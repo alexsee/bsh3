@@ -1,6 +1,6 @@
 # Backup Service Home 3 Bugtracker
-Willkommen! Dieses Projekt ist als Bugtracker für die Software **Backup Service Home 3** gedacht.
+Welcome! This project is the internal bug tracker for **Backup Service Home 3** (currently only available in german).
 
-**Für Vorschläge und Fragen** nutze bitte das [Support-Forum](https://forum.brightbits.de/).
+**Questions and Improvements**: Please use the community support forum for such requests (in german): [Support-Forum](https://forum.brightbits.de/)
 
-Wenn du einen Fehler in der Software gefunden hast, dann zögere nicht ihn direkt hier zu melden.
+**Issues and Errors**: You can use the issue tracker to report software bugs, issues, and enhancements.
