@@ -58,7 +58,7 @@ jobs:
     - name: Begin the sonar cloud scanner
       shell: powershell
       run: .\.sonar\scanner\dotnet-sonarscanner begin /k:"alexsee_bsh3" /o:"alexsee" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-     env:
+      env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
