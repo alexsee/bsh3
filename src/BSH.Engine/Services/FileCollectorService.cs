@@ -31,7 +31,7 @@ namespace Brightbits.BSH.Engine.Services
 
         private string root;
 
-        private string appDataFolder;
+        private readonly string appDataFolder;
 
         public List<FolderTableRow> EmptyFolders { get; set; }
 

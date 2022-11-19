@@ -34,11 +34,6 @@ namespace MRG.Controls.UI
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
     public class LoadingCircleToolStripMenuItem : ToolStripControlHost
     {
-        // Constants =========================================================
-
-        // Attributes ========================================================
-
-        // Properties ========================================================
         /// <summary>
         /// Gets the loading circle control.
         /// </summary>
@@ -50,7 +45,6 @@ namespace MRG.Controls.UI
             get { return Control as LoadingCircle; }
         }
 
-        // Constructor ========================================================
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadingCircleToolStripMenuItem"/> class.
         /// </summary>
@@ -69,30 +63,7 @@ namespace MRG.Controls.UI
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public override Size GetPreferredSize(Size constrainingSize)
         {
-            //return base.GetPreferredSize(constrainingSize);
             return this.LoadingCircleControl.GetPreferredSize(constrainingSize);
-        }
-
-        /// <summary>
-        /// Subscribes events from the hosted control.
-        /// </summary>
-        /// <param name="control">The control from which to subscribe events.</param>
-        protected override void OnSubscribeControlEvents(Control control)
-        {
-            base.OnSubscribeControlEvents(control);
-
-            //Add your code here to subsribe to Control Events
-        }
-
-        /// <summary>
-        /// Unsubscribes events from the hosted control.
-        /// </summary>
-        /// <param name="control">The control from which to unsubscribe events.</param>
-        protected override void OnUnsubscribeControlEvents(Control control)
-        {
-            base.OnUnsubscribeControlEvents(control);
-
-            //Add your code here to unsubscribe from control events.
         }
     }
 }

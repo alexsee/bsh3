@@ -29,16 +29,7 @@ namespace Brightbits.BSH.Main
 
         public delegate void ItemClickEventHandler(aVersionListItem sender);
 
-        private const int WM_MOUSEMOVE = 0x200;
         private VersionDetails _versionDetail;
-
-        public void Handler_MouseEnter(object sender, EventArgs e)
-        {
-        }
-
-        public void Handler_MouseLeave(object sender, EventArgs e)
-        {
-        }
 
         public bool VersionStable
         {
@@ -154,36 +145,6 @@ namespace Brightbits.BSH.Main
         private void lblVersionDate_Click(object sender, EventArgs e)
         {
             ItemClick?.Invoke(this);
-        }
-
-        private void lblVersionDate_MouseEnter(object sender, EventArgs e)
-        {
-            Handler_MouseEnter(sender, e);
-        }
-
-        private void lblVersionDate_MouseLeave(object sender, EventArgs e)
-        {
-            Handler_MouseLeave(sender, e);
-        }
-
-        private void lblVersionTitle_MouseEnter(object sender, EventArgs e)
-        {
-            Handler_MouseEnter(sender, e);
-        }
-
-        private void lblVersionTitle_MouseLeave(object sender, EventArgs e)
-        {
-            Handler_MouseLeave(sender, e);
-        }
-
-        private void lblVersionID_MouseEnter(object sender, EventArgs e)
-        {
-            Handler_MouseEnter(sender, e);
-        }
-
-        private void lblVersionID_MouseLeave(object sender, EventArgs e)
-        {
-            Handler_MouseLeave(sender, e);
         }
     }
 }

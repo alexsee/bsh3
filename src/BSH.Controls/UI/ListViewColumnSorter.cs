@@ -22,18 +22,11 @@ namespace Brightbits.BSH.Controls.UI
     /// </summary>
     public class ListViewColumnSorter : IComparer
     {
-        /// <summary>
-        /// Specifies the column to be sorted
-        /// </summary>
-        private int ColumnToSort;
-        /// <summary>
-        /// Specifies the order in which to sort (i.e. 'Ascending').
-        /// </summary>
-        private SortOrder OrderOfSort;
+
         /// <summary>
         /// Case insensitive comparer object
         /// </summary>
-        private CaseInsensitiveComparer ObjectCompare;
+        private readonly CaseInsensitiveComparer ObjectCompare;
 
         /// <summary>
         /// Class constructor.  Initializes various elements
@@ -41,10 +34,10 @@ namespace Brightbits.BSH.Controls.UI
         public ListViewColumnSorter()
         {
             // Initialize the column to '0'
-            ColumnToSort = 0;
+            SortColumn = 0;
 
             // Initialize the sort order to 'none'
-            OrderOfSort = SortOrder.None;
+            Order = SortOrder.None;
 
             // Initialize the CaseInsensitiveComparer object
             ObjectCompare = new CaseInsensitiveComparer();
@@ -68,7 +61,7 @@ namespace Brightbits.BSH.Controls.UI
             // Compare the two items
             try
             {
-                compareResult = ObjectCompare.Compare(listviewX.SubItems[ColumnToSort].Text, listviewY.SubItems[ColumnToSort].Text);
+                compareResult = ObjectCompare.Compare(listviewX.SubItems[SortColumn].Text, listviewY.SubItems[SortColumn].Text);
             }
             catch
             {
@@ -76,12 +69,12 @@ namespace Brightbits.BSH.Controls.UI
             }
 
             // Calculate correct return value based on object comparison
-            if (OrderOfSort == SortOrder.Ascending)
+            if (Order == SortOrder.Ascending)
             {
                 // Ascending sort is selected, return normal result of compare operation
                 return compareResult;
             }
-            else if (OrderOfSort == SortOrder.Descending)
+            else if (Order == SortOrder.Descending)
             {
                 // Descending sort is selected, return negative result of compare operation
                 return -compareResult;
@@ -96,32 +89,12 @@ namespace Brightbits.BSH.Controls.UI
         /// <summary>
         /// Gets or sets the number of the column to which to apply the sorting operation (Defaults to '0').
         /// </summary>
-        public int SortColumn
-        {
-            set
-            {
-                ColumnToSort = value;
-            }
-            get
-            {
-                return ColumnToSort;
-            }
-        }
+        public int SortColumn { set; get; }
 
         /// <summary>
         /// Gets or sets the order of sorting to apply (for example, 'Ascending' or 'Descending').
         /// </summary>
-        public SortOrder Order
-        {
-            set
-            {
-                OrderOfSort = value;
-            }
-            get
-            {
-                return OrderOfSort;
-            }
-        }
+        public SortOrder Order { set; get; }
 
     }
 }

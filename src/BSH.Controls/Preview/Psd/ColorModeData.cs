@@ -5,12 +5,13 @@ namespace SimplePsd
     /// </summary>
     public class ColorModeData
     {
-        public int nLength;
-        public byte[] ColourData;
+        public int NLength { get; set; }
+
+        public byte[] ColourData { get; set; }
 
         public ColorModeData()
         {
-            nLength = -1;
+            NLength = -1;
         }
     }
 }

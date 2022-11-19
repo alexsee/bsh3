@@ -58,7 +58,6 @@ namespace MRG.Controls.UI
         private const int IE7NumberOfSpoke = 24;
         private const int IE7SpokeThickness = 4;
 
-        // Enumeration =======================================================
         public enum StylePresets
         {
             MacOSX,
@@ -67,7 +66,6 @@ namespace MRG.Controls.UI
             Custom
         }
 
-        // Attributes ========================================================
         private Timer m_Timer;
         private bool m_IsTimerActive;
         private int m_NumberOfSpoke;
@@ -81,7 +79,6 @@ namespace MRG.Controls.UI
         private double[] m_Angles;
         private StylePresets m_StylePreset;
 
-        // Properties ========================================================
         /// <summary>
         /// Gets or sets the lightest color of the circle.
         /// </summary>
@@ -287,7 +284,6 @@ namespace MRG.Controls.UI
             }
         }
 
-        // Construtor ========================================================
         /// <summary>
         /// Initializes a new instance of the <see cref="T:LoadingCircle"/> class.
         /// </summary>
@@ -358,7 +354,6 @@ namespace MRG.Controls.UI
             base.OnPaint(e);
         }
 
-        // Overridden Methods ================================================
         /// <summary>
         /// Retrieves the size of a rectangular area into which a control can be fitted.
         /// </summary>

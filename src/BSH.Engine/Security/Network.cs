@@ -20,7 +20,7 @@ namespace Brightbits.BSH.Engine.Security
 {
     public class NetworkConnection : IDisposable
     {
-        public string RemoteShare = null;
+        public string RemoteShare { get; set; } = null;
 
         public NetworkConnection(string remoteHost, string remoteUser, string remotePassword)
         {
@@ -47,13 +47,18 @@ namespace Brightbits.BSH.Engine.Security
 
         ~NetworkConnection()
         {
-            Disconnect();
+            Dispose(false);
         }
 
         public void Dispose()
         {
-            Disconnect();
+            Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            Disconnect();
         }
 
         void Connect(string remoteUser, string remotePassword)

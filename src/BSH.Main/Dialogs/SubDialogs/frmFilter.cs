@@ -174,12 +174,13 @@ namespace Brightbits.BSH.Main
 
                     // Verzeichnis kann sortiert werden
                     string sTemp = dlgFolderBrowser.SelectedPath.Replace(entry.Substring(0, entry.LastIndexOf(@"\")), "");
+
                     if (!string.IsNullOrEmpty(sTemp))
                     {
                         // Nachschauen, ob schon drin
                         foreach (object entry2 in lstExcludeFolders.Items)
                         {
-                            if ((lstExcludeFolders.GetItemText(entry2) ?? "") == (sTemp ?? ""))
+                            if (lstExcludeFolders.GetItemText(entry2) == sTemp)
                             {
                                 // Eintrag gibts schon
                                 onLoadPath = dlgFolderBrowser.SelectedPath;
@@ -240,7 +241,7 @@ namespace Brightbits.BSH.Main
                 // Nachschauen, ob schon drin
                 foreach (object entry2 in lstExcludeFiles.Items)
                 {
-                    if ((lstExcludeFiles.GetItemText(entry2) ?? "") == (sInput ?? ""))
+                    if (lstExcludeFiles.GetItemText(entry2) == sInput)
                     {
                         // Eintrag gibts schon
                         return;

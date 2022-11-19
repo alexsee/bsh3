@@ -147,7 +147,7 @@ namespace SimplePsd
 
         public int GetBitsPerPixel()
         {
-            return m_HeaderInfo.nBitsPerPixel;
+            return m_HeaderInfo.NBitsPerPixel;
         }
 
         public int GlobalAngle()
@@ -167,22 +167,22 @@ namespace SimplePsd
 
         public int GetWidth()
         {
-            return m_HeaderInfo.nWidth;
+            return m_HeaderInfo.NWidth;
         }
 
         public int GetHeight()
         {
-            return m_HeaderInfo.nHeight;
+            return m_HeaderInfo.NHeight;
         }
 
         public int GetXResolution()
         {
-            return m_ResolutionInfo.hRes;
+            return m_ResolutionInfo.HRes;
         }
 
         public int GetYResolution()
         {
-            return m_ResolutionInfo.vRes;
+            return m_ResolutionInfo.VRes;
         }
 
         public int GetCompression()
@@ -217,30 +217,30 @@ namespace SimplePsd
 
                     if (SwapBytes(Channels, 2))
                     {
-                        m_HeaderInfo.nChannels = BitConverter.ToInt16(Channels, 0);
+                        m_HeaderInfo.NChannels = BitConverter.ToInt16(Channels, 0);
                     }
 
                     if (SwapBytes(Rows, 4))
                     {
-                        m_HeaderInfo.nHeight = BitConverter.ToInt32(Rows, 0);
+                        m_HeaderInfo.NHeight = BitConverter.ToInt32(Rows, 0);
                     }
 
                     if (SwapBytes(Columns, 4))
                     {
-                        m_HeaderInfo.nWidth = BitConverter.ToInt32(Columns, 0);
+                        m_HeaderInfo.NWidth = BitConverter.ToInt32(Columns, 0);
                     }
 
                     if (SwapBytes(Depth, 2))
                     {
-                        m_HeaderInfo.nBitsPerPixel = BitConverter.ToInt16(Depth, 0);
+                        m_HeaderInfo.NBitsPerPixel = BitConverter.ToInt16(Depth, 0);
                     }
 
                     if (SwapBytes(Mode, 2))
                     {
-                        m_HeaderInfo.nColourMode = BitConverter.ToInt16(Mode, 0);
+                        m_HeaderInfo.NColourMode = BitConverter.ToInt16(Mode, 0);
                     }
 
-                    if (m_HeaderInfo.nChannels != -1 && m_HeaderInfo.nHeight != -1 && m_HeaderInfo.nWidth != -1 && m_HeaderInfo.nBitsPerPixel != -1 && m_HeaderInfo.nColourMode != -1)
+                    if (m_HeaderInfo.NChannels != -1 && m_HeaderInfo.NHeight != -1 && m_HeaderInfo.NWidth != -1 && m_HeaderInfo.NBitsPerPixel != -1 && m_HeaderInfo.NColourMode != -1)
                     {
                         bSuccess = true;
                     }
@@ -285,7 +285,7 @@ namespace SimplePsd
                     nLength = BitConverter.ToInt32(ColorMode, 0);
                 }
 
-                m_ColorModeData.nLength = nLength;
+                m_ColorModeData.NLength = nLength;
 
                 if (nLength > 0)
                 {
@@ -324,10 +324,10 @@ namespace SimplePsd
                     nLength = BitConverter.ToInt32(Length, 0);
                 }
 
-                m_ImageResource.nLength = nLength;
+                m_ImageResource.NLength = nLength;
 
                 int nBytesRead = 0;
-                int nTotalBytes = m_ImageResource.nLength;
+                int nTotalBytes = m_ImageResource.NLength;
                 long nStreamLen = stream.Length;
 
                 while (stream.Position < nStreamLen && nBytesRead < nTotalBytes)
@@ -345,7 +345,7 @@ namespace SimplePsd
 
                         if (SwapBytes(ID, 2))
                         {
-                            m_ImageResource.nID = BitConverter.ToInt16(ID, 0);
+                            m_ImageResource.NID = BitConverter.ToInt16(ID, 0);
                         }
 
                         byte SizeOfName = binReader.ReadByte();
@@ -371,22 +371,22 @@ namespace SimplePsd
                         byte[] Size = binReader.ReadBytes(4);
                         if (SwapBytes(Size, 4))
                         {
-                            m_ImageResource.nSize = BitConverter.ToInt32(Size, 0);
+                            m_ImageResource.NSize = BitConverter.ToInt32(Size, 0);
                         }
 
                         nBytesRead += 4;
 
-                        if ((m_ImageResource.nSize % 2) != 0)   // resource data must be even
+                        if ((m_ImageResource.NSize % 2) != 0)   // resource data must be even
                         {
-                            m_ImageResource.nSize++;
+                            m_ImageResource.NSize++;
                         }
 
-                        if (m_ImageResource.nSize > 0)
+                        if (m_ImageResource.NSize > 0)
                         {
                             byte[] IntValue = new byte[4];
                             byte[] ShortValue = new byte[2];
 
-                            switch (m_ImageResource.nID)
+                            switch (m_ImageResource.NID)
                             {
                                 case 1005:
                                     {
@@ -395,42 +395,42 @@ namespace SimplePsd
                                         ShortValue = binReader.ReadBytes(2);
                                         if (SwapBytes(ShortValue, 2))
                                         {
-                                            m_ResolutionInfo.hRes = BitConverter.ToInt16(ShortValue, 0);
+                                            m_ResolutionInfo.HRes = BitConverter.ToInt16(ShortValue, 0);
                                         }
 
                                         nBytesRead += 2;
                                         IntValue = binReader.ReadBytes(4);
                                         if (SwapBytes(IntValue, 4))
                                         {
-                                            m_ResolutionInfo.hResUnit = BitConverter.ToInt32(IntValue, 0);
+                                            m_ResolutionInfo.HResUnit = BitConverter.ToInt32(IntValue, 0);
                                         }
 
                                         nBytesRead += 4;
                                         ShortValue = binReader.ReadBytes(2);
                                         if (SwapBytes(ShortValue, 2))
                                         {
-                                            m_ResolutionInfo.widthUnit = BitConverter.ToInt16(ShortValue, 0);
+                                            m_ResolutionInfo.WidthUnit = BitConverter.ToInt16(ShortValue, 0);
                                         }
 
                                         nBytesRead += 2;
                                         ShortValue = binReader.ReadBytes(2);
                                         if (SwapBytes(ShortValue, 2))
                                         {
-                                            m_ResolutionInfo.vRes = BitConverter.ToInt16(ShortValue, 0);
+                                            m_ResolutionInfo.VRes = BitConverter.ToInt16(ShortValue, 0);
                                         }
 
                                         nBytesRead += 2;
                                         IntValue = binReader.ReadBytes(4);
                                         if (SwapBytes(IntValue, 4))
                                         {
-                                            m_ResolutionInfo.vResUnit = BitConverter.ToInt32(IntValue, 0);
+                                            m_ResolutionInfo.VResUnit = BitConverter.ToInt32(IntValue, 0);
                                         }
 
                                         nBytesRead += 4;
                                         ShortValue = binReader.ReadBytes(2);
                                         if (SwapBytes(ShortValue, 2))
                                         {
-                                            m_ResolutionInfo.heightUnit = BitConverter.ToInt16(ShortValue, 0);
+                                            m_ResolutionInfo.HeightUnit = BitConverter.ToInt16(ShortValue, 0);
                                         }
 
                                         nBytesRead += 2;
@@ -471,15 +471,15 @@ namespace SimplePsd
                                         nBytesRead += 1;
                                         if (c == 0x00)
                                         {
-                                            m_DisplayInfo.kind = false;
+                                            m_DisplayInfo.Kind = false;
                                         }
                                         else
                                         {
-                                            m_DisplayInfo.kind = true;
+                                            m_DisplayInfo.Kind = true;
                                         }
 
                                         nBytesRead += 1;
-                                        m_DisplayInfo.padding = binReader.ReadByte();
+                                        m_DisplayInfo.Padding = binReader.ReadByte();
                                     }
                                     break;
                                 case 1034:
@@ -510,7 +510,7 @@ namespace SimplePsd
                                         IntValue = binReader.ReadBytes(4);
                                         if (SwapBytes(IntValue, 4))
                                         {
-                                            m_ThumbNail.nFormat = BitConverter.ToInt32(IntValue, 0);
+                                            m_ThumbNail.NFormat = BitConverter.ToInt32(IntValue, 0);
                                         }
 
                                         nBytesRead += 4;
@@ -518,7 +518,7 @@ namespace SimplePsd
                                         IntValue = binReader.ReadBytes(4);
                                         if (SwapBytes(IntValue, 4))
                                         {
-                                            m_ThumbNail.nWidth = BitConverter.ToInt32(IntValue, 0);
+                                            m_ThumbNail.NWidth = BitConverter.ToInt32(IntValue, 0);
                                         }
 
                                         nBytesRead += 4;
@@ -526,7 +526,7 @@ namespace SimplePsd
                                         IntValue = binReader.ReadBytes(4);
                                         if (SwapBytes(IntValue, 4))
                                         {
-                                            m_ThumbNail.nHeight = BitConverter.ToInt32(IntValue, 0);
+                                            m_ThumbNail.NHeight = BitConverter.ToInt32(IntValue, 0);
                                         }
 
                                         nBytesRead += 4;
@@ -534,7 +534,7 @@ namespace SimplePsd
                                         IntValue = binReader.ReadBytes(4);
                                         if (SwapBytes(IntValue, 4))
                                         {
-                                            m_ThumbNail.nWidthBytes = BitConverter.ToInt32(IntValue, 0);
+                                            m_ThumbNail.NWidthBytes = BitConverter.ToInt32(IntValue, 0);
                                         }
 
                                         nBytesRead += 4;
@@ -542,7 +542,7 @@ namespace SimplePsd
                                         IntValue = binReader.ReadBytes(4);
                                         if (SwapBytes(IntValue, 4))
                                         {
-                                            m_ThumbNail.nSize = BitConverter.ToInt32(IntValue, 0);
+                                            m_ThumbNail.NSize = BitConverter.ToInt32(IntValue, 0);
                                         }
 
                                         nBytesRead += 4;
@@ -550,7 +550,7 @@ namespace SimplePsd
                                         IntValue = binReader.ReadBytes(4);
                                         if (SwapBytes(IntValue, 4))
                                         {
-                                            m_ThumbNail.nCompressedSize = BitConverter.ToInt32(IntValue, 0);
+                                            m_ThumbNail.NCompressedSize = BitConverter.ToInt32(IntValue, 0);
                                         }
 
                                         nBytesRead += 4;
@@ -559,21 +559,21 @@ namespace SimplePsd
                                         nBytesRead += 2;
                                         if (SwapBytes(ShortValue, 2))
                                         {
-                                            m_ThumbNail.nBitPerPixel = BitConverter.ToInt16(ShortValue, 0);
+                                            m_ThumbNail.NBitPerPixel = BitConverter.ToInt16(ShortValue, 0);
                                         }
 
                                         ShortValue = binReader.ReadBytes(2);
                                         nBytesRead += 2;
                                         if (SwapBytes(ShortValue, 2))
                                         {
-                                            m_ThumbNail.nPlanes = BitConverter.ToInt16(ShortValue, 0);
+                                            m_ThumbNail.NPlanes = BitConverter.ToInt16(ShortValue, 0);
                                         }
 
-                                        int nTotalData = m_ImageResource.nSize - 28; // header
+                                        int nTotalData = m_ImageResource.NSize - 28; // header
 
                                         byte[] buffer = new byte[nTotalData];
                                         byte c;
-                                        if (m_ImageResource.nID == 1033)
+                                        if (m_ImageResource.NID == 1033)
                                         {
                                             // In BGR format
                                             for (int n = 0; n < nTotalData; n = n + 3)
@@ -589,7 +589,7 @@ namespace SimplePsd
                                                 buffer[n] = c;
                                             }
                                         }
-                                        else if (m_ImageResource.nID == 1036)
+                                        else if (m_ImageResource.NID == 1036)
                                         {
                                             // In RGB format										
                                             for (int n = 0; n < nTotalData; ++n)
@@ -635,7 +635,7 @@ namespace SimplePsd
                                 default:
                                     {
                                         byte c;
-                                        for (int n = 0; n < m_ImageResource.nSize; ++n)
+                                        for (int n = 0; n < m_ImageResource.NSize; ++n)
                                         {
                                             c = binReader.ReadByte();
                                             nBytesRead += 1;
@@ -720,17 +720,17 @@ namespace SimplePsd
                 {
                     case 0: // raw data
                         {
-                            int nWidth = m_HeaderInfo.nWidth;
-                            int nHeight = m_HeaderInfo.nHeight;
-                            int bytesPerPixelPerChannel = m_HeaderInfo.nBitsPerPixel / 8;
+                            int nWidth = m_HeaderInfo.NWidth;
+                            int nHeight = m_HeaderInfo.NHeight;
+                            int bytesPerPixelPerChannel = m_HeaderInfo.NBitsPerPixel / 8;
 
                             int nPixels = nWidth * nHeight;
-                            int nTotalBytes = nPixels * bytesPerPixelPerChannel * m_HeaderInfo.nChannels;
+                            int nTotalBytes = nPixels * bytesPerPixelPerChannel * m_HeaderInfo.NChannels;
 
                             byte[] pData = new byte[nTotalBytes];
                             byte[] pImageData = new byte[nTotalBytes];
 
-                            switch (m_HeaderInfo.nColourMode)
+                            switch (m_HeaderInfo.NColourMode)
                             {
                                 case 1:     // Grayscale
                                 case 2:     // Indexed
@@ -768,7 +768,7 @@ namespace SimplePsd
                                         if (nBytesToReadPerPixelPerChannel == 2)
                                         {
                                             nBytesToReadPerPixelPerChannel = 1;
-                                            nTotalBytes = nPixels * nBytesToReadPerPixelPerChannel * m_HeaderInfo.nChannels;
+                                            nTotalBytes = nPixels * nBytesToReadPerPixelPerChannel * m_HeaderInfo.NChannels;
                                         }
 
                                         pImageData = new byte[nBytesToReadPerPixelPerChannel];
@@ -895,14 +895,14 @@ namespace SimplePsd
 
                                 if (m_bResolutionInfoFilled)
                                 {
-                                    int nHorzResolution = (int)m_ResolutionInfo.hRes;
-                                    int nVertResolution = (int)m_ResolutionInfo.vRes;
+                                    int nHorzResolution = (int)m_ResolutionInfo.HRes;
+                                    int nVertResolution = (int)m_ResolutionInfo.VRes;
 
                                     ppm_x = (nHorzResolution * 10000) / 254;
                                     ppm_y = (nVertResolution * 10000) / 254;
                                 }
 
-                                switch (m_HeaderInfo.nBitsPerPixel)
+                                switch (m_HeaderInfo.NBitsPerPixel)
                                 {
                                     case 1:
                                         {
@@ -936,12 +936,12 @@ namespace SimplePsd
                         break;
                     case 1: // RLE compression
                         {
-                            int nWidth = m_HeaderInfo.nWidth;
-                            int nHeight = m_HeaderInfo.nHeight;
-                            int bytesPerPixelPerChannel = m_HeaderInfo.nBitsPerPixel / 8;
+                            int nWidth = m_HeaderInfo.NWidth;
+                            int nHeight = m_HeaderInfo.NHeight;
+                            int bytesPerPixelPerChannel = m_HeaderInfo.NBitsPerPixel / 8;
 
                             int nPixels = nWidth * nHeight;
-                            int nTotalBytes = nPixels * bytesPerPixelPerChannel * m_HeaderInfo.nChannels;
+                            int nTotalBytes = nPixels * bytesPerPixelPerChannel * m_HeaderInfo.NChannels;
 
                             byte[] pDest = new byte[nTotalBytes];
                             byte[] pData = new byte[nTotalBytes];
@@ -963,10 +963,10 @@ namespace SimplePsd
 
                             // The RLE-compressed data is proceeded by a 2-byte data count for each row in the data,
                             // which we're going to just skip.
-                            stream.Position += nHeight * m_HeaderInfo.nChannels * 2;
+                            stream.Position += nHeight * m_HeaderInfo.NChannels * 2;
 
 
-                            for (int channel = 0; channel < m_HeaderInfo.nChannels; channel++)
+                            for (int channel = 0; channel < m_HeaderInfo.NChannels; channel++)
                             {
                                 // Read the RLE data.
                                 Count = 0;
@@ -1016,7 +1016,7 @@ namespace SimplePsd
                             int nPixelCounter = 0;
                             nPointer = 0;
 
-                            for (int nColour = 0; nColour < m_HeaderInfo.nChannels; ++nColour)
+                            for (int nColour = 0; nColour < m_HeaderInfo.NChannels; ++nColour)
                             {
                                 nPixelCounter = nColour * bytesPerPixelPerChannel;
                                 for (int nPos = 0; nPos < nPixels; ++nPos)
@@ -1028,7 +1028,7 @@ namespace SimplePsd
 
                                     nPointer++;
 
-                                    nPixelCounter += m_HeaderInfo.nChannels * bytesPerPixelPerChannel;
+                                    nPixelCounter += m_HeaderInfo.NChannels * bytesPerPixelPerChannel;
                                 }
                             }
 
@@ -1042,14 +1042,14 @@ namespace SimplePsd
 
                             if (m_bResolutionInfoFilled)
                             {
-                                int nHorResolution = (int)m_ResolutionInfo.hRes;
-                                int nVertResolution = (int)m_ResolutionInfo.vRes;
+                                int nHorResolution = (int)m_ResolutionInfo.HRes;
+                                int nVertResolution = (int)m_ResolutionInfo.VRes;
 
                                 ppm_x = (nHorResolution * 10000) / 254;
                                 ppm_y = (nVertResolution * 10000) / 254;
                             }
 
-                            switch (m_HeaderInfo.nBitsPerPixel)
+                            switch (m_HeaderInfo.NBitsPerPixel)
                             {
                                 case 1:
                                     {
@@ -1168,13 +1168,13 @@ namespace SimplePsd
             IntPtr hdcMemory = IntPtr.Zero;
             IntPtr hbmpOld = IntPtr.Zero;
 
-            int nHeight = m_HeaderInfo.nHeight;
-            int nWidth = m_HeaderInfo.nWidth;
-            short bytesPerPixelPerChannel = (short)(m_HeaderInfo.nBitsPerPixel / 8);
+            int nHeight = m_HeaderInfo.NHeight;
+            int nWidth = m_HeaderInfo.NWidth;
+            short bytesPerPixelPerChannel = (short)(m_HeaderInfo.NBitsPerPixel / 8);
             int nPixels = nWidth * nHeight;
-            int nTotalBytes = nPixels * bytesPerPixelPerChannel * m_HeaderInfo.nChannels;
+            int nTotalBytes = nPixels * bytesPerPixelPerChannel * m_HeaderInfo.NChannels;
 
-            switch (m_HeaderInfo.nColourMode)
+            switch (m_HeaderInfo.NColourMode)
             {
                 case 1:     // Grayscale
                 case 8:     // Duotone
@@ -1201,7 +1201,7 @@ namespace SimplePsd
                                 SwapBytes(ColorValue, bytesPerPixelPerChannel);
 
                                 nValue = BitConverter.ToInt32(ColorValue, 0);
-                                if (m_HeaderInfo.nBitsPerPixel == 16)
+                                if (m_HeaderInfo.NBitsPerPixel == 16)
                                 {
                                     nValue = nValue / 256;
                                 }
@@ -1231,7 +1231,7 @@ namespace SimplePsd
                         hbmpOld = WinInvoke32.SelectObject(hdcMemory, hBitmap);
                         // pData holds the indices of loop through the palette and set the correct RGB
                         // 8bpp are supported
-                        if (m_ColorModeData.nLength == 768 && m_nColourCount > 0)
+                        if (m_ColorModeData.NLength == 768 && m_nColourCount > 0)
                         {
                             int nRow = 0;
                             int nCol = 0;
@@ -1268,7 +1268,7 @@ namespace SimplePsd
                         hdcMemory = WinInvoke32.CreateCompatibleDC(IntPtr.Zero);
                         hbmpOld = WinInvoke32.SelectObject(hdcMemory, hBitmap);
 
-                        int nBytesToRead = m_HeaderInfo.nBitsPerPixel / 8;
+                        int nBytesToRead = m_HeaderInfo.NBitsPerPixel / 8;
                         if (nBytesToRead == 2)
                         {
                             nBytesToRead = 1;
@@ -1282,7 +1282,7 @@ namespace SimplePsd
                         int nColor = 0;
                         byte[] ColorValue = new byte[8];
 
-                        for (int nCounter = 0; nCounter < nTotalBytes; nCounter += m_HeaderInfo.nChannels * nBytesToRead)
+                        for (int nCounter = 0; nCounter < nTotalBytes; nCounter += m_HeaderInfo.NChannels * nBytesToRead)
                         {
                             Array.Copy(pData, nCounter, ColorValue, 0, nBytesToRead);
                             SwapBytes(ColorValue, nBytesToRead);
@@ -1324,7 +1324,7 @@ namespace SimplePsd
 
                         byte[] ColorValue = new byte[8];
 
-                        double dMaxColours = Math.Pow(2, m_HeaderInfo.nBitsPerPixel);
+                        double dMaxColours = Math.Pow(2, m_HeaderInfo.NBitsPerPixel);
 
                         Color crPixel = Color.White;
 
@@ -1381,14 +1381,14 @@ namespace SimplePsd
 
                         byte[] ColorValue = new byte[8];
 
-                        double dMaxColours = Math.Pow(2, m_HeaderInfo.nBitsPerPixel);
+                        double dMaxColours = Math.Pow(2, m_HeaderInfo.NBitsPerPixel);
 
                         Color crPixel = Color.White;
 
                         // assume format is in either CMY or CMYK
-                        if (m_HeaderInfo.nChannels >= 3)
+                        if (m_HeaderInfo.NChannels >= 3)
                         {
-                            for (int nCounter = 0; nCounter < nTotalBytes; nCounter += m_HeaderInfo.nChannels * bytesPerPixelPerChannel)
+                            for (int nCounter = 0; nCounter < nTotalBytes; nCounter += m_HeaderInfo.NChannels * bytesPerPixelPerChannel)
                             {
                                 Array.Copy(pData, nCounter, ColorValue, 0, bytesPerPixelPerChannel);
                                 SwapBytes(ColorValue, bytesPerPixelPerChannel);
@@ -1407,7 +1407,7 @@ namespace SimplePsd
                                 Y = (1.0 - exY / dMaxColours);
                                 K = 0;
 
-                                if (m_HeaderInfo.nChannels == 4)
+                                if (m_HeaderInfo.NChannels == 4)
                                 {
                                     Array.Copy(pData, nCounter + 3 * bytesPerPixelPerChannel, ColorValue, 0, bytesPerPixelPerChannel);
                                     SwapBytes(ColorValue, bytesPerPixelPerChannel);
@@ -1448,7 +1448,7 @@ namespace SimplePsd
 
                         double exL, exA, exB;
                         double L_coef, a_coef, b_coef;
-                        double dMaxColours = Math.Pow(2, m_HeaderInfo.nBitsPerPixel);
+                        double dMaxColours = Math.Pow(2, m_HeaderInfo.NBitsPerPixel);
 
                         L_coef = dMaxColours / 100.0;
                         a_coef = dMaxColours / 256.0;

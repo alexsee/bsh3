@@ -50,13 +50,11 @@ namespace Manoli.Utils.CSharpFormat
         /// <summary/>
         protected SourceFormat()
         {
-            _tabSpaces = 4;
-            _lineNumbers = false;
-            _alternate = false;
-            _embedStyleSheet = false;
+            TabSpaces = 4;
+            LineNumbers = false;
+            Alternate = false;
+            EmbedStyleSheet = false;
         }
-
-        private byte _tabSpaces;
 
         /// <summary>
         /// Gets or sets the tabs width.
@@ -64,50 +62,28 @@ namespace Manoli.Utils.CSharpFormat
         /// <value>The number of space characters to substitute for tab 
         /// characters. The default is <b>4</b>, unless overridden is a 
         /// derived class.</value>
-        public byte TabSpaces
-        {
-            get { return _tabSpaces; }
-            set { _tabSpaces = value; }
-        }
-
-        private bool _lineNumbers;
+        public byte TabSpaces { get; set; }
 
         /// <summary>
         /// Enables or disables line numbers in output.
         /// </summary>
         /// <value>When <b>true</b>, line numbers are generated. 
         /// The default is <b>false</b>.</value>
-        public bool LineNumbers
-        {
-            get { return _lineNumbers; }
-            set { _lineNumbers = value; }
-        }
-
-        private bool _alternate;
+        public bool LineNumbers { get; set; }
 
         /// <summary>
         /// Enables or disables alternating line background.
         /// </summary>
         /// <value>When <b>true</b>, lines background is alternated. 
         /// The default is <b>false</b>.</value>
-        public bool Alternate
-        {
-            get { return _alternate; }
-            set { _alternate = value; }
-        }
-
-        private bool _embedStyleSheet;
+        public bool Alternate { get; set; }
 
         /// <summary>
         /// Enables or disables the embedded CSS style sheet.
         /// </summary>
         /// <value>When <b>true</b>, the CSS &lt;style&gt; element is included 
         /// in the HTML output. The default is <b>false</b>.</value>
-        public bool EmbedStyleSheet
-        {
-            get { return _embedStyleSheet; }
-            set { _embedStyleSheet = value; }
-        }
+        public bool EmbedStyleSheet { get; set; }
 
         /// <overloads>Transform source code to HTML 4.01.</overloads>
         /// 
@@ -121,7 +97,7 @@ namespace Manoli.Utils.CSharpFormat
             StreamReader reader = new StreamReader(source);
             string s = reader.ReadToEnd();
             reader.Close();
-            return FormatCode(s, _lineNumbers, _alternate, _embedStyleSheet, false);
+            return FormatCode(s, LineNumbers, Alternate, EmbedStyleSheet, false);
         }
 
         /// <summary>
@@ -130,7 +106,7 @@ namespace Manoli.Utils.CSharpFormat
         /// <returns>A string containing the HTML formatted code.</returns>
         public string FormatCode(string source)
         {
-            return FormatCode(source, _lineNumbers, _alternate, _embedStyleSheet, false);
+            return FormatCode(source, LineNumbers, Alternate, EmbedStyleSheet, false);
         }
 
         /// <summary>
@@ -194,7 +170,7 @@ namespace Manoli.Utils.CSharpFormat
                 sb.Replace("&", "&amp;");
                 sb.Replace("<", "&lt;");
                 sb.Replace(">", "&gt;");
-                sb.Replace("\t", string.Empty.PadRight(_tabSpaces));
+                sb.Replace("\t", string.Empty.PadRight(TabSpaces));
             }
 
             //color the code
