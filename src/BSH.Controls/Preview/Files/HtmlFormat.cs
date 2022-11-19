@@ -38,9 +38,9 @@ namespace Manoli.Utils.CSharpFormat
     /// </remarks>
     public class HtmlFormat : SourceFormat
     {
-        private CSharpFormat csf; //to format embedded C# code
-        private JavaScriptFormat jsf; //to format client-side JavaScript code
-        private Regex attribRegex;
+        private readonly CSharpFormat csf; //to format embedded C# code
+        private readonly JavaScriptFormat jsf; //to format client-side JavaScript code
+        private readonly Regex attribRegex;
 
         /// <summary/>
         public HtmlFormat()
