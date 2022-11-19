@@ -16,7 +16,7 @@ using System.Windows.Forms;
 
 namespace BSH.Controls.UI
 {
-    public class InputBox
+    public static class InputBox
     {
         public static string ShowInputBox(IWin32Window owner, string text, string title, string value)
         {
