@@ -9,11 +9,6 @@ on:
 jobs:
 
   build:
-
-    strategy:
-      matrix:
-        configuration: [Release]
-
     runs-on: windows-latest
     
     env:
@@ -21,15 +16,59 @@ jobs:
       Test_Project_Path: src\BSH.Test\BSH.Test.csproj                      # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
 
     steps:
+    
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.11
+
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1
+
     - name: Checkout
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+    
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v1
+      with:
+        path: ~\sonar\cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
   
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1
+    - name: Cache SonarCloud scanner
+      id: cache-sonar-scanner
+      uses: actions/cache@v1
+      with:
+        path: .\.sonar\scanner
+        key: ${{ runner.os }}-sonar-scanner
+        restore-keys: ${{ runner.os }}-sonar-scanner
+
+    - name: Install SonarCloud scanner
+      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      shell: powershell
+      run: |
+        New-Item -Path .\.sonar\scanner -ItemType Directory
+        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
     - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release -p:RestorePackagesConfig=true
+    
+    - name: Begin the sonar cloud scanner
+      shell: powershell
+      run: .\.sonar\scanner\dotnet-sonarscanner begin /k:"alexsee_bsh3" /o:"alexsee" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
       env:
-        Configuration: ${{ matrix.configuration }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Build
+      shell: powershell
+      run: msbuild $env:Solution_Name /t:Rebuild /p:Configuration=Release
+
+    - name: Finish the sonar cloud scanner
+      shell: powershell
+      run: .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
