@@ -53,7 +53,7 @@ jobs:
         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
     - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release -p:RestorePackagesConfig=true
     
     - name: Begin the sonar cloud scanner
       shell: powershell
