@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -25,7 +26,7 @@ namespace Brightbits.BSH.Main
 
         public event ItemClickEventHandler ItemClick;
 
-        public delegate void ItemClickEventHandler(aVersionListItem sender);
+        public delegate Task ItemClickEventHandler(aVersionListItem sender);
 
         public aVersionList()
         {

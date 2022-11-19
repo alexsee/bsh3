@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -26,7 +27,7 @@ namespace Brightbits.BSH.Main
 
         public event ItemClickEventHandler ItemClick;
 
-        public delegate void ItemClickEventHandler(string sPath);
+        public delegate Task ItemClickEventHandler(string sPath);
 
         public void CreateNavi(string CompletePath, bool NoClick = false)
         {
