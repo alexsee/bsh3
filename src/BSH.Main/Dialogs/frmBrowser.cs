@@ -828,7 +828,7 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private async void AVersionList1_ItemClick(aVersionListItem sender)
+        private async Task AVersionList1_ItemClick(aVersionListItem sender)
         {
             // change version
             await ChangeVersionAsync(sender.Version);
@@ -1299,7 +1299,7 @@ namespace Brightbits.BSH.Main
             LCFiles.LoadingCircleControl.Active = false;
         }
 
-        private async void UcNav_ItemClick(string sPath)
+        private async Task UcNav_ItemClick(string sPath)
         {
             await OpenFolderAsync(sPath);
         }
