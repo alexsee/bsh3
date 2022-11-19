@@ -36,7 +36,7 @@ namespace Brightbits.BSH.Main
 
             // construct new path controls
             string[] sPath = txtPath.Text.Split('\\');
-            string[] sPathLocalized = _PathLocalized.Split('\\');
+            string[] sPathLocalized = PathLocalized.Split('\\');
 
             if (sPath.Length != sPathLocalized.Length)
             {
@@ -47,8 +47,6 @@ namespace Brightbits.BSH.Main
 
             for (int i = 0; i < sPath.Length; i++)
             {
-                string entry = sPath[i];
-
                 // create item
                 var newEntry = new ucNavigationItem();
                 if (i == 0)
@@ -100,20 +98,7 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private string _PathLocalized;
-
-        public string PathLocalized
-        {
-            get
-            {
-                return _PathLocalized;
-            }
-
-            set
-            {
-                _PathLocalized = value;
-            }
-        }
+        public string PathLocalized { get; set; }
 
         private void ucNavigation_Resize(object sender, EventArgs e)
         {

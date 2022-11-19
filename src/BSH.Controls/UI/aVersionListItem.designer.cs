@@ -33,12 +33,8 @@ namespace Brightbits.BSH.Main
             var resources = new System.ComponentModel.ComponentResourceManager(typeof(aVersionListItem));
             lblVersionID = new Label();
             lblVersionID.Click += new EventHandler(lblVersionID_Click);
-            lblVersionID.MouseEnter += new EventHandler(lblVersionID_MouseEnter);
-            lblVersionID.MouseLeave += new EventHandler(lblVersionID_MouseLeave);
             lblVersionDate = new Label();
             lblVersionDate.Click += new EventHandler(lblVersionDate_Click);
-            lblVersionDate.MouseEnter += new EventHandler(lblVersionDate_MouseEnter);
-            lblVersionDate.MouseLeave += new EventHandler(lblVersionDate_MouseLeave);
             tt = new ToolTip(components);
             lblStable = new Label();
             PictureBox3 = new PictureBox();
@@ -110,8 +106,6 @@ namespace Brightbits.BSH.Main
             Name = "aVersionListItem";
             Size = new Size(318, 40);
             ((System.ComponentModel.ISupportInitialize)PictureBox3).EndInit();
-            MouseEnter += new EventHandler(Handler_MouseEnter);
-            MouseLeave += new EventHandler(Handler_MouseLeave);
             Click += new EventHandler(aVersionListItem_Click);
             ResumeLayout(false);
             PerformLayout();
