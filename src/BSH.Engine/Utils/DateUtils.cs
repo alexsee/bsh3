@@ -16,7 +16,7 @@ using System;
 
 namespace Brightbits.BSH.Engine.Utils
 {
-    public class DateUtils
+    public static class DateUtils
     {
         public static DateTime GetDateToWeekDay(DayOfWeek weekDay, DateTime date)
         {
