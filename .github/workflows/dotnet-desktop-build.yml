@@ -1,0 +1,35 @@
+name: .NET Core Desktop
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: windows-latest
+    
+    env:
+      Solution_Name: src\Backup Service Home 3.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
+      Test_Project_Path: src\BSH.Test\BSH.Test.csproj                      # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+  
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Restore the application
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
