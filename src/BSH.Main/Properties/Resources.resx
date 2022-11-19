@@ -1,0 +1,418 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="AppIco" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Icons\AppIco.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="archive" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\archive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="arrow_left_bold_circle_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\arrow-left-bold-circle-outline.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="arrow_left_bold_circle_outline_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\arrow-left-bold-circle-outline-off.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="arrow_left_circle_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\arrow-left-circle-fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="arrow_left_circle_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\arrow-left-circle-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="arrow_left_circle_line_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\arrow-left-circle-line-off.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="arrow_left_circle_line_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\arrow-left-circle-line-on.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BackupStatus_" xml:space="preserve">
+    <value>Status ist derzeit unbekannt.</value>
+  </data>
+  <data name="BackupStatus_0" xml:space="preserve">
+    <value>Backup Service Home wird ordnungsgemäß ausgeführt.</value>
+  </data>
+  <data name="BackupStatus_1" xml:space="preserve">
+    <value>Datensicherung läuft...</value>
+  </data>
+  <data name="BackupStatus_2" xml:space="preserve">
+    <value>Letzte Datensicherung wurde nicht korrekt abgeschlossen.</value>
+  </data>
+  <data name="BackupStatus_3" xml:space="preserve">
+    <value>Batteriebetrieb. Es werden keine Sicherungen durchgeführt.</value>
+  </data>
+  <data name="BackupStatus_4" xml:space="preserve">
+    <value>Automatische Sicherung ist deaktivert.</value>
+  </data>
+  <data name="BACKUP_FROM_DATE" xml:space="preserve">
+    <value>Sicherung vom </value>
+  </data>
+  <data name="backup_restore" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\backup-restore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="backup_service_client_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\backup service client_32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checkbox_blank_circle_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\checkbox-blank-circle-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checkbox_circle_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\checkbox-circle-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="close_circle_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\close-circle-fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="close_circle_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\close-circle-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dashminus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\dashminus.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dashplus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\dashplus.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="delete_bin_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\delete-bin-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DLG_ADD_SCHEDULE.FORMAT.DAILY" xml:space="preserve">
+    <value>'Täglich um' HH:mm:ss</value>
+  </data>
+  <data name="DLG_ADD_SCHEDULE.FORMAT.HOURLY" xml:space="preserve">
+    <value>'Stündlich, immer in Minute' mm</value>
+  </data>
+  <data name="DLG_ADD_SCHEDULE.FORMAT.MONTHLY" xml:space="preserve">
+    <value>'Jeden' dd. 'im Monat', 'um' HH:mm:ss</value>
+  </data>
+  <data name="DLG_ADD_SCHEDULE.FORMAT.ONCE" xml:space="preserve">
+    <value>'Einmalig am' dd.MM.yyyy 'um' HH:mm:ss</value>
+  </data>
+  <data name="DLG_ADD_SCHEDULE.FORMAT.WEEKLY" xml:space="preserve">
+    <value>'Jeden' dddd, 'um' HH:mm:ss</value>
+  </data>
+  <data name="error_warning_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\error-warning-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="eye" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\eye.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="eye_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\eye-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="favorite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\favorite.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="file_copy_2_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\file-copy-2-fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="file_copy_2_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\file-copy-2-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="folder_open_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\folder-open_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="function_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\function-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Hintergrund_Menu_oben" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Hintergrund Menu oben.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="home" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\home.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="home_4_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\home-4-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="keyboard_backspace" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\keyboard-backspace.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="menu_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\menu-fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="menu_fill1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\menu-fill1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="moreinfo_backgr" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\moreinfo_backgr.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pencil_box_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\pencil-box-outline.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="play_circle_outline_gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\play-circle-outline-gray.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="question_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\question-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="search_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\search-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="settings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="settings_3_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\settings-3-fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="settings_3_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\settings-3-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_error" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\status_error.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_ok" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\status_ok.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_red" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Icons\status_red.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Icons\status_refresh.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_running" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\status_running.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="String" xml:space="preserve">
+    <value>um die geplanete Datensicherung fortzusetzen. Schließen Sie nun</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value>dieses an Ihren Computer an.</value>
+  </data>
+  <data name="String10" xml:space="preserve">
+    <value>an Ihren Computer an.</value>
+  </data>
+  <data name="String11" xml:space="preserve">
+    <value>Das Medium wird automatisch erkannt.</value>
+  </data>
+  <data name="String2" xml:space="preserve">
+    <value>Das Medium wird automatisch erkannt.</value>
+  </data>
+  <data name="String3" xml:space="preserve">
+    <value>um die Wiederherstellung der Datensicherung fortzusetzen.</value>
+  </data>
+  <data name="String4" xml:space="preserve">
+    <value>Schließen Sie nun dieses an Ihren Computer an.</value>
+  </data>
+  <data name="String5" xml:space="preserve">
+    <value>Das Medium wird automatisch erkannt.</value>
+  </data>
+  <data name="String6" xml:space="preserve">
+    <value>um die Vorschau für die gewählte Datei anzuzeigen. Schließen  Sie</value>
+  </data>
+  <data name="String7" xml:space="preserve">
+    <value>nun dieses an Ihren Computer an.</value>
+  </data>
+  <data name="String8" xml:space="preserve">
+    <value>Das Medium wird automatisch erkannt.</value>
+  </data>
+  <data name="String9" xml:space="preserve">
+    <value>um die geplanete Aktion fortzusetzen. Schließen Sie nun dieses</value>
+  </data>
+  <data name="system_installer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\system-installer.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="system_lock_screen" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\system-lock-screen.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="table_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\table-2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="taskdialog_bg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\taskdialog_bg.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="taskdialog_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\taskdialog_hover.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="toggle_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\toggle_off.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="toggle_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\toggle_on.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="topbackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\topbackground.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="topBgrLine1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\topBgrLine1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="topBgrLine2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\topBgrLine2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="topBgrLine3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\topBgrLine3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="topbrowser" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\topbrowser.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="topPassword" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\topPassword.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="WAIT_0" xml:space="preserve">
+    <value>Backup Service Home wartet auf das Datensicherungsmedium, </value>
+  </data>
+  <data name="WAIT_1" xml:space="preserve">
+    <value>Backup Service Home wartet auf das Datensicherungsmedium,</value>
+  </data>
+  <data name="WAIT_2" xml:space="preserve">
+    <value>Backup Service Home wartet auf das Datensicherungsmedium,</value>
+  </data>
+  <data name="WAIT_3" xml:space="preserve">
+    <value>Backup Service Home wartet auf das Datensicherungsmedium, </value>
+  </data>
+  <data name="WELCOMETITLE_STEP_1" xml:space="preserve">
+    <value>Welche Daten möchten Sie sichern?</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_2" xml:space="preserve">
+    <value>Wo möchten Sie Ihre Sicherungen ablegen?</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_3" xml:space="preserve">
+    <value>Wählen Sie den Sicherungstyp aus.</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_4" xml:space="preserve">
+    <value>Backup Service Home wird konfiguriert...</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_5" xml:space="preserve">
+    <value>Von welchem Medium möchten Sie Sicherungen importieren?</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_6" xml:space="preserve">
+    <value>Sicherung auswählen.</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_7" xml:space="preserve">
+    <value>Sicherungen der lokalen Dateistruktur anpassen.</value>
+  </data>
+  <data name="WELCOME_STEP_1" xml:space="preserve">
+    <value>Fügen Sie nun die Verzeichnisse der Liste hinzu, die gesichert werden sollen.</value>
+  </data>
+  <data name="WELCOME_STEP_2" xml:space="preserve">
+    <value>Wählen Sie nun den Datenträger aus, auf dem die Datensicherung gespeichert werden soll. Alternativ können Sie die Datensicherung auf einem FTP-Server speichern.</value>
+  </data>
+  <data name="WELCOME_STEP_3" xml:space="preserve">
+    <value>Nun können Sie entscheiden, ob Backup Service Home alle Einstellungen automatisch festlegt oder ob Sie die Einstellungen manuell vornehmen möchten.</value>
+  </data>
+  <data name="WELCOME_STEP_4" xml:space="preserve">
+    <value>Einen Moment bitte...</value>
+  </data>
+  <data name="WELCOME_STEP_5" xml:space="preserve">
+    <value>Wählen Sie nun das Backupmedium aus, auf dem die zu importierenden Sicherungen liegen.</value>
+  </data>
+  <data name="WELCOME_STEP_6" xml:space="preserve">
+    <value>Wählen Sie nun die Sicherung aus, die Sie importieren möchten.</value>
+  </data>
+  <data name="WELCOME_STEP_7" xml:space="preserve">
+    <value>Legen Sie nun fest, welches Verzeichnis welcher Sicherung zugeordnet werden soll.</value>
+  </data>
+</root>

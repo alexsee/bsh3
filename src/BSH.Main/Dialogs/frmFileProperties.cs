@@ -1,0 +1,147 @@
+﻿// Copyright 2022 Alexander Seeliger
+//
+// Licensed under the Apache License, Version 2.0 (the "License")
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Models;
+using System;
+using System.Diagnostics;
+using System.Windows.Forms;
+
+namespace Brightbits.BSH.Main
+{
+    public partial class frmFileProperties
+    {
+        public frmFileProperties()
+        {
+            InitializeComponent();
+        }
+
+        public frmBrowser browserWindow;
+        public string CurrentFileFolder = "";
+
+        private async void cmdPreview_Click(object sender, EventArgs e)
+        {
+            if (lvVersions.SelectedItems.Count > 0)
+            {
+                if (!await BackupLogic.BackupController.CheckMediaAsync(ActionType.Restore))
+                {
+                    return;
+                }
+
+                if (!BackupLogic.BackupController.RequestPassword())
+                {
+                    return;
+                }
+
+                // Schnellansicht laden
+                string tmpFile = "";
+                bool isTmp = false;
+                try
+                {
+                    int id = int.Parse(((FileTableRow)lvVersions.SelectedItems[0].Tag).FilePackage);
+
+                    var password = BackupLogic.GlobalBackup.BackupService.GetPassword();
+                    tmpFile = BackupLogic.GlobalBackup.QueryManager.GetFileNameFromDrive(id, lblFileName.Text, CurrentFileFolder, password, out isTmp);
+
+#if !WIN_UWP
+                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile + "\"" + (isTmp ? " -c" : ""));
+                    procInfo.WindowStyle = ProcessWindowStyle.Normal;
+
+                    var proc = Process.Start(procInfo);
+                    proc.WaitForExit();
+#else
+                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\..\SmartPreview\SmartPreview.exe", " -file:\"" + tmpFile + "\"" + (isTmp ? " -c" : ""));
+                    procInfo.WindowStyle = ProcessWindowStyle.Normal;
+
+                    var proc = Process.Start(procInfo);
+                    proc.WaitForExit();
+#endif
+                }
+                catch
+                {
+                    // Fehler: Feature nicht installiert?
+                    MessageBox.Show("Feature derzeit nicht verfügbar.\r\n\r\nDieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie " + Program.APP_TITLE + " neu, um das Problem zu lösen.", "Feature nicht verfügbar", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+
+                if (isTmp && !string.IsNullOrEmpty(tmpFile))
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        try
+                        {
+                            System.IO.File.Delete(tmpFile);
+                            break;
+                        }
+                        catch
+                        {
+                            // next try
+                        }
+                    }
+                }
+            }
+        }
+
+        private async void cmdChange_Click(object sender, EventArgs e)
+        {
+            if (lvVersions.SelectedItems.Count > 0)
+            {
+                browserWindow.AVersionList1.SelectItem(((FileTableRow)lvVersions.SelectedItems[0].Tag).FilePackage);
+                await browserWindow.OpenFolderAsync(CurrentFileFolder);
+                Close();
+            }
+        }
+
+        private async void cmdRestore_Click(object sender, EventArgs e)
+        {
+            // Zielverzeichnis
+            string Destination = "";
+
+            // Rechte Maustaste?
+            if ((ModifierKeys & Keys.Control) == Keys.Control)
+            {
+                using (var dlgFolderBrowser = new FolderBrowserDialog())
+                {
+                    if (dlgFolderBrowser.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+
+                    Destination = dlgFolderBrowser.SelectedPath;
+                }
+            }
+
+            // Wurde überhaupt irgendetwas ausgewählt?
+            if (lvVersions.SelectedItems.Count > 0)
+            {
+                await BackupLogic.BackupController.RestoreBackupAsync(lvVersions.SelectedItems[0].Tag.ToString(), CurrentFileFolder + @"\" + lblFileName.Text, Destination);
+            }
+        }
+
+        private void lvVersions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lvVersions.SelectedItems.Count > 0)
+            {
+                cmdChange.Enabled = ((FileTableRow)lvVersions.SelectedItems[0].Tag).VersionStatus == "0";
+                cmdPreview.Enabled = true;
+                cmdRestore.Enabled = true;
+            }
+            else
+            {
+                cmdChange.Enabled = false;
+                cmdPreview.Enabled = false;
+                cmdRestore.Enabled = false;
+            }
+        }
+    }
+}

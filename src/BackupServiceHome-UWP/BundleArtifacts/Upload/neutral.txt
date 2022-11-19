@@ -1,0 +1,6 @@
+MainPackage=D:\Git\backup-service-home-3\src\BackupServiceHome-UWP\bin\AnyCPU\Windows 10\Upload\Backup Service Home_3.6.4.0_AnyCPU_Windows 10.appx
+SymbolPackage=D:\Git\backup-service-home-3\src\BackupServiceHome-UWP\bin\AnyCPU\Windows 10\Upload\Backup Service Home_3.6.4.0_Windows 10\Backup Service Home_3.6.4.0_AnyCPU_Windows 10.appxsym
+ResourcePack=D:\Git\backup-service-home-3\src\BackupServiceHome-UWP\bin\AnyCPU\Windows 10\Backup Service Home_3.6.4.0_scale-100.appx
+ResourcePack=D:\Git\backup-service-home-3\src\BackupServiceHome-UWP\bin\AnyCPU\Windows 10\Backup Service Home_3.6.4.0_scale-125.appx
+ResourcePack=D:\Git\backup-service-home-3\src\BackupServiceHome-UWP\bin\AnyCPU\Windows 10\Backup Service Home_3.6.4.0_scale-150.appx
+ResourcePack=D:\Git\backup-service-home-3\src\BackupServiceHome-UWP\bin\AnyCPU\Windows 10\Backup Service Home_3.6.4.0_scale-400.appx

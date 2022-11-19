@@ -1,0 +1,1755 @@
+﻿// Copyright 2022 Alexander Seeliger
+//
+// Licensed under the Apache License, Version 2.0 (the "License")
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Brightbits.BSH.Controls.UI;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
+using BSH.Main.Properties;
+using Humanizer;
+using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static Brightbits.BSH.Engine.Win32Stuff;
+
+namespace Brightbits.BSH.Main
+{
+    public partial class frmBrowser : IStatusReport
+    {
+        private ILogger _logger = Log.ForContext<frmBrowser>();
+
+        public frmBrowser()
+        {
+            InitializeComponent();
+        }
+
+        private VersionDetails selectedVersion;
+
+        private bool bSearch = false;
+
+        private bool isMedium = false;
+
+        private string selectedFolder;
+
+        private ListViewColumnSorter lvwColumnSorter;
+
+        private System.IO.DriveInfo drive;
+
+        /// <summary>
+        /// Checks if the version is available on the medium and accessible directly. Then it jumps to the version.
+        /// </summary>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        public async Task ChangeVersionAsync(VersionDetails version)
+        {
+            try
+            {
+                // check if medium is readable
+                isMedium = await BackupLogic.BackupController.CheckMediaAsync(ActionType.Preview, true);
+            }
+            catch
+            {
+                isMedium = false;
+            }
+
+            if (!isMedium)
+            {
+                Text = "Backupbrowser [Backupmedium nicht verfügbar]";
+            }
+
+            // set version
+            selectedVersion = version;
+            VersionAlsStabilMarkierenToolStripMenuItem.Checked = version.Stable;
+
+            await ReadFavoritsAsync(true);
+        }
+
+        /// <summary>
+        /// Checks if the file is directly readable from the storage device.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private bool IsFileAvailable(string fileName)
+        {
+            if (!isMedium || string.IsNullOrEmpty(fileName))
+            {
+                return false;
+            }
+
+            if (fileName.StartsWith("\\"))
+            {
+                return System.IO.File.Exists(fileName);
+            }
+
+            if (drive != null && (drive.DriveType == System.IO.DriveType.Fixed || drive.DriveType == System.IO.DriveType.Removable))
+            {
+                return System.IO.File.Exists(fileName);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Retrieves the list of sub folders for a given folder and adds them to the ListView.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private async Task CreateFolderListAsync(string path)
+        {
+            var folders = await BackupLogic.GlobalBackup.QueryManager.GetFolderListAsync(selectedVersion.Id, @"\" + path + @"\%");
+
+            // determine the above folder
+            if (!string.IsNullOrEmpty(selectedFolder))
+            {
+                var splitF = selectedFolder.Split('\\');
+                if (splitF.Length - 1 <= 0)
+                {
+                    btnBack.Enabled = false;
+                    btnBack.Image = Resources.arrow_left_circle_line_off;
+                }
+                else
+                {
+                    btnBack.Enabled = true;
+                    btnBack.Image = Resources.arrow_left_circle_line_on;
+                }
+            }
+
+            var currentFolderIdx = path.Split('\\').Length - 1;
+
+            // show folder
+            if (lvFiles.SelectedItems.Count <= 0)
+            {
+                lblFileName.Text = path.Split('\\')[currentFolderIdx];
+                lblFileType.Text = @"\" + path + @"\";
+                flpColumn2.Visible = false;
+                flpColumn3.Visible = false;
+                lblIntegrityCheck.Text = "";
+                imgFileType.Image = ilBigFolder.Images[1];
+            }
+
+            // retrieve sub folders for this folder
+            foreach (var folder in folders)
+            {
+                var folderPaths = folder.Split('\\');
+
+                if (folderPaths.Length - 1 >= currentFolderIdx + 1)
+                {
+                    // determine sub folder
+                    var newFolder = new ListViewItem
+                    {
+                        Text = folderPaths[currentFolderIdx + 1]
+                    };
+
+                    if (string.IsNullOrEmpty(newFolder.Text))
+                    {
+                        continue;
+                    }
+
+                    var folderTag = "\\" + string.Join("\\", folderPaths.Take(currentFolderIdx + 2)) + "\\";
+
+                    // create dummy item
+                    newFolder.Tag = folderTag;
+                    newFolder.Name = newFolder.Text;
+                    if (!lvFiles.Items.ContainsKey(newFolder.Text))
+                    {
+                        newFolder.ImageKey = "folder";
+                        newFolder.SubItems.Add("");
+                        newFolder.SubItems.Add("Ordner");
+                        newFolder.Group = lvFiles.Groups["Ordner"];
+
+                        // localize folder
+                        newFolder.Text = System.IO.Path.GetFileName(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(folderTag));
+                        if (chkFilesOfThisVersion.Checked && !BackupLogic.GlobalBackup.QueryManager.HasChangesOrNew(folderTag, selectedVersion.Id))
+                        {
+                            newFolder.ForeColor = Color.Gray;
+                        }
+
+                        lvFiles.Items.Add(newFolder);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a list of files of the selected folder and adds them to the ListView.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private async Task CreateFilesListAsync(string path)
+        {
+            var files = await BackupLogic.GlobalBackup.QueryManager.GetFilesByVersionAsync(selectedVersion.Id, @"\" + path + @"\");
+
+            foreach (var file in files)
+            {
+                if (chkFilesOfThisVersion.Checked && !file.FilePackage.Equals(selectedVersion.Id))
+                {
+                    continue;
+                }
+
+                // create listviewitem
+                var fileListItem = new ListViewItem();
+                fileListItem.Text = file.FileName;
+
+                // add file attributes
+                fileListItem.SubItems.Add(file.FileSize.Bytes().Humanize());
+                fileListItem.SubItems.Add("");
+                fileListItem.SubItems.Add(file.FileDateModified.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
+                fileListItem.SubItems.Add(file.FileDateCreated.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
+                fileListItem.SubItems.Add(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")");
+                fileListItem.ForeColor = (file.FileStatus == "1" ? Color.Black : Color.Red);
+                fileListItem.Tag = file.FilePath;
+
+                // get icon image
+                GetImageKey(file, fileListItem);
+
+                // add to group files
+                fileListItem.Group = lvFiles.Groups["Dateien"];
+                lvFiles.Items.Add(fileListItem);
+            }
+        }
+
+        /// <summary>
+        /// Opens the folder by retrieving files and folders of the selected path.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public async Task OpenFolderAsync(string path)
+        {
+            if (path is null)
+            {
+                return;
+            }
+
+            // update UI
+            lvFiles.BeginUpdate();
+            lvFiles.Items.Clear();
+
+            LCFiles.LoadingCircleControl.Active = true;
+            tsslblStatus.Text = "Ordner wird geladen...";
+
+            // adjust path
+            if (path.StartsWith(@"\"))
+            {
+                path = path.Substring(1);
+            }
+
+            if (path.EndsWith(@"\"))
+            {
+                path = path.Substring(0, path.Length - 1);
+            }
+
+            // fill navigation
+            var destFolder = BackupLogic.GlobalBackup.QueryManager.GetFullRestoreFolder(path, selectedVersion.Id);
+            if (destFolder == null)
+            {
+                // update UI
+                lvFiles.EndUpdate();
+                lvFiles.Focus();
+
+                LCFiles.LoadingCircleControl.Active = false;
+                tsslblStatus.Text = "Quellverzeichnis existiert nicht, wählen Sie ein anderes Verzeichnis aus.";
+
+                return;
+            }
+
+            UcNav.Path = path;
+            UcNav.PathLocalized = BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(path);
+            UcNav.CreateNavi(destFolder);
+
+            selectedFolder = path;
+
+            // retrieve folder and files list
+            await Task.WhenAll(CreateFolderListAsync(path), CreateFilesListAsync(path));
+
+            // update UI
+            lvFiles.EndUpdate();
+            lvFiles.Focus();
+
+            LCFiles.LoadingCircleControl.Active = false;
+            tsslblStatus.Text = "Bereit";
+
+            if (lvFiles.Items.Count > 0)
+            {
+                lvFiles.FocusedItem = lvFiles.Items[0];
+            }
+
+            // select first item
+            lvFiles.Select();
+            lvFiles_SelectedIndexChanged(null, null);
+        }
+
+        /// <summary>
+        /// Retrieves the icon of the given file and sets it to the ListViewItem.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="listViewItem"></param>
+        private void GetImageKey(FileTableRow file, ListViewItem listViewItem)
+        {
+            // is file directly accessible?
+            if (isMedium && file.FileType == "1")
+            {
+                // get file path
+                var fileName = BackupLogic.GlobalBackup.QueryManager.GetFileNameFromDrive(file);
+
+                if (IsFileAvailable(fileName))
+                {
+                    var fileInfo = new System.IO.FileInfo(fileName);
+                    var fiIcon = Icon.ExtractAssociatedIcon(fileInfo.FullName);
+
+                    if (fileInfo.Extension.ToUpper() == ".EXE")
+                    {
+                        ilBigIcons.Images.Add(fileInfo.Name, fiIcon);
+                        ilSmallIcons.Images.Add(fileInfo.Name, fiIcon);
+                    }
+                    else if (!ilBigIcons.Images.ContainsKey(fileInfo.Extension.ToUpper()))
+                    {
+                        ilBigIcons.Images.Add(fileInfo.Extension.ToUpper(), fiIcon);
+                        ilSmallIcons.Images.Add(fileInfo.Extension.ToUpper(), fiIcon);
+                    }
+
+                    // determine file details
+                    var shFi = new SHFILEINFO();
+                    SHGetFileInfo(fileInfo.FullName, 0U, out shFi, (uint)System.Runtime.InteropServices.Marshal.SizeOf(shFi), (uint)SHGFI.SHGFI_TYPENAME);
+                    listViewItem.SubItems[2].Text = shFi.szTypeName;
+
+                    // set icon to ListViewItem
+                    listViewItem.ImageKey = fileInfo.Extension.ToUpper() == ".EXE" ? fileInfo.Name : fileInfo.Extension.ToUpper();
+                    return;
+                }
+            }
+
+            // file not directly accessible, so generate temporary file
+            if (ilBigIcons.Images.ContainsKey(System.IO.Path.GetExtension(file.FileName).ToUpper()))
+            {
+                // we already have retrieved file icon
+                listViewItem.ImageKey = System.IO.Path.GetExtension(file.FileName).ToUpper().ToString();
+            }
+            else
+            {
+                try
+                {
+                    // determine file details
+                    var tmpFile = System.IO.Path.GetTempFileName();
+                    var tmpFilePath = System.IO.Path.GetDirectoryName(tmpFile) + @"\bshicon" + System.IO.Path.GetExtension(file.FileName);
+
+                    if (System.IO.File.Exists(tmpFilePath))
+                    {
+                        System.IO.File.Delete(tmpFilePath);
+                    }
+
+                    System.IO.File.Move(tmpFile, tmpFilePath);
+
+                    // retrieve file icon
+                    var fileInfo = new System.IO.FileInfo(tmpFilePath);
+                    var fiIcon = Icon.ExtractAssociatedIcon(fileInfo.FullName);
+
+                    if (fileInfo.Exists)
+                    {
+                        ilBigIcons.Images.Add(fileInfo.Extension.ToUpper(), fiIcon);
+                        ilSmallIcons.Images.Add(fileInfo.Extension.ToUpper(), fiIcon);
+                    }
+
+                    // set icon to ListViewItem
+                    listViewItem.ImageKey = fileInfo.Extension.ToUpper();
+                    System.IO.File.Delete(tmpFilePath);
+                }
+                catch
+                {
+                    // ignore error
+                }
+            }
+        }
+
+        private void gbBigList_Click(object sender, EventArgs e)
+        {
+            lvFiles.View = View.LargeIcon;
+        }
+
+        private void gbDetails_Click(object sender, EventArgs e)
+        {
+            lvFiles.View = View.Details;
+        }
+
+        private void frmBrowser_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Settings.Default.BrowserSplitter = SplitContainer1.SplitterDistance;
+            Settings.Default.BrowserSize = Size;
+            Settings.Default.Save();
+
+            StatusController.Current.RemoveObserver(this);
+        }
+
+        private KeyValuePair<float, float> GetDPISetting()
+        {
+            using (var myGraphics = CreateGraphics())
+            {
+                return new KeyValuePair<float, float>(myGraphics.DpiX, myGraphics.DpiY);
+            }
+        }
+
+        private async void frmBrowser_Load(object sender, EventArgs e)
+        {
+            // load column sorter
+            lvwColumnSorter = new ListViewColumnSorter();
+            lvFiles.ListViewItemSorter = lvwColumnSorter;
+
+            // get dpi setting and adjust the icons
+            var dpi = GetDPISetting();
+            ilSmallIcons.ImageSize = new Size((int)Math.Round(16d / 96d * (double)dpi.Key), (int)Math.Round(16d / 96d * (double)dpi.Value));
+            if (16d / 96d * (double)dpi.Key > 16d)
+            {
+                lvFiles.SmallImageList = ilBigIcons;
+            }
+            else
+            {
+                LCFiles.Height = 33;
+            }
+
+            // get current drive
+            try
+            {
+                if (BackupLogic.GlobalBackup.ConfigurationManager.MediumType == 1D
+                    && BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder.Substring(0, 1) != "/"
+                    && !BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder.StartsWith("\\\\"))
+                {
+                    drive = new System.IO.DriveInfo(BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder.Substring(0, 1));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, ex.Message);
+            }
+
+            // register for backup updates
+            StatusController.Current.AddObserver(this);
+
+            // load versions
+            ReloadBrowser();
+
+            // retrieve favorites
+            await ReadFavoritsAsync();
+        }
+
+        private async Task ReadFavoritsAsync(bool versionChanged = false)
+        {
+            // update UI
+            lvFavorite.Items.Clear();
+            lvFavorite.BeginUpdate();
+
+            try
+            {
+                if (selectedVersion == null)
+                {
+                    return;
+                }
+
+                string sourceFolders;
+                if (string.IsNullOrEmpty(selectedVersion.Sources))
+                {
+                    sourceFolders = BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder;
+                }
+                else
+                {
+                    sourceFolders = selectedVersion.Sources;
+                }
+
+                // retrieve source folders
+                foreach (var e in sourceFolders.Split('|'))
+                {
+                    string entry = e;
+
+                    if (entry.EndsWith(@"\"))
+                    {
+                        entry = entry.Substring(0, entry.Length - 1);
+                    }
+
+                    // Ordnername ermitteln
+                    var newEntry = new ListViewItem
+                    {
+                        Text = BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(entry.Substring(entry.LastIndexOf(@"\") + 1)),
+                        ImageIndex = 2,
+                        Tag = @"\" + entry.Substring(entry.LastIndexOf(@"\") + 1) + @"\"
+                    };
+
+                    lvFavorite.Items.Add(newEntry);
+                }
+
+                // refresh favorites
+                if (string.IsNullOrEmpty(Settings.Default.BrowserFavoritsName))
+                {
+                    foreach (var e in Settings.Default.BrowserFavorits.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        string entry = e;
+
+                        // store favorite name
+                        if (entry.EndsWith(@"\"))
+                        {
+                            entry = entry.Substring(0, entry.Length - 1);
+                        }
+
+                        Settings.Default.BrowserFavoritsName += System.IO.Path.GetFileName(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(entry));
+                    }
+                }
+
+                // read favorites
+                var favorites = Settings.Default.BrowserFavorits.Split('|');
+
+                for (int i = 0; i < favorites.Length; i++)
+                {
+                    string entry = favorites[i];
+
+                    if (string.IsNullOrEmpty(entry))
+                    {
+                        continue;
+                    }
+
+                    if (entry.EndsWith(@"\"))
+                    {
+                        entry = entry.Substring(0, entry.Length - 1);
+                    }
+
+                    // determine folder path
+                    var newEntry = new ListViewItem
+                    {
+                        Text = Settings.Default.BrowserFavoritsName.Split('|')[i],
+                        ImageIndex = 1,
+                        Tag = @"\" + entry.Substring(entry.IndexOf(@"\") + 1) + @"\",
+                        ToolTipText = "Originalname: " + BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(entry.Substring(entry.LastIndexOf(@"\") + 1)) + "\r\nZielort: " + @"\" + entry.Substring(entry.IndexOf(@"\") + 1) + @"\"
+                    };
+
+                    lvFavorite.Items.Add(newEntry);
+                }
+
+                // reload window
+                await GetExplorerFoldersAsync(versionChanged);
+            }
+            catch
+            {
+                // ignore error
+            }
+
+            // set favorites list height
+            try
+            {
+                if (lvFavorite.Items.Count > 10)
+                {
+                    plFavorites.Height = lvFavorite.Top + lvFavorite.Items[0].Bounds.Height * 11;
+                    lvFavorite.Height = lvFavorite.Items[0].Bounds.Height * 11;
+                    lvFavorite.Scrollable = true;
+                }
+                else
+                {
+                    plFavorites.Height = lvFavorite.Top + lvFavorite.Items[0].Bounds.Height * lvFavorite.Items.Count + 5;
+                    lvFavorite.Height = lvFavorite.Items[0].Bounds.Height * lvFavorite.Items.Count;
+                }
+            }
+            catch
+            {
+                // ignore error
+            }
+
+            lvFavorite.EndUpdate();
+        }
+
+        private async Task GetExplorerFoldersAsync(bool VersionChanged = false)
+        {
+            // determine new windows
+            var explorerFolders = GetWindowsExplorerPaths();
+            var sourceFolders = BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder.Split('|');
+            var result = new List<ExplorerWindow>();
+
+            // only select explorer windows
+            foreach (var entry in explorerFolders)
+            {
+                // filder source folders
+                foreach (var folder in sourceFolders)
+                {
+                    if (!entry.Path.ToLower().Contains(folder.ToLower()))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        string parent = System.IO.Directory.GetParent(folder).FullName;
+                        if (!entry.Path.EndsWith(@"\"))
+                        {
+                            entry.Path += @"\";
+                        }
+
+                        result.Add(new ExplorerWindow(entry.Path.Replace(parent, ""), entry.WindowTitle));
+                    }
+                    catch
+                    {
+                        // ignore error
+                    }
+                }
+            }
+
+            // add folders to favorites
+            foreach (var entry in result)
+            {
+                var newEntry = new ListViewItem
+                {
+                    ImageIndex = 3,
+                    Text = entry.WindowTitle + " [Windows Explorer]",
+                    Tag = entry.Path
+                };
+
+                lvFavorite.Items.Add(newEntry);
+            }
+
+            // reload selected folder if not already loaded
+            if (!string.IsNullOrEmpty(selectedFolder))
+            {
+                if (VersionChanged)
+                {
+                    await OpenFolderAsync(selectedFolder);
+                }
+            }
+            else if (result.Count == 1)
+            {
+                // navigate to folder
+                lvFavorite.Items[lvFavorite.Items.Count - 1].Selected = true;
+                await OpenFolderAsync(lvFavorite.Items[lvFavorite.Items.Count - 1].Tag.ToString());
+            }
+            else
+            {
+                // navigate to first folder
+                lvFavorite.Items[0].Selected = true;
+                await OpenFolderAsync(lvFavorite.Items[0].Tag.ToString());
+            }
+        }
+
+        private async void lvFiles_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+            {
+                // quick preview
+                if (lvFiles.SelectedItems.Count != 0 && lvFiles.SelectedItems[0].ImageKey != "folder")
+                {
+                    ToolStripSchnellansicht_Click(null, null);
+                }
+            }
+            else if (e.KeyCode == Keys.Enter)
+            {
+                // open folder
+                if (lvFiles.SelectedItems.Count == 1 && lvFiles.SelectedItems[0].ImageKey == "folder")
+                {
+                    await OpenFolderAsync(lvFiles.SelectedItems[0].Tag.ToString());
+                }
+            }
+            else if (e.KeyCode == Keys.Back)
+            {
+                // previous folder
+                btnBack_Click(null, null);
+            }
+        }
+
+        private async void lvFiles_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (lvFiles.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            if (lvFiles.SelectedItems[0].ImageKey == "folder")
+            {
+                // open folder
+                await OpenFolderAsync(lvFiles.SelectedItems[0].Tag.ToString());
+            }
+            else
+            {
+                // show file settings
+                EigenschaftenToolStripMenuItem_Click(null, null);
+            }
+        }
+
+        private void lvFiles_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // show file details
+            try
+            {
+                lblIntegrityCheck.Text = "";
+                flpDetails.Visible = false;
+                if (lvFiles.SelectedItems.Count == 0)
+                {
+                    flpColumn2.Visible = false;
+                    flpColumn3.Visible = false;
+                    ToolStripSchnellansicht.Enabled = false;
+                    SchnellansichtToolStripMenuItem.Enabled = false;
+                    EigenschaftenToolStripMenuItem.Enabled = false;
+                    SchnellansichtToolStripMenuItem1.Enabled = false;
+                    EigenschaftenToolStripMenuItem1.Enabled = false;
+
+                    // show folder name
+                    var sSelFolderSplit = selectedFolder.Split('\\');
+                    lblFileName.Text = sSelFolderSplit[sSelFolderSplit.Length - 1];
+                    lblFileType.Text = @"\" + selectedFolder + @"\";
+                    imgFileType.Image = ilBigFolder.Images[1];
+                    flpDetails.Visible = true;
+                    return;
+                }
+
+                flpColumn2.Visible = true;
+                flpColumn3.Visible = true;
+                {
+                    var withBlock = lvFiles.SelectedItems[0];
+                    lblFileName.Text = withBlock.Text;
+                    imgFileType.Image = ilBigIcons.Images[withBlock.ImageKey];
+                    if (withBlock.ImageKey == "folder")
+                    {
+                        lblFileType.Text = withBlock.Tag.ToString();
+                        flpColumn2.Visible = false;
+                        flpColumn3.Visible = false;
+                        flpDetails.Visible = true;
+                        return;
+                    }
+                    else
+                    {
+                        lblFileType.Text = withBlock.SubItems[2].Text;
+                        ToolStripSchnellansicht.Enabled = true;
+                        SchnellansichtToolStripMenuItem.Enabled = true;
+                        EigenschaftenToolStripMenuItem.Enabled = true;
+                        SchnellansichtToolStripMenuItem1.Enabled = true;
+                        EigenschaftenToolStripMenuItem1.Enabled = true;
+                    }
+
+                    lblFileSize.Text = withBlock.SubItems[1].Text;
+                    lblFileLastEdited.Text = withBlock.SubItems[3].Text;
+                    lblFileCreated.Text = withBlock.SubItems[4].Text;
+                    lblFileVersion.Text = withBlock.SubItems[5].Text;
+                    lblIntegrityCheck.Text = withBlock.ToolTipText;
+                }
+            }
+            catch
+            {
+                // ignore error
+            }
+            finally
+            {
+                flpDetails.Visible = true;
+            }
+        }
+
+        private void lvFavorite_AfterLabelEdit(object sender, LabelEditEventArgs e)
+        {
+            try
+            {
+                // Itemlabel von | befreien
+                string newLabel = e.Label.Replace("|", "");
+
+                // Bearbeiten des Labels abgeschlossen, also speichern
+                // Ordner suchen
+                var saved = Settings.Default.BrowserFavorits.Split('|');
+                var savedName = Settings.Default.BrowserFavoritsName.Split('|');
+
+                Settings.Default.BrowserFavorits = "";
+                Settings.Default.BrowserFavoritsName = "";
+
+                for (int i = 0; i <= saved.Length - 1; i++)
+                {
+                    string entry = saved[i];
+
+                    // Einträge neuschreiben
+                    if ((entry ?? "") == (lvFavorite.Items[e.Item].Tag.ToString() ?? ""))
+                    {
+                        // Gesuchte Item gefunden, also verändern
+                        Settings.Default.BrowserFavorits += entry + "|";
+                        Settings.Default.BrowserFavoritsName += newLabel + "|";
+                    }
+                    else
+                    {
+                        // Nicht das gesuchte Item, also normal speichern
+                        Settings.Default.BrowserFavorits += entry + "|";
+                        Settings.Default.BrowserFavoritsName += savedName[i] + "|";
+                    }
+                }
+            }
+            catch
+            {
+                // ignore error
+            }
+        }
+
+        private void lvFavorite_BeforeLabelEdit(object sender, LabelEditEventArgs e)
+        {
+            try
+            {
+                // check if is favorite
+                if (!string.IsNullOrEmpty(lvFavorite.Items[e.Item].ImageKey))
+                {
+                    // deny editing
+                    e.CancelEdit = true;
+                }
+            }
+            catch
+            {
+                // ignore error
+            }
+        }
+
+        private async void lvFavorite_Click(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    if (lvFavorite.SelectedItems.Count <= 0)
+                    {
+                        return;
+                    }
+
+                    await OpenFolderAsync(lvFavorite.SelectedItems[0].Tag.ToString());
+                }
+            }
+            catch
+            {
+                // ignore error
+            }
+        }
+
+        private async void AVersionList1_ItemClick(aVersionListItem sender)
+        {
+            // change version
+            await ChangeVersionAsync(sender.Version);
+
+            var backupDate = Convert.ToDateTime(sender.Version.CreationDate, CultureInfo.CreateSpecificCulture("de-DE"));
+            lblBackupdate.Text = Translation.GetString("BACKUP_FROM_DATE") + backupDate.ToString("dd. MMMM yyyy 'um' HH:mm");
+        }
+
+        private void mnuGoHome_Click(object sender, EventArgs e)
+        {
+            lvFavorite.Items[0].Selected = true;
+            lvFavorite_Click(sender, null);
+        }
+
+        private void GroßeSymboleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            lvFiles.View = View.LargeIcon;
+            Settings.Default.BrowserView = (int)lvFiles.View;
+        }
+
+        private void ListenansichtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            lvFiles.View = View.List;
+            Settings.Default.BrowserView = (int)lvFiles.View;
+        }
+
+        private void DetailansichtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            lvFiles.View = View.Details;
+            Settings.Default.BrowserView = (int)lvFiles.View;
+        }
+
+        private async void cmdRestore_MouseClick(object sender, MouseEventArgs e)
+        {
+            // set destination folder
+            string destinationFolder = "";
+
+            // STRG is hold
+            if ((ModifierKeys & Keys.Control) == Keys.Control)
+            {
+                using (var dlgFolderBrowser = new FolderBrowserDialog())
+                {
+                    if (dlgFolderBrowser.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+
+                    destinationFolder = dlgFolderBrowser.SelectedPath;
+                }
+            }
+
+            // selected folders/files restore
+            if (lvFiles.SelectedItems.Count > 0)
+            {
+                var FilesOrFolders = new List<string>();
+
+                foreach (ListViewItem entry in lvFiles.SelectedItems)
+                {
+                    // folder or file
+                    if (entry.ImageKey == "folder")
+                    {
+                        FilesOrFolders.Add(entry.Tag.ToString());
+                    }
+                    else
+                    {
+                        FilesOrFolders.Add(entry.Tag.ToString() + entry.Text);
+                    }
+                }
+
+                await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, FilesOrFolders, destinationFolder);
+            }
+            else
+            {
+                // restore entire folder
+                await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, @"\" + selectedFolder + @"\", destinationFolder);
+            }
+        }
+
+        private async void ZuOrdnerfavoritenHinzufügenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFiles.SelectedItems.Count > 0)
+            {
+                // directory or file
+                if (lvFiles.SelectedItems[0].ImageKey == "folder")
+                {
+                    // add
+                    Settings.Default.BrowserFavorits += "|" + lvFiles.SelectedItems[0].Tag.ToString();
+                    Settings.Default.BrowserFavoritsName += "|" + lvFiles.SelectedItems[0].Text;
+
+                    // store
+                    Settings.Default.Save();
+                }
+            }
+            else
+            {
+                // add
+                Settings.Default.BrowserFavorits += "|" + @"\" + selectedFolder + @"\";
+                Settings.Default.BrowserFavoritsName += "|" + System.IO.Path.GetFileName(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(@"\" + selectedFolder + @"\"));
+
+                // store
+                Settings.Default.Save();
+            }
+
+            // reload favorites
+            await ReadFavoritsAsync();
+        }
+
+        private void cmnuFavorits_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Prüfen, ob Ordner
+            if (lvFavorite.SelectedItems.Count <= 0)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            if (lvFavorite.SelectedItems[0].ImageIndex != 1)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private async void LöschenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // delete folder
+            if (lvFavorite.SelectedItems.Count <= 0)
+            {
+                return;
+            }
+
+            if (lvFavorite.SelectedItems[0].ImageIndex == 1)
+            {
+                // determine folder
+                var saved = Settings.Default.BrowserFavorits.Split('|');
+                var savedName = Settings.Default.BrowserFavoritsName.Split('|');
+
+                Settings.Default.BrowserFavorits = "";
+                Settings.Default.BrowserFavoritsName = "";
+
+                for (int i = 0; i < saved.Length; i++)
+                {
+                    string entry = saved[i];
+
+                    // rewrite favorites list
+                    if ((entry ?? "") != (lvFavorite.SelectedItems[0].Tag.ToString() ?? ""))
+                    {
+                        Settings.Default.BrowserFavorits += entry + "|";
+                        Settings.Default.BrowserFavoritsName += savedName[i] + "|";
+                    }
+                }
+
+                Settings.Default.BrowserFavorits = Settings.Default.BrowserFavorits.Substring(0, Settings.Default.BrowserFavorits.Length - 1);
+                Settings.Default.BrowserFavoritsName = Settings.Default.BrowserFavoritsName.Substring(0, Settings.Default.BrowserFavoritsName.Length - 1);
+
+                // save settings
+                Settings.Default.Save();
+            }
+
+            // reload favorites
+            await ReadFavoritsAsync();
+        }
+
+        private void WiederherstellenToolStripMenuItem_MouseClick(object sender, EventArgs e)
+        {
+            // restore folder or files
+            cmdRestore_MouseClick(null, new MouseEventArgs(MouseButtons.None, 1, 0, 0, 0));
+        }
+
+        private async void VersionBearbeitenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // edit version
+            using (var dlgEditVersion = new frmEditVersion())
+            using (var dbClient = BackupLogic.GlobalBackup.DbClientFactory.CreateDbClient())
+            {
+                using (var dbRead = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionID = " + selectedVersion.Id, null))
+                {
+                    if (dbRead.Read())
+                    {
+                        dlgEditVersion.txtTitle.Text = dbRead.GetString("versionTitle");
+                        dlgEditVersion.txtDescription.Text = dbRead.GetString("versionDescription");
+                    }
+
+                    dbRead.Close();
+                }
+
+                if (dlgEditVersion.ShowDialog(this) == DialogResult.OK)
+                {
+                    BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE versiontable SET versionTitle = '" + dlgEditVersion.txtTitle.Text + "', versionDescription = '" + dlgEditVersion.txtDescription.Text + "' WHERE versionID = " + selectedVersion.Id);
+                    foreach (aVersionListItem entry in AVersionList1.Items)
+                    {
+                        if ((entry.VersionID ?? "") == (selectedVersion.Id ?? ""))
+                        {
+                            entry.ToolTipTitle = dlgEditVersion.txtTitle.Text;
+                            entry.ToolTip = ("Datum: " + entry.VersionDate + (!string.IsNullOrEmpty(dlgEditVersion.txtDescription.Text) ? "\r\n\r\n" + dlgEditVersion.txtDescription.Text : "")).Trim();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private async void ToolStripSchnellansicht_Click(object sender, EventArgs e)
+        {
+            // Datei ausgewählt?
+            if (lvFiles.SelectedItems.Count > 0 && lvFiles.SelectedItems[0].ImageKey != "folder")
+            {
+                if (!await BackupLogic.BackupController.CheckMediaAsync(ActionType.Restore))
+                {
+                    return;
+                }
+
+                if (!BackupLogic.BackupController.RequestPassword())
+                {
+                    return;
+                }
+
+                // Schnellansicht laden
+                string tmpFile = "";
+                bool isTmp = false;
+                try
+                {
+                    var password = BackupLogic.GlobalBackup.BackupService.GetPassword();
+                    tmpFile = BackupLogic.GlobalBackup.QueryManager.GetFileNameFromDrive(int.Parse(selectedVersion.Id), lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString(), password, out isTmp);
+
+#if !WIN_UWP
+                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile + "\"" + (isTmp ? " -c" : ""));
+                    procInfo.WindowStyle = ProcessWindowStyle.Normal;
+
+                    var proc = Process.Start(procInfo);
+                    proc.WaitForExit();
+#else
+                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\..\SmartPreview\SmartPreview.exe", " -file:\"" + tmpFile + "\"" + (isTmp ? " -c" : ""));
+                    procInfo.WindowStyle = ProcessWindowStyle.Normal;
+
+                    var proc = Process.Start(procInfo);
+                    proc.WaitForExit();
+#endif
+                }
+                catch
+                {
+                    // Fehler: Feature nicht installiert?
+                    MessageBox.Show("Feature derzeit nicht verfügbar.\r\n\r\nDieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie " + Program.APP_TITLE + " neu, um das Problem zu lösen.", "Feature nicht verfügbar", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+
+                if (isTmp && !string.IsNullOrEmpty(tmpFile))
+                {
+                    for (int i = 0; i <= 5; i++)
+                    {
+                        try
+                        {
+                            if (i == 5)
+                            {
+                                return;
+                            }
+
+                            System.IO.File.Delete(tmpFile);
+                            break;
+                        }
+                        catch
+                        {
+                            // ignore error
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SchnellansichtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripSchnellansicht_Click(null, null);
+        }
+
+        private void txtSearch_Enter(object sender, EventArgs e)
+        {
+            if (txtSearch.Tag.ToString() == "search")
+            {
+                txtSearch.Text = "";
+                txtSearch.Font = new Font(txtSearch.Font.FontFamily, 10f, FontStyle.Regular);
+                txtSearch.Tag = "";
+            }
+        }
+
+        private bool searchIsBusy = false;
+
+        private async void txtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+            {
+                return;
+            }
+
+            e.SuppressKeyPress = true;
+
+            // Suche starten
+            if (txtSearch.Tag.ToString() == "search")
+            {
+                return;
+            }
+
+            // Nur starten, wenn der Benutzer etwas eingegeben aht
+            if (!string.IsNullOrEmpty(txtSearch.Text))
+            {
+                if (searchIsBusy)
+                {
+                    return;
+                }
+
+                searchIsBusy = true;
+
+                // Zuvor alten Prozess abbrechen
+                bgrWorkSearch.CancelAsync();
+                while (bgrWorkSearch.IsBusy)
+                {
+                    Application.DoEvents();
+                }
+
+                lvFiles.Items.Clear();
+
+                // Nun neuen Prozess starten
+                bSearch = true;
+                bgrWorkSearch.RunWorkerAsync();
+                searchIsBusy = false;
+            }
+            else
+            {
+                if (searchIsBusy)
+                {
+                    return;
+                }
+
+                searchIsBusy = true;
+
+                // Zuvor alten Prozess abbrechen
+                bgrWorkSearch.CancelAsync();
+                while (bgrWorkSearch.IsBusy)
+                {
+                    Application.DoEvents();
+                }
+
+                lvFiles.Items.Clear();
+                searchIsBusy = false;
+                bSearch = false;
+                await OpenFolderAsync(selectedFolder);
+            }
+        }
+
+        private void txtSearch_Leave(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtSearch.Text))
+            {
+                return;
+            }
+
+            txtSearch.Text = "Suchen";
+            txtSearch.Font = new Font(txtSearch.Font.FontFamily, 10f, FontStyle.Italic);
+            txtSearch.Tag = "search";
+        }
+
+        private async void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            if (txtSearch.Tag.ToString() == "search" || !string.IsNullOrEmpty(txtSearch.Text))
+            {
+                return;
+            }
+
+            // Zuvor alten Prozess abbrechen
+            bgrWorkSearch.CancelAsync();
+            while (bgrWorkSearch.IsBusy)
+            {
+                Application.DoEvents();
+            }
+
+            lvFiles.Items.Clear();
+            bSearch = false;
+            await OpenFolderAsync(selectedFolder);
+        }
+
+        private delegate void ThreadSafe_UcNav_Callback();
+
+        private void ThreadSafe_UcNav()
+        {
+            AVersionList1.SelectItem(selectedVersion.Id, false);
+            UcNav.Path = "Suchergebnis für \"" + txtSearch.Text + "\"";
+            UcNav.PathLocalized = "Suchergebnis für \"" + txtSearch.Text + "\"";
+            UcNav.CreateNavi("", true);
+            lblFileName.Text = "Suchergebnis";
+            lblFileType.Text = "";
+            lblIntegrityCheck.Text = "";
+            flpColumn2.Visible = false;
+            flpColumn3.Visible = false;
+            ToolStripSchnellansicht.Enabled = false;
+            SchnellansichtToolStripMenuItem.Enabled = false;
+            EigenschaftenToolStripMenuItem.Enabled = false;
+            SchnellansichtToolStripMenuItem1.Enabled = false;
+            EigenschaftenToolStripMenuItem1.Enabled = false;
+            WiederherstellenToolStripMenuItem1.Enabled = false;
+            imgFileType.Image = global::BSH.Main.Properties.Resources.search_line;
+        }
+
+        private async void bgrWorkSearch_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+
+            // update UI
+            LCFiles.LoadingCircleControl.Active = true;
+            bSearch = true;
+
+            // select new version
+            Invoke(new ThreadSafe_UcNav_Callback(ThreadSafe_UcNav));
+
+            // retrieve folder list from database
+            using (var dbClient = BackupLogic.GlobalBackup.DbClientFactory.CreateDbClient())
+            {
+                var searchParameters = new[] {
+                    dbClient.CreateParameter("filePath", DbType.String, default, "%" + txtSearch.Text + "%"),
+                    dbClient.CreateParameter("fileName", DbType.String, default, "%" + txtSearch.Text + "%"),
+                    dbClient.CreateParameter("versionID", DbType.String, default, long.Parse(selectedVersion.Id))
+                };
+
+                using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT filelink.versionID, filetable.fileID, filetable.fileName, filetable.filePath, fileversiontable.fileSize, fileversiontable.fileDateCreated, fileversiontable.fileDateModified, " + "fileversiontable.filePackage, fileversiontable.fileType, fileversiontable.fileStatus, versionDate FROM filetable, fileversiontable, filelink, versiontable WHERE (filetable.filePath LIKE @filePath OR filetable.fileName LIKE @fileName) AND filelink.versionID = @versionID AND filelink.fileversionID = fileversiontable.fileversionID AND filetable.fileID = fileversiontable.fileID AND versiontable.versionID = fileversiontable.filePackage LIMIT 300", searchParameters))
+                {
+                    var resultList = new List<ListViewItem>();
+
+                    // fill folder list
+                    while (reader.Read() && !bgrWorkSearch.CancellationPending)
+                    {
+                        var file = FileTableRow.FromReaderFile(reader);
+
+                        // add file
+                        var newEntry = new ListViewItem();
+                        newEntry.Text = file.FileName;
+
+                        // populate file attributes
+                        newEntry.SubItems.Add(file.FileSize.Bytes().Humanize());
+                        newEntry.SubItems.Add("");
+                        newEntry.SubItems.Add(file.FileDateModified.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
+                        newEntry.SubItems.Add(file.FileDateCreated.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
+                        newEntry.SubItems.Add(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")");
+                        newEntry.Tag = file.FilePath;
+
+                        // retrieve file icon
+                        GetImageKey(file, newEntry);
+
+                        newEntry.Group = lvFiles.Groups["Dateien"];
+                        resultList.Add(newEntry);
+                    }
+
+                    e.Result = resultList;
+
+                    reader.Close();
+                }
+            }
+        }
+
+        private void bgrWorkSearch_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            // update UI
+            lvFiles.BeginUpdate();
+
+            // fill list
+            foreach (ListViewItem entry in (List<ListViewItem>)e.Result)
+            {
+                lvFiles.Items.Add(entry);
+            }
+
+            lvFiles.EndUpdate();
+            ThreadSafe_UcNav();
+            LCFiles.LoadingCircleControl.Active = false;
+        }
+
+        private async void UcNav_ItemClick(string sPath)
+        {
+            await OpenFolderAsync(sPath);
+        }
+
+        private async void VersionLöschenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Sind Sie sich sicher, dass Sie die ausgewählte Sicherung löschen möchten?", "Löschen", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            {
+                return;
+            }
+
+            // delete version
+            Enabled = false;
+
+            await BackupLogic.BackupController.DeleteBackupAsync(selectedVersion.Id, true);
+
+            Enabled = true;
+            ReloadBrowser();
+        }
+
+        private void ReloadBrowser()
+        {
+            // retrieve versions
+            var lstVersions = BackupLogic.GlobalBackup.QueryManager.GetVersions(true);
+            if (lstVersions.Count <= 0)
+            {
+                Close();
+                NotificationController.Current.ShowIconBalloon(1000, "Keine Datensicherung vorhanden", "Es ist derzeit keine Datensicherung vorhanden, die durchsucht werden kann.", ToolTipIcon.Info);
+                return;
+            }
+
+            AVersionList1.Items.Clear();
+            AVersionList1.DrawItems();
+            foreach (var entry in lstVersions)
+            {
+                var newEntry = new aVersionListItem();
+
+                // datetime format
+                string dDate;
+                if (entry.CreationDate.Date == DateTime.Today)
+                {
+                    dDate = "Heute " + entry.CreationDate.ToShortTimeString();
+                }
+                else if (entry.CreationDate.AddDays(1d) == DateTime.Today)
+                {
+                    dDate = "Gestern " + entry.CreationDate.ToShortTimeString();
+                }
+                else
+                {
+                    dDate = entry.CreationDate.Date.ToString("dd. MMMM yyyy ") + entry.CreationDate.ToShortTimeString();
+                }
+
+                newEntry.VersionDate = dDate;
+                newEntry.VersionID = entry.Id;
+                newEntry.Version = entry;
+                newEntry.ToolTipTitle = entry.Title;
+                newEntry.ToolTip = ("Datum: " + newEntry.VersionDate + "\r\n\r\nDatenumfang (unkomprimiert): " + entry.Size.Bytes().Humanize() + (!string.IsNullOrEmpty(entry.Description) ? "\r\n\r\n" + entry.Description : "")).Trim();
+                newEntry.VersionStable = entry.Stable;
+                AVersionList1.Items.Add(newEntry);
+            }
+
+            // switch to current version
+            AVersionList1.DrawItems();
+            AVersionList1.SelectItem(lstVersions[0].Id);
+
+            Enabled = true;
+            Focus();
+        }
+
+        private void VersionAlsStabilMarkierenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BackupLogic.GlobalBackup.BackupService.SetStable(selectedVersion.Id, !VersionAlsStabilMarkierenToolStripMenuItem.Checked);
+            VersionAlsStabilMarkierenToolStripMenuItem.Checked = !VersionAlsStabilMarkierenToolStripMenuItem.Checked;
+
+            foreach (var entry in AVersionList1.Items)
+            {
+                if ((entry.VersionID ?? "") == (selectedVersion.Id ?? ""))
+                {
+                    entry.VersionStable = VersionAlsStabilMarkierenToolStripMenuItem.Checked;
+                    return;
+                }
+            }
+        }
+
+        private void cmdTakeMeBack_Click(object sender, EventArgs e)
+        {
+            if (bSearch)
+            {
+                if (searchIsBusy)
+                {
+                    return;
+                }
+
+                // Zuvor alten Prozess abbrechen
+                bgrWorkSearch.CancelAsync();
+                while (bgrWorkSearch.IsBusy)
+                {
+                    Application.DoEvents();
+                }
+
+                // Version suchen, in der die Datei ist
+                string Result = BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFile(selectedVersion.Id, txtSearch.Text);
+                if (Result is null)
+                {
+                    return;
+                }
+
+                selectedVersion = BackupLogic.GlobalBackup.QueryManager.GetVersionById(Result);
+
+                // Alles leeren
+                lvFiles.Items.Clear();
+
+                // Nun neuen Prozess starten
+                bSearch = true;
+                searchIsBusy = true;
+                bgrWorkSearch.RunWorkerAsync();
+                searchIsBusy = false;
+            }
+            else
+            {
+                string Result = BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFilesInFolder(selectedVersion.Id, selectedFolder);
+                if (Result is null)
+                {
+                    return;
+                }
+
+                AVersionList1.SelectItem(Result);
+            }
+        }
+
+        private void cmdTakeMeLater_Click(object sender, EventArgs e)
+        {
+            if (bSearch)
+            {
+                if (searchIsBusy)
+                {
+                    return;
+                }
+
+                // Zuvor alten Prozess abbrechen
+                bgrWorkSearch.CancelAsync();
+                while (bgrWorkSearch.IsBusy)
+                {
+                    Application.DoEvents();
+                }
+
+                // Version suchen, in der die Datei ist
+                string Result = BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFile(selectedVersion.Id, txtSearch.Text);
+                if (Result is null)
+                {
+                    return;
+                }
+
+                selectedVersion = BackupLogic.GlobalBackup.QueryManager.GetVersionById(Result);
+                lvFiles.Items.Clear();
+
+                // Nun neuen Prozess starten
+                bSearch = true;
+                searchIsBusy = true;
+                bgrWorkSearch.RunWorkerAsync();
+                searchIsBusy = false;
+            }
+            else
+            {
+                string Result = BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFilesInFolder(selectedVersion.Id, selectedFolder);
+                if (Result is null)
+                {
+                    return;
+                }
+
+                AVersionList1.SelectItem(Result);
+            }
+        }
+
+        private async void chkFilesOfThisVersion_CheckedChanged(object sender, EventArgs e)
+        {
+            await OpenFolderAsync(selectedFolder);
+        }
+
+        private async void EigenschaftenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvFiles.SelectedItems.Count <= 0)
+            {
+                return;
+            }
+
+            if (lvFiles.SelectedItems[0].ImageKey == "folder")
+            {
+                return;
+            }
+
+            // Eigenschaften anzeigen
+            using (var dlgFileProperties = new frmFileProperties())
+            {
+                dlgFileProperties.browserWindow = this;
+                dlgFileProperties.lblFileName.Text = lvFiles.SelectedItems[0].Text;
+                dlgFileProperties.lblFilePath.Text = BackupLogic.GlobalBackup.QueryManager.GetFullRestoreFolder(lvFiles.SelectedItems[0].Tag.ToString(), selectedVersion.Id);
+                dlgFileProperties.toolTipCtl.SetToolTip(dlgFileProperties.lblFilePath, dlgFileProperties.lblFilePath.Text);
+                dlgFileProperties.lblFileType.Text = lvFiles.SelectedItems[0].SubItems[2].Text;
+                dlgFileProperties.lblFileSize.Text = lvFiles.SelectedItems[0].SubItems[1].Text;
+                dlgFileProperties.lblFileCreated.Text = lvFiles.SelectedItems[0].SubItems[4].Text;
+                dlgFileProperties.lblFileModified.Text = lvFiles.SelectedItems[0].SubItems[3].Text;
+                dlgFileProperties.CurrentFileFolder = lvFiles.SelectedItems[0].Tag.ToString();
+                dlgFileProperties.PictureBox1.Image = imgFileType.Image;
+
+                var versions = await BackupLogic.GlobalBackup.QueryManager.GetVersionsByFileAsync(lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString());
+                foreach (var item in versions)
+                {
+                    var newItem = new ListViewItem();
+                    newItem.Text = item.FilePackage + " (" + item.FileVersionDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm") + ")";
+                    newItem.Tag = item;
+                    newItem.SubItems.Add(item.FileDateModified.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
+                    dlgFileProperties.lvVersions.Items.Add(newItem);
+                }
+
+                dlgFileProperties.ShowDialog(this);
+            }
+        }
+
+        private void UmbenennenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (lvFavorite.SelectedItems.Count > 0)
+                {
+                    lvFavorite.SelectedItems[0].BeginEdit();
+                }
+            }
+            catch
+            {
+                // ignore error
+            }
+        }
+
+        private void WiederherstellenToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            WiederherstellenToolStripMenuItem_MouseClick(sender, e);
+        }
+
+        private void EigenschaftenToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            EigenschaftenToolStripMenuItem_Click(sender, e);
+        }
+
+        private void SchnellansichtToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            SchnellansichtToolStripMenuItem_Click(sender, e);
+        }
+
+        private async void MehrereVersionenLöschenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Enabled = false;
+
+            using (var dlgMultiVersionDelete = new frmMultiVersionDeletion())
+            {
+                foreach (VersionDetails Version in BackupLogic.GlobalBackup.QueryManager.GetVersions())
+                {
+                    var newItem = new ListViewItem();
+                    newItem.Text = Version.CreationDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
+                    newItem.Tag = Version.Id;
+                    dlgMultiVersionDelete.lstVersions.Items.Add(newItem);
+                }
+
+                if (dlgMultiVersionDelete.ShowDialog() == DialogResult.OK)
+                {
+                    if (MessageBox.Show("Möchten Sie die ausgewählte Sicherung wirklich löschen?", "Sicherung löschen", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                    {
+                        return;
+                    }
+
+                    var toDeleteItems = new List<string>();
+                    foreach (ListViewItem item in dlgMultiVersionDelete.lstVersions.Items)
+                    {
+                        if (item.Checked)
+                        {
+                            toDeleteItems.Add(item.Tag.ToString());
+                        }
+                    }
+
+                    await BackupLogic.BackupController.DeleteBackupsAsync(toDeleteItems, true);
+                }
+            }
+
+            // Versionen laden
+            var lstVersions = BackupLogic.GlobalBackup.QueryManager.GetVersions(true);
+            if (lstVersions.Count <= 0)
+            {
+                // Browser nicht anzeigen
+                Close();
+                NotificationController.Current.ShowIconBalloon(1000, "Keine Datensicherung vorhanden", "Es ist derzeit keine Datensicherung vorhanden, die durchsucht werden kann.", ToolTipIcon.Info);
+
+                return;
+            }
+
+            AVersionList1.Items.Clear();
+            AVersionList1.DrawItems();
+
+            foreach (VersionDetails entry in lstVersions)
+            {
+                var newEntry = new aVersionListItem();
+
+                // Datum formatieren
+                string dDate;
+                if (entry.CreationDate.Date == DateTime.Today)
+                {
+                    dDate = "Heute " + entry.CreationDate.ToShortTimeString();
+                }
+                else if (entry.CreationDate.AddDays(1d) == DateTime.Today)
+                {
+                    dDate = "Gestern " + entry.CreationDate.ToShortTimeString();
+                }
+                else
+                {
+                    dDate = entry.CreationDate.Date.ToString("dd. MMMM yyyy ") + entry.CreationDate.ToShortTimeString();
+                }
+
+                newEntry.VersionDate = dDate;
+                newEntry.VersionID = entry.Id;
+                newEntry.Version = entry;
+                newEntry.ToolTipTitle = entry.Title;
+                newEntry.ToolTip = ("Datum: " + newEntry.VersionDate + (!string.IsNullOrEmpty(entry.Description) ? "\r\n\r\n" + entry.Description : "")).Trim();
+                newEntry.VersionStable = entry.Stable;
+                AVersionList1.Items.Add(newEntry);
+            }
+
+            // Zur aktuellen Version wechseln
+            AVersionList1.DrawItems();
+            AVersionList1.SelectItem(lstVersions[0].Id);
+            Enabled = true;
+        }
+
+        private void lvFavorite_SizeChanged(object sender, EventArgs e)
+        {
+            colName.Width = lvFavorite.Width - 25;
+        }
+
+        private async void btnBack_Click(object sender, EventArgs e)
+        {
+            // Eine Ordnerebene höher
+            var splitF = selectedFolder.Split('\\');
+            string temp = "";
+            if (splitF.Length - 1 <= 0)
+            {
+                return;
+            }
+
+            for (int i = 0, loopTo = splitF.Length - 2; i <= loopTo; i++)
+            {
+                temp += splitF[i] + @"\";
+            }
+
+            temp = temp.Substring(0, temp.Length - 1);
+            await OpenFolderAsync(temp);
+        }
+
+        private async void DateiOrdnerAusSicherungenLöschenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Wurde überhaupt irgendetwas ausgewählt?
+            if (lvFiles.SelectedItems.Count <= 0 || lvFiles.SelectedItems.Count >= 2)
+            {
+                return;
+            }
+
+            var selected = lvFiles.SelectedItems[0];
+
+            // Ordner oder Datei
+            if (selected.ImageKey == "folder")
+            {
+                await BackupLogic.BackupController.DeleteSingleFileAsync("", selected.Tag.ToString() + "%");
+            }
+            else
+            {
+                await BackupLogic.BackupController.DeleteSingleFileAsync(selected.Text, selected.Tag.ToString());
+            }
+
+            await OpenFolderAsync(selectedFolder);
+        }
+
+        private void cmnuListRight_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Einzelne Datei / Ordner Löschen klappt nur für ein Eintrag
+            DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Enabled = lvFiles.SelectedItems.Count == 1;
+        }
+
+        private void lvFiles_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            try
+            {
+                // Determine if clicked column Is already the column that Is being sorted.
+                if (e.Column == lvwColumnSorter.SortColumn)
+                {
+                    // Reverse the current sort direction for this column.
+                    if (lvwColumnSorter.Order == SortOrder.Ascending)
+                    {
+                        lvwColumnSorter.Order = SortOrder.Descending;
+                    }
+                    else
+                    {
+                        lvwColumnSorter.Order = SortOrder.Ascending;
+                    }
+                }
+                else
+                {
+                    // Set the column number that Is to be sorted; default to ascending.
+                    lvwColumnSorter.SortColumn = e.Column;
+                    lvwColumnSorter.Order = SortOrder.Ascending;
+                }
+
+                // Perform the sort with these New sort options.
+                lvFiles.Sort();
+            }
+            catch
+            {
+                // ignore error
+            }
+        }
+
+        private async void AllesWiederherstellenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, @"\", "");
+        }
+
+        public void ReportAction(ActionType action, bool silent)
+        {
+        }
+
+        public void ReportState(JobState jobState)
+        {
+            if (!IsHandleCreated)
+            {
+                return;
+            }
+
+            Invoke(new Action(() => { if (jobState == JobState.FINISHED) { try { ReloadBrowser(); } catch { } } }));
+        }
+
+        public void ReportStatus(string title, string text)
+        {
+        }
+
+        public void ReportProgress(int total, int current)
+        {
+        }
+
+        public void ReportFileProgress(string file)
+        {
+        }
+
+        public void ReportSystemStatus(SystemStatus systemStatus)
+        {
+        }
+    }
+}
