@@ -1,11 +1,9 @@
-name: .NET Core Desktop Release
+name: Release stable version
 
 on:
   push:
     tags:
       - 'v*.*.*'
-  workflow_dispatch:
-
 
 jobs:
 
@@ -13,8 +11,8 @@ jobs:
     runs-on: windows-latest
     
     env:
-      Solution_Name: src\Backup Service Home 3.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: src\BSH.Test\BSH.Test.csproj                      # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+      Solution_Name: src\Backup Service Home 3.sln
+      Test_Project_Path: src\BSH.Test\BSH.Test.csproj
 
     steps:
 
@@ -29,7 +27,7 @@ jobs:
     - name: Restore the application
       run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release -p:RestorePackagesConfig=true
     
-    - name: Build
+    - name: Build the application
       shell: powershell
       run: msbuild $env:Solution_Name /t:Rebuild /p:Configuration=Release
 
@@ -37,14 +35,8 @@ jobs:
       run: |
         iscc.exe tools\setup\Setup.iss
       shell: cmd
-    
-    - name: Upload the installer as an artifact
-      uses: actions/upload-artifact@v2
-      with:
-        path: tools\setup\output\backupservicehome-*.exe
-        name: backupservicehome-setup
 
-    - name: Release
+    - name: Release to Github
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
