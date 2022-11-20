@@ -1,0 +1,45 @@
+name: .NET Core Desktop Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+
+jobs:
+
+  build:
+    runs-on: windows-latest
+    
+    env:
+      Solution_Name: src\Backup Service Home 3.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
+      Test_Project_Path: src\BSH.Test\BSH.Test.csproj                      # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+
+    steps:
+
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Restore the application
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release -p:RestorePackagesConfig=true
+    
+    - name: Build
+      shell: powershell
+      run: msbuild $env:Solution_Name /t:Rebuild /p:Configuration=Release
+
+    - name: Building the installer
+      run: |
+        iscc.exe" tools\setup\Setup.iss
+      shell: cmd
+    
+    - name: Upload the installer as an artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: tools\setup\output\backupservicehome-*.exe
+        name: backupservicehome-setup
