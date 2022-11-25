@@ -179,7 +179,7 @@ namespace Brightbits.BSH.Main
 
                         // localize folder
                         newFolder.Text = System.IO.Path.GetFileName(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(folderTag));
-                        if (chkFilesOfThisVersion.Checked && !BackupLogic.GlobalBackup.QueryManager.HasChangesOrNew(folderTag, selectedVersion.Id))
+                        if (chkFilesOfThisVersion.Checked && !await BackupLogic.GlobalBackup.QueryManager.HasChangesOrNewAsync(folderTag, selectedVersion.Id))
                         {
                             newFolder.ForeColor = Color.Gray;
                         }
@@ -1017,7 +1017,7 @@ namespace Brightbits.BSH.Main
 
                 if (dlgEditVersion.ShowDialog(this) == DialogResult.OK)
                 {
-                    BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE versiontable SET versionTitle = '" + dlgEditVersion.txtTitle.Text + "', versionDescription = '" + dlgEditVersion.txtDescription.Text + "' WHERE versionID = " + selectedVersion.Id);
+                    await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE versiontable SET versionTitle = '" + dlgEditVersion.txtTitle.Text + "', versionDescription = '" + dlgEditVersion.txtDescription.Text + "' WHERE versionID = " + selectedVersion.Id);
                     foreach (aVersionListItem entry in AVersionList1.Items)
                     {
                         if ((entry.VersionID ?? "") == (selectedVersion.Id ?? ""))
@@ -1371,7 +1371,7 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private void cmdTakeMeBack_Click(object sender, EventArgs e)
+        private async void cmdTakeMeBack_Click(object sender, EventArgs e)
         {
             if (bSearch)
             {
@@ -1388,7 +1388,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Version suchen, in der die Datei ist
-                string Result = BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFile(selectedVersion.Id, txtSearch.Text);
+                string Result = await BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
                 if (Result is null)
                 {
                     return;
@@ -1407,7 +1407,7 @@ namespace Brightbits.BSH.Main
             }
             else
             {
-                string Result = BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFilesInFolder(selectedVersion.Id, selectedFolder);
+                string Result = await BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFilesInFolderAsync(selectedVersion.Id, selectedFolder);
                 if (Result is null)
                 {
                     return;
@@ -1417,7 +1417,7 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private void cmdTakeMeLater_Click(object sender, EventArgs e)
+        private async void cmdTakeMeLater_Click(object sender, EventArgs e)
         {
             if (bSearch)
             {
@@ -1434,7 +1434,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Version suchen, in der die Datei ist
-                string Result = BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFile(selectedVersion.Id, txtSearch.Text);
+                string Result = await BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
                 if (Result is null)
                 {
                     return;
@@ -1451,7 +1451,7 @@ namespace Brightbits.BSH.Main
             }
             else
             {
-                string Result = BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFilesInFolder(selectedVersion.Id, selectedFolder);
+                string Result = await BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFilesInFolderAsync(selectedVersion.Id, selectedFolder);
                 if (Result is null)
                 {
                     return;

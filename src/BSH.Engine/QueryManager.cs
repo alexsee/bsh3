@@ -120,11 +120,11 @@ namespace Brightbits.BSH.Engine
         /// Returns the number of active backups.
         /// </summary>
         /// <returns></returns>
-        public int GetNumberOfVersions()
+        public async Task<int> GetNumberOfVersionsAsync()
         {
             using (var dbClient = dbClientFactory.CreateDbClient())
             {
-                var result = dbClient.ExecuteScalar("SELECT COUNT(*) FROM versiontable WHERE versionStatus = 0");
+                var result = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM versiontable WHERE versionStatus = 0");
 
                 return int.Parse(result.ToString());
             }
@@ -264,7 +264,7 @@ namespace Brightbits.BSH.Engine
         /// <param name="startVersion"></param>
         /// <param name="searchString"></param>
         /// <returns></returns>
-        public string GetBackVersionWhereFile(string startVersion, string searchString)
+        public async Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString)
         {
             try
             {
@@ -276,7 +276,7 @@ namespace Brightbits.BSH.Engine
                         dbClient.CreateParameter("searchString", DbType.String, 0, "%" + searchString + "%")
                     };
 
-                    var result = dbClient.ExecuteScalar(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
+                    var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
                         "WHERE a.versionID < @startVersion " +
                         "AND a.versionStatus = 0 " +
                         "AND EXISTS (Select 1 FROM fileversiontable, filelink, filetable " +
@@ -306,7 +306,7 @@ namespace Brightbits.BSH.Engine
         /// <param name="startVersion"></param>
         /// <param name="searchString"></param>
         /// <returns></returns>
-        public string GetBackVersionWhereFilesInFolder(string startVersion, string path)
+        public async Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path)
         {
             try
             {
@@ -328,7 +328,7 @@ namespace Brightbits.BSH.Engine
                         dbClient.CreateParameter("path", DbType.String, 0, path)
                     };
 
-                    var result = dbClient.ExecuteScalar(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
+                    var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
                         "WHERE a.versionID < @startVersion " +
                         "AND a.versionStatus = 0 " +
                         "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
@@ -358,7 +358,7 @@ namespace Brightbits.BSH.Engine
         /// <param name="startVersion"></param>
         /// <param name="searchString"></param>
         /// <returns></returns>
-        public string GetNextVersionWhereFile(string startVersion, string searchString)
+        public async Task<string> GetNextVersionWhereFileAsync(string startVersion, string searchString)
         {
             try
             {
@@ -370,7 +370,7 @@ namespace Brightbits.BSH.Engine
                         dbClient.CreateParameter("searchString", DbType.String, 0,  "%" + searchString + "%")
                     };
 
-                    var result = dbClient.ExecuteScalar(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
+                    var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
                         "WHERE a.versionID > @startVersion " +
                         "AND a.versionStatus = 0 " +
                         "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
@@ -400,7 +400,7 @@ namespace Brightbits.BSH.Engine
         /// <param name="startVersion"></param>
         /// <param name="searchString"></param>
         /// <returns></returns>
-        public string GetNextVersionWhereFilesInFolder(string startVersion, string path)
+        public async Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path)
         {
             try
             {
@@ -422,7 +422,7 @@ namespace Brightbits.BSH.Engine
                         dbClient.CreateParameter("path", DbType.String, 0, path)
                     };
 
-                    var result = dbClient.ExecuteScalar(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
+                    var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
                         "WHERE a.versionID > @startVersion " +
                         "AND a.versionStatus = 0 " +
                         "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
@@ -676,11 +676,11 @@ namespace Brightbits.BSH.Engine
         /// <param name="path"></param>
         /// <param name="versionId"></param>
         /// <returns></returns>
-        public bool HasChangesOrNew(string path, string versionId)
+        public async Task<bool> HasChangesOrNewAsync(string path, string versionId)
         {
             using (var dbClient = dbClientFactory.CreateDbClient())
             {
-                var result = dbClient.ExecuteScalar($"SELECT COUNT(1) FROM fileversiontable, filetable WHERE filetable.fileID = fileversiontable.fileID AND fileversiontable.filePackage = {versionId} AND filetable.filePath LIKE \"{path}%\"");
+                var result = await dbClient.ExecuteScalarAsync($"SELECT COUNT(1) FROM fileversiontable, filetable WHERE filetable.fileID = fileversiontable.fileID AND fileversiontable.filePackage = {versionId} AND filetable.filePath LIKE \"{path}%\"");
                 if (result == null)
                 {
                     return false;

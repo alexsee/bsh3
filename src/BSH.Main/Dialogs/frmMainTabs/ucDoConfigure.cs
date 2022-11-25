@@ -20,6 +20,7 @@ using Microsoft.VisualBasic;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -78,21 +79,21 @@ namespace Brightbits.BSH.Main
 
         private int iWizardStep = 1;
 
-        private void cmdNext_Click(object sender, EventArgs e)
+        private async void cmdNext_Click(object sender, EventArgs e)
         {
             // wizard: next step
             iWizardStep += 1;
-            ShowWizardStep(iWizardStep);
+            await ShowWizardStepAsync(iWizardStep);
         }
 
-        private void cmdBack_Click(object sender, EventArgs e)
+        private async void cmdBack_Click(object sender, EventArgs e)
         {
             // wizard: previous step
             iWizardStep -= 1;
-            ShowWizardStep(iWizardStep);
+            await ShowWizardStepAsync(iWizardStep);
         }
 
-        private void ShowWizardStep(int iStep)
+        private async Task ShowWizardStepAsync(int iStep)
         {
             iWizardStep = iStep;
 
@@ -127,7 +128,7 @@ namespace Brightbits.BSH.Main
                     {
                         MessageBox.Show("Kein Verzeichnis hinzugefügt.\r\n\r\nSie haben kein Verzeichnis hinzugefügt, dass gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie mindestens ein Verzeichnis der Liste hinzufügen.", "Verzeichnis hinzufügen", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         iWizardStep -= 1;
-                        ShowWizardStep(iWizardStep);
+                        await ShowWizardStepAsync(iWizardStep);
                         return;
                     }
 
@@ -155,7 +156,7 @@ namespace Brightbits.BSH.Main
                         {
                             MessageBox.Show("Kein Sicherungsmedium ausgewählt.\r\n\r\nSie haben kein Medium ausgewählt, auf das gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie ein Medium der Liste auswählen.", "Verzeichnis auswählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
@@ -166,7 +167,7 @@ namespace Brightbits.BSH.Main
                         {
                             MessageBox.Show("Das ausgewählte Sicherungsmedium ist nicht leer und enthält bereits Sicherungen von Backup Service Home, die möglicherweise überschrieben werden könnten. Bitte wählen Sie ein anderes Verzeichnis aus oder löschen Sie zuvor manuell die Sicherungen von dem Sicherungsmedium.", "Verzeichnis auswählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
@@ -185,7 +186,7 @@ namespace Brightbits.BSH.Main
                                 // directory not found
                                 MessageBox.Show("Der angegebene Verzeichnispfad wurde nicht gefunden.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 iWizardStep -= 1;
-                                ShowWizardStep(iWizardStep);
+                                await ShowWizardStepAsync(iWizardStep);
                                 return;
                             }
 
@@ -196,7 +197,7 @@ namespace Brightbits.BSH.Main
                             // ftp credentials exception
                             MessageBox.Show("Die Verbindung konnte nicht aufgebaut werden.\r\n\r\nFTP Server meldete: " + ex.Message.ToString(), "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
                     }
@@ -212,7 +213,7 @@ namespace Brightbits.BSH.Main
                                     // network directory credentials exception
                                     MessageBox.Show("Zum Überprüfen des Pfades muss der Ordner, Netzlaufwerk oder Netzwerkfreigabe nun bereit stehen.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     iWizardStep -= 1;
-                                    ShowWizardStep(iWizardStep);
+                                    await ShowWizardStepAsync(iWizardStep);
                                     return;
                                 }
                             }
@@ -222,7 +223,7 @@ namespace Brightbits.BSH.Main
                             // credentials exception
                             MessageBox.Show("Zum Überprüfen des Pfades muss der Ordner, Netzlaufwerk oder Netzwerkfreigabe nun bereit stehen.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
                     }
@@ -242,7 +243,7 @@ namespace Brightbits.BSH.Main
                     {
                         MessageBox.Show("Keine Option gewählt.\r\n\r\nUm den Vorgang fortzsetzen muss mindestens eine Option ausgewählt werden. Falls Sie sich unsicher sind, wählen Sie die vollautomatische Datensicherung.", "Option wählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         iWizardStep -= 1;
-                        ShowWizardStep(iWizardStep);
+                        await ShowWizardStepAsync(iWizardStep);
                         return;
                     }
 
@@ -357,7 +358,7 @@ namespace Brightbits.BSH.Main
                         {
                             MessageBox.Show("Sie müssen ein Laufwerk auswählen.", "Laufwerk auswählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
@@ -411,14 +412,14 @@ namespace Brightbits.BSH.Main
                         // local or network directory
                         if (File.Exists(txtPath.Text + @"\backup.bshdb"))
                         {
-                            ShowWizardStep(7);
+                            await ShowWizardStepAsync(7);
                         }
                         else
                         {
                             // show controls
                             MessageBox.Show("In dem angegebenen Verzeichnis wurde keine Sicherung gefunden.", "Keine Sicherung", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
                     }
@@ -448,7 +449,7 @@ namespace Brightbits.BSH.Main
                                 {
                                     MessageBox.Show("Im angegebenen Verzeichnis wurde keine Sicherung gefunden. Wählen Sie den Ordner aus, der die Backup.bshdb Datei enthält.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     iWizardStep -= 1;
-                                    ShowWizardStep(iWizardStep);
+                                    await ShowWizardStepAsync(iWizardStep);
                                     return;
                                 }
                             }
@@ -460,12 +461,12 @@ namespace Brightbits.BSH.Main
                             // ftp credentials wrong
                             MessageBox.Show("Die Verbindung konnte nicht aufgebaut werden.\r\n\r\nFTP Server meldete: " + ex.Message.ToString(), "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
                         // goto next step
-                        ShowWizardStep(7);
+                        await ShowWizardStepAsync(7);
                     }
 
                     break;
@@ -490,7 +491,7 @@ namespace Brightbits.BSH.Main
                         {
                             MessageBox.Show("Keine Sicherung gewählt.\r\n\r\nUm den Vorgang fortzsetzen müssen Sie die Datensicherung auswählen, die Sie importieren möchten.", "Sicherung wählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
@@ -525,7 +526,7 @@ namespace Brightbits.BSH.Main
                             // credentials wrong
                             MessageBox.Show("FTP meldet: " + ex.Message.ToString() + "\r\n\r\nEine Verbindung mit dem FTP-Server konnte nicht aufgebaut werden. Um den Vorgang fortzusetzen muss die Verbindung zum FTP-Server hergestellt werden, um die Konnektivität zu überprüfen.", "FTP-Server nicht erreichbar", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 2;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
                     }
@@ -536,7 +537,7 @@ namespace Brightbits.BSH.Main
                             // database does not exist
                             MessageBox.Show("In dem angegebenen Verzeichnis wurde keine Sicherung gefunden.", "Keine Sicherung", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
@@ -554,9 +555,9 @@ namespace Brightbits.BSH.Main
                         BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder = lvBackups.SelectedItems[0].Tag.ToString();
                         BackupLogic.GlobalBackup.ConfigurationManager.MediumType = 1;
 
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
                     }
                     else if (tcStep5.SelectedIndex == 1)
                     {
@@ -570,9 +571,9 @@ namespace Brightbits.BSH.Main
                         BackupLogic.GlobalBackup.ConfigurationManager.FtpCoding = Convert.ToString(cboFtpEncoding2.SelectedItem);
                         BackupLogic.GlobalBackup.ConfigurationManager.MediumType = 3;
 
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
                     }
                     else
                     {
@@ -635,7 +636,7 @@ namespace Brightbits.BSH.Main
                             }
                         }
 
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE versiontable SET versionSources = \"" + string.Join("|", sources.Select(x => x.Path).ToArray()) + "\" WHERE versionID = " + version.Id);
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE versiontable SET versionSources = \"" + string.Join("|", sources.Select(x => x.Path).ToArray()) + "\" WHERE versionID = " + version.Id);
                     }
 
                     BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder = sourcePaths;
@@ -727,9 +728,9 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private void cmdImport_Click(object sender, EventArgs e)
+        private async void cmdImport_Click(object sender, EventArgs e)
         {
-            ShowWizardStep(5);
+            await ShowWizardStepAsync(5);
             iWizardStep = 5;
             cmdImport.Visible = false;
             cmdNext.Visible = true;
@@ -822,9 +823,9 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private void cmdConfigure_Click(object sender, EventArgs e)
+        private async void cmdConfigure_Click(object sender, EventArgs e)
         {
-            ShowWizardStep(1);
+            await ShowWizardStepAsync(1);
             iWizardStep = 1;
             cmdNext.Visible = true;
             cmdBack.Visible = true;

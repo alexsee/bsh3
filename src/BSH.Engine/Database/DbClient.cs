@@ -111,6 +111,17 @@ namespace Brightbits.BSH.Engine.Database
         }
 
         /// <summary>
+        /// Method to open the connection
+        /// </summary>
+        private async Task OpenConnectionAsync()
+        {
+            if (_connection != null && _connection.State != ConnectionState.Open)
+            {
+                await _connection.OpenAsync();
+            }
+        }
+
+        /// <summary>
         /// Method to close the connection
         /// </summary>
         private void CloseConnection()
@@ -288,20 +299,10 @@ namespace Brightbits.BSH.Engine.Database
         /// <returns>the data reader</returns>
         public async Task<DbDataReader> ExecuteDataReaderAsync(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
         {
-            OpenConnection();
+            await OpenConnectionAsync();
 
             DbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
             return await command.ExecuteReaderAsync();
-        }
-
-        public object ExecuteScalar(string commandText)
-        {
-            return ExecuteScalar(CommandType.Text, commandText, null);
-        }
-
-        public object ExecuteScalar(string procedureName, IDataParameter[] parameters)
-        {
-            return ExecuteScalar(CommandType.StoredProcedure, procedureName, parameters);
         }
 
         public object ExecuteScalar(CommandType commandType, string commandText, IDataParameter[] parameters)
@@ -309,13 +310,34 @@ namespace Brightbits.BSH.Engine.Database
             return ExecuteScalar(commandType, commandText, parameters, 60000);
         }
 
-
         public object ExecuteScalar(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
         {
             OpenConnection();
 
             DbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
             object result = command.ExecuteScalar();
+
+            CloseConnection();
+
+            return result;
+        }
+
+        public async Task<object> ExecuteScalarAsync(string commandText)
+        {
+            return await ExecuteScalarAsync(CommandType.Text, commandText, null);
+        }
+
+        public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, IDataParameter[] parameters)
+        {
+            return await ExecuteScalarAsync(commandType, commandText, parameters, 60000);
+        }
+
+        public async Task<object> ExecuteScalarAsync (CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
+        {
+            OpenConnection();
+
+            DbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+            object result = await command.ExecuteScalarAsync();
 
             CloseConnection();
 
@@ -346,8 +368,30 @@ namespace Brightbits.BSH.Engine.Database
         {
             OpenConnection();
 
-            IDbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+            DbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
             int result = command.ExecuteNonQuery();
+
+            CloseConnection();
+
+            return result;
+        }
+
+        public async Task<int> ExecuteNonQueryAsync(string commandText)
+        {
+            return await ExecuteNonQueryAsync(CommandType.Text, commandText, null, 60000);
+        }
+
+        public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, IDataParameter[] parameters)
+        {
+            return await ExecuteNonQueryAsync(commandType, commandText, parameters, 60000);
+        }
+
+        public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
+        {
+            await OpenConnectionAsync();
+
+            DbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+            int result = await command.ExecuteNonQueryAsync();
 
             CloseConnection();
 

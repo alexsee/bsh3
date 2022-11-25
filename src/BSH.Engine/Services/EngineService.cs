@@ -14,11 +14,10 @@
 
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
-using Brightbits.BSH.Engine.Properties;
-using System;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine.Services
 {
@@ -189,11 +188,11 @@ namespace Brightbits.BSH.Engine.Services
             }
         }
 
-        public int ExecuteNonQuery(string query)
+        public async Task<int> ExecuteNonQueryAsync(string query)
         {
             using (var dbClient = DbClientFactory.CreateDbClient())
             {
-                return dbClient.ExecuteNonQuery(query);
+                return await dbClient.ExecuteNonQueryAsync(query);
             }
         }
     }

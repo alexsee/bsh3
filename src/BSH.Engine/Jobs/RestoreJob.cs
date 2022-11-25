@@ -24,6 +24,7 @@ using System.Data;
 using System.IO;
 using System.Security;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine.Jobs
 {
@@ -63,7 +64,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// </summary>
         /// <param name="token"></param>
         /// <exception cref="DeviceNotReadyException"></exception>
-        public void Restore(CancellationToken token)
+        public async Task RestoreAsync(CancellationToken token)
         {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
 
@@ -129,7 +130,7 @@ namespace Brightbits.BSH.Engine.Jobs
                         File += "\\";
                     }
 
-                    var c = dbClient.ExecuteScalar(CommandType.Text,
+                    var c = await dbClient.ExecuteScalarAsync(CommandType.Text,
                         $"SELECT COUNT(*) FROM filetable, fileversiontable, filelink " +
                         $"WHERE filelink.fileversionID = fileversiontable.fileversionID " +
                         $"AND fileversiontable.fileID = filetable.fileID " +
@@ -175,7 +176,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 ReportProgress(countFiles, 0);
 
                 // restore files
-                using (var reader = dbClient.ExecuteDataReader(CommandType.Text, getFileSQL, null))
+                using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, getFileSQL, null))
                 {
                     int i = 0;
                     while (reader.Read())
@@ -262,7 +263,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 }
 
                 // restore folders
-                using (var reader = dbClient.ExecuteDataReader(CommandType.Text, $"SELECT folder FROM foldertable, folderlink WHERE foldertable.id = folderlink.folderid AND folderlink.versionid = {Version} AND foldertable.folder LIKE \"{File}%\"", null))
+                using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, $"SELECT folder FROM foldertable, folderlink WHERE foldertable.id = folderlink.folderid AND folderlink.versionid = {Version} AND foldertable.folder LIKE \"{File}%\"", null))
                 {
                     while (reader.Read())
                     {

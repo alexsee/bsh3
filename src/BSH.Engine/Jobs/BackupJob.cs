@@ -27,6 +27,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine.Jobs
 {
@@ -70,7 +71,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// <exception cref="DeviceNotReadyException"></exception>
         /// <exception cref="NoSourceFolderSelectedException"></exception>
         /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-        public void Backup(CancellationToken token)
+        public async Task BackupAsync(CancellationToken token)
         {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
 
@@ -89,7 +90,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 ///
 
                 // get last version
-                var lastVersionDate = dbClient.ExecuteScalar("SELECT versionDate FROM versiontable ORDER BY versionID LIMIT 1");
+                var lastVersionDate = await dbClient.ExecuteScalarAsync("SELECT versionDate FROM versiontable ORDER BY versionID LIMIT 1");
 
                 // full backup?
                 var fullBackup = string.IsNullOrEmpty(lastVersionDate?.ToString()) || FullBackup;
@@ -143,7 +144,7 @@ namespace Brightbits.BSH.Engine.Jobs
                     dbClient.CreateParameter("sources", DbType.String, 0, folderListString)
                 };
 
-                var newVersionId = (long)dbClient.ExecuteScalar(CommandType.Text,
+                var newVersionId = (long)await dbClient.ExecuteScalarAsync(CommandType.Text,
                     "INSERT INTO versiontable (versionDate, versionTitle, versionDescription, versionType, versionStatus, versionStable, versionSources) VALUES (" +
                     "@newVersionDate, @title, @description, @type, '0', '0', @sources); select last_insert_rowid()",
                     backupParameters);
@@ -183,7 +184,7 @@ namespace Brightbits.BSH.Engine.Jobs
                         dbClient.CreateParameter("folder", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(folder.RootPath), FileCollectorService.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\")
                     };
 
-                    var folderId = dbClient.ExecuteScalar(CommandType.Text, "INSERT OR IGNORE INTO foldertable ( folder ) VALUES ( @folder ); SELECT id FROM foldertable WHERE folder = @folder", folderParameters);
+                    var folderId = await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT OR IGNORE INTO foldertable ( folder ) VALUES ( @folder ); SELECT id FROM foldertable WHERE folder = @folder", folderParameters);
 
                     // add folder link
                     var folderLinkParameters = new IDataParameter[] {
@@ -191,7 +192,7 @@ namespace Brightbits.BSH.Engine.Jobs
                         dbClient.CreateParameter("versionID", DbType.Int32, 0, newVersionId)
                     };
 
-                    dbClient.ExecuteNonQuery(CommandType.Text, "INSERT INTO folderlink ( folderid, versionid ) VALUES ( @folderid, @versionID )", folderLinkParameters);
+                    await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO folderlink ( folderid, versionid ) VALUES ( @folderid, @versionID )", folderLinkParameters);
                 }
 
                 // process all files
@@ -214,7 +215,7 @@ namespace Brightbits.BSH.Engine.Jobs
                             dbClient.CreateParameter("filePath", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\")
                         };
 
-                        file.FileId = dbClient.ExecuteScalar(CommandType.Text, "SELECT fileID FROM filetable WHERE fileName = @fileName AND filePath = @filePath LIMIT 1", fileSelectParameters)?.ToString();
+                        file.FileId = (await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT fileID FROM filetable WHERE fileName = @fileName AND filePath = @filePath LIMIT 1", fileSelectParameters))?.ToString();
 
                         if (!long.TryParse(file.FileId, out long fileId))
                         {
@@ -224,7 +225,7 @@ namespace Brightbits.BSH.Engine.Jobs
                                 dbClient.CreateParameter("filePath", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\")
                             };
 
-                            file.FileId = dbClient.ExecuteScalar(CommandType.Text, "INSERT INTO filetable ( fileName, filePath ) VALUES ( @fileName, @filePath ); SELECT MAX(fileID) FROM filetable", fileInsertParameters)?.ToString();
+                            file.FileId = (await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT INTO filetable ( fileName, filePath ) VALUES ( @fileName, @filePath ); SELECT MAX(fileID) FROM filetable", fileInsertParameters))?.ToString();
                         }
                         else
                         {
@@ -237,8 +238,8 @@ namespace Brightbits.BSH.Engine.Jobs
                                     dbClient.CreateParameter("fileDateModified", DbType.Date, 0, file.FileDateModified)
                                 };
 
-                                file.FilePackage = dbClient.ExecuteScalar(CommandType.Text, "SELECT fileversionID FROM fileversiontable WHERE" +
-                                    " fileID = @fileID AND fileStatus = 1 AND fileSize = @fileSize AND datetime(fileDateModified) = datetime(@fileDateModified) ORDER BY fileversionID DESC LIMIT 1", fileSelectParameters2)?.ToString();
+                                file.FilePackage = (await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT fileversionID FROM fileversiontable WHERE" +
+                                    " fileID = @fileID AND fileStatus = 1 AND fileSize = @fileSize AND datetime(fileDateModified) = datetime(@fileDateModified) ORDER BY fileversionID DESC LIMIT 1", fileSelectParameters2))?.ToString();
 
                                 if (long.TryParse(file.FilePackage, out long filePackage))
                                 {
@@ -248,7 +249,7 @@ namespace Brightbits.BSH.Engine.Jobs
                                         dbClient.CreateParameter("versionID", DbType.Int32, 0, newVersionId)
                                     };
 
-                                    dbClient.ExecuteNonQuery(CommandType.Text, "INSERT INTO filelink ( fileversionID, versionID ) VALUES ( @fileversionID, @versionID )", fileInsertParameters2);
+                                    await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO filelink ( fileversionID, versionID ) VALUES ( @fileversionID, @versionID )", fileInsertParameters2);
                                     isModifiedFile = false;
                                 }
                             }
@@ -351,7 +352,7 @@ namespace Brightbits.BSH.Engine.Jobs
                         if (lastVersion != null)
                         {
                             storage.RenameDirectory(lastVersion.CreationDate.ToString("dd-MM-yyyy HH-mm-ss"), newVersionDate);
-                            dbClient.ExecuteNonQuery("UPDATE versiontable SET versionDate = '" + newVersionDate + "' WHERE versionID = " + lastVersion.Id);
+                            await dbClient.ExecuteNonQueryAsync("UPDATE versiontable SET versionDate = '" + newVersionDate + "' WHERE versionID = " + lastVersion.Id);
                         }
                     }
                     catch (Exception ex)
@@ -370,7 +371,7 @@ namespace Brightbits.BSH.Engine.Jobs
             }
 
             // refresh free diskspace
-            UpdateFreeDiskSpace();
+            await UpdateFreeDiskSpaceAsync();
 
             // close all database connections
             dbClientFactory.ClosePool();

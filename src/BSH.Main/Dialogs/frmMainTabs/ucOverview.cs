@@ -19,6 +19,7 @@ using Humanizer;
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -41,7 +42,7 @@ namespace Brightbits.BSH.Main
         public void OpenTab()
         {
             StatusController.Current.AddObserver(this);
-            RefreshInfo();
+            Task.WaitAll(RefreshInfo());
 
 #if !WIN_UWP
             try
@@ -88,7 +89,7 @@ namespace Brightbits.BSH.Main
 
         #endregion
 
-        private void RefreshInfo()
+        private async Task RefreshInfo()
         {
             try
             {
@@ -119,7 +120,7 @@ namespace Brightbits.BSH.Main
                     lblOldBackup.Text = "Voraussichtl. voll am:";
                     lblBdOldestBackup.Text = "noch nicht vorhersehbar";
 
-                    int countBackup = BackupLogic.GlobalBackup.QueryManager.GetNumberOfVersions();
+                    int countBackup = await BackupLogic.GlobalBackup.QueryManager.GetNumberOfVersionsAsync();
                     if (countBackup >= 20 && !string.IsNullOrEmpty(BackupLogic.GlobalBackup.ConfigurationManager.BackupSize))
                     {
                         try
@@ -468,7 +469,7 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            Invoke(new Action(() => RefreshInfo()));
+            Invoke(new Action(async () => await RefreshInfo()));
         }
 
         public void ReportState(JobState jobState)
@@ -478,7 +479,7 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            Invoke(new Action(() => RefreshInfo()));
+            Invoke(new Action(async () => await RefreshInfo()));
         }
 
         public void ReportStatus(string title, string text)
@@ -538,7 +539,7 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            Invoke(new Action(() => RefreshInfo()));
+            Invoke(new Action(async () => await RefreshInfo()));
         }
 
         private void llShowExceptionDialog_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
