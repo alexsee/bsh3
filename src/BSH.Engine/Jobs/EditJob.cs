@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
 using System;
@@ -55,7 +56,7 @@ namespace Brightbits.BSH.Engine.Jobs
             _logger.Information("Begin edit backup.");
 
             ReportState(JobState.RUNNING);
-            ReportStatus("Vorbereiten...", "Datensicherung wird geändert...");
+            ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_EDIT_PREPARE);
             ReportProgress(0, 0);
 
             // check medium
@@ -154,7 +155,7 @@ namespace Brightbits.BSH.Engine.Jobs
             ReportExceptions(FileErrorList);
 
             ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
-            ReportStatus("Bearbeitung abschließen...", "Die Bearbeitung wird nun abgeschlossen.");
+            ReportStatus(Resources.STATUS_EDIT_FINISHED_SHORT, Resources.STATUS_EDIT_FINISHED_TEXT);
 
             _logger.Information("Edit job finished.");
         }

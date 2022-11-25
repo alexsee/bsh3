@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Exceptions;
+using Brightbits.BSH.Engine.Properties;
 using System;
 using System.Data;
 using System.Data.SQLite;
@@ -72,7 +74,7 @@ namespace Brightbits.BSH.Engine.Services
 
                 if (dbVersion > 8)
                 {
-                    throw new Exception("Datenbankversion ist neuer als die installierte Backup Service Home Version. Installieren Sie eine neuere Version von Backup Service Home.");
+                    throw new DatabaseIncompatibleException();
                 }
 
                 // Version 1 auf 2 aktualisieren

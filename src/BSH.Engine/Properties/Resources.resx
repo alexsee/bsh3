@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="EXCEPTION_NEWER_DATABASE" xml:space="preserve">
+    <value>Datenbankversion ist neuer als die installierte Backup Service Home Version. Installieren Sie eine neuere Version von Backup Service Home.</value>
+  </data>
   <data name="STATUS_BACKUP_COPY_SHORT" xml:space="preserve">
     <value>Dateien werden gesichert...</value>
   </data>
@@ -141,7 +144,37 @@
   <data name="STATUS_CANCELLED_TEXT" xml:space="preserve">
     <value>Aktueller Vorgang wird abgebrochen...</value>
   </data>
+  <data name="STATUS_DELETE_PREPARE" xml:space="preserve">
+    <value>Zu löschende Dateien werden ermittelt...</value>
+  </data>
+  <data name="STATUS_DELETE_REMOVE_SHORT" xml:space="preserve">
+    <value>Dateien werden gelöscht...</value>
+  </data>
+  <data name="STATUS_DELETE_REMOVE_TEXT" xml:space="preserve">
+    <value>Dateien werden von Sicherungsmedium gelöscht...</value>
+  </data>
+  <data name="STATUS_DELETE_SINGLE_PREPARE" xml:space="preserve">
+    <value>Einzelne Dateien aus Sicherung löschen...</value>
+  </data>
+  <data name="STATUS_EDIT_FINISHED_SHORT" xml:space="preserve">
+    <value>Bearbeitung abschließen...</value>
+  </data>
+  <data name="STATUS_EDIT_FINISHED_TEXT" xml:space="preserve">
+    <value>Die Bearbeitung der Datensicherung wird nun abgeschlossen...</value>
+  </data>
+  <data name="STATUS_EDIT_PREPARE" xml:space="preserve">
+    <value>Datensicherung wird geändert...</value>
+  </data>
   <data name="STATUS_PREPARE" xml:space="preserve">
     <value>Vorbereiten...</value>
+  </data>
+  <data name="STATUS_RESTORE_COPY_SHORT" xml:space="preserve">
+    <value>Dateien wiederherstellen...</value>
+  </data>
+  <data name="STATUS_RESTORE_COPY_TEXT" xml:space="preserve">
+    <value>Dateien werden von dem Backupmedium wiederhergestellt...</value>
+  </data>
+  <data name="STATUS_RESTORE_PREPARE" xml:space="preserve">
+    <value>Datenwiederherstellung wird vorbereitet...</value>
   </data>
 </root>

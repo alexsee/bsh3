@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
 using System;
@@ -70,7 +71,7 @@ namespace Brightbits.BSH.Engine.Jobs
             _logger.Information("Begin restore", new { Version, File, Destination });
 
             ReportState(JobState.RUNNING);
-            ReportStatus("Vorbereiten...", "Dateien werden wiederhergestellt...");
+            ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_RESTORE_PREPARE);
             ReportProgress(0, 0);
 
             // check medium
@@ -170,6 +171,7 @@ namespace Brightbits.BSH.Engine.Jobs
 
                 // refresh status
                 _logger.Information("{countFiles} files will be restored.", countFiles);
+                ReportStatus(Resources.STATUS_RESTORE_COPY_SHORT, Resources.STATUS_RESTORE_COPY_TEXT);
                 ReportProgress(countFiles, 0);
 
                 // restore files
@@ -249,7 +251,7 @@ namespace Brightbits.BSH.Engine.Jobs
                             // report progress
                             _logger.Information("User requested cancellation of restore job.");
 
-                            ReportStatus("Vorgang wird abgebrochen", "Vorgang wird abgebrochen");
+                            ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_TEXT);
                             ReportExceptions(FileErrorList);
                             ReportState(JobState.FINISHED);
                             return;
