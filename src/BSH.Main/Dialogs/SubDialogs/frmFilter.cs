@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using BSH.Controls.UI;
-using Microsoft.VisualBasic;
 using System;
 using System.Diagnostics;
 using System.Linq;

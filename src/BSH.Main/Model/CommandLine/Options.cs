@@ -28,7 +28,7 @@ namespace BSH.Main.Model.CommandLine
         public bool DeleteProtocol { get; set; }
 
         [Option("config")]
-        public bool ShowConfig { get;set; }
+        public bool ShowConfig { get; set; }
 
         [Option("browser")]
         public bool ShowBrowser { get; set; }

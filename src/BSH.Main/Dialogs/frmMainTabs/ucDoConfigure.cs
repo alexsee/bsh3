@@ -16,7 +16,6 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Main.Properties;
-using Microsoft.VisualBasic;
 using System;
 using System.IO;
 using System.Linq;

@@ -14,8 +14,6 @@
 
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
-using Brightbits.BSH.Engine.Properties;
-using System;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
