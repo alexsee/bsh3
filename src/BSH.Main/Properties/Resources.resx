@@ -291,6 +291,18 @@ Die nötigen Rechte zum Verändern dieser Einstellung fehlen.</value>
   <data name="DLG_MAIN_MSG_UWP_AUTOSTART_TITLE" xml:space="preserve">
     <value>Autostartverhalten</value>
   </data>
+  <data name="DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT" xml:space="preserve">
+    <value>Wartungsaufgabe wird durchgeführt...</value>
+  </data>
+  <data name="DLG_SHORT_STATUS_FILES_STATUS_TEXT" xml:space="preserve">
+    <value>{0} wird verarbeitet...</value>
+  </data>
+  <data name="DLG_STATUS_FILES_PROCESSED_TEXT" xml:space="preserve">
+    <value>Verarbeitet: {0:N0} von {1:N0} Dateien</value>
+  </data>
+  <data name="DLG_STATUS_STATUS_CANCELED_TEXT" xml:space="preserve">
+    <value>Abbrechen...</value>
+  </data>
   <data name="DLG_UC_CONFIG_LBL_COMPRESSION_STAGE" xml:space="preserve">
     <value> Stufe </value>
   </data>
@@ -461,6 +473,9 @@ Möchten Sie den Vorgang fortsetzen?</value>
   </data>
   <data name="DLG_UC_OVERVIEW_TITLE" xml:space="preserve">
     <value>Startseite</value>
+  </data>
+  <data name="DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT" xml:space="preserve">
+    <value>Abbrechen...</value>
   </data>
   <data name="error_warning_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\error-warning-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

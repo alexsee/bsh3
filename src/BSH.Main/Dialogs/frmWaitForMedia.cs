@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using BSH.Main.Properties;
 using System;
 
 namespace Brightbits.BSH.Main
@@ -29,7 +30,7 @@ namespace Brightbits.BSH.Main
 
         private void cmdCancel_Click(object sender, EventArgs e)
         {
-            cmdCancel.Text = "Abbrechen ...";
+            cmdCancel.Text = Resources.DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT;
             cmdCancel.Enabled = false;
             OnAbort_Click?.Invoke();
         }

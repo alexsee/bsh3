@@ -581,6 +581,42 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Wartungsaufgabe wird durchgeführt... ähnelt.
+        /// </summary>
+        internal static string DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {0} wird verarbeitet... ähnelt.
+        /// </summary>
+        internal static string DLG_SHORT_STATUS_FILES_STATUS_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_SHORT_STATUS_FILES_STATUS_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Verarbeitet: {0:N0} von {1:N0} Dateien ähnelt.
+        /// </summary>
+        internal static string DLG_STATUS_FILES_PROCESSED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_STATUS_FILES_PROCESSED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Abbrechen... ähnelt.
+        /// </summary>
+        internal static string DLG_STATUS_STATUS_CANCELED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_STATUS_STATUS_CANCELED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  Stufe  ähnelt.
         /// </summary>
         internal static string DLG_UC_CONFIG_LBL_COMPRESSION_STAGE {
@@ -1066,6 +1102,15 @@ namespace BSH.Main.Properties {
         internal static string DLG_UC_OVERVIEW_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Abbrechen... ähnelt.
+        /// </summary>
+        internal static string DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT", resourceCulture);
             }
         }
         
