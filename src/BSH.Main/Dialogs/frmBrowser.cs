@@ -1071,7 +1071,7 @@ namespace Brightbits.BSH.Main
                 catch
                 {
                     // Fehler: Feature nicht installiert?
-                    MessageBox.Show(Resources.DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TEXT, Resources.DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(Resources.DLG_FEATURE_NOT_AVAILABLE_TEXT, Resources.DLG_FEATURE_NOT_AVAILABLE_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
 
                 if (isTmp && !string.IsNullOrEmpty(tmpFile))

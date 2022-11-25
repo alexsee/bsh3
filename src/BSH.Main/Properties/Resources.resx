@@ -226,14 +226,6 @@
   <data name="DLG_ADD_SCHEDULE.FORMAT.WEEKLY" xml:space="preserve">
     <value>'Jeden' dddd, 'um' HH:mm:ss</value>
   </data>
-  <data name="DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TEXT" xml:space="preserve">
-    <value>Feature derzeit nicht verfügbar.
-
-Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie Backup Service Home neu, um das Problem zu lösen.</value>
-  </data>
-  <data name="DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TITLE" xml:space="preserve">
-    <value>Feature nicht verfügbar</value>
-  </data>
   <data name="DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT" xml:space="preserve">
     <value>Sind Sie sich sicher, dass Sie die ausgewählte Sicherung löschen möchten?</value>
   </data>
@@ -270,6 +262,34 @@ Datumumfang (unkomprimiert): {1}
   <data name="DLG_BACKUPBROWSER_TT_VERSION_SIMPLE" xml:space="preserve">
     <value>Datum: {0}
 {1}</value>
+  </data>
+  <data name="DLG_FEATURE_NOT_AVAILABLE_TEXT" xml:space="preserve">
+    <value>Feature derzeit nicht verfügbar.
+
+Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie Backup Service Home neu, um das Problem zu lösen.</value>
+  </data>
+  <data name="DLG_FEATURE_NOT_AVAILABLE_TITLE" xml:space="preserve">
+    <value>Feature nicht verfügbar</value>
+  </data>
+  <data name="DLG_MAIN_MSG_ACCESS_DENIED_TEXT" xml:space="preserve">
+    <value>Zugriff verweigert.
+
+Die nötigen Rechte zum Verändern dieser Einstellung fehlen.</value>
+  </data>
+  <data name="DLG_MAIN_MSG_ACCESS_DENIED_TITLE" xml:space="preserve">
+    <value>Zugriff verweigert</value>
+  </data>
+  <data name="DLG_MAIN_MSG_RESET_TEXT" xml:space="preserve">
+    <value>Sind Sie sicher, dass Sie die komplette Konfiguration von Backup Service Home zurücksetzen möchten?</value>
+  </data>
+  <data name="DLG_MAIN_MSG_RESET_TITLE" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="DLG_MAIN_MSG_UWP_AUTOSTART_TEXT" xml:space="preserve">
+    <value>Sie können das Autostart Verhalten von Backup Service Home 3 im Taskmanager deaktivieren.</value>
+  </data>
+  <data name="DLG_MAIN_MSG_UWP_AUTOSTART_TITLE" xml:space="preserve">
+    <value>Autostartverhalten</value>
   </data>
   <data name="DLG_UC_CONFIG_LBL_COMPRESSION_STAGE" xml:space="preserve">
     <value> Stufe </value>

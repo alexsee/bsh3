@@ -402,26 +402,6 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Feature derzeit nicht verfügbar.
-        ///
-        ///Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie Backup Service Home neu, um das Problem zu lösen. ähnelt.
-        /// </summary>
-        internal static string DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TEXT {
-            get {
-                return ResourceManager.GetString("DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Feature nicht verfügbar ähnelt.
-        /// </summary>
-        internal static string DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TITLE {
-            get {
-                return ResourceManager.GetString("DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sind Sie sich sicher, dass Sie die ausgewählte Sicherung löschen möchten? ähnelt.
         /// </summary>
         internal static string DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT {
@@ -521,6 +501,82 @@ namespace BSH.Main.Properties {
         internal static string DLG_BACKUPBROWSER_TT_VERSION_SIMPLE {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_TT_VERSION_SIMPLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Feature derzeit nicht verfügbar.
+        ///
+        ///Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie Backup Service Home neu, um das Problem zu lösen. ähnelt.
+        /// </summary>
+        internal static string DLG_FEATURE_NOT_AVAILABLE_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_FEATURE_NOT_AVAILABLE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Feature nicht verfügbar ähnelt.
+        /// </summary>
+        internal static string DLG_FEATURE_NOT_AVAILABLE_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_FEATURE_NOT_AVAILABLE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Zugriff verweigert.
+        ///
+        ///Die nötigen Rechte zum Verändern dieser Einstellung fehlen. ähnelt.
+        /// </summary>
+        internal static string DLG_MAIN_MSG_ACCESS_DENIED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_MAIN_MSG_ACCESS_DENIED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Zugriff verweigert ähnelt.
+        /// </summary>
+        internal static string DLG_MAIN_MSG_ACCESS_DENIED_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_MAIN_MSG_ACCESS_DENIED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sind Sie sicher, dass Sie die komplette Konfiguration von Backup Service Home zurücksetzen möchten? ähnelt.
+        /// </summary>
+        internal static string DLG_MAIN_MSG_RESET_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_MAIN_MSG_RESET_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Zurücksetzen ähnelt.
+        /// </summary>
+        internal static string DLG_MAIN_MSG_RESET_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_MAIN_MSG_RESET_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sie können das Autostart Verhalten von Backup Service Home 3 im Taskmanager deaktivieren. ähnelt.
+        /// </summary>
+        internal static string DLG_MAIN_MSG_UWP_AUTOSTART_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_MAIN_MSG_UWP_AUTOSTART_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Autostartverhalten ähnelt.
+        /// </summary>
+        internal static string DLG_MAIN_MSG_UWP_AUTOSTART_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_MAIN_MSG_UWP_AUTOSTART_TITLE", resourceCulture);
             }
         }
         

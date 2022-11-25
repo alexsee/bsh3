@@ -14,6 +14,7 @@
 
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Models;
+using BSH.Main.Properties;
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -71,7 +72,7 @@ namespace Brightbits.BSH.Main
                 catch
                 {
                     // Fehler: Feature nicht installiert?
-                    MessageBox.Show("Feature derzeit nicht verfügbar.\r\n\r\nDieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie " + Program.APP_TITLE + " neu, um das Problem zu lösen.", "Feature nicht verfügbar", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(Resources.DLG_FEATURE_NOT_AVAILABLE_TEXT, Resources.DLG_FEATURE_NOT_AVAILABLE_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
 
                 if (isTmp && !string.IsNullOrEmpty(tmpFile))
