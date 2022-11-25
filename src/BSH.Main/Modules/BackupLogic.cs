@@ -17,6 +17,8 @@ using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Utils;
+using BSH.Main.Properties;
+using Humanizer;
 using Microsoft.Win32;
 using Serilog;
 using System;
@@ -130,7 +132,7 @@ namespace Brightbits.BSH.Main
                 // check free space
                 if (GlobalBackup.ConfigurationManager.RemindSpace != "-1" && GlobalBackup.ConfigurationManager.FreeSpace != "0" && Convert.ToDouble(GlobalBackup.ConfigurationManager.FreeSpace) < Convert.ToDouble(GlobalBackup.ConfigurationManager.RemindSpace) * 1024L * 1024L)
                 {
-                    NotificationController.Current.ShowIconBalloon(5000, "Nicht genug Speicherplatz.", "Auf dem Backupmedium ist nicht mehr genug Speicherplatz vorhanden. Löschen Sie Datensicherungen oder wechseln Sie das Medium.", ToolTipIcon.Warning);
+                    NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_NO_DISKSPACE_LEFT_TITLE, Resources.INFO_NO_DISKSPACE_LEFT_TEXT, ToolTipIcon.Warning);
                 }
 
                 // check if backup is running
@@ -193,7 +195,7 @@ namespace Brightbits.BSH.Main
 
             if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > 0)
             {
-                NotificationController.Current.ShowIconBalloon(5000, "Datensicherung veraltet", "Ihre letzte Datensicherung liegt bereits " + DateTime.Now.Subtract(lastBackup.CreationDate).Days + " Tage zurück. Führen Sie eine Datensicherung aus, damit Ihre aktuellen Dateien gesichert sind.", ToolTipIcon.Info);
+                NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_OLD_TITLE, Resources.INFO_BACKUP_OLD_TEXT.FormatWith(DateTime.Now.Subtract(lastBackup.CreationDate).Days), ToolTipIcon.Info);
             }
         }
 
@@ -669,7 +671,7 @@ namespace Brightbits.BSH.Main
             var cancellationToken = BackupController.GetNewCancellationToken();
             Engine.Jobs.IJobReport argjobReport = StatusController.Current;
 
-            var task = GlobalBackup.BackupService.StartBackup("Automatisches Backup", "", ref argjobReport, cancellationToken, FullBackup, "", true);
+            var task = GlobalBackup.BackupService.StartBackup(Resources.BACKUP_TITLE_AUTOMATIC, "", ref argjobReport, cancellationToken, FullBackup, "", true);
             if (task == null)
             {
                 Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;

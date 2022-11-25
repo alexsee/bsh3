@@ -14,6 +14,7 @@
 
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
+using BSH.Main.Properties;
 using Serilog;
 using System;
 using System.Drawing;
@@ -89,13 +90,13 @@ namespace Brightbits.BSH.Main
 
             // "Konfigurieren"
             ToolStripItem newEntry;
-            newEntry = systemTrayIconContextMenu.Items.Add("Status und Konfigurieren");
+            newEntry = systemTrayIconContextMenu.Items.Add(Resources.CONTEXT_MENU_STATUS_WINDOW);
             newEntry.Name = "mnuConfigure";
             newEntry.Font = new Font(newEntry.Font, FontStyle.Bold);
             newEntry.Click += eventMainContextConfiguration;
 
             // "Backupbrowser"
-            newEntry = systemTrayIconContextMenu.Items.Add("Backupbrowser");
+            newEntry = systemTrayIconContextMenu.Items.Add(Resources.CONTEXT_MENU_BACKUP_BROWSER_WINDOW);
             newEntry.Name = "mnuBrowser";
             newEntry.Click += eventMainContextBrowser;
 
@@ -103,12 +104,12 @@ namespace Brightbits.BSH.Main
             systemTrayIconContextMenu.Items.Add("-");
 
             // "Manuelle Sicherung starten"
-            newEntry = systemTrayIconContextMenu.Items.Add("Manuelle Sicherung starten");
+            newEntry = systemTrayIconContextMenu.Items.Add(Resources.CONTEXT_MENU_BACKUP_START);
             newEntry.Name = "mnuStartBackup";
             newEntry.Click += eventMainContextStartBackup;
 
             // "Manuelle Sicherung starten"
-            newEntry = systemTrayIconContextMenu.Items.Add("Manuelle Sicherung starten (+ Optionen)");
+            newEntry = systemTrayIconContextMenu.Items.Add(Resources.CONTEXT_MENU_BACKUP_START_OPTIONS);
             newEntry.Name = "mnuStartBackupOptions";
             newEntry.Click += eventMainContextStartBackupOptions;
 
@@ -116,7 +117,7 @@ namespace Brightbits.BSH.Main
             systemTrayIconContextMenu.Items.Add("-");
 
             // "Beenden"
-            newEntry = systemTrayIconContextMenu.Items.Add(Program.APP_TITLE + " beenden");
+            newEntry = systemTrayIconContextMenu.Items.Add(Resources.CONTEXT_MENU_CLOSE_APP);
             newEntry.Name = "mnuExit";
             newEntry.Click += eventMainContextExit;
         }
@@ -153,7 +154,7 @@ namespace Brightbits.BSH.Main
 
         private async void eventMainContextStartBackup(object sender, EventArgs e)
         {
-            await BackupLogic.BackupController.CreateBackupAsync("Manuelle Sicherung", "", true);
+            await BackupLogic.BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_MANUAL, "", true);
         }
 
         private async void eventMainContextStartBackupOptions(object sender, EventArgs e)
@@ -300,7 +301,7 @@ namespace Brightbits.BSH.Main
                     if (StatusController.Current.SystemStatus == SystemStatus.PAUSED_DUE_TO_BATTERY)
                     {
                         // battery mode, so stop automatic tasks
-                        systemTrayIcon.Icon = global::BSH.Main.Properties.Resources.status_red;
+                        systemTrayIcon.Icon = Resources.status_red;
                         SetDefault(systemTrayIconContextMenu.Items["mnuConfigure"], false);
                         SetDefault(systemTrayIconContextMenu.Items["mnuBrowser"], true);
                         systemTrayIconContextMenu.Items["mnuStartBackup"].Enabled = true;
@@ -308,7 +309,7 @@ namespace Brightbits.BSH.Main
                     }
                     else
                     {
-                        systemTrayIcon.Icon = global::BSH.Main.Properties.Resources.AppIco;
+                        systemTrayIcon.Icon = Resources.AppIco;
                         SetDefault(systemTrayIconContextMenu.Items["mnuConfigure"], false);
                         SetDefault(systemTrayIconContextMenu.Items["mnuBrowser"], true);
                         systemTrayIconContextMenu.Items["mnuStartBackup"].Enabled = true;
@@ -319,9 +320,9 @@ namespace Brightbits.BSH.Main
 
                 case SystemStatus.NOT_CONFIGURED:
                     // show tray icon baloon
-                    ShowIconBalloon(5000, "Nicht konfiguriert.", "Backup Service Home 3 ist noch nicht konfiguriert und sichert daher noch keine Daten.\r\n\r\nDoppelklicken Sie hier, um die Konfiguration zu starten.", ToolTipIcon.Info);
+                    ShowIconBalloon(5000, Resources.INFO_BSH_NOT_CONFIGURED_TITLE, Resources.INFO_BSH_NOT_CONFIGURED_TEXT, ToolTipIcon.Info);
 
-                    systemTrayIcon.Icon = global::BSH.Main.Properties.Resources.status_red;
+                    systemTrayIcon.Icon = Resources.status_red;
 
                     SetDefault(systemTrayIconContextMenu.Items["mnuBrowser"], false);
                     SetDefault(systemTrayIconContextMenu.Items["mnuConfigure"], true);
@@ -333,7 +334,7 @@ namespace Brightbits.BSH.Main
 
                 case SystemStatus.DEACTIVATED:
                     // system deactivated
-                    systemTrayIcon.Icon = global::BSH.Main.Properties.Resources.status_red;
+                    systemTrayIcon.Icon = Resources.status_red;
 
                     SetDefault(systemTrayIconContextMenu.Items["mnuBrowser"], false);
                     SetDefault(systemTrayIconContextMenu.Items["mnuConfigure"], true);

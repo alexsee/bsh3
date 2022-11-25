@@ -170,6 +170,24 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Automatisches Backup ähnelt.
+        /// </summary>
+        internal static string BACKUP_TITLE_AUTOMATIC {
+            get {
+                return ResourceManager.GetString("BACKUP_TITLE_AUTOMATIC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Manuelle Sicherung ähnelt.
+        /// </summary>
+        internal static string BACKUP_TITLE_MANUAL {
+            get {
+                return ResourceManager.GetString("BACKUP_TITLE_MANUAL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Status ist derzeit unbekannt. ähnelt.
         /// </summary>
         internal static string BackupStatus_ {
@@ -260,6 +278,51 @@ namespace BSH.Main.Properties {
             get {
                 object obj = ResourceManager.GetObject("close_circle_line", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Backupbrowser ähnelt.
+        /// </summary>
+        internal static string CONTEXT_MENU_BACKUP_BROWSER_WINDOW {
+            get {
+                return ResourceManager.GetString("CONTEXT_MENU_BACKUP_BROWSER_WINDOW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Manuelle Sicherung starten ähnelt.
+        /// </summary>
+        internal static string CONTEXT_MENU_BACKUP_START {
+            get {
+                return ResourceManager.GetString("CONTEXT_MENU_BACKUP_START", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Manuelle Sicherung starten (+ Optionen) ähnelt.
+        /// </summary>
+        internal static string CONTEXT_MENU_BACKUP_START_OPTIONS {
+            get {
+                return ResourceManager.GetString("CONTEXT_MENU_BACKUP_START_OPTIONS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home beenden ähnelt.
+        /// </summary>
+        internal static string CONTEXT_MENU_CLOSE_APP {
+            get {
+                return ResourceManager.GetString("CONTEXT_MENU_CLOSE_APP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Status und Konfigurieren ähnelt.
+        /// </summary>
+        internal static string CONTEXT_MENU_STATUS_WINDOW {
+            get {
+                return ResourceManager.GetString("CONTEXT_MENU_STATUS_WINDOW", resourceCulture);
             }
         }
         
@@ -449,12 +512,120 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Ihre letzte Datensicherung liegt bereits {0} Tage zurück. Führen Sie eine Datensicherung aus, damit Ihre aktuellen Dateien gesichert sind. ähnelt.
+        /// </summary>
+        internal static string INFO_BACKUP_OLD_TEXT {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_OLD_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung veraltet ähnelt.
+        /// </summary>
+        internal static string INFO_BACKUP_OLD_TITLE {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_OLD_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die geplante Sicherung wurde erfolgreich abgeschlossen. ähnelt.
+        /// </summary>
+        internal static string INFO_BACKUP_SUCCESSFUL_TEXT {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_SUCCESSFUL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung erfolgreich ähnelt.
+        /// </summary>
+        internal static string INFO_BACKUP_SUCCESSFUL_TITLE {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_SUCCESSFUL_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die geplante Datensicherung wurde mit Problemen beendet. Klicken Sie hier für mehr Informationen. ähnelt.
+        /// </summary>
+        internal static string INFO_BACKUP_UNSUCCESSFUL_TEXT {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_UNSUCCESSFUL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung mit Problemen beendet ähnelt.
+        /// </summary>
+        internal static string INFO_BACKUP_UNSUCCESSFUL_TITLE {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_UNSUCCESSFUL_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home 3 ist noch nicht konfiguriert und sichert daher noch keine Daten.\r\n\r\nDoppelklicken Sie hier, um die Konfiguration zu starten. ähnelt.
+        /// </summary>
+        internal static string INFO_BSH_NOT_CONFIGURED_TEXT {
+            get {
+                return ResourceManager.GetString("INFO_BSH_NOT_CONFIGURED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Nicht konfiguriert. ähnelt.
+        /// </summary>
+        internal static string INFO_BSH_NOT_CONFIGURED_TITLE {
+            get {
+                return ResourceManager.GetString("INFO_BSH_NOT_CONFIGURED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Auf dem Backupmedium ist nicht mehr genug Speicherplatz vorhanden. Löschen Sie Datensicherungen oder wechseln Sie das Medium. ähnelt.
+        /// </summary>
+        internal static string INFO_NO_DISKSPACE_LEFT_TEXT {
+            get {
+                return ResourceManager.GetString("INFO_NO_DISKSPACE_LEFT_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Nicht genug Speicherplatz. ähnelt.
+        /// </summary>
+        internal static string INFO_NO_DISKSPACE_LEFT_TITLE {
+            get {
+                return ResourceManager.GetString("INFO_NO_DISKSPACE_LEFT_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap keyboard_backspace {
             get {
                 object obj = ResourceManager.GetObject("keyboard_backspace", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Änderungsdatum:  ähnelt.
+        /// </summary>
+        internal static string LBL_CHANGE_DATE {
+            get {
+                return ResourceManager.GetString("LBL_CHANGE_DATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Größe:  ähnelt.
+        /// </summary>
+        internal static string LBL_SIZE {
+            get {
+                return ResourceManager.GetString("LBL_SIZE", resourceCulture);
             }
         }
         
@@ -485,6 +656,60 @@ namespace BSH.Main.Properties {
             get {
                 object obj = ResourceManager.GetObject("moreinfo_backgr", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Sicherung abgebrochen wird. ähnelt.
+        /// </summary>
+        internal static string MSG_BACKUP_DEVICE_NOT_READY_TEXT {
+            get {
+                return ResourceManager.GetString("MSG_BACKUP_DEVICE_NOT_READY_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungsmedium nicht bereit ähnelt.
+        /// </summary>
+        internal static string MSG_BACKUP_DEVICE_NOT_READY_TITLE {
+            get {
+                return ResourceManager.GetString("MSG_BACKUP_DEVICE_NOT_READY_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Das angegebene Kennwort ist falsch. ähnelt.
+        /// </summary>
+        internal static string MSG_PASSWORD_WRONG_TEXT {
+            get {
+                return ResourceManager.GetString("MSG_PASSWORD_WRONG_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Kennwort falsch ähnelt.
+        /// </summary>
+        internal static string MSG_PASSWORD_WRONG_TITLE {
+            get {
+                return ResourceManager.GetString("MSG_PASSWORD_WRONG_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Sicherung abgebrochen wird. ähnelt.
+        /// </summary>
+        internal static string MSG_TASK_RUNNING_TEXT {
+            get {
+                return ResourceManager.GetString("MSG_TASK_RUNNING_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Andere Sicherungsaufgabe in Bearbeitung ähnelt.
+        /// </summary>
+        internal static string MSG_TASK_RUNNING_TITLE {
+            get {
+                return ResourceManager.GetString("MSG_TASK_RUNNING_TITLE", resourceCulture);
             }
         }
         
@@ -609,114 +834,6 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die um die geplanete Datensicherung fortzusetzen. Schließen Sie nun ähnelt.
-        /// </summary>
-        internal static string String {
-            get {
-                return ResourceManager.GetString("String", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die dieses an Ihren Computer an. ähnelt.
-        /// </summary>
-        internal static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die an Ihren Computer an. ähnelt.
-        /// </summary>
-        internal static string String10 {
-            get {
-                return ResourceManager.GetString("String10", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Das Medium wird automatisch erkannt. ähnelt.
-        /// </summary>
-        internal static string String11 {
-            get {
-                return ResourceManager.GetString("String11", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Das Medium wird automatisch erkannt. ähnelt.
-        /// </summary>
-        internal static string String2 {
-            get {
-                return ResourceManager.GetString("String2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die um die Wiederherstellung der Datensicherung fortzusetzen. ähnelt.
-        /// </summary>
-        internal static string String3 {
-            get {
-                return ResourceManager.GetString("String3", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Schließen Sie nun dieses an Ihren Computer an. ähnelt.
-        /// </summary>
-        internal static string String4 {
-            get {
-                return ResourceManager.GetString("String4", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Das Medium wird automatisch erkannt. ähnelt.
-        /// </summary>
-        internal static string String5 {
-            get {
-                return ResourceManager.GetString("String5", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die um die Vorschau für die gewählte Datei anzuzeigen. Schließen  Sie ähnelt.
-        /// </summary>
-        internal static string String6 {
-            get {
-                return ResourceManager.GetString("String6", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die nun dieses an Ihren Computer an. ähnelt.
-        /// </summary>
-        internal static string String7 {
-            get {
-                return ResourceManager.GetString("String7", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Das Medium wird automatisch erkannt. ähnelt.
-        /// </summary>
-        internal static string String8 {
-            get {
-                return ResourceManager.GetString("String8", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die um die geplanete Aktion fortzusetzen. Schließen Sie nun dieses ähnelt.
-        /// </summary>
-        internal static string String9 {
-            get {
-                return ResourceManager.GetString("String9", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap system_installer {
@@ -743,6 +860,15 @@ namespace BSH.Main.Properties {
             get {
                 object obj = ResourceManager.GetObject("table_2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home 3 fährt den Computer nach einer erfolgreichen Aktion herunter... ähnelt.
+        /// </summary>
+        internal static string TASK_BSH_SHUTDOWN_PC {
+            get {
+                return ResourceManager.GetString("TASK_BSH_SHUTDOWN_PC", resourceCulture);
             }
         }
         

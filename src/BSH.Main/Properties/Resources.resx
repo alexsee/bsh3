@@ -169,6 +169,12 @@
   <data name="backup_service_client_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\backup service client_32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="BACKUP_TITLE_AUTOMATIC" xml:space="preserve">
+    <value>Automatisches Backup</value>
+  </data>
+  <data name="BACKUP_TITLE_MANUAL" xml:space="preserve">
+    <value>Manuelle Sicherung</value>
+  </data>
   <data name="checkbox_blank_circle_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\checkbox-blank-circle-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -180,6 +186,21 @@
   </data>
   <data name="close_circle_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\close-circle-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CONTEXT_MENU_BACKUP_BROWSER_WINDOW" xml:space="preserve">
+    <value>Backupbrowser</value>
+  </data>
+  <data name="CONTEXT_MENU_BACKUP_START" xml:space="preserve">
+    <value>Manuelle Sicherung starten</value>
+  </data>
+  <data name="CONTEXT_MENU_BACKUP_START_OPTIONS" xml:space="preserve">
+    <value>Manuelle Sicherung starten (+ Optionen)</value>
+  </data>
+  <data name="CONTEXT_MENU_CLOSE_APP" xml:space="preserve">
+    <value>Backup Service Home beenden</value>
+  </data>
+  <data name="CONTEXT_MENU_STATUS_WINDOW" xml:space="preserve">
+    <value>Status und Konfigurieren</value>
   </data>
   <data name="dashminus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\dashminus.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -238,8 +259,44 @@
   <data name="home_4_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\home-4-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="INFO_BACKUP_OLD_TEXT" xml:space="preserve">
+    <value>Ihre letzte Datensicherung liegt bereits {0} Tage zurück. Führen Sie eine Datensicherung aus, damit Ihre aktuellen Dateien gesichert sind.</value>
+  </data>
+  <data name="INFO_BACKUP_OLD_TITLE" xml:space="preserve">
+    <value>Datensicherung veraltet</value>
+  </data>
+  <data name="INFO_BACKUP_SUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Die geplante Sicherung wurde erfolgreich abgeschlossen.</value>
+  </data>
+  <data name="INFO_BACKUP_SUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Datensicherung erfolgreich</value>
+  </data>
+  <data name="INFO_BACKUP_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Die geplante Datensicherung wurde mit Problemen beendet. Klicken Sie hier für mehr Informationen.</value>
+  </data>
+  <data name="INFO_BACKUP_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Datensicherung mit Problemen beendet</value>
+  </data>
+  <data name="INFO_BSH_NOT_CONFIGURED_TEXT" xml:space="preserve">
+    <value>Backup Service Home 3 ist noch nicht konfiguriert und sichert daher noch keine Daten.\r\n\r\nDoppelklicken Sie hier, um die Konfiguration zu starten.</value>
+  </data>
+  <data name="INFO_BSH_NOT_CONFIGURED_TITLE" xml:space="preserve">
+    <value>Nicht konfiguriert.</value>
+  </data>
+  <data name="INFO_NO_DISKSPACE_LEFT_TEXT" xml:space="preserve">
+    <value>Auf dem Backupmedium ist nicht mehr genug Speicherplatz vorhanden. Löschen Sie Datensicherungen oder wechseln Sie das Medium.</value>
+  </data>
+  <data name="INFO_NO_DISKSPACE_LEFT_TITLE" xml:space="preserve">
+    <value>Nicht genug Speicherplatz.</value>
+  </data>
   <data name="keyboard_backspace" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\keyboard-backspace.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LBL_CHANGE_DATE" xml:space="preserve">
+    <value>Änderungsdatum: </value>
+  </data>
+  <data name="LBL_SIZE" xml:space="preserve">
+    <value>Größe: </value>
   </data>
   <data name="menu_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\menu-fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -249,6 +306,24 @@
   </data>
   <data name="moreinfo_backgr" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\moreinfo_backgr.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MSG_BACKUP_DEVICE_NOT_READY_TEXT" xml:space="preserve">
+    <value>Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Sicherung abgebrochen wird.</value>
+  </data>
+  <data name="MSG_BACKUP_DEVICE_NOT_READY_TITLE" xml:space="preserve">
+    <value>Sicherungsmedium nicht bereit</value>
+  </data>
+  <data name="MSG_PASSWORD_WRONG_TEXT" xml:space="preserve">
+    <value>Das angegebene Kennwort ist falsch.</value>
+  </data>
+  <data name="MSG_PASSWORD_WRONG_TITLE" xml:space="preserve">
+    <value>Kennwort falsch</value>
+  </data>
+  <data name="MSG_TASK_RUNNING_TEXT" xml:space="preserve">
+    <value>Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Sicherung abgebrochen wird.</value>
+  </data>
+  <data name="MSG_TASK_RUNNING_TITLE" xml:space="preserve">
+    <value>Andere Sicherungsaufgabe in Bearbeitung</value>
   </data>
   <data name="pencil_box_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\pencil-box-outline.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -286,42 +361,6 @@
   <data name="status_running" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\status_running.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="String" xml:space="preserve">
-    <value>um die geplanete Datensicherung fortzusetzen. Schließen Sie nun</value>
-  </data>
-  <data name="String1" xml:space="preserve">
-    <value>dieses an Ihren Computer an.</value>
-  </data>
-  <data name="String10" xml:space="preserve">
-    <value>an Ihren Computer an.</value>
-  </data>
-  <data name="String11" xml:space="preserve">
-    <value>Das Medium wird automatisch erkannt.</value>
-  </data>
-  <data name="String2" xml:space="preserve">
-    <value>Das Medium wird automatisch erkannt.</value>
-  </data>
-  <data name="String3" xml:space="preserve">
-    <value>um die Wiederherstellung der Datensicherung fortzusetzen.</value>
-  </data>
-  <data name="String4" xml:space="preserve">
-    <value>Schließen Sie nun dieses an Ihren Computer an.</value>
-  </data>
-  <data name="String5" xml:space="preserve">
-    <value>Das Medium wird automatisch erkannt.</value>
-  </data>
-  <data name="String6" xml:space="preserve">
-    <value>um die Vorschau für die gewählte Datei anzuzeigen. Schließen  Sie</value>
-  </data>
-  <data name="String7" xml:space="preserve">
-    <value>nun dieses an Ihren Computer an.</value>
-  </data>
-  <data name="String8" xml:space="preserve">
-    <value>Das Medium wird automatisch erkannt.</value>
-  </data>
-  <data name="String9" xml:space="preserve">
-    <value>um die geplanete Aktion fortzusetzen. Schließen Sie nun dieses</value>
-  </data>
   <data name="system_installer" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\system-installer.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -336,6 +375,9 @@
   </data>
   <data name="taskdialog_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\taskdialog_hover.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TASK_BSH_SHUTDOWN_PC" xml:space="preserve">
+    <value>Backup Service Home 3 fährt den Computer nach einer erfolgreichen Aktion herunter...</value>
   </data>
   <data name="toggle_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\toggle_off.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

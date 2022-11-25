@@ -173,7 +173,7 @@ namespace Brightbits.BSH.Main
                 {
                     _logger.Debug("Computer will be shutdown after task has finished.");
 
-                    Process.Start("shutdown.exe", "-s -t 60 -c \"Backup Service Home 3 fährt den Computer nach einer erfolgreichen Aktion herunter...\"");
+                    Process.Start("shutdown.exe", "-s -t 60 -c \"" + Resources.TASK_BSH_SHUTDOWN_PC + "\"");
                 }
                 else if (triggerAction && action == TaskCompleteAction.HibernatePC)
                 {
@@ -211,7 +211,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Sicherung abgebrochen wird.", "Andere Sicherungsaufgabe in Bearbeitung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -223,7 +223,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Sicherung abgebrochen wird.", "Sicherungsmedium nicht bereit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -252,7 +252,7 @@ namespace Brightbits.BSH.Main
             // shutdown pc?
             if (shutdownPC)
             {
-                Process.Start("shutdown.exe", "-s -t 60 -c \"Backup Service Home 3 fährt den Computer nach einer erfolgreichen Aktion herunter...\"");
+                Process.Start("shutdown.exe", "-s -t 60 -c \"" + Resources.TASK_BSH_SHUTDOWN_PC + "\"");
             }
 
             // shutdown app?
@@ -296,7 +296,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Wiederherstellung abgebrochen wird.", "Andere Sicherungsaufgabe in Bearbeitung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -308,7 +308,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Wiederherstellung abgebrochen wird.", "Sicherungsmedium nicht bereit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -360,7 +360,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Wiederherstellung abgebrochen wird.", "Andere Sicherungsaufgabe in Bearbeitung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -372,7 +372,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Wiederherstellung abgebrochen wird.", "Sicherungsmedium nicht bereit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -429,7 +429,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Aufgabe abgebrochen wird.", "Andere Sicherungsaufgabe in Bearbeitung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -441,7 +441,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Aufgabe abgebrochen wird.", "Sicherungsmedium nicht bereit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -490,7 +490,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Aufgabe abgebrochen wird.", "Andere Sicherungsaufgabe in Bearbeitung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -502,7 +502,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Aufgabe abgebrochen wird.", "Sicherungsmedium nicht bereit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -561,7 +561,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Aufgabe abgebrochen wird.", "Andere Sicherungsaufgabe in Bearbeitung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -573,7 +573,7 @@ namespace Brightbits.BSH.Main
 
                 if (statusDialog)
                 {
-                    MessageBox.Show("Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Aufgabe abgebrochen wird.", "Sicherungsmedium nicht bereit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 HandleFinishedStatusDialog(statusDialog);
@@ -652,7 +652,7 @@ namespace Brightbits.BSH.Main
                 // report back to user
                 _logger.Debug("Password given by user is not correct. Request retry.");
 
-                MessageBox.Show("Das angegebene Kennwort ist falsch.", "Kennwort falsch", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(Resources.MSG_PASSWORD_WRONG_TEXT, Resources.MSG_PASSWORD_WRONG_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 request = PresentationController.Current.RequestPassword();
             }
 
