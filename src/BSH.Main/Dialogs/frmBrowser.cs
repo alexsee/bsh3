@@ -178,7 +178,7 @@ namespace Brightbits.BSH.Main
                         newFolder.Group = lvFiles.Groups["Ordner"];
 
                         // localize folder
-                        newFolder.Text = System.IO.Path.GetFileName(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(folderTag));
+                        newFolder.Text = System.IO.Path.GetFileName(await BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(folderTag));
                         if (chkFilesOfThisVersion.Checked && !await BackupLogic.GlobalBackup.QueryManager.HasChangesOrNewAsync(folderTag, selectedVersion.Id))
                         {
                             newFolder.ForeColor = Color.Gray;
@@ -273,7 +273,7 @@ namespace Brightbits.BSH.Main
             }
 
             UcNav.Path = path;
-            UcNav.PathLocalized = BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(path);
+            UcNav.PathLocalized = await BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(path);
             UcNav.CreateNavi(destFolder);
 
             selectedFolder = path;
@@ -486,7 +486,7 @@ namespace Brightbits.BSH.Main
                     // Ordnername ermitteln
                     var newEntry = new ListViewItem
                     {
-                        Text = BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(entry.Substring(entry.LastIndexOf(@"\") + 1)),
+                        Text = await BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(entry.Substring(entry.LastIndexOf(@"\") + 1)),
                         ImageIndex = 2,
                         Tag = @"\" + entry.Substring(entry.LastIndexOf(@"\") + 1) + @"\"
                     };
@@ -507,7 +507,7 @@ namespace Brightbits.BSH.Main
                             entry = entry.Substring(0, entry.Length - 1);
                         }
 
-                        Settings.Default.BrowserFavoritsName += System.IO.Path.GetFileName(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(entry));
+                        Settings.Default.BrowserFavoritsName += System.IO.Path.GetFileName(await BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(entry));
                     }
                 }
 
@@ -534,7 +534,7 @@ namespace Brightbits.BSH.Main
                         Text = Settings.Default.BrowserFavoritsName.Split('|')[i],
                         ImageIndex = 1,
                         Tag = @"\" + entry.Substring(entry.IndexOf(@"\") + 1) + @"\",
-                        ToolTipText = Resources.DLG_BACKUPBROWSER_TT_FOLDER.FormatWith(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(entry.Substring(entry.LastIndexOf(@"\") + 1)), entry.Substring(entry.IndexOf(@"\") + 1))
+                        ToolTipText = Resources.DLG_BACKUPBROWSER_TT_FOLDER.FormatWith(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(entry.Substring(entry.LastIndexOf(@"\") + 1)), entry.Substring(entry.IndexOf(@"\") + 1))
                     };
 
                     lvFavorite.Items.Add(newEntry);
@@ -927,7 +927,7 @@ namespace Brightbits.BSH.Main
             {
                 // add
                 Settings.Default.BrowserFavorits += "|" + @"\" + selectedFolder + @"\";
-                Settings.Default.BrowserFavoritsName += "|" + System.IO.Path.GetFileName(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(@"\" + selectedFolder + @"\"));
+                Settings.Default.BrowserFavoritsName += "|" + System.IO.Path.GetFileName(await BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(@"\" + selectedFolder + @"\"));
 
                 // store
                 Settings.Default.Save();

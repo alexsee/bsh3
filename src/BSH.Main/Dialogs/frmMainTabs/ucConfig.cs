@@ -22,6 +22,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -48,7 +49,7 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            StoreSettings();
+            Task.WaitAll(StoreSettingsAsync());
         }
 
         public void OpenTab()
@@ -87,7 +88,7 @@ namespace Brightbits.BSH.Main
 
         #endregion
 
-        private void StoreSettings()
+        private async Task StoreSettingsAsync()
         {
             // wait for any other tasks finished
             if (StatusController.Current.IsTaskRunning())
@@ -221,7 +222,7 @@ namespace Brightbits.BSH.Main
 
             // stop system
             BackupLogic.StopSystem();
-            BackupLogic.StartSystem();
+            await BackupLogic.StartSystemAsync();
         }
 
         private void LoadSettings()

@@ -347,7 +347,7 @@ namespace Brightbits.BSH.Engine.Jobs
 
                     try
                     {
-                        var lastVersion = queryManager.GetLastBackup();
+                        var lastVersion = await queryManager.GetLastBackupAsync();
 
                         if (lastVersion != null)
                         {

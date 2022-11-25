@@ -320,7 +320,7 @@ namespace Brightbits.BSH.Main
                         SuperBase.CurrentTab = frmMain.AvailableTabs.TabOverview;
 
                         // start backup
-                        BackupLogic.StartSystem(true);
+                        await BackupLogic.StartSystemAsync(true);
 
                         // create first backup
                         BackupLogic.BackupController.CreateBackupAsync("Erste vollständige Datensicherung", "", false);
@@ -646,7 +646,7 @@ namespace Brightbits.BSH.Main
                     SuperBase.CurrentTab = frmMain.AvailableTabs.TabOverview;
 
                     // start backup system
-                    BackupLogic.StartSystem(true);
+                    await BackupLogic.StartSystemAsync(true);
                     break;
             }
         }

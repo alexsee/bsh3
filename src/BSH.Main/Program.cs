@@ -69,7 +69,7 @@ namespace Brightbits.BSH.Main
         }
 
         [STAThread()]
-        public async static Task Main(string[] args)
+        public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration().ReadFrom.AppSettings().CreateLogger();
             Log.Information($"{APP_TITLE} {CurrentVersion} started.");
@@ -126,7 +126,7 @@ namespace Brightbits.BSH.Main
 #endif
 
                 // start backup engine
-                await BackupLogic.StartupAsync();
+                Task.WaitAll(BackupLogic.StartupAsync());
 
                 // parse command line if system is configured
                 if (BackupLogic.GlobalBackup.ConfigurationManager.IsConfigured == "1")

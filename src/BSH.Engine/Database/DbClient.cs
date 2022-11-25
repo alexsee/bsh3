@@ -194,17 +194,6 @@ namespace Brightbits.BSH.Engine.Database
         /// <summary>
         /// Method to call a stored procedure and retrieve the result
         /// </summary>
-        /// <param name="procedureName">name of the stored procedure</param>
-        /// <param name="parameters">parameters for calling the stored procedure</param>
-        /// <returns>the dataset with the execution results</returns>
-        public DataSet ExecuteDataSet(string procedureName, IDataParameter[] parameters)
-        {
-            return ExecuteDataSet(CommandType.StoredProcedure, procedureName, parameters);
-        }
-
-        /// <summary>
-        /// Method to call a stored procedure and retrieve the result
-        /// </summary>
         /// <param name="commandType">the command type</param>
         /// <param name="procedureName">the command to execute</param>
         /// <param name="parameters">parameters for calling the stored procedure</param>
@@ -354,7 +343,6 @@ namespace Brightbits.BSH.Engine.Database
 
             return result;
         }
-
 
         /// <summary>
         /// Method to create a command

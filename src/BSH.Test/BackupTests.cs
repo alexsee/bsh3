@@ -76,14 +76,14 @@ namespace BSH.Test
             await backupJob.BackupAsync(token);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.AreEqual("1", version.Id);
 
             // start second backup
             await backupJob.BackupAsync(token);
 
             // check version
-            version = this.engineService.QueryManager.GetLastBackup();
+            version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.AreEqual("1", version.Id);
         }
 
@@ -106,7 +106,7 @@ namespace BSH.Test
             await backupJob.BackupAsync(token);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.AreEqual("1", version.Id);
         }
 
@@ -130,7 +130,7 @@ namespace BSH.Test
             await backupJob.BackupAsync(token);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.AreEqual("1", version.Id);
         }
 
@@ -152,7 +152,7 @@ namespace BSH.Test
             Assert.NotZero(backupJob.FileErrorList.Count);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.Null(version);
         }
 
@@ -172,7 +172,7 @@ namespace BSH.Test
             await backupJob.BackupAsync(token);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.AreEqual("1", version.Id);
         }
 
@@ -193,7 +193,7 @@ namespace BSH.Test
             await backupJob.BackupAsync(token);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.Null(version);
         }
     }

@@ -89,12 +89,12 @@ namespace Brightbits.BSH.Main
                 else
                 {
                     // Status: OK
-                    StartSystem();
+                    await StartSystemAsync();
                 }
             }
         }
 
-        public static void StartSystem(bool doOn = false)
+        public async static Task StartSystemAsync(bool doOn = false)
         {
             // check system status
             if (doOn || GlobalBackup.ConfigurationManager.DbStatus == "0")
@@ -152,7 +152,7 @@ namespace Brightbits.BSH.Main
                 // remind user about last backup
                 if (!string.IsNullOrEmpty(GlobalBackup.ConfigurationManager.RemindAfterDays))
                 {
-                    var lastBackup = GlobalBackup.QueryManager.GetLastBackup();
+                    var lastBackup = await GlobalBackup.QueryManager.GetLastBackupAsync();
                     if (lastBackup != null)
                     {
                         try
@@ -183,13 +183,13 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private static void RemindUserOldBackup(object sender, EventArgs e)
+        private async static void RemindUserOldBackup(object sender, EventArgs e)
         {
             Timer tmr = (Timer)sender;
             tmr.Stop();
             tmr.Dispose();
 
-            var lastBackup = GlobalBackup.QueryManager.GetLastBackup();
+            var lastBackup = await GlobalBackup.QueryManager.GetLastBackupAsync();
             if (lastBackup == null)
             {
                 return;
@@ -248,7 +248,7 @@ namespace Brightbits.BSH.Main
             BatteryStatusUnderCheck = false;
         }
 
-        private static void PowerChanged(object sender, PowerModeChangedEventArgs e)
+        private async static void PowerChanged(object sender, PowerModeChangedEventArgs e)
         {
             if (GlobalBackup.ConfigurationManager.DeativateAutoBackupsWhenAkku == "0")
             {
@@ -263,7 +263,7 @@ namespace Brightbits.BSH.Main
                 // check status
                 if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online)
                 {
-                    StartSystem();
+                    await StartSystemAsync();
                 }
                 else
                 {

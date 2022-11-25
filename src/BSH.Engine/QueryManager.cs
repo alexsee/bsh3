@@ -47,13 +47,13 @@ namespace Brightbits.BSH.Engine
         /// Returns a the last version of the backup.
         /// </summary>
         /// <returns></returns>
-        public VersionDetails GetLastBackup()
+        public async Task<VersionDetails> GetLastBackupAsync()
         {
             VersionDetails result = null;
 
             // obtain lastest backup
             using (var dbClient = dbClientFactory.CreateDbClient())
-            using (var reader = dbClient.ExecuteDataReader(CommandType.Text, "SELECT * FROM versiontable WHERE versionStatus = 0 ORDER BY versionID DESC LIMIT 1", null))
+            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionStatus = 0 ORDER BY versionID DESC LIMIT 1", null))
             {
                 if (reader.Read())
                 {
@@ -134,13 +134,13 @@ namespace Brightbits.BSH.Engine
         /// Returns a the oldest version of the full backup.
         /// </summary>
         /// <returns></returns>
-        public VersionDetails GetOldestBackup()
+        public async Task<VersionDetails> GetOldestBackupAsync()
         {
             VersionDetails result = null;
 
             // obtain oldest backup
             using (var dbClient = dbClientFactory.CreateDbClient())
-            using (var reader = dbClient.ExecuteDataReader(CommandType.Text, "SELECT * FROM versiontable ORDER BY versionID ASC LIMIT 1", null))
+            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable ORDER BY versionID ASC LIMIT 1", null))
             {
                 if (reader.Read())
                 {
@@ -742,7 +742,7 @@ namespace Brightbits.BSH.Engine
             return null;
         }
 
-        public string GetLocalizedPath(string path)
+        public async Task<string> GetLocalizedPathAsync(string path)
         {
             try
             {
@@ -762,7 +762,7 @@ namespace Brightbits.BSH.Engine
                     // search path in database
                     using (var dbClient = dbClientFactory.CreateDbClient())
                     {
-                        using (var reader = dbClient.ExecuteDataReader(CommandType.Text, $"SELECT * FROM folderjunctiontable", null))
+                        using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, $"SELECT * FROM folderjunctiontable", null))
                         {
                             while (reader.Read())
                             {

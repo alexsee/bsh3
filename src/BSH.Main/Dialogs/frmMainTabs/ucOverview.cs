@@ -109,7 +109,7 @@ namespace Brightbits.BSH.Main
                 // compression
                 if (BackupLogic.GlobalBackup.ConfigurationManager.Compression == 1)
                 {
-                    var oldestBackup = BackupLogic.GlobalBackup.QueryManager.GetOldestBackup();
+                    var oldestBackup = await BackupLogic.GlobalBackup.QueryManager.GetOldestBackupAsync();
 
                     lblBdOldestBackup.Text = (oldestBackup != null) ? oldestBackup.CreationDate.Humanize(false) : "Noch nicht durchgeführt";
                     lblOldBackup.Text = "Ältestes Backup:";
@@ -125,7 +125,7 @@ namespace Brightbits.BSH.Main
                     {
                         try
                         {
-                            var oldestBackup = BackupLogic.GlobalBackup.QueryManager.GetOldestBackup().CreationDate;
+                            var oldestBackup = (await BackupLogic.GlobalBackup.QueryManager.GetOldestBackupAsync()).CreationDate;
                             double tmp;
                             tmp = Convert.ToDouble(BackupLogic.GlobalBackup.ConfigurationManager.FreeSpace) / (Convert.ToDouble(BackupLogic.GlobalBackup.ConfigurationManager.BackupSize) / countBackup);
                             double getDaysToOldestBackup;
@@ -140,7 +140,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // retrieve newest backup
-                var lastBackup = BackupLogic.GlobalBackup.QueryManager.GetLastBackup();
+                var lastBackup = await BackupLogic.GlobalBackup.QueryManager.GetLastBackupAsync();
                 lblBdNewestBackup.Text = (lastBackup != null) ? lastBackup.CreationDate.Humanize(false) : "Noch nicht durchgeführt";
 
                 var nextDate = BackupLogic.GetNextBackupDate();
@@ -398,11 +398,11 @@ namespace Brightbits.BSH.Main
             SuperBase.CurrentTab = frmMain.AvailableTabs.TabConfiguration;
         }
 
-        private void btnOnOff_Click(object sender, EventArgs e)
+        private async void btnOnOff_Click(object sender, EventArgs e)
         {
             if (btnOnOff.Tag.ToString().Equals("OFF"))
             {
-                BackupLogic.StartSystem(true);
+                await BackupLogic.StartSystemAsync(true);
                 btnOnOff.Tag = "ON";
             }
             else
