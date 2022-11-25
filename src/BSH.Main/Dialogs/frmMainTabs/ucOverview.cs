@@ -72,7 +72,7 @@ namespace Brightbits.BSH.Main
         {
             get
             {
-                return "Startseite";
+                return Resources.DLG_UC_OVERVIEW_TITLE;
             }
         }
 
@@ -103,21 +103,21 @@ namespace Brightbits.BSH.Main
 
                 // retrieve details from database
                 long freeSpace = long.Parse(BackupLogic.GlobalBackup.ConfigurationManager.FreeSpace);
-                lblBdSpaceAvailable.Text = (freeSpace == 0L) ? "freier Speicherplatz nicht ermittelbar" : freeSpace.Bytes().Humanize();
+                lblBdSpaceAvailable.Text = (freeSpace == 0L) ? Resources.DLG_UC_OVERVIEW_LBL_FREE_SPACE_NOT_AVAILABLE_TEXT : freeSpace.Bytes().Humanize();
 
                 // compression
                 if (BackupLogic.GlobalBackup.ConfigurationManager.Compression == 1)
                 {
                     var oldestBackup = BackupLogic.GlobalBackup.QueryManager.GetOldestBackup();
 
-                    lblBdOldestBackup.Text = (oldestBackup != null) ? oldestBackup.CreationDate.Humanize(false) : "Noch nicht durchgeführt";
-                    lblOldBackup.Text = "Ältestes Backup:";
+                    lblBdOldestBackup.Text = (oldestBackup != null) ? oldestBackup.CreationDate.Humanize(false) : Resources.DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT;
+                    lblOldBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT;
                 }
                 else
                 {
                     // compute device full date
-                    lblOldBackup.Text = "Voraussichtl. voll am:";
-                    lblBdOldestBackup.Text = "noch nicht vorhersehbar";
+                    lblOldBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT;
+                    lblBdOldestBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT;
 
                     int countBackup = BackupLogic.GlobalBackup.QueryManager.GetNumberOfVersions();
                     if (countBackup >= 20 && !string.IsNullOrEmpty(BackupLogic.GlobalBackup.ConfigurationManager.BackupSize))
@@ -147,16 +147,16 @@ namespace Brightbits.BSH.Main
 
                 if (BackupLogic.GlobalBackup.ConfigurationManager.TaskType == TaskType.Auto)
                 {
-                    lblBackupMode.Text = "Vollautomatische Sicherung";
+                    lblBackupMode.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_MODE_AUTO_TEXT;
                 }
                 else if (BackupLogic.GlobalBackup.ConfigurationManager.TaskType == TaskType.Schedule)
                 {
-                    lblBackupMode.Text = "Zeitplanbasierte Sicherung";
+                    lblBackupMode.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_MODE_SCHEDULED_TEXT;
                 }
                 else
                 {
-                    lblBackupMode.Text = "Manuelle Sicherung";
-                    lblNextBackup.Text = "keines geplant";
+                    lblBackupMode.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_MODE_MANUAL_TEXT;
+                    lblNextBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT;
                 }
             }
             catch
@@ -265,39 +265,39 @@ namespace Brightbits.BSH.Main
                 {
                     if (StatusController.Current.JobState == JobState.ERROR)
                     {
-                        infoText.Append("Bei der letzten Datensicherung ist ein Problem aufgetreten. Möglicherweise ist Ihre Konfiguration nicht korrekt oder das Sicherungslaufwerk ist nicht bereit.");
+                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_STATUS_FAILED);
                         lblInfo.Text = infoText.ToString();
                         return;
                     }
                     else
                     {
-                        infoText.Append(Program.APP_TITLE + " sichert Ihre Dateien");
+                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_STATUS_OK);
                     }
 
                     // source folder
-                    infoText.Append(" (" + BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder.Split('|').Length + " Quellverzeichnis(se))");
+                    infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT.FormatWith(BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder.Split('|').Length));
 
                     // backup type
                     if (BackupLogic.GlobalBackup.ConfigurationManager.TaskType == TaskType.Auto)
                     {
-                        infoText.Append(" vollautomatisch stündlich");
+                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT);
                     }
                     else if (BackupLogic.GlobalBackup.ConfigurationManager.TaskType == TaskType.Schedule)
                     {
-                        infoText.Append(" nach eingestelltem Zeitplan");
+                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT);
                     }
                     else
                     {
-                        infoText.Append(" wenn Sie die Sicherung manuell anstoßen");
+                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MANUAL_BACKUP_TEXT);
                     }
 
                     // backup device
                     if (BackupLogic.GlobalBackup.ConfigurationManager.MediumType != 3)
                     {
-                        infoText.Append(" auf dem");
+                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_ON_TEXT);
                         if (BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder.Substring(0, 1) == @"\")
                         {
-                            infoText.Append(" Netzlaufwerk (" + BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder + ").");
+                            infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT.FormatWith(BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder));
                         }
                         else
                         {
@@ -305,41 +305,41 @@ namespace Brightbits.BSH.Main
                             switch (drive.DriveType)
                             {
                                 case System.IO.DriveType.Fixed:
-                                    infoText.Append(" lokalen Datenträger (" + drive.Name + ").");
+                                    infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT.FormatWith(drive.Name));
                                     break;
 
                                 case System.IO.DriveType.Network:
-                                    infoText.Append(" Netzlaufwerk (" + drive.Name + ").");
+                                    infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT.FormatWith(drive.Name));
                                     break;
 
                                 case System.IO.DriveType.Removable:
-                                    infoText.Append(" externen Laufwerk (" + drive.Name + ").");
+                                    infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_EXTERNAL_HDD_BACKUP_TEXT.FormatWith(drive.Name));
                                     break;
                             }
                         }
                     }
                     else
                     {
-                        infoText.Append(" auf einem FTP-Server (" + BackupLogic.GlobalBackup.ConfigurationManager.FtpHost + ").");
+                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT.FormatWith(BackupLogic.GlobalBackup.ConfigurationManager.FtpHost));
                     }
 
                     // compressed or encrypted
                     if (BackupLogic.GlobalBackup.ConfigurationManager.Compression == 1)
                     {
-                        infoText.Append(" Die Sicherung wird komprimiert.");
+                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_COMPRESSED_TEXT);
                     }
                     else if (BackupLogic.GlobalBackup.ConfigurationManager.Encrypt == 1)
                     {
-                        infoText.Append(" Die Sicherung wird verschlüsselt.");
+                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_ENCRYPTED_TEXT);
                     }
                 }
                 else if (StatusController.Current.SystemStatus == SystemStatus.PAUSED_DUE_TO_BATTERY)
                 {
-                    infoText.Append(Program.APP_TITLE + " ist derzeit deaktiviert, da Ihr Notebook sich im Batteriebetrieb befindet.");
+                    infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_BATTERY_TEXT);
                 }
                 else
                 {
-                    infoText.Append(Program.APP_TITLE + " ist derzeit deaktiviert.");
+                    infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_TEXT);
                 }
 
                 lblInfo.Text = infoText.ToString();
@@ -376,7 +376,7 @@ namespace Brightbits.BSH.Main
             else
             {
                 // start backup
-                await BackupLogic.BackupController.CreateBackupAsync("Manuelles Backup", "", true);
+                await BackupLogic.BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_MANUAL, "", true);
             }
         }
 
@@ -528,7 +528,7 @@ namespace Brightbits.BSH.Main
             }
 
             lastTimeRefreshed = DateTime.Now;
-            Invoke(new Action(() => { if (string.IsNullOrEmpty(file)) { lblBdStatus.Text = "Datensicherung wird durchgeführt..."; } else { lblBdStatus.Text = System.IO.Path.GetFileName(file) + " wird gesichert..."; } }));
+            Invoke(new Action(() => { if (string.IsNullOrEmpty(file)) { lblBdStatus.Text = Resources.DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_TEXT; } else { lblBdStatus.Text = Resources.DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_FILE_TEXT.FormatWith(System.IO.Path.GetFileName(file)); } }));
         }
 
         public void ReportSystemStatus(SystemStatus systemStatus)

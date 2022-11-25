@@ -361,6 +361,87 @@ Möchten Sie den Vorgang fortsetzen?</value>
   <data name="DLG_UC_CONFIG_TITLE" xml:space="preserve">
     <value>Konfigurieren</value>
   </data>
+  <data name="DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT" xml:space="preserve">
+    <value> vollautomatisch stündlich</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT" xml:space="preserve">
+    <value>noch nicht vorhersehbar</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT" xml:space="preserve">
+    <value>Voraussichtl. voll am:</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_BACKUP_MODE_AUTO_TEXT" xml:space="preserve">
+    <value>Vollautomatische Sicherung</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_BACKUP_MODE_MANUAL_TEXT" xml:space="preserve">
+    <value>Manuelle Sicherung</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_BACKUP_MODE_SCHEDULED_TEXT" xml:space="preserve">
+    <value>Zeitplanbasierte Sicherung</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_COMPRESSED_TEXT" xml:space="preserve">
+    <value> Die Sicherung wird komprimiert.</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_ENCRYPTED_TEXT" xml:space="preserve">
+    <value> Die Sicherung wird verschlüsselt.</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_FREE_SPACE_NOT_AVAILABLE_TEXT" xml:space="preserve">
+    <value>freier Speicherplatz nicht ermittelbar</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MANUAL_BACKUP_TEXT" xml:space="preserve">
+    <value> wenn Sie die Sicherung manuell anstoßen</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MEDIA_EXTERNAL_HDD_BACKUP_TEXT" xml:space="preserve">
+    <value> externen Laufwerk ({0}).</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT" xml:space="preserve">
+    <value> auf einem FTP Server ({0}).</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT" xml:space="preserve">
+    <value> lokalen Datenträger ({0}).</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT" xml:space="preserve">
+    <value> Netzlaufwerk ({0}).</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT" xml:space="preserve">
+    <value>keines geplant</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT" xml:space="preserve">
+    <value>Noch nicht durchgeführt</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT" xml:space="preserve">
+    <value>Ältestes Backup:</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_ON_TEXT" xml:space="preserve">
+    <value> auf dem</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT" xml:space="preserve">
+    <value> nach eingestelltem Zeitplan</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT" xml:space="preserve">
+    <value> ({0} Quellverzeichnis(se))</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_BATTERY_TEXT" xml:space="preserve">
+    <value>Backup Service Home ist derzeit deaktiviert, da Ihr Notebook sich im Batteriebetrieb befindet.</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_TEXT" xml:space="preserve">
+    <value>Backup Service Home ist derzeit deaktiviert.</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_STATUS_FAILED" xml:space="preserve">
+    <value>Bei der letzten Datensicherung ist ein Problem aufgetreten. Möglicherweise ist Ihre Konfiguration nicht korrekt oder das Sicherungslaufwerk ist nicht bereit.</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_STATUS_OK" xml:space="preserve">
+    <value>Backup Service Home sichert Ihre Dateien</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_FILE_TEXT" xml:space="preserve">
+    <value>{0} wird gesichert...</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_TEXT" xml:space="preserve">
+    <value>Datensicherung wird durchgeführt...</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_TITLE" xml:space="preserve">
+    <value>Startseite</value>
+  </data>
   <data name="error_warning_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\error-warning-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

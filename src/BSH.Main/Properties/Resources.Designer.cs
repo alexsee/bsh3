@@ -771,6 +771,249 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  vollautomatisch stündlich ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die noch nicht vorhersehbar ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Voraussichtl. voll am: ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vollautomatische Sicherung ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_BACKUP_MODE_AUTO_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_BACKUP_MODE_AUTO_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Manuelle Sicherung ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_BACKUP_MODE_MANUAL_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_BACKUP_MODE_MANUAL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Zeitplanbasierte Sicherung ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_BACKUP_MODE_SCHEDULED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_BACKUP_MODE_SCHEDULED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  Die Sicherung wird komprimiert. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_COMPRESSED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_COMPRESSED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  Die Sicherung wird verschlüsselt. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_ENCRYPTED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_ENCRYPTED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die freier Speicherplatz nicht ermittelbar ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_FREE_SPACE_NOT_AVAILABLE_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_FREE_SPACE_NOT_AVAILABLE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  wenn Sie die Sicherung manuell anstoßen ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_MANUAL_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MANUAL_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  externen Laufwerk ({0}). ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_MEDIA_EXTERNAL_HDD_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MEDIA_EXTERNAL_HDD_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  auf einem FTP Server ({0}). ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  lokalen Datenträger ({0}). ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  Netzlaufwerk ({0}). ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die keines geplant ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Noch nicht durchgeführt ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Ältestes Backup: ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  auf dem ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_ON_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_ON_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  nach eingestelltem Zeitplan ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  ({0} Quellverzeichnis(se)) ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home ist derzeit deaktiviert, da Ihr Notebook sich im Batteriebetrieb befindet. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_BATTERY_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_BATTERY_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home ist derzeit deaktiviert. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Bei der letzten Datensicherung ist ein Problem aufgetreten. Möglicherweise ist Ihre Konfiguration nicht korrekt oder das Sicherungslaufwerk ist nicht bereit. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_STATUS_FAILED {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_STATUS_FAILED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home sichert Ihre Dateien ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_STATUS_OK {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_STATUS_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {0} wird gesichert... ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_FILE_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_FILE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung wird durchgeführt... ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Startseite ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap error_warning_line {
