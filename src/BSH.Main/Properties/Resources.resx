@@ -226,6 +226,84 @@
   <data name="DLG_ADD_SCHEDULE.FORMAT.WEEKLY" xml:space="preserve">
     <value>'Jeden' dddd, 'um' HH:mm:ss</value>
   </data>
+  <data name="DLG_UC_CONFIG_LBL_COMPRESSION_STAGE" xml:space="preserve">
+    <value> Stufe </value>
+  </data>
+  <data name="DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION" xml:space="preserve">
+    <value>Höchste Kompression</value>
+  </data>
+  <data name="DLG_UC_CONFIG_LBL_HIGH_COMPRESSION" xml:space="preserve">
+    <value>Hohe Kompression</value>
+  </data>
+  <data name="DLG_UC_CONFIG_LBL_LOW_COMPRESSION" xml:space="preserve">
+    <value>Niedrige Kompression</value>
+  </data>
+  <data name="DLG_UC_CONFIG_LBL_NO_COMPRESSION" xml:space="preserve">
+    <value>Keine Kompression</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Die Verbindung zum FTP-Server konnte nicht aufgebaut werden.</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>FTP-Verbindung nicht erfolgreich</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_MOVE_TEXT" xml:space="preserve">
+    <value>Problem beim Verschieben.\r\n\r\n</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_MOVE_TITLE" xml:space="preserve">
+    <value>Problem beim Verschieben</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TEXT" xml:space="preserve">
+    <value>Gleicher Verzeichnisname.\r\n\r\nEin Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern.</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TITLE" xml:space="preserve">
+    <value>Gleicher Verzeichnisname</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TEXT" xml:space="preserve">
+    <value>Sie haben ein gesamtes Laufwerk als Quellverzeichnis ausgewählt. Backup Service Home 3 unterstützt nur die Sicherung von Verzeichnissen, weshalb Dateien im Stammverzeichnis des Laufwerkes nicht gesichert werden. Verzeichnisse auf dem Laufwerk werden dagegen gesichert.</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TITLE" xml:space="preserve">
+    <value>Gesamtes Laufwerk ausgewählt</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Die Verbindung zum FTP-Server konnte erfolgreich aufgebaut werden.</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TITLE" xml:space="preserve">
+    <value>FTP-Verbindung erfolgreich</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TEXT" xml:space="preserve">
+    <value>Geben Sie die Dateierweiterung ein, die von der Kompression ausgeschlossen werden soll:</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TITLE" xml:space="preserve">
+    <value>Dateierweitung eingeben</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT" xml:space="preserve">
+    <value>Vorhandene Sicherungen werden gelöscht.\r\n\r\nWenn Sie das Sicherungsmedium auf einen FTP-Server wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.\r\n\r\nMöchten Sie den Vorgang fortsetzen?</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT" xml:space="preserve">
+    <value>Vorhandene Sicherungen werden gelöscht.\r\n\r\nWenn Sie das Sicherungsmedium auf einen lokalen Datenträger oder Netzlaufwerk wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.\r\n\r\nMöchten Sie den Vorgang fortsetzen?</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE" xml:space="preserve">
+    <value>Sicherungen werden gelöscht</value>
+  </data>
+  <data name="DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT" xml:space="preserve">
+    <value>Datensicherungen werden entschlüsselt...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT" xml:space="preserve">
+    <value>Alte Datensicherungen werden gelöscht...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_STATUS_FINISHING_BACKUP_TEXT" xml:space="preserve">
+    <value>Sicherungsmedium wird abgeschlossen...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_STATUS_INIT_BACKUP_TEXT" xml:space="preserve">
+    <value>Neues Medium einrichten...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_STATUS_WAIT_FOR_FINISH_TEXT" xml:space="preserve">
+    <value>Warten auf Fertigstellung einer anderen Aktion...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_TITLE" xml:space="preserve">
+    <value>Konfigurieren</value>
+  </data>
   <data name="error_warning_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\error-warning-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -282,6 +360,12 @@
   </data>
   <data name="INFO_BSH_NOT_CONFIGURED_TITLE" xml:space="preserve">
     <value>Nicht konfiguriert.</value>
+  </data>
+  <data name="INFO_BSH_UPDATE_AVAILABLE_TEXT" xml:space="preserve">
+    <value>Für Backup Service Home 3 sind Aktualisierungen verfügbar, die nun heruntergeladen und installiert werden können. Es wird empfohlen diese Aktualisierungen zu installieren.</value>
+  </data>
+  <data name="INFO_BSH_UPDATE_AVAILABLE_TITLE" xml:space="preserve">
+    <value>Es sind Aktualisierungen verfügbar</value>
   </data>
   <data name="INFO_NO_DISKSPACE_LEFT_TEXT" xml:space="preserve">
     <value>Auf dem Backupmedium ist nicht mehr genug Speicherplatz vorhanden. Löschen Sie Datensicherungen oder wechseln Sie das Medium.</value>

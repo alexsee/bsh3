@@ -402,6 +402,240 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  Stufe  ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_LBL_COMPRESSION_STAGE {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_LBL_COMPRESSION_STAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Hohe Kompression ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_LBL_HIGH_COMPRESSION {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_LBL_HIGH_COMPRESSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Höchste Kompression ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Niedrige Kompression ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_LBL_LOW_COMPRESSION {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_LBL_LOW_COMPRESSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Keine Kompression ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_LBL_NO_COMPRESSION {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_LBL_NO_COMPRESSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung zum FTP-Server konnte nicht aufgebaut werden. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FTP-Verbindung nicht erfolgreich ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Problem beim Verschieben.\r\n\r\n ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_ERROR_MOVE_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_MOVE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Problem beim Verschieben ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_ERROR_MOVE_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_MOVE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Gleicher Verzeichnisname.\r\n\r\nEin Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Gleicher Verzeichnisname ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sie haben ein gesamtes Laufwerk als Quellverzeichnis ausgewählt. Backup Service Home 3 unterstützt nur die Sicherung von Verzeichnissen, weshalb Dateien im Stammverzeichnis des Laufwerkes nicht gesichert werden. Verzeichnisse auf dem Laufwerk werden dagegen gesichert. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Gesamtes Laufwerk ausgewählt ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung zum FTP-Server konnte erfolgreich aufgebaut werden. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FTP-Verbindung erfolgreich ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Geben Sie die Dateierweiterung ein, die von der Kompression ausgeschlossen werden soll: ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Dateierweitung eingeben ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vorhandene Sicherungen werden gelöscht.\r\n\r\nWenn Sie das Sicherungsmedium auf einen FTP-Server wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.\r\n\r\nMöchten Sie den Vorgang fortsetzen? ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vorhandene Sicherungen werden gelöscht.\r\n\r\nWenn Sie das Sicherungsmedium auf einen lokalen Datenträger oder Netzlaufwerk wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.\r\n\r\nMöchten Sie den Vorgang fortsetzen? ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungen werden gelöscht ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherungen werden entschlüsselt... ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Alte Datensicherungen werden gelöscht... ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungsmedium wird abgeschlossen... ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_STATUS_FINISHING_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_STATUS_FINISHING_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Neues Medium einrichten... ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_STATUS_INIT_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_STATUS_INIT_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Warten auf Fertigstellung einer anderen Aktion... ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_STATUS_WAIT_FOR_FINISH_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_STATUS_WAIT_FOR_FINISH_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Konfigurieren ähnelt.
+        /// </summary>
+        internal static string DLG_UC_CONFIG_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap error_warning_line {
@@ -580,6 +814,24 @@ namespace BSH.Main.Properties {
         internal static string INFO_BSH_NOT_CONFIGURED_TITLE {
             get {
                 return ResourceManager.GetString("INFO_BSH_NOT_CONFIGURED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Für Backup Service Home 3 sind Aktualisierungen verfügbar, die nun heruntergeladen und installiert werden können. Es wird empfohlen diese Aktualisierungen zu installieren. ähnelt.
+        /// </summary>
+        internal static string INFO_BSH_UPDATE_AVAILABLE_TEXT {
+            get {
+                return ResourceManager.GetString("INFO_BSH_UPDATE_AVAILABLE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Es sind Aktualisierungen verfügbar ähnelt.
+        /// </summary>
+        internal static string INFO_BSH_UPDATE_AVAILABLE_TITLE {
+            get {
+                return ResourceManager.GetString("INFO_BSH_UPDATE_AVAILABLE_TITLE", resourceCulture);
             }
         }
         
