@@ -834,7 +834,7 @@ namespace Brightbits.BSH.Main
             await ChangeVersionAsync(sender.Version);
 
             var backupDate = Convert.ToDateTime(sender.Version.CreationDate, CultureInfo.CreateSpecificCulture("de-DE"));
-            lblBackupdate.Text = Translation.GetString("BACKUP_FROM_DATE") + backupDate.ToString("dd. MMMM yyyy 'um' HH:mm");
+            lblBackupdate.Text = Resources.BACKUP_FROM_DATE + backupDate.ToString("dd. MMMM yyyy 'um' HH:mm");
         }
 
         private void mnuGoHome_Click(object sender, EventArgs e)

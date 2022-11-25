@@ -71,6 +71,7 @@
     <Reference Include="System.Security" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="updateSystemDotNet.Controller">
       <HintPath>..\..\assemblies\updateSystemDotNet.Controller.dll</HintPath>
@@ -233,7 +234,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
-    <Compile Include="Translation\Translation.cs" />
     <EmbeddedResource Include="Dialogs\frmBrowser.resx">
       <DependentUpon>frmBrowser.cs</DependentUpon>
     </EmbeddedResource>

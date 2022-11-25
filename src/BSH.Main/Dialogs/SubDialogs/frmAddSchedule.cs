@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using BSH.Main.Properties;
 using System;
 
 namespace Brightbits.BSH.Main
@@ -29,35 +30,35 @@ namespace Brightbits.BSH.Main
             {
                 case 0:
                     // once
-                    dtpStartTime.CustomFormat = Translation.GetString("DLG_ADD_SCHEDULE.FORMAT.ONCE");
+                    dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_ONCE;
                     dtpStartTime.ShowUpDown = false;
 
                     break;
 
                 case 1:
                     // hourly
-                    dtpStartTime.CustomFormat = Translation.GetString("DLG_ADD_SCHEDULE.FORMAT.HOURLY");
+                    dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_HOURLY;
                     dtpStartTime.ShowUpDown = true;
 
                     break;
 
                 case 2:
                     // daily
-                    dtpStartTime.CustomFormat = Translation.GetString("DLG_ADD_SCHEDULE.FORMAT.DAILY");
+                    dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_DAILY;
                     dtpStartTime.ShowUpDown = true;
 
                     break;
 
                 case 3:
                     // weekly
-                    dtpStartTime.CustomFormat = Translation.GetString("DLG_ADD_SCHEDULE.FORMAT.WEEKLY");
+                    dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_WEEKLY;
                     dtpStartTime.ShowUpDown = false;
 
                     break;
 
                 case 4:
                     // monthly
-                    dtpStartTime.CustomFormat = Translation.GetString("DLG_ADD_SCHEDULE.FORMAT.MONTHLY");
+                    dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_MONTHLY;
                     dtpStartTime.ShowUpDown = true;
 
                     break;

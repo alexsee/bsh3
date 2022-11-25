@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
+using BSH.Main.Properties;
 using Microsoft.VisualBasic;
 using System;
 using System.IO;
@@ -113,8 +114,8 @@ namespace Brightbits.BSH.Main
 
                     // show controls
                     tbControl.SelectedTab = tbStep1;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_1");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_1");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_1;
+                    lblDescription.Text = Resources.WELCOME_STEP_1;
                     cmdBack.Enabled = false;
                     cmdNext.Enabled = true;
                     break;
@@ -139,8 +140,8 @@ namespace Brightbits.BSH.Main
 
                     // show controls
                     tbControl.SelectedTab = tbStep2;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_2");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_2");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_2;
+                    lblDescription.Text = Resources.WELCOME_STEP_2;
                     cmdBack.Enabled = true;
                     cmdNext.Enabled = true;
                     break;
@@ -228,8 +229,8 @@ namespace Brightbits.BSH.Main
 
                     // show controls
                     tbControl.SelectedTab = tbStep3;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_3");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_3");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_3;
+                    lblDescription.Text = Resources.WELCOME_STEP_3;
                     cmdBack.Enabled = true;
                     cmdNext.Enabled = true;
                     break;
@@ -247,8 +248,8 @@ namespace Brightbits.BSH.Main
 
                     // show controls
                     tbControl.SelectedTab = tbProgress;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_4");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_4");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_4;
+                    lblDescription.Text = Resources.WELCOME_STEP_4;
                     cmdBack.Enabled = false;
                     cmdNext.Enabled = false;
                     Application.DoEvents();
@@ -331,8 +332,8 @@ namespace Brightbits.BSH.Main
 
                     // show import steps
                     tbControl.SelectedTab = tbStep5;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_5");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_5");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_5;
+                    lblDescription.Text = Resources.WELCOME_STEP_5;
                     cmdBack.Enabled = false;
                     cmdNext.Enabled = true;
 
@@ -395,8 +396,8 @@ namespace Brightbits.BSH.Main
                         }
 
                         // show controls
-                        lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_6");
-                        lblDescription.Text = Translation.GetString("WELCOME_STEP_6");
+                        lblTitle.Text = Resources.WELCOMETITLE_STEP_6;
+                        lblDescription.Text = Resources.WELCOME_STEP_6;
                         tbControl.SelectedTab = tbStep6;
                         cmdBack.Enabled = true;
                         cmdNext.Enabled = true;
@@ -581,8 +582,8 @@ namespace Brightbits.BSH.Main
 
                     // show controls
                     tbControl.SelectedTab = tbStep7;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_7");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_7");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_7;
+                    lblDescription.Text = Resources.WELCOME_STEP_7;
                     cmdBack.Enabled = false;
                     cmdNext.Enabled = true;
                     lvSourceDirs.Items.Clear();

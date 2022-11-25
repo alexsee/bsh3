@@ -14,6 +14,7 @@
 
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
+using BSH.Main.Properties;
 using Humanizer;
 using System;
 using System.Linq;
@@ -169,11 +170,11 @@ namespace Brightbits.BSH.Main
             {
                 if (StatusController.Current.SystemStatus == SystemStatus.PAUSED_DUE_TO_BATTERY)
                 {
-                    lblBdStatus.Text = Translation.GetString("BackupStatus_3");
+                    lblBdStatus.Text = Resources.BackupStatus_3;
                 }
                 else
                 {
-                    lblBdStatus.Text = Translation.GetString("BackupStatus_4");
+                    lblBdStatus.Text = Resources.BackupStatus_4;
                 }
 
                 picDataType.Image = global::BSH.Main.Properties.Resources.status_error;
@@ -185,15 +186,15 @@ namespace Brightbits.BSH.Main
             {
                 if (StatusController.Current.JobState == JobState.ERROR)
                 {
-                    lblBdStatus.Text = Translation.GetString("BackupStatus_2");
+                    lblBdStatus.Text = Resources.BackupStatus_2;
                 }
                 else if (StatusController.Current.JobState == JobState.RUNNING)
                 {
-                    lblBdStatus.Text = Translation.GetString("BackupStatus_1");
+                    lblBdStatus.Text = Resources.BackupStatus_1;
                 }
                 else
                 {
-                    lblBdStatus.Text = Translation.GetString("BackupStatus_0");
+                    lblBdStatus.Text = Resources.BackupStatus_0;
                 }
 
                 if (StatusController.Current.JobState == JobState.ERROR)
