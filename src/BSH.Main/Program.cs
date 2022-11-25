@@ -19,6 +19,7 @@ using Serilog;
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -68,7 +69,7 @@ namespace Brightbits.BSH.Main
         }
 
         [STAThread()]
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration().ReadFrom.AppSettings().CreateLogger();
             Log.Information($"{APP_TITLE} {CurrentVersion} started.");
@@ -125,7 +126,7 @@ namespace Brightbits.BSH.Main
 #endif
 
                 // start backup engine
-                BackupLogic.Startup();
+                await BackupLogic.StartupAsync();
 
                 // parse command line if system is configured
                 if (BackupLogic.GlobalBackup.ConfigurationManager.IsConfigured == "1")

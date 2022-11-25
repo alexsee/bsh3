@@ -546,7 +546,7 @@ namespace Brightbits.BSH.Main
                     }
 
                     // start backup logic
-                    BackupLogic.Startup();
+                    await BackupLogic.StartupAsync();
 
                     // adjust configuration
                     if (tcStep5.SelectedIndex == 0)

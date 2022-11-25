@@ -371,11 +371,11 @@ namespace Brightbits.BSH.Engine.Services
         /// </summary>
         /// <param name="version"></param>
         /// <param name="stable"></param>
-        public void SetStable(string version, bool stable)
+        public async Task SetStableAsync(string version, bool stable)
         {
             using (var dbClient = dbClientFactory.CreateDbClient())
             {
-                dbClient.ExecuteNonQuery($"UPDATE versiontable SET versionStable = {(stable ? 1 : 0)} WHERE versionID = {version}");
+                await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStable = {(stable ? 1 : 0)} WHERE versionID = {version}");
             }
         }
     }

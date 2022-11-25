@@ -45,12 +45,14 @@ namespace Brightbits.BSH.Main
 
         private static Timer tmrUserReminder;
 
-        private static void LoadDatabase()
+        private async static Task LoadDatabaseAsync()
         {
             try
             {
                 // load database
                 GlobalBackup = new EngineService(DatabaseFile);
+                await GlobalBackup.InitAsync();
+
                 BackupController = new BackupController(GlobalBackup.BackupService, GlobalBackup.ConfigurationManager);
             }
             catch (Exception ex)
@@ -63,7 +65,7 @@ namespace Brightbits.BSH.Main
         /// <summary>
         /// Loads the database and starts the backup engine if BSH is configured.
         /// </summary>
-        public static void Startup()
+        public async static Task StartupAsync()
         {
             // first time start?
             if (!System.IO.File.Exists(DatabaseFile))
@@ -73,12 +75,12 @@ namespace Brightbits.BSH.Main
 
                 // create database
                 System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(DatabaseFile));
-                LoadDatabase();
+                await LoadDatabaseAsync();
             }
             else
             {
                 // load existing database
-                LoadDatabase();
+                await LoadDatabaseAsync();
                 if (GlobalBackup.ConfigurationManager.IsConfigured == "0")
                 {
                     // Status: unconfigured

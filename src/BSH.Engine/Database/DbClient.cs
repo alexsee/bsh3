@@ -241,17 +241,6 @@ namespace Brightbits.BSH.Engine.Database
         /// <summary>
         /// Method to execute a datareader
         /// </summary>
-        /// <param name="procedureName">the procedurename</param>
-        /// <param name="parameters">the parameters</param>
-        /// <returns>the data reader</returns>
-        public IDataReader ExecuteDataReader(string procedureName, IDataParameter[] parameters)
-        {
-            return ExecuteDataReader(CommandType.StoredProcedure, procedureName, parameters);
-        }
-
-        /// <summary>
-        /// Method to execute a datareader
-        /// </summary>
         /// <param name="commandType">the command type</param>
         /// <param name="procedureName">the procedurename</param>
         /// <param name="parameters">the parameters</param>
@@ -305,23 +294,6 @@ namespace Brightbits.BSH.Engine.Database
             return await command.ExecuteReaderAsync();
         }
 
-        public object ExecuteScalar(CommandType commandType, string commandText, IDataParameter[] parameters)
-        {
-            return ExecuteScalar(commandType, commandText, parameters, 60000);
-        }
-
-        public object ExecuteScalar(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
-        {
-            OpenConnection();
-
-            DbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-            object result = command.ExecuteScalar();
-
-            CloseConnection();
-
-            return result;
-        }
-
         public async Task<object> ExecuteScalarAsync(string commandText)
         {
             return await ExecuteScalarAsync(CommandType.Text, commandText, null);
@@ -342,21 +314,6 @@ namespace Brightbits.BSH.Engine.Database
             CloseConnection();
 
             return result;
-        }
-
-        public int ExecuteNonQuery(string procedureName, IDataParameter[] parameters)
-        {
-            return ExecuteNonQuery(CommandType.StoredProcedure, procedureName, parameters);
-        }
-
-        public int ExecuteNonQuery(string commandText)
-        {
-            return ExecuteNonQuery(CommandType.Text, commandText, null, 60000);
-        }
-
-        public int ExecuteNonQuery(CommandType commandType, string commandText)
-        {
-            return ExecuteNonQuery(commandType, commandText, null, 60000);
         }
 
         public int ExecuteNonQuery(CommandType commandType, string commandText, IDataParameter[] parameters)

@@ -110,7 +110,7 @@ namespace Brightbits.BSH.Engine.Jobs
                         // change file
                         try
                         {
-                            EditFileFromDevice(
+                            await EditFileFromDeviceAsync(
                                 dbClient,
                                 remoteFilePath,
                                 reader.GetInt32("fileType"),
@@ -168,7 +168,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// <param name="remoteFile"></param>
         /// <param name="fileType"></param>
         /// <param name="fileVersionId"></param>
-        private void EditFileFromDevice(DbClient dbClient, string remoteFile, int fileType, int fileVersionId)
+        private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, int fileVersionId)
         {
             if (fileType == 5)
             {
@@ -176,7 +176,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 storage.DecryptOnStorage(remoteFile, Password);
 
                 // modify entry
-                dbClient.ExecuteNonQuery($"UPDATE fileversiontable SET fileType = 3 WHERE fileversionid = {fileVersionId}");
+                await dbClient.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = 3 WHERE fileversionid = {fileVersionId}");
             }
             else if (fileType == 6)
             {
@@ -184,7 +184,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 storage.DecryptOnStorage(remoteFile, Password);
 
                 // modify entry
-                dbClient.ExecuteNonQuery($"UPDATE fileversiontable SET fileType = 1 WHERE fileversionid = {fileVersionId}");
+                await dbClient.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = 1 WHERE fileversionid = {fileVersionId}");
             }
         }
     }

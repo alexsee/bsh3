@@ -18,7 +18,7 @@ namespace BSH.Test
         private EngineService engineService;
 
         [SetUp]
-        public void Setup()
+        public async Task Setup()
         {
             if (engineService != null)
             {
@@ -31,6 +31,7 @@ namespace BSH.Test
                 File.Delete("testdb.db");
 
             this.engineService = new EngineService(Environment.CurrentDirectory + "\\testdb.db");
+            await this.engineService.InitAsync();
         }
 
         [Test]

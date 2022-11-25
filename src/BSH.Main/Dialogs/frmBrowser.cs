@@ -1356,9 +1356,9 @@ namespace Brightbits.BSH.Main
             Focus();
         }
 
-        private void VersionAlsStabilMarkierenToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void VersionAlsStabilMarkierenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            BackupLogic.GlobalBackup.BackupService.SetStable(selectedVersion.Id, !VersionAlsStabilMarkierenToolStripMenuItem.Checked);
+            await BackupLogic.GlobalBackup.BackupService.SetStableAsync(selectedVersion.Id, !VersionAlsStabilMarkierenToolStripMenuItem.Checked);
             VersionAlsStabilMarkierenToolStripMenuItem.Checked = !VersionAlsStabilMarkierenToolStripMenuItem.Checked;
 
             foreach (var entry in AVersionList1.Items)

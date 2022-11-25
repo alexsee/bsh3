@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine.Database;
 using System;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine
 {
@@ -387,12 +388,9 @@ namespace Brightbits.BSH.Engine
         public ConfigurationManager(DbClientFactory dbClientFactory)
         {
             this.dbClientFactory = dbClientFactory;
-
-            // load configuration
-            LoadConfiguration();
         }
 
-        private void LoadConfiguration()
+        public async Task LoadConfigurationAsync()
         {
             using (var dbClient = dbClientFactory.CreateDbClient())
             {
@@ -407,7 +405,7 @@ namespace Brightbits.BSH.Engine
                        dbClient.CreateParameter("value", DbType.String, 1024, configEntry.Name.Replace("_", ""))
                     };
 
-                    var result = dbClient.ExecuteScalar(CommandType.Text, "SELECT confValue FROM configuration WHERE confProperty LIKE @value LIMIT 1", parameters);
+                    var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT confValue FROM configuration WHERE confProperty LIKE @value LIMIT 1", parameters);
 
                     if (result == null || result.Equals(DBNull.Value))
                     {

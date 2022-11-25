@@ -259,12 +259,12 @@ namespace Brightbits.BSH.Engine.Jobs
                         if (isModifiedFile)
                         {
                             // store folder reparse point
-                            SaveJunction(file, dbClient);
+                            await SaveJunctionAsync(file, dbClient);
 
                             // backup file
                             _logger.Debug("Copy file {fileName} to backup device.", file.FileNamePath());
 
-                            if (CopyFileToDevice(storage, file, newVersionId, newVersionDate, dbClient))
+                            if (await CopyFileToDeviceAsync(storage, file, newVersionId, newVersionDate, dbClient))
                             {
                                 _logger.Debug("{fileName} backed up successfully.", file.FileNamePath());
 
@@ -448,7 +448,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// </summary>
         /// <param name="file"></param>
         /// <param name="dbClient"></param>
-        private void SaveJunction(FileTableRow file, DbClient dbClient)
+        private async Task SaveJunctionAsync(FileTableRow file, DbClient dbClient)
         {
             var path = Path.GetDirectoryName(file.FileNamePath());
             if (!junctionFolders.Add(path))
@@ -468,7 +468,7 @@ namespace Brightbits.BSH.Engine.Jobs
                     dbClient.CreateParameter("displayName", DbType.String, 0, displayName)
                 };
 
-                dbClient.ExecuteNonQuery(CommandType.Text, "INSERT OR IGNORE INTO folderjunctiontable VALUES (@path, @displayName)", junctionInsertParameters);
+                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT OR IGNORE INTO folderjunctiontable VALUES (@path, @displayName)", junctionInsertParameters);
             }
         }
 
@@ -485,7 +485,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// <param name="useVss"></param>
         /// <returns></returns>
         /// <exception cref="FileNotProcessedException"></exception>
-        private bool CopyFileToDevice(IStorage storage, FileTableRow file, double newVersionId, string newVersionDate, DbClient dbClient, bool normalCopy = false, bool useVss = false)
+        private async Task<bool> CopyFileToDeviceAsync(IStorage storage, FileTableRow file, double newVersionId, string newVersionDate, DbClient dbClient, bool normalCopy = false, bool useVss = false)
         {
             // file variables
             var localFileName = file.FileNamePath();
@@ -613,7 +613,7 @@ namespace Brightbits.BSH.Engine.Jobs
                     throw new FileNotProcessedException(ex);
                 }
 
-                return CopyFileToDevice(storage, file, newVersionId, newVersionDate, dbClient, true, true);
+                return await CopyFileToDeviceAsync(storage, file, newVersionId, newVersionDate, dbClient, true, true);
             }
 
             // backup successful?
@@ -623,7 +623,7 @@ namespace Brightbits.BSH.Engine.Jobs
             }
 
             // add database entry
-            AddFileVersionDatabaseEntry(dbClient, file, newVersionId, longFileName, compress, encrypt);
+            await AddFileVersionDatabaseEntryAsync(dbClient, file, newVersionId, longFileName, compress, encrypt);
 
             return true;
         }
@@ -637,7 +637,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// <param name="longFileName"></param>
         /// <param name="compress"></param>
         /// <param name="encrypt"></param>
-        private void AddFileVersionDatabaseEntry(DbClient dbClient, FileTableRow file, double newVersionId, string longFileName, bool compress, bool encrypt)
+        private async Task AddFileVersionDatabaseEntryAsync(DbClient dbClient, FileTableRow file, double newVersionId, string longFileName, bool compress, bool encrypt)
         {
             // correct path
             if (!file.FilePath.EndsWith("\\"))
@@ -685,7 +685,7 @@ namespace Brightbits.BSH.Engine.Jobs
                     dbClient.CreateParameter("longfilename", DbType.String, 0, longFileName)
                 };
 
-            dbClient.ExecuteNonQuery(CommandType.Text, "INSERT INTO fileversiontable " +
+            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO fileversiontable " +
                 "( fileID, filePackage, fileSize, fileDateCreated, fileDateModified, fileHash, fileType, fileStatus, longfilename ) VALUES " +
                 "( @fileID, @filePackage, @fileSize, @fileDateCreated, @fileDateModified, @fileHash, @fileType, @fileStatus, @longfilename )", fileInsertParameters);
 
@@ -693,7 +693,7 @@ namespace Brightbits.BSH.Engine.Jobs
             var fileLinkInsertParameters = new IDataParameter[] {
                     dbClient.CreateParameter("versionID", DbType.Int32, 0, newVersionId)
                 };
-            dbClient.ExecuteNonQuery(CommandType.Text, "INSERT INTO filelink ( fileversionID, versionID ) VALUES ( last_insert_rowid(), @versionID )", fileLinkInsertParameters);
+            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO filelink ( fileversionID, versionID ) VALUES ( last_insert_rowid(), @versionID )", fileLinkInsertParameters);
 
         }
     }
