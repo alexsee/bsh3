@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
@@ -77,7 +78,7 @@ namespace Brightbits.BSH.Engine.Jobs
             _logger.Information("Begin backup", new { Title, FullBackup, Sources, SourceFolder });
 
             ReportState(JobState.RUNNING);
-            ReportStatus("Vorbereiten...", "Zu sichernde Dateien werden ermittelt...");
+            ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_BACKUP_PREPARE);
             ReportProgress(0, 0);
 
             // connect to database
@@ -167,7 +168,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 // report progress
                 _logger.Information("{numFiles} files and {numFolders} folders are collected for backup.", files.Count, emptyFolder.Count);
 
-                ReportStatus("Dateien werden gesichert...", "Neue Dateien werden auf dem Backupmedium gesichert...");
+                ReportStatus(Resources.STATUS_BACKUP_COPY_SHORT, Resources.STATUS_BACKUP_COPY_TEXT);
                 ReportProgress(files.Count, 0);
 
                 // keep system running
@@ -290,7 +291,7 @@ namespace Brightbits.BSH.Engine.Jobs
                     {
                         // report progress
                         _logger.Information("User requested cancellation of backup job. Rollback all transfers.");
-                        ReportStatus("Vorgang wird abgebrochen", "Vorgang wird abgebrochen");
+                        ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_TEXT);
 
                         // undo
                         storage.DeleteDirectory(newVersionDate);
@@ -316,7 +317,7 @@ namespace Brightbits.BSH.Engine.Jobs
                     {
                         // report progress
                         _logger.Error("Cannot write to backup device. Rollback all transfers.");
-                        ReportStatus("Vorgang wird abgebrochen", "Vorgang wird aufgrund von Fehlern abgebrochen");
+                        ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_ERROR);
 
                         // undo
                         storage.DeleteDirectory(newVersionDate);
@@ -389,7 +390,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 ReportExceptions(FileErrorList);
             }
 
-            ReportStatus("Sicherung abschließen...", "Die Sicherung wird nun abgeschlossen.");
+            ReportStatus(Resources.STATUS_BACKUP_FINISHED_SHORT, Resources.STATUS_BACKUP_FINISHED_TEXT);
             ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
 
             _logger.Information("Backup job finished.");

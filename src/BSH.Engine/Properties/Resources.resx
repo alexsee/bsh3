@@ -112,16 +112,36 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="inactive_search" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\inactive_search.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="STATUS_BACKUP_COPY_SHORT" xml:space="preserve">
+    <value>Dateien werden gesichert...</value>
   </data>
-  <data name="active_search" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\active_search.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="STATUS_BACKUP_COPY_TEXT" xml:space="preserve">
+    <value>Neue Dateien werden auf dem Backupmedium gesichert...</value>
+  </data>
+  <data name="STATUS_BACKUP_FINISHED_SHORT" xml:space="preserve">
+    <value>Sicherung abschließen...</value>
+  </data>
+  <data name="STATUS_BACKUP_FINISHED_TEXT" xml:space="preserve">
+    <value>Die Sicherung wird nun abgeschlossen...</value>
+  </data>
+  <data name="STATUS_BACKUP_PREPARE" xml:space="preserve">
+    <value>Zu sichernde Dateien werden ermittelt...</value>
+  </data>
+  <data name="STATUS_CANCELLED_ERROR" xml:space="preserve">
+    <value>Vorgang wird aufgrund von Fehlern abgebrochen...</value>
+  </data>
+  <data name="STATUS_CANCELLED_SHORT" xml:space="preserve">
+    <value>Vorgang wird abgebrochen</value>
+  </data>
+  <data name="STATUS_CANCELLED_TEXT" xml:space="preserve">
+    <value>Aktueller Vorgang wird abgebrochen...</value>
+  </data>
+  <data name="STATUS_PREPARE" xml:space="preserve">
+    <value>Vorbereiten...</value>
   </data>
 </root>

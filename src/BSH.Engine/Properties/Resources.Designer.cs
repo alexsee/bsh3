@@ -61,22 +61,83 @@ namespace Brightbits.BSH.Engine.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Dateien werden gesichert... ähnelt.
         /// </summary>
-        internal static System.Drawing.Bitmap active_search {
+        internal static string STATUS_BACKUP_COPY_SHORT {
             get {
-                object obj = ResourceManager.GetObject("active_search", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("STATUS_BACKUP_COPY_SHORT", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Neue Dateien werden auf dem Backupmedium gesichert... ähnelt.
         /// </summary>
-        internal static System.Drawing.Bitmap inactive_search {
+        internal static string STATUS_BACKUP_COPY_TEXT {
             get {
-                object obj = ResourceManager.GetObject("inactive_search", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("STATUS_BACKUP_COPY_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sicherung abschließen... ähnelt.
+        /// </summary>
+        internal static string STATUS_BACKUP_FINISHED_SHORT {
+            get {
+                return ResourceManager.GetString("STATUS_BACKUP_FINISHED_SHORT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die Sicherung wird nun abgeschlossen... ähnelt.
+        /// </summary>
+        internal static string STATUS_BACKUP_FINISHED_TEXT {
+            get {
+                return ResourceManager.GetString("STATUS_BACKUP_FINISHED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Zu sichernde Dateien werden ermittelt... ähnelt.
+        /// </summary>
+        internal static string STATUS_BACKUP_PREPARE {
+            get {
+                return ResourceManager.GetString("STATUS_BACKUP_PREPARE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vorgang wird aufgrund von Fehlern abgebrochen... ähnelt.
+        /// </summary>
+        internal static string STATUS_CANCELLED_ERROR {
+            get {
+                return ResourceManager.GetString("STATUS_CANCELLED_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vorgang wird abgebrochen ähnelt.
+        /// </summary>
+        internal static string STATUS_CANCELLED_SHORT {
+            get {
+                return ResourceManager.GetString("STATUS_CANCELLED_SHORT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Aktueller Vorgang wird abgebrochen... ähnelt.
+        /// </summary>
+        internal static string STATUS_CANCELLED_TEXT {
+            get {
+                return ResourceManager.GetString("STATUS_CANCELLED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vorbereiten... ähnelt.
+        /// </summary>
+        internal static string STATUS_PREPARE {
+            get {
+                return ResourceManager.GetString("STATUS_PREPARE", resourceCulture);
             }
         }
     }
