@@ -226,6 +226,51 @@
   <data name="DLG_ADD_SCHEDULE.FORMAT.WEEKLY" xml:space="preserve">
     <value>'Jeden' dddd, 'um' HH:mm:ss</value>
   </data>
+  <data name="DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TEXT" xml:space="preserve">
+    <value>Feature derzeit nicht verfügbar.
+
+Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie Backup Service Home neu, um das Problem zu lösen.</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TITLE" xml:space="preserve">
+    <value>Feature nicht verfügbar</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT" xml:space="preserve">
+    <value>Sind Sie sich sicher, dass Sie die ausgewählte Sicherung löschen möchten?</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE" xml:space="preserve">
+    <value>Sicherung löschen</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT" xml:space="preserve">
+    <value>Suchergebnis für "{0}"</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT" xml:space="preserve">
+    <value>Suchergebnis</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_SEARCH_TEXT" xml:space="preserve">
+    <value>Suchen</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_STATUS_LOADING_TEXT" xml:space="preserve">
+    <value>Ordner wird geladen...</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_STATUS_NO_SOURCE_FOLDER_TEXT" xml:space="preserve">
+    <value>Quellverzeichnis existiert nicht, wählen Sie ein anderes Verzeichnis aus.</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_TITLE_NOT_AVAILABLE" xml:space="preserve">
+    <value>Backupbrowser [Backupmedium nicht verfügbar]</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_TT_FOLDER" xml:space="preserve">
+    <value>Originalname: {0}
+Zielort: "{1}"</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_TT_VERSION" xml:space="preserve">
+    <value>Datum: {0}
+Datumumfang (unkomprimiert): {1}
+{2}</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_TT_VERSION_SIMPLE" xml:space="preserve">
+    <value>Datum: {0}
+{1}</value>
+  </data>
   <data name="DLG_UC_CONFIG_LBL_COMPRESSION_STAGE" xml:space="preserve">
     <value> Stufe </value>
   </data>
@@ -248,13 +293,17 @@
     <value>FTP-Verbindung nicht erfolgreich</value>
   </data>
   <data name="DLG_UC_CONFIG_MSG_ERROR_MOVE_TEXT" xml:space="preserve">
-    <value>Problem beim Verschieben.\r\n\r\n</value>
+    <value>Problem beim Verschieben.
+
+</value>
   </data>
   <data name="DLG_UC_CONFIG_MSG_ERROR_MOVE_TITLE" xml:space="preserve">
     <value>Problem beim Verschieben</value>
   </data>
   <data name="DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TEXT" xml:space="preserve">
-    <value>Gleicher Verzeichnisname.\r\n\r\nEin Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern.</value>
+    <value>Gleicher Verzeichnisname.
+
+Ein Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern.</value>
   </data>
   <data name="DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TITLE" xml:space="preserve">
     <value>Gleicher Verzeichnisname</value>
@@ -278,10 +327,18 @@
     <value>Dateierweitung eingeben</value>
   </data>
   <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT" xml:space="preserve">
-    <value>Vorhandene Sicherungen werden gelöscht.\r\n\r\nWenn Sie das Sicherungsmedium auf einen FTP-Server wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.\r\n\r\nMöchten Sie den Vorgang fortsetzen?</value>
+    <value>Vorhandene Sicherungen werden gelöscht.
+
+Wenn Sie das Sicherungsmedium auf einen FTP-Server wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.
+
+Möchten Sie den Vorgang fortsetzen?</value>
   </data>
   <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT" xml:space="preserve">
-    <value>Vorhandene Sicherungen werden gelöscht.\r\n\r\nWenn Sie das Sicherungsmedium auf einen lokalen Datenträger oder Netzlaufwerk wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.\r\n\r\nMöchten Sie den Vorgang fortsetzen?</value>
+    <value>Vorhandene Sicherungen werden gelöscht.
+
+Wenn Sie das Sicherungsmedium auf einen lokalen Datenträger oder Netzlaufwerk wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.
+
+Möchten Sie den Vorgang fortsetzen?</value>
   </data>
   <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE" xml:space="preserve">
     <value>Sicherungen werden gelöscht</value>
@@ -366,6 +423,12 @@
   </data>
   <data name="INFO_BSH_UPDATE_AVAILABLE_TITLE" xml:space="preserve">
     <value>Es sind Aktualisierungen verfügbar</value>
+  </data>
+  <data name="INFO_NO_BACKUP_AVAILABLE_TEXT" xml:space="preserve">
+    <value>Es ist derzeit keine Datensicherung vorhanden, die durchsucht werden kann.</value>
+  </data>
+  <data name="INFO_NO_BACKUP_AVAILABLE_TITLE" xml:space="preserve">
+    <value>Keine Datensicherung vorhanden</value>
   </data>
   <data name="INFO_NO_DISKSPACE_LEFT_TEXT" xml:space="preserve">
     <value>Auf dem Backupmedium ist nicht mehr genug Speicherplatz vorhanden. Löschen Sie Datensicherungen oder wechseln Sie das Medium.</value>

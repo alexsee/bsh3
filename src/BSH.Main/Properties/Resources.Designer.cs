@@ -402,6 +402,129 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Feature derzeit nicht verfügbar.
+        ///
+        ///Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie Backup Service Home neu, um das Problem zu lösen. ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Feature nicht verfügbar ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sind Sie sich sicher, dass Sie die ausgewählte Sicherung löschen möchten? ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sicherung löschen ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Suchergebnis ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Suchergebnis für &quot;{0}&quot; ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Suchen ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_SEARCH_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_SEARCH_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Ordner wird geladen... ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_STATUS_LOADING_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_STATUS_LOADING_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Quellverzeichnis existiert nicht, wählen Sie ein anderes Verzeichnis aus. ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_STATUS_NO_SOURCE_FOLDER_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_STATUS_NO_SOURCE_FOLDER_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Backupbrowser [Backupmedium nicht verfügbar] ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_TITLE_NOT_AVAILABLE {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_TITLE_NOT_AVAILABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Originalname: {0}
+        ///Zielort: &quot;{1}&quot; ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_TT_FOLDER {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_TT_FOLDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datum: {0}
+        ///Datumumfang (unkomprimiert): {1}
+        ///{2} ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_TT_VERSION {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_TT_VERSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datum: {0}
+        ///{1} ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_TT_VERSION_SIMPLE {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_TT_VERSION_SIMPLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  Stufe  ähnelt.
         /// </summary>
         internal static string DLG_UC_CONFIG_LBL_COMPRESSION_STAGE {
@@ -465,7 +588,9 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Problem beim Verschieben.\r\n\r\n ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Problem beim Verschieben.
+        ///
+        /// ähnelt.
         /// </summary>
         internal static string DLG_UC_CONFIG_MSG_ERROR_MOVE_TEXT {
             get {
@@ -483,7 +608,9 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Gleicher Verzeichnisname.\r\n\r\nEin Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Gleicher Verzeichnisname.
+        ///
+        ///Ein Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern. ähnelt.
         /// </summary>
         internal static string DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TEXT {
             get {
@@ -555,7 +682,11 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Vorhandene Sicherungen werden gelöscht.\r\n\r\nWenn Sie das Sicherungsmedium auf einen FTP-Server wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.\r\n\r\nMöchten Sie den Vorgang fortsetzen? ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vorhandene Sicherungen werden gelöscht.
+        ///
+        ///Wenn Sie das Sicherungsmedium auf einen FTP-Server wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.
+        ///
+        ///Möchten Sie den Vorgang fortsetzen? ähnelt.
         /// </summary>
         internal static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT {
             get {
@@ -564,7 +695,11 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Vorhandene Sicherungen werden gelöscht.\r\n\r\nWenn Sie das Sicherungsmedium auf einen lokalen Datenträger oder Netzlaufwerk wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.\r\n\r\nMöchten Sie den Vorgang fortsetzen? ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Vorhandene Sicherungen werden gelöscht.
+        ///
+        ///Wenn Sie das Sicherungsmedium auf einen lokalen Datenträger oder Netzlaufwerk wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.
+        ///
+        ///Möchten Sie den Vorgang fortsetzen? ähnelt.
         /// </summary>
         internal static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT {
             get {
@@ -832,6 +967,24 @@ namespace BSH.Main.Properties {
         internal static string INFO_BSH_UPDATE_AVAILABLE_TITLE {
             get {
                 return ResourceManager.GetString("INFO_BSH_UPDATE_AVAILABLE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Es ist derzeit keine Datensicherung vorhanden, die durchsucht werden kann. ähnelt.
+        /// </summary>
+        internal static string INFO_NO_BACKUP_AVAILABLE_TEXT {
+            get {
+                return ResourceManager.GetString("INFO_NO_BACKUP_AVAILABLE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Keine Datensicherung vorhanden ähnelt.
+        /// </summary>
+        internal static string INFO_NO_BACKUP_AVAILABLE_TITLE {
+            get {
+                return ResourceManager.GetString("INFO_NO_BACKUP_AVAILABLE_TITLE", resourceCulture);
             }
         }
         

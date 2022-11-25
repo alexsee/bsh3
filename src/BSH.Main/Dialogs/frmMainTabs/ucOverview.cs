@@ -177,7 +177,7 @@ namespace Brightbits.BSH.Main
                     lblBdStatus.Text = Resources.BackupStatus_4;
                 }
 
-                picDataType.Image = global::BSH.Main.Properties.Resources.status_error;
+                picDataType.Image = Resources.status_error;
                 loadingCircle.Visible = false;
 
                 BtnChangeState("OFF");
@@ -199,7 +199,7 @@ namespace Brightbits.BSH.Main
 
                 if (StatusController.Current.JobState == JobState.ERROR)
                 {
-                    picDataType.Image = global::BSH.Main.Properties.Resources.status_error;
+                    picDataType.Image = Resources.status_error;
                     loadingCircle.Visible = false;
                     plStatus.Visible = false;
                     btnSettings.Enabled = true;
@@ -218,7 +218,7 @@ namespace Brightbits.BSH.Main
                     pbStatus.Value = StatusController.Current.LastProgressCurrent;
 
                     // show status state
-                    picDataType.Image = global::BSH.Main.Properties.Resources.status_running;
+                    picDataType.Image = Resources.status_running;
                     loadingCircle.Visible = true;
                     plStatus.Visible = true;
                     btnSettings.Enabled = false;
@@ -227,7 +227,7 @@ namespace Brightbits.BSH.Main
                 }
                 else
                 {
-                    picDataType.Image = global::BSH.Main.Properties.Resources.status_ok;
+                    picDataType.Image = Resources.status_ok;
                     loadingCircle.Visible = false;
                     plStatus.Visible = false;
                     btnSettings.Enabled = true;
@@ -246,12 +246,12 @@ namespace Brightbits.BSH.Main
             if (str.Equals("OFF"))
             {
                 btnOnOff.Tag = "OFF";
-                btnOnOff.Image = global::BSH.Main.Properties.Resources.toggle_off;
+                btnOnOff.Image = Resources.toggle_off;
             }
             else
             {
                 btnOnOff.Tag = "ON";
-                btnOnOff.Image = global::BSH.Main.Properties.Resources.toggle_on;
+                btnOnOff.Image = Resources.toggle_on;
             }
         }
 
@@ -413,32 +413,32 @@ namespace Brightbits.BSH.Main
 
         private void btnSettings_MouseLeave(object sender, EventArgs e)
         {
-            btnSettings.Image = global::BSH.Main.Properties.Resources.settings_3_line;
+            btnSettings.Image = Resources.settings_3_line;
         }
 
         private void btnSettings_MouseEnter(object sender, EventArgs e)
         {
-            btnSettings.Image = global::BSH.Main.Properties.Resources.settings_3_fill;
+            btnSettings.Image = Resources.settings_3_fill;
         }
 
         private void cmdBackupNow_MouseEnter(object sender, EventArgs e)
         {
-            cmdBackupNow.Image = global::BSH.Main.Properties.Resources.file_copy_2_fill;
+            cmdBackupNow.Image = Resources.file_copy_2_fill;
         }
 
         private void cmdBackupNow_MouseLeave(object sender, EventArgs e)
         {
-            cmdBackupNow.Image = global::BSH.Main.Properties.Resources.file_copy_2_line;
+            cmdBackupNow.Image = Resources.file_copy_2_line;
         }
 
         private void cmdBackupCancel_MouseEnter(object sender, EventArgs e)
         {
-            cmdBackupCancel.Image = global::BSH.Main.Properties.Resources.close_circle_fill;
+            cmdBackupCancel.Image = Resources.close_circle_fill;
         }
 
         private void cmdBackupCancel_MouseLeave(object sender, EventArgs e)
         {
-            cmdBackupCancel.Image = global::BSH.Main.Properties.Resources.close_circle_line;
+            cmdBackupCancel.Image = Resources.close_circle_line;
         }
 
         private void llOptions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

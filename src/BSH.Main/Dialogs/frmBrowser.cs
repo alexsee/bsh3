@@ -18,6 +18,7 @@ using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.Main.Properties;
+using BSH.Main.Utils;
 using Humanizer;
 using Serilog;
 using System;
@@ -73,7 +74,7 @@ namespace Brightbits.BSH.Main
 
             if (!isMedium)
             {
-                Text = "Backupbrowser [Backupmedium nicht verfügbar]";
+                Text = Resources.DLG_BACKUPBROWSER_TITLE_NOT_AVAILABLE;
             }
 
             // set version
@@ -244,7 +245,7 @@ namespace Brightbits.BSH.Main
             lvFiles.Items.Clear();
 
             LCFiles.LoadingCircleControl.Active = true;
-            tsslblStatus.Text = "Ordner wird geladen...";
+            tsslblStatus.Text = Resources.DLG_BACKUPBROWSER_STATUS_LOADING_TEXT;
 
             // adjust path
             if (path.StartsWith(@"\"))
@@ -266,7 +267,7 @@ namespace Brightbits.BSH.Main
                 lvFiles.Focus();
 
                 LCFiles.LoadingCircleControl.Active = false;
-                tsslblStatus.Text = "Quellverzeichnis existiert nicht, wählen Sie ein anderes Verzeichnis aus.";
+                tsslblStatus.Text = Resources.DLG_BACKUPBROWSER_STATUS_NO_SOURCE_FOLDER_TEXT;
 
                 return;
             }
@@ -533,7 +534,7 @@ namespace Brightbits.BSH.Main
                         Text = Settings.Default.BrowserFavoritsName.Split('|')[i],
                         ImageIndex = 1,
                         Tag = @"\" + entry.Substring(entry.IndexOf(@"\") + 1) + @"\",
-                        ToolTipText = "Originalname: " + BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(entry.Substring(entry.LastIndexOf(@"\") + 1)) + "\r\nZielort: " + @"\" + entry.Substring(entry.IndexOf(@"\") + 1) + @"\"
+                        ToolTipText = Resources.DLG_BACKUPBROWSER_TT_FOLDER.FormatWith(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPath(entry.Substring(entry.LastIndexOf(@"\") + 1)), entry.Substring(entry.IndexOf(@"\") + 1))
                     };
 
                     lvFavorite.Items.Add(newEntry);
@@ -1022,7 +1023,7 @@ namespace Brightbits.BSH.Main
                         if ((entry.VersionID ?? "") == (selectedVersion.Id ?? ""))
                         {
                             entry.ToolTipTitle = dlgEditVersion.txtTitle.Text;
-                            entry.ToolTip = ("Datum: " + entry.VersionDate + (!string.IsNullOrEmpty(dlgEditVersion.txtDescription.Text) ? "\r\n\r\n" + dlgEditVersion.txtDescription.Text : "")).Trim();
+                            entry.ToolTip = Resources.DLG_BACKUPBROWSER_TT_VERSION_SIMPLE.FormatWith(entry.VersionDate, dlgEditVersion.txtDescription.Text).Trim();
                             break;
                         }
                     }
@@ -1070,7 +1071,7 @@ namespace Brightbits.BSH.Main
                 catch
                 {
                     // Fehler: Feature nicht installiert?
-                    MessageBox.Show("Feature derzeit nicht verfügbar.\r\n\r\nDieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie " + Program.APP_TITLE + " neu, um das Problem zu lösen.", "Feature nicht verfügbar", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(Resources.DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TEXT, Resources.DLG_BACKUPBROWSER_FEATURE_NOT_AVAILABLE_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
 
                 if (isTmp && !string.IsNullOrEmpty(tmpFile))
@@ -1182,7 +1183,7 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            txtSearch.Text = "Suchen";
+            txtSearch.Text = Resources.DLG_BACKUPBROWSER_SEARCH_TEXT;
             txtSearch.Font = new Font(txtSearch.Font.FontFamily, 10f, FontStyle.Italic);
             txtSearch.Tag = "search";
         }
@@ -1211,10 +1212,10 @@ namespace Brightbits.BSH.Main
         private void ThreadSafe_UcNav()
         {
             AVersionList1.SelectItem(selectedVersion.Id, false);
-            UcNav.Path = "Suchergebnis für \"" + txtSearch.Text + "\"";
-            UcNav.PathLocalized = "Suchergebnis für \"" + txtSearch.Text + "\"";
+            UcNav.Path = Resources.DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT.FormatWith(txtSearch.Text);
+            UcNav.PathLocalized = Resources.DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT.FormatWith(txtSearch.Text);
             UcNav.CreateNavi("", true);
-            lblFileName.Text = "Suchergebnis";
+            lblFileName.Text = Resources.DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT;
             lblFileType.Text = "";
             lblIntegrityCheck.Text = "";
             flpColumn2.Visible = false;
@@ -1225,7 +1226,7 @@ namespace Brightbits.BSH.Main
             SchnellansichtToolStripMenuItem1.Enabled = false;
             EigenschaftenToolStripMenuItem1.Enabled = false;
             WiederherstellenToolStripMenuItem1.Enabled = false;
-            imgFileType.Image = global::BSH.Main.Properties.Resources.search_line;
+            imgFileType.Image = Resources.search_line;
         }
 
         private async void bgrWorkSearch_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -1306,7 +1307,7 @@ namespace Brightbits.BSH.Main
 
         private async void VersionLöschenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Sind Sie sich sicher, dass Sie die ausgewählte Sicherung löschen möchten?", "Löschen", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            if (MessageBox.Show(Resources.DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT, Resources.DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
                 return;
             }
@@ -1327,7 +1328,7 @@ namespace Brightbits.BSH.Main
             if (lstVersions.Count <= 0)
             {
                 Close();
-                NotificationController.Current.ShowIconBalloon(1000, "Keine Datensicherung vorhanden", "Es ist derzeit keine Datensicherung vorhanden, die durchsucht werden kann.", ToolTipIcon.Info);
+                NotificationController.Current.ShowIconBalloon(1000, Resources.INFO_NO_BACKUP_AVAILABLE_TITLE, Resources.INFO_NO_BACKUP_AVAILABLE_TEXT, ToolTipIcon.Info);
                 return;
             }
 
@@ -1335,28 +1336,14 @@ namespace Brightbits.BSH.Main
             AVersionList1.DrawItems();
             foreach (var entry in lstVersions)
             {
-                var newEntry = new aVersionListItem();
-
-                // datetime format
-                string dDate;
-                if (entry.CreationDate.Date == DateTime.Today)
+                var newEntry = new aVersionListItem
                 {
-                    dDate = "Heute " + entry.CreationDate.ToShortTimeString();
-                }
-                else if (entry.CreationDate.AddDays(1d) == DateTime.Today)
-                {
-                    dDate = "Gestern " + entry.CreationDate.ToShortTimeString();
-                }
-                else
-                {
-                    dDate = entry.CreationDate.Date.ToString("dd. MMMM yyyy ") + entry.CreationDate.ToShortTimeString();
-                }
-
-                newEntry.VersionDate = dDate;
-                newEntry.VersionID = entry.Id;
-                newEntry.Version = entry;
-                newEntry.ToolTipTitle = entry.Title;
-                newEntry.ToolTip = ("Datum: " + newEntry.VersionDate + "\r\n\r\nDatenumfang (unkomprimiert): " + entry.Size.Bytes().Humanize() + (!string.IsNullOrEmpty(entry.Description) ? "\r\n\r\n" + entry.Description : "")).Trim();
+                    VersionDate = entry.CreationDate.HumanizeDate(),
+                    VersionID = entry.Id,
+                    Version = entry,
+                    ToolTipTitle = entry.Title
+                };
+                newEntry.ToolTip = Resources.DLG_BACKUPBROWSER_TT_VERSION.FormatWith(entry.CreationDate, entry.Size.Bytes().Humanize(), entry.Description).Trim();
                 newEntry.VersionStable = entry.Stable;
                 AVersionList1.Items.Add(newEntry);
             }
@@ -1565,7 +1552,7 @@ namespace Brightbits.BSH.Main
 
                 if (dlgMultiVersionDelete.ShowDialog() == DialogResult.OK)
                 {
-                    if (MessageBox.Show("Möchten Sie die ausgewählte Sicherung wirklich löschen?", "Sicherung löschen", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                    if (MessageBox.Show(Resources.DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT, Resources.DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                     {
                         return;
                     }
@@ -1583,13 +1570,12 @@ namespace Brightbits.BSH.Main
                 }
             }
 
-            // Versionen laden
+            // load versions
             var lstVersions = BackupLogic.GlobalBackup.QueryManager.GetVersions(true);
             if (lstVersions.Count <= 0)
             {
-                // Browser nicht anzeigen
                 Close();
-                NotificationController.Current.ShowIconBalloon(1000, "Keine Datensicherung vorhanden", "Es ist derzeit keine Datensicherung vorhanden, die durchsucht werden kann.", ToolTipIcon.Info);
+                NotificationController.Current.ShowIconBalloon(1000, Resources.INFO_NO_BACKUP_AVAILABLE_TITLE, Resources.INFO_NO_BACKUP_AVAILABLE_TEXT, ToolTipIcon.Info);
 
                 return;
             }
@@ -1599,33 +1585,19 @@ namespace Brightbits.BSH.Main
 
             foreach (VersionDetails entry in lstVersions)
             {
-                var newEntry = new aVersionListItem();
-
-                // Datum formatieren
-                string dDate;
-                if (entry.CreationDate.Date == DateTime.Today)
+                var newEntry = new aVersionListItem
                 {
-                    dDate = "Heute " + entry.CreationDate.ToShortTimeString();
-                }
-                else if (entry.CreationDate.AddDays(1d) == DateTime.Today)
-                {
-                    dDate = "Gestern " + entry.CreationDate.ToShortTimeString();
-                }
-                else
-                {
-                    dDate = entry.CreationDate.Date.ToString("dd. MMMM yyyy ") + entry.CreationDate.ToShortTimeString();
-                }
-
-                newEntry.VersionDate = dDate;
-                newEntry.VersionID = entry.Id;
-                newEntry.Version = entry;
-                newEntry.ToolTipTitle = entry.Title;
-                newEntry.ToolTip = ("Datum: " + newEntry.VersionDate + (!string.IsNullOrEmpty(entry.Description) ? "\r\n\r\n" + entry.Description : "")).Trim();
+                    VersionDate = entry.CreationDate.HumanizeDate(),
+                    VersionID = entry.Id,
+                    Version = entry,
+                    ToolTipTitle = entry.Title
+                };
+                newEntry.ToolTip = Resources.DLG_BACKUPBROWSER_TT_VERSION.FormatWith(entry.CreationDate, entry.Size.Bytes().Humanize(), entry.Description).Trim();
                 newEntry.VersionStable = entry.Stable;
                 AVersionList1.Items.Add(newEntry);
             }
 
-            // Zur aktuellen Version wechseln
+            // change to current version
             AVersionList1.DrawItems();
             AVersionList1.SelectItem(lstVersions[0].Id);
             Enabled = true;
@@ -1638,7 +1610,6 @@ namespace Brightbits.BSH.Main
 
         private async void btnBack_Click(object sender, EventArgs e)
         {
-            // Eine Ordnerebene höher
             var splitF = selectedFolder.Split('\\');
             string temp = "";
             if (splitF.Length - 1 <= 0)
@@ -1657,7 +1628,6 @@ namespace Brightbits.BSH.Main
 
         private async void DateiOrdnerAusSicherungenLöschenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Wurde überhaupt irgendetwas ausgewählt?
             if (lvFiles.SelectedItems.Count <= 0 || lvFiles.SelectedItems.Count >= 2)
             {
                 return;
@@ -1665,7 +1635,7 @@ namespace Brightbits.BSH.Main
 
             var selected = lvFiles.SelectedItems[0];
 
-            // Ordner oder Datei
+            // file or folder
             if (selected.ImageKey == "folder")
             {
                 await BackupLogic.BackupController.DeleteSingleFileAsync("", selected.Tag.ToString() + "%");

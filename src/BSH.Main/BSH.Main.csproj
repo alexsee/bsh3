@@ -234,6 +234,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
+    <Compile Include="Utils\UiFormatUtils.cs" />
     <EmbeddedResource Include="Dialogs\frmBrowser.resx">
       <DependentUpon>frmBrowser.cs</DependentUpon>
     </EmbeddedResource>
