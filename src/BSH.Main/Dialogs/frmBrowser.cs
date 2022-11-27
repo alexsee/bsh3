@@ -234,7 +234,7 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         public async Task OpenFolderAsync(string path)
         {
-            if (path is null)
+            if (path == null)
             {
                 return;
             }
@@ -278,14 +278,22 @@ namespace Brightbits.BSH.Main
             selectedFolder = path;
 
             // retrieve folder and files list
-            await Task.WhenAll(CreateFolderListAsync(path), CreateFilesListAsync(path));
+            try
+            {
+                await Task.WhenAll(CreateFolderListAsync(path), CreateFilesListAsync(path));
+                tsslblStatus.Text = "Bereit";
+            }
+            catch (Exception ex)
+            {
+                this._logger.Error(ex, "Exception during backup browser file collection.");
+                tsslblStatus.Text = "Fehler beim Laden der Sicherung. Siehe Ereignisprotokoll für weitere Details.";
+            }
 
             // update UI
             lvFiles.EndUpdate();
             lvFiles.Focus();
 
             LCFiles.LoadingCircleControl.Active = false;
-            tsslblStatus.Text = "Bereit";
 
             if (lvFiles.Items.Count > 0)
             {
