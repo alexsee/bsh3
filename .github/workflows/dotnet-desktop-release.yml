@@ -35,9 +35,9 @@ jobs:
       run: |
         iscc.exe tools\setup\Setup.iss
       shell: cmd
-
+    
     - name: Release to Github
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: tools\setup\output\backupservicehome-*.exe
+        files: tools\setup\output\backupservicehome-*
