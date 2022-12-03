@@ -77,6 +77,7 @@
     <Compile Include="UI\aVersionListItem.designer.cs">
       <DependentUpon>aVersionListItem.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\DatetimeComparer.cs" />
     <Compile Include="UI\dlgInputBox.cs">
       <SubType>Form</SubType>
     </Compile>
