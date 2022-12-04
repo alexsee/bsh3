@@ -266,6 +266,41 @@ Datumumfang (unkomprimiert): {1}
     <value>Datum: {0}
 {1}</value>
   </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Die Verbindung konnte nicht aufgebaut werden.
+
+FTP Server meldete: </value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Fehlgeschlagen</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TEXT" xml:space="preserve">
+    <value>Die Verbindung konnte nicht aufgebaut werden.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE" xml:space="preserve">
+    <value>Fehlgeschlagen</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Die Verbindung konnte erfolgreich aufgebaut werden.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Erfolgreich</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT" xml:space="preserve">
+    <value>Kein Sicherungsmedium ausgewählt.
+
+Sie haben kein Medium ausgewählt, auf das gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie ein Medium der Liste auswählen.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE" xml:space="preserve">
+    <value>Verzeichnis auswählen</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT" xml:space="preserve">
+    <value>Auf dem Sicherungsmedium befinden sich bereits andere Datensicherungen. Es kann daher nicht für den Wechsel benutzt werden.
+Wenn Sie ein altes Datensicherungsmedium betrachten möchten bzw. eine Datensicherung dieses Wiederherstellen möchten, benutzen Sie die Importfunktion im "Extras und Support" Menü im Konfigrationsfenster.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE" xml:space="preserve">
+    <value>Medium enthält Datensicherungen</value>
+  </data>
   <data name="DLG_FEATURE_NOT_AVAILABLE_TEXT" xml:space="preserve">
     <value>Feature derzeit nicht verfügbar.
 
@@ -542,6 +577,9 @@ Ein Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home
     <value>keines geplant</value>
   </data>
   <data name="DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT" xml:space="preserve">
+    <value>Noch nicht durchgeführt</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT" xml:space="preserve">
     <value>Noch nicht durchgeführt</value>
   </data>
   <data name="DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT" xml:space="preserve">

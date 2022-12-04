@@ -140,7 +140,7 @@ namespace Brightbits.BSH.Main
 
                 // retrieve newest backup
                 var lastBackup = BackupLogic.GlobalBackup.QueryManager.GetLastBackup();
-                lblBdNewestBackup.Text = (lastBackup != null) ? lastBackup.CreationDate.Humanize(false) : "Noch nicht durchgeführt";
+                lblBdNewestBackup.Text = (lastBackup != null) ? lastBackup.CreationDate.Humanize(false) : Resources.DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT;
 
                 var nextDate = BackupLogic.GetNextBackupDate();
                 lblNextBackup.Text = nextDate.Humanize();

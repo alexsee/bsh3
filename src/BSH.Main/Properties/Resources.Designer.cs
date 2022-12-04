@@ -514,6 +514,101 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte nicht aufgebaut werden.
+        ///
+        ///FTP Server meldete:  ähnelt.
+        /// </summary>
+        internal static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Fehlgeschlagen ähnelt.
+        /// </summary>
+        internal static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte nicht aufgebaut werden. ähnelt.
+        /// </summary>
+        internal static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Fehlgeschlagen ähnelt.
+        /// </summary>
+        internal static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte erfolgreich aufgebaut werden. ähnelt.
+        /// </summary>
+        internal static string DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Erfolgreich ähnelt.
+        /// </summary>
+        internal static string DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Kein Sicherungsmedium ausgewählt.
+        ///
+        ///Sie haben kein Medium ausgewählt, auf das gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie ein Medium der Liste auswählen. ähnelt.
+        /// </summary>
+        internal static string DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Verzeichnis auswählen ähnelt.
+        /// </summary>
+        internal static string DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Auf dem Sicherungsmedium befinden sich bereits andere Datensicherungen. Es kann daher nicht für den Wechsel benutzt werden.
+        ///Wenn Sie ein altes Datensicherungsmedium betrachten möchten bzw. eine Datensicherung dieses Wiederherstellen möchten, benutzen Sie die Importfunktion im &quot;Extras und Support&quot; Menü im Konfigrationsfenster. ähnelt.
+        /// </summary>
+        internal static string DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Medium enthält Datensicherungen ähnelt.
+        /// </summary>
+        internal static string DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Feature derzeit nicht verfügbar.
         ///
         ///Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie Backup Service Home neu, um das Problem zu lösen. ähnelt.
@@ -1283,6 +1378,15 @@ namespace BSH.Main.Properties {
         internal static string DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Noch nicht durchgeführt ähnelt.
+        /// </summary>
+        internal static string DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT", resourceCulture);
             }
         }
         
