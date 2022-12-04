@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections;
 using System.Windows.Forms;
 
@@ -22,11 +23,8 @@ namespace Brightbits.BSH.Controls.UI
     /// </summary>
     public class ListViewColumnSorter : IComparer
     {
-
-        /// <summary>
-        /// Case insensitive comparer object
-        /// </summary>
-        private readonly CaseInsensitiveComparer ObjectCompare;
+        private readonly IComparer dateTimeComparer = new DateTimeComparer();
+        private readonly IComparer stringComparer = new CaseInsensitiveComparer();
 
         /// <summary>
         /// Class constructor.  Initializes various elements
@@ -38,9 +36,6 @@ namespace Brightbits.BSH.Controls.UI
 
             // Initialize the sort order to 'none'
             Order = SortOrder.None;
-
-            // Initialize the CaseInsensitiveComparer object
-            ObjectCompare = new CaseInsensitiveComparer();
         }
 
         /// <summary>
@@ -61,7 +56,34 @@ namespace Brightbits.BSH.Controls.UI
             // Compare the two items
             try
             {
-                compareResult = ObjectCompare.Compare(listviewX.SubItems[SortColumn].Text, listviewY.SubItems[SortColumn].Text);
+                if (listviewX.SubItems.Count <= SortColumn || listviewY.SubItems.Count <= SortColumn)
+                {
+                    return 0;
+                }
+
+                if (SortColumn == 0)
+                {
+                    compareResult = stringComparer.Compare(listviewX.Text, listviewY.Text);
+                }
+                else if (listviewX.SubItems[SortColumn].Tag is DateTime &&
+                    listviewY.SubItems[SortColumn].Tag is DateTime)
+                {
+                    compareResult = dateTimeComparer.Compare(listviewX.SubItems[SortColumn].Tag, listviewY.SubItems[SortColumn].Tag);
+                }
+                else if (listviewX.SubItems[SortColumn].Tag is string &&
+                    listviewY.SubItems[SortColumn].Tag is string)
+                {
+                    compareResult = stringComparer.Compare(listviewX.SubItems[SortColumn].Tag, listviewY.SubItems[SortColumn].Tag);
+                }
+                else if (listviewX.SubItems[SortColumn].Tag is double &&
+                    listviewY.SubItems[SortColumn].Tag is double)
+                {
+                    compareResult = ((double)listviewX.SubItems[SortColumn].Tag).CompareTo((double)listviewY.SubItems[SortColumn].Tag);
+                }
+                else
+                {
+                    compareResult = 0;
+                }
             }
             catch
             {
