@@ -172,6 +172,9 @@
   <data name="BACKUP_TITLE_AUTOMATIC" xml:space="preserve">
     <value>Automatisches Backup</value>
   </data>
+  <data name="BACKUP_TITLE_FIRST" xml:space="preserve">
+    <value>Erste vollständige Datensicherung</value>
+  </data>
   <data name="BACKUP_TITLE_MANUAL" xml:space="preserve">
     <value>Manuelle Sicherung</value>
   </data>
@@ -393,6 +396,106 @@ Möchten Sie den Vorgang fortsetzen?</value>
   <data name="DLG_UC_CONFIG_TITLE" xml:space="preserve">
     <value>Konfigurieren</value>
   </data>
+  <data name="DLG_UC_DO_CONFIGURE_COMPUTER" xml:space="preserve">
+    <value>Computer: </value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TEXT" xml:space="preserve">
+    <value>Der Speicherort dieses Verzeichnisses kann nicht verändert werden, da der Ordnername identisch sein muss.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TITLE" xml:space="preserve">
+    <value>Speicherort nicht veränderbar</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT" xml:space="preserve">
+    <value>Der angegebene Verzeichnispfad wurde nicht gefunden.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE" xml:space="preserve">
+    <value>FTP Verbindung fehlgeschlagen</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Die Verbindung konnte nicht aufgebaut werden.
+
+FTP Server meldete:</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Fehlgeschlagen</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Zum Überprüfen des Pfades muss der Ordner, Netzlaufwerk oder Netzwerkfreigabe nun bereit stehen.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Fehlgeschlagen</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT" xml:space="preserve">
+    <value>In dem angegebenen Verzeichnis wurde keine Sicherung gefunden.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE" xml:space="preserve">
+    <value>Keine Sicherung</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TEXT" xml:space="preserve">
+    <value>Sie müssen ein Laufwerk auswählen.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TITLE" xml:space="preserve">
+    <value>Laufwerk auswählen</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TEXT" xml:space="preserve">
+    <value>Keine Option gewählt.
+
+Um den Vorgang fortzsetzen muss mindestens eine Option ausgewählt werden. Falls Sie sich unsicher sind, wählen Sie die vollautomatische Datensicherung.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TITLE" xml:space="preserve">
+    <value>Option wählen</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT" xml:space="preserve">
+    <value>Die Verbindung konnte erfolgreich aufgebaut werden.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE" xml:space="preserve">
+    <value>Erfolgreich</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT" xml:space="preserve">
+    <value>Keine Sicherung gewählt.\r\n\r\nUm den Vorgang fortzsetzen müssen Sie die Datensicherung auswählen, die Sie importieren möchten.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TITLE" xml:space="preserve">
+    <value>Sicherung wählen</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TEXT" xml:space="preserve">
+    <value>Kein Verzeichnis hinzugefügt.
+
+Sie haben kein Verzeichnis hinzugefügt, dass gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie mindestens ein Verzeichnis der Liste hinzufügen.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TITLE" xml:space="preserve">
+    <value>Verzeichnis hinzufügen</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TEXT" xml:space="preserve">
+    <value>Kein Sicherungsmedium ausgewählt.
+
+Sie haben kein Medium ausgewählt, auf das gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie ein Medium der Liste auswählen.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TITLE" xml:space="preserve">
+    <value>Sicherungsmedium hinzufügen</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TEXT" xml:space="preserve">
+    <value>Gleicher Verzeichnisname.
+
+Ein Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TITLE" xml:space="preserve">
+    <value>Gleicher Verzeichnisname</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TEXT" xml:space="preserve">
+    <value>Das ausgewählte Sicherungsmedium ist nicht leer und enthält bereits Sicherungen von Backup Service Home, die möglicherweise überschrieben werden könnten. Bitte wählen Sie ein anderes Verzeichnis aus oder löschen Sie zuvor manuell die Sicherungen von dem Sicherungsmedium.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TITLE" xml:space="preserve">
+    <value>Sicherungsmedium nicht leer</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_STATUS_IMPORT_TEXT" xml:space="preserve">
+    <value>Datensicherung wird importiert...</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_STATUS_IMPORT_WAIT_TEXT" xml:space="preserve">
+    <value>Einen Moment bitte...</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_TITLE" xml:space="preserve">
+    <value>Konfigurieren</value>
+  </data>
   <data name="DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT" xml:space="preserve">
     <value> vollautomatisch stündlich</value>
   </data>
@@ -509,6 +612,12 @@ Möchten Sie den Vorgang fortsetzen?</value>
   </data>
   <data name="home_4_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\home-4-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="INFO_BACKUP_FIRST_RUN_TEXT" xml:space="preserve">
+    <value>Sobald die erste Datensicherung durchgelaufen ist, können Sie diese durch einen Doppelklick hierauf mit dem Backupbrowser ansehen.</value>
+  </data>
+  <data name="INFO_BACKUP_FIRST_RUN_TITLE" xml:space="preserve">
+    <value>Erste Sicherung läuft...</value>
   </data>
   <data name="INFO_BACKUP_OLD_TEXT" xml:space="preserve">
     <value>Ihre letzte Datensicherung liegt bereits {0} Tage zurück. Führen Sie eine Datensicherung aus, damit Ihre aktuellen Dateien gesichert sind.</value>

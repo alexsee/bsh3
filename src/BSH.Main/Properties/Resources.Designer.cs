@@ -179,6 +179,15 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Erste vollständige Datensicherung ähnelt.
+        /// </summary>
+        internal static string BACKUP_TITLE_FIRST {
+            get {
+                return ResourceManager.GetString("BACKUP_TITLE_FIRST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Manuelle Sicherung ähnelt.
         /// </summary>
         internal static string BACKUP_TITLE_MANUAL {
@@ -863,6 +872,286 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Computer:  ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_COMPUTER {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_COMPUTER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Der Speicherort dieses Verzeichnisses kann nicht verändert werden, da der Ordnername identisch sein muss. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Speicherort nicht veränderbar ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Der angegebene Verzeichnispfad wurde nicht gefunden. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FTP Verbindung fehlgeschlagen ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte nicht aufgebaut werden.
+        ///
+        ///FTP Server meldete: ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Fehlgeschlagen ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Zum Überprüfen des Pfades muss der Ordner, Netzlaufwerk oder Netzwerkfreigabe nun bereit stehen. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Fehlgeschlagen ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die In dem angegebenen Verzeichnis wurde keine Sicherung gefunden. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Keine Sicherung ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sie müssen ein Laufwerk auswählen. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Laufwerk auswählen ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Keine Option gewählt.
+        ///
+        ///Um den Vorgang fortzsetzen muss mindestens eine Option ausgewählt werden. Falls Sie sich unsicher sind, wählen Sie die vollautomatische Datensicherung. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Option wählen ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte erfolgreich aufgebaut werden. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Erfolgreich ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Keine Sicherung gewählt.\r\n\r\nUm den Vorgang fortzsetzen müssen Sie die Datensicherung auswählen, die Sie importieren möchten. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sicherung wählen ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Kein Verzeichnis hinzugefügt.
+        ///
+        ///Sie haben kein Verzeichnis hinzugefügt, dass gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie mindestens ein Verzeichnis der Liste hinzufügen. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Verzeichnis hinzufügen ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Kein Sicherungsmedium ausgewählt.
+        ///
+        ///Sie haben kein Medium ausgewählt, auf das gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie ein Medium der Liste auswählen. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungsmedium hinzufügen ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Gleicher Verzeichnisname.
+        ///
+        ///Ein Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Gleicher Verzeichnisname ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Das ausgewählte Sicherungsmedium ist nicht leer und enthält bereits Sicherungen von Backup Service Home, die möglicherweise überschrieben werden könnten. Bitte wählen Sie ein anderes Verzeichnis aus oder löschen Sie zuvor manuell die Sicherungen von dem Sicherungsmedium. ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungsmedium nicht leer ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung wird importiert... ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_STATUS_IMPORT_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_STATUS_IMPORT_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Einen Moment bitte... ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_STATUS_IMPORT_WAIT_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_STATUS_IMPORT_WAIT_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Konfigurieren ähnelt.
+        /// </summary>
+        internal static string DLG_UC_DO_CONFIGURE_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  vollautomatisch stündlich ähnelt.
         /// </summary>
         internal static string DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT {
@@ -1221,6 +1510,24 @@ namespace BSH.Main.Properties {
             get {
                 object obj = ResourceManager.GetObject("home_4_line", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sobald die erste Datensicherung durchgelaufen ist, können Sie diese durch einen Doppelklick hierauf mit dem Backupbrowser ansehen. ähnelt.
+        /// </summary>
+        internal static string INFO_BACKUP_FIRST_RUN_TEXT {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_FIRST_RUN_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Erste Sicherung läuft... ähnelt.
+        /// </summary>
+        internal static string INFO_BACKUP_FIRST_RUN_TITLE {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_FIRST_RUN_TITLE", resourceCulture);
             }
         }
         
