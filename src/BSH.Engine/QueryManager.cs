@@ -757,28 +757,35 @@ namespace Brightbits.BSH.Engine
                     path = path.Substring(0, path.Length - 1);
                 }
 
-                if (Configuration.ShowLocalizedPath == "1")
+                if (Configuration.ShowLocalizedPath != "1")
                 {
-                    // search path in database
-                    using (var dbClient = dbClientFactory.CreateDbClient())
+                    return path;
+                }
+
+                // search path in database
+                using (var dbClient = dbClientFactory.CreateDbClient())
+                {
+                    var parameters = new IDataParameter[]
                     {
-                        using (var reader = dbClient.ExecuteDataReader(CommandType.Text, $"SELECT * FROM folderjunctiontable", null))
+                        dbClient.CreateParameter("junction", DbType.String, 0, "%" + path + "%")
+                    };
+
+                    using (var reader = dbClient.ExecuteDataReader(CommandType.Text, "SELECT junction, folder FROM folderjunctiontable WHERE junction LIKE @junction", parameters))
+                    {
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            var junction = reader.GetString("junction");
+                            var folder = reader.GetString("folder");
+
+                            if (path.Contains(junction))
                             {
-                                var junction = reader.GetString("junction");
-                                var folder = reader.GetString("folder");
+                                reader.Close();
 
-                                if (path.Contains(junction))
-                                {
-                                    reader.Close();
-
-                                    return path.Replace(junction, folder);
-                                }
+                                return path.Replace(junction, folder);
                             }
-
-                            reader.Close();
                         }
+
+                        reader.Close();
                     }
                 }
 
