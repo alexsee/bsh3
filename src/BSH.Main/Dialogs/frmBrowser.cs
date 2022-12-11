@@ -22,7 +22,6 @@ using BSH.Main.Utils;
 using Humanizer;
 using Serilog;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -117,7 +116,7 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         private async Task CreateFolderListAsync(string path)
         {
-            var folders = await BackupLogic.GlobalBackup.QueryManager.GetFolderListAsync(selectedVersion.Id, @"\" + path + @"\%");
+            var folders = await BackupLogic.GlobalBackup.QueryManager.GetFolderListAsync(selectedVersion.Id, $"\\{path}\\%");
 
             // determine the above folder
             if (!string.IsNullOrEmpty(selectedFolder))
@@ -198,7 +197,7 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         private async Task CreateFilesListAsync(string path)
         {
-            var files = await BackupLogic.GlobalBackup.QueryManager.GetFilesByVersionAsync(selectedVersion.Id, @"\" + path + @"\");
+            var files = await BackupLogic.GlobalBackup.QueryManager.GetFilesByVersionAsync(selectedVersion.Id, $"\\{path}\\");
 
             foreach (var file in files)
             {
@@ -310,12 +309,12 @@ namespace Brightbits.BSH.Main
             try
             {
                 await Task.WhenAll(CreateFolderListAsync(path), CreateFilesListAsync(path));
-                tsslblStatus.Text = "Bereit";
+                tsslblStatus.Text = Resources.DLG_BACKUPBROWSER_MSG_INFO_READY;
             }
             catch (Exception ex)
             {
                 this._logger.Error(ex, "Exception during backup browser file collection.");
-                tsslblStatus.Text = "Fehler beim Laden der Sicherung. Siehe Ereignisprotokoll für weitere Details.";
+                tsslblStatus.Text = Resources.DLG_BACKUPBROWSER_MSG_ERROR_ERROR_LOAD;
             }
 
             // update UI
