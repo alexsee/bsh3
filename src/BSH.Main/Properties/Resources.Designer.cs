@@ -710,7 +710,9 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Dateityp ausschließen.\r\n\r\nGeben Sie einfach die Dateierweiterung derer Dateien ein, die Sie von der Datensicherung ausschließen möchten. Zum Beispiel: doc ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Dateityp ausschließen.
+        ///
+        ///Geben Sie einfach die Dateierweiterung derer Dateien ein, die Sie von der Datensicherung ausschließen möchten. Zum Beispiel: doc ähnelt.
         /// </summary>
         internal static string DLG_FILTER_INPUT_FILE_TYPE_TEXT {
             get {
