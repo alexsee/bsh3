@@ -337,7 +337,9 @@ Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht 
     <value>Feature nicht verfügbar</value>
   </data>
   <data name="DLG_FILTER_INPUT_FILE_TYPE_TEXT" xml:space="preserve">
-    <value>Dateityp ausschließen.\r\n\r\nGeben Sie einfach die Dateierweiterung derer Dateien ein, die Sie von der Datensicherung ausschließen möchten. Zum Beispiel: doc</value>
+    <value>Dateityp ausschließen.
+
+Geben Sie einfach die Dateierweiterung derer Dateien ein, die Sie von der Datensicherung ausschließen möchten. Zum Beispiel: doc</value>
   </data>
   <data name="DLG_FILTER_INPUT_FILE_TYPE_TITLE" xml:space="preserve">
     <value>Dateierweiterung ausschließen</value>
