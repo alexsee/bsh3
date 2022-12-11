@@ -15,7 +15,7 @@
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
-using Microsoft.VisualBasic;
+using BSH.Main.Properties;
 using System;
 using System.IO;
 using System.Linq;
@@ -59,7 +59,7 @@ namespace Brightbits.BSH.Main
         {
             get
             {
-                return "Konfigurieren";
+                return Resources.DLG_UC_DO_CONFIGURE_TITLE;
             }
         }
 
@@ -113,8 +113,8 @@ namespace Brightbits.BSH.Main
 
                     // show controls
                     tbControl.SelectedTab = tbStep1;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_1");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_1");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_1;
+                    lblDescription.Text = Resources.WELCOME_STEP_1;
                     cmdBack.Enabled = false;
                     cmdNext.Enabled = true;
                     break;
@@ -124,7 +124,7 @@ namespace Brightbits.BSH.Main
                     // at least one source folder added
                     if (lvSourceFolders.Items.Count <= 0)
                     {
-                        MessageBox.Show("Kein Verzeichnis hinzugefügt.\r\n\r\nSie haben kein Verzeichnis hinzugefügt, dass gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie mindestens ein Verzeichnis der Liste hinzufügen.", "Verzeichnis hinzufügen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         iWizardStep -= 1;
                         ShowWizardStep(iWizardStep);
                         return;
@@ -139,8 +139,8 @@ namespace Brightbits.BSH.Main
 
                     // show controls
                     tbControl.SelectedTab = tbStep2;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_2");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_2");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_2;
+                    lblDescription.Text = Resources.WELCOME_STEP_2;
                     cmdBack.Enabled = true;
                     cmdNext.Enabled = true;
                     break;
@@ -152,7 +152,7 @@ namespace Brightbits.BSH.Main
                     {
                         if (lvBackupDrive.SelectedItems.Count <= 0)
                         {
-                            MessageBox.Show("Kein Sicherungsmedium ausgewählt.\r\n\r\nSie haben kein Medium ausgewählt, auf das gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie ein Medium der Liste auswählen.", "Verzeichnis auswählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
                             ShowWizardStep(iWizardStep);
                             return;
@@ -163,7 +163,7 @@ namespace Brightbits.BSH.Main
 
                         if (BackupFolder.Exists)
                         {
-                            MessageBox.Show("Das ausgewählte Sicherungsmedium ist nicht leer und enthält bereits Sicherungen von Backup Service Home, die möglicherweise überschrieben werden könnten. Bitte wählen Sie ein anderes Verzeichnis aus oder löschen Sie zuvor manuell die Sicherungen von dem Sicherungsmedium.", "Verzeichnis auswählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
                             ShowWizardStep(iWizardStep);
                             return;
@@ -182,18 +182,18 @@ namespace Brightbits.BSH.Main
                             if (profile == null)
                             {
                                 // directory not found
-                                MessageBox.Show("Der angegebene Verzeichnispfad wurde nicht gefunden.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 iWizardStep -= 1;
                                 ShowWizardStep(iWizardStep);
                                 return;
                             }
 
-                            MessageBox.Show("Die Verbindung konnte erfolgreich aufgebaut werden.", "Erfolgreich", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         catch (Exception ex)
                         {
                             // ftp credentials exception
-                            MessageBox.Show("Die Verbindung konnte nicht aufgebaut werden.\r\n\r\nFTP Server meldete: " + ex.Message.ToString(), "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
                             ShowWizardStep(iWizardStep);
                             return;
@@ -209,7 +209,7 @@ namespace Brightbits.BSH.Main
                                 if (!Directory.Exists(txtUNCPath.Text))
                                 {
                                     // network directory credentials exception
-                                    MessageBox.Show("Zum Überprüfen des Pfades muss der Ordner, Netzlaufwerk oder Netzwerkfreigabe nun bereit stehen.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     iWizardStep -= 1;
                                     ShowWizardStep(iWizardStep);
                                     return;
@@ -219,7 +219,7 @@ namespace Brightbits.BSH.Main
                         catch
                         {
                             // credentials exception
-                            MessageBox.Show("Zum Überprüfen des Pfades muss der Ordner, Netzlaufwerk oder Netzwerkfreigabe nun bereit stehen.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
                             ShowWizardStep(iWizardStep);
                             return;
@@ -228,8 +228,8 @@ namespace Brightbits.BSH.Main
 
                     // show controls
                     tbControl.SelectedTab = tbStep3;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_3");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_3");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_3;
+                    lblDescription.Text = Resources.WELCOME_STEP_3;
                     cmdBack.Enabled = true;
                     cmdNext.Enabled = true;
                     break;
@@ -239,7 +239,7 @@ namespace Brightbits.BSH.Main
                     // automatic or manual mode
                     if (!rdFullAutomated.Checked && !rdManualMode.Checked)
                     {
-                        MessageBox.Show("Keine Option gewählt.\r\n\r\nUm den Vorgang fortzsetzen muss mindestens eine Option ausgewählt werden. Falls Sie sich unsicher sind, wählen Sie die vollautomatische Datensicherung.", "Option wählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         iWizardStep -= 1;
                         ShowWizardStep(iWizardStep);
                         return;
@@ -247,8 +247,8 @@ namespace Brightbits.BSH.Main
 
                     // show controls
                     tbControl.SelectedTab = tbProgress;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_4");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_4");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_4;
+                    lblDescription.Text = Resources.WELCOME_STEP_4;
                     cmdBack.Enabled = false;
                     cmdNext.Enabled = false;
                     Application.DoEvents();
@@ -321,8 +321,8 @@ namespace Brightbits.BSH.Main
                         BackupLogic.StartSystem(true);
 
                         // create first backup
-                        BackupLogic.BackupController.CreateBackupAsync("Erste vollständige Datensicherung", "", false);
-                        NotificationController.Current.ShowIconBalloon(5000, "Erste Sicherung läuft...", "Sobald die erste Datensicherung durchgelaufen ist, können Sie diese durch einen Doppelklick hierauf mit dem Backupbrowser ansehen.", ToolTipIcon.Info);
+                        BackupLogic.BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_FIRST, "", false);
+                        NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_FIRST_RUN_TITLE, Resources.INFO_BACKUP_FIRST_RUN_TEXT, ToolTipIcon.Info);
                     }
 
                     break;
@@ -331,8 +331,8 @@ namespace Brightbits.BSH.Main
 
                     // show import steps
                     tbControl.SelectedTab = tbStep5;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_5");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_5");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_5;
+                    lblDescription.Text = Resources.WELCOME_STEP_5;
                     cmdBack.Enabled = false;
                     cmdNext.Enabled = true;
 
@@ -354,7 +354,7 @@ namespace Brightbits.BSH.Main
                     {
                         if (lvBackupMedia.SelectedItems.Count <= 0)
                         {
-                            MessageBox.Show("Sie müssen ein Laufwerk auswählen.", "Laufwerk auswählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
                             ShowWizardStep(iWizardStep);
                             return;
@@ -379,7 +379,7 @@ namespace Brightbits.BSH.Main
                                     string computerName = computerDirectory.Substring(computerDirectory.LastIndexOf(@"\") + 1);
                                     try
                                     {
-                                        lvBackups.Groups.Add(new ListViewGroup(computerName, "Computer: " + computerName));
+                                        lvBackups.Groups.Add(new ListViewGroup(computerName, Resources.DLG_UC_DO_CONFIGURE_COMPUTER + computerName));
                                     }
                                     catch
                                     {
@@ -395,8 +395,8 @@ namespace Brightbits.BSH.Main
                         }
 
                         // show controls
-                        lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_6");
-                        lblDescription.Text = Translation.GetString("WELCOME_STEP_6");
+                        lblTitle.Text = Resources.WELCOMETITLE_STEP_6;
+                        lblDescription.Text = Resources.WELCOME_STEP_6;
                         tbControl.SelectedTab = tbStep6;
                         cmdBack.Enabled = true;
                         cmdNext.Enabled = true;
@@ -415,7 +415,7 @@ namespace Brightbits.BSH.Main
                         else
                         {
                             // show controls
-                            MessageBox.Show("In dem angegebenen Verzeichnis wurde keine Sicherung gefunden.", "Keine Sicherung", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             iWizardStep -= 1;
                             ShowWizardStep(iWizardStep);
                             return;
@@ -445,19 +445,19 @@ namespace Brightbits.BSH.Main
                                 storage.Open();
                                 if (!storage.FileExists("backup.bshdb"))
                                 {
-                                    MessageBox.Show("Im angegebenen Verzeichnis wurde keine Sicherung gefunden. Wählen Sie den Ordner aus, der die Backup.bshdb Datei enthält.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     iWizardStep -= 1;
                                     ShowWizardStep(iWizardStep);
                                     return;
                                 }
                             }
 
-                            MessageBox.Show("Die Verbindung konnte erfolgreich aufgebaut werden.", "Erfolgreich", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         catch (Exception ex)
                         {
                             // ftp credentials wrong
-                            MessageBox.Show("Die Verbindung konnte nicht aufgebaut werden.\r\n\r\nFTP Server meldete: " + ex.Message.ToString(), "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
                             ShowWizardStep(iWizardStep);
                             return;
@@ -474,8 +474,8 @@ namespace Brightbits.BSH.Main
                     tbControl.SelectedTab = tbProgress;
                     cmdBack.Enabled = false;
                     cmdNext.Enabled = false;
-                    lblTitle.Text = "Einen Moment bitte...";
-                    lblStatus.Text = "Datensicherung wird importiert...";
+                    lblTitle.Text = Resources.DLG_UC_DO_CONFIGURE_STATUS_IMPORT_WAIT_TEXT;
+                    lblStatus.Text = Resources.DLG_UC_DO_CONFIGURE_STATUS_IMPORT_TEXT;
                     Application.DoEvents();
 
                     // reset application
@@ -487,7 +487,7 @@ namespace Brightbits.BSH.Main
                         // no backup selected?
                         if (lvBackups.SelectedItems.Count <= 0)
                         {
-                            MessageBox.Show("Keine Sicherung gewählt.\r\n\r\nUm den Vorgang fortzsetzen müssen Sie die Datensicherung auswählen, die Sie importieren möchten.", "Sicherung wählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
                             ShowWizardStep(iWizardStep);
                             return;
@@ -522,7 +522,7 @@ namespace Brightbits.BSH.Main
                         catch (Exception ex)
                         {
                             // credentials wrong
-                            MessageBox.Show("FTP meldet: " + ex.Message.ToString() + "\r\n\r\nEine Verbindung mit dem FTP-Server konnte nicht aufgebaut werden. Um den Vorgang fortzusetzen muss die Verbindung zum FTP-Server hergestellt werden, um die Konnektivität zu überprüfen.", "FTP-Server nicht erreichbar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 2;
                             ShowWizardStep(iWizardStep);
                             return;
@@ -533,7 +533,7 @@ namespace Brightbits.BSH.Main
                         if (!File.Exists(txtPath.Text + @"\backup.bshdb"))
                         {
                             // database does not exist
-                            MessageBox.Show("In dem angegebenen Verzeichnis wurde keine Sicherung gefunden.", "Keine Sicherung", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             iWizardStep -= 1;
                             ShowWizardStep(iWizardStep);
                             return;
@@ -581,8 +581,8 @@ namespace Brightbits.BSH.Main
 
                     // show controls
                     tbControl.SelectedTab = tbStep7;
-                    lblTitle.Text = Translation.GetString("WELCOMETITLE_STEP_7");
-                    lblDescription.Text = Translation.GetString("WELCOME_STEP_7");
+                    lblTitle.Text = Resources.WELCOMETITLE_STEP_7;
+                    lblDescription.Text = Resources.WELCOME_STEP_7;
                     cmdBack.Enabled = false;
                     cmdNext.Enabled = true;
                     lvSourceDirs.Items.Clear();
@@ -680,7 +680,7 @@ namespace Brightbits.BSH.Main
                 {
                     if (string.Compare(new DirectoryInfo(entry.Text).Name, new DirectoryInfo(dlgFolderBrowser.SelectedPath).Name, true) == 0)
                     {
-                        MessageBox.Show("Gleicher Verzeichnisname.\r\n\r\nEin Verzeichnis mit dem selben Namen wird bereits gesichert. " + Program.APP_TITLE + " kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern.", Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         return;
                     }
                 }
@@ -713,16 +713,16 @@ namespace Brightbits.BSH.Main
 
                 if (profile == null)
                 {
-                    MessageBox.Show("Die Verbindung mit dem FTP Server war nicht erfolgreich.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT, Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                MessageBox.Show("Die Verbindung konnte erfolgreich aufgebaut werden.", "Erfolgreich", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 // credentials wrong
-                MessageBox.Show("Die Verbindung konnte nicht aufgebaut werden.\r\n\r\nFTP Server meldete: " + ex.Message.ToString(), "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -816,7 +816,7 @@ namespace Brightbits.BSH.Main
                 }
                 else
                 {
-                    MessageBox.Show("Der Speicherort dieses Verzeichnisses kann nicht verändert werden, da der Ordnername identisch sein muss.", "Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }

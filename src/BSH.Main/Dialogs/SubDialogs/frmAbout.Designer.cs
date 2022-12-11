@@ -119,7 +119,6 @@ namespace Brightbits.BSH.Main
             this.cmdOK.TabIndex = 0;
             this.cmdOK.Text = "&OK";
             this.cmdOK.UseVisualStyleBackColor = true;
-            this.cmdOK.DialogResult = DialogResult.OK;
             // 
             // Label1
             // 
@@ -163,8 +162,8 @@ namespace Brightbits.BSH.Main
             // 
             // TextBox1
             // 
-            this.TextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TextBox1.BackColor = System.Drawing.Color.White;
             this.TextBox1.Location = new System.Drawing.Point(42, 236);

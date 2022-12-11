@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
 using System;
@@ -55,7 +56,7 @@ namespace Brightbits.BSH.Engine.Jobs
             _logger.Information("Begin delete single file.");
 
             ReportState(JobState.RUNNING);
-            ReportStatus("Vorbereiten...", "Einzelne Dateien aus Sicherung löschen...");
+            ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_DELETE_SINGLE_PREPARE);
             ReportProgress(0, 0);
 
             // check medium

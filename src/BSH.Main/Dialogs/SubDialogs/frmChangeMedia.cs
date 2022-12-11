@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Brightbits.BSH.Engine.Storage;
+using BSH.Main.Properties;
 using System;
 using System.Windows.Forms;
 
@@ -128,12 +129,12 @@ namespace Brightbits.BSH.Main
             {
                 if (lvBackupDrive.SelectedItems.Count <= 0)
                 {
-                    MessageBox.Show("Kein Sicherungsmedium ausgewählt.\r\n\r\nSie haben kein Medium ausgewählt, auf das gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie ein Medium der Liste auswählen.", "Verzeichnis auswählen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT, Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
                 else if (System.IO.File.Exists(lvBackupDrive.SelectedItems[0].Tag.ToString() + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName + @"\backup.bshdb"))
                 {
-                    MessageBox.Show("Auf dem Sicherungsmedium befinden sich bereits andere Datensicherungen. Es kann daher nicht für den Wechsel benutzt werden.\r\nWenn Sie ein altes Datensicherungsmedium betrachten möchten bzw. eine Datensicherung dieses Wiederherstellen möchten, benutzen Sie die Importfunktion im \"Extras und Support\" Menü im Konfigrationsfenster.", "Medium enthält Datensicherungen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
@@ -158,7 +159,7 @@ namespace Brightbits.BSH.Main
 
                         if (storage.FileExists("backup.bshdb"))
                         {
-                            MessageBox.Show("Auf dem Sicherungsmedium befinden sich bereits andere Datensicherungen. Es kann daher nicht für den Wechsel benutzt werden.\r\nWenn Sie ein altes Datensicherungsmedium betrachten möchten bzw. eine Datensicherung dieses Wiederherstellen möchten, benutzen Sie die Importfunktion im \"Extras und Support\" Menü im Konfigrationsfenster.", "Medium enthält Datensicherungen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
                     }
@@ -166,7 +167,7 @@ namespace Brightbits.BSH.Main
                 catch (Exception ex)
                 {
                     // Verbindungdaten falsch
-                    MessageBox.Show("Die Verbindung konnte nicht aufgebaut werden.\r\n\r\nFTP Server meldete: " + ex.Message.ToString(), "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
@@ -191,16 +192,16 @@ namespace Brightbits.BSH.Main
 
                 if (profile == null)
                 {
-                    MessageBox.Show("Die Verbindung konnte nicht aufgebaut werden.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TEXT, Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                MessageBox.Show("Die Verbindung konnte erfolgreich aufgebaut werden.", "Erfolgreich", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT, Resources.DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 // Verbindungdaten falsch
-                MessageBox.Show("Die Verbindung konnte nicht aufgebaut werden.\r\n\r\nFTP Server meldete: " + ex.Message.ToString(), "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

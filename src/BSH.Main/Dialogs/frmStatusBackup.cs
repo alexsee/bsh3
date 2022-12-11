@@ -14,6 +14,8 @@
 
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
+using BSH.Main.Properties;
+using Humanizer;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using System;
 
@@ -67,7 +69,7 @@ namespace Brightbits.BSH.Main
                 pbarTotal.Value = current;
                 TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal);
                 TaskbarManager.Instance.SetProgressValue(pbarTotal.Value, pbarTotal.Maximum);
-                lblFiles.Text = string.Format("Verarbeitet: {0:N0} von {1:N0} Dateien", current, total);
+                lblFiles.Text = Resources.DLG_STATUS_FILES_PROCESSED_TEXT.FormatWith(current, total);
             }));
         }
 
@@ -97,7 +99,7 @@ namespace Brightbits.BSH.Main
         {
             BackupLogic.BackupController.Cancel();
             cmdCancel.Enabled = false;
-            cmdCancel.Text = "Abbrechen...";
+            cmdCancel.Text = Resources.DLG_STATUS_STATUS_CANCELED_TEXT;
         }
 
         private void chkOptions_CheckedChanged(object sender, EventArgs e)

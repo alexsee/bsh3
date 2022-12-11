@@ -17,6 +17,7 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Controls.UI;
+using BSH.Main.Properties;
 using System;
 using System.IO;
 using System.Linq;
@@ -70,7 +71,7 @@ namespace Brightbits.BSH.Main
         {
             get
             {
-                return "Konfiguration";
+                return Resources.DLG_UC_CONFIG_TITLE;
             }
         }
 
@@ -94,7 +95,7 @@ namespace Brightbits.BSH.Main
                 using (var dlgShortStatus = new frmShortStatus())
                 {
                     Enabled = false;
-                    dlgShortStatus.lblStatus.Text = "Warten auf Fertigstellung einer anderen Aktion...";
+                    dlgShortStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_WAIT_FOR_FINISH_TEXT;
                     dlgShortStatus.Show(SuperBase);
 
                     while (StatusController.Current.IsTaskRunning())
@@ -387,7 +388,7 @@ namespace Brightbits.BSH.Main
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Problem beim Verschieben.\r\n\r\n" + ex.Message, "Problem beim Verschieben", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_ERROR_MOVE_TEXT + ex.Message, Resources.DLG_UC_CONFIG_MSG_ERROR_MOVE_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 
@@ -422,14 +423,14 @@ namespace Brightbits.BSH.Main
             {
                 if (string.Compare(new DirectoryInfo(entry.Text).Name, new DirectoryInfo(folderPath).Name, true) == 0)
                 {
-                    MessageBox.Show("Gleicher Verzeichnisname.\r\n\r\nEin Verzeichnis mit dem selben Namen wird bereits gesichert. " + Program.APP_TITLE + " kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern.", Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TEXT, Resources.DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
             }
 
             if (folderPath.Length <= 3)
             {
-                MessageBox.Show("Sie haben ein gesamtes Laufwerk als Quellverzeichnis ausgewählt. Backup Service Home 3 unterstützt nur die Sicherung von Verzeichnissen, weshalb Dateien im Stammverzeichnis des Laufwerkes nicht gesichert werden. Verzeichnisse auf dem Laufwerk werden dagegen gesichert.", "Gesamtes Laufwerk ausgewählt", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TEXT, Resources.DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             lvSource.Items.Add(folderPath, 0);
@@ -440,7 +441,7 @@ namespace Brightbits.BSH.Main
                 using (var dlgShortStatus = new frmShortStatus())
                 {
                     Enabled = false;
-                    dlgShortStatus.lblStatus.Text = "Warten auf Fertigstellung einer anderen Aktion...";
+                    dlgShortStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_WAIT_FOR_FINISH_TEXT;
                     dlgShortStatus.Show();
 
                     while (StatusController.Current.IsTaskRunning())
@@ -496,16 +497,16 @@ namespace Brightbits.BSH.Main
 
                 if (profile != null)
                 {
-                    MessageBox.Show("Die Verbindung konnte erfolgreich aufgebaut werden.", "Erfolgreich", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TEXT, Resources.DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("Die Verbindung konnte nicht aufgebaut werden.", "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT, Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Die Verbindung konnte nicht aufgebaut werden.\r\n\r\nFTP Server meldete: " + ex.Message.ToString(), "Fehlgeschlagen", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + "\r\n\r\n" + ex.Message.ToString(), Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -554,7 +555,7 @@ namespace Brightbits.BSH.Main
             using (var statusWindow = new frmShortStatus())
             {
                 IJobReport statusWindowReport = statusWindow;
-                statusWindow.lblStatus.Text = "Datensicherungen werden entschlüsselt...";
+                statusWindow.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT;
                 statusWindow.Show(this);
 
                 Enabled = false;
@@ -592,22 +593,22 @@ namespace Brightbits.BSH.Main
         {
             if (tbCompressionLevel.Value == 0)
             {
-                lblCompressionLevel.Text = "Keine Komprimierung";
+                lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_NO_COMPRESSION;
             }
             else if (tbCompressionLevel.Value < 5)
             {
-                lblCompressionLevel.Text = "Niedrige Komprimierung";
+                lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_LOW_COMPRESSION;
             }
             else if (tbCompressionLevel.Value < 9)
             {
-                lblCompressionLevel.Text = "Hohe Komprimierung";
+                lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_HIGH_COMPRESSION;
             }
             else
             {
-                lblCompressionLevel.Text = "Höchste Komprimierung";
+                lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION;
             }
 
-            lblCompressionLevel.Text += " Stufe " + tbCompressionLevel.Value.ToString();
+            lblCompressionLevel.Text += Resources.DLG_UC_CONFIG_LBL_COMPRESSION_STAGE + tbCompressionLevel.Value.ToString();
         }
 
         private void rdCompress_CheckedChanged(object sender, EventArgs e)
@@ -627,12 +628,12 @@ namespace Brightbits.BSH.Main
             {
                 case 0:
 
-                    if (MessageBox.Show("Vorhandene Sicherungen werden gelöscht.\r\n\r\nWenn Sie das Sicherungsmedium auf einen lokalen Datenträger oder Netzlaufwerk wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.\r\n\r\nMöchten Sie den Vorgang fortsetzen?", "Sicherungen werden gelöscht", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    if (MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT, Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
                         // delete backups
                         using (var dlgStatus = new frmShortStatus())
                         {
-                            dlgStatus.lblStatus.Text = "Alte Datensicherungen werden gelöscht...";
+                            dlgStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT;
                             dlgStatus.Show(SuperBase);
 
                             var versions = BackupLogic.GlobalBackup.QueryManager.GetVersions().Select(x => x.Id).ToList();
@@ -656,12 +657,12 @@ namespace Brightbits.BSH.Main
 
                 case 1:
 
-                    if (MessageBox.Show("Vorhandene Sicherungen werden gelöscht.\r\n\r\nWenn Sie das Sicherungsmedium auf einen FTP-Server wechseln möchten, dann werden alle vorhandenen Sicherungen nun gelöscht. Eine Verschiebung dieser Sicherungen ist nicht möglich.\r\n\r\nMöchten Sie den Vorgang fortsetzen?", "Sicherungen werden gelöscht", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    if (MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT, Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
                         // delete backups
                         using (var formShortStatus = new frmShortStatus())
                         {
-                            formShortStatus.lblStatus.Text = "Alte Datensicherungen werden gelöscht...";
+                            formShortStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT;
                             formShortStatus.Show(SuperBase);
 
                             var versions = BackupLogic.GlobalBackup.QueryManager.GetVersions().Select(x => x.Id).ToList();
@@ -695,7 +696,7 @@ namespace Brightbits.BSH.Main
             // show status
             using (var dlgStatus = new frmShortStatus())
             {
-                dlgStatus.lblStatus.Text = "Sicherungsmedium wird abgeschlossen...";
+                dlgStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_FINISHING_BACKUP_TEXT;
                 dlgStatus.Show(SuperBase);
 
                 if (!await BackupLogic.BackupController.CheckMediaAsync(ActionType.Modify, true))
@@ -708,7 +709,7 @@ namespace Brightbits.BSH.Main
                 BackupLogic.GlobalBackup.BackupService.UpdateDatabaseFile(BackupLogic.GlobalBackup.DatabaseFile);
 
                 // update status
-                dlgStatus.lblStatus.Text = "Neues Medium einrichten...";
+                dlgStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_INIT_BACKUP_TEXT;
 
                 using (var dlgChangeMedia = new frmChangeMedia())
                 {
@@ -763,7 +764,7 @@ namespace Brightbits.BSH.Main
 
         private void cmdAddExcludeCompress_Click(object sender, EventArgs e)
         {
-            string extension = InputBox.ShowInputBox(this, "Geben Sie die Dateierweiterung ein, die von der Kompression ausgeschlossen werden soll:", "Dateierweitung eingeben", "");
+            string extension = InputBox.ShowInputBox(this, Resources.DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TEXT, Resources.DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TITLE, "");
             if (string.IsNullOrEmpty(extension))
             {
                 return;

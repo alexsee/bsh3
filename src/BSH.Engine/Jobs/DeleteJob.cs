@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
 using System;
@@ -58,7 +59,7 @@ namespace Brightbits.BSH.Engine.Jobs
             _logger.Information("Begin delete backup.");
 
             ReportState(JobState.RUNNING);
-            ReportStatus("Vorbereiten...", "Zu löschende Dateien werden ermittelt...");
+            ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_DELETE_PREPARE);
             ReportProgress(0, 0);
 
             // check medium
@@ -101,7 +102,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 _logger.Information("{numFiles} files determined for deletion.", files.Tables[0].Rows.Count);
 
                 ReportProgress(files.Tables[0].Rows.Count, 0);
-                ReportStatus("Dateien werden gelöscht...", $"Dateien werden von Sicherungsmedium gelöscht...");
+                ReportStatus(Resources.STATUS_DELETE_REMOVE_SHORT, Resources.STATUS_DELETE_REMOVE_TEXT);
 
                 // delete files
                 for (int i = 0; i < files.Tables[0].Rows.Count; i++)

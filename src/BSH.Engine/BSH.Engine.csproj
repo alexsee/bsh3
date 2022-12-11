@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="ActionType.cs" />
     <Compile Include="Database\DbUtils.cs" />
+    <Compile Include="Exceptions\DatabaseIncompatibleException.cs" />
     <Compile Include="Exceptions\TaskRunningException.cs" />
     <Compile Include="Services\BackupService.cs" />
     <Compile Include="Exceptions\DeviceContainsWrongStateException.cs" />

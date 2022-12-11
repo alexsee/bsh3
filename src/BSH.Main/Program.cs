@@ -255,7 +255,7 @@ namespace Brightbits.BSH.Main
 #if !WIN_UWP
         private static void mainUpdateController_updateFound(object sender, updateSystemDotNet.appEventArgs.updateFoundEventArgs e)
         {
-            NotificationController.Current.ShowIconBalloon(5000, "Es sind Aktualisierungen verfügbar", "Für Backup Service Home 3 sind Aktualisierungen verfügbar, die nun heruntergeladen und installiert werden können. Es wird empfohlen diese Aktualisierungen zu installieren.", ToolTipIcon.Info);
+            NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BSH_UPDATE_AVAILABLE_TITLE, Resources.INFO_BSH_UPDATE_AVAILABLE_TEXT, ToolTipIcon.Info);
         }
 
         private static void mainUpdateController_updateInstallerStarted(object sender, updateSystemDotNet.appEventArgs.updateInstallerStartedEventArgs e)

@@ -12,27 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using BSH.Main.Properties;
 using System;
 
-namespace Brightbits.BSH.Main
+namespace BSH.Main.Utils
 {
-    public partial class frmWaitForMedia
+    public static class UiFormatUtils
     {
-        public frmWaitForMedia()
+        public static string HumanizeDate(this DateTime date)
         {
-            InitializeComponent();
-        }
+            string formattedDate;
+            if (date.Date == DateTime.Today)
+            {
+                formattedDate = "Heute " + date.ToShortTimeString();
+            }
+            else if (date.AddDays(1d) == DateTime.Today)
+            {
+                formattedDate = "Gestern " + date.ToShortTimeString();
+            }
+            else
+            {
+                formattedDate = date.Date.ToString("dd. MMMM yyyy ") + date.ToShortTimeString();
+            }
 
-        public event OnAbort_ClickEventHandler OnAbort_Click;
-
-        public delegate void OnAbort_ClickEventHandler();
-
-        private void cmdCancel_Click(object sender, EventArgs e)
-        {
-            cmdCancel.Text = Resources.DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT;
-            cmdCancel.Enabled = false;
-            OnAbort_Click?.Invoke();
+            return formattedDate;
         }
     }
 }

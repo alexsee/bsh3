@@ -16,6 +16,7 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
+using BSH.Main.Properties;
 using Humanizer;
 using System.Collections.Generic;
 using System.Drawing;
@@ -98,12 +99,12 @@ namespace Brightbits.BSH.Main
             // finished successfully
             if (jobState == JobState.FINISHED && lastActionType == ActionType.Backup && BackupLogic.GlobalBackup.ConfigurationManager.InfoBackupDone == "1")
             {
-                NotificationController.Current.ShowIconBalloon(5000, "Datensicherung erfolgreich", "Die geplante Sicherung wurde erfolgreich abgeschlossen.", ToolTipIcon.Info);
+                NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_SUCCESSFUL_TITLE, Resources.INFO_BACKUP_SUCCESSFUL_TEXT, ToolTipIcon.Info);
             }
 
             if (jobState == JobState.ERROR && lastActionType == ActionType.Backup && BackupLogic.GlobalBackup.ConfigurationManager.InfoBackupDone == "1")
             {
-                NotificationController.Current.ShowIconBalloon(5000, "Datensicherung mit Problemen beendet", "Die geplante Datensicherung wurde mit Problemen beendet. Klicken Sie hier für mehr Informationen.", ToolTipIcon.Warning);
+                NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_UNSUCCESSFUL_TITLE, Resources.INFO_BACKUP_UNSUCCESSFUL_TEXT, ToolTipIcon.Warning);
             }
         }
 
@@ -149,10 +150,10 @@ namespace Brightbits.BSH.Main
             {
                 dlgFilesOverwrite.lblFileName1.Text = remoteFile.FileName;
                 dlgFilesOverwrite.lblFileName2.Text = localFile.FileName;
-                dlgFilesOverwrite.lblFileDateChanged1.Text = "Änderungsdatum: " + remoteFile.FileDateModified.ToString();
-                dlgFilesOverwrite.lblFileDateChanged2.Text = "Änderungsdatum: " + localFile.FileDateModified.ToString();
-                dlgFilesOverwrite.lblFileSize1.Text = "Größe: " + remoteFile.FileSize.Bytes().Humanize();
-                dlgFilesOverwrite.lblFileSize2.Text = "Größe: " + localFile.FileSize.Bytes().Humanize();
+                dlgFilesOverwrite.lblFileDateChanged1.Text = Resources.LBL_CHANGE_DATE + remoteFile.FileDateModified.ToString();
+                dlgFilesOverwrite.lblFileDateChanged2.Text = Resources.LBL_CHANGE_DATE + localFile.FileDateModified.ToString();
+                dlgFilesOverwrite.lblFileSize1.Text = Resources.LBL_SIZE + remoteFile.FileSize.Bytes().Humanize();
+                dlgFilesOverwrite.lblFileSize2.Text = Resources.LBL_SIZE + localFile.FileSize.Bytes().Humanize();
                 if (!localFile.FilePath.StartsWith(@"\\"))
                 {
                     dlgFilesOverwrite.picIco1.Image = Icon.ExtractAssociatedIcon(localFile.FilePath + localFile.FileName).ToBitmap();

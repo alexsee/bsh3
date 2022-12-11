@@ -12,19 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Main
-{
-    static class Translation
-    {
+using Brightbits.BSH.Engine.Properties;
+using System;
 
-        /// <summary>
-        /// Get translation string from resource
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public static string GetString(string key)
-        {
-            return global::BSH.Main.Properties.Resources.ResourceManager.GetString(key);
-        }
+namespace Brightbits.BSH.Engine.Exceptions
+{
+    public class DatabaseIncompatibleException : Exception
+    {
+        public DatabaseIncompatibleException() : base(Resources.EXCEPTION_NEWER_DATABASE) { }
     }
 }

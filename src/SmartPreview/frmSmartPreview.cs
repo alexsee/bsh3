@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Humanizer;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Humanizer;
 using static Brightbits.BSH.Engine.Win32Stuff;
 
 namespace SmartPreview
@@ -121,7 +121,7 @@ namespace SmartPreview
                     case ".inf":
                         {
                             var previewItem = new RichTextBox();
-                            previewItem.LoadFile(fileName, (fileExt == ".txt" || fileExt == ".ini" || fileExt == ".inf") ? RichTextBoxStreamType.PlainText : RichTextBoxStreamType.RichText);                            previewItem.ReadOnly = true;
+                            previewItem.LoadFile(fileName, (fileExt == ".txt" || fileExt == ".ini" || fileExt == ".inf") ? RichTextBoxStreamType.PlainText : RichTextBoxStreamType.RichText); previewItem.ReadOnly = true;
                             previewItem.BackColor = Color.White;
                             plContent.Controls.Add(previewItem);
                             previewItem.Dock = DockStyle.Fill;

@@ -15,6 +15,8 @@
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
+using BSH.Main.Properties;
+using Humanizer;
 using System;
 using System.Collections.Generic;
 
@@ -74,7 +76,7 @@ namespace Brightbits.BSH.Main
             }
 
             lastTimeRefreshed = DateTime.Now;
-            Invoke(new Action(() => { if (string.IsNullOrEmpty(file)) { lblStatus.Text = "Wartungsaufgabe wird durchgeführt..."; } else { lblStatus.Text = System.IO.Path.GetFileName(file) + " wird verarbeitet..."; } }));
+            Invoke(new Action(() => { if (string.IsNullOrEmpty(file)) { lblStatus.Text = Resources.DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT; } else { lblStatus.Text = Resources.DLG_SHORT_STATUS_FILES_STATUS_TEXT.FormatWith(System.IO.Path.GetFileName(file)); } }));
         }
 
         public void ReportExceptions(List<FileExceptionEntry> files, bool silent)
