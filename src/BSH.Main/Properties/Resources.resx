@@ -229,6 +229,12 @@
   <data name="DLG_ADD_SCHEDULE.FORMAT.WEEKLY" xml:space="preserve">
     <value>'Jeden' dddd, 'um' HH:mm:ss</value>
   </data>
+  <data name="DLG_BACKUPBROWSER_MSG_ERROR_ERROR_LOAD" xml:space="preserve">
+    <value>Fehler beim Laden der Sicherung. Siehe Ereignisprotokoll für weitere Details.</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_MSG_INFO_READY" xml:space="preserve">
+    <value>Bereit</value>
+  </data>
   <data name="DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT" xml:space="preserve">
     <value>Sind Sie sich sicher, dass Sie die ausgewählte Sicherung löschen möchten?</value>
   </data>
@@ -308,6 +314,37 @@ Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht 
   </data>
   <data name="DLG_FEATURE_NOT_AVAILABLE_TITLE" xml:space="preserve">
     <value>Feature nicht verfügbar</value>
+  </data>
+  <data name="DLG_FILTER_INPUT_FILE_TYPE_TEXT" xml:space="preserve">
+    <value>Dateityp ausschließen.\r\n\r\nGeben Sie einfach die Dateierweiterung derer Dateien ein, die Sie von der Datensicherung ausschließen möchten. Zum Beispiel: doc</value>
+  </data>
+  <data name="DLG_FILTER_INPUT_FILE_TYPE_TITLE" xml:space="preserve">
+    <value>Dateierweiterung ausschließen</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT" xml:space="preserve">
+    <value>Ausgewähltes Verzeichnis kann nicht verwendet werden.
+
+Das ausgewählte Verzeichnis kann nicht ausgeschlossen werden, da es nicht zur Datensicherung gehört.</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE" xml:space="preserve">
+    <value>Verzeichnis nicht verwendbar</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_FILE_INVALID_TEXT" xml:space="preserve">
+    <value>Ausgewählte Datei "{0}" kann nicht verwendet werden.
+
+Die ausgewählte Datei kann nicht ausgeschlossen werden, da es nicht zur Datensicherung gehört.</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_FILE_INVALID_TITLE" xml:space="preserve">
+    <value>Datei nicht verwendbar</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_INVALID_REGEX_TEXT" xml:space="preserve">
+    <value>Der angegebene reguläre Ausdruck (RegEx) ist ungültig. Bitte prüfen Sie den Ausdruck bevor Sie diesen speichern.</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_INVALID_REGEX_TITLE" xml:space="preserve">
+    <value>Reguläre Ausdruck ungültig</value>
+  </data>
+  <data name="DLG_FILTER_REGEX_LINK" xml:space="preserve">
+    <value>http://de.wikipedia.org/wiki/Regulärer_Ausdruck</value>
   </data>
   <data name="DLG_MAIN_MSG_ACCESS_DENIED_TEXT" xml:space="preserve">
     <value>Zugriff verweigert.
@@ -676,7 +713,9 @@ Ein Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home
     <value>Datensicherung mit Problemen beendet</value>
   </data>
   <data name="INFO_BSH_NOT_CONFIGURED_TEXT" xml:space="preserve">
-    <value>Backup Service Home 3 ist noch nicht konfiguriert und sichert daher noch keine Daten.\r\n\r\nDoppelklicken Sie hier, um die Konfiguration zu starten.</value>
+    <value>Backup Service Home 3 ist noch nicht konfiguriert und sichert daher noch keine Daten.
+
+Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   </data>
   <data name="INFO_BSH_NOT_CONFIGURED_TITLE" xml:space="preserve">
     <value>Nicht konfiguriert.</value>

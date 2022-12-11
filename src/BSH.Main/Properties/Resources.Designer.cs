@@ -411,6 +411,24 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Fehler beim Laden der Sicherung. Siehe Ereignisprotokoll für weitere Details. ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_MSG_ERROR_ERROR_LOAD {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_MSG_ERROR_ERROR_LOAD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Bereit ähnelt.
+        /// </summary>
+        internal static string DLG_BACKUPBROWSER_MSG_INFO_READY {
+            get {
+                return ResourceManager.GetString("DLG_BACKUPBROWSER_MSG_INFO_READY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sind Sie sich sicher, dass Sie die ausgewählte Sicherung löschen möchten? ähnelt.
         /// </summary>
         internal static string DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT {
@@ -625,6 +643,91 @@ namespace BSH.Main.Properties {
         internal static string DLG_FEATURE_NOT_AVAILABLE_TITLE {
             get {
                 return ResourceManager.GetString("DLG_FEATURE_NOT_AVAILABLE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Dateityp ausschließen.\r\n\r\nGeben Sie einfach die Dateierweiterung derer Dateien ein, die Sie von der Datensicherung ausschließen möchten. Zum Beispiel: doc ähnelt.
+        /// </summary>
+        internal static string DLG_FILTER_INPUT_FILE_TYPE_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_FILTER_INPUT_FILE_TYPE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Dateierweiterung ausschließen ähnelt.
+        /// </summary>
+        internal static string DLG_FILTER_INPUT_FILE_TYPE_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_FILTER_INPUT_FILE_TYPE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Ausgewähltes Verzeichnis kann nicht verwendet werden.
+        ///
+        ///Das ausgewählte Verzeichnis kann nicht ausgeschlossen werden, da es nicht zur Datensicherung gehört. ähnelt.
+        /// </summary>
+        internal static string DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Verzeichnis nicht verwendbar ähnelt.
+        /// </summary>
+        internal static string DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Ausgewählte Datei &quot;{0}&quot; kann nicht verwendet werden.
+        ///
+        ///Die ausgewählte Datei kann nicht ausgeschlossen werden, da es nicht zur Datensicherung gehört. ähnelt.
+        /// </summary>
+        internal static string DLG_FILTER_MSG_ERROR_FILE_INVALID_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_FILE_INVALID_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datei nicht verwendbar ähnelt.
+        /// </summary>
+        internal static string DLG_FILTER_MSG_ERROR_FILE_INVALID_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_FILE_INVALID_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Der angegebene reguläre Ausdruck (RegEx) ist ungültig. Bitte prüfen Sie den Ausdruck bevor Sie diesen speichern. ähnelt.
+        /// </summary>
+        internal static string DLG_FILTER_MSG_ERROR_INVALID_REGEX_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_INVALID_REGEX_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reguläre Ausdruck ungültig ähnelt.
+        /// </summary>
+        internal static string DLG_FILTER_MSG_ERROR_INVALID_REGEX_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_INVALID_REGEX_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die http://de.wikipedia.org/wiki/Regulärer_Ausdruck ähnelt.
+        /// </summary>
+        internal static string DLG_FILTER_REGEX_LINK {
+            get {
+                return ResourceManager.GetString("DLG_FILTER_REGEX_LINK", resourceCulture);
             }
         }
         
@@ -1690,7 +1793,9 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home 3 ist noch nicht konfiguriert und sichert daher noch keine Daten.\r\n\r\nDoppelklicken Sie hier, um die Konfiguration zu starten. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home 3 ist noch nicht konfiguriert und sichert daher noch keine Daten.
+        ///
+        ///Doppelklicken Sie hier, um die Konfiguration zu starten. ähnelt.
         /// </summary>
         internal static string INFO_BSH_NOT_CONFIGURED_TEXT {
             get {
