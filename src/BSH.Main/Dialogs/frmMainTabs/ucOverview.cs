@@ -143,7 +143,7 @@ namespace Brightbits.BSH.Main
                 lblBdNewestBackup.Text = (lastBackup != null) ? lastBackup.CreationDate.Humanize(false) : Resources.DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT;
 
                 var nextDate = BackupLogic.GetNextBackupDate();
-                lblNextBackup.Text = nextDate.Humanize();
+                lblNextBackup.Text = nextDate != DateTime.MaxValue ? nextDate.Humanize() : Resources.DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT;
 
                 if (BackupLogic.GlobalBackup.ConfigurationManager.TaskType == TaskType.Auto)
                 {
