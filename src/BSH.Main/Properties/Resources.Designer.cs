@@ -627,6 +627,69 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Täglich ähnelt.
+        /// </summary>
+        internal static string DLG_EDIT_SCHEDULER_INTERVAL_DAILY {
+            get {
+                return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_DAILY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Stündlich ähnelt.
+        /// </summary>
+        internal static string DLG_EDIT_SCHEDULER_INTERVAL_HOURLY {
+            get {
+                return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_HOURLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die immer zur {0} Minute ähnelt.
+        /// </summary>
+        internal static string DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT {
+            get {
+                return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Monatlich ähnelt.
+        /// </summary>
+        internal static string DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY {
+            get {
+                return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die jeden Monat am {0}. um {1} Uhr ähnelt.
+        /// </summary>
+        internal static string DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT {
+            get {
+                return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Einmalig ähnelt.
+        /// </summary>
+        internal static string DLG_EDIT_SCHEDULER_INTERVAL_ONCE {
+            get {
+                return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_ONCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Wöchentlich ähnelt.
+        /// </summary>
+        internal static string DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY {
+            get {
+                return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Feature derzeit nicht verfügbar.
         ///
         ///Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie Backup Service Home neu, um das Problem zu lösen. ähnelt.
@@ -1227,7 +1290,9 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Keine Sicherung gewählt.\r\n\r\nUm den Vorgang fortzsetzen müssen Sie die Datensicherung auswählen, die Sie importieren möchten. ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Keine Sicherung gewählt.
+        ///
+        ///Um den Vorgang fortzsetzen müssen Sie die Datensicherung auswählen, die Sie importieren möchten. ähnelt.
         /// </summary>
         internal static string DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT {
             get {

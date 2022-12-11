@@ -307,6 +307,27 @@ Wenn Sie ein altes Datensicherungsmedium betrachten möchten bzw. eine Datensich
   <data name="DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE" xml:space="preserve">
     <value>Medium enthält Datensicherungen</value>
   </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_DAILY" xml:space="preserve">
+    <value>Täglich</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_HOURLY" xml:space="preserve">
+    <value>Stündlich</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT" xml:space="preserve">
+    <value>immer zur {0} Minute</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY" xml:space="preserve">
+    <value>Monatlich</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT" xml:space="preserve">
+    <value>jeden Monat am {0}. um {1} Uhr</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_ONCE" xml:space="preserve">
+    <value>Einmalig</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY" xml:space="preserve">
+    <value>Wöchentlich</value>
+  </data>
   <data name="DLG_FEATURE_NOT_AVAILABLE_TEXT" xml:space="preserve">
     <value>Feature derzeit nicht verfügbar.
 
@@ -524,7 +545,9 @@ Um den Vorgang fortzsetzen muss mindestens eine Option ausgewählt werden. Falls
     <value>Erfolgreich</value>
   </data>
   <data name="DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT" xml:space="preserve">
-    <value>Keine Sicherung gewählt.\r\n\r\nUm den Vorgang fortzsetzen müssen Sie die Datensicherung auswählen, die Sie importieren möchten.</value>
+    <value>Keine Sicherung gewählt.
+
+Um den Vorgang fortzsetzen müssen Sie die Datensicherung auswählen, die Sie importieren möchten.</value>
   </data>
   <data name="DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TITLE" xml:space="preserve">
     <value>Sicherung wählen</value>

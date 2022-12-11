@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using BSH.Main.Properties;
+using Humanizer;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -40,31 +42,31 @@ namespace Brightbits.BSH.Main
                             var newEntry = new ListViewItem();
                             var parsedDate = DateTime.Parse(reader["timDate"].ToString());
 
-                            switch (reader["timType"].ToString() ?? "")
+                            switch (reader["timType"].ToString())
                             {
                                 case "1":
-                                    newEntry.Text = "Einmalig";
+                                    newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_ONCE;
                                     newEntry.SubItems.Add(reader["timDate"].ToString());
                                     break;
 
                                 case "2":
-                                    newEntry.Text = "Stündlich";
-                                    newEntry.SubItems.Add("immer zur " + parsedDate.Minute + " Minute");
+                                    newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY;
+                                    newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT.FormatWith(parsedDate.Minute));
                                     break;
 
                                 case "3":
-                                    newEntry.Text = "Täglich";
+                                    newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_DAILY;
                                     newEntry.SubItems.Add(parsedDate.ToShortTimeString());
                                     break;
 
                                 case "4":
-                                    newEntry.Text = "Wöchentlich";
+                                    newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY;
                                     newEntry.SubItems.Add(parsedDate.ToString("dddd") + ", " + parsedDate.ToString("HH:mm"));
                                     break;
 
                                 case "5":
-                                    newEntry.Text = "Monatlich";
-                                    newEntry.SubItems.Add(parsedDate.Day + ". " + parsedDate.ToString("HH:mm"));
+                                    newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY;
+                                    newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(parsedDate.Day, parsedDate.ToString("HH:mm")));
                                     break;
                             }
 
@@ -162,30 +164,32 @@ namespace Brightbits.BSH.Main
                 var newEntry = new ListViewItem();
                 newEntry.Text = dlgAddSchedule.cbIntervall.Text;
 
-                switch (dlgAddSchedule.cbIntervall.Text ?? "")
+                switch (dlgAddSchedule.cbIntervall.SelectedIndex)
                 {
-                    case "Einmalig":
+                    case 0:
                         newEntry.SubItems.Add(dlgAddSchedule.dtpStartTime.Value.ToString());
                         break;
 
-                    case "Stündlich":
-                        newEntry.SubItems.Add("immer zur " + dlgAddSchedule.dtpStartTime.Value.Minute + " Minute");
+                    case 1:
+                        newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT.FormatWith(dlgAddSchedule.dtpStartTime.Value.Minute));
                         break;
 
-                    case "Täglich":
+                    case 2:
                         newEntry.SubItems.Add(dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm"));
                         break;
 
-                    case "Wöchentlich":
+                    case 3:
                         newEntry.SubItems.Add(dlgAddSchedule.dtpStartTime.Value.ToString("dddd") + ", " + dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm"));
                         break;
 
-                    case "Monatlich":
-                        newEntry.SubItems.Add(dlgAddSchedule.dtpStartTime.Value.Day + ". " + dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm"));
+                    case 4:
+                        newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(dlgAddSchedule.dtpStartTime.Value.Day,  dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm")));
                         break;
                 }
 
                 newEntry.Tag = dlgAddSchedule.dtpStartTime.Value;
+                newEntry.SubItems[0].Tag = dlgAddSchedule.cbIntervall.SelectedIndex;
+
                 lwTimeSchedule.Items.Add(newEntry);
             }
         }
@@ -198,25 +202,25 @@ namespace Brightbits.BSH.Main
             foreach (ListViewItem entry in lwTimeSchedule.Items)
             {
                 string parsedDate = Convert.ToDateTime(entry.Tag).ToString("dd.MM.yyyy HH:mm:ss");
-                switch (entry.Text ?? "")
+                switch (entry.SubItems[0].Tag)
                 {
-                    case "Einmalig":
+                    case 0:
                         BackupLogic.GlobalBackup.ExecuteNonQuery("INSERT INTO schedule ( timType, timDate) VALUES ( 1, '" + parsedDate + "' )");
                         break;
 
-                    case "Stündlich":
+                    case 1:
                         BackupLogic.GlobalBackup.ExecuteNonQuery("INSERT INTO schedule ( timType, timDate) VALUES ( 2, '" + parsedDate + "' )");
                         break;
 
-                    case "Täglich":
+                    case 2:
                         BackupLogic.GlobalBackup.ExecuteNonQuery("INSERT INTO schedule ( timType, timDate) VALUES ( 3, '" + parsedDate + "' )");
                         break;
 
-                    case "Wöchentlich":
+                    case 3:
                         BackupLogic.GlobalBackup.ExecuteNonQuery("INSERT INTO schedule ( timType, timDate) VALUES ( 4, '" + parsedDate + "' )");
                         break;
 
-                    case "Monatlich":
+                    case 4:
                         BackupLogic.GlobalBackup.ExecuteNonQuery("INSERT INTO schedule ( timType, timDate) VALUES ( 5, '" + parsedDate + "' )");
                         break;
                 }
