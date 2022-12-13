@@ -46,7 +46,7 @@ jobs:
           ${{runner.workspace}}/bsh3/tools/setup/output/backupservicehome-*.exe
 
     - name: Upload to Brightbits
-      uses: mdallasanta/ssh-scp-deploy@v1
+      uses: mdallasanta/ssh-scp-deploy@v1.2.0
       with:
         local: ${{runner.workspace}}/bsh3/tools/setup/output/backupservicehome-*.exe
         remote: '~/'
