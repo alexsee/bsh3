@@ -10,6 +10,7 @@ jobs:
 
   release:
     runs-on: windows-latest
+    environment: production
     
     env:
       Solution_Name: src\Backup Service Home 3.sln
