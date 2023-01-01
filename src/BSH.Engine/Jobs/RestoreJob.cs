@@ -153,7 +153,7 @@ namespace Brightbits.BSH.Engine.Jobs
 
                 if (string.IsNullOrEmpty(Destination))
                 {
-                    var sources = queryManager.GetVersionById(Version.ToString()).Sources;
+                    var sources = (await queryManager.GetVersionByIdAsync(Version.ToString())).Sources;
 
                     if (string.IsNullOrEmpty(sources))
                     {

@@ -123,7 +123,7 @@ namespace Brightbits.BSH.Main
                     }
                     else if (GlobalBackup.ConfigurationManager.TaskType == TaskType.Schedule)
                     {
-                        StartScheduleSystem();
+                        await StartScheduleSystem();
                     }
                 }
                 else
@@ -437,17 +437,17 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private static void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        private async static void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
         {
             if (e.Mode == PowerModes.Resume)
             {
                 // restart system after standby resume
                 StopScheduleSystem();
-                StartScheduleSystem();
+                await StartScheduleSystem();
             }
         }
 
-        public static void StartScheduleSystem()
+        public async static Task StartScheduleSystem()
         {
             Log.Information("Service for \"Scheduled backups\" is started.");
 
@@ -460,7 +460,7 @@ namespace Brightbits.BSH.Main
 
             // read scheduler entries in database
             using (var dbClient = GlobalBackup.DbClientFactory.CreateDbClient())
-            using (var reader = dbClient.ExecuteDataReader(CommandType.Text, "SELECT * FROM schedule", null))
+            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null))
             {
                 while (reader.Read())
                 {
@@ -472,13 +472,13 @@ namespace Brightbits.BSH.Main
                         // once
                         if (DateTime.Compare(DateTime.Now, scheduleDate) < 0)
                         {
-                            schedulerService.ScheduleOnce(() => thScheduleSysRunBackup(), scheduleDate);
+                            schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), scheduleDate);
                         }
                     }
                     else if (scheduleType == 2)
                     {
                         // hourly
-                        schedulerService.ScheduleHourly(() => thScheduleSysRunBackup(), scheduleDate);
+                        schedulerService.ScheduleHourly(async () => await thScheduleSysRunBackup(), scheduleDate);
                     }
                     else if (scheduleType == 3)
                     {
@@ -487,10 +487,10 @@ namespace Brightbits.BSH.Main
                         // catch up old backup?
                         if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                         {
-                            schedulerService.ScheduleOnce(() => thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                            schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                         }
 
-                        schedulerService.ScheduleDaily(() => thScheduleSysRunBackup(), scheduleDate);
+                        schedulerService.ScheduleDaily(async () => await thScheduleSysRunBackup(), scheduleDate);
                     }
                     else if (scheduleType == 4)
                     {
@@ -502,7 +502,7 @@ namespace Brightbits.BSH.Main
                             // backup was performed already earlier
                             if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                             {
-                                schedulerService.ScheduleOnce(() => thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                                schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                             }
                         }
                         else
@@ -518,7 +518,7 @@ namespace Brightbits.BSH.Main
                                     // backup was performed already earlier
                                     if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                                     {
-                                        schedulerService.ScheduleOnce(() => thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                                        schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                                     }
 
                                     break;
@@ -531,7 +531,7 @@ namespace Brightbits.BSH.Main
                             }
                         }
 
-                        schedulerService.ScheduleWeekly(() => thScheduleSysRunBackup(), scheduleDate);
+                        schedulerService.ScheduleWeekly(async () => await thScheduleSysRunBackup(), scheduleDate);
                     }
                     else if (scheduleType == 5)
                     {
@@ -543,7 +543,7 @@ namespace Brightbits.BSH.Main
                             // backup was performed already earlier
                             if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                             {
-                                schedulerService.ScheduleOnce(() => thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                                schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                             }
                         }
                         else
@@ -559,7 +559,7 @@ namespace Brightbits.BSH.Main
                                 {
                                     if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                                     {
-                                        schedulerService.ScheduleOnce(() => thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                                        schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                                     }
 
                                     break;
@@ -572,7 +572,7 @@ namespace Brightbits.BSH.Main
                             }
                         }
 
-                        schedulerService.ScheduleMonthly(() => thScheduleSysRunBackup(), scheduleDate);
+                        schedulerService.ScheduleMonthly(async () => await thScheduleSysRunBackup(), scheduleDate);
                     }
                 }
 
@@ -626,7 +626,7 @@ namespace Brightbits.BSH.Main
             SystemEvents.PowerModeChanged -= PowerModeChanged;
         }
 
-        public static void thScheduleSysRunBackup()
+        public async static Task thScheduleSysRunBackup()
         {
             Log.Information("Scheduled backup is planned and will be performed now.");
 
@@ -663,7 +663,7 @@ namespace Brightbits.BSH.Main
                 var Item = GlobalBackup.ConfigurationManager.ScheduleFullBackup.Split('|');
                 if (Item[0] == "day")
                 {
-                    var lastFullBackup = GlobalBackup.QueryManager.GetLastFullBackup();
+                    var lastFullBackup = await GlobalBackup.QueryManager.GetLastFullBackupAsync();
                     var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
                     FullBackup = Diff.Days >= Convert.ToInt32(Item[1]);
                 }
@@ -680,7 +680,7 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            task.ContinueWith((x) =>
+            await task.ContinueWith((x) =>
             {
                 if (!cancellationToken.IsCancellationRequested)
                 {
@@ -847,7 +847,7 @@ namespace Brightbits.BSH.Main
                 }
                 else if (_RunBackupDelegate == RunBackupMethod.Schedule)
                 {
-                    thScheduleSysRunBackup();
+                    await thScheduleSysRunBackup();
                 }
             }
         }

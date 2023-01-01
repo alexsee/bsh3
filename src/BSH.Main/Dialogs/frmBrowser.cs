@@ -286,7 +286,7 @@ namespace Brightbits.BSH.Main
             }
 
             // fill navigation
-            var destFolder = BackupLogic.GlobalBackup.QueryManager.GetFullRestoreFolder(path, selectedVersion.Id);
+            var destFolder = await BackupLogic.GlobalBackup.QueryManager.GetFullRestoreFolderAsync(path, selectedVersion.Id);
             if (destFolder == null)
             {
                 // update UI
@@ -1082,21 +1082,20 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Schnellansicht laden
-                string tmpFile = "";
-                bool isTmp = false;
+                Tuple<string, bool> tmpFile = null;
                 try
                 {
                     var password = BackupLogic.GlobalBackup.BackupService.GetPassword();
-                    tmpFile = BackupLogic.GlobalBackup.QueryManager.GetFileNameFromDrive(int.Parse(selectedVersion.Id), lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString(), password, out isTmp);
+                    tmpFile = await BackupLogic.GlobalBackup.QueryManager.GetFileNameFromDriveAsync(int.Parse(selectedVersion.Id), lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString(), password);
 
 #if !WIN_UWP
-                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile + "\"" + (isTmp ? " -c" : ""));
+                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"" + (tmpFile.Item2 ? " -c" : ""));
                     procInfo.WindowStyle = ProcessWindowStyle.Normal;
 
                     var proc = Process.Start(procInfo);
                     proc.WaitForExit();
 #else
-                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\..\SmartPreview\SmartPreview.exe", " -file:\"" + tmpFile + "\"" + (isTmp ? " -c" : ""));
+                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\..\SmartPreview\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"" + (isTmp.Item2 ? " -c" : ""));
                     procInfo.WindowStyle = ProcessWindowStyle.Normal;
 
                     var proc = Process.Start(procInfo);
@@ -1109,7 +1108,7 @@ namespace Brightbits.BSH.Main
                     MessageBox.Show(Resources.DLG_FEATURE_NOT_AVAILABLE_TEXT, Resources.DLG_FEATURE_NOT_AVAILABLE_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
 
-                if (isTmp && !string.IsNullOrEmpty(tmpFile))
+                if (tmpFile != null && tmpFile.Item2)
                 {
                     for (int i = 0; i <= 5; i++)
                     {
@@ -1120,7 +1119,7 @@ namespace Brightbits.BSH.Main
                                 return;
                             }
 
-                            System.IO.File.Delete(tmpFile);
+                            System.IO.File.Delete(tmpFile.Item1);
                             break;
                         }
                         catch
@@ -1429,7 +1428,7 @@ namespace Brightbits.BSH.Main
                     return;
                 }
 
-                selectedVersion = BackupLogic.GlobalBackup.QueryManager.GetVersionById(Result);
+                selectedVersion = await BackupLogic.GlobalBackup.QueryManager.GetVersionByIdAsync(Result);
 
                 // Alles leeren
                 lvFiles.Items.Clear();
@@ -1475,7 +1474,7 @@ namespace Brightbits.BSH.Main
                     return;
                 }
 
-                selectedVersion = BackupLogic.GlobalBackup.QueryManager.GetVersionById(Result);
+                selectedVersion = await BackupLogic.GlobalBackup.QueryManager.GetVersionByIdAsync(Result);
                 lvFiles.Items.Clear();
 
                 // Nun neuen Prozess starten
@@ -1518,7 +1517,7 @@ namespace Brightbits.BSH.Main
             {
                 dlgFileProperties.browserWindow = this;
                 dlgFileProperties.lblFileName.Text = lvFiles.SelectedItems[0].Text;
-                dlgFileProperties.lblFilePath.Text = BackupLogic.GlobalBackup.QueryManager.GetFullRestoreFolder(lvFiles.SelectedItems[0].Tag.ToString(), selectedVersion.Id);
+                dlgFileProperties.lblFilePath.Text = await BackupLogic.GlobalBackup.QueryManager.GetFullRestoreFolderAsync(lvFiles.SelectedItems[0].Tag.ToString(), selectedVersion.Id);
                 dlgFileProperties.toolTipCtl.SetToolTip(dlgFileProperties.lblFilePath, dlgFileProperties.lblFilePath.Text);
                 dlgFileProperties.lblFileType.Text = lvFiles.SelectedItems[0].SubItems[2].Text;
                 dlgFileProperties.lblFileSize.Text = lvFiles.SelectedItems[0].SubItems[1].Text;

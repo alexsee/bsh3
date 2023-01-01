@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Storage;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -70,13 +71,13 @@ namespace Brightbits.BSH.Engine
         /// Returns a the last version of the full backup.
         /// </summary>
         /// <returns></returns>
-        public VersionDetails GetLastFullBackup()
+        public async Task<VersionDetails> GetLastFullBackupAsync()
         {
             VersionDetails result = null;
 
             // obtain last full backup
             using (var dbClient = dbClientFactory.CreateDbClient())
-            using (var reader = dbClient.ExecuteDataReader(CommandType.Text, "SELECT * FROM versiontable WHERE versionStatus = 0 AND versionType = 2 ORDER BY versionID DESC LIMIT 1", null))
+            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionStatus = 0 AND versionType = 2 ORDER BY versionID DESC LIMIT 1", null))
             {
                 if (reader.Read())
                 {
@@ -158,13 +159,13 @@ namespace Brightbits.BSH.Engine
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public VersionDetails GetVersionById(string id)
+        public async Task<VersionDetails> GetVersionByIdAsync(string id)
         {
             VersionDetails result = null;
 
             // obtain lastest backup
             using (var dbClient = dbClientFactory.CreateDbClient())
-            using (var reader = dbClient.ExecuteDataReader(CommandType.Text, $"SELECT * FROM versiontable WHERE versionID = {id}", null))
+            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, $"SELECT * FROM versiontable WHERE versionID = {id}", null))
             {
                 if (reader.Read())
                 {
@@ -593,14 +594,14 @@ namespace Brightbits.BSH.Engine
         /// <param name="password"></param>
         /// <param name="temp"></param>
         /// <returns></returns>
-        public string GetFileNameFromDrive(int versionId, string fileName, string filePath, SecureString password, out bool temp)
+        public async Task<Tuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, SecureString password)
         {
             using (var dbClient = dbClientFactory.CreateDbClient())
             using (var storage = storageFactory.GetCurrentStorageProvider())
             {
                 storage.Open();
 
-                temp = false;
+                var temp = false;
                 string result = null;
 
                 var parameters = new IDataParameter[]
@@ -610,7 +611,7 @@ namespace Brightbits.BSH.Engine
                     dbClient.CreateParameter("filePath", DbType.String, 0, filePath)
                 };
 
-                using (var reader = dbClient.ExecuteDataReader(CommandType.Text,
+                using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text,
                     "SELECT fileversiontable.*, filetable.*, versiontable.versionDate, versiontable.versionStatus " +
                     "FROM filetable, fileversiontable, versiontable, filelink " +
                     "WHERE filelink.fileversionID = fileversiontable.fileversionID " +
@@ -666,7 +667,7 @@ namespace Brightbits.BSH.Engine
                     reader.Close();
                 }
 
-                return result;
+                return new Tuple<string, bool>(result, temp);
             }
         }
 
@@ -696,7 +697,7 @@ namespace Brightbits.BSH.Engine
         /// <param name="folder"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public string GetFullRestoreFolder(string folder, string version)
+        public async Task<string> GetFullRestoreFolderAsync(string folder, string version)
         {
             // correct path
             if (!folder.StartsWith("\\"))
@@ -710,7 +711,7 @@ namespace Brightbits.BSH.Engine
             }
 
             // obtain source folders
-            var sourcesInVersion = GetVersionById(version).Sources;
+            var sourcesInVersion = (await GetVersionByIdAsync(version)).Sources;
             if (string.IsNullOrEmpty(sourcesInVersion))
             {
                 sourcesInVersion = configurationManager.SourceFolder;
