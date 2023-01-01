@@ -93,7 +93,7 @@ namespace Brightbits.BSH.Main
                             plMain.Controls.Add((Control)_iMTCurrentTab);
 
                             // Home-Button anzeigen
-                            picHome.Image = global::BSH.Main.Properties.Resources.home_4_line;
+                            picHome.Image = Resources.home_4_line;
                             picHome.Tag = "home";
                             picHome.Cursor = Cursors.Default;
                             break;
@@ -108,7 +108,7 @@ namespace Brightbits.BSH.Main
                             plMain.Controls.Add((Control)_iMTCurrentTab);
 
                             // Zurück-Button anzeigen
-                            picHome.Image = global::BSH.Main.Properties.Resources.arrow_left_circle_line;
+                            picHome.Image = Resources.arrow_left_circle_line;
                             picHome.Tag = "config";
                             picHome.Cursor = Cursors.Hand;
                             break;
@@ -123,7 +123,7 @@ namespace Brightbits.BSH.Main
                             plMain.Controls.Add((Control)_iMTCurrentTab);
 
                             // Home-Button anzeigen
-                            picHome.Image = global::BSH.Main.Properties.Resources.home_4_line;
+                            picHome.Image = Resources.home_4_line;
                             picHome.Tag = "home";
                             picHome.Cursor = Cursors.Default;
                             break;
@@ -248,7 +248,7 @@ namespace Brightbits.BSH.Main
                 }
                 else if (startupTask.State == StartupTaskState.Enabled)
                 {
-                    MessageBox.Show("Sie können das Autostart Verhalten von Backup Service Home 3 im Taskmanager deaktivieren.", "Autostartverhalten", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(Resources.DLG_MAIN_MSG_UWP_AUTOSTART_TEXT, Resources.DLG_MAIN_MSG_UWP_AUTOSTART_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 #else
                 if (MitWindowsStartenToolStripMenuItem.Checked)
@@ -267,7 +267,7 @@ namespace Brightbits.BSH.Main
             }
             catch
             {
-                MessageBox.Show("Zugriff verweigert.\r\n\r\nDie nötigen Rechte zum Verändern dieser Einstellung fehlen.", "Zugriff verweigert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(Resources.DLG_MAIN_MSG_ACCESS_DENIED_TEXT, Resources.DLG_MAIN_MSG_ACCESS_DENIED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 
@@ -281,7 +281,7 @@ namespace Brightbits.BSH.Main
 
         private async void ZurücksetzenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Sind Sie sicher, dass Sie die komplette Konfiguration von " + Program.APP_TITLE + " zurücksetzen möchten?", "Zurücksetzen", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            if (MessageBox.Show(Resources.DLG_MAIN_MSG_RESET_TEXT, Resources.DLG_MAIN_MSG_RESET_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
             {
                 // Gesamte Konfiguration zurücksetzen
                 CurrentTab = AvailableTabs.TabNothing;

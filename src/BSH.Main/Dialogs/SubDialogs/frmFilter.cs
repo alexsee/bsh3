@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using BSH.Controls.UI;
-using Microsoft.VisualBasic;
+using BSH.Main.Properties;
+using Humanizer;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -132,7 +133,7 @@ namespace Brightbits.BSH.Main
             }
             catch
             {
-                MessageBox.Show("Der angegebene reguläre Ausdruck (RegEx) ist ungültig. Bitte prüfen Sie den Ausdruck bevor Sie diesen speichern.", "Reguläre Ausdruck ungültig", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(Resources.DLG_FILTER_MSG_ERROR_INVALID_REGEX_TEXT, Resources.DLG_FILTER_MSG_ERROR_INVALID_REGEX_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -198,7 +199,7 @@ namespace Brightbits.BSH.Main
                 if (!bAdded)
                 {
                     // Verzeichnis nicht in Quellverzeichnis
-                    MessageBox.Show("Ausgewähltes Verzeichnis kann nicht verwendet werden.\r\n\r\nDas ausgewählte Verzeichnis kann nicht ausgeschlossen werden, da es nicht zur Datensicherung gehört.", "Verzeichnis nicht verwendbar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT, Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -225,7 +226,7 @@ namespace Brightbits.BSH.Main
         {
             try
             {
-                string sInput = InputBox.ShowInputBox(this, "Dateityp ausschließen.\r\n\r\nGeben Sie einfach die Dateierweiterung derer Dateien ein, die Sie von der Datensicherung ausschließen möchten. Zum Beispiel: doc", "Dateierweiterung ausschließen", "");
+                string sInput = InputBox.ShowInputBox(this, Resources.DLG_FILTER_INPUT_FILE_TYPE_TEXT, Resources.DLG_FILTER_INPUT_FILE_TYPE_TITLE, "");
                 if (string.IsNullOrEmpty(sInput))
                 {
                     return;
@@ -236,7 +237,10 @@ namespace Brightbits.BSH.Main
                     sInput = sInput.Substring(1, sInput.Length - 1);
                 }
 
-                sInput = sInput.Replace(".", "");
+                if (sInput.StartsWith("."))
+                {
+                    sInput = sInput.Substring(1, sInput.Length - 1);
+                }
 
                 // Nachschauen, ob schon drin
                 foreach (object entry2 in lstExcludeFiles.Items)
@@ -288,7 +292,7 @@ namespace Brightbits.BSH.Main
         {
             try
             {
-                Process.Start("http://de.wikipedia.org/wiki/Regulärer_Ausdruck");
+                Process.Start(Resources.DLG_FILTER_REGEX_LINK);
             }
             catch
             {
@@ -360,7 +364,7 @@ namespace Brightbits.BSH.Main
                     if (!bAdded)
                     {
                         // Verzeichnis nicht in Quellverzeichnis
-                        MessageBox.Show("Ausgewählte Datei \"" + File + "\" kann nicht verwendet werden.\r\n\r\nDie ausgewählte Datei kann nicht ausgeschlossen werden, da es nicht zur Datensicherung gehört.", "Datei nicht verwendbar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(Resources.DLG_FILTER_MSG_ERROR_FILE_INVALID_TEXT.FormatWith(File), Resources.DLG_FILTER_MSG_ERROR_FILE_INVALID_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
                     }
                 }

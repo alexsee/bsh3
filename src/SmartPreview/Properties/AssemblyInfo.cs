@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
@@ -43,5 +42,5 @@ using System.Runtime.InteropServices;
 //      Buildnummer
 //      Revision
 //
-[assembly: AssemblyVersion("3.8.3.0")]
-[assembly: AssemblyFileVersion("3.8.3.0")]
+[assembly: AssemblyVersion("3.8.4.0")]
+[assembly: AssemblyFileVersion("3.8.4.0")]

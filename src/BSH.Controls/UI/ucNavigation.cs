@@ -74,7 +74,7 @@ namespace Brightbits.BSH.Main
                     newEntry.ItemClick += event_ItemClick;
                 }
 
-                flpNavi.Controls.Add(newEntry);              
+                flpNavi.Controls.Add(newEntry);
             }
 
             ucNavigation_Resize(null, null);

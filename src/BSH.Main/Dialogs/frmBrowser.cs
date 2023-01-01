@@ -116,7 +116,7 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         private async Task CreateFolderListAsync(string path)
         {
-            var folders = await BackupLogic.GlobalBackup.QueryManager.GetFolderListAsync(selectedVersion.Id, @"\" + path + @"\%");
+            var folders = await BackupLogic.GlobalBackup.QueryManager.GetFolderListAsync(selectedVersion.Id, $"\\{path}\\%");
 
             // determine the above folder
             if (!string.IsNullOrEmpty(selectedFolder))
@@ -173,8 +173,8 @@ namespace Brightbits.BSH.Main
                     if (!lvFiles.Items.ContainsKey(newFolder.Text))
                     {
                         newFolder.ImageKey = "folder";
-                        newFolder.SubItems.Add("");
-                        newFolder.SubItems.Add("Ordner");
+                        newFolder.SubItems.Add(CreateStringListViewSubItem(""));
+                        newFolder.SubItems.Add(CreateStringListViewSubItem("Ordner"));
                         newFolder.Group = lvFiles.Groups["Ordner"];
 
                         // localize folder
@@ -197,7 +197,7 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         private async Task CreateFilesListAsync(string path)
         {
-            var files = await BackupLogic.GlobalBackup.QueryManager.GetFilesByVersionAsync(selectedVersion.Id, @"\" + path + @"\");
+            var files = await BackupLogic.GlobalBackup.QueryManager.GetFilesByVersionAsync(selectedVersion.Id, $"\\{path}\\");
 
             foreach (var file in files)
             {
@@ -211,11 +211,11 @@ namespace Brightbits.BSH.Main
                 fileListItem.Text = file.FileName;
 
                 // add file attributes
-                fileListItem.SubItems.Add(file.FileSize.Bytes().Humanize());
-                fileListItem.SubItems.Add("");
-                fileListItem.SubItems.Add(file.FileDateModified.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
-                fileListItem.SubItems.Add(file.FileDateCreated.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
-                fileListItem.SubItems.Add(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")");
+                fileListItem.SubItems.Add(CreateFileSizeListViewSubItem(file.FileSize));
+                fileListItem.SubItems.Add(CreateStringListViewSubItem(""));
+                fileListItem.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
+                fileListItem.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
+                fileListItem.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")"));
                 fileListItem.ForeColor = (file.FileStatus == "1" ? Color.Black : Color.Red);
                 fileListItem.Tag = file.FilePath;
 
@@ -228,6 +228,33 @@ namespace Brightbits.BSH.Main
             }
         }
 
+        private ListViewItem.ListViewSubItem CreateFileSizeListViewSubItem(double fileSize)
+        {
+            return new ListViewItem.ListViewSubItem()
+            {
+                Text = fileSize.Bytes().Humanize(),
+                Tag = fileSize
+            };
+        }
+
+        private ListViewItem.ListViewSubItem CreateDateTimeListViewSubItem(DateTime dateTime)
+        {
+            return new ListViewItem.ListViewSubItem()
+            {
+                Text = dateTime.ToString("dd.MM.yyyy HH:mm"),
+                Tag = dateTime
+            };
+        }
+
+        private ListViewItem.ListViewSubItem CreateStringListViewSubItem(string str)
+        {
+            return new ListViewItem.ListViewSubItem()
+            {
+                Text = str,
+                Tag = str
+            };
+        }
+
         /// <summary>
         /// Opens the folder by retrieving files and folders of the selected path.
         /// </summary>
@@ -235,7 +262,7 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         public async Task OpenFolderAsync(string path)
         {
-            if (path is null)
+            if (path == null)
             {
                 return;
             }
@@ -279,14 +306,22 @@ namespace Brightbits.BSH.Main
             selectedFolder = path;
 
             // retrieve folder and files list
-            await Task.WhenAll(CreateFolderListAsync(path), CreateFilesListAsync(path));
+            try
+            {
+                await Task.WhenAll(CreateFolderListAsync(path), CreateFilesListAsync(path));
+                tsslblStatus.Text = Resources.DLG_BACKUPBROWSER_MSG_INFO_READY;
+            }
+            catch (Exception ex)
+            {
+                this._logger.Error(ex, "Exception during backup browser file collection.");
+                tsslblStatus.Text = Resources.DLG_BACKUPBROWSER_MSG_ERROR_ERROR_LOAD;
+            }
 
             // update UI
             lvFiles.EndUpdate();
             lvFiles.Focus();
 
             LCFiles.LoadingCircleControl.Active = false;
-            tsslblStatus.Text = "Bereit";
 
             if (lvFiles.Items.Count > 0)
             {
@@ -1263,11 +1298,11 @@ namespace Brightbits.BSH.Main
                         newEntry.Text = file.FileName;
 
                         // populate file attributes
-                        newEntry.SubItems.Add(file.FileSize.Bytes().Humanize());
-                        newEntry.SubItems.Add("");
-                        newEntry.SubItems.Add(file.FileDateModified.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
-                        newEntry.SubItems.Add(file.FileDateCreated.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
-                        newEntry.SubItems.Add(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")");
+                        newEntry.SubItems.Add(CreateFileSizeListViewSubItem(file.FileSize));
+                        newEntry.SubItems.Add(CreateStringListViewSubItem(""));
+                        newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
+                        newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
+                        newEntry.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")"));
                         newEntry.Tag = file.FilePath;
 
                         // retrieve file icon

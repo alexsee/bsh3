@@ -12,25 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using CommandLine;
+using System;
+using System.Collections;
 
-namespace BSH.Main.Model.CommandLine
+namespace Brightbits.BSH.Controls.UI
 {
-    public class Options
+    public class DateTimeComparer : IComparer
     {
-        [Option("delayedstart", Default = false)]
-        public bool DelayedStart { get; set; }
+        public int Compare(object x, object y)
+        {
+            DateTime dateX = Convert.ToDateTime(x);
+            DateTime dateY = Convert.ToDateTime(y);
 
-        [Option("databasefile")]
-        public string DatabaseFile { get; set; }
-
-        [Option("deleteprotocol", Default = false)]
-        public bool DeleteProtocol { get; set; }
-
-        [Option("config")]
-        public bool ShowConfig { get; set; }
-
-        [Option("browser")]
-        public bool ShowBrowser { get; set; }
+            return DateTime.Compare(dateX, dateY);
+        }
     }
 }
