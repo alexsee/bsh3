@@ -16,7 +16,6 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using BSH.Main.Properties;
 using Humanizer;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using System;
 
 namespace Brightbits.BSH.Main
@@ -67,8 +66,6 @@ namespace Brightbits.BSH.Main
             {
                 pbarTotal.Maximum = total;
                 pbarTotal.Value = current;
-                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal);
-                TaskbarManager.Instance.SetProgressValue(pbarTotal.Value, pbarTotal.Maximum);
                 lblFiles.Text = Resources.DLG_STATUS_FILES_PROCESSED_TEXT.FormatWith(current, total);
             }));
         }

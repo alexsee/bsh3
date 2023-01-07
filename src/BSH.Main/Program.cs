@@ -76,6 +76,7 @@ namespace Brightbits.BSH.Main
 
             // set current culture
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
 
             CheckSingleInstance();

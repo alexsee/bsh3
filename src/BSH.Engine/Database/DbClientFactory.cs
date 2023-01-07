@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Data.Common;
 
 namespace Brightbits.BSH.Engine.Database
 {
@@ -28,6 +29,8 @@ namespace Brightbits.BSH.Engine.Database
         public DbClientFactory(string databaseFile)
         {
             this.databaseFile = databaseFile;
+
+            DbProviderFactories.RegisterFactory("System.Data.SQLite", System.Data.SQLite.SQLiteFactory.Instance);
         }
 
         /// <summary>
