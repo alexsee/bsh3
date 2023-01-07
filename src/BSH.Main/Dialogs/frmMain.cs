@@ -279,7 +279,7 @@ namespace Brightbits.BSH.Main
 #endif
         }
 
-        private void ZurücksetzenToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void ZurücksetzenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show(Resources.DLG_MAIN_MSG_RESET_TEXT, Resources.DLG_MAIN_MSG_RESET_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
             {
@@ -291,7 +291,7 @@ namespace Brightbits.BSH.Main
 
                 System.IO.File.Delete(BackupLogic.DatabaseFile);
 
-                BackupLogic.Startup();
+                await BackupLogic.StartupAsync();
                 CurrentTab = AvailableTabs.TabDoConfiguration;
             }
         }

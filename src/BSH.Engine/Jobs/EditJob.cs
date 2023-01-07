@@ -24,6 +24,7 @@ using System.Data;
 using System.Globalization;
 using System.Security;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine.Jobs
 {
@@ -48,7 +49,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// </summary>
         /// <exception cref="DeviceNotReadyException"></exception>
         /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-        public void Edit()
+        public async Task EditAsync()
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
 
@@ -81,11 +82,11 @@ namespace Brightbits.BSH.Engine.Jobs
                     "WHERE(c.fileversionid = b.fileversionid And a.fileid = b.fileid) " +
                     "and d.versionid = b.filepackage";
 
-                var numFiles = int.Parse(dbClient.ExecuteScalar(CommandType.Text, "SELECT COUNT(1) " + commandSQL, null).ToString());
+                var numFiles = int.Parse((await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT COUNT(1) " + commandSQL, null)).ToString());
                 ReportProgress(numFiles, 0);
 
                 // determine files of backup to edit
-                using (var reader = dbClient.ExecuteDataReader(CommandType.Text, "SELECT * " + commandSQL, null))
+                using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * " + commandSQL, null))
                 {
                     int i = 0;
                     while (reader.Read())
@@ -109,7 +110,7 @@ namespace Brightbits.BSH.Engine.Jobs
                         // change file
                         try
                         {
-                            EditFileFromDevice(
+                            await EditFileFromDeviceAsync(
                                 dbClient,
                                 remoteFilePath,
                                 reader.GetInt32("fileType"),
@@ -167,7 +168,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// <param name="remoteFile"></param>
         /// <param name="fileType"></param>
         /// <param name="fileVersionId"></param>
-        private void EditFileFromDevice(DbClient dbClient, string remoteFile, int fileType, int fileVersionId)
+        private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, int fileVersionId)
         {
             if (fileType == 5)
             {
@@ -175,7 +176,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 storage.DecryptOnStorage(remoteFile, Password);
 
                 // modify entry
-                dbClient.ExecuteNonQuery($"UPDATE fileversiontable SET fileType = 3 WHERE fileversionid = {fileVersionId}");
+                await dbClient.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = 3 WHERE fileversionid = {fileVersionId}");
             }
             else if (fileType == 6)
             {
@@ -183,7 +184,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 storage.DecryptOnStorage(remoteFile, Password);
 
                 // modify entry
-                dbClient.ExecuteNonQuery($"UPDATE fileversiontable SET fileType = 1 WHERE fileversionid = {fileVersionId}");
+                await dbClient.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = 1 WHERE fileversionid = {fileVersionId}");
             }
         }
     }

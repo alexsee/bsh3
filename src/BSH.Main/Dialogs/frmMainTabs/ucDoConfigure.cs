@@ -19,6 +19,7 @@ using BSH.Main.Properties;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -77,21 +78,21 @@ namespace Brightbits.BSH.Main
 
         private int iWizardStep = 1;
 
-        private void cmdNext_Click(object sender, EventArgs e)
+        private async void cmdNext_Click(object sender, EventArgs e)
         {
             // wizard: next step
             iWizardStep += 1;
-            ShowWizardStep(iWizardStep);
+            await ShowWizardStepAsync(iWizardStep);
         }
 
-        private void cmdBack_Click(object sender, EventArgs e)
+        private async void cmdBack_Click(object sender, EventArgs e)
         {
             // wizard: previous step
             iWizardStep -= 1;
-            ShowWizardStep(iWizardStep);
+            await ShowWizardStepAsync(iWizardStep);
         }
 
-        private void ShowWizardStep(int iStep)
+        private async Task ShowWizardStepAsync(int iStep)
         {
             iWizardStep = iStep;
 
@@ -126,7 +127,7 @@ namespace Brightbits.BSH.Main
                     {
                         MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         iWizardStep -= 1;
-                        ShowWizardStep(iWizardStep);
+                        await ShowWizardStepAsync(iWizardStep);
                         return;
                     }
 
@@ -154,7 +155,7 @@ namespace Brightbits.BSH.Main
                         {
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
@@ -165,7 +166,7 @@ namespace Brightbits.BSH.Main
                         {
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
@@ -184,7 +185,7 @@ namespace Brightbits.BSH.Main
                                 // directory not found
                                 MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 iWizardStep -= 1;
-                                ShowWizardStep(iWizardStep);
+                                await ShowWizardStepAsync(iWizardStep);
                                 return;
                             }
 
@@ -195,7 +196,7 @@ namespace Brightbits.BSH.Main
                             // ftp credentials exception
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
                     }
@@ -211,7 +212,7 @@ namespace Brightbits.BSH.Main
                                     // network directory credentials exception
                                     MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     iWizardStep -= 1;
-                                    ShowWizardStep(iWizardStep);
+                                    await ShowWizardStepAsync(iWizardStep);
                                     return;
                                 }
                             }
@@ -221,7 +222,7 @@ namespace Brightbits.BSH.Main
                             // credentials exception
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
                     }
@@ -241,7 +242,7 @@ namespace Brightbits.BSH.Main
                     {
                         MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         iWizardStep -= 1;
-                        ShowWizardStep(iWizardStep);
+                        await ShowWizardStepAsync(iWizardStep);
                         return;
                     }
 
@@ -318,7 +319,7 @@ namespace Brightbits.BSH.Main
                         SuperBase.CurrentTab = frmMain.AvailableTabs.TabOverview;
 
                         // start backup
-                        BackupLogic.StartSystem(true);
+                        await BackupLogic.StartSystemAsync(true);
 
                         // create first backup
                         BackupLogic.BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_FIRST, "", false);
@@ -356,7 +357,7 @@ namespace Brightbits.BSH.Main
                         {
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
@@ -410,14 +411,14 @@ namespace Brightbits.BSH.Main
                         // local or network directory
                         if (File.Exists(txtPath.Text + @"\backup.bshdb"))
                         {
-                            ShowWizardStep(7);
+                            await ShowWizardStepAsync(7);
                         }
                         else
                         {
                             // show controls
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
                     }
@@ -447,7 +448,7 @@ namespace Brightbits.BSH.Main
                                 {
                                     MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     iWizardStep -= 1;
-                                    ShowWizardStep(iWizardStep);
+                                    await ShowWizardStepAsync(iWizardStep);
                                     return;
                                 }
                             }
@@ -459,12 +460,12 @@ namespace Brightbits.BSH.Main
                             // ftp credentials wrong
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
                         // goto next step
-                        ShowWizardStep(7);
+                        await ShowWizardStepAsync(7);
                     }
 
                     break;
@@ -489,7 +490,7 @@ namespace Brightbits.BSH.Main
                         {
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
@@ -524,7 +525,7 @@ namespace Brightbits.BSH.Main
                             // credentials wrong
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             iWizardStep -= 2;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
                     }
@@ -535,7 +536,7 @@ namespace Brightbits.BSH.Main
                             // database does not exist
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             iWizardStep -= 1;
-                            ShowWizardStep(iWizardStep);
+                            await ShowWizardStepAsync(iWizardStep);
                             return;
                         }
 
@@ -544,7 +545,7 @@ namespace Brightbits.BSH.Main
                     }
 
                     // start backup logic
-                    BackupLogic.Startup();
+                    await BackupLogic.StartupAsync();
 
                     // adjust configuration
                     if (tcStep5.SelectedIndex == 0)
@@ -553,9 +554,9 @@ namespace Brightbits.BSH.Main
                         BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder = lvBackups.SelectedItems[0].Tag.ToString();
                         BackupLogic.GlobalBackup.ConfigurationManager.MediumType = 1;
 
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
                     }
                     else if (tcStep5.SelectedIndex == 1)
                     {
@@ -569,9 +570,9 @@ namespace Brightbits.BSH.Main
                         BackupLogic.GlobalBackup.ConfigurationManager.FtpCoding = Convert.ToString(cboFtpEncoding2.SelectedItem);
                         BackupLogic.GlobalBackup.ConfigurationManager.MediumType = 3;
 
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
                     }
                     else
                     {
@@ -634,7 +635,7 @@ namespace Brightbits.BSH.Main
                             }
                         }
 
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("UPDATE versiontable SET versionSources = \"" + string.Join("|", sources.Select(x => x.Path).ToArray()) + "\" WHERE versionID = " + version.Id);
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE versiontable SET versionSources = \"" + string.Join("|", sources.Select(x => x.Path).ToArray()) + "\" WHERE versionID = " + version.Id);
                     }
 
                     BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder = sourcePaths;
@@ -644,7 +645,7 @@ namespace Brightbits.BSH.Main
                     SuperBase.CurrentTab = frmMain.AvailableTabs.TabOverview;
 
                     // start backup system
-                    BackupLogic.StartSystem(true);
+                    await BackupLogic.StartSystemAsync(true);
                     break;
             }
         }
@@ -726,9 +727,9 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private void cmdImport_Click(object sender, EventArgs e)
+        private async void cmdImport_Click(object sender, EventArgs e)
         {
-            ShowWizardStep(5);
+            await ShowWizardStepAsync(5);
             iWizardStep = 5;
             cmdImport.Visible = false;
             cmdNext.Visible = true;
@@ -821,9 +822,9 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private void cmdConfigure_Click(object sender, EventArgs e)
+        private async void cmdConfigure_Click(object sender, EventArgs e)
         {
-            ShowWizardStep(1);
+            await ShowWizardStepAsync(1);
             iWizardStep = 1;
             cmdNext.Visible = true;
             cmdBack.Visible = true;

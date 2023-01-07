@@ -166,7 +166,7 @@ namespace Brightbits.BSH.Engine.Services
             // start backup
             jobReport.ReportAction(ActionType.Backup, silent);
 
-            currentTask = Task.Factory.StartNew(() => backupJob.Backup(cancellationToken));
+            currentTask = Task.Factory.StartNew(async () => await backupJob.BackupAsync(cancellationToken));
 
             // error handling
             currentTask.ContinueWith(t =>
@@ -224,7 +224,7 @@ namespace Brightbits.BSH.Engine.Services
             // run restore
             jobReport.ReportAction(ActionType.Restore, silent);
 
-            currentTask = Task.Factory.StartNew(() => restoreJob.Restore(cancellationToken));
+            currentTask = Task.Factory.StartNew(() => restoreJob.RestoreAsync(cancellationToken));
 
             // error handling
             currentTask.ContinueWith(t =>
@@ -267,7 +267,7 @@ namespace Brightbits.BSH.Engine.Services
             // run delete
             jobReport.ReportAction(ActionType.Delete, silent);
 
-            currentTask = Task.Factory.StartNew(() => deleteJob.Delete());
+            currentTask = Task.Factory.StartNew(async () => await deleteJob.DeleteAsync());
 
             // error handling
             currentTask.ContinueWith(t =>
@@ -308,7 +308,7 @@ namespace Brightbits.BSH.Engine.Services
             // run delete
             jobReport.ReportAction(ActionType.Delete, silent);
 
-            currentTask = Task.Factory.StartNew(() => deleteJob.DeleteSingle(fileFilter, pathFilter));
+            currentTask = Task.Factory.StartNew(async () => await deleteJob.DeleteSingleAsync(fileFilter, pathFilter));
 
             // error handling
             currentTask.ContinueWith(t =>
@@ -354,7 +354,7 @@ namespace Brightbits.BSH.Engine.Services
             // run edit
             jobReport.ReportAction(ActionType.Modify, silent);
 
-            currentTask = Task.Factory.StartNew(() => editJob.Edit());
+            currentTask = Task.Factory.StartNew(() => editJob.EditAsync());
 
             // error handling
             currentTask.ContinueWith(t =>
@@ -371,11 +371,11 @@ namespace Brightbits.BSH.Engine.Services
         /// </summary>
         /// <param name="version"></param>
         /// <param name="stable"></param>
-        public void SetStable(string version, bool stable)
+        public async Task SetStableAsync(string version, bool stable)
         {
             using (var dbClient = dbClientFactory.CreateDbClient())
             {
-                dbClient.ExecuteNonQuery($"UPDATE versiontable SET versionStable = {(stable ? 1 : 0)} WHERE versionID = {version}");
+                await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStable = {(stable ? 1 : 0)} WHERE versionID = {version}");
             }
         }
     }

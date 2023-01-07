@@ -19,6 +19,7 @@ using Humanizer;
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -41,7 +42,7 @@ namespace Brightbits.BSH.Main
         public void OpenTab()
         {
             StatusController.Current.AddObserver(this);
-            RefreshInfo();
+            Task.WaitAll(RefreshInfo());
 
 #if !WIN_UWP
             try
@@ -88,7 +89,7 @@ namespace Brightbits.BSH.Main
 
         #endregion
 
-        private void RefreshInfo()
+        private async Task RefreshInfo()
         {
             try
             {
@@ -108,7 +109,7 @@ namespace Brightbits.BSH.Main
                 // compression
                 if (BackupLogic.GlobalBackup.ConfigurationManager.Compression == 1)
                 {
-                    var oldestBackup = BackupLogic.GlobalBackup.QueryManager.GetOldestBackup();
+                    var oldestBackup = await BackupLogic.GlobalBackup.QueryManager.GetOldestBackupAsync();
 
                     lblBdOldestBackup.Text = (oldestBackup != null) ? oldestBackup.CreationDate.Humanize(false) : Resources.DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT;
                     lblOldBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT;
@@ -119,12 +120,12 @@ namespace Brightbits.BSH.Main
                     lblOldBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT;
                     lblBdOldestBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT;
 
-                    int countBackup = BackupLogic.GlobalBackup.QueryManager.GetNumberOfVersions();
+                    int countBackup = await BackupLogic.GlobalBackup.QueryManager.GetNumberOfVersionsAsync();
                     if (countBackup >= 20 && !string.IsNullOrEmpty(BackupLogic.GlobalBackup.ConfigurationManager.BackupSize))
                     {
                         try
                         {
-                            var oldestBackup = BackupLogic.GlobalBackup.QueryManager.GetOldestBackup().CreationDate;
+                            var oldestBackup = (await BackupLogic.GlobalBackup.QueryManager.GetOldestBackupAsync()).CreationDate;
                             double tmp;
                             tmp = Convert.ToDouble(BackupLogic.GlobalBackup.ConfigurationManager.FreeSpace) / (Convert.ToDouble(BackupLogic.GlobalBackup.ConfigurationManager.BackupSize) / countBackup);
                             double getDaysToOldestBackup;
@@ -139,7 +140,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // retrieve newest backup
-                var lastBackup = BackupLogic.GlobalBackup.QueryManager.GetLastBackup();
+                var lastBackup = await BackupLogic.GlobalBackup.QueryManager.GetLastBackupAsync();
                 lblBdNewestBackup.Text = (lastBackup != null) ? lastBackup.CreationDate.Humanize(false) : Resources.DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT;
 
                 var nextDate = BackupLogic.GetNextBackupDate();
@@ -397,11 +398,11 @@ namespace Brightbits.BSH.Main
             SuperBase.CurrentTab = frmMain.AvailableTabs.TabConfiguration;
         }
 
-        private void btnOnOff_Click(object sender, EventArgs e)
+        private async void btnOnOff_Click(object sender, EventArgs e)
         {
             if (btnOnOff.Tag.ToString().Equals("OFF"))
             {
-                BackupLogic.StartSystem(true);
+                await BackupLogic.StartSystemAsync(true);
                 btnOnOff.Tag = "ON";
             }
             else
@@ -468,7 +469,7 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            Invoke(new Action(() => RefreshInfo()));
+            Invoke(new Action(async () => await RefreshInfo()));
         }
 
         public void ReportState(JobState jobState)
@@ -478,7 +479,7 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            Invoke(new Action(() => RefreshInfo()));
+            Invoke(new Action(async () => await RefreshInfo()));
         }
 
         public void ReportStatus(string title, string text)
@@ -538,7 +539,7 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            Invoke(new Action(() => RefreshInfo()));
+            Invoke(new Action(async () => await RefreshInfo()));
         }
 
         private void llShowExceptionDialog_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

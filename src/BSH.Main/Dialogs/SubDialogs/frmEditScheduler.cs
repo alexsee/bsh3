@@ -183,7 +183,7 @@ namespace Brightbits.BSH.Main
                         break;
 
                     case 4:
-                        newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(dlgAddSchedule.dtpStartTime.Value.Day,  dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm")));
+                        newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(dlgAddSchedule.dtpStartTime.Value.Day, dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm")));
                         break;
                 }
 
@@ -194,9 +194,9 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private void cmdOK_Click(object sender, EventArgs e)
+        private async void cmdOK_Click(object sender, EventArgs e)
         {
-            BackupLogic.GlobalBackup.ExecuteNonQuery("DELETE FROM schedule");
+            await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("DELETE FROM schedule");
 
             // Automatische Backups
             foreach (ListViewItem entry in lwTimeSchedule.Items)
@@ -205,23 +205,23 @@ namespace Brightbits.BSH.Main
                 switch (entry.SubItems[0].Tag)
                 {
                     case 0:
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("INSERT INTO schedule ( timType, timDate) VALUES ( 1, '" + parsedDate + "' )");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 1, '" + parsedDate + "' )");
                         break;
 
                     case 1:
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("INSERT INTO schedule ( timType, timDate) VALUES ( 2, '" + parsedDate + "' )");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 2, '" + parsedDate + "' )");
                         break;
 
                     case 2:
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("INSERT INTO schedule ( timType, timDate) VALUES ( 3, '" + parsedDate + "' )");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 3, '" + parsedDate + "' )");
                         break;
 
                     case 3:
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("INSERT INTO schedule ( timType, timDate) VALUES ( 4, '" + parsedDate + "' )");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 4, '" + parsedDate + "' )");
                         break;
 
                     case 4:
-                        BackupLogic.GlobalBackup.ExecuteNonQuery("INSERT INTO schedule ( timType, timDate) VALUES ( 5, '" + parsedDate + "' )");
+                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 5, '" + parsedDate + "' )");
                         break;
                 }
             }

@@ -24,6 +24,7 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine.Jobs
 {
@@ -48,7 +49,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// <param name="pathFilter"></param>
         /// <exception cref="DeviceNotReadyException"></exception>
         /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-        public void DeleteSingle(string fileFilter, string pathFilter)
+        public async Task DeleteSingleAsync(string fileFilter, string pathFilter)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
 
@@ -106,7 +107,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 }
 
                 // obtain files
-                using (var reader = dbClient.ExecuteDataReader(CommandType.Text, selectFileSQL, selectFileParameters))
+                using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, selectFileSQL, selectFileParameters))
                 {
                     while (reader.Read())
                     {
@@ -127,7 +128,7 @@ namespace Brightbits.BSH.Engine.Jobs
                         dbClient.CreateParameter("fileId", DbType.Int32, 0, fileId)
                     };
 
-                    using (var reader = dbClient.ExecuteDataReader(CommandType.Text,
+                    using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text,
                         "SELECT * FROM fileVersionTable AS fvt " +
                                                         "INNER JOIN fileTable AS ft ON " +
                                                         "  ft.fileID = fvt.fileID " +
@@ -196,9 +197,9 @@ namespace Brightbits.BSH.Engine.Jobs
                 }
 
                 // delete metadata
-                dbClient.ExecuteNonQuery(CommandType.Text, "DELETE FROM fileLink WHERE fileversionid IN (SELECT fileversionid FROM fileversiontable AS fvt WHERE fvt.fileID IN (" + subQuerySQL + "))", deleteParams.ToArray());
-                dbClient.ExecuteNonQuery(CommandType.Text, "DELETE FROM fileversiontable WHERE fileID IN (" + subQuerySQL + ")", deleteParams.ToArray());
-                dbClient.ExecuteNonQuery(CommandType.Text, "DELETE FROM fileTable AS ft WHERE " + subQuerySQL.Substring(subQuerySQL.IndexOf("WHERE ") + 6), deleteParams.ToArray());
+                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileLink WHERE fileversionid IN (SELECT fileversionid FROM fileversiontable AS fvt WHERE fvt.fileID IN (" + subQuerySQL + "))", deleteParams.ToArray());
+                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileversiontable WHERE fileID IN (" + subQuerySQL + ")", deleteParams.ToArray());
+                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileTable AS ft WHERE " + subQuerySQL.Substring(subQuerySQL.IndexOf("WHERE ") + 6), deleteParams.ToArray());
 
                 dbClient.CommitTransaction();
             }
@@ -210,7 +211,7 @@ namespace Brightbits.BSH.Engine.Jobs
             }
 
             // refresh free diskspace
-            UpdateFreeDiskSpace();
+            await UpdateFreeDiskSpaceAsync();
 
             // store database version
             int.TryParse(queryManager.Configuration.OldBackupPrevent, out int databaseVersion);

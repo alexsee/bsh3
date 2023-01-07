@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine.Jobs
 {
@@ -51,7 +52,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// </summary>
         /// <exception cref="DeviceNotReadyException"></exception>
         /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-        public void Delete()
+        public async Task DeleteAsync()
         {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
 
@@ -140,16 +141,16 @@ namespace Brightbits.BSH.Engine.Jobs
                     {
                         dbClient.CreateParameter("id", DbType.VarNumeric, 0, file["fileversionid"])
                     };
-                    dbClient.ExecuteNonQuery(CommandType.Text, "DELETE FROM fileversiontable WHERE fileversionid = @id", deleteFileParams);
+                    await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileversiontable WHERE fileversionid = @id", deleteFileParams);
                 }
 
                 // update backup metadata
-                dbClient.ExecuteNonQuery($"DELETE FROM filelink WHERE versionID = {Version}");
-                dbClient.ExecuteNonQuery("DELETE FROM filetable WHERE fileid NOT IN (SELECT fileid FROM fileversiontable)");
-                dbClient.ExecuteNonQuery($"UPDATE versiontable SET versionStatus = 1 WHERE versionID = {Version}");
+                await dbClient.ExecuteNonQueryAsync($"DELETE FROM filelink WHERE versionID = {Version}");
+                await dbClient.ExecuteNonQueryAsync("DELETE FROM filetable WHERE fileid NOT IN (SELECT fileid FROM fileversiontable)");
+                await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStatus = 1 WHERE versionID = {Version}");
 
-                dbClient.ExecuteNonQuery($"DELETE FROM folderlink WHERE versionID = {Version}");
-                dbClient.ExecuteNonQuery("DELETE FROM foldertable WHERE id NOT IN (SELECT folderid FROM folderlink)");
+                await dbClient.ExecuteNonQueryAsync($"DELETE FROM folderlink WHERE versionID = {Version}");
+                await dbClient.ExecuteNonQueryAsync("DELETE FROM foldertable WHERE id NOT IN (SELECT folderid FROM folderlink)");
 
                 dbClient.CommitTransaction();
             }
@@ -167,7 +168,7 @@ namespace Brightbits.BSH.Engine.Jobs
 
                 using (var dbClient = dbClientFactory.CreateDbClient())
                 {
-                    queryManager.Configuration.BackupSize = dbClient.ExecuteScalar("SELECT SUM(FileSize) FROM fileversiontable").ToString();
+                    queryManager.Configuration.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
                 }
             }
             catch (Exception ex)
@@ -180,7 +181,7 @@ namespace Brightbits.BSH.Engine.Jobs
             if (storage is FileSystemStorage)
             {
                 using (var dbClient = dbClientFactory.CreateDbClient())
-                using (var reader = dbClient.ExecuteDataReader(CommandType.Text, "SELECT versiondate FROM versiontable WHERE versionid NOT IN (SELECT filepackage FROM fileversiontable)", null))
+                using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT versiondate FROM versiontable WHERE versionid NOT IN (SELECT filepackage FROM fileversiontable)", null))
                 {
                     while (reader.Read())
                     {
@@ -205,7 +206,7 @@ namespace Brightbits.BSH.Engine.Jobs
             queryManager.Configuration.OldBackupPrevent = (databaseVersion + 1).ToString();
 
             // refresh free diskspace
-            UpdateFreeDiskSpace();
+            await UpdateFreeDiskSpaceAsync();
 
             // close all database connections
             dbClientFactory.ClosePool();

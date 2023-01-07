@@ -19,6 +19,7 @@ using Serilog;
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -125,7 +126,7 @@ namespace Brightbits.BSH.Main
 #endif
 
                 // start backup engine
-                BackupLogic.Startup();
+                Task.WaitAll(BackupLogic.StartupAsync());
 
                 // parse command line if system is configured
                 if (BackupLogic.GlobalBackup.ConfigurationManager.IsConfigured == "1")

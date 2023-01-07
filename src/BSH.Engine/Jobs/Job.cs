@@ -19,6 +19,7 @@ using Brightbits.BSH.Engine.Storage;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine.Jobs
 {
@@ -185,7 +186,7 @@ namespace Brightbits.BSH.Engine.Jobs
         /// <summary>
         /// Updates the free disk space on the database.
         /// </summary>
-        protected void UpdateFreeDiskSpace()
+        protected async Task UpdateFreeDiskSpaceAsync()
         {
             try
             {
@@ -193,7 +194,7 @@ namespace Brightbits.BSH.Engine.Jobs
 
                 using (var dbClient = dbClientFactory.CreateDbClient())
                 {
-                    queryManager.Configuration.BackupSize = dbClient.ExecuteScalar("SELECT SUM(FileSize) FROM fileversiontable").ToString();
+                    queryManager.Configuration.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
                 }
             }
             catch (Exception ex)

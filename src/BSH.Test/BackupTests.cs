@@ -21,6 +21,7 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace BSH.Test
 {
@@ -29,7 +30,7 @@ namespace BSH.Test
         private EngineService engineService;
 
         [SetUp]
-        public void Setup()
+        public async Task Setup()
         {
             if (engineService != null)
             {
@@ -44,6 +45,7 @@ namespace BSH.Test
             }
 
             this.engineService = new EngineService(Environment.CurrentDirectory + "\\testdb.db");
+            await this.engineService.InitAsync();
         }
 
         [Test]
@@ -57,7 +59,7 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            Assert.Throws<NoSourceFolderSelectedException>(() => backupJob.Backup(token));
+            Assert.Throws<NoSourceFolderSelectedException>(async () => await backupJob.BackupAsync(token));
         }
 
         [Test]
@@ -71,11 +73,11 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            Assert.Throws<DeviceNotReadyException>(() => backupJob.Backup(token));
+            Assert.Throws<DeviceNotReadyException>(async () => await backupJob.BackupAsync(token));
         }
 
         [Test]
-        public void TestSimpleFullAndIncremental()
+        public async Task TestSimpleFullAndIncremental()
         {
             var fs = new StorageMock();
             var backupJob = new BackupJob(fs, this.engineService.DbClientFactory, this.engineService.QueryManager);
@@ -85,22 +87,22 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            backupJob.Backup(token);
+            await backupJob.BackupAsync(token);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.AreEqual("1", version.Id);
 
             // start second backup
-            backupJob.Backup(token);
+            await backupJob.BackupAsync(token);
 
             // check version
-            version = this.engineService.QueryManager.GetLastBackup();
+            version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.AreEqual("1", version.Id);
         }
 
         [Test]
-        public void TestCompressedFull()
+        public async Task TestCompressedFull()
         {
             // set compressed state
             this.engineService.ConfigurationManager.Compression = 1;
@@ -115,15 +117,15 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            backupJob.Backup(token);
+            await backupJob.BackupAsync(token);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.AreEqual("1", version.Id);
         }
 
         [Test]
-        public void TestEncryptedFull()
+        public async Task TestEncryptedFull()
         {
             // set compressed state
             this.engineService.ConfigurationManager.Encrypt = 1;
@@ -139,15 +141,15 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            backupJob.Backup(token);
+            await backupJob.BackupAsync(token);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.AreEqual("1", version.Id);
         }
 
         [Test]
-        public void TestFullFail()
+        public async Task TestFullFail()
         {
             // generate backup job
             var fs = new StorageMock(false, true);
@@ -159,17 +161,17 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            backupJob.Backup(token);
+            await backupJob.BackupAsync(token);
 
             Assert.NotZero(backupJob.FileErrorList.Count);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.Null(version);
         }
 
         [Test]
-        public void TestFullDrive()
+        public async Task TestFullDrive()
         {
             // generate backup job
             var fs = new StorageMock();
@@ -181,15 +183,15 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            backupJob.Backup(token);
+            await backupJob.BackupAsync(token);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.AreEqual("1", version.Id);
         }
 
         [Test]
-        public void TestCancellation()
+        public async Task TestCancellation()
         {
             var fs = new StorageMock();
             var backupJob = new BackupJob(fs, this.engineService.DbClientFactory, this.engineService.QueryManager);
@@ -202,10 +204,10 @@ namespace BSH.Test
             var token = tokenSource.Token;
             tokenSource.Cancel();
 
-            backupJob.Backup(token);
+            await backupJob.BackupAsync(token);
 
             // check version
-            var version = this.engineService.QueryManager.GetLastBackup();
+            var version = await this.engineService.QueryManager.GetLastBackupAsync();
             Assert.Null(version);
         }
     }
