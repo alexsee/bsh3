@@ -183,7 +183,7 @@ namespace Brightbits.BSH.Main
                         break;
 
                     case 4:
-                        newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(dlgAddSchedule.dtpStartTime.Value.Day,  dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm")));
+                        newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(dlgAddSchedule.dtpStartTime.Value.Day, dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm")));
                         break;
                 }
 

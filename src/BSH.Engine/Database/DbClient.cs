@@ -293,7 +293,7 @@ namespace Brightbits.BSH.Engine.Database
             return await ExecuteScalarAsync(commandType, commandText, parameters, 60000);
         }
 
-        public async Task<object> ExecuteScalarAsync (CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
+        public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
         {
             OpenConnection();
 
