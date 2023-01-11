@@ -69,6 +69,8 @@ namespace Brightbits.BSH.Main
         {
         }
 
+        public RequestOverwriteResult LastFileOverwriteChoice { get {  return lastFileOverwriteChoice; } }
+
         public bool IsTaskRunning()
         {
             return JobState == JobState.RUNNING;
