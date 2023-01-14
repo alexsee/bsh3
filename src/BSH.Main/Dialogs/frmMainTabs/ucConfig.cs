@@ -496,7 +496,7 @@ namespace Brightbits.BSH.Main
                 // check FTP
                 var profile = FTPStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
 
-                if (profile != null)
+                if (profile)
                 {
                     MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TEXT, Resources.DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
