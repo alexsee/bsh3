@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
 using FluentFTP;
+using FluentFTP.Exceptions;
 using FluentFTP.Helpers;
 using Ionic.Zip;
 using Serilog;
