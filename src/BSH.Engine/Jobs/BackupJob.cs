@@ -559,8 +559,12 @@ namespace Brightbits.BSH.Engine.Jobs
                 }
             }
 
+            // compress or encrypt?
+            var compress = queryManager.Configuration.Compression == 1 && !normalCopy && !doNotCompress;
+            var encrypt = queryManager.Configuration.Encrypt == 1 && !normalCopy && file.FileSize != 0;
+
             // check if path is too long
-            if (storage.IsPathTooLong(remoteFileName))
+            if (storage.IsPathTooLong(remoteFileName, compress, encrypt))
             {
                 longFileName = Guid.NewGuid().ToString();
                 longFileName += Path.GetExtension(localFileName);
@@ -569,10 +573,6 @@ namespace Brightbits.BSH.Engine.Jobs
 
                 _logger.Debug("{fileName} path is too long to be copied, it will be renamed instead to {longFile}.", file.FileNamePath(), longFileName);
             }
-
-            // compress or encrypt?
-            var compress = queryManager.Configuration.Compression == 1 && !normalCopy && !doNotCompress;
-            var encrypt = queryManager.Configuration.Encrypt == 1 && !normalCopy && file.FileSize != 0;
 
             // send file to storage provider
             bool result;

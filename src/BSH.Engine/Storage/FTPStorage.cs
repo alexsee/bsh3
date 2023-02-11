@@ -246,16 +246,17 @@ namespace Brightbits.BSH.Engine.Storage
         {
             // create directory if not exists
             var remoteFilePath = Combine(folderPath, remoteFile + ".zip").GetFtpPath();
-
             var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile)) + ".zip";
-            using (var zipFile = new ZipFile(tmpFile))
+
+            using (var fs = new FileStream(tmpFile, FileMode.Create, FileAccess.ReadWrite))
+            using (var zipFile = new ZipFile())
             {
                 zipFile.ParallelDeflateThreshold = -1;
                 zipFile.CompressionLevel = (Ionic.Zlib.CompressionLevel)compressionLevel;
                 zipFile.UseZip64WhenSaving = Zip64Option.AsNecessary;
                 zipFile.AddFile(GetLocalFileName(localFile), "\\");
 
-                zipFile.Save();
+                zipFile.Save(fs);
             }
 
             var result = ftpClient.UploadFile(tmpFile, remoteFilePath, FtpRemoteExists.Overwrite, true);
@@ -479,7 +480,7 @@ namespace Brightbits.BSH.Engine.Storage
             return ftpClient.FileExists(remoteFilePath);
         }
 
-        public bool IsPathTooLong(string path)
+        public bool IsPathTooLong(string path, bool compression, bool encryption)
         {
             return false;
         }

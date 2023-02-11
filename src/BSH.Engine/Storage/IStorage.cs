@@ -53,7 +53,7 @@ namespace Brightbits.BSH.Engine.Storage
 
         void UpdateStorageVersion(int versionId);
 
-        bool IsPathTooLong(string path);
+        bool IsPathTooLong(string path, bool compression, bool encryption);
 
         long GetFreeSpace();
     }
