@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
 using FluentFTP;
+using FluentFTP.Exceptions;
 using FluentFTP.Helpers;
 using Ionic.Zip;
 using Serilog;
@@ -108,7 +109,7 @@ namespace Brightbits.BSH.Engine.Storage
             return profile;
         }
 
-        public static FtpProfile CheckConnection(string host, int port, string userName, string password, string folderPath, string encoding)
+        public static bool CheckConnection(string host, int port, string userName, string password, string folderPath, string encoding)
         {
             var credentials = new NetworkCredential(userName, password);
             var config = new FtpConfig
@@ -133,21 +134,30 @@ namespace Brightbits.BSH.Engine.Storage
                     client.Encoding = Encoding.GetEncoding(encoding);
                 }
 
-                var profile = client.AutoConnect();
+                // first, try direct connect
+                try
+                {
+                    client.Connect();
+                }
+                catch
+                {
+                    // failed, so try auto connect
+                    client.AutoConnect();
+                }
 
                 if (!client.IsConnected)
                 {
-                    return profile;
+                    return false;
                 }
 
                 // check if folder exists
                 if (!client.DirectoryExists(folderPath.GetFtpPath()))
                 {
                     client.Disconnect();
-                    return profile;
+                    return false;
                 }
 
-                return profile;
+                return true;
             }
         }
 
