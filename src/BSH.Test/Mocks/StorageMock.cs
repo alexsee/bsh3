@@ -102,7 +102,7 @@ namespace BSH.Test.Mocks
             return 0;
         }
 
-        public bool IsPathTooLong(string path)
+        public bool IsPathTooLong(string path, bool compression, bool encryption)
         {
             return false;
         }
