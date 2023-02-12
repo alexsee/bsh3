@@ -91,14 +91,9 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         private bool IsFileAvailable(string fileName)
         {
-            if (!isMedium || string.IsNullOrEmpty(fileName))
+            if (!isMedium || string.IsNullOrEmpty(fileName) || fileName.StartsWith("\\"))
             {
                 return false;
-            }
-
-            if (fileName.StartsWith("\\"))
-            {
-                return System.IO.File.Exists(fileName);
             }
 
             if (drive != null && (drive.DriveType == System.IO.DriveType.Fixed || drive.DriveType == System.IO.DriveType.Removable))
@@ -220,7 +215,15 @@ namespace Brightbits.BSH.Main
                 fileListItem.Tag = file.FilePath;
 
                 // get icon image
-                GetImageKey(file, fileListItem);
+                try
+                {
+                    GetImageKey(file, fileListItem);
+                }
+                catch (Exception ex)
+                {
+                    // could not retrieve icon
+                    this._logger.Warning(ex, "Could not retrieve icon for file: %s", file.FileName);
+                }
 
                 // add to group files
                 fileListItem.Group = lvFiles.Groups["Dateien"];
