@@ -62,7 +62,7 @@ namespace Brightbits.BSH.Main
 
         private void plCancel_MouseClick(object sender, MouseEventArgs e)
         {
-            DialogResult = DialogResult.Cancel;
+            DialogResult = DialogResult.Ignore;
             Close();
         }
 
