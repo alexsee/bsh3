@@ -415,7 +415,7 @@
       <Version>2.14.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.19041.1</Version>
+      <Version>10.0.22621.755</Version>
     </PackageReference>
     <PackageReference Include="Serilog.Settings.AppSettings">
       <Version>2.2.2</Version>
