@@ -124,6 +124,9 @@
   <data name="archive" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\archive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="arrow_back_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_back_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="arrow_left_bold_circle_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\arrow-left-bold-circle-outline.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -160,11 +163,14 @@
   <data name="BackupStatus_4" xml:space="preserve">
     <value>Automatische Sicherung ist deaktivert.</value>
   </data>
+  <data name="backup_fill_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\backup_fill_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="BACKUP_FROM_DATE" xml:space="preserve">
     <value>Sicherung vom </value>
   </data>
-  <data name="backup_restore" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\backup-restore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="backup_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\backup_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="backup_service_client_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\backup service client_32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -178,17 +184,17 @@
   <data name="BACKUP_TITLE_MANUAL" xml:space="preserve">
     <value>Manuelle Sicherung</value>
   </data>
+  <data name="cancel_fill_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cancel_fill_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cancel_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cancel_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="checkbox_blank_circle_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\checkbox-blank-circle-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="checkbox_circle_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\checkbox-circle-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="close_circle_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\close-circle-fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="close_circle_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\close-circle-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CONTEXT_MENU_BACKUP_BROWSER_WINDOW" xml:space="preserve">
     <value>Backupbrowser</value>
@@ -211,8 +217,8 @@
   <data name="dashplus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\dashplus.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="delete_bin_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\delete-bin-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="delete_icon_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\delete_icon_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DLG_ADD_SCHEDULE.FORMAT.DAILY" xml:space="preserve">
     <value>'Täglich um' HH:mm:ss</value>
@@ -680,38 +686,26 @@ Ein Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home
   <data name="DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT" xml:space="preserve">
     <value>Abbrechen...</value>
   </data>
-  <data name="error_warning_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\error-warning-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="edit_square_icon_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\edit_square_icon_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="eye" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\eye.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="error_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\error_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="eye_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\eye-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="folder_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="favorite" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\favorite.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="grid_view_icon_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\grid_view_icon_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="file_copy_2_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\file-copy-2-fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="file_copy_2_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\file-copy-2-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder_open_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\folder-open_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="function_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\function-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="help_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\help_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Hintergrund_Menu_oben" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Hintergrund Menu oben.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="home" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\home.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="home_4_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\home-4-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="home_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\home_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="INFO_BACKUP_FIRST_RUN_TEXT" xml:space="preserve">
     <value>Sobald die erste Datensicherung durchgelaufen ist, können Sie diese durch einen Doppelklick hierauf mit dem Backupbrowser ansehen.</value>
@@ -763,20 +757,14 @@ Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   <data name="INFO_NO_DISKSPACE_LEFT_TITLE" xml:space="preserve">
     <value>Nicht genug Speicherplatz.</value>
   </data>
-  <data name="keyboard_backspace" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\keyboard-backspace.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="LBL_CHANGE_DATE" xml:space="preserve">
     <value>Änderungsdatum: </value>
   </data>
   <data name="LBL_SIZE" xml:space="preserve">
     <value>Größe: </value>
   </data>
-  <data name="menu_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\menu-fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="menu_fill1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\menu-fill1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="list_icon_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\list_icon_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="moreinfo_backgr" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\moreinfo_backgr.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -799,26 +787,23 @@ Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   <data name="MSG_TASK_RUNNING_TITLE" xml:space="preserve">
     <value>Andere Sicherungsaufgabe in Bearbeitung</value>
   </data>
-  <data name="pencil_box_outline" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\pencil-box-outline.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="play_circle_outline_gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\play-circle-outline-gray.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="question_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\question-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="password_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\password_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="search_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\search-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="settings" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="settings_backup_restore_icon_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settings_backup_restore_icon_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="settings_3_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\settings-3-fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="settings_backup_restore_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settings_backup_restore_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="settings_3_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\settings-3-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="settings_fill_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settings_fill_icon48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="settings_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settings_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="status_error" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\status_error.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -835,14 +820,8 @@ Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   <data name="status_running" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\status_running.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="system_installer" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\system-installer.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="system_lock_screen" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\system-lock-screen.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="table_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\table-2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="storage_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\storage_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="taskdialog_bg" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\taskdialog_bg.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -853,14 +832,11 @@ Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   <data name="TASK_BSH_SHUTDOWN_PC" xml:space="preserve">
     <value>Backup Service Home 3 fährt den Computer nach einer erfolgreichen Aktion herunter...</value>
   </data>
-  <data name="toggle_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\toggle_off.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="toggle_off_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\toggle_off_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="toggle_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\toggle_on.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="topbackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\topbackground.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="toggle_on_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\toggle_on_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="topBgrLine1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\topBgrLine1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -876,6 +852,12 @@ Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   </data>
   <data name="topPassword" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\topPassword.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="view_list_icon_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\view_list_icon_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="visibility_icon_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\visibility_icon_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="WAIT_0" xml:space="preserve">
     <value>Backup Service Home wartet auf das Datensicherungsmedium, </value>
