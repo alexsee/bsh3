@@ -93,7 +93,7 @@ namespace Brightbits.BSH.Main
                             plMain.Controls.Add((Control)_iMTCurrentTab);
 
                             // Home-Button anzeigen
-                            picHome.Image = Resources.home_4_line;
+                            picHome.Image = Resources.home_icon_48;
                             picHome.Tag = "home";
                             picHome.Cursor = Cursors.Default;
                             break;
@@ -108,7 +108,7 @@ namespace Brightbits.BSH.Main
                             plMain.Controls.Add((Control)_iMTCurrentTab);
 
                             // Zurück-Button anzeigen
-                            picHome.Image = Resources.arrow_left_circle_line;
+                            picHome.Image = Resources.arrow_back_icon_48;
                             picHome.Tag = "config";
                             picHome.Cursor = Cursors.Hand;
                             break;
@@ -123,7 +123,7 @@ namespace Brightbits.BSH.Main
                             plMain.Controls.Add((Control)_iMTCurrentTab);
 
                             // Home-Button anzeigen
-                            picHome.Image = Resources.home_4_line;
+                            picHome.Image = Resources.home_icon_48;
                             picHome.Tag = "home";
                             picHome.Cursor = Cursors.Default;
                             break;

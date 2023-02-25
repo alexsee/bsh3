@@ -247,12 +247,12 @@ namespace Brightbits.BSH.Main
             if (str.Equals("OFF"))
             {
                 btnOnOff.Tag = "OFF";
-                btnOnOff.Image = Resources.toggle_off;
+                btnOnOff.Image = Resources.toggle_off_icon_48;
             }
             else
             {
                 btnOnOff.Tag = "ON";
-                btnOnOff.Image = Resources.toggle_on;
+                btnOnOff.Image = Resources.toggle_on_icon_48;
             }
         }
 
@@ -414,32 +414,32 @@ namespace Brightbits.BSH.Main
 
         private void btnSettings_MouseLeave(object sender, EventArgs e)
         {
-            btnSettings.Image = Resources.settings_3_line;
+            btnSettings.Image = Resources.settings_icon_48;
         }
 
         private void btnSettings_MouseEnter(object sender, EventArgs e)
         {
-            btnSettings.Image = Resources.settings_3_fill;
+            btnSettings.Image = Resources.settings_fill_icon_48;
         }
 
         private void cmdBackupNow_MouseEnter(object sender, EventArgs e)
         {
-            cmdBackupNow.Image = Resources.file_copy_2_fill;
+            cmdBackupNow.Image = Resources.backup_fill_icon_48;
         }
 
         private void cmdBackupNow_MouseLeave(object sender, EventArgs e)
         {
-            cmdBackupNow.Image = Resources.file_copy_2_line;
+            cmdBackupNow.Image = Resources.backup_icon_48;
         }
 
         private void cmdBackupCancel_MouseEnter(object sender, EventArgs e)
         {
-            cmdBackupCancel.Image = Resources.close_circle_fill;
+            cmdBackupCancel.Image = Resources.cancel_fill_icon_48;
         }
 
         private void cmdBackupCancel_MouseLeave(object sender, EventArgs e)
         {
-            cmdBackupCancel.Image = Resources.close_circle_line;
+            cmdBackupCancel.Image = Resources.cancel_icon_48;
         }
 
         private void llOptions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

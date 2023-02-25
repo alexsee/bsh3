@@ -29,8 +29,8 @@ namespace Brightbits.BSH.Main
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmBrowser));
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Ordner", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Dateien", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Ordner", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Dateien", System.Windows.Forms.HorizontalAlignment.Left);
             this.UcPanel = new System.Windows.Forms.Panel();
             this.UcNav = new Brightbits.BSH.Main.ucNavigation();
             this.SplitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -346,22 +346,22 @@ namespace Brightbits.BSH.Main
             this.UmbenennenToolStripMenuItem});
             this.cmnuFavorits.Name = "cmnuFavorits";
             this.cmnuFavorits.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.cmnuFavorits.Size = new System.Drawing.Size(207, 84);
+            this.cmnuFavorits.Size = new System.Drawing.Size(199, 68);
             this.cmnuFavorits.Opening += new System.ComponentModel.CancelEventHandler(this.cmnuFavorits_Opening);
             // 
             // LöschenToolStripMenuItem
             // 
-            this.LöschenToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.delete_bin_line;
+            this.LöschenToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.delete_icon_24;
             this.LöschenToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.LöschenToolStripMenuItem.Name = "LöschenToolStripMenuItem";
-            this.LöschenToolStripMenuItem.Size = new System.Drawing.Size(206, 40);
+            this.LöschenToolStripMenuItem.Size = new System.Drawing.Size(198, 32);
             this.LöschenToolStripMenuItem.Text = "Löschen";
             this.LöschenToolStripMenuItem.Click += new System.EventHandler(this.LöschenToolStripMenuItem_Click);
             // 
             // UmbenennenToolStripMenuItem
             // 
             this.UmbenennenToolStripMenuItem.Name = "UmbenennenToolStripMenuItem";
-            this.UmbenennenToolStripMenuItem.Size = new System.Drawing.Size(206, 40);
+            this.UmbenennenToolStripMenuItem.Size = new System.Drawing.Size(198, 32);
             this.UmbenennenToolStripMenuItem.Text = "Umbenennen";
             this.UmbenennenToolStripMenuItem.Click += new System.EventHandler(this.UmbenennenToolStripMenuItem_Click);
             // 
@@ -369,10 +369,10 @@ namespace Brightbits.BSH.Main
             // 
             this.ilFolder.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ilFolder.ImageStream")));
             this.ilFolder.TransparentColor = System.Drawing.Color.Transparent;
-            this.ilFolder.Images.SetKeyName(0, "folder-3-line.png");
-            this.ilFolder.Images.SetKeyName(1, "folder-5-line.png");
-            this.ilFolder.Images.SetKeyName(2, "home-4-line.png");
-            this.ilFolder.Images.SetKeyName(3, "window-2-line.png");
+            this.ilFolder.Images.SetKeyName(0, "folder_icon_24.png");
+            this.ilFolder.Images.SetKeyName(1, "folder_open_icon_24.png");
+            this.ilFolder.Images.SetKeyName(2, "home_icon_24.png");
+            this.ilFolder.Images.SetKeyName(3, "tab_icon_24.png");
             // 
             // lblExpand1
             // 
@@ -400,13 +400,13 @@ namespace Brightbits.BSH.Main
             this.lvFiles.ContextMenuStrip = this.cmnuListRight;
             this.lvFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvFiles.FullRowSelect = true;
-            listViewGroup1.Header = "Ordner";
-            listViewGroup1.Name = "Ordner";
-            listViewGroup2.Header = "Dateien";
-            listViewGroup2.Name = "Dateien";
+            listViewGroup3.Header = "Ordner";
+            listViewGroup3.Name = "Ordner";
+            listViewGroup4.Header = "Dateien";
+            listViewGroup4.Name = "Dateien";
             this.lvFiles.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2});
+            listViewGroup3,
+            listViewGroup4});
             this.lvFiles.HideSelection = false;
             this.lvFiles.LargeImageList = this.ilBigIcons;
             this.lvFiles.Location = new System.Drawing.Point(0, 66);
@@ -473,6 +473,7 @@ namespace Brightbits.BSH.Main
             // 
             // WiederherstellenToolStripMenuItem1
             // 
+            this.WiederherstellenToolStripMenuItem1.Image = global::BSH.Main.Properties.Resources.settings_backup_restore_icon_24;
             this.WiederherstellenToolStripMenuItem1.Name = "WiederherstellenToolStripMenuItem1";
             this.WiederherstellenToolStripMenuItem1.Size = new System.Drawing.Size(405, 32);
             this.WiederherstellenToolStripMenuItem1.Text = "Wiederherstellen";
@@ -504,7 +505,7 @@ namespace Brightbits.BSH.Main
             // 
             // SchnellansichtToolStripMenuItem1
             // 
-            this.SchnellansichtToolStripMenuItem1.Image = global::BSH.Main.Properties.Resources.eye_line;
+            this.SchnellansichtToolStripMenuItem1.Image = global::BSH.Main.Properties.Resources.visibility_icon_24;
             this.SchnellansichtToolStripMenuItem1.Name = "SchnellansichtToolStripMenuItem1";
             this.SchnellansichtToolStripMenuItem1.ShortcutKeyDisplayString = "Leertaste";
             this.SchnellansichtToolStripMenuItem1.Size = new System.Drawing.Size(405, 32);
@@ -565,8 +566,8 @@ namespace Brightbits.BSH.Main
             // 
             this.ilBigFolder.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ilBigFolder.ImageStream")));
             this.ilBigFolder.TransparentColor = System.Drawing.Color.Transparent;
-            this.ilBigFolder.Images.SetKeyName(0, "folder-open_32.png");
-            this.ilBigFolder.Images.SetKeyName(1, "folder-closed_32.png");
+            this.ilBigFolder.Images.SetKeyName(0, "folder_open_icon_24.png");
+            this.ilBigFolder.Images.SetKeyName(1, "folder_icon_24.png");
             // 
             // StatusStrip1
             // 
@@ -637,7 +638,7 @@ namespace Brightbits.BSH.Main
             this.MehrereVersionenLöschenToolStripMenuItem});
             this.ToolStripDropDownButton1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ToolStripDropDownButton1.ForeColor = System.Drawing.Color.Black;
-            this.ToolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("ToolStripDropDownButton1.Image")));
+            this.ToolStripDropDownButton1.Image = global::BSH.Main.Properties.Resources.edit_square_icon_24;
             this.ToolStripDropDownButton1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ToolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ToolStripDropDownButton1.Name = "ToolStripDropDownButton1";
@@ -647,7 +648,7 @@ namespace Brightbits.BSH.Main
             // 
             // WiederherstellenToolStripMenuItem
             // 
-            this.WiederherstellenToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("WiederherstellenToolStripMenuItem.Image")));
+            this.WiederherstellenToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.settings_backup_restore_icon_24;
             this.WiederherstellenToolStripMenuItem.Name = "WiederherstellenToolStripMenuItem";
             this.WiederherstellenToolStripMenuItem.Size = new System.Drawing.Size(383, 36);
             this.WiederherstellenToolStripMenuItem.Text = "Wiederherstellen";
@@ -676,7 +677,7 @@ namespace Brightbits.BSH.Main
             // SchnellansichtToolStripMenuItem
             // 
             this.SchnellansichtToolStripMenuItem.Enabled = false;
-            this.SchnellansichtToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("SchnellansichtToolStripMenuItem.Image")));
+            this.SchnellansichtToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.visibility_icon_24;
             this.SchnellansichtToolStripMenuItem.Name = "SchnellansichtToolStripMenuItem";
             this.SchnellansichtToolStripMenuItem.ShortcutKeyDisplayString = "Leertaste";
             this.SchnellansichtToolStripMenuItem.Size = new System.Drawing.Size(383, 36);
@@ -704,7 +705,7 @@ namespace Brightbits.BSH.Main
             // 
             // VersionLöschenToolStripMenuItem
             // 
-            this.VersionLöschenToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("VersionLöschenToolStripMenuItem.Image")));
+            this.VersionLöschenToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.delete_icon_24;
             this.VersionLöschenToolStripMenuItem.Name = "VersionLöschenToolStripMenuItem";
             this.VersionLöschenToolStripMenuItem.Size = new System.Drawing.Size(383, 36);
             this.VersionLöschenToolStripMenuItem.Text = "Sicherung löschen";
@@ -734,7 +735,7 @@ namespace Brightbits.BSH.Main
             // 
             this.ToolStripSchnellansicht.Enabled = false;
             this.ToolStripSchnellansicht.ForeColor = System.Drawing.Color.Black;
-            this.ToolStripSchnellansicht.Image = ((System.Drawing.Image)(resources.GetObject("ToolStripSchnellansicht.Image")));
+            this.ToolStripSchnellansicht.Image = global::BSH.Main.Properties.Resources.visibility_icon_24;
             this.ToolStripSchnellansicht.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ToolStripSchnellansicht.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ToolStripSchnellansicht.Name = "ToolStripSchnellansicht";
@@ -793,28 +794,28 @@ namespace Brightbits.BSH.Main
             // 
             // GroßeSymboleToolStripMenuItem
             // 
-            this.GroßeSymboleToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("GroßeSymboleToolStripMenuItem.Image")));
+            this.GroßeSymboleToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.grid_view_icon_24;
             this.GroßeSymboleToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.GroßeSymboleToolStripMenuItem.Name = "GroßeSymboleToolStripMenuItem";
-            this.GroßeSymboleToolStripMenuItem.Size = new System.Drawing.Size(257, 42);
+            this.GroßeSymboleToolStripMenuItem.Size = new System.Drawing.Size(270, 36);
             this.GroßeSymboleToolStripMenuItem.Text = "Große Symbole";
             this.GroßeSymboleToolStripMenuItem.Click += new System.EventHandler(this.GroßeSymboleToolStripMenuItem_Click);
             // 
             // ListenansichtToolStripMenuItem
             // 
-            this.ListenansichtToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("ListenansichtToolStripMenuItem.Image")));
+            this.ListenansichtToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.list_icon_24;
             this.ListenansichtToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.ListenansichtToolStripMenuItem.Name = "ListenansichtToolStripMenuItem";
-            this.ListenansichtToolStripMenuItem.Size = new System.Drawing.Size(257, 42);
+            this.ListenansichtToolStripMenuItem.Size = new System.Drawing.Size(270, 36);
             this.ListenansichtToolStripMenuItem.Text = "Listenansicht";
             this.ListenansichtToolStripMenuItem.Click += new System.EventHandler(this.ListenansichtToolStripMenuItem_Click);
             // 
             // DetailsansichtToolStripMenuItem
             // 
-            this.DetailsansichtToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("DetailsansichtToolStripMenuItem.Image")));
+            this.DetailsansichtToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.view_list_icon_24;
             this.DetailsansichtToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.DetailsansichtToolStripMenuItem.Name = "DetailsansichtToolStripMenuItem";
-            this.DetailsansichtToolStripMenuItem.Size = new System.Drawing.Size(257, 42);
+            this.DetailsansichtToolStripMenuItem.Size = new System.Drawing.Size(270, 36);
             this.DetailsansichtToolStripMenuItem.Text = "Detailsansicht";
             this.DetailsansichtToolStripMenuItem.Click += new System.EventHandler(this.DetailansichtToolStripMenuItem_Click);
             // 
@@ -822,7 +823,7 @@ namespace Brightbits.BSH.Main
             // 
             this.cmdRestore.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.cmdRestore.ForeColor = System.Drawing.Color.Black;
-            this.cmdRestore.Image = ((System.Drawing.Image)(resources.GetObject("cmdRestore.Image")));
+            this.cmdRestore.Image = global::BSH.Main.Properties.Resources.settings_backup_restore_icon_24;
             this.cmdRestore.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cmdRestore.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cmdRestore.Margin = new System.Windows.Forms.Padding(0, 1, 10, 2);
