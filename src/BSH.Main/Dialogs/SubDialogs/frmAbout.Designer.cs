@@ -136,7 +136,7 @@ namespace Brightbits.BSH.Main
             this.Label3.Name = "Label3";
             this.Label3.Size = new System.Drawing.Size(384, 56);
             this.Label3.TabIndex = 84;
-            this.Label3.Text = "© 2008-2022 Alexander Seeliger Software.\r\nAlle Rechte vorbehalten.";
+            this.Label3.Text = "© 2008-2023 Alexander Seeliger Software.\r\nAlle Rechte vorbehalten.";
             // 
             // Label4
             // 
