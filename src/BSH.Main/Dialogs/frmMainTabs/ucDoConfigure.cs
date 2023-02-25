@@ -765,23 +765,23 @@ namespace Brightbits.BSH.Main
 
             foreach (var entry in drives.Where(x => x.IsReady))
             {
-                int iImageKey = 2;
+                int iImageKey = 1;
                 var gGroup = view.Groups[0];
                 if (entry.DriveType == DriveType.Fixed)
                 {
-                    iImageKey = 2;
+                    iImageKey = 1;
                     gGroup = view.Groups[0];
                 }
 
                 if (entry.DriveType == DriveType.Removable)
                 {
-                    iImageKey = 3;
+                    iImageKey = 2;
                     gGroup = view.Groups[1];
                 }
 
                 if (entry.DriveType == DriveType.Network)
                 {
-                    iImageKey = 1;
+                    iImageKey = 3;
                     gGroup = view.Groups[2];
                 }
 

@@ -838,9 +838,6 @@ Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   <data name="toggle_on_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\toggle_on_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="topbackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\topbackground.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="topBgrLine1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\topBgrLine1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
