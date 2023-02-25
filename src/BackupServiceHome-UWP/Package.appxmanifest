@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" IgnorableNamespaces="uap mp rescap desktop">
-  <Identity Name="39676AlexanderSeeliger.BackupServiceHome" Publisher="CN=A06EFC7C-10D7-426E-9D52-242895841F24" Version="3.8.3.0" />
+  <Identity Name="39676AlexanderSeeliger.BackupServiceHome" Publisher="CN=A06EFC7C-10D7-426E-9D52-242895841F24" Version="3.8.5.0" />
   <Properties>
     <DisplayName>Backup Service Home</DisplayName>
     <PublisherDisplayName>Alexander Seeliger</PublisherDisplayName>
