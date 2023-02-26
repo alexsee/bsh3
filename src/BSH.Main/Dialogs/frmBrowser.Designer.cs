@@ -29,8 +29,8 @@ namespace Brightbits.BSH.Main
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmBrowser));
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Ordner", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Dateien", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Ordner", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Dateien", System.Windows.Forms.HorizontalAlignment.Left);
             this.SplitContainer1 = new System.Windows.Forms.SplitContainer();
             this.plVersions = new System.Windows.Forms.Panel();
             this.cmdTakeMeLater = new System.Windows.Forms.Button();
@@ -311,13 +311,14 @@ namespace Brightbits.BSH.Main
             // 
             // cmnuFavorits
             // 
+            this.cmnuFavorits.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.cmnuFavorits.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.cmnuFavorits.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.LöschenToolStripMenuItem,
             this.UmbenennenToolStripMenuItem});
             this.cmnuFavorits.Name = "cmnuFavorits";
             this.cmnuFavorits.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.cmnuFavorits.Size = new System.Drawing.Size(199, 68);
+            this.cmnuFavorits.Size = new System.Drawing.Size(210, 72);
             this.cmnuFavorits.Opening += new System.ComponentModel.CancelEventHandler(this.cmnuFavorits_Opening);
             // 
             // LöschenToolStripMenuItem
@@ -325,14 +326,14 @@ namespace Brightbits.BSH.Main
             this.LöschenToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.delete_icon_24;
             this.LöschenToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.LöschenToolStripMenuItem.Name = "LöschenToolStripMenuItem";
-            this.LöschenToolStripMenuItem.Size = new System.Drawing.Size(198, 32);
+            this.LöschenToolStripMenuItem.Size = new System.Drawing.Size(209, 34);
             this.LöschenToolStripMenuItem.Text = "Löschen";
             this.LöschenToolStripMenuItem.Click += new System.EventHandler(this.LöschenToolStripMenuItem_Click);
             // 
             // UmbenennenToolStripMenuItem
             // 
             this.UmbenennenToolStripMenuItem.Name = "UmbenennenToolStripMenuItem";
-            this.UmbenennenToolStripMenuItem.Size = new System.Drawing.Size(198, 32);
+            this.UmbenennenToolStripMenuItem.Size = new System.Drawing.Size(209, 34);
             this.UmbenennenToolStripMenuItem.Text = "Umbenennen";
             this.UmbenennenToolStripMenuItem.Click += new System.EventHandler(this.UmbenennenToolStripMenuItem_Click);
             // 
@@ -371,13 +372,13 @@ namespace Brightbits.BSH.Main
             this.lvFiles.ContextMenuStrip = this.cmnuListRight;
             this.lvFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvFiles.FullRowSelect = true;
-            listViewGroup1.Header = "Ordner";
-            listViewGroup1.Name = "Ordner";
-            listViewGroup2.Header = "Dateien";
-            listViewGroup2.Name = "Dateien";
+            listViewGroup3.Header = "Ordner";
+            listViewGroup3.Name = "Ordner";
+            listViewGroup4.Header = "Dateien";
+            listViewGroup4.Name = "Dateien";
             this.lvFiles.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2});
+            listViewGroup3,
+            listViewGroup4});
             this.lvFiles.HideSelection = false;
             this.lvFiles.LargeImageList = this.ilBigIcons;
             this.lvFiles.Location = new System.Drawing.Point(0, 66);
@@ -429,6 +430,7 @@ namespace Brightbits.BSH.Main
             // 
             // cmnuListRight
             // 
+            this.cmnuListRight.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.cmnuListRight.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.cmnuListRight.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.WiederherstellenToolStripMenuItem1,
@@ -439,47 +441,47 @@ namespace Brightbits.BSH.Main
             this.SchnellansichtToolStripMenuItem1});
             this.cmnuListRight.Name = "cmnuListRight";
             this.cmnuListRight.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.cmnuListRight.Size = new System.Drawing.Size(406, 144);
+            this.cmnuListRight.Size = new System.Drawing.Size(437, 152);
             this.cmnuListRight.Opening += new System.ComponentModel.CancelEventHandler(this.cmnuListRight_Opening);
             // 
             // WiederherstellenToolStripMenuItem1
             // 
             this.WiederherstellenToolStripMenuItem1.Image = global::BSH.Main.Properties.Resources.settings_backup_restore_icon_24;
             this.WiederherstellenToolStripMenuItem1.Name = "WiederherstellenToolStripMenuItem1";
-            this.WiederherstellenToolStripMenuItem1.Size = new System.Drawing.Size(405, 32);
+            this.WiederherstellenToolStripMenuItem1.Size = new System.Drawing.Size(436, 34);
             this.WiederherstellenToolStripMenuItem1.Text = "Wiederherstellen";
             this.WiederherstellenToolStripMenuItem1.Click += new System.EventHandler(this.WiederherstellenToolStripMenuItem1_Click);
             // 
             // EigenschaftenToolStripMenuItem1
             // 
             this.EigenschaftenToolStripMenuItem1.Name = "EigenschaftenToolStripMenuItem1";
-            this.EigenschaftenToolStripMenuItem1.Size = new System.Drawing.Size(405, 32);
+            this.EigenschaftenToolStripMenuItem1.Size = new System.Drawing.Size(436, 34);
             this.EigenschaftenToolStripMenuItem1.Text = "Eigenschaften";
             this.EigenschaftenToolStripMenuItem1.Click += new System.EventHandler(this.EigenschaftenToolStripMenuItem1_Click);
             // 
             // ToolStripMenuItem5
             // 
             this.ToolStripMenuItem5.Name = "ToolStripMenuItem5";
-            this.ToolStripMenuItem5.Size = new System.Drawing.Size(402, 6);
+            this.ToolStripMenuItem5.Size = new System.Drawing.Size(433, 6);
             // 
             // DateiOrdnerAusSicherungenLöschenToolStripMenuItem
             // 
             this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Name = "DateiOrdnerAusSicherungenLöschenToolStripMenuItem";
-            this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Size = new System.Drawing.Size(405, 32);
+            this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Size = new System.Drawing.Size(436, 34);
             this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Text = "Datei / Ordner aus Sicherungen löschen";
             this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Click += new System.EventHandler(this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem_Click);
             // 
             // ToolStripMenuItem3
             // 
             this.ToolStripMenuItem3.Name = "ToolStripMenuItem3";
-            this.ToolStripMenuItem3.Size = new System.Drawing.Size(402, 6);
+            this.ToolStripMenuItem3.Size = new System.Drawing.Size(433, 6);
             // 
             // SchnellansichtToolStripMenuItem1
             // 
             this.SchnellansichtToolStripMenuItem1.Image = global::BSH.Main.Properties.Resources.visibility_icon_24;
             this.SchnellansichtToolStripMenuItem1.Name = "SchnellansichtToolStripMenuItem1";
             this.SchnellansichtToolStripMenuItem1.ShortcutKeyDisplayString = "Leertaste";
-            this.SchnellansichtToolStripMenuItem1.Size = new System.Drawing.Size(405, 32);
+            this.SchnellansichtToolStripMenuItem1.Size = new System.Drawing.Size(436, 34);
             this.SchnellansichtToolStripMenuItem1.Text = "Schnellansicht";
             this.SchnellansichtToolStripMenuItem1.Click += new System.EventHandler(this.SchnellansichtToolStripMenuItem1_Click);
             // 
