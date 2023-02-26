@@ -93,9 +93,9 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap arrow_left_bold_circle_outline {
+        internal static System.Drawing.Bitmap arrow_upward_gray_icon_48 {
             get {
-                object obj = ResourceManager.GetObject("arrow_left_bold_circle_outline", resourceCulture);
+                object obj = ResourceManager.GetObject("arrow_upward_gray_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,49 +103,9 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap arrow_left_bold_circle_outline_off {
+        internal static System.Drawing.Bitmap arrow_upward_icon_48 {
             get {
-                object obj = ResourceManager.GetObject("arrow_left_bold_circle_outline_off", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_left_circle_fill {
-            get {
-                object obj = ResourceManager.GetObject("arrow_left_circle_fill", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_left_circle_line {
-            get {
-                object obj = ResourceManager.GetObject("arrow_left_circle_line", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_left_circle_line_off {
-            get {
-                object obj = ResourceManager.GetObject("arrow_left_circle_line_off", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_left_circle_line_on {
-            get {
-                object obj = ResourceManager.GetObject("arrow_left_circle_line_on", resourceCulture);
+                object obj = ResourceManager.GetObject("arrow_upward_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -352,26 +312,6 @@ namespace BSH.Main.Properties {
         internal static string CONTEXT_MENU_STATUS_WINDOW {
             get {
                 return ResourceManager.GetString("CONTEXT_MENU_STATUS_WINDOW", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap dashminus {
-            get {
-                object obj = ResourceManager.GetObject("dashminus", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap dashplus {
-            get {
-                object obj = ResourceManager.GetObject("dashplus", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -2018,6 +1958,26 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap search_icon_24 {
+            get {
+                object obj = ResourceManager.GetObject("search_icon_24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap search_icon_48 {
+            get {
+                object obj = ResourceManager.GetObject("search_icon_48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap search_line {
             get {
                 object obj = ResourceManager.GetObject("search_line", resourceCulture);
@@ -2170,46 +2130,6 @@ namespace BSH.Main.Properties {
         internal static System.Drawing.Bitmap toggle_on_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("toggle_on_icon_48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap topBgrLine1 {
-            get {
-                object obj = ResourceManager.GetObject("topBgrLine1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap topBgrLine2 {
-            get {
-                object obj = ResourceManager.GetObject("topBgrLine2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap topBgrLine3 {
-            get {
-                object obj = ResourceManager.GetObject("topBgrLine3", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap topbrowser {
-            get {
-                object obj = ResourceManager.GetObject("topbrowser", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

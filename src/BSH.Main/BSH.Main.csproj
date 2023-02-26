@@ -410,6 +410,10 @@
     <None Include="Resources\settings_backup_restore_icon_48.png" />
     <None Include="Resources\storage_icon_48.png" />
     <None Include="Resources\password_icon_48.png" />
+    <None Include="Resources\arrow_upward_icon_48.png" />
+    <None Include="Resources\search_icon_24.png" />
+    <None Include="Resources\search_icon_48.png" />
+    <None Include="Resources\arrow_upward_gray_icon_48.png" />
     <Content Include="status_red.ico" />
     <Content Include="status_refresh.ico" />
   </ItemGroup>
