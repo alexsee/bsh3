@@ -42,6 +42,18 @@ namespace Brightbits.BSH.Main
         public frmBrowser()
         {
             InitializeComponent();
+
+            // restore window size
+            try
+            {
+                Size = Settings.Default.BrowserSize;
+                SplitContainer1.SplitterDistance = Settings.Default.BrowserSplitter;
+                lvFiles.View = (View)Settings.Default.BrowserView;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, ex.Message);
+            }
         }
 
         private VersionDetails selectedVersion;
@@ -470,18 +482,6 @@ namespace Brightbits.BSH.Main
             else
             {
                 LCFiles.Height = 33;
-            }
-
-            // restore window size
-            try
-            {
-                Size = Settings.Default.BrowserSize;
-                SplitContainer1.SplitterDistance = Settings.Default.BrowserSplitter;
-                lvFiles.View = (View)Settings.Default.BrowserView;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, ex.Message);
             }
 
             // get current drive
