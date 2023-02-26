@@ -177,7 +177,7 @@ namespace Brightbits.BSH.Main
             // plVersions
             // 
             this.plVersions.AutoScroll = true;
-            this.plVersions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(243)))), ((int)(((byte)(245)))));
+            this.plVersions.BackColor = System.Drawing.Color.White;
             this.plVersions.Controls.Add(this.cmdTakeMeLater);
             this.plVersions.Controls.Add(this.cmdTakeMeBack);
             this.plVersions.Controls.Add(this.AVersionList1);
@@ -232,7 +232,7 @@ namespace Brightbits.BSH.Main
             this.AVersionList1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.AVersionList1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(243)))), ((int)(((byte)(245)))));
+            this.AVersionList1.BackColor = System.Drawing.Color.White;
             this.AVersionList1.Location = new System.Drawing.Point(0, 66);
             this.AVersionList1.Margin = new System.Windows.Forms.Padding(4);
             this.AVersionList1.Name = "AVersionList1";
@@ -257,7 +257,7 @@ namespace Brightbits.BSH.Main
             // plFavorites
             // 
             this.plFavorites.AutoScroll = true;
-            this.plFavorites.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(243)))), ((int)(((byte)(245)))));
+            this.plFavorites.BackColor = System.Drawing.Color.White;
             this.plFavorites.Controls.Add(this.lvFavorite);
             this.plFavorites.Controls.Add(this.lblExpand1);
             this.plFavorites.Dock = System.Windows.Forms.DockStyle.Top;
@@ -272,7 +272,7 @@ namespace Brightbits.BSH.Main
             this.lvFavorite.Alignment = System.Windows.Forms.ListViewAlignment.Left;
             this.lvFavorite.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lvFavorite.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(243)))), ((int)(((byte)(245)))));
+            this.lvFavorite.BackColor = System.Drawing.Color.White;
             this.lvFavorite.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lvFavorite.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colName});
@@ -381,10 +381,10 @@ namespace Brightbits.BSH.Main
             listViewGroup4});
             this.lvFiles.HideSelection = false;
             this.lvFiles.LargeImageList = this.ilBigIcons;
-            this.lvFiles.Location = new System.Drawing.Point(0, 66);
+            this.lvFiles.Location = new System.Drawing.Point(0, 58);
             this.lvFiles.Margin = new System.Windows.Forms.Padding(4);
             this.lvFiles.Name = "lvFiles";
-            this.lvFiles.Size = new System.Drawing.Size(951, 539);
+            this.lvFiles.Size = new System.Drawing.Size(951, 547);
             this.lvFiles.SmallImageList = this.ilSmallIcons;
             this.lvFiles.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvFiles.TabIndex = 0;
@@ -506,14 +506,14 @@ namespace Brightbits.BSH.Main
             this.Panel3.Location = new System.Drawing.Point(0, 0);
             this.Panel3.Margin = new System.Windows.Forms.Padding(4);
             this.Panel3.Name = "Panel3";
-            this.Panel3.Size = new System.Drawing.Size(951, 66);
+            this.Panel3.Size = new System.Drawing.Size(951, 58);
             this.Panel3.TabIndex = 1;
             // 
             // chkFilesOfThisVersion
             // 
             this.chkFilesOfThisVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkFilesOfThisVersion.AutoSize = true;
-            this.chkFilesOfThisVersion.Location = new System.Drawing.Point(636, 18);
+            this.chkFilesOfThisVersion.Location = new System.Drawing.Point(636, 15);
             this.chkFilesOfThisVersion.Margin = new System.Windows.Forms.Padding(4);
             this.chkFilesOfThisVersion.Name = "chkFilesOfThisVersion";
             this.chkFilesOfThisVersion.Size = new System.Drawing.Size(292, 32);
@@ -526,13 +526,15 @@ namespace Brightbits.BSH.Main
             // 
             // lblBackupdate
             // 
-            this.lblBackupdate.AutoSize = true;
-            this.lblBackupdate.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBackupdate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(102)))), ((int)(((byte)(177)))));
-            this.lblBackupdate.Location = new System.Drawing.Point(27, 20);
+            this.lblBackupdate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblBackupdate.AutoEllipsis = true;
+            this.lblBackupdate.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblBackupdate.ForeColor = System.Drawing.Color.Black;
+            this.lblBackupdate.Location = new System.Drawing.Point(16, 15);
             this.lblBackupdate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblBackupdate.Name = "lblBackupdate";
-            this.lblBackupdate.Size = new System.Drawing.Size(0, 31);
+            this.lblBackupdate.Size = new System.Drawing.Size(611, 31);
             this.lblBackupdate.TabIndex = 0;
             // 
             // ilBigFolder
@@ -632,7 +634,7 @@ namespace Brightbits.BSH.Main
             // 
             this.AllesWiederherstellenToolStripMenuItem1.Name = "AllesWiederherstellenToolStripMenuItem1";
             this.AllesWiederherstellenToolStripMenuItem1.Size = new System.Drawing.Size(383, 36);
-            this.AllesWiederherstellenToolStripMenuItem1.Text = "Alles Wiederherstellen";
+            this.AllesWiederherstellenToolStripMenuItem1.Text = "Alles wiederherstellen";
             this.AllesWiederherstellenToolStripMenuItem1.Click += new System.EventHandler(this.AllesWiederherstellenToolStripMenuItem_Click);
             // 
             // EigenschaftenToolStripMenuItem
