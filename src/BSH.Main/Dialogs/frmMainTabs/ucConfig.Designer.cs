@@ -624,6 +624,7 @@ namespace Brightbits.BSH.Main
             // 
             // TabPage5
             // 
+            this.TabPage5.BackColor = System.Drawing.Color.White;
             this.TabPage5.Controls.Add(this.cmdChangeBackupMedia);
             this.TabPage5.Controls.Add(this.Label1);
             this.TabPage5.Controls.Add(this.cboMedia);
