@@ -41,6 +41,18 @@ namespace Brightbits.BSH.Main
         public frmBrowser()
         {
             InitializeComponent();
+
+            // restore window size
+            try
+            {
+                Size = Settings.Default.BrowserSize;
+                SplitContainer1.SplitterDistance = Settings.Default.BrowserSplitter;
+                lvFiles.View = (View)Settings.Default.BrowserView;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, ex.Message);
+            }
         }
 
         private VersionDetails selectedVersion;
@@ -120,12 +132,12 @@ namespace Brightbits.BSH.Main
                 if (splitF.Length - 1 <= 0)
                 {
                     btnBack.Enabled = false;
-                    btnBack.Image = Resources.arrow_left_circle_line_off;
+                    btnBack.Image = Resources.arrow_upward_gray_icon_48;
                 }
                 else
                 {
                     btnBack.Enabled = true;
-                    btnBack.Image = Resources.arrow_left_circle_line_on;
+                    btnBack.Image = Resources.arrow_upward_icon_48;
                 }
             }
 
@@ -430,9 +442,17 @@ namespace Brightbits.BSH.Main
 
         private void frmBrowser_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Settings.Default.BrowserSplitter = SplitContainer1.SplitterDistance;
-            Settings.Default.BrowserSize = Size;
-            Settings.Default.Save();
+            try
+            {
+                Settings.Default.BrowserSplitter = SplitContainer1.SplitterDistance;
+                Settings.Default.BrowserSize = Size;
+                Settings.Default.BrowserView = (int)lvFiles.View;
+                Settings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, ex.Message);
+            }
 
             StatusController.Current.RemoveObserver(this);
         }

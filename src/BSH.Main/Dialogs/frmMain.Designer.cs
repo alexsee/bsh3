@@ -252,7 +252,7 @@ namespace Brightbits.BSH.Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(243)))), ((int)(((byte)(245)))));
             this.ClientSize = new System.Drawing.Size(1036, 628);
             this.Controls.Add(this.lblExtras);
             this.Controls.Add(this.picHome);
