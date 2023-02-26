@@ -29,8 +29,8 @@ namespace Brightbits.BSH.Main
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmBrowser));
-            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Ordner", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Dateien", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Ordner", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Dateien", System.Windows.Forms.HorizontalAlignment.Left);
             this.SplitContainer1 = new System.Windows.Forms.SplitContainer();
             this.plVersions = new System.Windows.Forms.Panel();
             this.cmdTakeMeLater = new System.Windows.Forms.Button();
@@ -68,7 +68,6 @@ namespace Brightbits.BSH.Main
             this.StatusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsslblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.ttMain = new System.Windows.Forms.ToolTip(this.components);
-            this.tmrSearch = new System.Windows.Forms.Timer(this.components);
             this.bgrWorkSearch = new System.ComponentModel.BackgroundWorker();
             this.tMain = new System.Windows.Forms.ToolStrip();
             this.ToolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -372,13 +371,13 @@ namespace Brightbits.BSH.Main
             this.lvFiles.ContextMenuStrip = this.cmnuListRight;
             this.lvFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvFiles.FullRowSelect = true;
-            listViewGroup3.Header = "Ordner";
-            listViewGroup3.Name = "Ordner";
-            listViewGroup4.Header = "Dateien";
-            listViewGroup4.Name = "Dateien";
+            listViewGroup1.Header = "Ordner";
+            listViewGroup1.Name = "Ordner";
+            listViewGroup2.Header = "Dateien";
+            listViewGroup2.Name = "Dateien";
             this.lvFiles.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup3,
-            listViewGroup4});
+            listViewGroup1,
+            listViewGroup2});
             this.lvFiles.HideSelection = false;
             this.lvFiles.LargeImageList = this.ilBigIcons;
             this.lvFiles.Location = new System.Drawing.Point(0, 58);
@@ -1302,7 +1301,6 @@ namespace Brightbits.BSH.Main
         internal ToolStripMenuItem ZuOrdnerfavoritenHinzufügenToolStripMenuItem;
         internal ContextMenuStrip cmnuFavorits;
         internal ToolStripMenuItem LöschenToolStripMenuItem;
-        internal Timer tmrSearch;
         internal System.ComponentModel.BackgroundWorker bgrWorkSearch;
         internal Panel plGlass;
         internal ToolStripMenuItem VersionAlsStabilMarkierenToolStripMenuItem;
