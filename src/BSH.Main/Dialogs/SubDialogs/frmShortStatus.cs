@@ -87,5 +87,10 @@ namespace Brightbits.BSH.Main
         {
             return RequestOverwriteResult.NoOverwriteAll;
         }
+
+        public void RequestShowErrorInsufficientDiskSpace()
+        {
+
+        }
     }
 }

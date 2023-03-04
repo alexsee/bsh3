@@ -134,6 +134,21 @@ namespace Brightbits.BSH.Engine.Jobs
             return RequestOverwriteResult.Overwrite;
         }
 
+        protected void RequestShowErrorInsufficientDiskSpace()
+        {
+            foreach (var observer in observers)
+            {
+                try
+                {
+                    observer.RequestShowErrorInsufficientDiskSpace();
+                }
+                catch
+                {
+                    // ignore exception
+                }
+            }
+        }
+
         public void AddObserver(IJobReport observer)
         {
             try

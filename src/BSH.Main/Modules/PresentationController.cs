@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using BSH.Main.Dialogs.SubDialogs;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -164,6 +165,14 @@ namespace Brightbits.BSH.Main
             }
 
             return (null, false);
+        }
+
+        public void ShowErrorInsufficientDiskSpace()
+        {
+            using (var errorWindow = new frmErrorInsufficientDiskSpace())
+            {
+                errorWindow.ShowDialog();
+            }
         }
     }
 }

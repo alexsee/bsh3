@@ -73,6 +73,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
     <Reference Include="updateSystemDotNet.Controller">
       <HintPath>..\..\assemblies\updateSystemDotNet.Controller.dll</HintPath>
     </Reference>
@@ -188,6 +189,12 @@
     <Compile Include="Dialogs\SubDialogs\frmError.Designer.cs">
       <DependentUpon>frmError.cs</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\SubDialogs\frmErrorInsufficientDiskSpace.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\SubDialogs\frmErrorInsufficientDiskSpace.Designer.cs">
+      <DependentUpon>frmErrorInsufficientDiskSpace.cs</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\SubDialogs\frmFilter.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -291,6 +298,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\SubDialogs\frmError.resx">
       <DependentUpon>frmError.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\SubDialogs\frmErrorInsufficientDiskSpace.resx">
+      <DependentUpon>frmErrorInsufficientDiskSpace.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\SubDialogs\frmFilter.resx">
       <DependentUpon>frmFilter.cs</DependentUpon>

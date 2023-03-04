@@ -12,27 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Models;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace Brightbits.BSH.Engine.Jobs
+namespace BSH.Main.Dialogs.SubDialogs
 {
-    public interface IJobReport
+    public partial class frmErrorInsufficientDiskSpace : Form
     {
-        void ReportAction(ActionType action, bool silent);
-
-        void ReportState(JobState jobState);
-
-        void ReportStatus(string title, string text);
-
-        void ReportProgress(int total, int current);
-
-        void ReportFileProgress(string file);
-
-        void ReportExceptions(List<FileExceptionEntry> files, bool silent);
-
-        RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
-
-        void RequestShowErrorInsufficientDiskSpace();
+        public frmErrorInsufficientDiskSpace()
+        {
+            InitializeComponent();
+        }
     }
 }
