@@ -273,32 +273,23 @@ namespace Brightbits.BSH.Engine.Jobs
                             }
                         }
                     }
-                    catch (Exception ex)
+                    catch (FileNotProcessedException ex)
                     {
-                        var fileExceptionEntry = new FileExceptionEntry()
-                        {
-                            Exception = ex,
-                            File = file,
-                            NewVersionDate = newVersionDate,
-                            NewVersionId = newVersionId
-                        };
-
-                        FileErrorList.Add(fileExceptionEntry);
-
+                        FileExceptionEntry fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
                         _logger.Error(ex.InnerException, "File {fileName} could not be backuped.", file.FileNamePath(), new { fileExceptionEntry });
 
-                        // check if instance of file not processed exception
-                        if (ex.GetType() == typeof(FileNotProcessedException))
+                        if (ex.RequestCancel)
                         {
-                            FileNotProcessedException ex_ = (FileNotProcessedException)ex;
-                            if (ex_.RequestCancel)
-                            {
-                                _logger.Error("Backup job is being cancelled due to permanent storage exception.");
-                                cancel = true;
+                            _logger.Error("Backup job is being cancelled due to permanent storage exception.");
+                            cancel = true;
 
-                                RequestShowErrorInsufficientDiskSpace();
-                            }
+                            RequestShowErrorInsufficientDiskSpace();
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        FileExceptionEntry fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
+                        _logger.Error(ex.InnerException, "File {fileName} could not be backuped.", file.FileNamePath(), new { fileExceptionEntry });
                     }
 
                     // cancellation token requested?
@@ -409,6 +400,28 @@ namespace Brightbits.BSH.Engine.Jobs
             ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
 
             _logger.Information("Backup job finished.");
+        }
+
+        /// <summary>
+        /// Adds the given exception to the file exception list.
+        /// </summary>
+        /// <param name="versionDate">The version date of the backup.</param>
+        /// <param name="versionId">The version id of the backup.</param>
+        /// <param name="file">The file that could not be copied.</param>
+        /// <param name="ex">The exception that occured.</param>
+        /// <returns></returns>
+        private FileExceptionEntry AddFileErrorToList(string versionDate, long versionId, FileTableRow file, Exception ex)
+        {
+            var fileExceptionEntry = new FileExceptionEntry()
+            {
+                Exception = ex,
+                File = file,
+                NewVersionDate = versionDate,
+                NewVersionId = versionId
+            };
+
+            FileErrorList.Add(fileExceptionEntry);
+            return fileExceptionEntry;
         }
 
         /// <summary>
