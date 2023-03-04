@@ -32,5 +32,7 @@ namespace Brightbits.BSH.Engine.Jobs
         void ReportExceptions(List<FileExceptionEntry> files, bool silent);
 
         RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
+
+        void RequestShowErrorInsufficientDiskSpace();
     }
 }

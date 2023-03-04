@@ -69,7 +69,7 @@ namespace Brightbits.BSH.Main
             this.picHome.Location = new System.Drawing.Point(22, 14);
             this.picHome.Margin = new System.Windows.Forms.Padding(4);
             this.picHome.Name = "picHome";
-            this.picHome.Size = new System.Drawing.Size(33, 33);
+            this.picHome.Size = new System.Drawing.Size(32, 32);
             this.picHome.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picHome.TabIndex = 21;
             this.picHome.TabStop = false;
@@ -86,7 +86,7 @@ namespace Brightbits.BSH.Main
             this.picHelp.Location = new System.Drawing.Point(986, 14);
             this.picHelp.Margin = new System.Windows.Forms.Padding(4);
             this.picHelp.Name = "picHelp";
-            this.picHelp.Size = new System.Drawing.Size(33, 33);
+            this.picHelp.Size = new System.Drawing.Size(32, 32);
             this.picHelp.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picHelp.TabIndex = 35;
             this.picHelp.TabStop = false;

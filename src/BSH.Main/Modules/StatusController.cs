@@ -239,5 +239,10 @@ namespace Brightbits.BSH.Main
                 dlgFileNotCopied.ShowDialog();
             }
         }
+
+        public void RequestShowErrorInsufficientDiskSpace()
+        {
+            PresentationController.Current.ShowErrorInsufficientDiskSpace();
+        }
     }
 }

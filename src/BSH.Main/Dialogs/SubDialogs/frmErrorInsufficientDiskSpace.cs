@@ -12,19 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using System.Windows.Forms;
 
-namespace Brightbits.BSH.Engine.Exceptions
+namespace BSH.Main.Dialogs.SubDialogs
 {
-    public class FileNotProcessedException : Exception
+    public partial class frmErrorInsufficientDiskSpace : Form
     {
-        public bool RequestCancel { get; set; }
-
-        public FileNotProcessedException() { }
-
-        public FileNotProcessedException(Exception ex, bool cancel = false) : base($"Datei konnte nicht von/nach Backupmedium kopiert werden ({ex.Message}).", ex)
+        public frmErrorInsufficientDiskSpace()
         {
-            this.RequestCancel = cancel;
+            InitializeComponent();
         }
     }
 }
