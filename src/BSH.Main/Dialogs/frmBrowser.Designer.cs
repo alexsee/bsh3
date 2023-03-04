@@ -66,6 +66,7 @@ namespace Brightbits.BSH.Main
             this.lblBackupdate = new System.Windows.Forms.Label();
             this.ilBigFolder = new System.Windows.Forms.ImageList(this.components);
             this.StatusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.LCFiles = new MRG.Controls.UI.LoadingCircleToolStripMenuItem();
             this.tsslblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.ttMain = new System.Windows.Forms.ToolTip(this.components);
             this.bgrWorkSearch = new System.ComponentModel.BackgroundWorker();
@@ -119,7 +120,6 @@ namespace Brightbits.BSH.Main
             this.Label4 = new System.Windows.Forms.Label();
             this.imgFileType = new System.Windows.Forms.PictureBox();
             this.AllesWiederherstellenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.LCFiles = new MRG.Controls.UI.LoadingCircleToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer1)).BeginInit();
             this.SplitContainer1.Panel1.SuspendLayout();
             this.SplitContainer1.Panel2.SuspendLayout();
@@ -530,10 +530,10 @@ namespace Brightbits.BSH.Main
             this.lblBackupdate.AutoEllipsis = true;
             this.lblBackupdate.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblBackupdate.ForeColor = System.Drawing.Color.Black;
-            this.lblBackupdate.Location = new System.Drawing.Point(16, 15);
+            this.lblBackupdate.Location = new System.Drawing.Point(16, 13);
             this.lblBackupdate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblBackupdate.Name = "lblBackupdate";
-            this.lblBackupdate.Size = new System.Drawing.Size(611, 31);
+            this.lblBackupdate.Size = new System.Drawing.Size(611, 33);
             this.lblBackupdate.TabIndex = 0;
             // 
             // ilBigFolder
@@ -555,6 +555,29 @@ namespace Brightbits.BSH.Main
             this.StatusStrip1.Size = new System.Drawing.Size(1188, 32);
             this.StatusStrip1.TabIndex = 8;
             this.StatusStrip1.Text = "StatusStrip1";
+            // 
+            // LCFiles
+            // 
+            this.LCFiles.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            // 
+            // LCFiles
+            // 
+            this.LCFiles.LoadingCircleControl.AccessibleName = "LCFiles";
+            this.LCFiles.LoadingCircleControl.Active = false;
+            this.LCFiles.LoadingCircleControl.Color = System.Drawing.Color.DarkGray;
+            this.LCFiles.LoadingCircleControl.InnerCircleRadius = 8;
+            this.LCFiles.LoadingCircleControl.Location = new System.Drawing.Point(2, 3);
+            this.LCFiles.LoadingCircleControl.Name = "LCFiles";
+            this.LCFiles.LoadingCircleControl.NumberSpoke = 24;
+            this.LCFiles.LoadingCircleControl.OuterCircleRadius = 9;
+            this.LCFiles.LoadingCircleControl.RotationSpeed = 100;
+            this.LCFiles.LoadingCircleControl.Size = new System.Drawing.Size(26, 29);
+            this.LCFiles.LoadingCircleControl.SpokeThickness = 4;
+            this.LCFiles.LoadingCircleControl.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.IE7;
+            this.LCFiles.LoadingCircleControl.TabIndex = 1;
+            this.LCFiles.Name = "LCFiles";
+            this.LCFiles.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.LCFiles.Size = new System.Drawing.Size(26, 29);
             // 
             // tsslblStatus
             // 
@@ -743,7 +766,7 @@ namespace Brightbits.BSH.Main
             this.GroßeSymboleToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.grid_view_icon_24;
             this.GroßeSymboleToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.GroßeSymboleToolStripMenuItem.Name = "GroßeSymboleToolStripMenuItem";
-            this.GroßeSymboleToolStripMenuItem.Size = new System.Drawing.Size(270, 36);
+            this.GroßeSymboleToolStripMenuItem.Size = new System.Drawing.Size(249, 36);
             this.GroßeSymboleToolStripMenuItem.Text = "Große Symbole";
             this.GroßeSymboleToolStripMenuItem.Click += new System.EventHandler(this.GroßeSymboleToolStripMenuItem_Click);
             // 
@@ -752,7 +775,7 @@ namespace Brightbits.BSH.Main
             this.ListenansichtToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.list_icon_24;
             this.ListenansichtToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.ListenansichtToolStripMenuItem.Name = "ListenansichtToolStripMenuItem";
-            this.ListenansichtToolStripMenuItem.Size = new System.Drawing.Size(270, 36);
+            this.ListenansichtToolStripMenuItem.Size = new System.Drawing.Size(249, 36);
             this.ListenansichtToolStripMenuItem.Text = "Listenansicht";
             this.ListenansichtToolStripMenuItem.Click += new System.EventHandler(this.ListenansichtToolStripMenuItem_Click);
             // 
@@ -761,7 +784,7 @@ namespace Brightbits.BSH.Main
             this.DetailsansichtToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.view_list_icon_24;
             this.DetailsansichtToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.DetailsansichtToolStripMenuItem.Name = "DetailsansichtToolStripMenuItem";
-            this.DetailsansichtToolStripMenuItem.Size = new System.Drawing.Size(270, 36);
+            this.DetailsansichtToolStripMenuItem.Size = new System.Drawing.Size(249, 36);
             this.DetailsansichtToolStripMenuItem.Text = "Detailsansicht";
             this.DetailsansichtToolStripMenuItem.Click += new System.EventHandler(this.DetailansichtToolStripMenuItem_Click);
             // 
@@ -1161,29 +1184,6 @@ namespace Brightbits.BSH.Main
             this.AllesWiederherstellenToolStripMenuItem.Name = "AllesWiederherstellenToolStripMenuItem";
             this.AllesWiederherstellenToolStripMenuItem.Size = new System.Drawing.Size(366, 32);
             this.AllesWiederherstellenToolStripMenuItem.Text = "Alles Wiederherstellen";
-            // 
-            // LCFiles
-            // 
-            this.LCFiles.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            // 
-            // LCFiles
-            // 
-            this.LCFiles.LoadingCircleControl.AccessibleName = "LCFiles";
-            this.LCFiles.LoadingCircleControl.Active = false;
-            this.LCFiles.LoadingCircleControl.Color = System.Drawing.Color.DarkGray;
-            this.LCFiles.LoadingCircleControl.InnerCircleRadius = 8;
-            this.LCFiles.LoadingCircleControl.Location = new System.Drawing.Point(2, 3);
-            this.LCFiles.LoadingCircleControl.Name = "LCFiles";
-            this.LCFiles.LoadingCircleControl.NumberSpoke = 24;
-            this.LCFiles.LoadingCircleControl.OuterCircleRadius = 9;
-            this.LCFiles.LoadingCircleControl.RotationSpeed = 100;
-            this.LCFiles.LoadingCircleControl.Size = new System.Drawing.Size(26, 29);
-            this.LCFiles.LoadingCircleControl.SpokeThickness = 4;
-            this.LCFiles.LoadingCircleControl.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.IE7;
-            this.LCFiles.LoadingCircleControl.TabIndex = 1;
-            this.LCFiles.Name = "LCFiles";
-            this.LCFiles.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.LCFiles.Size = new System.Drawing.Size(26, 29);
             // 
             // frmBrowser
             // 

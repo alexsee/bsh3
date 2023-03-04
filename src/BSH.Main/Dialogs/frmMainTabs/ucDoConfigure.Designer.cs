@@ -207,8 +207,8 @@ namespace Brightbits.BSH.Main
             this.ilImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ilImages.ImageStream")));
             this.ilImages.TransparentColor = System.Drawing.Color.Transparent;
             this.ilImages.Images.SetKeyName(0, "account_circle_icon_24.png");
-            this.ilImages.Images.SetKeyName(1, "folder_icon_24.png");
-            this.ilImages.Images.SetKeyName(2, "hard_drive_icon_24.png");
+            this.ilImages.Images.SetKeyName(1, "folder_icon_22.png");
+            this.ilImages.Images.SetKeyName(2, "ic_fluent_hard_drive_22_regular.png");
             this.ilImages.Images.SetKeyName(3, "smb_share_icon_24.png");
             this.ilImages.Images.SetKeyName(4, "supervisor_account_icon_24.png");
             // 
