@@ -82,6 +82,24 @@ namespace Brightbits.BSH.Engine.Jobs
             ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_BACKUP_PREPARE);
             ReportProgress(0, 0);
 
+            // check medium
+            if (!storage.CheckMedium())
+            {
+                _logger.Error("Backup storage is not ready. Backup will be cancelled.");
+
+                ReportState(JobState.ERROR);
+                throw new DeviceNotReadyException();
+            }
+
+            // check source
+            if (string.IsNullOrEmpty(SourceFolder))
+            {
+                _logger.Error("Source folder is empty so no files can be backuped.");
+
+                ReportState(JobState.ERROR);
+                throw new NoSourceFolderSelectedException();
+            }
+
             // connect to database
             using (var dbClient = dbClientFactory.CreateDbClient())
             {
@@ -94,24 +112,6 @@ namespace Brightbits.BSH.Engine.Jobs
 
                 // full backup?
                 var fullBackup = string.IsNullOrEmpty(lastVersionDate?.ToString()) || FullBackup;
-
-                // check medium
-                if (!storage.CheckMedium())
-                {
-                    _logger.Error("Backup storage is not ready. Backup will be cancelled.");
-
-                    ReportState(JobState.ERROR);
-                    throw new DeviceNotReadyException();
-                }
-
-                // check source
-                if (string.IsNullOrEmpty(SourceFolder))
-                {
-                    _logger.Error("Source folder is empty so no files can be backuped.");
-
-                    ReportState(JobState.ERROR);
-                    throw new NoSourceFolderSelectedException();
-                }
 
                 // open storage
                 storage.Open();
