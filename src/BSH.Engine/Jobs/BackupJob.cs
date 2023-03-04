@@ -196,6 +196,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 }
 
                 // process all files
+                bool cancel = false;
                 for (int i = 0; i < files.Count; i++)
                 {
                     var file = files[i];
@@ -285,13 +286,24 @@ namespace Brightbits.BSH.Engine.Jobs
                         FileErrorList.Add(fileExceptionEntry);
 
                         _logger.Error(ex.InnerException, "File {fileName} could not be backuped.", file.FileNamePath(), new { fileExceptionEntry });
+
+                        // check if instance of file not processed exception
+                        if (ex.GetType() == typeof(FileNotProcessedException))
+                        {
+                            FileNotProcessedException ex_ = (FileNotProcessedException)ex;
+                            if (ex_.RequestCancel)
+                            {
+                                _logger.Error("Backup job is being cancelled due to permanent storage exception.");
+                                cancel = true;
+                            }
+                        }
                     }
 
                     // cancellation token requested?
-                    if (token.IsCancellationRequested)
+                    if (token.IsCancellationRequested || cancel)
                     {
                         // report progress
-                        _logger.Information("User requested cancellation of backup job. Rollback all transfers.");
+                        _logger.Information("Cancellation of backup job requested. Rollback all transfers.");
                         ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_TEXT);
 
                         // undo
@@ -603,12 +615,36 @@ namespace Brightbits.BSH.Engine.Jobs
                     }
                 }
             }
+            catch (IOException ex)
+            {
+                _logger.Warning(ex, "Could not copy file {localFileName} due to IO error.", localFileName);
+
+                // file does not exist anymore?
+                if (ex.GetType() == typeof(DirectoryNotFoundException) || ex.GetType() == typeof(FileNotFoundException))
+                {
+                    throw new FileNotProcessedException(ex);
+                }
+
+                // second attempt? or via VSS
+                if (normalCopy || useVss)
+                {
+                    throw new FileNotProcessedException(ex);
+                }
+
+                // special exception --> stop backup
+                if (Win32Stuff.IsDiskFull(ex))
+                {
+                    throw new FileNotProcessedException(ex, true);
+                }
+
+                return await CopyFileToDeviceAsync(storage, file, newVersionId, newVersionDate, dbClient, true, true);
+            }
             catch (Exception ex)
             {
                 _logger.Warning(ex, "Could not copy file {localFileName} via regular file copy.", localFileName);
 
                 // already second attempt or other non-fixable error
-                if (normalCopy || useVss || ex.GetType() == typeof(DirectoryNotFoundException) || ex.GetType() == typeof(FileNotFoundException))
+                if (normalCopy || useVss)
                 {
                     throw new FileNotProcessedException(ex);
                 }

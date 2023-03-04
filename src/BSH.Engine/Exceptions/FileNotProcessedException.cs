@@ -18,10 +18,13 @@ namespace Brightbits.BSH.Engine.Exceptions
 {
     public class FileNotProcessedException : Exception
     {
+        public bool RequestCancel { get; set; }
+
         public FileNotProcessedException() { }
 
-        public FileNotProcessedException(Exception ex) : base($"Datei konnte nicht von/nach Backupmedium kopiert werden ({ex.Message}).", ex)
+        public FileNotProcessedException(Exception ex, bool cancel = false) : base($"Datei konnte nicht von/nach Backupmedium kopiert werden ({ex.Message}).", ex)
         {
+            this.RequestCancel = cancel;
         }
     }
 }
