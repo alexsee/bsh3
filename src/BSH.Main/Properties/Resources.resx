@@ -763,9 +763,6 @@ Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   <data name="search_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\search_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="search_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\search-line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="settings_backup_restore_icon_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\settings_backup_restore_icon_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

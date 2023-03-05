@@ -1928,16 +1928,6 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap search_line {
-            get {
-                object obj = ResourceManager.GetObject("search_line", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap settings_backup_restore_icon_24 {
             get {
                 object obj = ResourceManager.GetObject("settings_backup_restore_icon_24", resourceCulture);
