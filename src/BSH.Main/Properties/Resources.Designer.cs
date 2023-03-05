@@ -241,26 +241,6 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap checkbox_blank_circle_line {
-            get {
-                object obj = ResourceManager.GetObject("checkbox_blank_circle_line", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap checkbox_circle_line {
-            get {
-                object obj = ResourceManager.GetObject("checkbox_circle_line", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backupbrowser ähnelt.
         /// </summary>
         internal static string CONTEXT_MENU_BACKUP_BROWSER_WINDOW {

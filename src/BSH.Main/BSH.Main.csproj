@@ -425,6 +425,9 @@
     <None Include="Resources\backup_fill_icon_48.png" />
     <None Include="Resources\backup_icon_48.png" />
     <None Include="Resources\storage_icon_48.png" />
+    <None Include="Resources\status_running.png" />
+    <None Include="Resources\status_ok.png" />
+    <None Include="Resources\status_error.png" />
     <Content Include="status_red.ico" />
     <Content Include="status_refresh.ico" />
   </ItemGroup>
