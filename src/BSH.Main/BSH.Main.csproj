@@ -347,7 +347,6 @@
     <None Include="Resources\cancel_fill_icon_48.png" />
     <None Include="Resources\cancel_icon_48.png" />
     <None Include="Resources\visibility_icon_48.png" />
-    <None Include="Resources\delete_icon_48.png" />
     <None Include="Resources\edit_square_icon_48.png" />
     <None Include="Resources\view_list_icon_48.png" />
     <None Include="Resources\list_icon_48.png" />
@@ -357,7 +356,6 @@
     <None Include="Resources\list_icon_24.png" />
     <None Include="Resources\edit_square_icon_24.png" />
     <None Include="Resources\visibility_icon_24.png" />
-    <None Include="Resources\delete_icon_24.png" />
     <None Include="Resources\settings_backup_restore_icon_24.png" />
     <None Include="Resources\error_icon_48.png" />
     <None Include="Resources\settings_backup_restore_icon_48.png" />
@@ -380,6 +378,7 @@
     <None Include="Resources\status_running.png" />
     <None Include="Resources\status_ok.png" />
     <None Include="Resources\status_error.png" />
+    <None Include="Resources\delete_icon_24.png" />
     <Content Include="status_red.ico" />
     <Content Include="status_refresh.ico" />
   </ItemGroup>
