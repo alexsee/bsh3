@@ -444,6 +444,8 @@ namespace Brightbits.BSH.Main
         {
             try
             {
+                StoreColumnSizes();
+
                 Settings.Default.BrowserSplitter = SplitContainer1.SplitterDistance;
                 Settings.Default.BrowserSize = Size;
                 Settings.Default.BrowserView = (int)lvFiles.View;
@@ -465,11 +467,45 @@ namespace Brightbits.BSH.Main
             }
         }
 
+        private void SetColumnSizes()
+        {
+            if (string.IsNullOrEmpty(Settings.Default.BrowserColumnsSize))
+            {
+                return;
+            }
+
+            string[] columnSizes = Settings.Default.BrowserColumnsSize.Split(';');
+            if (columnSizes.Length != lvFiles.Columns.Count)
+            {
+                return;
+            }
+
+            for (int i = 0; i < columnSizes.Length; i++)
+            {
+                lvFiles.Columns[i].Width = int.Parse(columnSizes[i]);
+            }
+        }
+
+        private void StoreColumnSizes()
+        {
+            var columnSizes = string.Join(";", lvFiles.Columns.Cast<ColumnHeader>().Select(x => x.Width.ToString()));
+            Settings.Default.BrowserColumnsSize = columnSizes;
+        }
+
         private async void frmBrowser_Load(object sender, EventArgs e)
         {
             // load column sorter
             lvwColumnSorter = new ListViewColumnSorter();
             lvFiles.ListViewItemSorter = lvwColumnSorter;
+
+            try
+            {
+                SetColumnSizes();
+            }
+            catch
+            {
+                // do nothing
+            }
 
             // get dpi setting and adjust the icons
             var dpi = GetDPISetting();
