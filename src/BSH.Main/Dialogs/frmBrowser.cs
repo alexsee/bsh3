@@ -1283,7 +1283,6 @@ namespace Brightbits.BSH.Main
             SchnellansichtToolStripMenuItem1.Enabled = false;
             EigenschaftenToolStripMenuItem1.Enabled = false;
             WiederherstellenToolStripMenuItem1.Enabled = false;
-            imgFileType.Image = Resources.search_line;
         }
 
         private async void bgrWorkSearch_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)

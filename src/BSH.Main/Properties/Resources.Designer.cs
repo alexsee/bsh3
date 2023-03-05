@@ -73,16 +73,6 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap archive {
-            get {
-                object obj = ResourceManager.GetObject("archive", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap arrow_back_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("arrow_back_icon_48", resourceCulture);
@@ -246,26 +236,6 @@ namespace BSH.Main.Properties {
         internal static System.Drawing.Bitmap cancel_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("cancel_icon_48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap checkbox_blank_circle_line {
-            get {
-                object obj = ResourceManager.GetObject("checkbox_blank_circle_line", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap checkbox_circle_line {
-            get {
-                object obj = ResourceManager.GetObject("checkbox_circle_line", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1690,16 +1660,6 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Hintergrund_Menu_oben {
-            get {
-                object obj = ResourceManager.GetObject("Hintergrund_Menu_oben", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap home_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("home_icon_48", resourceCulture);
@@ -1882,16 +1842,6 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap moreinfo_backgr {
-            get {
-                object obj = ResourceManager.GetObject("moreinfo_backgr", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Sicherung abgebrochen wird. ähnelt.
         /// </summary>
         internal static string MSG_BACKUP_DEVICE_NOT_READY_TEXT {
@@ -1971,16 +1921,6 @@ namespace BSH.Main.Properties {
         internal static System.Drawing.Bitmap search_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("search_icon_48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap search_line {
-            get {
-                object obj = ResourceManager.GetObject("search_line", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
