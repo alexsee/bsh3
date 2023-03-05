@@ -29,8 +29,8 @@ namespace Brightbits.BSH.Main
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmBrowser));
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Ordner", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Dateien", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Ordner", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Dateien", System.Windows.Forms.HorizontalAlignment.Left);
             this.SplitContainer1 = new System.Windows.Forms.SplitContainer();
             this.plVersions = new System.Windows.Forms.Panel();
             this.cmdTakeMeLater = new System.Windows.Forms.Button();
@@ -371,13 +371,13 @@ namespace Brightbits.BSH.Main
             this.lvFiles.ContextMenuStrip = this.cmnuListRight;
             this.lvFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvFiles.FullRowSelect = true;
-            listViewGroup1.Header = "Ordner";
-            listViewGroup1.Name = "Ordner";
-            listViewGroup2.Header = "Dateien";
-            listViewGroup2.Name = "Dateien";
+            listViewGroup3.Header = "Ordner";
+            listViewGroup3.Name = "Ordner";
+            listViewGroup4.Header = "Dateien";
+            listViewGroup4.Name = "Dateien";
             this.lvFiles.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2});
+            listViewGroup3,
+            listViewGroup4});
             this.lvFiles.HideSelection = false;
             this.lvFiles.LargeImageList = this.ilBigIcons;
             this.lvFiles.Location = new System.Drawing.Point(0, 58);
@@ -980,6 +980,7 @@ namespace Brightbits.BSH.Main
             this.flpColumn2.Location = new System.Drawing.Point(32, 0);
             this.flpColumn2.Margin = new System.Windows.Forms.Padding(0);
             this.flpColumn2.Name = "flpColumn2";
+            this.flpColumn2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.flpColumn2.Size = new System.Drawing.Size(230, 64);
             this.flpColumn2.TabIndex = 46;
             // 
@@ -993,6 +994,7 @@ namespace Brightbits.BSH.Main
             this.flpDateLastWrite.Location = new System.Drawing.Point(4, 4);
             this.flpDateLastWrite.Margin = new System.Windows.Forms.Padding(4);
             this.flpDateLastWrite.Name = "flpDateLastWrite";
+            this.flpDateLastWrite.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.flpDateLastWrite.Size = new System.Drawing.Size(222, 28);
             this.flpDateLastWrite.TabIndex = 43;
             // 
@@ -1028,10 +1030,11 @@ namespace Brightbits.BSH.Main
             this.flpDateCreated.BackColor = System.Drawing.Color.Transparent;
             this.flpDateCreated.Controls.Add(this.lFileCreated);
             this.flpDateCreated.Controls.Add(this.lblFileCreated);
-            this.flpDateCreated.Location = new System.Drawing.Point(4, 36);
+            this.flpDateCreated.Location = new System.Drawing.Point(57, 36);
             this.flpDateCreated.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.flpDateCreated.Name = "flpDateCreated";
-            this.flpDateCreated.Size = new System.Drawing.Size(216, 28);
+            this.flpDateCreated.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.flpDateCreated.Size = new System.Drawing.Size(169, 28);
             this.flpDateCreated.TabIndex = 42;
             // 
             // lFileCreated
@@ -1039,8 +1042,8 @@ namespace Brightbits.BSH.Main
             this.lFileCreated.AutoSize = true;
             this.lFileCreated.BackColor = System.Drawing.Color.Transparent;
             this.lFileCreated.ForeColor = System.Drawing.Color.Gray;
-            this.lFileCreated.Location = new System.Drawing.Point(51, 0);
-            this.lFileCreated.Margin = new System.Windows.Forms.Padding(51, 0, 4, 0);
+            this.lFileCreated.Location = new System.Drawing.Point(4, 0);
+            this.lFileCreated.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lFileCreated.Name = "lFileCreated";
             this.lFileCreated.Size = new System.Drawing.Size(107, 28);
             this.lFileCreated.TabIndex = 4;
@@ -1051,7 +1054,7 @@ namespace Brightbits.BSH.Main
             this.lblFileCreated.AutoSize = true;
             this.lblFileCreated.BackColor = System.Drawing.Color.Transparent;
             this.lblFileCreated.ForeColor = System.Drawing.Color.Black;
-            this.lblFileCreated.Location = new System.Drawing.Point(166, 0);
+            this.lblFileCreated.Location = new System.Drawing.Point(119, 0);
             this.lblFileCreated.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFileCreated.Name = "lblFileCreated";
             this.lblFileCreated.Padding = new System.Windows.Forms.Padding(0, 0, 22, 0);

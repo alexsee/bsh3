@@ -73,16 +73,6 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap archive {
-            get {
-                object obj = ResourceManager.GetObject("archive", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap arrow_back_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("arrow_back_icon_48", resourceCulture);
@@ -1690,16 +1680,6 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Hintergrund_Menu_oben {
-            get {
-                object obj = ResourceManager.GetObject("Hintergrund_Menu_oben", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap home_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("home_icon_48", resourceCulture);
@@ -1877,16 +1857,6 @@ namespace BSH.Main.Properties {
         internal static System.Drawing.Bitmap list_icon_24 {
             get {
                 object obj = ResourceManager.GetObject("list_icon_24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap moreinfo_backgr {
-            get {
-                object obj = ResourceManager.GetObject("moreinfo_backgr", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

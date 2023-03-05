@@ -391,13 +391,7 @@
     <None Include="Properties\Resources\topBgrLine3.png" />
     <None Include="Properties\Resources\topbrowser.jpg" />
     <None Include="Properties\Resources\topPassword.png" />
-    <None Include="Resources\settings_fill_icon48.png" />
-    <None Include="Resources\settings_icon_48.png" />
-    <None Include="Resources\backup_fill_icon_48.png" />
-    <None Include="Resources\backup_icon_48.png" />
     <None Include="Resources\arrow_back_icon_48.png" />
-    <None Include="Resources\toggle_off_icon_48.png" />
-    <None Include="Resources\toggle_on_icon_48.png" />
     <None Include="Resources\cancel_fill_icon_48.png" />
     <None Include="Resources\cancel_icon_48.png" />
     <None Include="Resources\visibility_icon_48.png" />
@@ -415,7 +409,6 @@
     <None Include="Resources\settings_backup_restore_icon_24.png" />
     <None Include="Resources\error_icon_48.png" />
     <None Include="Resources\settings_backup_restore_icon_48.png" />
-    <None Include="Resources\storage_icon_48.png" />
     <None Include="Resources\password_icon_48.png" />
     <None Include="Resources\arrow_upward_icon_48.png" />
     <None Include="Resources\search_icon_24.png" />
@@ -425,6 +418,13 @@
     <None Include="Resources\home_icon_48.png" />
     <None Include="Resources\folder_icon_48.png" />
     <None Include="Resources\help_icon_48.png" />
+    <None Include="Resources\toggle_off_icon_48.png" />
+    <None Include="Resources\toggle_on_icon_48.png" />
+    <None Include="Resources\settings_icon_48.png" />
+    <None Include="Resources\settings_fill_icon_48.png" />
+    <None Include="Resources\backup_fill_icon_48.png" />
+    <None Include="Resources\backup_icon_48.png" />
+    <None Include="Resources\storage_icon_48.png" />
     <Content Include="status_red.ico" />
     <Content Include="status_refresh.ico" />
   </ItemGroup>
