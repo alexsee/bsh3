@@ -35,6 +35,7 @@ namespace Brightbits.BSH.Main
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmFileProperties));
             this.TabControl1 = new System.Windows.Forms.TabControl();
             this.TabPage1 = new System.Windows.Forms.TabPage();
             this.lblFileModified = new System.Windows.Forms.Label();
@@ -377,6 +378,7 @@ namespace Brightbits.BSH.Main
             this.Controls.Add(this.cmdCancel);
             this.Controls.Add(this.TabControl1);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
