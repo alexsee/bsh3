@@ -3,14 +3,14 @@
 
 [Setup]
 AppName=Backup Service Home
-AppVerName=Backup Service Home 3.8
+AppVerName=Backup Service Home 3.8.5
 AppPublisher=Alexander Seeliger Software
 AppPublisherURL=https://www.brightbits.de/
 AppSupportURL=https://www.brightbits.de/
 AppUpdatesURL=https://www.brightbits.de/
 DefaultDirName={pf}\Alexosoft\Backup Service Home 3
 DefaultGroupName=Backup Service Home 3
-LicenseFile=Freewarelizenz.rtf
+LicenseFile=apache-license-2.0.rtf
 OutputDir=output
 OutputBaseFilename=backupservicehome-3.8.5.0-win64
 Compression=lzma/ultra64
