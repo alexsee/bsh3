@@ -47,8 +47,6 @@ namespace Brightbits.BSH.Main
 
         private ActionType lastActionType = ActionType.Check;
 
-        private bool lastActionSilent = false;
-
         public JobState JobState { get; set; }
 
         public SystemStatus SystemStatus { get; set; }
@@ -86,7 +84,6 @@ namespace Brightbits.BSH.Main
         {
             lastFileOverwriteChoice = RequestOverwriteResult.None;
             lastActionType = action;
-            lastActionSilent = silent;
             observers.ForEach(x => x.ReportAction(action, silent));
         }
 

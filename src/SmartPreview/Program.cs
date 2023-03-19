@@ -17,7 +17,7 @@ using System.Windows.Forms;
 
 namespace SmartPreview
 {
-    static class modMain
+    static class Program
     {
         [STAThread]
         public static void Main()
@@ -28,11 +28,11 @@ namespace SmartPreview
 
                 string fileName = "";
 
-                string[] Arguments;
+                string[] arguments;
 
                 // get file name
-                Arguments = Environment.GetCommandLineArgs();
-                foreach (string entry in Arguments)
+                arguments = Environment.GetCommandLineArgs();
+                foreach (string entry in arguments)
                 {
                     if (entry.StartsWith("-file:"))
                     {
@@ -42,11 +42,9 @@ namespace SmartPreview
 
                 if (System.IO.File.Exists(fileName))
                 {
-                    using (var dlgSmartPreview = new frmSmartPreview())
-                    {
-                        dlgSmartPreview.ShowPreview(fileName);
-                        dlgSmartPreview.ShowDialog();
-                    }
+                    using var dlgSmartPreview = new frmSmartPreview();
+                    dlgSmartPreview.ShowPreview(fileName);
+                    dlgSmartPreview.ShowDialog();
                 }
 
                 Application.Exit();

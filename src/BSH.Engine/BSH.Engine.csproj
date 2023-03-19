@@ -17,6 +17,7 @@
     <Title>Backup Service Home</Title>
     <Platforms>x64</Platforms>
     <Configurations>Debug;Release;Windows 10</Configurations>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <OutputPath>bin\x64\Debug\</OutputPath>

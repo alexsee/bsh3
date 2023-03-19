@@ -160,24 +160,22 @@ namespace Brightbits.BSH.Main
         private async void eventMainContextStartBackupOptions(object sender, EventArgs e)
         {
             // show dialog with more backup options
-            using (var dlgCreateBackup = new frmCreateBackup())
+            using var dlgCreateBackup = new frmCreateBackup();
+            if (dlgCreateBackup.ShowDialog() != DialogResult.OK)
             {
-                if (dlgCreateBackup.ShowDialog() != DialogResult.OK)
-                {
-                    return;
-                }
-
-                // concatenate source folders
-                var sourceFolders = string.Join("|", dlgCreateBackup.clstSources.CheckedItems);
-
-                if (string.IsNullOrEmpty(sourceFolders))
-                {
-                    return;
-                }
-
-                // start backup job
-                await BackupLogic.BackupController.CreateBackupAsync(dlgCreateBackup.txtTitle.Text, dlgCreateBackup.txtDescription.Text, true, dlgCreateBackup.cbFullBackup.Checked, dlgCreateBackup.chkShutdownPC.Checked, sourceFolders: sourceFolders);
+                return;
             }
+
+            // concatenate source folders
+            var sourceFolders = string.Join("|", dlgCreateBackup.clstSources.CheckedItems);
+
+            if (string.IsNullOrEmpty(sourceFolders))
+            {
+                return;
+            }
+
+            // start backup job
+            await BackupLogic.BackupController.CreateBackupAsync(dlgCreateBackup.txtTitle.Text, dlgCreateBackup.txtDescription.Text, true, dlgCreateBackup.cbFullBackup.Checked, dlgCreateBackup.chkShutdownPC.Checked, sourceFolders: sourceFolders);
         }
 
         private void eventMainContextClick(object sender, EventArgs e)

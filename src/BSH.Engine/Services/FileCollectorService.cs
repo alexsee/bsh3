@@ -264,7 +264,7 @@ namespace Brightbits.BSH.Engine.Services
 
             if (result.StartsWith("\\") && result.Length > 1)
             {
-                result = result.Substring(1);
+                result = result[1..];
             }
             else if (result == "\\")
             {

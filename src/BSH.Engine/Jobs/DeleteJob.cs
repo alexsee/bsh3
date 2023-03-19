@@ -166,10 +166,8 @@ namespace Brightbits.BSH.Engine.Jobs
             {
                 queryManager.Configuration.FreeSpace = storage.GetFreeSpace().ToString();
 
-                using (var dbClient = dbClientFactory.CreateDbClient())
-                {
-                    queryManager.Configuration.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
-                }
+                using var dbClient = dbClientFactory.CreateDbClient();
+                queryManager.Configuration.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
             }
             catch (Exception ex)
             {
@@ -180,30 +178,30 @@ namespace Brightbits.BSH.Engine.Jobs
             // clean storage folders
             if (storage is FileSystemStorage)
             {
-                using (var dbClient = dbClientFactory.CreateDbClient())
-                using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT versiondate FROM versiontable WHERE versionid NOT IN (SELECT filepackage FROM fileversiontable)", null))
-                {
-                    while (reader.Read())
-                    {
-                        try
-                        {
-                            var remoteFolder = reader.GetString("versiondate");
-                            storage.DeleteDirectory(remoteFolder);
-                        }
-                        catch
-                        {
-                            // not necessary to handle this error
-                        }
-                    }
+                using var dbClient = dbClientFactory.CreateDbClient();
+                using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT versiondate FROM versiontable WHERE versionid NOT IN (SELECT filepackage FROM fileversiontable)", null);
 
-                    reader.Close();
+                while (reader.Read())
+                {
+                    try
+                    {
+                        var remoteFolder = reader.GetString("versiondate");
+                        storage.DeleteDirectory(remoteFolder);
+                    }
+                    catch
+                    {
+                        // not necessary to handle this error
+                    }
                 }
+
+                reader.Close();
             }
 
             // store database version
-            int.TryParse(queryManager.Configuration.OldBackupPrevent, out int databaseVersion);
-
-            queryManager.Configuration.OldBackupPrevent = (databaseVersion + 1).ToString();
+            if (int.TryParse(queryManager.Configuration.OldBackupPrevent, out int databaseVersion))
+            {
+                queryManager.Configuration.OldBackupPrevent = (databaseVersion + 1).ToString();
+            }
 
             // refresh free diskspace
             await UpdateFreeDiskSpaceAsync();
