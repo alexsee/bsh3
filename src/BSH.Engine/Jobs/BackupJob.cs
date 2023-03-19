@@ -82,6 +82,24 @@ namespace Brightbits.BSH.Engine.Jobs
             ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_BACKUP_PREPARE);
             ReportProgress(0, 0);
 
+            // check medium
+            if (!storage.CheckMedium())
+            {
+                _logger.Error("Backup storage is not ready. Backup will be cancelled.");
+
+                ReportState(JobState.ERROR);
+                throw new DeviceNotReadyException();
+            }
+
+            // check source
+            if (string.IsNullOrEmpty(SourceFolder))
+            {
+                _logger.Error("Source folder is empty so no files can be backuped.");
+
+                ReportState(JobState.ERROR);
+                throw new NoSourceFolderSelectedException();
+            }
+
             // connect to database
             using (var dbClient = dbClientFactory.CreateDbClient())
             {
@@ -94,24 +112,6 @@ namespace Brightbits.BSH.Engine.Jobs
 
                 // full backup?
                 var fullBackup = string.IsNullOrEmpty(lastVersionDate?.ToString()) || FullBackup;
-
-                // check medium
-                if (!storage.CheckMedium())
-                {
-                    _logger.Error("Backup storage is not ready. Backup will be cancelled.");
-
-                    ReportState(JobState.ERROR);
-                    throw new DeviceNotReadyException();
-                }
-
-                // check source
-                if (string.IsNullOrEmpty(SourceFolder))
-                {
-                    _logger.Error("Source folder is empty so no files can be backuped.");
-
-                    ReportState(JobState.ERROR);
-                    throw new NoSourceFolderSelectedException();
-                }
 
                 // open storage
                 storage.Open();
@@ -196,6 +196,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 }
 
                 // process all files
+                bool cancel = false;
                 for (int i = 0; i < files.Count; i++)
                 {
                     var file = files[i];
@@ -272,26 +273,30 @@ namespace Brightbits.BSH.Engine.Jobs
                             }
                         }
                     }
+                    catch (FileNotProcessedException ex)
+                    {
+                        FileExceptionEntry fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
+                        _logger.Error(ex.InnerException, "File {fileName} could not be backuped.", file.FileNamePath(), new { fileExceptionEntry });
+
+                        if (ex.RequestCancel)
+                        {
+                            _logger.Error("Backup job is being cancelled due to permanent storage exception.");
+                            cancel = true;
+
+                            RequestShowErrorInsufficientDiskSpace();
+                        }
+                    }
                     catch (Exception ex)
                     {
-                        var fileExceptionEntry = new FileExceptionEntry()
-                        {
-                            Exception = ex,
-                            File = file,
-                            NewVersionDate = newVersionDate,
-                            NewVersionId = newVersionId
-                        };
-
-                        FileErrorList.Add(fileExceptionEntry);
-
+                        FileExceptionEntry fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
                         _logger.Error(ex.InnerException, "File {fileName} could not be backuped.", file.FileNamePath(), new { fileExceptionEntry });
                     }
 
                     // cancellation token requested?
-                    if (token.IsCancellationRequested)
+                    if (token.IsCancellationRequested || cancel)
                     {
                         // report progress
-                        _logger.Information("User requested cancellation of backup job. Rollback all transfers.");
+                        _logger.Information("Cancellation of backup job requested. Rollback all transfers.");
                         ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_TEXT);
 
                         // undo
@@ -395,6 +400,28 @@ namespace Brightbits.BSH.Engine.Jobs
             ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
 
             _logger.Information("Backup job finished.");
+        }
+
+        /// <summary>
+        /// Adds the given exception to the file exception list.
+        /// </summary>
+        /// <param name="versionDate">The version date of the backup.</param>
+        /// <param name="versionId">The version id of the backup.</param>
+        /// <param name="file">The file that could not be copied.</param>
+        /// <param name="ex">The exception that occured.</param>
+        /// <returns></returns>
+        private FileExceptionEntry AddFileErrorToList(string versionDate, long versionId, FileTableRow file, Exception ex)
+        {
+            var fileExceptionEntry = new FileExceptionEntry()
+            {
+                Exception = ex,
+                File = file,
+                NewVersionDate = versionDate,
+                NewVersionId = versionId
+            };
+
+            FileErrorList.Add(fileExceptionEntry);
+            return fileExceptionEntry;
         }
 
         /// <summary>
@@ -559,8 +586,12 @@ namespace Brightbits.BSH.Engine.Jobs
                 }
             }
 
+            // compress or encrypt?
+            var compress = queryManager.Configuration.Compression == 1 && !normalCopy && !doNotCompress;
+            var encrypt = queryManager.Configuration.Encrypt == 1 && !normalCopy && file.FileSize != 0;
+
             // check if path is too long
-            if (storage.IsPathTooLong(remoteFileName))
+            if (storage.IsPathTooLong(remoteFileName, compress, encrypt))
             {
                 longFileName = Guid.NewGuid().ToString();
                 longFileName += Path.GetExtension(localFileName);
@@ -569,10 +600,6 @@ namespace Brightbits.BSH.Engine.Jobs
 
                 _logger.Debug("{fileName} path is too long to be copied, it will be renamed instead to {longFile}.", file.FileNamePath(), longFileName);
             }
-
-            // compress or encrypt?
-            var compress = queryManager.Configuration.Compression == 1 && !normalCopy && !doNotCompress;
-            var encrypt = queryManager.Configuration.Encrypt == 1 && !normalCopy && file.FileSize != 0;
 
             // send file to storage provider
             bool result;
@@ -603,12 +630,36 @@ namespace Brightbits.BSH.Engine.Jobs
                     }
                 }
             }
+            catch (IOException ex)
+            {
+                _logger.Warning(ex, "Could not copy file {localFileName} due to IO error.", localFileName);
+
+                // file does not exist anymore?
+                if (ex.GetType() == typeof(DirectoryNotFoundException) || ex.GetType() == typeof(FileNotFoundException))
+                {
+                    throw new FileNotProcessedException(ex);
+                }
+
+                // second attempt? or via VSS
+                if (normalCopy || useVss)
+                {
+                    throw new FileNotProcessedException(ex);
+                }
+
+                // special exception --> stop backup
+                if (Win32Stuff.IsDiskFull(ex))
+                {
+                    throw new FileNotProcessedException(ex, true);
+                }
+
+                return await CopyFileToDeviceAsync(storage, file, newVersionId, newVersionDate, dbClient, true, true);
+            }
             catch (Exception ex)
             {
                 _logger.Warning(ex, "Could not copy file {localFileName} via regular file copy.", localFileName);
 
                 // already second attempt or other non-fixable error
-                if (normalCopy || useVss || ex.GetType() == typeof(DirectoryNotFoundException) || ex.GetType() == typeof(FileNotFoundException))
+                if (normalCopy || useVss)
                 {
                     throw new FileNotProcessedException(ex);
                 }

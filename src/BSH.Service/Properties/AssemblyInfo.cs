@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alexander Seeliger Software")]
 [assembly: AssemblyProduct("Backup Service Home")]
-[assembly: AssemblyCopyright("Copyright © Alexander Seeliger 2022")]
+[assembly: AssemblyCopyright("Copyright © Alexander Seeliger 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -45,5 +45,5 @@ using System.Runtime.InteropServices;
 // Sie können alle Werte angeben oder Standardwerte für die Build- und Revisionsnummern verwenden,
 // indem Sie "*" wie unten gezeigt eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.8.4.0")]
-[assembly: AssemblyFileVersion("3.8.4.0")]
+[assembly: AssemblyVersion("3.8.5.0")]
+[assembly: AssemblyFileVersion("3.8.5.0")]

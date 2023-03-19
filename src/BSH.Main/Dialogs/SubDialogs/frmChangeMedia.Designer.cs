@@ -28,10 +28,10 @@ namespace Brightbits.BSH.Main
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmChangeMedia));
             System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Festplatten", System.Windows.Forms.HorizontalAlignment.Left);
             System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Wechseldatenträger", System.Windows.Forms.HorizontalAlignment.Left);
             System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Netzwerk", System.Windows.Forms.HorizontalAlignment.Left);
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmChangeMedia));
             this.Panel1 = new System.Windows.Forms.Panel();
             this.Button1 = new System.Windows.Forms.Button();
             this.Label1 = new System.Windows.Forms.Label();
@@ -47,6 +47,7 @@ namespace Brightbits.BSH.Main
             this.ColumnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ilImages = new System.Windows.Forms.ImageList(this.components);
             this.plFTP = new System.Windows.Forms.Panel();
+            this.chkFtpEncryption = new System.Windows.Forms.CheckBox();
             this.cboFtpEncoding = new System.Windows.Forms.ComboBox();
             this.Label10 = new System.Windows.Forms.Label();
             this.cmdFTPCheck = new System.Windows.Forms.Button();
@@ -60,7 +61,6 @@ namespace Brightbits.BSH.Main
             this.Label6 = new System.Windows.Forms.Label();
             this.txtFTPServer = new System.Windows.Forms.TextBox();
             this.Label9 = new System.Windows.Forms.Label();
-            this.chkFtpEncryption = new System.Windows.Forms.CheckBox();
             this.Panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
             this.plDevice.SuspendLayout();
@@ -141,7 +141,7 @@ namespace Brightbits.BSH.Main
             // 
             // PictureBox1
             // 
-            this.PictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("PictureBox1.Image")));
+            this.PictureBox1.Image = global::BSH.Main.Properties.Resources.storage_icon_48;
             this.PictureBox1.Location = new System.Drawing.Point(33, 87);
             this.PictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.PictureBox1.Name = "PictureBox1";
@@ -264,6 +264,15 @@ namespace Brightbits.BSH.Main
             this.plFTP.Size = new System.Drawing.Size(879, 236);
             this.plFTP.TabIndex = 99;
             this.plFTP.Visible = false;
+            // 
+            // chkFtpEncryption
+            // 
+            this.chkFtpEncryption.Location = new System.Drawing.Point(464, 195);
+            this.chkFtpEncryption.Name = "chkFtpEncryption";
+            this.chkFtpEncryption.Size = new System.Drawing.Size(398, 40);
+            this.chkFtpEncryption.TabIndex = 95;
+            this.chkFtpEncryption.Text = "Unverschlüsselte Verbindung erzwingen";
+            this.chkFtpEncryption.UseVisualStyleBackColor = true;
             // 
             // cboFtpEncoding
             // 
@@ -388,15 +397,6 @@ namespace Brightbits.BSH.Main
             this.Label9.Size = new System.Drawing.Size(71, 28);
             this.Label9.TabIndex = 81;
             this.Label9.Text = "Server:";
-            // 
-            // chkFtpEncryption
-            // 
-            this.chkFtpEncryption.Location = new System.Drawing.Point(464, 195);
-            this.chkFtpEncryption.Name = "chkFtpEncryption";
-            this.chkFtpEncryption.Size = new System.Drawing.Size(398, 40);
-            this.chkFtpEncryption.TabIndex = 95;
-            this.chkFtpEncryption.Text = "Unverschlüsselte Verbindung erzwingen";
-            this.chkFtpEncryption.UseVisualStyleBackColor = true;
             // 
             // frmChangeMedia
             // 

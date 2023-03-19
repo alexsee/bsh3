@@ -180,7 +180,7 @@ namespace Brightbits.BSH.Main
                             txtFTPPath.Text = FTPStorage.GetFtpPath(txtFTPPath.Text);
 
                             var profile = FTPStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
-                            if (profile == null)
+                            if (!profile)
                             {
                                 // directory not found
                                 MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -712,7 +712,7 @@ namespace Brightbits.BSH.Main
             {
                 var profile = FTPStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
 
-                if (profile == null)
+                if (!profile)
                 {
                     MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT, Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -765,23 +765,23 @@ namespace Brightbits.BSH.Main
 
             foreach (var entry in drives.Where(x => x.IsReady))
             {
-                int iImageKey = 2;
+                int iImageKey = 1;
                 var gGroup = view.Groups[0];
                 if (entry.DriveType == DriveType.Fixed)
                 {
-                    iImageKey = 2;
+                    iImageKey = 1;
                     gGroup = view.Groups[0];
                 }
 
                 if (entry.DriveType == DriveType.Removable)
                 {
-                    iImageKey = 3;
+                    iImageKey = 2;
                     gGroup = view.Groups[1];
                 }
 
                 if (entry.DriveType == DriveType.Network)
                 {
-                    iImageKey = 1;
+                    iImageKey = 3;
                     gGroup = view.Groups[2];
                 }
 

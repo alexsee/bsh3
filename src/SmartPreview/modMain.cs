@@ -34,7 +34,7 @@ namespace SmartPreview
                 Arguments = Environment.GetCommandLineArgs();
                 foreach (string entry in Arguments)
                 {
-                    if (entry.Substring(0, 6) == "-file:")
+                    if (entry.StartsWith("-file:"))
                     {
                         fileName = entry.Replace("-file:", "");
                     }

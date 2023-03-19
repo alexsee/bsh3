@@ -127,26 +127,6 @@ Verwenden.
 Durch eine andere Konfiguration des Systems hat sich der Ort des Backupmediums geändert. Daher ist das Medium nicht mehr erreichbar. Diese Fehlkonfiguration möchten Sie korrigieren.</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="PictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAANkSURBVHhe7Zr9jRQxDMW3BEqghOsASqADrgPoADqATo4OoAPoADqADsA/6SKNIjufdnYG5Unv
-        j92dceIXx3GyuW1sbGxsrMEL4SvhO+GHZz49M33mN555KfwvgDOfhD+Ffzv5Xci7r4WXAiPNaI44bRFb
-        2MT2aZEc/y3UnPAgtpcI8Vn4NSPfWXgrjHQ8J23RZhi+CfNG+S4HI0ESy5+tEVs5fwi1Z0uk7ZBooEN5
-        Y3x3xIOwdZ5/ET4KeacGVgCe5R3NVk760GK3CzUBaLAW8r+EH4UzI8S774XY0tpIpC+uIpQEqDn/R0in
-        vYFNbGttQlcRLAFqzhO2kUUMEaH1LdFNBK0RkhTFSf59IuG+CrSl9QGSE6YTY0lljSSt1aBNrS+Q1WEK
-        PQLcw/mEkghT/WoVYDTsmafsE44cnbvWdCAfDE+FFgF4ZhSafW97cDgvtQhQYm0H5y0AK4+2RA5HwdUE
-        ANQJuU04FAVXFABoFSPLYjeuKoAVBd2HKlcVgPme24WlrbwKliScGGUt8UQJALRdJBXsqRApgDUNpstj
-        T0QKwJKY24ZE5mkQKQDIbcOILfowogXQjteGq8IIRAug2T+9ANBrZ6nZZ3Voxj1GKNFDhGkBtC2mpwCl
-        fTycFUEToGsKaAJ4FxORImhHd10CWMWEN6JE0Gx1LYMUDZqRiBNfbxFcCiHLyExYluApglsprBUTXZm0
-        E14iaJshfOkGW8jcEIzcVNREqE1Bt+0weCPUjEXX1JYILRGgrV5weCPkdsTUiVyE1vDX/q3Gh2FYiq7Y
-        WSURWp23kl/X+p+DOeV63NyJ1mWX57Q/ben7dD+tKODazFlAX7Q+To1+ghUFbg1Mwhogl9FPyJPSka1z
-        NAKlfrGKuUIrMBLvIULJ+ZCCjXAq3dXh/t4q0JbWB0gfwxI0/xdY+QCSjFoz9wiwbSU8SN9crsiUUBOB
-        5YhLz97AprbUJS5xPqEmAqQqo9Mz4ci7hLtW4R251PkEGizlhCO5s4MYLdODZ3i29QYqfVjufAIjVFod
-        LHJkxVw+snQDzSJthyW8HrAk1aaEJ2nrnvWHCkaCqixSCGzTxilG3UISojU/tBBbp3dcAwcRnMaMXIXn
-        Hd491b+6M2D0cIZ9O6MJSWIwfeY3nrncSG9sbGxcELfbP9yH95YJorIZAAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAUAAAAAAAEAIABkTwAAVgAAADAwAAABACAAqCUAALpPAAAgIAAAAQAgAKgQAABidQAAGBgAAAEA

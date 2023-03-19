@@ -226,7 +226,14 @@ namespace Brightbits.BSH.Main
 
         public void ReportState(JobState jobState)
         {
-            systemTrayIconContextMenu.Invoke(new Action(() => ReportState_Safe(jobState)));
+            try
+            {
+                systemTrayIconContextMenu.Invoke(new Action(() => ReportState_Safe(jobState)));
+            }
+            catch (Exception)
+            {
+                // raise no error
+            }
         }
 
         private void ReportState_Safe(JobState jobState)

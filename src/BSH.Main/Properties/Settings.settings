@@ -8,12 +8,6 @@
     <Setting Name="SystemConfigured" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="BrowserVersionsCollapse" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="BrowserFavoritsCollapse" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="BrowserSplitter" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">235</Value>
     </Setting>
@@ -38,13 +32,13 @@
     <Setting Name="AutoSearchUpdates" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="FirstStartWelcomeCenter" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="StartParameters" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="UniqueUserId" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="BrowserColumnsSize" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

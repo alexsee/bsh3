@@ -152,7 +152,7 @@ namespace Brightbits.BSH.Main
             // PictureBox1
             // 
             this.PictureBox1.BackColor = System.Drawing.Color.Transparent;
-            this.PictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("PictureBox1.Image")));
+            this.PictureBox1.Image = global::BSH.Main.Properties.Resources.settings_backup_restore_icon_48;
             this.PictureBox1.Location = new System.Drawing.Point(32, 21);
             this.PictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.PictureBox1.Name = "PictureBox1";

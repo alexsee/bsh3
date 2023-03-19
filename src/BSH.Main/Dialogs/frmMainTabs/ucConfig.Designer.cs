@@ -29,13 +29,11 @@ namespace Brightbits.BSH.Main
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ucConfig));
-            this.Timer1 = new System.Windows.Forms.Timer(this.components);
             this.ImageList1 = new System.Windows.Forms.ImageList(this.components);
             this.ColumnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColumnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColumnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColumnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ImageList2 = new System.Windows.Forms.ImageList(this.components);
             this.TabPage4 = new System.Windows.Forms.TabPage();
             this.chkWaitOnMediaInteractive = new System.Windows.Forms.CheckBox();
             this.chkRemind = new System.Windows.Forms.CheckBox();
@@ -147,13 +145,6 @@ namespace Brightbits.BSH.Main
             // ColumnHeader7
             // 
             this.ColumnHeader7.Width = 521;
-            // 
-            // ImageList2
-            // 
-            this.ImageList2.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ImageList2.ImageStream")));
-            this.ImageList2.TransparentColor = System.Drawing.Color.Transparent;
-            this.ImageList2.Images.SetKeyName(0, "dialog-error.png");
-            this.ImageList2.Images.SetKeyName(1, "dialog-information.png");
             // 
             // TabPage4
             // 
@@ -624,6 +615,7 @@ namespace Brightbits.BSH.Main
             // 
             // TabPage5
             // 
+            this.TabPage5.BackColor = System.Drawing.Color.White;
             this.TabPage5.Controls.Add(this.cmdChangeBackupMedia);
             this.TabPage5.Controls.Add(this.Label1);
             this.TabPage5.Controls.Add(this.cboMedia);
@@ -1069,14 +1061,11 @@ namespace Brightbits.BSH.Main
             this.ResumeLayout(false);
 
         }
-
-        internal Timer Timer1;
         internal ColumnHeader ColumnHeader3;
         internal ColumnHeader ColumnHeader4;
         internal ColumnHeader ColumnHeader6;
         internal ImageList ImageList1;
         internal ColumnHeader ColumnHeader7;
-        internal ImageList ImageList2;
         internal TabPage TabPage4;
         internal CheckBox chkAbortWhenNotAvailable;
         internal CheckBox chkRemindSpace;

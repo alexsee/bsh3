@@ -29,51 +29,54 @@ namespace Brightbits.BSH.Main
         [DebuggerStepThrough()]
         private void InitializeComponent()
         {
-            Label1 = new Label();
-            Label1.Click += new EventHandler(Label1_Click);
-            lblText = new Label();
-            lblText.Click += new EventHandler(lblText_Click);
-            SuspendLayout();
+            this.Label1 = new System.Windows.Forms.Label();
+            this.lblText = new System.Windows.Forms.Label();
+            this.SuspendLayout();
             // 
             // Label1
             // 
-            Label1.Font = new Font("Marlett", 9.75f, FontStyle.Bold, GraphicsUnit.Point);
-            Label1.ForeColor = Color.White;
-            Label1.Location = new Point(0, 3);
-            Label1.Margin = new Padding(4, 0, 4, 0);
-            Label1.Name = "Label1";
-            Label1.Size = new Size(45, 30);
-            Label1.TabIndex = 0;
-            Label1.Text = "4";
-            Label1.TextAlign = ContentAlignment.MiddleLeft;
+            this.Label1.Font = new System.Drawing.Font("Marlett", 9.75F, System.Drawing.FontStyle.Bold);
+            this.Label1.ForeColor = System.Drawing.Color.Black;
+            this.Label1.Location = new System.Drawing.Point(0, 3);
+            this.Label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.Label1.Name = "Label1";
+            this.Label1.Size = new System.Drawing.Size(45, 30);
+            this.Label1.TabIndex = 0;
+            this.Label1.Text = "4";
+            this.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.Label1.Click += new System.EventHandler(this.Label1_Click);
             // 
             // lblText
             // 
-            lblText.AutoSize = true;
-            lblText.Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            lblText.ForeColor = Color.White;
-            lblText.Location = new Point(32, 3);
-            lblText.Margin = new Padding(4, 0, 4, 0);
-            lblText.Name = "lblText";
-            lblText.Size = new Size(192, 28);
-            lblText.TabIndex = 1;
-            lblText.Text = "#TEXT####TEXT###";
+            this.lblText.AutoSize = true;
+            this.lblText.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.lblText.ForeColor = System.Drawing.Color.Black;
+            this.lblText.Location = new System.Drawing.Point(26, 1);
+            this.lblText.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblText.Name = "lblText";
+            this.lblText.Size = new System.Drawing.Size(192, 28);
+            this.lblText.TabIndex = 1;
+            this.lblText.Text = "#TEXT####TEXT###";
+            this.lblText.Click += new System.EventHandler(this.lblText_Click);
             // 
             // ucNavigationItem
             // 
-            AutoScaleDimensions = new SizeF(144.0f, 144.0f);
-            AutoScaleMode = AutoScaleMode.Dpi;
-            BackColor = Color.Transparent;
-            Controls.Add(lblText);
-            Controls.Add(Label1);
-            Cursor = Cursors.Hand;
-            Margin = new Padding(0);
-            MinimumSize = new Size(0, 30);
-            Name = "ucNavigationItem";
-            Size = new Size(524, 30);
-            Click += new EventHandler(ucNavigationItem_Click);
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.BackColor = System.Drawing.Color.Transparent;
+            this.Controls.Add(this.lblText);
+            this.Controls.Add(this.Label1);
+            this.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.DoubleBuffered = true;
+            this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Margin = new System.Windows.Forms.Padding(0);
+            this.MinimumSize = new System.Drawing.Size(0, 30);
+            this.Name = "ucNavigationItem";
+            this.Size = new System.Drawing.Size(524, 30);
+            this.Click += new System.EventHandler(this.ucNavigationItem_Click);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         internal Label Label1;

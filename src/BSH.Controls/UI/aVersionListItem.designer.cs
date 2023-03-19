@@ -29,86 +29,89 @@ namespace Brightbits.BSH.Main
         [DebuggerStepThrough()]
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(aVersionListItem));
-            lblVersionID = new Label();
-            lblVersionID.Click += new EventHandler(lblVersionID_Click);
-            lblVersionDate = new Label();
-            lblVersionDate.Click += new EventHandler(lblVersionDate_Click);
-            tt = new ToolTip(components);
-            lblStable = new Label();
-            PictureBox3 = new PictureBox();
-            ((System.ComponentModel.ISupportInitialize)PictureBox3).BeginInit();
-            SuspendLayout();
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(aVersionListItem));
+            this.lblVersionID = new System.Windows.Forms.Label();
+            this.lblVersionDate = new System.Windows.Forms.Label();
+            this.tt = new System.Windows.Forms.ToolTip(this.components);
+            this.lblStable = new System.Windows.Forms.Label();
+            this.PictureBox3 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBox3)).BeginInit();
+            this.SuspendLayout();
             // 
             // lblVersionID
             // 
-            lblVersionID.BackColor = Color.Gray;
-            lblVersionID.Font = new Font(new FontFamily("Tahoma"), 14.25f, FontStyle.Regular, GraphicsUnit.Point);
-            lblVersionID.ForeColor = Color.White;
-            lblVersionID.Location = new Point(3, 55);
-            lblVersionID.Name = "lblVersionID";
-            lblVersionID.Size = new Size(42, 35);
-            lblVersionID.TabIndex = 0;
-            lblVersionID.Text = "59";
-            lblVersionID.TextAlign = ContentAlignment.MiddleCenter;
-            lblVersionID.Visible = false;
+            this.lblVersionID.BackColor = System.Drawing.Color.Gray;
+            this.lblVersionID.Font = new System.Drawing.Font("Tahoma", 14.25F);
+            this.lblVersionID.ForeColor = System.Drawing.Color.White;
+            this.lblVersionID.Location = new System.Drawing.Point(3, 55);
+            this.lblVersionID.Name = "lblVersionID";
+            this.lblVersionID.Size = new System.Drawing.Size(42, 35);
+            this.lblVersionID.TabIndex = 0;
+            this.lblVersionID.Text = "59";
+            this.lblVersionID.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblVersionID.Visible = false;
+            this.lblVersionID.Click += new System.EventHandler(this.lblVersionID_Click);
             // 
             // lblVersionDate
             // 
-            lblVersionDate.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            lblVersionDate.AutoEllipsis = true;
-            lblVersionDate.BackColor = Color.Transparent;
-            lblVersionDate.Font = new Font(new FontFamily("Segoe UI"), 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            lblVersionDate.ForeColor = Color.Black;
-            lblVersionDate.Location = new Point(29, 0);
-            lblVersionDate.Name = "lblVersionDate";
-            lblVersionDate.Size = new Size(307, 40);
-            lblVersionDate.TabIndex = 1;
-            lblVersionDate.Text = "12. September 2007";
-            lblVersionDate.TextAlign = ContentAlignment.MiddleLeft;
+            this.lblVersionDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblVersionDate.AutoEllipsis = true;
+            this.lblVersionDate.BackColor = System.Drawing.Color.Transparent;
+            this.lblVersionDate.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.lblVersionDate.ForeColor = System.Drawing.Color.Black;
+            this.lblVersionDate.Location = new System.Drawing.Point(36, 0);
+            this.lblVersionDate.Name = "lblVersionDate";
+            this.lblVersionDate.Size = new System.Drawing.Size(282, 40);
+            this.lblVersionDate.TabIndex = 1;
+            this.lblVersionDate.Text = "12. September 2007";
+            this.lblVersionDate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblVersionDate.UseMnemonic = false;
+            this.lblVersionDate.Click += new System.EventHandler(this.lblVersionDate_Click);
             // 
             // tt
             // 
-            tt.ToolTipIcon = ToolTipIcon.Info;
+            this.tt.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             // 
             // lblStable
             // 
-            lblStable.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            lblStable.BackColor = Color.LimeGreen;
-            lblStable.Location = new Point(297, 15);
-            lblStable.Name = "lblStable";
-            lblStable.Size = new Size(10, 10);
-            lblStable.TabIndex = 4;
-            tt.SetToolTip(lblStable, "Version fixiert.");
-            lblStable.Visible = false;
+            this.lblStable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblStable.BackColor = System.Drawing.Color.LimeGreen;
+            this.lblStable.Location = new System.Drawing.Point(297, 15);
+            this.lblStable.Name = "lblStable";
+            this.lblStable.Size = new System.Drawing.Size(10, 10);
+            this.lblStable.TabIndex = 4;
+            this.tt.SetToolTip(this.lblStable, "Version fixiert.");
+            this.lblStable.Visible = false;
             // 
             // PictureBox3
             // 
-            PictureBox3.BackColor = Color.Transparent;
-            PictureBox3.Image = (Image)resources.GetObject("PictureBox3.Image");
-            PictureBox3.Location = new Point(10, 14);
-            PictureBox3.Name = "PictureBox3";
-            PictureBox3.Size = new Size(16, 16);
-            PictureBox3.SizeMode = PictureBoxSizeMode.AutoSize;
-            PictureBox3.TabIndex = 5;
-            PictureBox3.TabStop = false;
+            this.PictureBox3.BackColor = System.Drawing.Color.Transparent;
+            this.PictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("PictureBox3.Image")));
+            this.PictureBox3.Location = new System.Drawing.Point(10, 11);
+            this.PictureBox3.Name = "PictureBox3";
+            this.PictureBox3.Size = new System.Drawing.Size(20, 20);
+            this.PictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.PictureBox3.TabIndex = 5;
+            this.PictureBox3.TabStop = false;
             // 
             // aVersionListItem
             // 
-            AutoScaleMode = AutoScaleMode.None;
-            BackColor = Color.White;
-            Controls.Add(PictureBox3);
-            Controls.Add(lblStable);
-            Controls.Add(lblVersionDate);
-            Controls.Add(lblVersionID);
-            Cursor = Cursors.Hand;
-            Name = "aVersionListItem";
-            Size = new Size(318, 40);
-            ((System.ComponentModel.ISupportInitialize)PictureBox3).EndInit();
-            Click += new EventHandler(aVersionListItem_Click);
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.PictureBox3);
+            this.Controls.Add(this.lblStable);
+            this.Controls.Add(this.lblVersionDate);
+            this.Controls.Add(this.lblVersionID);
+            this.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.Name = "aVersionListItem";
+            this.Size = new System.Drawing.Size(318, 40);
+            this.Click += new System.EventHandler(this.aVersionListItem_Click);
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBox3)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         internal Label lblVersionID;

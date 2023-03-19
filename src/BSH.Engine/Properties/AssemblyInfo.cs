@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alexander Seeliger Software")]
 [assembly: AssemblyProduct("Backup Service Home")]
-[assembly: AssemblyCopyright("Copyright © Alexander Seeliger 2022")]
+[assembly: AssemblyCopyright("Copyright © Alexander Seeliger 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -42,6 +42,6 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.8.4.0")]
-[assembly: AssemblyFileVersion("3.8.4.0")]
+[assembly: AssemblyVersion("3.8.5.0")]
+[assembly: AssemblyFileVersion("3.8.5.0")]
 

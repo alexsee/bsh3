@@ -314,15 +314,16 @@ namespace Brightbits.BSH.Engine.Storage
             // create directory if not exists
             var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
             Directory.CreateDirectory(Path.GetDirectoryName(remoteFilePath));
-
-            using (var zipFile = new ZipFile(remoteFilePath + ".zip"))
+            
+            using (var fs = new FileStream(remoteFilePath + ".zip", FileMode.Create, FileAccess.ReadWrite))
+            using (var zipFile = new ZipFile())
             {
                 zipFile.ParallelDeflateThreshold = -1;
                 zipFile.CompressionLevel = (Ionic.Zlib.CompressionLevel)compressionLevel;
                 zipFile.UseZip64WhenSaving = Zip64Option.AsNecessary;
                 zipFile.AddFile(GetLocalFileName(localFile), "\\");
 
-                zipFile.Save();
+                zipFile.Save(fs);
             }
 
             return true;
@@ -450,8 +451,13 @@ namespace Brightbits.BSH.Engine.Storage
             return result;
         }
 
-        public bool IsPathTooLong(string path)
+        public bool IsPathTooLong(string path, bool compression, bool encryption)
         {
+            if (compression || encryption)
+            {
+                return Path.Combine(backupFolder, path).Length + 4 > 255;
+            }
+
             return Path.Combine(backupFolder, path).Length > 255;
         }
 

@@ -69,6 +69,8 @@ namespace Brightbits.BSH.Main
         {
         }
 
+        public RequestOverwriteResult LastFileOverwriteChoice { get { return lastFileOverwriteChoice; } }
+
         public bool IsTaskRunning()
         {
             return JobState == JobState.RUNNING;
@@ -160,24 +162,39 @@ namespace Brightbits.BSH.Main
                 }
 
                 dlgFilesOverwrite.picIco2.Image = dlgFilesOverwrite.picIco1.Image;
+
+                // cancel
                 if (dlgFilesOverwrite.ShowDialog() == DialogResult.Cancel)
                 {
+                    BackupLogic.BackupController.Cancel();
                     return RequestOverwriteResult.NoOverwrite;
                 }
 
-                if (dlgFilesOverwrite.chkAllConflicts.Checked && dlgFilesOverwrite.DialogResult == DialogResult.OK)
-                {
-                    lastFileOverwriteChoice = RequestOverwriteResult.OverwriteAll;
-                }
-
+                // overwrite
                 if (dlgFilesOverwrite.DialogResult == DialogResult.OK)
                 {
-                    return RequestOverwriteResult.OverwriteAll;
+                    if (dlgFilesOverwrite.chkAllConflicts.Checked)
+                    {
+                        lastFileOverwriteChoice = RequestOverwriteResult.OverwriteAll;
+                        return RequestOverwriteResult.OverwriteAll;
+                    }
+
+                    return RequestOverwriteResult.Overwrite;
                 }
-                else
+
+                // ignore
+                if (dlgFilesOverwrite.DialogResult == DialogResult.Ignore)
                 {
+                    if (dlgFilesOverwrite.chkAllConflicts.Checked)
+                    {
+                        lastFileOverwriteChoice = RequestOverwriteResult.NoOverwriteAll;
+                        return RequestOverwriteResult.NoOverwriteAll;
+                    }
+
                     return RequestOverwriteResult.NoOverwrite;
                 }
+
+                return RequestOverwriteResult.NoOverwrite;
             }
         }
 
@@ -221,6 +238,11 @@ namespace Brightbits.BSH.Main
 
                 dlgFileNotCopied.ShowDialog();
             }
+        }
+
+        public void RequestShowErrorInsufficientDiskSpace()
+        {
+            PresentationController.Current.ShowErrorInsufficientDiskSpace();
         }
     }
 }

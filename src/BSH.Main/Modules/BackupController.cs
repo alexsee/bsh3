@@ -386,16 +386,26 @@ namespace Brightbits.BSH.Main
             }
 
             // run restore job
+            var fileOverwrite = FileOverwrite.Ask;
+
             foreach (string file in files)
             {
                 try
                 {
-                    var task = backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, FileOverwrite.Ask, !statusDialog);
+                    var task = backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, fileOverwrite, !statusDialog);
                     await task.ConfigureAwait(true);
                 }
                 catch
                 {
                     // exception already handled
+                }
+                finally
+                {
+                    // persist overwrite
+                    if (StatusController.Current.LastFileOverwriteChoice == RequestOverwriteResult.OverwriteAll || StatusController.Current.LastFileOverwriteChoice == RequestOverwriteResult.NoOverwriteAll)
+                    {
+                        fileOverwrite = StatusController.Current.LastFileOverwriteChoice == RequestOverwriteResult.OverwriteAll ? FileOverwrite.Overwrite : FileOverwrite.DontCopy;
+                    }
                 }
 
                 if (cancellationToken.IsCancellationRequested)

@@ -28,137 +28,138 @@ namespace Brightbits.BSH.Main
         [DebuggerStepThrough()]
         private void InitializeComponent()
         {
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(frmChangePath));
-            Panel1 = new Panel();
-            Button2 = new Button();
-            Button1 = new Button();
-            Label1 = new Label();
-            cmdCancel = new Button();
-            Label2 = new Label();
-            Label3 = new Label();
-            PictureBox1 = new PictureBox();
-            Panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)PictureBox1).BeginInit();
-            SuspendLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmChangePath));
+            this.Panel1 = new System.Windows.Forms.Panel();
+            this.Button2 = new System.Windows.Forms.Button();
+            this.Button1 = new System.Windows.Forms.Button();
+            this.Label1 = new System.Windows.Forms.Label();
+            this.cmdCancel = new System.Windows.Forms.Button();
+            this.Label2 = new System.Windows.Forms.Label();
+            this.Label3 = new System.Windows.Forms.Label();
+            this.PictureBox1 = new System.Windows.Forms.PictureBox();
+            this.Panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
+            this.SuspendLayout();
             // 
             // Panel1
             // 
-            Panel1.BackColor = SystemColors.Control;
-            Panel1.Controls.Add(Button2);
-            Panel1.Controls.Add(Button1);
-            Panel1.Controls.Add(Label1);
-            Panel1.Controls.Add(cmdCancel);
-            Panel1.Dock = DockStyle.Bottom;
-            Panel1.Location = new Point(0, 378);
-            Panel1.Margin = new Padding(4, 4, 4, 4);
-            Panel1.Name = "Panel1";
-            Panel1.Size = new Size(801, 68);
-            Panel1.TabIndex = 6;
+            this.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.Panel1.Controls.Add(this.Button2);
+            this.Panel1.Controls.Add(this.Button1);
+            this.Panel1.Controls.Add(this.Label1);
+            this.Panel1.Controls.Add(this.cmdCancel);
+            this.Panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.Panel1.Location = new System.Drawing.Point(0, 378);
+            this.Panel1.Margin = new System.Windows.Forms.Padding(4);
+            this.Panel1.Name = "Panel1";
+            this.Panel1.Size = new System.Drawing.Size(801, 68);
+            this.Panel1.TabIndex = 6;
             // 
             // Button2
             // 
-            Button2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            Button2.DialogResult = DialogResult.OK;
-            Button2.Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            Button2.Location = new Point(336, 15);
-            Button2.Margin = new Padding(4, 4, 4, 4);
-            Button2.Name = "Button2";
-            Button2.Size = new Size(140, 39);
-            Button2.TabIndex = 6;
-            Button2.Text = "&Verschieben";
-            Button2.UseVisualStyleBackColor = true;
+            this.Button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.Button2.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.Button2.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.Button2.Location = new System.Drawing.Point(336, 15);
+            this.Button2.Margin = new System.Windows.Forms.Padding(4);
+            this.Button2.Name = "Button2";
+            this.Button2.Size = new System.Drawing.Size(140, 39);
+            this.Button2.TabIndex = 6;
+            this.Button2.Text = "&Verschieben";
+            this.Button2.UseVisualStyleBackColor = true;
             // 
             // Button1
             // 
-            Button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            Button1.DialogResult = DialogResult.Ignore;
-            Button1.Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            Button1.Location = new Point(484, 15);
-            Button1.Margin = new Padding(4, 4, 4, 4);
-            Button1.Name = "Button1";
-            Button1.Size = new Size(140, 39);
-            Button1.TabIndex = 0;
-            Button1.Text = "&Verwenden";
-            Button1.UseVisualStyleBackColor = true;
+            this.Button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.Button1.DialogResult = System.Windows.Forms.DialogResult.Ignore;
+            this.Button1.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.Button1.Location = new System.Drawing.Point(484, 15);
+            this.Button1.Margin = new System.Windows.Forms.Padding(4);
+            this.Button1.Name = "Button1";
+            this.Button1.Size = new System.Drawing.Size(140, 39);
+            this.Button1.TabIndex = 0;
+            this.Button1.Text = "&Verwenden";
+            this.Button1.UseVisualStyleBackColor = true;
             // 
             // Label1
             // 
-            Label1.BackColor = Color.DarkGray;
-            Label1.Dock = DockStyle.Top;
-            Label1.Location = new Point(0, 0);
-            Label1.Margin = new Padding(4, 0, 4, 0);
-            Label1.Name = "Label1";
-            Label1.Size = new Size(801, 2);
-            Label1.TabIndex = 5;
+            this.Label1.BackColor = System.Drawing.Color.DarkGray;
+            this.Label1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.Label1.Location = new System.Drawing.Point(0, 0);
+            this.Label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.Label1.Name = "Label1";
+            this.Label1.Size = new System.Drawing.Size(801, 2);
+            this.Label1.TabIndex = 5;
             // 
             // cmdCancel
             // 
-            cmdCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cmdCancel.DialogResult = DialogResult.Cancel;
-            cmdCancel.Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            cmdCancel.Location = new Point(633, 15);
-            cmdCancel.Margin = new Padding(4, 4, 4, 4);
-            cmdCancel.Name = "cmdCancel";
-            cmdCancel.Size = new Size(140, 39);
-            cmdCancel.TabIndex = 1;
-            cmdCancel.Text = "&Abbrechen";
-            cmdCancel.UseVisualStyleBackColor = true;
+            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cmdCancel.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.cmdCancel.Location = new System.Drawing.Point(633, 15);
+            this.cmdCancel.Margin = new System.Windows.Forms.Padding(4);
+            this.cmdCancel.Name = "cmdCancel";
+            this.cmdCancel.Size = new System.Drawing.Size(140, 39);
+            this.cmdCancel.TabIndex = 1;
+            this.cmdCancel.Text = "&Abbrechen";
+            this.cmdCancel.UseVisualStyleBackColor = true;
             // 
             // Label2
             // 
-            Label2.AutoSize = true;
-            Label2.Font = new Font("Segoe UI", 12.0f, FontStyle.Regular, GraphicsUnit.Point);
-            Label2.ForeColor = Color.FromArgb(0, 51, 153);
-            Label2.Location = new Point(27, 27);
-            Label2.Margin = new Padding(4, 0, 4, 0);
-            Label2.Name = "Label2";
-            Label2.Size = new Size(320, 32);
-            Label2.TabIndex = 0;
-            Label2.Text = "Ändern des Backupmediums";
+            this.Label2.AutoSize = true;
+            this.Label2.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.Label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))));
+            this.Label2.Location = new System.Drawing.Point(27, 27);
+            this.Label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.Label2.Name = "Label2";
+            this.Label2.Size = new System.Drawing.Size(319, 32);
+            this.Label2.TabIndex = 0;
+            this.Label2.Text = "Ändern des Backupmediums";
             // 
             // Label3
             // 
-            Label3.Location = new Point(96, 87);
-            Label3.Margin = new Padding(4, 0, 4, 0);
-            Label3.Name = "Label3";
-            Label3.Size = new Size(676, 268);
-            Label3.TabIndex = 8;
-            Label3.Text = resources.GetString("Label3.Text");
+            this.Label3.Location = new System.Drawing.Point(96, 87);
+            this.Label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.Label3.Name = "Label3";
+            this.Label3.Size = new System.Drawing.Size(676, 268);
+            this.Label3.TabIndex = 8;
+            this.Label3.Text = resources.GetString("Label3.Text");
             // 
             // PictureBox1
             // 
-            PictureBox1.Image = (Image)resources.GetObject("PictureBox1.Image");
-            PictureBox1.Location = new Point(33, 87);
-            PictureBox1.Margin = new Padding(4, 4, 4, 4);
-            PictureBox1.Name = "PictureBox1";
-            PictureBox1.Size = new Size(48, 48);
-            PictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            PictureBox1.TabIndex = 7;
-            PictureBox1.TabStop = false;
+            this.PictureBox1.Image = global::BSH.Main.Properties.Resources.storage_icon_48;
+            this.PictureBox1.Location = new System.Drawing.Point(33, 87);
+            this.PictureBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.PictureBox1.Name = "PictureBox1";
+            this.PictureBox1.Size = new System.Drawing.Size(48, 48);
+            this.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.PictureBox1.TabIndex = 7;
+            this.PictureBox1.TabStop = false;
             // 
             // frmChangePath
             // 
-            AutoScaleDimensions = new SizeF(144.0f, 144.0f);
-            AutoScaleMode = AutoScaleMode.Dpi;
-            BackColor = Color.White;
-            ClientSize = new Size(801, 446);
-            Controls.Add(Label3);
-            Controls.Add(PictureBox1);
-            Controls.Add(Label2);
-            Controls.Add(Panel1);
-            Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            FormBorderStyle = FormBorderStyle.FixedSingle;
-            Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(4, 4, 4, 4);
-            MaximizeBox = false;
-            MinimizeBox = false;
-            Name = "frmChangePath";
-            StartPosition = FormStartPosition.CenterParent;
-            Text = "Ändern des Backupmediums";
-            Panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)PictureBox1).EndInit();
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(801, 446);
+            this.Controls.Add(this.Label3);
+            this.Controls.Add(this.PictureBox1);
+            this.Controls.Add(this.Label2);
+            this.Controls.Add(this.Panel1);
+            this.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "frmChangePath";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Ändern des Backupmediums";
+            this.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         internal Panel Panel1;

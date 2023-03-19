@@ -41,6 +41,18 @@ namespace Brightbits.BSH.Main
         public frmBrowser()
         {
             InitializeComponent();
+
+            // restore window size
+            try
+            {
+                Size = Settings.Default.BrowserSize;
+                SplitContainer1.SplitterDistance = Settings.Default.BrowserSplitter;
+                lvFiles.View = (View)Settings.Default.BrowserView;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, ex.Message);
+            }
         }
 
         private VersionDetails selectedVersion;
@@ -91,14 +103,9 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         private bool IsFileAvailable(string fileName)
         {
-            if (!isMedium || string.IsNullOrEmpty(fileName))
+            if (!isMedium || string.IsNullOrEmpty(fileName) || fileName.StartsWith("\\"))
             {
                 return false;
-            }
-
-            if (fileName.StartsWith("\\"))
-            {
-                return System.IO.File.Exists(fileName);
             }
 
             if (drive != null && (drive.DriveType == System.IO.DriveType.Fixed || drive.DriveType == System.IO.DriveType.Removable))
@@ -125,12 +132,12 @@ namespace Brightbits.BSH.Main
                 if (splitF.Length - 1 <= 0)
                 {
                     btnBack.Enabled = false;
-                    btnBack.Image = Resources.arrow_left_circle_line_off;
+                    btnBack.Image = Resources.arrow_upward_gray_icon_48;
                 }
                 else
                 {
                     btnBack.Enabled = true;
-                    btnBack.Image = Resources.arrow_left_circle_line_on;
+                    btnBack.Image = Resources.arrow_upward_icon_48;
                 }
             }
 
@@ -220,7 +227,15 @@ namespace Brightbits.BSH.Main
                 fileListItem.Tag = file.FilePath;
 
                 // get icon image
-                GetImageKey(file, fileListItem);
+                try
+                {
+                    GetImageKey(file, fileListItem);
+                }
+                catch (Exception ex)
+                {
+                    // could not retrieve icon
+                    this._logger.Warning(ex, "Could not retrieve icon for file: %s", file.FileName);
+                }
 
                 // add to group files
                 fileListItem.Group = lvFiles.Groups["Dateien"];
@@ -427,9 +442,19 @@ namespace Brightbits.BSH.Main
 
         private void frmBrowser_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Settings.Default.BrowserSplitter = SplitContainer1.SplitterDistance;
-            Settings.Default.BrowserSize = Size;
-            Settings.Default.Save();
+            try
+            {
+                StoreColumnSizes();
+
+                Settings.Default.BrowserSplitter = SplitContainer1.SplitterDistance;
+                Settings.Default.BrowserSize = Size;
+                Settings.Default.BrowserView = (int)lvFiles.View;
+                Settings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, ex.Message);
+            }
 
             StatusController.Current.RemoveObserver(this);
         }
@@ -442,11 +467,45 @@ namespace Brightbits.BSH.Main
             }
         }
 
+        private void SetColumnSizes()
+        {
+            if (string.IsNullOrEmpty(Settings.Default.BrowserColumnsSize))
+            {
+                return;
+            }
+
+            string[] columnSizes = Settings.Default.BrowserColumnsSize.Split(';');
+            if (columnSizes.Length != lvFiles.Columns.Count)
+            {
+                return;
+            }
+
+            for (int i = 0; i < columnSizes.Length; i++)
+            {
+                lvFiles.Columns[i].Width = int.Parse(columnSizes[i]);
+            }
+        }
+
+        private void StoreColumnSizes()
+        {
+            var columnSizes = string.Join(";", lvFiles.Columns.Cast<ColumnHeader>().Select(x => x.Width.ToString()));
+            Settings.Default.BrowserColumnsSize = columnSizes;
+        }
+
         private async void frmBrowser_Load(object sender, EventArgs e)
         {
             // load column sorter
             lvwColumnSorter = new ListViewColumnSorter();
             lvFiles.ListViewItemSorter = lvwColumnSorter;
+
+            try
+            {
+                SetColumnSizes();
+            }
+            catch
+            {
+                // do nothing
+            }
 
             // get dpi setting and adjust the icons
             var dpi = GetDPISetting();
@@ -1260,7 +1319,6 @@ namespace Brightbits.BSH.Main
             SchnellansichtToolStripMenuItem1.Enabled = false;
             EigenschaftenToolStripMenuItem1.Enabled = false;
             WiederherstellenToolStripMenuItem1.Enabled = false;
-            imgFileType.Image = Resources.search_line;
         }
 
         private async void bgrWorkSearch_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)

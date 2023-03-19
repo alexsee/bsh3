@@ -15,6 +15,7 @@
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
 using FluentFTP;
+using FluentFTP.Exceptions;
 using FluentFTP.Helpers;
 using Ionic.Zip;
 using Serilog;
@@ -108,7 +109,7 @@ namespace Brightbits.BSH.Engine.Storage
             return profile;
         }
 
-        public static FtpProfile CheckConnection(string host, int port, string userName, string password, string folderPath, string encoding)
+        public static bool CheckConnection(string host, int port, string userName, string password, string folderPath, string encoding)
         {
             var credentials = new NetworkCredential(userName, password);
             var config = new FtpConfig
@@ -133,21 +134,30 @@ namespace Brightbits.BSH.Engine.Storage
                     client.Encoding = Encoding.GetEncoding(encoding);
                 }
 
-                var profile = client.AutoConnect();
+                // first, try direct connect
+                try
+                {
+                    client.Connect();
+                }
+                catch
+                {
+                    // failed, so try auto connect
+                    client.AutoConnect();
+                }
 
                 if (!client.IsConnected)
                 {
-                    return profile;
+                    return false;
                 }
 
                 // check if folder exists
                 if (!client.DirectoryExists(folderPath.GetFtpPath()))
                 {
                     client.Disconnect();
-                    return profile;
+                    return false;
                 }
 
-                return profile;
+                return true;
             }
         }
 
@@ -246,16 +256,17 @@ namespace Brightbits.BSH.Engine.Storage
         {
             // create directory if not exists
             var remoteFilePath = Combine(folderPath, remoteFile + ".zip").GetFtpPath();
-
             var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile)) + ".zip";
-            using (var zipFile = new ZipFile(tmpFile))
+
+            using (var fs = new FileStream(tmpFile, FileMode.Create, FileAccess.ReadWrite))
+            using (var zipFile = new ZipFile())
             {
                 zipFile.ParallelDeflateThreshold = -1;
                 zipFile.CompressionLevel = (Ionic.Zlib.CompressionLevel)compressionLevel;
                 zipFile.UseZip64WhenSaving = Zip64Option.AsNecessary;
                 zipFile.AddFile(GetLocalFileName(localFile), "\\");
 
-                zipFile.Save();
+                zipFile.Save(fs);
             }
 
             var result = ftpClient.UploadFile(tmpFile, remoteFilePath, FtpRemoteExists.Overwrite, true);
@@ -479,7 +490,7 @@ namespace Brightbits.BSH.Engine.Storage
             return ftpClient.FileExists(remoteFilePath);
         }
 
-        public bool IsPathTooLong(string path)
+        public bool IsPathTooLong(string path, bool compression, bool encryption)
         {
             return false;
         }

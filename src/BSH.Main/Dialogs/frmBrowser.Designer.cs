@@ -29,10 +29,8 @@ namespace Brightbits.BSH.Main
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmBrowser));
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Ordner", System.Windows.Forms.HorizontalAlignment.Left);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Dateien", System.Windows.Forms.HorizontalAlignment.Left);
-            this.UcPanel = new System.Windows.Forms.Panel();
-            this.UcNav = new Brightbits.BSH.Main.ucNavigation();
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Ordner", System.Windows.Forms.HorizontalAlignment.Left);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Dateien", System.Windows.Forms.HorizontalAlignment.Left);
             this.SplitContainer1 = new System.Windows.Forms.SplitContainer();
             this.plVersions = new System.Windows.Forms.Panel();
             this.cmdTakeMeLater = new System.Windows.Forms.Button();
@@ -68,9 +66,9 @@ namespace Brightbits.BSH.Main
             this.lblBackupdate = new System.Windows.Forms.Label();
             this.ilBigFolder = new System.Windows.Forms.ImageList(this.components);
             this.StatusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.LCFiles = new MRG.Controls.UI.LoadingCircleToolStripMenuItem();
             this.tsslblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.ttMain = new System.Windows.Forms.ToolTip(this.components);
-            this.tmrSearch = new System.Windows.Forms.Timer(this.components);
             this.bgrWorkSearch = new System.ComponentModel.BackgroundWorker();
             this.tMain = new System.Windows.Forms.ToolStrip();
             this.ToolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -87,14 +85,15 @@ namespace Brightbits.BSH.Main
             this.ToolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.MehrereVersionenLöschenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripSchnellansicht = new System.Windows.Forms.ToolStripButton();
-            this.LCFiles = new MRG.Controls.UI.LoadingCircleToolStripMenuItem();
             this.ToolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.GroßeSymboleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ListenansichtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DetailsansichtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmdRestore = new System.Windows.Forms.ToolStripButton();
             this.plGlass = new System.Windows.Forms.Panel();
+            this.UcNav = new Brightbits.BSH.Main.ucNavigation();
             this.Panel2 = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
             this.PictureBox3 = new System.Windows.Forms.PictureBox();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.btnBack = new System.Windows.Forms.PictureBox();
@@ -121,7 +120,6 @@ namespace Brightbits.BSH.Main
             this.Label4 = new System.Windows.Forms.Label();
             this.imgFileType = new System.Windows.Forms.PictureBox();
             this.AllesWiederherstellenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.UcPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer1)).BeginInit();
             this.SplitContainer1.Panel1.SuspendLayout();
             this.SplitContainer1.Panel2.SuspendLayout();
@@ -135,6 +133,7 @@ namespace Brightbits.BSH.Main
             this.tMain.SuspendLayout();
             this.plGlass.SuspendLayout();
             this.Panel2.SuspendLayout();
+            this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnBack)).BeginInit();
             this.Panel1.SuspendLayout();
@@ -149,41 +148,12 @@ namespace Brightbits.BSH.Main
             ((System.ComponentModel.ISupportInitialize)(this.imgFileType)).BeginInit();
             this.SuspendLayout();
             // 
-            // UcPanel
-            // 
-            this.UcPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.UcPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(92)))), ((int)(((byte)(161)))));
-            this.UcPanel.Controls.Add(this.UcNav);
-            this.UcPanel.Location = new System.Drawing.Point(66, 12);
-            this.UcPanel.Margin = new System.Windows.Forms.Padding(4);
-            this.UcPanel.Name = "UcPanel";
-            this.UcPanel.Size = new System.Drawing.Size(758, 34);
-            this.UcPanel.TabIndex = 1;
-            // 
-            // UcNav
-            // 
-            this.UcNav.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.UcNav.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(92)))), ((int)(((byte)(161)))));
-            this.UcNav.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.UcNav.ForeColor = System.Drawing.Color.White;
-            this.UcNav.Location = new System.Drawing.Point(0, 0);
-            this.UcNav.Margin = new System.Windows.Forms.Padding(6);
-            this.UcNav.Name = "UcNav";
-            this.UcNav.Path = "";
-            this.UcNav.PathLocalized = null;
-            this.UcNav.Size = new System.Drawing.Size(758, 51);
-            this.UcNav.TabIndex = 1;
-            this.UcNav.TabStop = false;
-            this.UcNav.ItemClick += new Brightbits.BSH.Main.ucNavigation.ItemClickEventHandler(this.UcNav_ItemClick);
-            // 
             // SplitContainer1
             // 
             this.SplitContainer1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(209)))), ((int)(((byte)(211)))));
             this.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.SplitContainer1.Location = new System.Drawing.Point(0, 119);
+            this.SplitContainer1.Location = new System.Drawing.Point(0, 113);
             this.SplitContainer1.Margin = new System.Windows.Forms.Padding(4);
             this.SplitContainer1.Name = "SplitContainer1";
             // 
@@ -198,7 +168,7 @@ namespace Brightbits.BSH.Main
             // 
             this.SplitContainer1.Panel2.Controls.Add(this.lvFiles);
             this.SplitContainer1.Panel2.Controls.Add(this.Panel3);
-            this.SplitContainer1.Size = new System.Drawing.Size(1188, 605);
+            this.SplitContainer1.Size = new System.Drawing.Size(1188, 611);
             this.SplitContainer1.SplitterDistance = 235;
             this.SplitContainer1.SplitterWidth = 2;
             this.SplitContainer1.TabIndex = 1;
@@ -206,7 +176,7 @@ namespace Brightbits.BSH.Main
             // plVersions
             // 
             this.plVersions.AutoScroll = true;
-            this.plVersions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(243)))), ((int)(((byte)(245)))));
+            this.plVersions.BackColor = System.Drawing.Color.White;
             this.plVersions.Controls.Add(this.cmdTakeMeLater);
             this.plVersions.Controls.Add(this.cmdTakeMeBack);
             this.plVersions.Controls.Add(this.AVersionList1);
@@ -215,7 +185,7 @@ namespace Brightbits.BSH.Main
             this.plVersions.Location = new System.Drawing.Point(0, 198);
             this.plVersions.Margin = new System.Windows.Forms.Padding(4);
             this.plVersions.Name = "plVersions";
-            this.plVersions.Size = new System.Drawing.Size(235, 407);
+            this.plVersions.Size = new System.Drawing.Size(235, 413);
             this.plVersions.TabIndex = 1;
             // 
             // cmdTakeMeLater
@@ -225,7 +195,7 @@ namespace Brightbits.BSH.Main
             this.cmdTakeMeLater.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmdTakeMeLater.Image = ((System.Drawing.Image)(resources.GetObject("cmdTakeMeLater.Image")));
             this.cmdTakeMeLater.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.cmdTakeMeLater.Location = new System.Drawing.Point(19, 305);
+            this.cmdTakeMeLater.Location = new System.Drawing.Point(19, 308);
             this.cmdTakeMeLater.Margin = new System.Windows.Forms.Padding(4);
             this.cmdTakeMeLater.Name = "cmdTakeMeLater";
             this.cmdTakeMeLater.Size = new System.Drawing.Size(195, 38);
@@ -244,7 +214,7 @@ namespace Brightbits.BSH.Main
             this.cmdTakeMeBack.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmdTakeMeBack.Image = ((System.Drawing.Image)(resources.GetObject("cmdTakeMeBack.Image")));
             this.cmdTakeMeBack.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.cmdTakeMeBack.Location = new System.Drawing.Point(19, 353);
+            this.cmdTakeMeBack.Location = new System.Drawing.Point(19, 356);
             this.cmdTakeMeBack.Margin = new System.Windows.Forms.Padding(4);
             this.cmdTakeMeBack.Name = "cmdTakeMeBack";
             this.cmdTakeMeBack.Size = new System.Drawing.Size(195, 38);
@@ -261,11 +231,11 @@ namespace Brightbits.BSH.Main
             this.AVersionList1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.AVersionList1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(243)))), ((int)(((byte)(245)))));
+            this.AVersionList1.BackColor = System.Drawing.Color.White;
             this.AVersionList1.Location = new System.Drawing.Point(0, 66);
             this.AVersionList1.Margin = new System.Windows.Forms.Padding(4);
             this.AVersionList1.Name = "AVersionList1";
-            this.AVersionList1.Size = new System.Drawing.Size(235, 228);
+            this.AVersionList1.Size = new System.Drawing.Size(235, 226);
             this.AVersionList1.TabIndex = 2;
             this.AVersionList1.TabStop = false;
             this.AVersionList1.ItemClick += new Brightbits.BSH.Main.aVersionList.ItemClickEventHandler(this.AVersionList1_ItemClick);
@@ -286,7 +256,7 @@ namespace Brightbits.BSH.Main
             // plFavorites
             // 
             this.plFavorites.AutoScroll = true;
-            this.plFavorites.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(243)))), ((int)(((byte)(245)))));
+            this.plFavorites.BackColor = System.Drawing.Color.White;
             this.plFavorites.Controls.Add(this.lvFavorite);
             this.plFavorites.Controls.Add(this.lblExpand1);
             this.plFavorites.Dock = System.Windows.Forms.DockStyle.Top;
@@ -301,7 +271,7 @@ namespace Brightbits.BSH.Main
             this.lvFavorite.Alignment = System.Windows.Forms.ListViewAlignment.Left;
             this.lvFavorite.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lvFavorite.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(243)))), ((int)(((byte)(245)))));
+            this.lvFavorite.BackColor = System.Drawing.Color.White;
             this.lvFavorite.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lvFavorite.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colName});
@@ -340,28 +310,29 @@ namespace Brightbits.BSH.Main
             // 
             // cmnuFavorits
             // 
+            this.cmnuFavorits.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.cmnuFavorits.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.cmnuFavorits.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.LöschenToolStripMenuItem,
             this.UmbenennenToolStripMenuItem});
             this.cmnuFavorits.Name = "cmnuFavorits";
             this.cmnuFavorits.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.cmnuFavorits.Size = new System.Drawing.Size(207, 84);
+            this.cmnuFavorits.Size = new System.Drawing.Size(210, 72);
             this.cmnuFavorits.Opening += new System.ComponentModel.CancelEventHandler(this.cmnuFavorits_Opening);
             // 
             // LöschenToolStripMenuItem
             // 
-            this.LöschenToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.delete_bin_line;
+            this.LöschenToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.delete_icon_24;
             this.LöschenToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.LöschenToolStripMenuItem.Name = "LöschenToolStripMenuItem";
-            this.LöschenToolStripMenuItem.Size = new System.Drawing.Size(206, 40);
+            this.LöschenToolStripMenuItem.Size = new System.Drawing.Size(209, 34);
             this.LöschenToolStripMenuItem.Text = "Löschen";
             this.LöschenToolStripMenuItem.Click += new System.EventHandler(this.LöschenToolStripMenuItem_Click);
             // 
             // UmbenennenToolStripMenuItem
             // 
             this.UmbenennenToolStripMenuItem.Name = "UmbenennenToolStripMenuItem";
-            this.UmbenennenToolStripMenuItem.Size = new System.Drawing.Size(206, 40);
+            this.UmbenennenToolStripMenuItem.Size = new System.Drawing.Size(209, 34);
             this.UmbenennenToolStripMenuItem.Text = "Umbenennen";
             this.UmbenennenToolStripMenuItem.Click += new System.EventHandler(this.UmbenennenToolStripMenuItem_Click);
             // 
@@ -369,10 +340,10 @@ namespace Brightbits.BSH.Main
             // 
             this.ilFolder.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ilFolder.ImageStream")));
             this.ilFolder.TransparentColor = System.Drawing.Color.Transparent;
-            this.ilFolder.Images.SetKeyName(0, "folder-3-line.png");
-            this.ilFolder.Images.SetKeyName(1, "folder-5-line.png");
-            this.ilFolder.Images.SetKeyName(2, "home-4-line.png");
-            this.ilFolder.Images.SetKeyName(3, "window-2-line.png");
+            this.ilFolder.Images.SetKeyName(0, "folder_icon_24.png");
+            this.ilFolder.Images.SetKeyName(1, "folder_open_icon_24.png");
+            this.ilFolder.Images.SetKeyName(2, "home_icon_24.png");
+            this.ilFolder.Images.SetKeyName(3, "tab_icon_24.png");
             // 
             // lblExpand1
             // 
@@ -400,19 +371,19 @@ namespace Brightbits.BSH.Main
             this.lvFiles.ContextMenuStrip = this.cmnuListRight;
             this.lvFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvFiles.FullRowSelect = true;
-            listViewGroup1.Header = "Ordner";
-            listViewGroup1.Name = "Ordner";
-            listViewGroup2.Header = "Dateien";
-            listViewGroup2.Name = "Dateien";
+            listViewGroup3.Header = "Ordner";
+            listViewGroup3.Name = "Ordner";
+            listViewGroup4.Header = "Dateien";
+            listViewGroup4.Name = "Dateien";
             this.lvFiles.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2});
+            listViewGroup3,
+            listViewGroup4});
             this.lvFiles.HideSelection = false;
             this.lvFiles.LargeImageList = this.ilBigIcons;
-            this.lvFiles.Location = new System.Drawing.Point(0, 66);
+            this.lvFiles.Location = new System.Drawing.Point(0, 58);
             this.lvFiles.Margin = new System.Windows.Forms.Padding(4);
             this.lvFiles.Name = "lvFiles";
-            this.lvFiles.Size = new System.Drawing.Size(951, 539);
+            this.lvFiles.Size = new System.Drawing.Size(951, 553);
             this.lvFiles.SmallImageList = this.ilSmallIcons;
             this.lvFiles.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvFiles.TabIndex = 0;
@@ -458,6 +429,7 @@ namespace Brightbits.BSH.Main
             // 
             // cmnuListRight
             // 
+            this.cmnuListRight.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.cmnuListRight.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.cmnuListRight.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.WiederherstellenToolStripMenuItem1,
@@ -468,46 +440,47 @@ namespace Brightbits.BSH.Main
             this.SchnellansichtToolStripMenuItem1});
             this.cmnuListRight.Name = "cmnuListRight";
             this.cmnuListRight.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.cmnuListRight.Size = new System.Drawing.Size(406, 144);
+            this.cmnuListRight.Size = new System.Drawing.Size(437, 152);
             this.cmnuListRight.Opening += new System.ComponentModel.CancelEventHandler(this.cmnuListRight_Opening);
             // 
             // WiederherstellenToolStripMenuItem1
             // 
+            this.WiederherstellenToolStripMenuItem1.Image = global::BSH.Main.Properties.Resources.settings_backup_restore_icon_24;
             this.WiederherstellenToolStripMenuItem1.Name = "WiederherstellenToolStripMenuItem1";
-            this.WiederherstellenToolStripMenuItem1.Size = new System.Drawing.Size(405, 32);
+            this.WiederherstellenToolStripMenuItem1.Size = new System.Drawing.Size(436, 34);
             this.WiederherstellenToolStripMenuItem1.Text = "Wiederherstellen";
             this.WiederherstellenToolStripMenuItem1.Click += new System.EventHandler(this.WiederherstellenToolStripMenuItem1_Click);
             // 
             // EigenschaftenToolStripMenuItem1
             // 
             this.EigenschaftenToolStripMenuItem1.Name = "EigenschaftenToolStripMenuItem1";
-            this.EigenschaftenToolStripMenuItem1.Size = new System.Drawing.Size(405, 32);
+            this.EigenschaftenToolStripMenuItem1.Size = new System.Drawing.Size(436, 34);
             this.EigenschaftenToolStripMenuItem1.Text = "Eigenschaften";
             this.EigenschaftenToolStripMenuItem1.Click += new System.EventHandler(this.EigenschaftenToolStripMenuItem1_Click);
             // 
             // ToolStripMenuItem5
             // 
             this.ToolStripMenuItem5.Name = "ToolStripMenuItem5";
-            this.ToolStripMenuItem5.Size = new System.Drawing.Size(402, 6);
+            this.ToolStripMenuItem5.Size = new System.Drawing.Size(433, 6);
             // 
             // DateiOrdnerAusSicherungenLöschenToolStripMenuItem
             // 
             this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Name = "DateiOrdnerAusSicherungenLöschenToolStripMenuItem";
-            this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Size = new System.Drawing.Size(405, 32);
+            this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Size = new System.Drawing.Size(436, 34);
             this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Text = "Datei / Ordner aus Sicherungen löschen";
             this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Click += new System.EventHandler(this.DateiOrdnerAusSicherungenLöschenToolStripMenuItem_Click);
             // 
             // ToolStripMenuItem3
             // 
             this.ToolStripMenuItem3.Name = "ToolStripMenuItem3";
-            this.ToolStripMenuItem3.Size = new System.Drawing.Size(402, 6);
+            this.ToolStripMenuItem3.Size = new System.Drawing.Size(433, 6);
             // 
             // SchnellansichtToolStripMenuItem1
             // 
-            this.SchnellansichtToolStripMenuItem1.Image = global::BSH.Main.Properties.Resources.eye_line;
+            this.SchnellansichtToolStripMenuItem1.Image = global::BSH.Main.Properties.Resources.visibility_icon_24;
             this.SchnellansichtToolStripMenuItem1.Name = "SchnellansichtToolStripMenuItem1";
             this.SchnellansichtToolStripMenuItem1.ShortcutKeyDisplayString = "Leertaste";
-            this.SchnellansichtToolStripMenuItem1.Size = new System.Drawing.Size(405, 32);
+            this.SchnellansichtToolStripMenuItem1.Size = new System.Drawing.Size(436, 34);
             this.SchnellansichtToolStripMenuItem1.Text = "Schnellansicht";
             this.SchnellansichtToolStripMenuItem1.Click += new System.EventHandler(this.SchnellansichtToolStripMenuItem1_Click);
             // 
@@ -532,14 +505,14 @@ namespace Brightbits.BSH.Main
             this.Panel3.Location = new System.Drawing.Point(0, 0);
             this.Panel3.Margin = new System.Windows.Forms.Padding(4);
             this.Panel3.Name = "Panel3";
-            this.Panel3.Size = new System.Drawing.Size(951, 66);
+            this.Panel3.Size = new System.Drawing.Size(951, 58);
             this.Panel3.TabIndex = 1;
             // 
             // chkFilesOfThisVersion
             // 
             this.chkFilesOfThisVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkFilesOfThisVersion.AutoSize = true;
-            this.chkFilesOfThisVersion.Location = new System.Drawing.Point(636, 18);
+            this.chkFilesOfThisVersion.Location = new System.Drawing.Point(636, 15);
             this.chkFilesOfThisVersion.Margin = new System.Windows.Forms.Padding(4);
             this.chkFilesOfThisVersion.Name = "chkFilesOfThisVersion";
             this.chkFilesOfThisVersion.Size = new System.Drawing.Size(292, 32);
@@ -552,26 +525,29 @@ namespace Brightbits.BSH.Main
             // 
             // lblBackupdate
             // 
-            this.lblBackupdate.AutoSize = true;
-            this.lblBackupdate.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBackupdate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(102)))), ((int)(((byte)(177)))));
-            this.lblBackupdate.Location = new System.Drawing.Point(27, 20);
+            this.lblBackupdate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblBackupdate.AutoEllipsis = true;
+            this.lblBackupdate.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblBackupdate.ForeColor = System.Drawing.Color.Black;
+            this.lblBackupdate.Location = new System.Drawing.Point(16, 13);
             this.lblBackupdate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblBackupdate.Name = "lblBackupdate";
-            this.lblBackupdate.Size = new System.Drawing.Size(0, 31);
+            this.lblBackupdate.Size = new System.Drawing.Size(611, 33);
             this.lblBackupdate.TabIndex = 0;
             // 
             // ilBigFolder
             // 
             this.ilBigFolder.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ilBigFolder.ImageStream")));
             this.ilBigFolder.TransparentColor = System.Drawing.Color.Transparent;
-            this.ilBigFolder.Images.SetKeyName(0, "folder-open_32.png");
-            this.ilBigFolder.Images.SetKeyName(1, "folder-closed_32.png");
+            this.ilBigFolder.Images.SetKeyName(0, "folder_open_icon_48.png");
+            this.ilBigFolder.Images.SetKeyName(1, "folder_icon_48.png");
             // 
             // StatusStrip1
             // 
             this.StatusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.StatusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.LCFiles,
             this.tsslblStatus});
             this.StatusStrip1.Location = new System.Drawing.Point(0, 817);
             this.StatusStrip1.Name = "StatusStrip1";
@@ -579,6 +555,29 @@ namespace Brightbits.BSH.Main
             this.StatusStrip1.Size = new System.Drawing.Size(1188, 32);
             this.StatusStrip1.TabIndex = 8;
             this.StatusStrip1.Text = "StatusStrip1";
+            // 
+            // LCFiles
+            // 
+            this.LCFiles.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            // 
+            // LCFiles
+            // 
+            this.LCFiles.LoadingCircleControl.AccessibleName = "LCFiles";
+            this.LCFiles.LoadingCircleControl.Active = false;
+            this.LCFiles.LoadingCircleControl.Color = System.Drawing.Color.DarkGray;
+            this.LCFiles.LoadingCircleControl.InnerCircleRadius = 8;
+            this.LCFiles.LoadingCircleControl.Location = new System.Drawing.Point(2, 3);
+            this.LCFiles.LoadingCircleControl.Name = "LCFiles";
+            this.LCFiles.LoadingCircleControl.NumberSpoke = 24;
+            this.LCFiles.LoadingCircleControl.OuterCircleRadius = 9;
+            this.LCFiles.LoadingCircleControl.RotationSpeed = 100;
+            this.LCFiles.LoadingCircleControl.Size = new System.Drawing.Size(26, 29);
+            this.LCFiles.LoadingCircleControl.SpokeThickness = 4;
+            this.LCFiles.LoadingCircleControl.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.IE7;
+            this.LCFiles.LoadingCircleControl.TabIndex = 1;
+            this.LCFiles.Name = "LCFiles";
+            this.LCFiles.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.LCFiles.Size = new System.Drawing.Size(26, 29);
             // 
             // tsslblStatus
             // 
@@ -609,16 +608,14 @@ namespace Brightbits.BSH.Main
             this.tMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolStripDropDownButton1,
             this.ToolStripSchnellansicht,
-            this.LCFiles,
             this.ToolStripDropDownButton2,
             this.cmdRestore});
-            this.tMain.Location = new System.Drawing.Point(0, 63);
+            this.tMain.Location = new System.Drawing.Point(0, 0);
             this.tMain.Name = "tMain";
-            this.tMain.Padding = new System.Windows.Forms.Padding(15, 0, 2, 0);
+            this.tMain.Padding = new System.Windows.Forms.Padding(15, 2, 15, 2);
             this.tMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.tMain.Size = new System.Drawing.Size(1188, 56);
+            this.tMain.Size = new System.Drawing.Size(1188, 50);
             this.tMain.TabIndex = 0;
-            this.tMain.Text = "ToolStrip1";
             // 
             // ToolStripDropDownButton1
             // 
@@ -637,17 +634,19 @@ namespace Brightbits.BSH.Main
             this.MehrereVersionenLöschenToolStripMenuItem});
             this.ToolStripDropDownButton1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ToolStripDropDownButton1.ForeColor = System.Drawing.Color.Black;
-            this.ToolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("ToolStripDropDownButton1.Image")));
+            this.ToolStripDropDownButton1.Image = global::BSH.Main.Properties.Resources.edit_square_icon_24;
             this.ToolStripDropDownButton1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ToolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolStripDropDownButton1.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.ToolStripDropDownButton1.Name = "ToolStripDropDownButton1";
-            this.ToolStripDropDownButton1.Size = new System.Drawing.Size(175, 51);
+            this.ToolStripDropDownButton1.Padding = new System.Windows.Forms.Padding(2);
+            this.ToolStripDropDownButton1.Size = new System.Drawing.Size(179, 36);
             this.ToolStripDropDownButton1.Text = " Organisieren ";
             this.ToolStripDropDownButton1.ToolTipText = "Organisieren der ausgewählten Elemente";
             // 
             // WiederherstellenToolStripMenuItem
             // 
-            this.WiederherstellenToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("WiederherstellenToolStripMenuItem.Image")));
+            this.WiederherstellenToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.settings_backup_restore_icon_24;
             this.WiederherstellenToolStripMenuItem.Name = "WiederherstellenToolStripMenuItem";
             this.WiederherstellenToolStripMenuItem.Size = new System.Drawing.Size(383, 36);
             this.WiederherstellenToolStripMenuItem.Text = "Wiederherstellen";
@@ -657,7 +656,7 @@ namespace Brightbits.BSH.Main
             // 
             this.AllesWiederherstellenToolStripMenuItem1.Name = "AllesWiederherstellenToolStripMenuItem1";
             this.AllesWiederherstellenToolStripMenuItem1.Size = new System.Drawing.Size(383, 36);
-            this.AllesWiederherstellenToolStripMenuItem1.Text = "Alles Wiederherstellen";
+            this.AllesWiederherstellenToolStripMenuItem1.Text = "Alles wiederherstellen";
             this.AllesWiederherstellenToolStripMenuItem1.Click += new System.EventHandler(this.AllesWiederherstellenToolStripMenuItem_Click);
             // 
             // EigenschaftenToolStripMenuItem
@@ -676,7 +675,7 @@ namespace Brightbits.BSH.Main
             // SchnellansichtToolStripMenuItem
             // 
             this.SchnellansichtToolStripMenuItem.Enabled = false;
-            this.SchnellansichtToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("SchnellansichtToolStripMenuItem.Image")));
+            this.SchnellansichtToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.visibility_icon_24;
             this.SchnellansichtToolStripMenuItem.Name = "SchnellansichtToolStripMenuItem";
             this.SchnellansichtToolStripMenuItem.ShortcutKeyDisplayString = "Leertaste";
             this.SchnellansichtToolStripMenuItem.Size = new System.Drawing.Size(383, 36);
@@ -704,7 +703,7 @@ namespace Brightbits.BSH.Main
             // 
             // VersionLöschenToolStripMenuItem
             // 
-            this.VersionLöschenToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("VersionLöschenToolStripMenuItem.Image")));
+            this.VersionLöschenToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.delete_icon_24;
             this.VersionLöschenToolStripMenuItem.Name = "VersionLöschenToolStripMenuItem";
             this.VersionLöschenToolStripMenuItem.Size = new System.Drawing.Size(383, 36);
             this.VersionLöschenToolStripMenuItem.Text = "Sicherung löschen";
@@ -734,46 +733,16 @@ namespace Brightbits.BSH.Main
             // 
             this.ToolStripSchnellansicht.Enabled = false;
             this.ToolStripSchnellansicht.ForeColor = System.Drawing.Color.Black;
-            this.ToolStripSchnellansicht.Image = ((System.Drawing.Image)(resources.GetObject("ToolStripSchnellansicht.Image")));
+            this.ToolStripSchnellansicht.Image = global::BSH.Main.Properties.Resources.visibility_icon_24;
             this.ToolStripSchnellansicht.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ToolStripSchnellansicht.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolStripSchnellansicht.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.ToolStripSchnellansicht.Name = "ToolStripSchnellansicht";
-            this.ToolStripSchnellansicht.Size = new System.Drawing.Size(163, 51);
+            this.ToolStripSchnellansicht.Padding = new System.Windows.Forms.Padding(2);
+            this.ToolStripSchnellansicht.Size = new System.Drawing.Size(167, 36);
             this.ToolStripSchnellansicht.Text = "Schnellansicht";
             this.ToolStripSchnellansicht.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.ToolStripSchnellansicht.Click += new System.EventHandler(this.ToolStripSchnellansicht_Click);
-            // 
-            // LCFiles
-            // 
-            this.LCFiles.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.LCFiles.AutoSize = false;
-            this.LCFiles.BackColor = System.Drawing.Color.Transparent;
-            this.LCFiles.Enabled = false;
-            this.LCFiles.ForeColor = System.Drawing.Color.White;
-            // 
-            // LCFiles
-            // 
-            this.LCFiles.LoadingCircleControl.AccessibleName = "LCFiles";
-            this.LCFiles.LoadingCircleControl.Active = false;
-            this.LCFiles.LoadingCircleControl.BackColor = System.Drawing.Color.Transparent;
-            this.LCFiles.LoadingCircleControl.Color = System.Drawing.Color.DarkGray;
-            this.LCFiles.LoadingCircleControl.Enabled = false;
-            this.LCFiles.LoadingCircleControl.ForeColor = System.Drawing.Color.White;
-            this.LCFiles.LoadingCircleControl.InnerCircleRadius = 8;
-            this.LCFiles.LoadingCircleControl.Location = new System.Drawing.Point(1148, 3);
-            this.LCFiles.LoadingCircleControl.Margin = new System.Windows.Forms.Padding(4);
-            this.LCFiles.LoadingCircleControl.Name = "LCFiles";
-            this.LCFiles.LoadingCircleControl.NumberSpoke = 24;
-            this.LCFiles.LoadingCircleControl.OuterCircleRadius = 9;
-            this.LCFiles.LoadingCircleControl.RotationSpeed = 25;
-            this.LCFiles.LoadingCircleControl.Size = new System.Drawing.Size(33, 50);
-            this.LCFiles.LoadingCircleControl.SpokeThickness = 4;
-            this.LCFiles.LoadingCircleControl.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.IE7;
-            this.LCFiles.LoadingCircleControl.TabIndex = 1;
-            this.LCFiles.Margin = new System.Windows.Forms.Padding(0, 3, 5, 3);
-            this.LCFiles.Name = "LCFiles";
-            this.LCFiles.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.LCFiles.Size = new System.Drawing.Size(33, 50);
             // 
             // ToolStripDropDownButton2
             // 
@@ -785,36 +754,37 @@ namespace Brightbits.BSH.Main
             this.ToolStripDropDownButton2.ForeColor = System.Drawing.Color.Black;
             this.ToolStripDropDownButton2.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.ToolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolStripDropDownButton2.Margin = new System.Windows.Forms.Padding(0, 1, 10, 2);
+            this.ToolStripDropDownButton2.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.ToolStripDropDownButton2.Name = "ToolStripDropDownButton2";
-            this.ToolStripDropDownButton2.Size = new System.Drawing.Size(125, 53);
+            this.ToolStripDropDownButton2.Padding = new System.Windows.Forms.Padding(2);
+            this.ToolStripDropDownButton2.Size = new System.Drawing.Size(129, 36);
             this.ToolStripDropDownButton2.Text = " Ansichten ";
             this.ToolStripDropDownButton2.ToolTipText = "Ansichten wechseln";
             // 
             // GroßeSymboleToolStripMenuItem
             // 
-            this.GroßeSymboleToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("GroßeSymboleToolStripMenuItem.Image")));
+            this.GroßeSymboleToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.grid_view_icon_24;
             this.GroßeSymboleToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.GroßeSymboleToolStripMenuItem.Name = "GroßeSymboleToolStripMenuItem";
-            this.GroßeSymboleToolStripMenuItem.Size = new System.Drawing.Size(257, 42);
+            this.GroßeSymboleToolStripMenuItem.Size = new System.Drawing.Size(249, 36);
             this.GroßeSymboleToolStripMenuItem.Text = "Große Symbole";
             this.GroßeSymboleToolStripMenuItem.Click += new System.EventHandler(this.GroßeSymboleToolStripMenuItem_Click);
             // 
             // ListenansichtToolStripMenuItem
             // 
-            this.ListenansichtToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("ListenansichtToolStripMenuItem.Image")));
+            this.ListenansichtToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.list_icon_24;
             this.ListenansichtToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.ListenansichtToolStripMenuItem.Name = "ListenansichtToolStripMenuItem";
-            this.ListenansichtToolStripMenuItem.Size = new System.Drawing.Size(257, 42);
+            this.ListenansichtToolStripMenuItem.Size = new System.Drawing.Size(249, 36);
             this.ListenansichtToolStripMenuItem.Text = "Listenansicht";
             this.ListenansichtToolStripMenuItem.Click += new System.EventHandler(this.ListenansichtToolStripMenuItem_Click);
             // 
             // DetailsansichtToolStripMenuItem
             // 
-            this.DetailsansichtToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("DetailsansichtToolStripMenuItem.Image")));
+            this.DetailsansichtToolStripMenuItem.Image = global::BSH.Main.Properties.Resources.view_list_icon_24;
             this.DetailsansichtToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.DetailsansichtToolStripMenuItem.Name = "DetailsansichtToolStripMenuItem";
-            this.DetailsansichtToolStripMenuItem.Size = new System.Drawing.Size(257, 42);
+            this.DetailsansichtToolStripMenuItem.Size = new System.Drawing.Size(249, 36);
             this.DetailsansichtToolStripMenuItem.Text = "Detailsansicht";
             this.DetailsansichtToolStripMenuItem.Click += new System.EventHandler(this.DetailansichtToolStripMenuItem_Click);
             // 
@@ -822,12 +792,13 @@ namespace Brightbits.BSH.Main
             // 
             this.cmdRestore.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.cmdRestore.ForeColor = System.Drawing.Color.Black;
-            this.cmdRestore.Image = ((System.Drawing.Image)(resources.GetObject("cmdRestore.Image")));
+            this.cmdRestore.Image = global::BSH.Main.Properties.Resources.settings_backup_restore_icon_24;
             this.cmdRestore.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cmdRestore.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdRestore.Margin = new System.Windows.Forms.Padding(0, 1, 10, 2);
+            this.cmdRestore.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.cmdRestore.Name = "cmdRestore";
-            this.cmdRestore.Size = new System.Drawing.Size(187, 53);
+            this.cmdRestore.Padding = new System.Windows.Forms.Padding(2);
+            this.cmdRestore.Size = new System.Drawing.Size(191, 36);
             this.cmdRestore.Text = "Wiederherstellen";
             this.cmdRestore.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.cmdRestore.ToolTipText = "Eine Datei oder Ordner wiederherstellen.\r\nHalten Sie Strg-Taste gedrückt, um zu b" +
@@ -836,51 +807,82 @@ namespace Brightbits.BSH.Main
             // 
             // plGlass
             // 
-            this.plGlass.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(92)))), ((int)(((byte)(161)))));
+            this.plGlass.BackColor = System.Drawing.Color.White;
+            this.plGlass.Controls.Add(this.UcNav);
             this.plGlass.Controls.Add(this.Panel2);
             this.plGlass.Controls.Add(this.btnBack);
             this.plGlass.Dock = System.Windows.Forms.DockStyle.Top;
-            this.plGlass.Location = new System.Drawing.Point(0, 0);
+            this.plGlass.Location = new System.Drawing.Point(0, 50);
             this.plGlass.Margin = new System.Windows.Forms.Padding(4);
             this.plGlass.Name = "plGlass";
             this.plGlass.Size = new System.Drawing.Size(1188, 63);
             this.plGlass.TabIndex = 9;
             // 
+            // UcNav
+            // 
+            this.UcNav.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.UcNav.BackColor = System.Drawing.Color.White;
+            this.UcNav.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.UcNav.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.UcNav.ForeColor = System.Drawing.Color.White;
+            this.UcNav.Location = new System.Drawing.Point(66, 12);
+            this.UcNav.Margin = new System.Windows.Forms.Padding(6);
+            this.UcNav.Name = "UcNav";
+            this.UcNav.Path = "";
+            this.UcNav.PathLocalized = null;
+            this.UcNav.Size = new System.Drawing.Size(749, 38);
+            this.UcNav.TabIndex = 1;
+            this.UcNav.TabStop = false;
+            this.UcNav.ItemClick += new Brightbits.BSH.Main.ucNavigation.ItemClickEventHandler(this.UcNav_ItemClick);
+            // 
             // Panel2
             // 
             this.Panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(119)))), ((int)(((byte)(165)))));
-            this.Panel2.Controls.Add(this.PictureBox3);
-            this.Panel2.Controls.Add(this.txtSearch);
+            this.Panel2.BackColor = System.Drawing.Color.White;
+            this.Panel2.Controls.Add(this.panel4);
             this.Panel2.Location = new System.Drawing.Point(825, 0);
             this.Panel2.Margin = new System.Windows.Forms.Padding(4);
             this.Panel2.Name = "Panel2";
             this.Panel2.Size = new System.Drawing.Size(362, 62);
             this.Panel2.TabIndex = 9;
             // 
+            // panel4
+            // 
+            this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel4.BackColor = System.Drawing.Color.White;
+            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel4.Controls.Add(this.PictureBox3);
+            this.panel4.Controls.Add(this.txtSearch);
+            this.panel4.Location = new System.Drawing.Point(4, 12);
+            this.panel4.Margin = new System.Windows.Forms.Padding(4);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(346, 38);
+            this.panel4.TabIndex = 10;
+            // 
             // PictureBox3
             // 
-            this.PictureBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.PictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("PictureBox3.Image")));
-            this.PictureBox3.Location = new System.Drawing.Point(310, 9);
+            this.PictureBox3.Image = global::BSH.Main.Properties.Resources.search_icon_48;
+            this.PictureBox3.Location = new System.Drawing.Point(2, 2);
             this.PictureBox3.Margin = new System.Windows.Forms.Padding(4);
             this.PictureBox3.Name = "PictureBox3";
-            this.PictureBox3.Size = new System.Drawing.Size(45, 45);
+            this.PictureBox3.Size = new System.Drawing.Size(32, 32);
             this.PictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.PictureBox3.TabIndex = 7;
             this.PictureBox3.TabStop = false;
             // 
             // txtSearch
             // 
-            this.txtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(119)))), ((int)(((byte)(165)))));
+            this.txtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtSearch.BackColor = System.Drawing.Color.White;
             this.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSearch.ForeColor = System.Drawing.Color.White;
-            this.txtSearch.Location = new System.Drawing.Point(30, 16);
+            this.txtSearch.ForeColor = System.Drawing.Color.Black;
+            this.txtSearch.Location = new System.Drawing.Point(45, 3);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(4);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(272, 26);
+            this.txtSearch.Size = new System.Drawing.Size(295, 26);
             this.txtSearch.TabIndex = 4;
             this.txtSearch.Tag = "search";
             this.txtSearch.Text = "Suche";
@@ -892,7 +894,7 @@ namespace Brightbits.BSH.Main
             // btnBack
             // 
             this.btnBack.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnBack.Image = global::BSH.Main.Properties.Resources.arrow_left_circle_line_off;
+            this.btnBack.Image = global::BSH.Main.Properties.Resources.arrow_upward_icon_48;
             this.btnBack.Location = new System.Drawing.Point(19, 12);
             this.btnBack.Margin = new System.Windows.Forms.Padding(4);
             this.btnBack.Name = "btnBack";
@@ -904,7 +906,7 @@ namespace Brightbits.BSH.Main
             // 
             // Panel1
             // 
-            this.Panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(205)))), ((int)(((byte)(227)))), ((int)(((byte)(248)))));
+            this.Panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(243)))), ((int)(((byte)(245)))));
             this.Panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Panel1.Controls.Add(this.flpDetails);
             this.Panel1.Controls.Add(this.Label4);
@@ -978,6 +980,7 @@ namespace Brightbits.BSH.Main
             this.flpColumn2.Location = new System.Drawing.Point(32, 0);
             this.flpColumn2.Margin = new System.Windows.Forms.Padding(0);
             this.flpColumn2.Name = "flpColumn2";
+            this.flpColumn2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.flpColumn2.Size = new System.Drawing.Size(230, 64);
             this.flpColumn2.TabIndex = 46;
             // 
@@ -991,6 +994,7 @@ namespace Brightbits.BSH.Main
             this.flpDateLastWrite.Location = new System.Drawing.Point(4, 4);
             this.flpDateLastWrite.Margin = new System.Windows.Forms.Padding(4);
             this.flpDateLastWrite.Name = "flpDateLastWrite";
+            this.flpDateLastWrite.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.flpDateLastWrite.Size = new System.Drawing.Size(222, 28);
             this.flpDateLastWrite.TabIndex = 43;
             // 
@@ -1026,10 +1030,11 @@ namespace Brightbits.BSH.Main
             this.flpDateCreated.BackColor = System.Drawing.Color.Transparent;
             this.flpDateCreated.Controls.Add(this.lFileCreated);
             this.flpDateCreated.Controls.Add(this.lblFileCreated);
-            this.flpDateCreated.Location = new System.Drawing.Point(4, 36);
+            this.flpDateCreated.Location = new System.Drawing.Point(57, 36);
             this.flpDateCreated.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.flpDateCreated.Name = "flpDateCreated";
-            this.flpDateCreated.Size = new System.Drawing.Size(216, 28);
+            this.flpDateCreated.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.flpDateCreated.Size = new System.Drawing.Size(169, 28);
             this.flpDateCreated.TabIndex = 42;
             // 
             // lFileCreated
@@ -1037,8 +1042,8 @@ namespace Brightbits.BSH.Main
             this.lFileCreated.AutoSize = true;
             this.lFileCreated.BackColor = System.Drawing.Color.Transparent;
             this.lFileCreated.ForeColor = System.Drawing.Color.Gray;
-            this.lFileCreated.Location = new System.Drawing.Point(51, 0);
-            this.lFileCreated.Margin = new System.Windows.Forms.Padding(51, 0, 4, 0);
+            this.lFileCreated.Location = new System.Drawing.Point(4, 0);
+            this.lFileCreated.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lFileCreated.Name = "lFileCreated";
             this.lFileCreated.Size = new System.Drawing.Size(107, 28);
             this.lFileCreated.TabIndex = 4;
@@ -1049,7 +1054,7 @@ namespace Brightbits.BSH.Main
             this.lblFileCreated.AutoSize = true;
             this.lblFileCreated.BackColor = System.Drawing.Color.Transparent;
             this.lblFileCreated.ForeColor = System.Drawing.Color.Black;
-            this.lblFileCreated.Location = new System.Drawing.Point(166, 0);
+            this.lblFileCreated.Location = new System.Drawing.Point(119, 0);
             this.lblFileCreated.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFileCreated.Name = "lblFileCreated";
             this.lblFileCreated.Padding = new System.Windows.Forms.Padding(0, 0, 22, 0);
@@ -1158,7 +1163,7 @@ namespace Brightbits.BSH.Main
             // 
             // Label4
             // 
-            this.Label4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(194)))), ((int)(((byte)(210)))), ((int)(((byte)(231)))));
+            this.Label4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.Label4.Dock = System.Windows.Forms.DockStyle.Top;
             this.Label4.Location = new System.Drawing.Point(0, 0);
             this.Label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -1173,6 +1178,7 @@ namespace Brightbits.BSH.Main
             this.imgFileType.Margin = new System.Windows.Forms.Padding(4);
             this.imgFileType.Name = "imgFileType";
             this.imgFileType.Size = new System.Drawing.Size(48, 48);
+            this.imgFileType.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.imgFileType.TabIndex = 41;
             this.imgFileType.TabStop = false;
             // 
@@ -1188,11 +1194,10 @@ namespace Brightbits.BSH.Main
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1188, 849);
             this.Controls.Add(this.SplitContainer1);
+            this.Controls.Add(this.plGlass);
             this.Controls.Add(this.Panel1);
             this.Controls.Add(this.tMain);
             this.Controls.Add(this.StatusStrip1);
-            this.Controls.Add(this.UcPanel);
-            this.Controls.Add(this.plGlass);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1203,7 +1208,6 @@ namespace Brightbits.BSH.Main
             this.Text = "Backupbrowser";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmBrowser_FormClosing);
             this.Load += new System.EventHandler(this.frmBrowser_Load);
-            this.UcPanel.ResumeLayout(false);
             this.SplitContainer1.Panel1.ResumeLayout(false);
             this.SplitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer1)).EndInit();
@@ -1222,10 +1226,12 @@ namespace Brightbits.BSH.Main
             this.tMain.PerformLayout();
             this.plGlass.ResumeLayout(false);
             this.Panel2.ResumeLayout(false);
-            this.Panel2.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnBack)).EndInit();
             this.Panel1.ResumeLayout(false);
+            this.Panel1.PerformLayout();
             this.flpDetails.ResumeLayout(false);
             this.flpDetails.PerformLayout();
             this.flpColumn1.ResumeLayout(false);
@@ -1282,7 +1288,6 @@ namespace Brightbits.BSH.Main
         internal Label lblExpand2;
         internal ToolStrip tMain;
         internal ToolStripButton ToolStripSchnellansicht;
-        internal MRG.Controls.UI.LoadingCircleToolStripMenuItem LCFiles;
         internal ToolStripDropDownButton ToolStripDropDownButton1;
         internal ToolStripMenuItem WiederherstellenToolStripMenuItem;
         internal ToolStripMenuItem EigenschaftenToolStripMenuItem;
@@ -1299,10 +1304,8 @@ namespace Brightbits.BSH.Main
         internal ToolStripMenuItem ZuOrdnerfavoritenHinzufügenToolStripMenuItem;
         internal ContextMenuStrip cmnuFavorits;
         internal ToolStripMenuItem LöschenToolStripMenuItem;
-        internal Timer tmrSearch;
         internal System.ComponentModel.BackgroundWorker bgrWorkSearch;
         internal Panel plGlass;
-        internal ucNavigation UcNav;
         internal ToolStripMenuItem VersionAlsStabilMarkierenToolStripMenuItem;
         internal Button cmdTakeMeLater;
         internal Button cmdTakeMeBack;
@@ -1329,7 +1332,6 @@ namespace Brightbits.BSH.Main
         internal ToolStripSeparator ToolStripMenuItem3;
         internal ToolStripSeparator ToolStripMenuItem4;
         internal ToolStripMenuItem MehrereVersionenLöschenToolStripMenuItem;
-        internal Panel UcPanel;
         internal ColumnHeader colName;
         internal PictureBox PictureBox3;
         internal PictureBox btnBack;
@@ -1338,5 +1340,8 @@ namespace Brightbits.BSH.Main
         internal ToolStripMenuItem DateiOrdnerAusSicherungenLöschenToolStripMenuItem;
         internal ToolStripMenuItem AllesWiederherstellenToolStripMenuItem;
         internal ToolStripMenuItem AllesWiederherstellenToolStripMenuItem1;
+        internal ucNavigation UcNav;
+        internal Panel panel4;
+        private MRG.Controls.UI.LoadingCircleToolStripMenuItem LCFiles;
     }
 }
