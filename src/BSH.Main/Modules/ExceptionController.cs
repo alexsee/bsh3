@@ -24,21 +24,19 @@ namespace Brightbits.BSH.Main
         {
             Log.Error("An unexpected error occurred {msg}.", e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString(), e.Exception);
 
-            using (var dlgException = new frmError())
-            {
-                dlgException.txtError.Text = e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString();
+            using var dlgException = new frmError();
+            dlgException.txtError.Text = e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString();
 
-                var DialogRes = dlgException.ShowDialog();
-                if (DialogRes == DialogResult.Cancel)
-                {
-                    Application.Exit();
-                    Environment.Exit(0);
-                }
-                else if (DialogRes == DialogResult.Retry)
-                {
-                    Application.Restart();
-                    Environment.Exit(0);
-                }
+            var DialogRes = dlgException.ShowDialog();
+            if (DialogRes == DialogResult.Cancel)
+            {
+                Application.Exit();
+                Environment.Exit(0);
+            }
+            else if (DialogRes == DialogResult.Retry)
+            {
+                Application.Restart();
+                Environment.Exit(0);
             }
         }
 
@@ -47,21 +45,19 @@ namespace Brightbits.BSH.Main
             Exception exception = (Exception)e.ExceptionObject;
             Log.Error("An unexpected error occurred {msg}.", exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString(), exception);
 
-            using (var dlgException = new frmError())
-            {
-                dlgException.txtError.Text = exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString();
+            using var dlgException = new frmError();
+            dlgException.txtError.Text = exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString();
 
-                var DialogRes = dlgException.ShowDialog();
-                if (DialogRes == DialogResult.Cancel)
-                {
-                    Application.Exit();
-                    Environment.Exit(0);
-                }
-                else if (DialogRes == DialogResult.Retry)
-                {
-                    Application.Restart();
-                    Environment.Exit(0);
-                }
+            var DialogRes = dlgException.ShowDialog();
+            if (DialogRes == DialogResult.Cancel)
+            {
+                Application.Exit();
+                Environment.Exit(0);
+            }
+            else if (DialogRes == DialogResult.Retry)
+            {
+                Application.Restart();
+                Environment.Exit(0);
             }
         }
     }

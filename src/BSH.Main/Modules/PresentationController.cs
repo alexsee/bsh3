@@ -148,10 +148,8 @@ namespace Brightbits.BSH.Main
 
         public void ShowAboutWindow(IWin32Window owner)
         {
-            using (var aboutWindow = new frmAbout())
-            {
-                aboutWindow.ShowDialog(owner);
-            }
+            using var aboutWindow = new frmAbout();
+            aboutWindow.ShowDialog(owner);
         }
 
         public (string password, bool persist) RequestPassword()
@@ -169,10 +167,8 @@ namespace Brightbits.BSH.Main
 
         public void ShowErrorInsufficientDiskSpace()
         {
-            using (var errorWindow = new frmErrorInsufficientDiskSpace())
-            {
-                errorWindow.ShowDialog();
-            }
+            using var errorWindow = new frmErrorInsufficientDiskSpace();
+            errorWindow.ShowDialog();
         }
     }
 }
