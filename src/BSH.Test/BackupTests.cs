@@ -59,7 +59,7 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            Assert.Throws<NoSourceFolderSelectedException>(async () => await backupJob.BackupAsync(token));
+            Assert.ThrowsAsync<NoSourceFolderSelectedException>(async () => await backupJob.BackupAsync(token));
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            Assert.Throws<DeviceNotReadyException>(async () => await backupJob.BackupAsync(token));
+            Assert.ThrowsAsync<DeviceNotReadyException>(async () => await backupJob.BackupAsync(token));
         }
 
         [Test]
