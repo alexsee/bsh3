@@ -103,18 +103,18 @@ namespace Manoli.Utils.CSharpFormat
             if (match.Groups[1].Success) //JavaScript code
             {
                 string s = match.ToString();
-                return jsf.FormatSubCode(match.ToString());
+                return jsf.FormatSubCode(s);
             }
             if (match.Groups[2].Success) //comment
             {
-                StringReader reader = new StringReader(match.ToString());
+                StringReader reader = new(match.ToString());
                 string line;
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 while ((line = reader.ReadLine()) != null)
                 {
                     if (sb.Length > 0)
                     {
-                        sb.Append("\n");
+                        sb.Append('\n');
                     }
                     sb.Append("<span class=\"rem\">");
                     sb.Append(line);
