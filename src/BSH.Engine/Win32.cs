@@ -25,7 +25,7 @@ namespace Brightbits.BSH.Engine
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern long GetVolumeInformation(
             string PathName,
             StringBuilder VolumeNameBuffer,

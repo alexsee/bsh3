@@ -77,7 +77,7 @@ namespace Brightbits.BSH.Engine.Storage
             this.currentStorageVersion = currentStorageVersion;
         }
 
-        private string Combine(string path1, string path2)
+        private static string Combine(string path1, string path2)
         {
             return path1 + @"/" + path2;
         }
@@ -122,43 +122,42 @@ namespace Brightbits.BSH.Engine.Storage
                 ValidateAnyCertificate = true
             };
 
-            using (var client = new FtpClient(host, credentials, port, config))
+            using var client = new FtpClient(host, credentials, port, config);
+            
+            // set encoding
+            if (encoding == "UTF-8")
             {
-                // set encoding
-                if (encoding == "UTF-8")
-                {
-                    client.Encoding = new UTF8Encoding(false);
-                }
-                else
-                {
-                    client.Encoding = Encoding.GetEncoding(encoding);
-                }
-
-                // first, try direct connect
-                try
-                {
-                    client.Connect();
-                }
-                catch
-                {
-                    // failed, so try auto connect
-                    client.AutoConnect();
-                }
-
-                if (!client.IsConnected)
-                {
-                    return false;
-                }
-
-                // check if folder exists
-                if (!client.DirectoryExists(folderPath.GetFtpPath()))
-                {
-                    client.Disconnect();
-                    return false;
-                }
-
-                return true;
+                client.Encoding = new UTF8Encoding(false);
             }
+            else
+            {
+                client.Encoding = Encoding.GetEncoding(encoding);
+            }
+
+            // first, try direct connect
+            try
+            {
+                client.Connect();
+            }
+            catch
+            {
+                // failed, so try auto connect
+                client.AutoConnect();
+            }
+
+            if (!client.IsConnected)
+            {
+                return false;
+            }
+
+            // check if folder exists
+            if (!client.DirectoryExists(folderPath.GetFtpPath()))
+            {
+                client.Disconnect();
+                return false;
+            }
+
+            return true;
         }
 
         public bool CheckMedium(bool quickCheck = false)
@@ -172,47 +171,45 @@ namespace Brightbits.BSH.Engine.Storage
                     ValidateAnyCertificate = true,
                 };
 
-                using (var client = new FtpClient(serverAddress, credentials, serverPort, config))
+                using var client = new FtpClient(serverAddress, credentials, serverPort, config);
+                client.LoadProfile(GetFtpProfile());
+
+                if (this.encryption)
                 {
-                    client.LoadProfile(GetFtpProfile());
+                    client.AutoConnect();
+                }
+                else
+                {
+                    client.Connect();
+                }
 
-                    if (this.encryption)
+                if (!client.IsConnected)
+                {
+                    return false;
+                }
+
+                // check if folder exists
+                if (!client.DirectoryExists(folderPath.GetFtpPath()))
+                {
+                    _logger.Warning("FTP server does not have the specified folder.");
+                    return false;
+                }
+
+                // check if backup.bshv file exists
+                var remoteBackupVersionFile = Combine(folderPath, "backup.bshv").GetFtpPath();
+                var localBackupVersionFile = Path.Combine(Path.GetTempPath(), "backup.bshv");
+
+                if (client.FileExists(remoteBackupVersionFile))
+                {
+                    client.DownloadFile(localBackupVersionFile, remoteBackupVersionFile, FtpLocalExists.Overwrite);
+
+                    var versionId = File.ReadAllText(localBackupVersionFile);
+                    File.Delete(localBackupVersionFile);
+
+                    if (!string.IsNullOrEmpty(versionId) && int.Parse(versionId) != currentStorageVersion)
                     {
-                        client.AutoConnect();
-                    }
-                    else
-                    {
-                        client.Connect();
-                    }
-
-                    if (!client.IsConnected)
-                    {
-                        return false;
-                    }
-
-                    // check if folder exists
-                    if (!client.DirectoryExists(folderPath.GetFtpPath()))
-                    {
-                        _logger.Warning("FTP server does not have the specified folder.");
-                        return false;
-                    }
-
-                    // check if backup.bshv file exists
-                    var remoteBackupVersionFile = Combine(folderPath, "backup.bshv").GetFtpPath();
-                    var localBackupVersionFile = Path.Combine(Path.GetTempPath(), "backup.bshv");
-
-                    if (client.FileExists(remoteBackupVersionFile))
-                    {
-                        client.DownloadFile(localBackupVersionFile, remoteBackupVersionFile, FtpLocalExists.Overwrite);
-
-                        var versionId = File.ReadAllText(localBackupVersionFile);
-                        File.Delete(localBackupVersionFile);
-
-                        if (!string.IsNullOrEmpty(versionId) && int.Parse(versionId) != currentStorageVersion)
-                        {
-                            _logger.Warning("FTP server contains an inconsistent state. Version file contains a different version than the computers backup version.");
-                            throw new DeviceContainsWrongStateException();
-                        }
+                        _logger.Warning("FTP server contains an inconsistent state. Version file contains a different version than the computers backup version.");
+                        throw new DeviceContainsWrongStateException();
                     }
                 }
 

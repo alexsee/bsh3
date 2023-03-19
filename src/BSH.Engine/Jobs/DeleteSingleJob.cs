@@ -128,54 +128,52 @@ namespace Brightbits.BSH.Engine.Jobs
                         dbClient.CreateParameter("fileId", DbType.Int32, 0, fileId)
                     };
 
-                    using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text,
+                    using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text,
                         "SELECT * FROM fileVersionTable AS fvt " +
                                                         "INNER JOIN fileTable AS ft ON " +
                                                         "  ft.fileID = fvt.fileID " +
                                                         "INNER JOIN versionTable AS vt ON " +
                                                         "  fvt.filePackage = vt.versionID " +
                                                         "WHERE fvt.fileID = @fileId",
-                        deleteFileParams))
+                        deleteFileParams);
+                    int i = 0;
+                    while (reader.Read())
                     {
-                        int i = 0;
-                        while (reader.Read())
+                        // get file name
+                        var fileName = reader.GetString("filePath") + reader.GetString("fileName");
+
+                        ReportFileProgress(fileName);
+                        ReportProgress(fileIds.Count, i);
+                        i++;
+
+                        // delete file
+                        try
                         {
-                            // get file name
-                            var fileName = reader.GetString("filePath") + reader.GetString("fileName");
-
-                            ReportFileProgress(fileName);
-                            ReportProgress(fileIds.Count, i);
-                            i++;
-
-                            // delete file
-                            try
+                            DeleteFileFromDevice(
+                                reader.GetString("fileName"),
+                                reader.GetString("filePath"),
+                                reader.GetString("longfilename"),
+                                reader.GetString("versionDate"),
+                                reader.GetInt32("fileType").ToString()
+                            );
+                        }
+                        catch (FileNotProcessedException ex)
+                        {
+                            // file not deleted
+                            FileErrorList.Add(new FileExceptionEntry()
                             {
-                                DeleteFileFromDevice(
-                                    reader.GetString("fileName"),
-                                    reader.GetString("filePath"),
-                                    reader.GetString("longfilename"),
-                                    reader.GetString("versionDate"),
-                                    reader.GetInt32("fileType").ToString()
-                                );
-                            }
-                            catch (FileNotProcessedException ex)
-                            {
-                                // file not deleted
-                                FileErrorList.Add(new FileExceptionEntry()
-                                {
-                                    File = new FileTableRow() { FileName = reader.GetString("fileName"), FilePath = reader.GetString("filePath") },
-                                    Exception = ex
-                                });
+                                File = new FileTableRow() { FileName = reader.GetString("fileName"), FilePath = reader.GetString("filePath") },
+                                Exception = ex
+                            });
 
-                                _logger.Error(ex.InnerException, "File {fileName} could not be deleted.", reader.GetString("fileName"));
-                            }
-
-                            // add to deleted id list
-                            fileVersionIds.Add(reader.GetInt32(reader.GetOrdinal("fileversionid")));
+                            _logger.Error(ex.InnerException, "File {fileName} could not be deleted.", reader.GetString("fileName"));
                         }
 
-                        reader.Close();
+                        // add to deleted id list
+                        fileVersionIds.Add(reader.GetInt32(reader.GetOrdinal("fileversionid")));
                     }
+
+                    reader.Close();
                 }
 
                 // delete metadata from database
@@ -199,7 +197,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 // delete metadata
                 await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileLink WHERE fileversionid IN (SELECT fileversionid FROM fileversiontable AS fvt WHERE fvt.fileID IN (" + subQuerySQL + "))", deleteParams.ToArray());
                 await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileversiontable WHERE fileID IN (" + subQuerySQL + ")", deleteParams.ToArray());
-                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileTable AS ft WHERE " + subQuerySQL.Substring(subQuerySQL.IndexOf("WHERE ") + 6), deleteParams.ToArray());
+                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileTable AS ft WHERE " + subQuerySQL[(subQuerySQL.IndexOf("WHERE ") + 6)..], deleteParams.ToArray());
 
                 dbClient.CommitTransaction();
             }
@@ -214,9 +212,10 @@ namespace Brightbits.BSH.Engine.Jobs
             await UpdateFreeDiskSpaceAsync();
 
             // store database version
-            int.TryParse(queryManager.Configuration.OldBackupPrevent, out int databaseVersion);
-
-            queryManager.Configuration.OldBackupPrevent = (databaseVersion + 1).ToString();
+            if (int.TryParse(queryManager.Configuration.OldBackupPrevent, out int databaseVersion))
+            {
+                queryManager.Configuration.OldBackupPrevent = (databaseVersion + 1).ToString();
+            }
 
             // close all database connections
             DbClientFactory.ClosePool();

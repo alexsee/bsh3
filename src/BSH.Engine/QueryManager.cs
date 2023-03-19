@@ -123,12 +123,10 @@ namespace Brightbits.BSH.Engine
         /// <returns></returns>
         public async Task<int> GetNumberOfVersionsAsync()
         {
-            using (var dbClient = dbClientFactory.CreateDbClient())
-            {
-                var result = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM versiontable WHERE versionStatus = 0");
+            using var dbClient = dbClientFactory.CreateDbClient();
+            var result = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM versiontable WHERE versionStatus = 0");
 
-                return int.Parse(result.ToString());
-            }
+            return int.Parse(result.ToString());
         }
 
         /// <summary>
@@ -214,12 +212,12 @@ namespace Brightbits.BSH.Engine
 
                         if (folder.StartsWith("\\"))
                         {
-                            folder = folder.Substring(1);
+                            folder = folder[1..];
                         }
 
                         if (folder.EndsWith("\\"))
                         {
-                            folder = folder.Substring(0, folder.Length - 1);
+                            folder = folder[..^1];
                         }
 
                         result.Add(folder);
@@ -242,12 +240,12 @@ namespace Brightbits.BSH.Engine
 
                         if (folder.StartsWith("\\"))
                         {
-                            folder = folder.Substring(1);
+                            folder = folder[1..];
                         }
 
                         if (folder.EndsWith("\\"))
                         {
-                            folder = folder.Substring(0, folder.Length - 1);
+                            folder = folder[..^1];
                         }
 
                         result.Add(folder);
@@ -269,31 +267,29 @@ namespace Brightbits.BSH.Engine
         {
             try
             {
-                using (var dbClient = dbClientFactory.CreateDbClient())
+                using var dbClient = dbClientFactory.CreateDbClient();
+                var parameters = new IDataParameter[]
                 {
-                    var parameters = new IDataParameter[]
-                    {
                         dbClient.CreateParameter("startVersion", DbType.Int32, 0, int.Parse(startVersion)),
                         dbClient.CreateParameter("searchString", DbType.String, 0, "%" + searchString + "%")
-                    };
+                };
 
-                    var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
-                        "WHERE a.versionID < @startVersion " +
-                        "AND a.versionStatus = 0 " +
-                        "AND EXISTS (Select 1 FROM fileversiontable, filelink, filetable " +
-                        "WHERE fileversiontable.fileversionid = filelink.fileversionid " +
-                        "AND filelink.versionID = a.versionID " +
-                        "AND filetable.fileID = fileversiontable.fileID " +
-                        "AND (filetable.filePath LIKE @searchString OR filetable.fileName LIKE @searchString)) " +
-                        "ORDER BY versionID DESC LIMIT 1", parameters);
+                var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
+                    "WHERE a.versionID < @startVersion " +
+                    "AND a.versionStatus = 0 " +
+                    "AND EXISTS (Select 1 FROM fileversiontable, filelink, filetable " +
+                    "WHERE fileversiontable.fileversionid = filelink.fileversionid " +
+                    "AND filelink.versionID = a.versionID " +
+                    "AND filetable.fileID = fileversiontable.fileID " +
+                    "AND (filetable.filePath LIKE @searchString OR filetable.fileName LIKE @searchString)) " +
+                    "ORDER BY versionID DESC LIMIT 1", parameters);
 
-                    if (result != null)
-                    {
-                        return result.ToString();
-                    }
-
-                    return null;
+                if (result != null)
+                {
+                    return result.ToString();
                 }
+
+                return null;
             }
             catch
             {
@@ -321,31 +317,29 @@ namespace Brightbits.BSH.Engine
                     path += "\\";
                 }
 
-                using (var dbClient = dbClientFactory.CreateDbClient())
+                using var dbClient = dbClientFactory.CreateDbClient();
+                var parameters = new IDataParameter[]
                 {
-                    var parameters = new IDataParameter[]
-                    {
                         dbClient.CreateParameter("startVersion", DbType.Int32, 0, int.Parse(startVersion)),
                         dbClient.CreateParameter("path", DbType.String, 0, path)
-                    };
+                };
 
-                    var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
-                        "WHERE a.versionID < @startVersion " +
-                        "AND a.versionStatus = 0 " +
-                        "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
-                        "WHERE fileversiontable.fileversionid = filelink.fileversionid " +
-                        "AND filelink.versionID = a.versionID " +
-                        "AND filetable.fileID = fileversiontable.fileID " +
-                        "AND filetable.filePath = @path) " +
-                        "ORDER BY versionID DESC LIMIT 1", parameters);
+                var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
+                    "WHERE a.versionID < @startVersion " +
+                    "AND a.versionStatus = 0 " +
+                    "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
+                    "WHERE fileversiontable.fileversionid = filelink.fileversionid " +
+                    "AND filelink.versionID = a.versionID " +
+                    "AND filetable.fileID = fileversiontable.fileID " +
+                    "AND filetable.filePath = @path) " +
+                    "ORDER BY versionID DESC LIMIT 1", parameters);
 
-                    if (result != null)
-                    {
-                        return result.ToString();
-                    }
-
-                    return null;
+                if (result != null)
+                {
+                    return result.ToString();
                 }
+
+                return null;
             }
             catch
             {
@@ -363,31 +357,29 @@ namespace Brightbits.BSH.Engine
         {
             try
             {
-                using (var dbClient = dbClientFactory.CreateDbClient())
+                using var dbClient = dbClientFactory.CreateDbClient();
+                var parameters = new IDataParameter[]
                 {
-                    var parameters = new IDataParameter[]
-                    {
                         dbClient.CreateParameter("startVersion", DbType.Int32, 0, int.Parse(startVersion)),
                         dbClient.CreateParameter("searchString", DbType.String, 0,  "%" + searchString + "%")
-                    };
+                };
 
-                    var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
-                        "WHERE a.versionID > @startVersion " +
-                        "AND a.versionStatus = 0 " +
-                        "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
-                        "WHERE fileversiontable.fileversionid = filelink.fileversionid " +
-                        "AND filelink.versionID = a.versionID " +
-                        "AND filetable.fileID = fileversiontable.fileID " +
-                        "AND (filetable.filePath LIKE @searchString OR filetable.fileName LIKE @searchString)) " +
-                        "ORDER BY versionID DESC LIMIT 1", parameters);
+                var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
+                    "WHERE a.versionID > @startVersion " +
+                    "AND a.versionStatus = 0 " +
+                    "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
+                    "WHERE fileversiontable.fileversionid = filelink.fileversionid " +
+                    "AND filelink.versionID = a.versionID " +
+                    "AND filetable.fileID = fileversiontable.fileID " +
+                    "AND (filetable.filePath LIKE @searchString OR filetable.fileName LIKE @searchString)) " +
+                    "ORDER BY versionID DESC LIMIT 1", parameters);
 
-                    if (result != null)
-                    {
-                        return result.ToString();
-                    }
-
-                    return null;
+                if (result != null)
+                {
+                    return result.ToString();
                 }
+
+                return null;
             }
             catch
             {
@@ -415,31 +407,29 @@ namespace Brightbits.BSH.Engine
                     path += "\\";
                 }
 
-                using (var dbClient = dbClientFactory.CreateDbClient())
+                using var dbClient = dbClientFactory.CreateDbClient();
+                var parameters = new IDataParameter[]
                 {
-                    var parameters = new IDataParameter[]
-                    {
                         dbClient.CreateParameter("startVersion", DbType.Int32, 0, int.Parse(startVersion)),
                         dbClient.CreateParameter("path", DbType.String, 0, path)
-                    };
+                };
 
-                    var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
-                        "WHERE a.versionID > @startVersion " +
-                        "AND a.versionStatus = 0 " +
-                        "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
-                        "WHERE fileversiontable.fileversionid = filelink.fileversionid " +
-                        "AND filelink.versionID = a.versionID " +
-                        "AND filetable.fileID = fileversiontable.fileID " +
-                        "AND filetable.filePath = @path) " +
-                        "ORDER BY versionID ASC LIMIT 1", parameters);
+                var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
+                    "WHERE a.versionID > @startVersion " +
+                    "AND a.versionStatus = 0 " +
+                    "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
+                    "WHERE fileversiontable.fileversionid = filelink.fileversionid " +
+                    "AND filelink.versionID = a.versionID " +
+                    "AND filetable.fileID = fileversiontable.fileID " +
+                    "AND filetable.filePath = @path) " +
+                    "ORDER BY versionID ASC LIMIT 1", parameters);
 
-                    if (result != null)
-                    {
-                        return result.ToString();
-                    }
-
-                    return null;
+                if (result != null)
+                {
+                    return result.ToString();
                 }
+
+                return null;
             }
             catch
             {
@@ -465,7 +455,7 @@ namespace Brightbits.BSH.Engine
                 };
 
                 // get folders from stored files
-                using (var reader = await dbClient.ExecuteDataReaderAsync(
+                using var reader = await dbClient.ExecuteDataReaderAsync(
                     CommandType.Text,
                     "SELECT filetable.fileID AS fileID, fileName, filePath, fileSize, fileDateCreated, fileDateModified, filePackage, fileType, fileStatus, versionDate, versionStatus " +
                     "FROM filetable, fileversiontable, versiontable " +
@@ -473,15 +463,13 @@ namespace Brightbits.BSH.Engine
                     "AND filetable.fileID = fileversiontable.fileID " +
                     "AND fileName LIKE @fileName " +
                     "AND filePath LIKE @filePath",
-                    fileSelectParameters))
+                    fileSelectParameters);
+                while (await reader.ReadAsync())
                 {
-                    while (await reader.ReadAsync())
-                    {
-                        result.Add(FileTableRow.FromReaderFileVersion(reader));
-                    }
-
-                    reader.Close();
+                    result.Add(FileTableRow.FromReaderFileVersion(reader));
                 }
+
+                reader.Close();
             }
 
             return result;
@@ -516,7 +504,7 @@ namespace Brightbits.BSH.Engine
                 };
 
                 // get folders from stored files
-                using (var reader = await dbClient.ExecuteDataReaderAsync(
+                using var reader = await dbClient.ExecuteDataReaderAsync(
                     CommandType.Text,
                     "SELECT " +
                     "fileversiontable.fileStatus, " +
@@ -538,15 +526,13 @@ namespace Brightbits.BSH.Engine
                     "INNER JOIN versiontable On (versiontable.versionID = fileversiontable.filePackage)  " +
                     "WHERE(filelink.versionID = @versionID) " +
                     "And filePath = @filePath",
-                    fileSelectParameters))
+                    fileSelectParameters);
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        result.Add(FileTableRow.FromReaderFile(reader));
-                    }
-
-                    reader.Close();
+                    result.Add(FileTableRow.FromReaderFile(reader));
                 }
+
+                reader.Close();
             }
 
             return result;
@@ -572,7 +558,7 @@ namespace Brightbits.BSH.Engine
 
                 if (file.FilePath.StartsWith("\\"))
                 {
-                    folderPath = Path.Combine(folderPath, file.FilePath.Substring(1));
+                    folderPath = Path.Combine(folderPath, file.FilePath[1..]);
                 }
                 else
                 {
@@ -596,79 +582,77 @@ namespace Brightbits.BSH.Engine
         /// <returns></returns>
         public async Task<Tuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, SecureString password)
         {
-            using (var dbClient = dbClientFactory.CreateDbClient())
-            using (var storage = storageFactory.GetCurrentStorageProvider())
+            using var dbClient = dbClientFactory.CreateDbClient();
+            using var storage = storageFactory.GetCurrentStorageProvider();
+            storage.Open();
+
+            var temp = false;
+            string result = null;
+
+            var parameters = new IDataParameter[]
             {
-                storage.Open();
-
-                var temp = false;
-                string result = null;
-
-                var parameters = new IDataParameter[]
-                {
                     dbClient.CreateParameter("versionId", DbType.Int32, 0, versionId),
                     dbClient.CreateParameter("fileName", DbType.String, 0, fileName),
                     dbClient.CreateParameter("filePath", DbType.String, 0, filePath)
-                };
+            };
 
-                using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text,
-                    "SELECT fileversiontable.*, filetable.*, versiontable.versionDate, versiontable.versionStatus " +
-                    "FROM filetable, fileversiontable, versiontable, filelink " +
-                    "WHERE filelink.fileversionID = fileversiontable.fileversionID " +
-                    "AND filelink.versionID = @versionId " +
-                    "AND fileversiontable.filePackage = versiontable.versionID " +
-                    "AND filetable.fileName LIKE @fileName " +
-                    "AND filetable.filePath LIKE @filePath " +
-                    "AND fileversiontable.fileID = filetable.fileID " +
-                    "LIMIT 1",
-                    parameters))
+            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text,
+                "SELECT fileversiontable.*, filetable.*, versiontable.versionDate, versiontable.versionStatus " +
+                "FROM filetable, fileversiontable, versiontable, filelink " +
+                "WHERE filelink.fileversionID = fileversiontable.fileversionID " +
+                "AND filelink.versionID = @versionId " +
+                "AND fileversiontable.filePackage = versiontable.versionID " +
+                "AND filetable.fileName LIKE @fileName " +
+                "AND filetable.filePath LIKE @filePath " +
+                "AND fileversiontable.fileID = filetable.fileID " +
+                "LIMIT 1",
+                parameters))
+            {
+                if (reader.Read())
                 {
-                    if (reader.Read())
+                    var fileType = reader.GetInt32("fileType");
+
+                    if (fileType == 1)
                     {
-                        var fileType = reader.GetInt32("fileType");
-
-                        if (fileType == 1)
-                        {
-                            result = GetFileNameFromDrive(FileTableRow.FromReaderFileVersion(reader));
-                        }
-                        else if (fileType >= 2 && fileType <= 6)
-                        {
-                            temp = true;
-
-                            var localFilePath = Path.Combine(Path.GetTempPath(), reader.GetString("fileName"));
-                            var remoteFilePath = "";
-
-                            if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
-                            {
-                                remoteFilePath = reader.GetString("versionDate") + "\\_LONG_FILES\\" + reader.GetString("longfilename");
-                            }
-                            else
-                            {
-                                remoteFilePath = reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
-                            }
-
-                            if (fileType == 3)
-                            {
-                                storage.CopyFileFromStorage(localFilePath, remoteFilePath);
-                            }
-                            else if (fileType == 2 || fileType == 4)
-                            {
-                                storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
-                            }
-                            else if (fileType == 5 || fileType == 6)
-                            {
-                                storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
-                            }
-
-                            result = localFilePath;
-                        }
+                        result = GetFileNameFromDrive(FileTableRow.FromReaderFileVersion(reader));
                     }
+                    else if (fileType >= 2 && fileType <= 6)
+                    {
+                        temp = true;
 
-                    reader.Close();
+                        var localFilePath = Path.Combine(Path.GetTempPath(), reader.GetString("fileName"));
+                        var remoteFilePath = "";
+
+                        if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
+                        {
+                            remoteFilePath = reader.GetString("versionDate") + "\\_LONG_FILES\\" + reader.GetString("longfilename");
+                        }
+                        else
+                        {
+                            remoteFilePath = reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
+                        }
+
+                        if (fileType == 3)
+                        {
+                            storage.CopyFileFromStorage(localFilePath, remoteFilePath);
+                        }
+                        else if (fileType == 2 || fileType == 4)
+                        {
+                            storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
+                        }
+                        else if (fileType == 5 || fileType == 6)
+                        {
+                            storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
+                        }
+
+                        result = localFilePath;
+                    }
                 }
 
-                return new Tuple<string, bool>(result, temp);
+                reader.Close();
             }
+
+            return new Tuple<string, bool>(result, temp);
         }
 
         /// <summary>
@@ -679,16 +663,14 @@ namespace Brightbits.BSH.Engine
         /// <returns></returns>
         public async Task<bool> HasChangesOrNewAsync(string path, string versionId)
         {
-            using (var dbClient = dbClientFactory.CreateDbClient())
+            using var dbClient = dbClientFactory.CreateDbClient();
+            var result = await dbClient.ExecuteScalarAsync($"SELECT COUNT(1) FROM fileversiontable, filetable WHERE filetable.fileID = fileversiontable.fileID AND fileversiontable.filePackage = {versionId} AND filetable.filePath LIKE \"{path}%\"");
+            if (result == null)
             {
-                var result = await dbClient.ExecuteScalarAsync($"SELECT COUNT(1) FROM fileversiontable, filetable WHERE filetable.fileID = fileversiontable.fileID AND fileversiontable.filePackage = {versionId} AND filetable.filePath LIKE \"{path}%\"");
-                if (result == null)
-                {
-                    return false;
-                }
-
-                return int.Parse(result.ToString()) > 0;
+                return false;
             }
+
+            return int.Parse(result.ToString()) > 0;
         }
 
         /// <summary>
@@ -729,11 +711,11 @@ namespace Brightbits.BSH.Engine
                     var idx = folder.IndexOf("\\" + directory.Name + "\\");
 
                     // path found
-                    var result = Path.Combine(destination, folder.Substring(idx + directory.Name.Length + 2));
+                    var result = Path.Combine(destination, folder[(idx + directory.Name.Length + 2)..]);
 
                     if (result.EndsWith("\\"))
                     {
-                        return result.Substring(0, result.Length - 1);
+                        return result[..^1];
                     }
 
                     return result;
@@ -750,12 +732,12 @@ namespace Brightbits.BSH.Engine
                 // correct path
                 if (path.StartsWith("\\"))
                 {
-                    path = path.Substring(1);
+                    path = path[1..];
                 }
 
                 if (path.EndsWith("\\"))
                 {
-                    path = path.Substring(0, path.Length - 1);
+                    path = path[..^1];
                 }
 
                 if (Configuration.ShowLocalizedPath != "1")
@@ -771,23 +753,21 @@ namespace Brightbits.BSH.Engine
                         dbClient.CreateParameter("junction", DbType.String, 0, "%" + path + "%")
                     };
 
-                    using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT junction, folder FROM folderjunctiontable WHERE junction LIKE @junction", parameters))
+                    using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT junction, folder FROM folderjunctiontable WHERE junction LIKE @junction", parameters);
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        var junction = reader.GetString("junction");
+                        var folder = reader.GetString("folder");
+
+                        if (path.Contains(junction))
                         {
-                            var junction = reader.GetString("junction");
-                            var folder = reader.GetString("folder");
+                            reader.Close();
 
-                            if (path.Contains(junction))
-                            {
-                                reader.Close();
-
-                                return path.Replace(junction, folder);
-                            }
+                            return path.Replace(junction, folder);
                         }
-
-                        reader.Close();
                     }
+
+                    reader.Close();
                 }
 
                 return path;

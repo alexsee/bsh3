@@ -38,7 +38,7 @@ namespace Brightbits.BSH.Engine.Jobs
 
         protected readonly bool silent;
 
-        private readonly List<IJobReport> observers = new List<IJobReport>();
+        private readonly List<IJobReport> observers = new();
 
         protected Job(IStorage storage, DbClientFactory dbClientFactory, QueryManager queryManager, bool silent = false)
         {
@@ -207,10 +207,8 @@ namespace Brightbits.BSH.Engine.Jobs
             {
                 queryManager.Configuration.FreeSpace = storage.GetFreeSpace().ToString();
 
-                using (var dbClient = dbClientFactory.CreateDbClient())
-                {
-                    queryManager.Configuration.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
-                }
+                using var dbClient = dbClientFactory.CreateDbClient();
+                queryManager.Configuration.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
             }
             catch (Exception ex)
             {

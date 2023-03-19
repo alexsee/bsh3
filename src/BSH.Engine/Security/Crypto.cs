@@ -59,7 +59,7 @@ namespace Brightbits.BSH.Engine.Security
 
         public static SecureString ToSecureString(string input)
         {
-            SecureString secure = new SecureString();
+            SecureString secure = new();
             foreach (char c in input)
             {
                 secure.AppendChar(c);

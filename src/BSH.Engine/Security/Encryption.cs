@@ -80,7 +80,7 @@ namespace Brightbits.BSH.Engine.Security
             {
                 using (FileStream InFileStream = new FileStream(SourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    using (FileStream OutFileStream = new FileStream(TargetFile, FileMode.Create))
+                    using (FileStream OutFileStream = new(TargetFile, FileMode.Create))
                     {
                         CryptoStream CryptStream = null;
 
@@ -89,13 +89,13 @@ namespace Brightbits.BSH.Engine.Security
                         long BufferCount = 0;
                         long FileLen = InFileStream.Length;
 
-                        Rfc2898DeriveBytes MakeKey = new Rfc2898DeriveBytes(Crypto.ToInsecureString(Password), mKeySalt);
-                        Rfc2898DeriveBytes MakeIV = new Rfc2898DeriveBytes(Crypto.ToInsecureString(Password), mIVSalt);
+                        Rfc2898DeriveBytes MakeKey = new(Crypto.ToInsecureString(Password), mKeySalt);
+                        Rfc2898DeriveBytes MakeIV = new(Crypto.ToInsecureString(Password), mIVSalt);
 
                         // Prüfen ob die Bitstärke mit dem gewählten Algorithmus übereinstimmt und evtl. anpassen
                         CheckBitLen();
 
-                        RijndaelManaged RIJNDAEL = new RijndaelManaged();
+                        RijndaelManaged RIJNDAEL = new();
                         CryptStream = new CryptoStream(OutFileStream, RIJNDAEL.CreateEncryptor(MakeKey.GetBytes(mBitLen), MakeIV.GetBytes(16)), CryptoStreamMode.Write); // 16,24,32
                         do
                         {
@@ -133,8 +133,8 @@ namespace Brightbits.BSH.Engine.Security
         {
             try
             {
-                FileStream InFileStream = new FileStream(SourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                FileStream OutFileStream = new FileStream(TargetFile, FileMode.Create);
+                FileStream InFileStream = new(SourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                FileStream OutFileStream = new(TargetFile, FileMode.Create);
                 CryptoStream CryptStream = null;
 
                 byte[] Data = new byte[BufferSize - 1 + 1];
@@ -142,13 +142,13 @@ namespace Brightbits.BSH.Engine.Security
                 long BufferCount = 0;
                 long FileLen = InFileStream.Length;
 
-                Rfc2898DeriveBytes MakeKey = new Rfc2898DeriveBytes(Crypto.ToInsecureString(Password), mKeySalt);
-                Rfc2898DeriveBytes MakeIV = new Rfc2898DeriveBytes(Crypto.ToInsecureString(Password), mIVSalt);
+                Rfc2898DeriveBytes MakeKey = new(Crypto.ToInsecureString(Password), mKeySalt);
+                Rfc2898DeriveBytes MakeIV = new(Crypto.ToInsecureString(Password), mIVSalt);
 
                 // Prüfen ob die Bitstärke mit dem gewählten Algorithmus übereinstimmt und evtl. anpassen
                 CheckBitLen();
 
-                RijndaelManaged RIJNDAEL = new RijndaelManaged();
+                RijndaelManaged RIJNDAEL = new();
                 CryptStream = new CryptoStream(InFileStream, RIJNDAEL.CreateDecryptor(MakeKey.GetBytes(mBitLen), MakeIV.GetBytes(16)), CryptoStreamMode.Read);
 
                 do
