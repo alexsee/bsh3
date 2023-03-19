@@ -84,7 +84,7 @@
       <Version>4.3.1</Version>
     </PackageReference>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
-    <PackageReference Include="ServiceWire" Version="5.3.1" />
+    <PackageReference Include="ServiceWire" Version="5.5.4" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="7.0.1" />
   </ItemGroup>
 </Project>
