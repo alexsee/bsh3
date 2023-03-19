@@ -156,6 +156,54 @@ namespace Brightbits.BSH.Main
         }
 
         /// <summary>
+        /// Prepares a backup job by setting internal states, informs all observers, and
+        /// shows (if applicable) the corresponding user interfaces to the user. This method
+        /// also handles potential exceptions and returns false.
+        /// </summary>
+        /// <param name="action">Specifies the action that is executed.</param>
+        /// <param name="statusDialog">Specifies if the status window should be shown.</param>
+        /// <returns></returns>
+        private async Task<bool> PrepareJobAndHandleExceptions(ActionType action, bool statusDialog)
+        {
+            try
+            {
+                await PrepareJob(action, statusDialog);
+            }
+            catch (TaskRunningException ex)
+            {
+                _logger.Error(ex, "Another task is running, so the backup task will not be started.");
+
+                if (statusDialog)
+                {
+                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                HandleFinishedStatusDialog(statusDialog);
+                return false;
+            }
+            catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
+            {
+                _logger.Error(ex, "Device is not ready, so the backup task will not be started.");
+
+                if (statusDialog)
+                {
+                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                HandleFinishedStatusDialog(statusDialog);
+                return false;
+            }
+            catch (PasswordRequiredException ex)
+            {
+                _logger.Error(ex, "Password request was cancelled, so the backup task will not be started.");
+                HandleFinishedStatusDialog(statusDialog);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Ensures that the corresponding finishing tasks of the status windows are handled according
         /// to the user settings. If the user specifies to shutdown the computer, the computer will be
         /// shut down. If the user specifies to hibernate the computer, the computer will be put into
@@ -201,38 +249,8 @@ namespace Brightbits.BSH.Main
                 title, description, statusDialog, fullBackup);
 
             // check job requirements
-            try
+            if (!await PrepareJobAndHandleExceptions(ActionType.Backup, statusDialog))
             {
-                await PrepareJob(ActionType.Backup, statusDialog);
-            }
-            catch (TaskRunningException ex)
-            {
-                _logger.Error(ex, "Another task is running, so the backup task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
-            {
-                _logger.Error(ex, "Device is not ready, so the backup task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (PasswordRequiredException ex)
-            {
-                _logger.Error(ex, "Password request was cancelled, so the backup task will not be started.");
-                HandleFinishedStatusDialog(statusDialog);
                 return;
             }
 
@@ -286,38 +304,8 @@ namespace Brightbits.BSH.Main
                 version, file, destination);
 
             // check job requirements
-            try
+            if (!await PrepareJobAndHandleExceptions(ActionType.Restore, statusDialog))
             {
-                await PrepareJob(ActionType.Backup, statusDialog);
-            }
-            catch (TaskRunningException ex)
-            {
-                _logger.Error(ex, "Another task is running, so the restore task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
-            {
-                _logger.Error(ex, "Device is not ready, so the restore task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (PasswordRequiredException ex)
-            {
-                _logger.Error(ex, "Password request was cancelled, so the restore task will not be started.");
-                HandleFinishedStatusDialog(statusDialog);
                 return;
             }
 
@@ -350,38 +338,8 @@ namespace Brightbits.BSH.Main
                 version, files.Count, destination);
 
             // check job requirements
-            try
+            if (!await PrepareJobAndHandleExceptions(ActionType.Restore, statusDialog))
             {
-                await PrepareJob(ActionType.Backup, statusDialog);
-            }
-            catch (TaskRunningException ex)
-            {
-                _logger.Error(ex, "Another task is running, so the restore task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
-            {
-                _logger.Error(ex, "Device is not ready, so the restore task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (PasswordRequiredException ex)
-            {
-                _logger.Error(ex, "Password request was cancelled, so the restore task will not be started.");
-                HandleFinishedStatusDialog(statusDialog);
                 return;
             }
 
@@ -429,38 +387,8 @@ namespace Brightbits.BSH.Main
             _logger.Debug("Delete task started for version {version}.", version);
 
             // check job requirements
-            try
+            if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
             {
-                await PrepareJob(ActionType.Backup, statusDialog);
-            }
-            catch (TaskRunningException ex)
-            {
-                _logger.Error(ex, "Another task is running, so the delete task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
-            {
-                _logger.Error(ex, "Device is not ready, so the delete task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (PasswordRequiredException ex)
-            {
-                _logger.Error(ex, "Password request was cancelled, so the delete task will not be started.");
-                HandleFinishedStatusDialog(statusDialog);
                 return;
             }
 
@@ -490,38 +418,8 @@ namespace Brightbits.BSH.Main
             _logger.Debug("Delete task started for {versions} versions.", versions.Count);
 
             // check job requirements
-            try
+            if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
             {
-                await PrepareJob(ActionType.Backup, statusDialog);
-            }
-            catch (TaskRunningException ex)
-            {
-                _logger.Error(ex, "Another task is running, so the delete task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
-            {
-                _logger.Error(ex, "Device is not ready, so the delete task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (PasswordRequiredException ex)
-            {
-                _logger.Error(ex, "Password request was cancelled, so the delete task will not be started.");
-                HandleFinishedStatusDialog(statusDialog);
                 return;
             }
 
@@ -561,38 +459,8 @@ namespace Brightbits.BSH.Main
             _logger.Debug("Delete task started for file and folder filter.");
 
             // check job requirements
-            try
+            if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
             {
-                await PrepareJob(ActionType.Backup, statusDialog);
-            }
-            catch (TaskRunningException ex)
-            {
-                _logger.Error(ex, "Another task is running, so the delete task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
-            {
-                _logger.Error(ex, "Device is not ready, so the delete task will not be started.");
-
-                if (statusDialog)
-                {
-                    MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                HandleFinishedStatusDialog(statusDialog);
-                return;
-            }
-            catch (PasswordRequiredException ex)
-            {
-                _logger.Error(ex, "Password request was cancelled, so the delete task will not be started.");
-                HandleFinishedStatusDialog(statusDialog);
                 return;
             }
 
