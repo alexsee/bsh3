@@ -106,8 +106,8 @@ namespace Manoli.Utils.CSharpFormat
             }
 
             //build a master regex with capturing groups
-            StringBuilder regAll = new StringBuilder();
-            regAll.Append("(");
+            StringBuilder regAll = new();
+            regAll.Append('(');
             regAll.Append(CommentRegEx);
             regAll.Append(")|(");
             regAll.Append(StringRegEx);
@@ -118,7 +118,7 @@ namespace Manoli.Utils.CSharpFormat
             }
             regAll.Append(")|(");
             regAll.Append(regKeyword);
-            regAll.Append(")");
+            regAll.Append(')');
 
             RegexOptions caseInsensitive = CaseSensitive ? 0 : RegexOptions.IgnoreCase;
             CodeRegex = new Regex(regAll.ToString(), RegexOptions.Singleline | caseInsensitive, TimeSpan.FromSeconds(10));
@@ -135,14 +135,14 @@ namespace Manoli.Utils.CSharpFormat
         {
             if (match.Groups[1].Success) //comment
             {
-                StringReader reader = new StringReader(match.ToString());
+                StringReader reader = new(match.ToString());
                 string line;
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 while ((line = reader.ReadLine()) != null)
                 {
                     if (sb.Length > 0)
                     {
-                        sb.Append("\n");
+                        sb.Append('\n');
                     }
                     sb.Append("<span class=\"rem\">");
                     sb.Append(line);
