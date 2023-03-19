@@ -80,13 +80,11 @@ namespace BSH.Service
 
             try
             {
-                using (var vss = new VssBackup())
-                {
-                    vss.Setup(fileInfo.Directory.Root.Name);
+                using var vss = new VssBackup();
+                vss.Setup(fileInfo.Directory.Root.Name);
 
-                    var snapshotPath = vss.GetSnapshotPath(source);
-                    XCopy(snapshotPath, destination);
-                }
+                var snapshotPath = vss.GetSnapshotPath(source);
+                XCopy(snapshotPath, destination);
 
                 return true;
             }
