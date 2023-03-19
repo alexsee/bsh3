@@ -94,7 +94,7 @@ namespace Manoli.Utils.CSharpFormat
         /// <returns>A string containing the HTML formatted code.</returns>
         public string FormatCode(Stream source)
         {
-            StreamReader reader = new StreamReader(source);
+            StreamReader reader = new(source);
             string s = reader.ReadToEnd();
             reader.Close();
             return FormatCode(s, LineNumbers, Alternate, EmbedStyleSheet, false);
@@ -134,20 +134,14 @@ namespace Manoli.Utils.CSharpFormat
         /// <returns>A string containing the CSS definitions.</returns>
         public static string GetCssString()
         {
-            StreamReader reader = new StreamReader(GetCssStream());
+            StreamReader reader = new(GetCssStream());
             return reader.ReadToEnd();
         }
-
-        private Regex codeRegex;
 
         /// <summary>
         /// The regular expression used to capture language tokens.
         /// </summary>
-        protected Regex CodeRegex
-        {
-            get { return codeRegex; }
-            set { codeRegex = value; }
-        }
+        protected Regex CodeRegex { get; set; }
 
         /// <summary>
         /// Called to evaluate the HTML fragment corresponding to each 
@@ -163,7 +157,7 @@ namespace Manoli.Utils.CSharpFormat
             bool alternate, bool embedStyleSheet, bool subCode)
         {
             //replace special characters
-            StringBuilder sb = new StringBuilder(source);
+            StringBuilder sb = new(source);
 
             if (!subCode)
             {
@@ -174,7 +168,7 @@ namespace Manoli.Utils.CSharpFormat
             }
 
             //color the code
-            source = codeRegex.Replace(sb.ToString(), new MatchEvaluator(this.MatchEval));
+            source = CodeRegex.Replace(sb.ToString(), new MatchEvaluator(this.MatchEval));
 
             sb = new StringBuilder();
 
@@ -192,7 +186,7 @@ namespace Manoli.Utils.CSharpFormat
                     sb.Append("<div class=\"csharpcode\">\n");
                 }
 
-                StringReader reader = new StringReader(source);
+                StringReader reader = new(source);
                 int i = 0;
                 string spaces = "    ";
                 int order;
@@ -213,7 +207,7 @@ namespace Manoli.Utils.CSharpFormat
                     {
                         order = (int)Math.Log10(i);
                         sb.Append("<span class=\"lnum\">"
-                            + spaces.Substring(0, 3 - order) + i.ToString()
+                            + spaces[..(3 - order)] + i.ToString()
                             + ":  </span>");
                     }
 
