@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0-windows7.0</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <StartupObject>SmartPreview.modMain</StartupObject>
+    <StartupObject>SmartPreview.Program</StartupObject>
     <MyType>WindowsFormsWithCustomSubMain</MyType>
     <OptionStrict>On</OptionStrict>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(ProjectDir)**\*.vb</DefaultItemExcludes>
