@@ -144,7 +144,7 @@ namespace Brightbits.BSH.Engine.Services
             scheduler.Shutdown();
         }
 
-        private class RunActionJob : IJob
+        private sealed class RunActionJob : IJob
         {
             async Task IJob.Execute(IJobExecutionContext context)
             {
