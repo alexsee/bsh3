@@ -19,6 +19,8 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <Platforms>x64</Platforms>
+    <Configurations>Debug;Release;Windows 10</Configurations>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Brightbits.BSH.Main.Program</StartupObject>
@@ -39,6 +41,9 @@
     <OutputPath>bin\x64\Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\..\output\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows 10|x64'">
     <OutputPath>..\..\output\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Windows 10|x64'">
