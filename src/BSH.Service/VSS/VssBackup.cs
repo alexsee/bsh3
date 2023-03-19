@@ -13,10 +13,7 @@
 // limitations under the License.
 
 using Alphaleonis.Win32.Vss;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 
 namespace BSH.Service.VSS
 {

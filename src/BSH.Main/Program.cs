@@ -76,6 +76,7 @@ namespace Brightbits.BSH.Main
 
             // set current culture
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
 
             CheckSingleInstance();
@@ -126,7 +127,7 @@ namespace Brightbits.BSH.Main
 #endif
 
                 // start backup engine
-                Task.WaitAll(BackupLogic.StartupAsync());
+                BackupLogic.StartupAsync().Wait();
 
                 // parse command line if system is configured
                 if (BackupLogic.GlobalBackup.ConfigurationManager.IsConfigured == "1")

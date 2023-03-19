@@ -219,7 +219,7 @@ namespace Brightbits.BSH.Engine.Jobs
             queryManager.Configuration.OldBackupPrevent = (databaseVersion + 1).ToString();
 
             // close all database connections
-            dbClientFactory.ClosePool();
+            DbClientFactory.ClosePool();
 
             // store database
             UpdateDatabaseOnStorage();

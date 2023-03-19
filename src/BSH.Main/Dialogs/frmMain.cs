@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Brightbits.BSH.Engine.Database;
 using BSH.Main.Properties;
 using Serilog;
 using System;
@@ -286,7 +287,7 @@ namespace Brightbits.BSH.Main
                 // Gesamte Konfiguration zurücksetzen
                 CurrentTab = AvailableTabs.TabNothing;
                 BackupLogic.StopSystem();
-                BackupLogic.GlobalBackup.DbClientFactory.ClosePool();
+                DbClientFactory.ClosePool();
                 BackupLogic.GlobalBackup = null;
 
                 System.IO.File.Delete(BackupLogic.DatabaseFile);

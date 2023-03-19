@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Security;
@@ -34,7 +35,7 @@ namespace BSH.Test
         {
             if (engineService != null)
             {
-                this.engineService.DbClientFactory.ClosePool();
+                DbClientFactory.ClosePool();
                 this.engineService = null;
             }
 
@@ -59,7 +60,7 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            Assert.Throws<NoSourceFolderSelectedException>(async () => await backupJob.BackupAsync(token));
+            Assert.ThrowsAsync<NoSourceFolderSelectedException>(async () => await backupJob.BackupAsync(token));
         }
 
         [Test]
@@ -73,7 +74,7 @@ namespace BSH.Test
 
             // start backup
             var token = new CancellationTokenSource().Token;
-            Assert.Throws<DeviceNotReadyException>(async () => await backupJob.BackupAsync(token));
+            Assert.ThrowsAsync<DeviceNotReadyException>(async () => await backupJob.BackupAsync(token));
         }
 
         [Test]
