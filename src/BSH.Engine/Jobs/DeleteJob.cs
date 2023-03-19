@@ -209,7 +209,7 @@ namespace Brightbits.BSH.Engine.Jobs
             await UpdateFreeDiskSpaceAsync();
 
             // close all database connections
-            dbClientFactory.ClosePool();
+            DbClientFactory.ClosePool();
 
             // store database
             UpdateDatabaseOnStorage();

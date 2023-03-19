@@ -109,7 +109,7 @@ namespace Brightbits.BSH.Engine.Services
         /// <param name="databaseFile"></param>
         public void UpdateDatabaseFile(string databaseFile)
         {
-            dbClientFactory.ClosePool();
+            DbClientFactory.ClosePool();
 
             using (var storage = storageFactory.GetCurrentStorageProvider())
             {

@@ -127,7 +127,7 @@ namespace Brightbits.BSH.Main
 #endif
 
                 // start backup engine
-                Task.WaitAll(BackupLogic.StartupAsync());
+                BackupLogic.StartupAsync().Wait();
 
                 // parse command line if system is configured
                 if (BackupLogic.GlobalBackup.ConfigurationManager.IsConfigured == "1")

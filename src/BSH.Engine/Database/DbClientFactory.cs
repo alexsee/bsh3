@@ -45,7 +45,7 @@ namespace Brightbits.BSH.Engine.Database
         /// <summary>
         /// Cleans up all open data pools for the database and runs the garbage collection.
         /// </summary>
-        public void ClosePool()
+        public static void ClosePool()
         {
             System.Data.SQLite.SQLiteConnection.ClearAllPools();
             GC.Collect();

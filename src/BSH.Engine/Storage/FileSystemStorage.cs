@@ -82,95 +82,94 @@ namespace Brightbits.BSH.Engine.Storage
             try
             {
                 // connect to network
-                using (var networkConn = new NetworkConnection(backupFolder, networkUserName, networkPassword))
+                using var networkConn = new NetworkConnection(backupFolder, networkUserName, networkPassword);
+
+                // check path
+                if (Directory.Exists(backupFolder))
                 {
-                    // check path
-                    if (Directory.Exists(backupFolder))
+                    // check if we can write to the folder
+                    if (!CanWriteToStorage(backupFolder))
                     {
-                        // check if we can write to the folder
-                        if (!CanWriteToStorage(backupFolder))
-                        {
-                            return false;
-                        }
-
-                        // store volume serial if not present
-                        var volumeSerial = Win32Stuff.GetVolumeSerial(backupFolder.Substring(0, 3));
-
-                        if (string.IsNullOrEmpty(volumeSerialNumber) && volumeSerial != null)
-                        {
-                            configurationManager.MediaVolumeSerial = volumeSerial;
-                        }
-
-                        // check serial
-                        if (!string.IsNullOrEmpty(volumeSerial) && !string.IsNullOrEmpty(volumeSerialNumber))
-                        {
-                            if (volumeSerial == volumeSerialNumber)
-                            {
-                                return IsValidStorage();
-                            }
-                            else
-                            {
-                                _logger.Information("Storage device serial number is not equal to the stored id. We are not sure if that is the same device.");
-                                return false;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        _logger.Information("Medium directory {directoryName} not found; searching for device with corresponding serial number.", backupFolder);
-
-                        // search for medium (maybe the drive letter has changed)
-                        if (string.IsNullOrEmpty(volumeSerialNumber))
-                        {
-                            return false;
-                        }
-
-                        foreach (var drive in DriveInfo.GetDrives())
-                        {
-                            if (drive.DriveType != DriveType.Fixed && drive.DriveType != DriveType.Removable)
-                            {
-                                continue;
-                            }
-
-                            try
-                            {
-                                // get serial id
-                                var volumeSerial = Win32Stuff.GetVolumeSerial(drive.RootDirectory.FullName.Substring(0, 3));
-
-                                if (!string.IsNullOrEmpty(volumeSerial) && volumeSerial == volumeSerialNumber)
-                                {
-                                    // drive found
-                                    _logger.Information("Drive letter updated with the serial number {volumeSerialNumber} at {driveLetter}.",
-                                        volumeSerialNumber, drive.RootDirectory.FullName);
-
-                                    var newBackupFolder = drive.RootDirectory.FullName.Substring(0, 1) + configurationManager.BackupFolder.Substring(1);
-
-                                    if (Directory.Exists(newBackupFolder) && CanWriteToStorage(newBackupFolder))
-                                    {
-                                        // update folder path
-                                        configurationManager.BackupFolder = newBackupFolder;
-                                        backupFolder = newBackupFolder;
-
-                                        return IsValidStorage();
-                                    }
-                                }
-                            }
-                            catch (DeviceContainsWrongStateException)
-                            {
-                                throw;
-                            }
-                            catch (Exception)
-                            {
-                                // could not access device, ignore that
-                            }
-                        }
-
                         return false;
                     }
 
-                    // check storage version
-                    return IsValidStorage();
+                    // store volume serial if not present
+                    var volumeSerial = Win32Stuff.GetVolumeSerial(backupFolder[..3]);
+
+                    if (string.IsNullOrEmpty(volumeSerialNumber) && volumeSerial != null)
+                    {
+                        configurationManager.MediaVolumeSerial = volumeSerial;
+                    }
+
+                    // check serial
+                    if (!string.IsNullOrEmpty(volumeSerial) && !string.IsNullOrEmpty(volumeSerialNumber))
+                    {
+                        if (volumeSerial == volumeSerialNumber)
+                        {
+                            return IsValidStorage();
+                        }
+                        else
+                        {
+                            _logger.Information("Storage device serial number is not equal to the stored id. We are not sure if that is the same device.");
+                            return false;
+                        }
+                    }
                 }
+                else
+                {
+                    _logger.Information("Medium directory {directoryName} not found; searching for device with corresponding serial number.", backupFolder);
+
+                    // search for medium (maybe the drive letter has changed)
+                    if (string.IsNullOrEmpty(volumeSerialNumber))
+                    {
+                        return false;
+                    }
+
+                    foreach (var drive in DriveInfo.GetDrives())
+                    {
+                        if (drive.DriveType != DriveType.Fixed && drive.DriveType != DriveType.Removable)
+                        {
+                            continue;
+                        }
+
+                        try
+                        {
+                            // get serial id
+                            var volumeSerial = Win32Stuff.GetVolumeSerial(drive.RootDirectory.FullName[..3]);
+
+                            if (!string.IsNullOrEmpty(volumeSerial) && volumeSerial == volumeSerialNumber)
+                            {
+                                // drive found
+                                _logger.Information("Drive letter updated with the serial number {volumeSerialNumber} at {driveLetter}.",
+                                    volumeSerialNumber, drive.RootDirectory.FullName);
+
+                                var newBackupFolder = drive.RootDirectory.FullName[..1] + configurationManager.BackupFolder[1..];
+
+                                if (Directory.Exists(newBackupFolder) && CanWriteToStorage(newBackupFolder))
+                                {
+                                    // update folder path
+                                    configurationManager.BackupFolder = newBackupFolder;
+                                    backupFolder = newBackupFolder;
+
+                                    return IsValidStorage();
+                                }
+                            }
+                        }
+                        catch (DeviceContainsWrongStateException)
+                        {
+                            throw;
+                        }
+                        catch (Exception)
+                        {
+                            // could not access device, ignore that
+                        }
+                    }
+
+                    return false;
+                }
+
+                // check storage version
+                return IsValidStorage();
             }
             catch (Win32Exception)
             {
@@ -281,10 +280,7 @@ namespace Brightbits.BSH.Engine.Storage
 
         private void DisconnectToNetwork()
         {
-            if (networkConnection != null)
-            {
-                networkConnection.Dispose();
-            }
+            networkConnection?.Dispose();
         }
 
         public bool UploadDatabaseFile(string databaseFile)
@@ -315,16 +311,15 @@ namespace Brightbits.BSH.Engine.Storage
             var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
             Directory.CreateDirectory(Path.GetDirectoryName(remoteFilePath));
 
-            using (var fs = new FileStream(remoteFilePath + ".zip", FileMode.Create, FileAccess.ReadWrite))
-            using (var zipFile = new ZipFile())
-            {
-                zipFile.ParallelDeflateThreshold = -1;
-                zipFile.CompressionLevel = (Ionic.Zlib.CompressionLevel)compressionLevel;
-                zipFile.UseZip64WhenSaving = Zip64Option.AsNecessary;
-                zipFile.AddFile(GetLocalFileName(localFile), "\\");
+            using var fs = new FileStream(remoteFilePath + ".zip", FileMode.Create, FileAccess.ReadWrite);
+            using var zipFile = new ZipFile();
+            
+            zipFile.ParallelDeflateThreshold = -1;
+            zipFile.CompressionLevel = (Ionic.Zlib.CompressionLevel)compressionLevel;
+            zipFile.UseZip64WhenSaving = Zip64Option.AsNecessary;
+            zipFile.AddFile(GetLocalFileName(localFile), "\\");
 
-                zipFile.Save(fs);
-            }
+            zipFile.Save(fs);
 
             return true;
         }
@@ -368,10 +363,8 @@ namespace Brightbits.BSH.Engine.Storage
             // create directory if not exists
             Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
-            using (var zipFile = new ZipFile(remoteFilePath))
-            {
-                zipFile[0].Extract(GetLocalFileName(Path.GetDirectoryName(localFile)), ExtractExistingFileAction.OverwriteSilently);
-            }
+            using var zipFile = new ZipFile(remoteFilePath);
+            zipFile[0].Extract(GetLocalFileName(Path.GetDirectoryName(localFile)), ExtractExistingFileAction.OverwriteSilently);
 
             return true;
         }
