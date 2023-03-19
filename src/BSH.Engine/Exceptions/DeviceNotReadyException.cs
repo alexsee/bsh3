@@ -13,14 +13,23 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Brightbits.BSH.Engine.Exceptions
 {
+    [Serializable]
     public class DeviceNotReadyException : Exception
     {
-        public DeviceNotReadyException() : base()
-        {
+        public DeviceNotReadyException() : base() { }
 
+        protected DeviceNotReadyException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+            // ...
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
         }
 
         public override string Message => "Das Sicherungsmedium steht aktuell nicht zur Verfügung.";
