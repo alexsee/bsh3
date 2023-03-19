@@ -14,8 +14,6 @@
 
 using BSH.Service.Shared;
 using BSH.Service.VSS;
-using System;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace BSH.Service
