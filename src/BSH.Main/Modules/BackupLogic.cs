@@ -449,7 +449,7 @@ namespace Brightbits.BSH.Main
             // read scheduler entries in database
             using var dbClient = GlobalBackup.DbClientFactory.CreateDbClient();
             using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
-            
+
             while (reader.Read())
             {
                 var scheduleDate = reader.GetDateTimeParsed("timDate");
@@ -499,9 +499,9 @@ namespace Brightbits.BSH.Main
                         var versions = GlobalBackup.QueryManager.GetVersions(true);
                         var checkDate = DateUtils.GetDateToWeekDay(scheduleDate.DayOfWeek, DateTime.Now);
 
-                        foreach (var version in versions)
+                        foreach (var versionDate in versions.Select(x => x.CreationDate))
                         {
-                            if (version.CreationDate.Subtract(checkDate).Days < 0)
+                            if (versionDate.Subtract(checkDate).Days < 0)
                             {
                                 // backup was performed already earlier
                                 if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
@@ -512,7 +512,7 @@ namespace Brightbits.BSH.Main
                                 break;
                             }
 
-                            if (version.CreationDate.DayOfWeek == scheduleDate.DayOfWeek)
+                            if (versionDate.DayOfWeek == scheduleDate.DayOfWeek)
                             {
                                 break;
                             }
@@ -540,10 +540,10 @@ namespace Brightbits.BSH.Main
                         var versions = GlobalBackup.QueryManager.GetVersions(true);
                         var checkDate = DateUtils.GetDateToMonth(scheduleDate.Day, DateTime.Now);
 
-                        foreach (var version in versions)
+                        foreach (var versionDate in versions.Select(x => x.CreationDate))
                         {
                             // backup was performed already earlier
-                            if (version.CreationDate.Subtract(checkDate).Days < 0)
+                            if (versionDate.Subtract(checkDate).Days < 0)
                             {
                                 if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                                 {
@@ -553,7 +553,7 @@ namespace Brightbits.BSH.Main
                                 break;
                             }
 
-                            if (version.CreationDate.Day == scheduleDate.Day)
+                            if (versionDate.Day == scheduleDate.Day)
                             {
                                 break;
                             }
@@ -581,16 +581,16 @@ namespace Brightbits.BSH.Main
             }
 
             // check if this backup was performed
-            foreach (var version in GlobalBackup.QueryManager.GetVersions())
+            foreach (var versionDate in GlobalBackup.QueryManager.GetVersions().Select(x => x.CreationDate))
             {
                 if (orOlder)
                 {
-                    if (version.CreationDate >= date)
+                    if (versionDate >= date)
                     {
                         return false;
                     }
                 }
-                else if (version.CreationDate > date.AddMinutes(-5) && version.CreationDate < date.AddMinutes(5))
+                else if (versionDate > date.AddMinutes(-5) && versionDate < date.AddMinutes(5))
                 {
                     return false;
                 }
