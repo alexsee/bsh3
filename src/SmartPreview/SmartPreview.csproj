@@ -59,6 +59,9 @@
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
     <BaseOutputPath>D:\Git\bsh3\output</BaseOutputPath>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <Authors>Alexander Seeliger</Authors>
+    <Company>Alexander Seeliger Software</Company>
+    <Copyright>Alexander Seeliger</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />

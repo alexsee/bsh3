@@ -11,6 +11,9 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Authors>Alexander Seeliger</Authors>
+    <Company>Alexander Seeliger Software</Company>
+    <Copyright>Alexander Seeliger</Copyright>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <OutputPath>bin\x64\Debug\</OutputPath>
