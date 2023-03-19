@@ -20,6 +20,7 @@
  */
 #endregion
 
+using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -92,10 +93,10 @@ namespace Manoli.Utils.CSharpFormat
         {
             //generate the keyword and preprocessor regexes from the keyword lists
             Regex r;
-            r = new Regex(@"\w+|-\w+|#\w+|@@\w+|#(?:\\(?:s|w)(?:\*|\+)?\w+)+|@\\w\*+");
+            r = new Regex(@"\w+|-\w+|#\w+|@@\w+|#(?:\\(?:s|w)(?:\*|\+)?\w+)+|@\\w\*+", RegexOptions.None, TimeSpan.FromSeconds(10));
             string regKeyword = r.Replace(Keywords, @"(?<=^|\W)$0(?=\W)");
             string regPreproc = r.Replace(Preprocessors, @"(?<=^|\s)$0(?=\s|$)");
-            r = new Regex(@" +");
+            r = new Regex(@" +", RegexOptions.None, TimeSpan.FromSeconds(10));
             regKeyword = r.Replace(regKeyword, @"|");
             regPreproc = r.Replace(regPreproc, @"|");
 
@@ -120,7 +121,7 @@ namespace Manoli.Utils.CSharpFormat
             regAll.Append(")");
 
             RegexOptions caseInsensitive = CaseSensitive ? 0 : RegexOptions.IgnoreCase;
-            CodeRegex = new Regex(regAll.ToString(), RegexOptions.Singleline | caseInsensitive);
+            CodeRegex = new Regex(regAll.ToString(), RegexOptions.Singleline | caseInsensitive, TimeSpan.FromSeconds(10));
         }
 
         /// <summary>

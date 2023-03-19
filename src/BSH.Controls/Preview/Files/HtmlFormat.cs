@@ -20,6 +20,7 @@
  */
 #endregion
 
+using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -61,8 +62,8 @@ namespace Manoli.Utils.CSharpFormat
                 + regTagDelimiter + ")|(" + regTagName + ")|("
                 + regAttributes + ")|(" + regEntity + ")";
 
-            CodeRegex = new Regex(regAll, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            attribRegex = new Regex(regAttributeMatch, RegexOptions.Singleline);
+            CodeRegex = new Regex(regAll, RegexOptions.IgnoreCase | RegexOptions.Singleline, TimeSpan.FromSeconds(10));
+            attribRegex = new Regex(regAttributeMatch, RegexOptions.Singleline, TimeSpan.FromSeconds(10));
 
             csf = new CSharpFormat();
             jsf = new JavaScriptFormat();
