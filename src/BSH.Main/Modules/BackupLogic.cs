@@ -425,18 +425,6 @@ namespace Brightbits.BSH.Main
 
         #region  Schedule System 
 
-        public struct Schedule
-        {
-            public string timDate;
-            public string timType;
-
-            public Schedule(string stimDate, string stimType)
-            {
-                timDate = stimDate;
-                timType = stimType;
-            }
-        }
-
         private async static void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
         {
             if (e.Mode == PowerModes.Resume)
