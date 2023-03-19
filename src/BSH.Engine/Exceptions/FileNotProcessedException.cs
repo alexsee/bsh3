@@ -13,18 +13,30 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Brightbits.BSH.Engine.Exceptions
 {
+    [Serializable]
     public class FileNotProcessedException : Exception
     {
         public bool RequestCancel { get; set; }
 
-        public FileNotProcessedException() { }
+        public FileNotProcessedException() : base() { }
 
         public FileNotProcessedException(Exception ex, bool cancel = false) : base($"Datei konnte nicht von/nach Backupmedium kopiert werden ({ex.Message}).", ex)
         {
             this.RequestCancel = cancel;
+        }
+
+        protected FileNotProcessedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+            // ...
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
         }
     }
 }

@@ -29,8 +29,6 @@ namespace Brightbits.BSH.Main
 
         public delegate void ItemClickEventHandler(aVersionListItem sender);
 
-        private VersionDetails _versionDetail;
-
         public bool VersionStable
         {
             get
@@ -43,17 +41,7 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        public VersionDetails Version
-        {
-            get
-            {
-                return _versionDetail;
-            }
-            set
-            {
-                _versionDetail = value;
-            }
-        }
+        public VersionDetails Version { get; set; }
 
         public string ToolTipTitle
         {

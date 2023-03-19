@@ -126,7 +126,7 @@ namespace Brightbits.BSH.Main
                 string regularExpression = txtRegEx.Text.Trim().Replace("\r\n", "|").Trim().Replace("||", "|");
                 if (!string.IsNullOrEmpty(regularExpression))
                 {
-                    Regex.IsMatch(@"C:\test.txt", regularExpression, RegexOptions.Singleline);
+                    Regex.IsMatch(@"C:\test.txt", regularExpression, RegexOptions.Singleline, TimeSpan.FromSeconds(10));
                 }
 
                 BackupLogic.GlobalBackup.ConfigurationManager.ExcludeMask = regularExpression;

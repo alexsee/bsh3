@@ -45,7 +45,7 @@ namespace Brightbits.BSH.Engine.Storage
 
         private readonly string folderPath;
 
-        private readonly bool encryption = true;
+        private readonly bool encryption;
 
         public int compressionLevel;
 
