@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net7.0-windows7.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <StartupObject>SmartPreview.modMain</StartupObject>
     <MyType>WindowsFormsWithCustomSubMain</MyType>
@@ -62,6 +62,7 @@
     <Authors>Alexander Seeliger</Authors>
     <Company>Alexander Seeliger Software</Company>
     <Copyright>Alexander Seeliger</Copyright>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />

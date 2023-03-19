@@ -314,7 +314,7 @@ namespace Brightbits.BSH.Engine.Storage
             // create directory if not exists
             var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
             Directory.CreateDirectory(Path.GetDirectoryName(remoteFilePath));
-            
+
             using (var fs = new FileStream(remoteFilePath + ".zip", FileMode.Create, FileAccess.ReadWrite))
             using (var zipFile = new ZipFile())
             {
