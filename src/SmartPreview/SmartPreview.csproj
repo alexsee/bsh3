@@ -105,4 +105,7 @@
   <ItemGroup>
     <EmbeddedResource Remove="My Project\Resources.resx" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>

@@ -41,4 +41,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PreviewHandlerFramework\PreviewHandlerFramework.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>
