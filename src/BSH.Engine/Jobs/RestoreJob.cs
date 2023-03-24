@@ -200,7 +200,7 @@ namespace Brightbits.BSH.Engine.Jobs
                                 {
                                     var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower());
 
-                                    fileDest = folder + "\\" + fileDest.Substring(idx + Path.GetFileName(folder).Length + 2);
+                                    fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
                                     break;
                                 }
                             }
@@ -208,7 +208,7 @@ namespace Brightbits.BSH.Engine.Jobs
                         else
                         {
                             // path found
-                            fileDest = fileDest.Substring(fileDest.IndexOf("\\", 2) + 1);
+                            fileDest = fileDest[(fileDest.IndexOf("\\", 2) + 1)..];
                             fileDest = destFolders[0] + "\\" + fileDest;
                         }
 
@@ -277,7 +277,7 @@ namespace Brightbits.BSH.Engine.Jobs
                                 {
                                     var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower());
 
-                                    fileDest = folder + "\\" + fileDest.Substring(idx + Path.GetFileName(folder).Length + 2);
+                                    fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
                                     break;
                                 }
                             }
@@ -285,7 +285,7 @@ namespace Brightbits.BSH.Engine.Jobs
                         else
                         {
                             // path found
-                            fileDest = fileDest.Substring(fileDest.IndexOf("\\", 2) + 1);
+                            fileDest = fileDest[(fileDest.IndexOf("\\", 2) + 1)..];
                             fileDest = destFolders[0] + "\\" + fileDest;
                         }
 

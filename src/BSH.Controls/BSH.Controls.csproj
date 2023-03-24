@@ -1,145 +1,59 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{81B22B32-2F91-4EF3-BEBC-2CBAFEF5F67D}</ProjectGuid>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BSH.Controls</RootNamespace>
-    <AssemblyName>BSH.Controls</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <PlatformTarget>x64</PlatformTarget>
+    <Authors>Alexander Seeliger</Authors>
+    <Company>Alexander Seeliger Software</Company>
+    <Copyright>Alexander Seeliger</Copyright>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
+    <Title>Backup Service Home</Title>
+    <Configurations>Debug;Release;Windows 10</Configurations>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\..\output\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows 10|x64'">
+    <OutputPath>..\..\output\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Windows 10|x64'">
     <OutputPath>bin\x64\Windows 10\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Preview\Files\CLikeFormat.cs" />
-    <Compile Include="Preview\Files\CodeFormat.cs" />
-    <Compile Include="Preview\Files\CSharpFormat.cs" />
-    <Compile Include="Preview\Files\HtmlFormat.cs" />
-    <Compile Include="Preview\Files\JavaScriptFormat.cs" />
-    <Compile Include="Preview\Files\MshFormat.cs" />
-    <Compile Include="Preview\Files\SourceFormat.cs" />
-    <Compile Include="Preview\Files\TsqlFormat.cs" />
-    <Compile Include="Preview\Files\VisualBasicFormat.cs" />
-    <Compile Include="Preview\Psd\ColorModeData.cs" />
-    <Compile Include="Preview\Psd\CPSD.cs" />
-    <Compile Include="Preview\Psd\DisplayInfo.cs" />
-    <Compile Include="Preview\Psd\HeaderInfo.cs" />
-    <Compile Include="Preview\Psd\ImageResource.cs" />
-    <Compile Include="Preview\Psd\ResolutionInfo.cs" />
-    <Compile Include="Preview\Psd\ThumbNail.cs" />
-    <Compile Include="Preview\Psd\WinInvoke32.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="UI\aVersionList.cs">
+    <Compile Update="UI\aVersionList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\aVersionList.designer.cs">
-      <DependentUpon>aVersionList.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\aVersionListItem.cs">
+    <Compile Update="UI\aVersionListItem.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\aVersionListItem.designer.cs">
-      <DependentUpon>aVersionListItem.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\DatetimeComparer.cs" />
-    <Compile Include="UI\dlgInputBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\dlgInputBox.Designer.cs">
-      <DependentUpon>dlgInputBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\InputBox.cs" />
-    <Compile Include="UI\ListViewColumnSorter.cs" />
-    <Compile Include="UI\LoadingCircle.cs">
+    <Compile Update="UI\LoadingCircle.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\LoadingCircle.Designer.cs">
-      <DependentUpon>LoadingCircle.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\LoadingCircleToolStripMenuItem.cs">
+    <Compile Update="UI\LoadingCircleToolStripMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\ucNavigation.cs">
+    <Compile Update="UI\ucNavigation.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\ucNavigation.Designer.cs">
-      <DependentUpon>ucNavigation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ucNavigationItem.cs">
+    <Compile Update="UI\ucNavigationItem.cs">
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\ucNavigationItem.Designer.cs">
-      <DependentUpon>ucNavigationItem.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Preview\Files\csharp.css" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\aVersionList.resx">
-      <DependentUpon>aVersionList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\aVersionListItem.resx">
-      <DependentUpon>aVersionListItem.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\dlgInputBox.resx">
-      <DependentUpon>dlgInputBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ucNavigation.resx">
-      <DependentUpon>ucNavigation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ucNavigationItem.resx">
-      <DependentUpon>ucNavigationItem.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj">
-      <Project>{73a80afa-c186-477a-a564-6936605ab6f0}</Project>
-      <Name>BSH.Engine</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
+  </ItemGroup>
 </Project>

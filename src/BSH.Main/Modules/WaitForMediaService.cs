@@ -51,7 +51,7 @@ namespace Brightbits.BSH.Main
             if (!silent)
             {
                 window = new frmWaitForMedia();
-                window.OnAbort_Click += () => cancellationTokenSource.Cancel();
+                window.OnAbort_Click += cancellationTokenSource.Cancel;
                 window.Show();
             }
 

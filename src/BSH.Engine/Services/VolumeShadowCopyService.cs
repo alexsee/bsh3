@@ -25,22 +25,21 @@ namespace Brightbits.BSH.Engine.Services
         {
             try
             {
-                using (var npClient = new NpClient<IVSSRemoteObject>(new NpEndPoint("backupservicehome")))
+                using var npClient = new NpClient<IVSSRemoteObject>(new NpEndPoint("backupservicehome"));
+                
+                var serviceFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                var destination = destFileName.Replace("\\\\", "\\");
+
+                // copy file
+                var result = npClient.Proxy.CopyFileWithVSS(serviceFilePath, fileName, destination);
+
+                if (!result)
                 {
-                    var serviceFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                    var destination = destFileName.Replace("\\\\", "\\");
-
-                    // copy file
-                    var result = npClient.Proxy.CopyFileWithVSS(serviceFilePath, fileName, destination);
-
-                    if (!result)
-                    {
-                        Log.Error(npClient.Proxy.GetException(), "Could not copy file via VSS.");
-                        return false;
-                    }
-
-                    return true;
+                    Log.Error(npClient.Proxy.GetException(), "Could not copy file via VSS.");
+                    return false;
                 }
+
+                return true;
             }
             catch
             {

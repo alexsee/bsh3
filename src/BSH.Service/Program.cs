@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Alexander Seeliger
+// Copyright 2022 Alexander Seeliger
 //
 // Licensed under the Apache License, Version 2.0 (the "License")
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ServiceProcess;
+using BSH.Service;
+using Microsoft.Extensions.Logging.Configuration;
+using Microsoft.Extensions.Logging.EventLog;
 
-namespace BSH.Service
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddWindowsService(options =>
 {
-    internal static class Program
-    {
-        static void Main()
-        {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[]
-            {
-                new Service()
-            };
-            ServiceBase.Run(ServicesToRun);
-        }
-    }
-}
+    options.ServiceName = "Backup Service Home 3 Service";
+});
+
+LoggerProviderOptions.RegisterProviderOptions<
+    EventLogSettings, EventLogLoggerProvider>(builder.Services);
+
+builder.Services.AddHostedService<WindowsBackgroundService>();
+
+IHost host = builder.Build();
+host.Run();

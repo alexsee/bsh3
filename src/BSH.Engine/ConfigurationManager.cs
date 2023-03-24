@@ -392,57 +392,55 @@ namespace Brightbits.BSH.Engine
 
         public async Task LoadConfigurationAsync()
         {
-            using (var dbClient = dbClientFactory.CreateDbClient())
+            using var dbClient = dbClientFactory.CreateDbClient();
+            
+            foreach (var configEntry in GetType().GetProperties())
             {
-                foreach (var configEntry in GetType().GetProperties())
+                if (configEntry == null)
                 {
-                    if (configEntry == null)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    var parameters = new IDataParameter[] {
+                var parameters = new IDataParameter[] {
                        dbClient.CreateParameter("value", DbType.String, 1024, configEntry.Name.Replace("_", ""))
                     };
 
-                    var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT confValue FROM configuration WHERE confProperty LIKE @value LIMIT 1", parameters);
+                var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT confValue FROM configuration WHERE confProperty LIKE @value LIMIT 1", parameters);
 
-                    if (result == null || result.Equals(DBNull.Value))
-                    {
-                        continue;
-                    }
+                if (result == null || result.Equals(DBNull.Value))
+                {
+                    continue;
+                }
 
-                    if (configEntry.Name == "Status" || configEntry.Name == "TaskType" || configEntry.Name == "Compression" || configEntry.Name == "Encrypt" || configEntry.Name == "MediumType")
+                if (configEntry.Name == "Status" || configEntry.Name == "TaskType" || configEntry.Name == "Compression" || configEntry.Name == "Encrypt" || configEntry.Name == "MediumType")
+                {
+                    if (int.TryParse(result.ToString(), out int val))
                     {
-                        if (int.TryParse(result.ToString(), out int val))
-                        {
-                            configEntry.SetValue(this, val);
-                        }
+                        configEntry.SetValue(this, val);
                     }
-                    else
-                    {
-                        configEntry.SetValue(this, result);
-                    }
+                }
+                else
+                {
+                    configEntry.SetValue(this, result);
                 }
             }
         }
 
         private void SaveProperty(string property, string value)
         {
-            using (var dbClient = dbClientFactory.CreateDbClient())
+            using var dbClient = dbClientFactory.CreateDbClient();
+            
+            var parameters = new IDataParameter[]
             {
-                var parameters = new IDataParameter[]
-                {
                     dbClient.CreateParameter("value", DbType.String, 255, value),
                     dbClient.CreateParameter("prop", DbType.String, 255, property.ToLower())
-                };
+            };
 
-                var result = dbClient.ExecuteNonQuery(CommandType.Text, "UPDATE configuration SET confValue = @value WHERE confProperty = @prop", parameters);
+            var result = dbClient.ExecuteNonQuery(CommandType.Text, "UPDATE configuration SET confValue = @value WHERE confProperty = @prop", parameters);
 
-                if (result == 0)
-                {
-                    dbClient.ExecuteNonQuery(CommandType.Text, "INSERT INTO configuration VALUES (@prop, @value)", parameters);
-                }
+            if (result == 0)
+            {
+                dbClient.ExecuteNonQuery(CommandType.Text, "INSERT INTO configuration VALUES (@prop, @value)", parameters);
             }
         }
     }

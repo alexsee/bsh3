@@ -30,7 +30,7 @@ namespace Brightbits.BSH.Engine.Database
         DbConnection _connection;
         DbTransaction _transaction;
         DbProviderFactory _factory;
-        readonly Dictionary<string, DbCommand> _commands = new Dictionary<string, DbCommand>();
+        readonly Dictionary<string, DbCommand> _commands = new();
 
         #endregion
 

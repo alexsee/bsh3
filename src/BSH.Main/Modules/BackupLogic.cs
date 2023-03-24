@@ -425,18 +425,6 @@ namespace Brightbits.BSH.Main
 
         #region  Schedule System 
 
-        public struct Schedule
-        {
-            public string timDate;
-            public string timType;
-
-            public Schedule(string stimDate, string stimType)
-            {
-                timDate = stimDate;
-                timType = stimType;
-            }
-        }
-
         private async static void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
         {
             if (e.Mode == PowerModes.Resume)
@@ -459,125 +447,124 @@ namespace Brightbits.BSH.Main
             SystemEvents.PowerModeChanged += PowerModeChanged;
 
             // read scheduler entries in database
-            using (var dbClient = GlobalBackup.DbClientFactory.CreateDbClient())
-            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null))
+            using var dbClient = GlobalBackup.DbClientFactory.CreateDbClient();
+            using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
+
+            while (reader.Read())
             {
-                while (reader.Read())
+                var scheduleDate = reader.GetDateTimeParsed("timDate");
+                int scheduleType = reader.GetInt32("timType");
+
+                if (scheduleType == 1)
                 {
-                    var scheduleDate = reader.GetDateTimeParsed("timDate");
-                    int scheduleType = reader.GetInt32("timType");
-
-                    if (scheduleType == 1)
+                    // once
+                    if (DateTime.Compare(DateTime.Now, scheduleDate) < 0)
                     {
-                        // once
-                        if (DateTime.Compare(DateTime.Now, scheduleDate) < 0)
-                        {
-                            schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), scheduleDate);
-                        }
+                        schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), scheduleDate);
                     }
-                    else if (scheduleType == 2)
-                    {
-                        // hourly
-                        schedulerService.ScheduleHourly(async () => await thScheduleSysRunBackup(), scheduleDate);
-                    }
-                    else if (scheduleType == 3)
-                    {
-                        // daily
+                }
+                else if (scheduleType == 2)
+                {
+                    // hourly
+                    schedulerService.ScheduleHourly(async () => await thScheduleSysRunBackup(), scheduleDate);
+                }
+                else if (scheduleType == 3)
+                {
+                    // daily
 
-                        // catch up old backup?
+                    // catch up old backup?
+                    if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
+                    {
+                        schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                    }
+
+                    schedulerService.ScheduleDaily(async () => await thScheduleSysRunBackup(), scheduleDate);
+                }
+                else if (scheduleType == 4)
+                {
+                    // weekly
+
+                    // catch up old backup?
+                    if (DateTime.Now.DayOfWeek == scheduleDate.DayOfWeek)
+                    {
+                        // backup was performed already earlier
                         if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                         {
                             schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                         }
-
-                        schedulerService.ScheduleDaily(async () => await thScheduleSysRunBackup(), scheduleDate);
                     }
-                    else if (scheduleType == 4)
+                    else
                     {
-                        // weekly
+                        // check of backup was done the last 7 days
+                        var versions = GlobalBackup.QueryManager.GetVersions(true);
+                        var checkDate = DateUtils.GetDateToWeekDay(scheduleDate.DayOfWeek, DateTime.Now);
 
-                        // catch up old backup?
-                        if (DateTime.Now.DayOfWeek == scheduleDate.DayOfWeek)
+                        foreach (var versionDate in versions.Select(x => x.CreationDate))
                         {
-                            // backup was performed already earlier
-                            if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
-                            {
-                                schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
-                            }
-                        }
-                        else
-                        {
-                            // check of backup was done the last 7 days
-                            var versions = GlobalBackup.QueryManager.GetVersions(true);
-                            var checkDate = DateUtils.GetDateToWeekDay(scheduleDate.DayOfWeek, DateTime.Now);
-
-                            foreach (var version in versions)
-                            {
-                                if (version.CreationDate.Subtract(checkDate).Days < 0)
-                                {
-                                    // backup was performed already earlier
-                                    if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
-                                    {
-                                        schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
-                                    }
-
-                                    break;
-                                }
-
-                                if (version.CreationDate.DayOfWeek == scheduleDate.DayOfWeek)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-
-                        schedulerService.ScheduleWeekly(async () => await thScheduleSysRunBackup(), scheduleDate);
-                    }
-                    else if (scheduleType == 5)
-                    {
-                        // monthly
-
-                        // catch up old backup?
-                        if (DateTime.Now.Day == scheduleDate.Day)
-                        {
-                            // backup was performed already earlier
-                            if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
-                            {
-                                schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
-                            }
-                        }
-                        else
-                        {
-                            // check of backup was done the last 7 days
-                            var versions = GlobalBackup.QueryManager.GetVersions(true);
-                            var checkDate = DateUtils.GetDateToMonth(scheduleDate.Day, DateTime.Now);
-
-                            foreach (var version in versions)
+                            if (versionDate.Subtract(checkDate).Days < 0)
                             {
                                 // backup was performed already earlier
-                                if (version.CreationDate.Subtract(checkDate).Days < 0)
+                                if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                                 {
-                                    if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
-                                    {
-                                        schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
-                                    }
-
-                                    break;
+                                    schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                                 }
 
-                                if (version.CreationDate.Day == scheduleDate.Day)
-                                {
-                                    break;
-                                }
+                                break;
+                            }
+
+                            if (versionDate.DayOfWeek == scheduleDate.DayOfWeek)
+                            {
+                                break;
                             }
                         }
-
-                        schedulerService.ScheduleMonthly(async () => await thScheduleSysRunBackup(), scheduleDate);
                     }
-                }
 
-                reader.Close();
+                    schedulerService.ScheduleWeekly(async () => await thScheduleSysRunBackup(), scheduleDate);
+                }
+                else if (scheduleType == 5)
+                {
+                    // monthly
+
+                    // catch up old backup?
+                    if (DateTime.Now.Day == scheduleDate.Day)
+                    {
+                        // backup was performed already earlier
+                        if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
+                        {
+                            schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                        }
+                    }
+                    else
+                    {
+                        // check of backup was done the last 7 days
+                        var versions = GlobalBackup.QueryManager.GetVersions(true);
+                        var checkDate = DateUtils.GetDateToMonth(scheduleDate.Day, DateTime.Now);
+
+                        foreach (var versionDate in versions.Select(x => x.CreationDate))
+                        {
+                            // backup was performed already earlier
+                            if (versionDate.Subtract(checkDate).Days < 0)
+                            {
+                                if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
+                                {
+                                    schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                                }
+
+                                break;
+                            }
+
+                            if (versionDate.Day == scheduleDate.Day)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    schedulerService.ScheduleMonthly(async () => await thScheduleSysRunBackup(), scheduleDate);
+                }
             }
+
+            reader.Close();
         }
 
         public static bool DoPastBackup(DateTime date, bool orOlder = false)
@@ -594,16 +581,16 @@ namespace Brightbits.BSH.Main
             }
 
             // check if this backup was performed
-            foreach (var version in GlobalBackup.QueryManager.GetVersions())
+            foreach (var versionDate in GlobalBackup.QueryManager.GetVersions().Select(x => x.CreationDate))
             {
                 if (orOlder)
                 {
-                    if (version.CreationDate >= date)
+                    if (versionDate >= date)
                     {
                         return false;
                     }
                 }
-                else if (version.CreationDate > date.AddMinutes(-5) && version.CreationDate < date.AddMinutes(5))
+                else if (versionDate > date.AddMinutes(-5) && versionDate < date.AddMinutes(5))
                 {
                     return false;
                 }

@@ -145,7 +145,7 @@ namespace Brightbits.BSH.Engine.Jobs
             queryManager.Configuration.EncryptPassMD5 = "";
 
             // close all database connections
-            dbClientFactory.ClosePool();
+            DbClientFactory.ClosePool();
 
             // store database
             UpdateDatabaseOnStorage();

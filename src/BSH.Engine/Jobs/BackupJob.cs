@@ -38,7 +38,7 @@ namespace Brightbits.BSH.Engine.Jobs
     {
         private static readonly ILogger _logger = Log.ForContext<BackupJob>();
 
-        private readonly HashSet<string> junctionFolders = new HashSet<string>();
+        private readonly HashSet<string> junctionFolders = new();
 
         public string Title { get; set; }
 
@@ -371,15 +371,17 @@ namespace Brightbits.BSH.Engine.Jobs
                 queryManager.Configuration.LastBackupDone = newVersionDate;
                 queryManager.Configuration.LastVersionDate = "";
 
-                int.TryParse(queryManager.Configuration.OldBackupPrevent, out int databaseVersion);
-                queryManager.Configuration.OldBackupPrevent = (databaseVersion + 1).ToString();
+                if (int.TryParse(queryManager.Configuration.OldBackupPrevent, out int databaseVersion))
+                {
+                    queryManager.Configuration.OldBackupPrevent = (databaseVersion + 1).ToString();
+                }
             }
 
             // refresh free diskspace
             await UpdateFreeDiskSpaceAsync();
 
             // close all database connections
-            dbClientFactory.ClosePool();
+            DbClientFactory.ClosePool();
 
             // store database
             UpdateDatabaseOnStorage();

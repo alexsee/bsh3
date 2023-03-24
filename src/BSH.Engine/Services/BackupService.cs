@@ -109,13 +109,11 @@ namespace Brightbits.BSH.Engine.Services
         /// <param name="databaseFile"></param>
         public void UpdateDatabaseFile(string databaseFile)
         {
-            dbClientFactory.ClosePool();
+            DbClientFactory.ClosePool();
 
-            using (var storage = storageFactory.GetCurrentStorageProvider())
-            {
-                storage.Open();
-                storage.UploadDatabaseFile(databaseFile);
-            }
+            using var storage = storageFactory.GetCurrentStorageProvider();
+            storage.Open();
+            storage.UploadDatabaseFile(databaseFile);
         }
 
         /// <summary>
@@ -373,10 +371,8 @@ namespace Brightbits.BSH.Engine.Services
         /// <param name="stable"></param>
         public async Task SetStableAsync(string version, bool stable)
         {
-            using (var dbClient = dbClientFactory.CreateDbClient())
-            {
-                await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStable = {(stable ? 1 : 0)} WHERE versionID = {version}");
-            }
+            using var dbClient = dbClientFactory.CreateDbClient();
+            await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStable = {(stable ? 1 : 0)} WHERE versionID = {version}");
         }
     }
 }

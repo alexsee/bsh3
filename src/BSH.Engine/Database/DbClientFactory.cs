@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Data.Common;
 
 namespace Brightbits.BSH.Engine.Database
 {
@@ -28,6 +29,8 @@ namespace Brightbits.BSH.Engine.Database
         public DbClientFactory(string databaseFile)
         {
             this.databaseFile = databaseFile;
+
+            DbProviderFactories.RegisterFactory("System.Data.SQLite", System.Data.SQLite.SQLiteFactory.Instance);
         }
 
         /// <summary>
@@ -42,7 +45,7 @@ namespace Brightbits.BSH.Engine.Database
         /// <summary>
         /// Cleans up all open data pools for the database and runs the garbage collection.
         /// </summary>
-        public void ClosePool()
+        public static void ClosePool()
         {
             System.Data.SQLite.SQLiteConnection.ClearAllPools();
             GC.Collect();

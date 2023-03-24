@@ -14,8 +14,6 @@
 
 using BSH.Service.Shared;
 using BSH.Service.VSS;
-using System;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace BSH.Service
@@ -82,13 +80,11 @@ namespace BSH.Service
 
             try
             {
-                using (var vss = new VssBackup())
-                {
-                    vss.Setup(fileInfo.Directory.Root.Name);
+                using var vss = new VssBackup();
+                vss.Setup(fileInfo.Directory.Root.Name);
 
-                    var snapshotPath = vss.GetSnapshotPath(source);
-                    XCopy(snapshotPath, destination);
-                }
+                var snapshotPath = vss.GetSnapshotPath(source);
+                XCopy(snapshotPath, destination);
 
                 return true;
             }

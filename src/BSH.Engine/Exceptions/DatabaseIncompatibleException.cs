@@ -14,11 +14,24 @@
 
 using Brightbits.BSH.Engine.Properties;
 using System;
+using System.Runtime.Serialization;
 
 namespace Brightbits.BSH.Engine.Exceptions
 {
+    [Serializable]
     public class DatabaseIncompatibleException : Exception
     {
         public DatabaseIncompatibleException() : base(Resources.EXCEPTION_NEWER_DATABASE) { }
+
+        protected DatabaseIncompatibleException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+            // ...
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+        }
+
     }
 }

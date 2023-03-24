@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Alexander Seeliger
+// Copyright 2022 Alexander Seeliger
 //
 // Licensed under the Apache License, Version 2.0 (the "License")
 // you may not use this file except in compliance with the License.
@@ -14,36 +14,37 @@
 
 using BSH.Service.Shared;
 using ServiceWire.NamedPipes;
-using System.ServiceProcess;
 
 namespace BSH.Service
 {
-    public partial class Service : ServiceBase
+    public sealed class WindowsBackgroundService : IHostedService
     {
-        private NpHost host;
+        private readonly Task _completedTask = Task.CompletedTask;
 
-        private IVSSRemoteObject remoteObject;
+        private readonly NpHost host;
 
-        public Service()
-        {
-            InitializeComponent();
-        }
+        private readonly IVSSRemoteObject remoteObject;
 
-        protected override void OnStart(string[] args)
+        public WindowsBackgroundService()
         {
             // init remote object
             remoteObject = new VSSService();
 
             // create remote rpc server
             host = new NpHost("backupservicehome");
-            host.AddService<IVSSRemoteObject>(remoteObject);
-            host.Open();
+            host.AddService(remoteObject);
         }
 
-        protected override void OnStop()
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-            // close remote rpc server
+            host.Open();
+            return _completedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
             host.Close();
+            return _completedTask;
         }
     }
 }

@@ -49,28 +49,3 @@ jobs:
       with:
         name: backup-service-home-setup
         path: ${{runner.workspace}}/bsh3/tools/setup/output/backupservicehome-*.exe
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: release
-    environment: production
-
-    steps:
-
-    - name: Download artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: backup-service-home-setup
-        path: ~/
-
-    - name: Upload to Brightbits
-      uses: mdallasanta/ssh-scp-deploy@v1.2.0
-      with:
-        local: ~/backupservicehome-*.exe
-        remote: '~/'
-        host: ${{secrets.REMOTE_HOST}}                                      # Remote server address - REQUIRED true
-        port: ${{secrets.REMOTE_PORT}}                                      # Remote server port - REQUIRED false - DEFAULT 22
-        user: ${{secrets.REMOTE_USER}}                                      # Remote server user - REQUIRED true
-        key: ${{secrets.SSH_PRIVATE_KEY}}                                        # Remote server private key - REQUIRED at least one of "password" or "key" 
-        ssh_options: -o StrictHostKeyChecking=no                     # A set of ssh_option separated by -o - REQUIRED false - DEFAULT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
-        scp_options: -v                                              # Flags to use during scp - REQUIRED false - DEFAULT ''‚

@@ -179,7 +179,7 @@ namespace Brightbits.BSH.Engine.Services
                 {
                     if (_regexExcludeCache == null)
                     {
-                        _regexExcludeCache = new Regex(queryManager.Configuration.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline);
+                        _regexExcludeCache = new Regex(queryManager.Configuration.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline, TimeSpan.FromSeconds(10));
                     }
 
                     if (_regexExcludeCache.IsMatch(file.FileNamePath()))
@@ -244,7 +244,7 @@ namespace Brightbits.BSH.Engine.Services
             {
                 if (_regexExcludeCache == null)
                 {
-                    _regexExcludeCache = new Regex(queryManager.Configuration.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline);
+                    _regexExcludeCache = new Regex(queryManager.Configuration.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline, TimeSpan.FromSeconds(10));
                 }
 
                 if (_regexExcludeCache.IsMatch(folder.Folder))
@@ -264,7 +264,7 @@ namespace Brightbits.BSH.Engine.Services
 
             if (result.StartsWith("\\") && result.Length > 1)
             {
-                result = result.Substring(1);
+                result = result[1..];
             }
             else if (result == "\\")
             {
