@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using BSH.Main.Dialogs.SubDialogs;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main
@@ -172,6 +174,27 @@ namespace Brightbits.BSH.Main
             using (var errorWindow = new frmErrorInsufficientDiskSpace())
             {
                 errorWindow.ShowDialog();
+            }
+        }
+
+        public async Task ShowCreateBackupWindow()
+        {
+            using (var dlgCreateBackup = new frmCreateBackup())
+            {
+                if (dlgCreateBackup.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                // retrieve sources
+                string sources = string.Join("|", dlgCreateBackup.clstSources.CheckedItems.Cast<string>());
+                if (string.IsNullOrEmpty(sources))
+                {
+                    return;
+                }
+
+                // start backup
+                await BackupLogic.BackupController.CreateBackupAsync(dlgCreateBackup.txtTitle.Text, dlgCreateBackup.txtDescription.Text, true, dlgCreateBackup.cbFullBackup.Checked, dlgCreateBackup.chkShutdownPC.Checked, sourceFolders: sources);
             }
         }
     }

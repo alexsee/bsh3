@@ -355,24 +355,7 @@ namespace Brightbits.BSH.Main
         {
             if ((ModifierKeys & Keys.Control) == Keys.Control)
             {
-                // show options
-                using (var dlgCreateBackup = new frmCreateBackup())
-                {
-                    if (dlgCreateBackup.ShowDialog() != DialogResult.OK)
-                    {
-                        return;
-                    }
-
-                    // retrieve sources
-                    string sources = string.Join("|", dlgCreateBackup.clstSources.CheckedItems.Cast<string>());
-                    if (string.IsNullOrEmpty(sources))
-                    {
-                        return;
-                    }
-
-                    // start backup
-                    await BackupLogic.BackupController.CreateBackupAsync(dlgCreateBackup.txtTitle.Text, dlgCreateBackup.txtDescription.Text, true, dlgCreateBackup.cbFullBackup.Checked, dlgCreateBackup.chkShutdownPC.Checked, sourceFolders: sources);
-                }
+                await PresentationController.Current.ShowCreateBackupWindow();
             }
             else
             {
