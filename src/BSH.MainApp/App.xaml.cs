@@ -39,7 +39,7 @@ public partial class App : Application
         return service;
     }
 
-    public static WindowEx MainWindow { get; } = new MainWindow();
+    public static MainWindow MainWindow { get; } = new MainWindow();
 
     public App()
     {
@@ -66,6 +66,8 @@ public partial class App : Application
             services.AddSingleton<IFileService, FileService>();
 
             // Views and ViewModels
+            services.AddTransient<BrowserViewModel>();
+            services.AddTransient<BrowserPage>();
             services.AddTransient<MainViewModel>();
             services.AddTransient<MainPage>();
 
@@ -88,9 +90,6 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
-
-        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
-
         await App.GetService<IActivationService>().ActivateAsync(args);
     }
 }

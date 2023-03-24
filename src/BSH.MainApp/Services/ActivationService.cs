@@ -11,7 +11,6 @@ public class ActivationService : IActivationService
 {
     private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
-    private UIElement? _shell = null;
 
     public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers)
     {
@@ -23,12 +22,6 @@ public class ActivationService : IActivationService
     {
         // Execute tasks before activation.
         await InitializeAsync();
-
-        // Set the MainWindow Content.
-        if (App.MainWindow.Content == null)
-        {
-            App.MainWindow.Content = _shell ?? new Frame();
-        }
 
         // Handle activation via ActivationHandlers.
         await HandleActivationAsync(activationArgs);

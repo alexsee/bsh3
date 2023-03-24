@@ -16,4 +16,8 @@ public sealed partial class MainPage : Page
         ViewModel = App.GetService<MainViewModel>();
         InitializeComponent();
     }
+
+    private async void btnExecuteBackup_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+    }
 }

@@ -11,6 +11,19 @@
     PersistenceId="MainWindow"
     mc:Ignorable="d">
     <windowex:WindowEx.Backdrop>
-        <windowex:MicaSystemBackdrop/>
+        <windowex:MicaSystemBackdrop  />
     </windowex:WindowEx.Backdrop>
+
+    <NavigationView x:Name="MainNavigation"
+                    IsBackButtonVisible="Collapsed" 
+                    PaneDisplayMode="LeftCompact"
+                    IsPaneToggleButtonVisible="False"
+                    PaneTitle="Backup Service Home"
+                    ItemInvoked="MainNavigation_ItemInvoked">
+        <NavigationView.MenuItems>
+            <NavigationViewItem Icon="Home" Content="Übersicht" x:Name="nviOverviewPage" />
+            <NavigationViewItem Icon="BrowsePhotos" Content="Backupbrowser" x:Name="nviBackupBrowser" />
+        </NavigationView.MenuItems>
+        <Frame x:Name="ContentArea" x:FieldModifier="public" />
+    </NavigationView>
 </windowex:WindowEx>

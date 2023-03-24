@@ -7,20 +7,95 @@
     Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea">
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="48" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock
-            Grid.Row="0"
-            x:Uid="Main_Title"
-            Style="{StaticResource PageTitleStyle}" />
+        <Grid Margin="30" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Row="1">
-            
+            <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold">Übersicht</TextBlock>
+
+            <Grid Grid.Row="1" Margin="0, 20, 0, 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock HorizontalAlignment="Center" FontSize="40" FontFamily="Segoe MDL2 Assets">&#xE8FB;</TextBlock>
+
+                    <ToggleSwitch Margin="30,20,0,0" x:Name="tsSystem" OnContent="" OffContent=""></ToggleSwitch>
+                    <TextBlock HorizontalAlignment="Center" Visibility="{x:Bind tsSystem.IsOn, Mode=OneWay}">On</TextBlock>
+                    <TextBlock HorizontalAlignment="Center" Visibility="{x:Bind tsSystem.IsOn, Mode=OneWay}">Off</TextBlock>
+                </StackPanel>
+
+                <Grid Grid.Column="1" RowSpacing="15" Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" FontSize="18" x:Name="tbBigStatus">
+                        Backup Service Home wird ordnungsgemäß ausgeführt
+                    </TextBlock>
+
+                    <TextBlock Grid.Column="0" Grid.Row="1">Verfügbar:</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="1" x:Name="tbAvailableDiskspace">653 GB</TextBlock>
+
+                    <TextBlock Grid.Column="0" Grid.Row="2">Vorraussichtlich voll am:</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="2" x:Name="tbDiskspaceFullyFilled">noch nicht vorhersehbar</TextBlock>
+
+                    <TextBlock Grid.Column="0" Grid.Row="3">Letzte Sicherung:</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="3" x:Name="tbLastBackupDate">Heute, 13:00 Uhr</TextBlock>
+
+
+                    <TextBlock Grid.Column="0" Grid.Row="5">Sicherungsmodus:</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="5" x:Name="tbBackupMode">Vollautomatische Sicherung</TextBlock>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="0, 40, 0, 0">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold">Sicherungseinstellungen</TextBlock>
+                    <TextBlock x:Name="tbBackupDetails" TextWrapping="WrapWholeWords">Backup Service Home sichert Ihre Dateien (1 Quellverzeichnis(se)) vollautomatisch stündlich auf dem lokalen Datenträger (D:)</TextBlock>
+                </StackPanel>
+            </Grid>
         </Grid>
-        
+
+        <Grid Grid.Row="1" Background="#fafafa" Padding="30,20" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <FontIcon FontSize="18" FontFamily="Segoe MDL2 Assets" Glyph="&#xE787;" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock Margin="10,0,10,0" VerticalAlignment="Center">Nächste Sicherung:</TextBlock>
+                <TextBlock x:Name="tbNextBackupDate" FontWeight="Bold" VerticalAlignment="Center">Heute um 12:00 Uhr</TextBlock>
+            </StackPanel>
+
+            <Button Grid.Column="1" Grid.Row="6" x:Name="btnExecuteBackup" Click="btnExecuteBackup_Click" Style="{StaticResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE74E;" Margin="0,0,10,0"/>
+                    <TextBlock>Sicherung starten</TextBlock>
+                </StackPanel>
+            </Button>
+        </Grid>
     </Grid>
 </Page>

@@ -141,4 +141,8 @@
   &lt;/actions&gt;
 &lt;/toast&gt;</value>
   </data>
+  <data name="Browser_Title.Text" xml:space="preserve">
+    <value>Browser</value>
+    <comment>Page title for BrowserPage</comment>
+  </data>
 </root>
