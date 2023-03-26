@@ -47,26 +47,31 @@ namespace Brightbits.BSH.Main
                                 case "1":
                                     newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_ONCE;
                                     newEntry.SubItems.Add(reader["timDate"].ToString());
+                                    newEntry.SubItems[0].Tag = 0;
                                     break;
 
                                 case "2":
                                     newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY;
                                     newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT.FormatWith(parsedDate.Minute));
+                                    newEntry.SubItems[0].Tag = 1;
                                     break;
 
                                 case "3":
                                     newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_DAILY;
                                     newEntry.SubItems.Add(parsedDate.ToShortTimeString());
+                                    newEntry.SubItems[0].Tag = 2;
                                     break;
 
                                 case "4":
                                     newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY;
                                     newEntry.SubItems.Add(parsedDate.ToString("dddd") + ", " + parsedDate.ToString("HH:mm"));
+                                    newEntry.SubItems[0].Tag = 3;
                                     break;
 
                                 case "5":
                                     newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY;
                                     newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(parsedDate.Day, parsedDate.ToString("HH:mm")));
+                                    newEntry.SubItems[0].Tag = 4;
                                     break;
                             }
 
