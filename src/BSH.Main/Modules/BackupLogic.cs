@@ -70,7 +70,7 @@ static class BackupLogic
 
     private static Timer tmrUserReminder;
 
-    private async static Task LoadDatabaseAsync()
+    private static async Task LoadDatabaseAsync()
     {
         try
         {
@@ -84,12 +84,6 @@ static class BackupLogic
             // database migration?
             var dbMigration = new DbMigrationService(DbClientFactory, ConfigurationManager);
             await dbMigration.InitializeAsync();
-
-            var storageFactory = new StorageFactory(ConfigurationManager);
-            QueryManager = new QueryManager(DbClientFactory, ConfigurationManager, storageFactory);
-
-            BackupService = new BackupService(ConfigurationManager, QueryManager, DbClientFactory, storageFactory);
-            BackupController = new BackupController(BackupService, ConfigurationManager);
         }
         catch (Exception ex)
         {
@@ -101,36 +95,31 @@ static class BackupLogic
     /// <summary>
     /// Loads the database and starts the backup engine if BSH is configured.
     /// </summary>
-    public async static Task StartupAsync()
+    public static async Task StartupAsync()
     {
+        // init database
+        await LoadDatabaseAsync();
+
+        // start main system
+        var storageFactory = new StorageFactory(ConfigurationManager);
+        QueryManager = new QueryManager(DbClientFactory, ConfigurationManager, storageFactory);
+
+        BackupService = new BackupService(ConfigurationManager, QueryManager, DbClientFactory, storageFactory);
+        BackupController = new BackupController(BackupService, ConfigurationManager);
+
         // first time start?
-        if (!System.IO.File.Exists(DatabaseFile))
+        if (ConfigurationManager.IsConfigured == "0")
         {
             // Status: unconfigured
             StatusController.Current.SetSystemStatus(SystemStatus.NOT_CONFIGURED);
+            return;
+        }
 
-            // create database
-            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(DatabaseFile));
-            await LoadDatabaseAsync();
-        }
-        else
-        {
-            // load existing database
-            await LoadDatabaseAsync();
-            if (ConfigurationManager.IsConfigured == "0")
-            {
-                // Status: unconfigured
-                StatusController.Current.SetSystemStatus(SystemStatus.NOT_CONFIGURED);
-            }
-            else
-            {
-                // Status: OK
-                await StartSystemAsync();
-            }
-        }
+        // Status: OK
+        await StartSystemAsync();
     }
 
-    public async static Task StartSystemAsync(bool doOn = false)
+    public static async Task StartSystemAsync(bool doOn = false)
     {
         // check system status
         if (doOn || ConfigurationManager.DbStatus == "0")
@@ -219,7 +208,7 @@ static class BackupLogic
         }
     }
 
-    private async static void RemindUserOldBackup(object sender, EventArgs e)
+    private static async void RemindUserOldBackup(object sender, EventArgs e)
     {
         Timer tmr = (Timer)sender;
         tmr.Stop();
@@ -284,7 +273,7 @@ static class BackupLogic
         BatteryStatusUnderCheck = false;
     }
 
-    private async static void PowerChanged(object sender, PowerModeChangedEventArgs e)
+    private static async void PowerChanged(object sender, PowerModeChangedEventArgs e)
     {
         if (ConfigurationManager.DeativateAutoBackupsWhenAkku == "0")
         {
@@ -461,7 +450,7 @@ static class BackupLogic
 
     #region  Schedule System 
 
-    private async static void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+    private static async void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
     {
         if (e.Mode == PowerModes.Resume)
         {
@@ -471,7 +460,7 @@ static class BackupLogic
         }
     }
 
-    public async static Task StartScheduleSystem()
+    public static async Task StartScheduleSystem()
     {
         Log.Information("Service for \"Scheduled backups\" is started.");
 
@@ -649,7 +638,7 @@ static class BackupLogic
         SystemEvents.PowerModeChanged -= PowerModeChanged;
     }
 
-    public async static Task thScheduleSysRunBackup()
+    public static async Task thScheduleSysRunBackup()
     {
         Log.Information("Scheduled backup is planned and will be performed now.");
 
@@ -842,7 +831,7 @@ static class BackupLogic
         }
     }
 
-    private async static void DriveArrived(object sender, string driveLetter)
+    private static async void DriveArrived(object sender, string driveLetter)
     {
         if (!await BackupController.CheckMediaAsync(ActionType.Backup, true))
         {

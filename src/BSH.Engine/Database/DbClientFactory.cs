@@ -40,11 +40,10 @@ public class DbClientFactory : IDbClientFactory
         this.databaseFile = databaseFile;
 
         // check database existence
-        if (!File.Exists(this.databaseFile))
+        if (!File.Exists(databaseFile))
         {
             await CreateDatabaseAsync();
         }
-
     }
 
     /// <summary>
@@ -69,10 +68,11 @@ public class DbClientFactory : IDbClientFactory
     private async Task CreateDatabaseAsync()
     {
         // generate database file
-        SQLiteConnection.CreateFile(this.databaseFile);
+        Directory.CreateDirectory(Path.GetDirectoryName(databaseFile));
+        SQLiteConnection.CreateFile(databaseFile);
 
         // create tables
-        using var dbClient = this.CreateDbClient();
+        using var dbClient = CreateDbClient();
         await dbClient.ExecuteNonQueryAsync("PRAGMA page_size=4096; CREATE TABLE configuration (confProperty NVARCHAR(20) PRIMARY KEY,confValue NVARCHAR(255));");
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE filelink (fileversionID INTEGER, versionID INTEGER);");
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE filetable (fileID INTEGER PRIMARY KEY, fileName TEXT, filePath TEXT);");

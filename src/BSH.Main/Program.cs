@@ -60,13 +60,7 @@ namespace Brightbits.BSH.Main
         }
 #endif
 
-        public static string CurrentVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
-        }
+        public static string CurrentVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         [STAThread()]
         public static void Main(string[] args)
