@@ -47,26 +47,31 @@ namespace Brightbits.BSH.Main
                                 case "1":
                                     newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_ONCE;
                                     newEntry.SubItems.Add(reader["timDate"].ToString());
+                                    newEntry.SubItems[0].Tag = 0;
                                     break;
 
                                 case "2":
                                     newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY;
                                     newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT.FormatWith(parsedDate.Minute));
+                                    newEntry.SubItems[0].Tag = 1;
                                     break;
 
                                 case "3":
                                     newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_DAILY;
                                     newEntry.SubItems.Add(parsedDate.ToShortTimeString());
+                                    newEntry.SubItems[0].Tag = 2;
                                     break;
 
                                 case "4":
                                     newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY;
                                     newEntry.SubItems.Add(parsedDate.ToString("dddd") + ", " + parsedDate.ToString("HH:mm"));
+                                    newEntry.SubItems[0].Tag = 3;
                                     break;
 
                                 case "5":
                                     newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY;
                                     newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(parsedDate.Day, parsedDate.ToString("HH:mm")));
+                                    newEntry.SubItems[0].Tag = 4;
                                     break;
                             }
 
@@ -196,7 +201,8 @@ namespace Brightbits.BSH.Main
 
         private async void cmdOK_Click(object sender, EventArgs e)
         {
-            await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("DELETE FROM schedule");
+            using var dbClient = BackupLogic.DbClientFactory.CreateDbClient();
+            await dbClient.ExecuteNonQueryAsync("DELETE FROM schedule");
 
             // Automatische Backups
             foreach (ListViewItem entry in lwTimeSchedule.Items)
@@ -205,23 +211,23 @@ namespace Brightbits.BSH.Main
                 switch (entry.SubItems[0].Tag)
                 {
                     case 0:
-                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 1, '" + parsedDate + "' )");
+                        await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 1, '" + parsedDate + "' )");
                         break;
 
                     case 1:
-                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 2, '" + parsedDate + "' )");
+                        await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 2, '" + parsedDate + "' )");
                         break;
 
                     case 2:
-                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 3, '" + parsedDate + "' )");
+                        await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 3, '" + parsedDate + "' )");
                         break;
 
                     case 3:
-                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 4, '" + parsedDate + "' )");
+                        await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 4, '" + parsedDate + "' )");
                         break;
 
                     case 4:
-                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 5, '" + parsedDate + "' )");
+                        await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 5, '" + parsedDate + "' )");
                         break;
                 }
             }
