@@ -120,36 +120,36 @@ namespace Brightbits.BSH.Main
             if (cboMedia.SelectedIndex == 1)
             {
                 // FTP
-                BackupLogic.GlobalBackup.ConfigurationManager.MediumType = 3;
+                BackupLogic.ConfigurationManager.MediumType = 3;
             }
             else
             {
                 // directory
-                BackupLogic.GlobalBackup.ConfigurationManager.MediumType = 1;
+                BackupLogic.ConfigurationManager.MediumType = 1;
 
                 // UNC authentication
                 if (txtBackupPath.Text.StartsWith(@"\\"))
                 {
-                    BackupLogic.GlobalBackup.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
-                    BackupLogic.GlobalBackup.ConfigurationManager.UNCPassword = Crypto.EncryptString(Crypto.ToSecureString(txtUNCPassword.Text), System.Security.Cryptography.DataProtectionScope.LocalMachine);
-                    BackupLogic.GlobalBackup.ConfigurationManager.MediaVolumeSerial = "";
+                    BackupLogic.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
+                    BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(Crypto.ToSecureString(txtUNCPassword.Text), System.Security.Cryptography.DataProtectionScope.LocalMachine);
+                    BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
                 }
                 else
                 {
-                    BackupLogic.GlobalBackup.ConfigurationManager.UNCUsername = "";
-                    BackupLogic.GlobalBackup.ConfigurationManager.UNCPassword = "";
+                    BackupLogic.ConfigurationManager.UNCUsername = "";
+                    BackupLogic.ConfigurationManager.UNCPassword = "";
 
                     // MedienID speichern
-                    BackupLogic.GlobalBackup.ConfigurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(txtBackupPath.Text.Substring(0, 1) + @":\");
-                    if (BackupLogic.GlobalBackup.ConfigurationManager.MediaVolumeSerial == null ||
-                        BackupLogic.GlobalBackup.ConfigurationManager.MediaVolumeSerial == "0")
+                    BackupLogic.ConfigurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(txtBackupPath.Text.Substring(0, 1) + @":\");
+                    if (BackupLogic.ConfigurationManager.MediaVolumeSerial == null ||
+                        BackupLogic.ConfigurationManager.MediaVolumeSerial == "0")
                     {
-                        BackupLogic.GlobalBackup.ConfigurationManager.MediaVolumeSerial = "";
+                        BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
                     }
                 }
             }
 
-            var configurationManager = BackupLogic.GlobalBackup.ConfigurationManager;
+            var configurationManager = BackupLogic.ConfigurationManager;
             configurationManager.FtpHost = txtFTPServer.Text;
             configurationManager.FtpPort = txtFTPPort.Text;
             configurationManager.FtpUser = txtFTPUsername.Text;
@@ -230,9 +230,9 @@ namespace Brightbits.BSH.Main
             lvSource.Items.Clear();
 
             // load sources
-            if (!string.IsNullOrEmpty(BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder))
+            if (!string.IsNullOrEmpty(BackupLogic.ConfigurationManager.SourceFolder))
             {
-                var sources = BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder.Split('|');
+                var sources = BackupLogic.ConfigurationManager.SourceFolder.Split('|');
                 foreach (string entry in sources)
                 {
                     lvSource.Items.Add(entry, 0);
@@ -243,7 +243,7 @@ namespace Brightbits.BSH.Main
             cboMedia.Tag = "";
 
             // load backup storage
-            if (BackupLogic.GlobalBackup.ConfigurationManager.MediumType == 3)
+            if (BackupLogic.ConfigurationManager.MediumType == 3)
             {
                 // FTP
                 cboMedia.SelectedIndex = 1;
@@ -261,7 +261,7 @@ namespace Brightbits.BSH.Main
             // release media selection
             cboMedia.Tag = "1";
 
-            var configurationManager = BackupLogic.GlobalBackup.ConfigurationManager;
+            var configurationManager = BackupLogic.ConfigurationManager;
             txtFTPServer.Text = configurationManager.FtpHost;
             txtFTPPort.Text = string.IsNullOrEmpty(configurationManager.FtpPort) ? "21" : configurationManager.FtpPort;
             txtFTPUsername.Text = configurationManager.FtpUser;
@@ -458,11 +458,11 @@ namespace Brightbits.BSH.Main
             // store source folder
             if (lvSource.Items.Count == 0)
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder = "";
+                BackupLogic.ConfigurationManager.SourceFolder = "";
             }
             else
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder = string.Join("|", lvSource.Items.Cast<ListViewItem>().Select(x => x.Text));
+                BackupLogic.ConfigurationManager.SourceFolder = string.Join("|", lvSource.Items.Cast<ListViewItem>().Select(x => x.Text));
             }
         }
 
@@ -479,11 +479,11 @@ namespace Brightbits.BSH.Main
             // store source folders
             if (lvSource.Items.Count == 0)
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder = "";
+                BackupLogic.ConfigurationManager.SourceFolder = "";
             }
             else
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder = string.Join("|", lvSource.Items.Cast<ListViewItem>().Select(x => x.Text));
+                BackupLogic.ConfigurationManager.SourceFolder = string.Join("|", lvSource.Items.Cast<ListViewItem>().Select(x => x.Text));
             }
 
             cmdDeleteSource_Click(sender, e);
@@ -520,8 +520,8 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            BackupLogic.GlobalBackup.ConfigurationManager.EncryptPassMD5 = Hash.GetMD5Hash(password);
-            BackupLogic.GlobalBackup.ConfigurationManager.Encrypt = 1;
+            BackupLogic.ConfigurationManager.EncryptPassMD5 = Hash.GetMD5Hash(password);
+            BackupLogic.ConfigurationManager.Encrypt = 1;
             cmdEncrypt.Enabled = false;
 
             OpenTab();
@@ -561,7 +561,7 @@ namespace Brightbits.BSH.Main
 
                 Enabled = false;
 
-                var task = BackupLogic.GlobalBackup.BackupService.StartEdit(ref statusWindowReport, new CancellationTokenSource().Token, true);
+                var task = BackupLogic.BackupService.StartEdit(ref statusWindowReport, new CancellationTokenSource().Token, true);
                 await task.ConfigureAwait(true);
                 statusWindow.Close();
 
@@ -637,7 +637,7 @@ namespace Brightbits.BSH.Main
                             dlgStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT;
                             dlgStatus.Show(SuperBase);
 
-                            var versions = BackupLogic.GlobalBackup.QueryManager.GetVersions().Select(x => x.Id).ToList();
+                            var versions = BackupLogic.QueryManager.GetVersions().Select(x => x.Id).ToList();
                             await BackupLogic.BackupController.DeleteBackupsAsync(versions, false);
 
                             dlgStatus.Close();
@@ -666,7 +666,7 @@ namespace Brightbits.BSH.Main
                             formShortStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT;
                             formShortStatus.Show(SuperBase);
 
-                            var versions = BackupLogic.GlobalBackup.QueryManager.GetVersions().Select(x => x.Id).ToList();
+                            var versions = BackupLogic.QueryManager.GetVersions().Select(x => x.Id).ToList();
                             await BackupLogic.BackupController.DeleteBackupsAsync(versions, false);
 
                             formShortStatus.Close();
@@ -707,7 +707,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // update database file
-                BackupLogic.GlobalBackup.BackupService.UpdateDatabaseFile(BackupLogic.GlobalBackup.DatabaseFile);
+                BackupLogic.BackupService.UpdateDatabaseFile(BackupLogic.DatabaseFile);
 
                 // update status
                 dlgStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_INIT_BACKUP_TEXT;
@@ -723,34 +723,34 @@ namespace Brightbits.BSH.Main
                     if (dlgChangeMedia.cboMedia.SelectedIndex == 0)
                     {
                         // directory
-                        BackupLogic.GlobalBackup.ConfigurationManager.MediumType = 1;
-                        BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder = Convert.ToString(dlgChangeMedia.lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName;
-                        BackupLogic.GlobalBackup.ConfigurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder.Substring(0, 1) + @":\");
-                        if (BackupLogic.GlobalBackup.ConfigurationManager.MediaVolumeSerial == "0")
+                        BackupLogic.ConfigurationManager.MediumType = 1;
+                        BackupLogic.ConfigurationManager.BackupFolder = Convert.ToString(dlgChangeMedia.lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName;
+                        BackupLogic.ConfigurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(BackupLogic.ConfigurationManager.BackupFolder.Substring(0, 1) + @":\");
+                        if (BackupLogic.ConfigurationManager.MediaVolumeSerial == "0")
                         {
-                            BackupLogic.GlobalBackup.ConfigurationManager.MediaVolumeSerial = "";
+                            BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
                         }
                     }
                     else
                     {
                         // FTP server
-                        BackupLogic.GlobalBackup.ConfigurationManager.MediumType = 3;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpHost = dlgChangeMedia.txtFTPServer.Text;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpPort = dlgChangeMedia.txtFTPPort.Text;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpUser = dlgChangeMedia.txtFTPUsername.Text;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpPass = dlgChangeMedia.txtFTPPassword.Text;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpFolder = dlgChangeMedia.txtFTPPath.Text;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpCoding = Convert.ToString(dlgChangeMedia.cboFtpEncoding.SelectedItem);
+                        BackupLogic.ConfigurationManager.MediumType = 3;
+                        BackupLogic.ConfigurationManager.FtpHost = dlgChangeMedia.txtFTPServer.Text;
+                        BackupLogic.ConfigurationManager.FtpPort = dlgChangeMedia.txtFTPPort.Text;
+                        BackupLogic.ConfigurationManager.FtpUser = dlgChangeMedia.txtFTPUsername.Text;
+                        BackupLogic.ConfigurationManager.FtpPass = dlgChangeMedia.txtFTPPassword.Text;
+                        BackupLogic.ConfigurationManager.FtpFolder = dlgChangeMedia.txtFTPPath.Text;
+                        BackupLogic.ConfigurationManager.FtpCoding = Convert.ToString(dlgChangeMedia.cboFtpEncoding.SelectedItem);
                     }
                 }
 
                 // delete all backups from database
-                await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("DELETE FROM versiontable");
-                await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("DELETE FROM filelink");
-                await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("DELETE FROM fileversiontable");
+                await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("DELETE FROM versiontable");
+                await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("DELETE FROM filelink");
+                await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("DELETE FROM fileversiontable");
 
                 // update database file
-                BackupLogic.GlobalBackup.BackupService.UpdateDatabaseFile(BackupLogic.GlobalBackup.DatabaseFile);
+                BackupLogic.BackupService.UpdateDatabaseFile(BackupLogic.DatabaseFile);
                 save = false;
                 SuperBase.CurrentTab = frmMain.AvailableTabs.TabOverview;
 

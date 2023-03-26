@@ -1,9 +1,7 @@
 ﻿using BSH.MainApp.Activation;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Views;
 
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace BSH.MainApp.Services;
 

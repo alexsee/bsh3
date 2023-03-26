@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodels="using:BSH.MainApp.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
     Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
     mc:Ignorable="d">
 
@@ -62,7 +62,7 @@
                     <TextBlock Grid.Column="1" Grid.Row="2" x:Name="tbDiskspaceFullyFilled">noch nicht vorhersehbar</TextBlock>
 
                     <TextBlock Grid.Column="0" Grid.Row="3">Letzte Sicherung:</TextBlock>
-                    <TextBlock Grid.Column="1" Grid.Row="3" x:Name="tbLastBackupDate">Heute, 13:00 Uhr</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="3" Text="{x:Bind ViewModel.LastBackupDate}">Heute, 13:00 Uhr</TextBlock>
 
 
                     <TextBlock Grid.Column="0" Grid.Row="5">Sicherungsmodus:</TextBlock>

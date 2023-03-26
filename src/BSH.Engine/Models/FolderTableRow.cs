@@ -16,9 +16,15 @@ namespace Brightbits.BSH.Engine.Models
 {
     public class FolderTableRow
     {
-        public string Folder { get; set; }
+        public string Folder
+        {
+            get; set;
+        }
 
-        public string RootPath { get; set; }
+        public string RootPath
+        {
+            get; set;
+        }
 
         public FolderTableRow(string folder, string rootPath)
         {

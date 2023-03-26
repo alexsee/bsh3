@@ -96,12 +96,12 @@ namespace Brightbits.BSH.Main
             }
 
             // finished successfully
-            if (jobState == JobState.FINISHED && lastActionType == ActionType.Backup && BackupLogic.GlobalBackup.ConfigurationManager.InfoBackupDone == "1")
+            if (jobState == JobState.FINISHED && lastActionType == ActionType.Backup && BackupLogic.ConfigurationManager.InfoBackupDone == "1")
             {
                 NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_SUCCESSFUL_TITLE, Resources.INFO_BACKUP_SUCCESSFUL_TEXT, ToolTipIcon.Info);
             }
 
-            if (jobState == JobState.ERROR && lastActionType == ActionType.Backup && BackupLogic.GlobalBackup.ConfigurationManager.InfoBackupDone == "1")
+            if (jobState == JobState.ERROR && lastActionType == ActionType.Backup && BackupLogic.ConfigurationManager.InfoBackupDone == "1")
             {
                 NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_UNSUCCESSFUL_TITLE, Resources.INFO_BACKUP_UNSUCCESSFUL_TEXT, ToolTipIcon.Warning);
             }

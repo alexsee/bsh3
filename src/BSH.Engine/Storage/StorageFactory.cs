@@ -12,27 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Engine.Storage
+using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Storage;
+
+namespace Brightbits.BSH.Engine.Storage;
+
+public class StorageFactory : IStorageFactory
 {
-    public class StorageFactory
+    private readonly IConfigurationManager configurationManager;
+
+    public StorageFactory(IConfigurationManager configurationManager)
     {
-        private readonly ConfigurationManager configurationManager;
+        this.configurationManager = configurationManager;
+    }
 
-        public StorageFactory(ConfigurationManager configurationManager)
+    public IStorage GetCurrentStorageProvider()
+    {
+        if (configurationManager.MediumType != 3)
         {
-            this.configurationManager = configurationManager;
+            return new FileSystemStorage(configurationManager);
         }
-
-        public IStorage GetCurrentStorageProvider()
+        else
         {
-            if (configurationManager.MediumType != 3)
-            {
-                return new FileSystemStorage(configurationManager);
-            }
-            else
-            {
-                return new FTPStorage(configurationManager);
-            }
+            return new FTPStorage(configurationManager);
         }
     }
 }

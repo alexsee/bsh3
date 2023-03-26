@@ -12,27 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Database;
 using System;
 using System.Data;
+using Brightbits.BSH.Engine.Database;
 
 namespace Brightbits.BSH.Engine.Models
 {
     public class VersionDetails
     {
-        public string Id { get; set; }
+        public string Id
+        {
+            get; set;
+        }
 
-        public DateTime CreationDate { get; set; }
+        public DateTime CreationDate
+        {
+            get; set;
+        }
 
-        public string Title { get; set; }
+        public string Title
+        {
+            get; set;
+        }
 
-        public string Description { get; set; }
+        public string Description
+        {
+            get; set;
+        }
 
-        public bool Stable { get; set; }
+        public bool Stable
+        {
+            get; set;
+        }
 
-        public string Sources { get; set; }
+        public string Sources
+        {
+            get; set;
+        }
 
-        public long Size { get; set; }
+        public long Size
+        {
+            get; set;
+        }
 
         public static VersionDetails FromReader(IDataReader reader)
         {

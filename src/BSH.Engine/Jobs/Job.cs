@@ -12,209 +12,211 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Database;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace Brightbits.BSH.Engine.Jobs
+namespace Brightbits.BSH.Engine.Jobs;
+
+/// <summary>
+/// Class for all job tasks
+/// </summary>
+public abstract class Job
 {
-    /// <summary>
-    /// Class for all job tasks
-    /// </summary>
-    public abstract class Job
+    private static readonly ILogger _logger = Log.ForContext<Job>();
+
+    protected readonly IStorage storage;
+
+    protected readonly IDbClientFactory dbClientFactory;
+
+    protected readonly IQueryManager queryManager;
+
+    protected readonly IConfigurationManager configurationManager;
+
+    protected readonly bool silent;
+
+    private readonly List<IJobReport> observers = new();
+
+    protected Job(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager, bool silent = false)
     {
-        private static readonly ILogger _logger = Log.ForContext<Job>();
+        this.storage = storage;
+        this.dbClientFactory = dbClientFactory;
+        this.queryManager = queryManager;
+        this.configurationManager = configurationManager;
+        this.silent = silent;
+    }
 
-        protected readonly IStorage storage;
-
-        protected readonly DbClientFactory dbClientFactory;
-
-        protected readonly QueryManager queryManager;
-
-        protected readonly bool silent;
-
-        private readonly List<IJobReport> observers = new();
-
-        protected Job(IStorage storage, DbClientFactory dbClientFactory, QueryManager queryManager, bool silent = false)
-        {
-            this.storage = storage;
-            this.dbClientFactory = dbClientFactory;
-            this.queryManager = queryManager;
-
-            this.silent = silent;
-        }
-
-        public void ReportState(JobState jobState)
-        {
-            foreach (var observer in observers)
-            {
-                try
-                {
-                    observer.ReportState(jobState);
-                }
-                catch
-                {
-                    // ignore exception
-                }
-            }
-        }
-
-        protected void ReportStatus(string title, string text)
-        {
-            foreach (var observer in observers)
-            {
-                try
-                {
-                    observer.ReportStatus(title, text);
-                }
-                catch
-                {
-                    // ignore exception
-                }
-            }
-        }
-
-        protected void ReportProgress(int total, int current)
-        {
-            foreach (var observer in observers)
-            {
-                try
-                {
-                    observer.ReportProgress(total, current);
-                }
-                catch
-                {
-                    // ignore exception
-                }
-            }
-        }
-
-        protected void ReportFileProgress(string file)
-        {
-            foreach (var observer in observers)
-            {
-                try
-                {
-                    observer.ReportFileProgress(file);
-                }
-                catch
-                {
-                    // ignore exception
-                }
-            }
-        }
-
-        protected void ReportExceptions(List<FileExceptionEntry> files)
-        {
-            foreach (var observer in observers)
-            {
-                try
-                {
-                    observer.ReportExceptions(files, this.silent);
-                }
-                catch
-                {
-                    // ignore exception
-                }
-            }
-        }
-
-        protected RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
-        {
-            if (observers.Count > 0)
-            {
-                return observers[0].RequestOverwrite(localFile, remoteFile);
-            }
-
-            return RequestOverwriteResult.Overwrite;
-        }
-
-        protected void RequestShowErrorInsufficientDiskSpace()
-        {
-            foreach (var observer in observers)
-            {
-                try
-                {
-                    observer.RequestShowErrorInsufficientDiskSpace();
-                }
-                catch
-                {
-                    // ignore exception
-                }
-            }
-        }
-
-        public void AddObserver(IJobReport observer)
+    public void ReportState(JobState jobState)
+    {
+        foreach (var observer in observers)
         {
             try
             {
-                observers.Add(observer);
+                observer.ReportState(jobState);
             }
             catch
             {
                 // ignore exception
             }
         }
+    }
 
-        public void RemoveObserver(IJobReport observer)
+    protected void ReportStatus(string title, string text)
+    {
+        foreach (var observer in observers)
         {
             try
             {
-                observers.Remove(observer);
+                observer.ReportStatus(title, text);
             }
             catch
             {
                 // ignore exception
             }
         }
+    }
 
-        /// <summary>
-        /// Updates the database on the storage device. Storage must still be open.
-        /// </summary>
-        /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-        protected void UpdateDatabaseOnStorage()
+    protected void ReportProgress(int total, int current)
+    {
+        foreach (var observer in observers)
         {
             try
             {
-                storage.UpdateStorageVersion(int.Parse(queryManager.Configuration.OldBackupPrevent));
-                storage.UploadDatabaseFile(queryManager.DatabaseFile);
+                observer.ReportProgress(total, current);
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.Error(ex, "Database file could not be refreshed on storage device.");
-
-                ReportState(JobState.ERROR);
-
-                // standby mode
-                Win32Stuff.AllowSystemSleep();
-                storage.Dispose();
-
-                throw new DatabaseFileNotUpdatedException();
+                // ignore exception
             }
         }
+    }
 
-        /// <summary>
-        /// Updates the free disk space on the database.
-        /// </summary>
-        protected async Task UpdateFreeDiskSpaceAsync()
+    protected void ReportFileProgress(string file)
+    {
+        foreach (var observer in observers)
         {
             try
             {
-                queryManager.Configuration.FreeSpace = storage.GetFreeSpace().ToString();
-
-                using var dbClient = dbClientFactory.CreateDbClient();
-                queryManager.Configuration.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
+                observer.ReportFileProgress(file);
             }
-            catch (Exception ex)
+            catch
             {
-                // not important
-                _logger.Warning(ex, "Could not update free space variable due to exception.");
+                // ignore exception
             }
+        }
+    }
+
+    protected void ReportExceptions(List<FileExceptionEntry> files)
+    {
+        foreach (var observer in observers)
+        {
+            try
+            {
+                observer.ReportExceptions(files, this.silent);
+            }
+            catch
+            {
+                // ignore exception
+            }
+        }
+    }
+
+    protected RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
+    {
+        if (observers.Count > 0)
+        {
+            return observers[0].RequestOverwrite(localFile, remoteFile);
+        }
+
+        return RequestOverwriteResult.Overwrite;
+    }
+
+    protected void RequestShowErrorInsufficientDiskSpace()
+    {
+        foreach (var observer in observers)
+        {
+            try
+            {
+                observer.RequestShowErrorInsufficientDiskSpace();
+            }
+            catch
+            {
+                // ignore exception
+            }
+        }
+    }
+
+    public void AddObserver(IJobReport observer)
+    {
+        try
+        {
+            observers.Add(observer);
+        }
+        catch
+        {
+            // ignore exception
+        }
+    }
+
+    public void RemoveObserver(IJobReport observer)
+    {
+        try
+        {
+            observers.Remove(observer);
+        }
+        catch
+        {
+            // ignore exception
+        }
+    }
+
+    /// <summary>
+    /// Updates the database on the storage device. Storage must still be open.
+    /// </summary>
+    /// <exception cref="DatabaseFileNotUpdatedException"></exception>
+    protected void UpdateDatabaseOnStorage()
+    {
+        try
+        {
+            storage.UpdateStorageVersion(int.Parse(configurationManager.OldBackupPrevent));
+            storage.UploadDatabaseFile(dbClientFactory.DatabaseFile);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Database file could not be refreshed on storage device.");
+
+            ReportState(JobState.ERROR);
+
+            // standby mode
+            Win32Stuff.AllowSystemSleep();
+            storage.Dispose();
+
+            throw new DatabaseFileNotUpdatedException();
+        }
+    }
+
+    /// <summary>
+    /// Updates the free disk space on the database.
+    /// </summary>
+    protected async Task UpdateFreeDiskSpaceAsync()
+    {
+        try
+        {
+            configurationManager.FreeSpace = storage.GetFreeSpace().ToString();
+
+            using var dbClient = dbClientFactory.CreateDbClient();
+            configurationManager.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
+        }
+        catch (Exception ex)
+        {
+            // not important
+            _logger.Warning(ex, "Could not update free space variable due to exception.");
         }
     }
 }

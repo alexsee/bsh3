@@ -18,12 +18,24 @@ namespace Brightbits.BSH.Engine.Models
 {
     public class FileExceptionEntry
     {
-        public Exception Exception { get; set; }
+        public Exception Exception
+        {
+            get; set;
+        }
 
-        public FileTableRow File { get; set; }
+        public FileTableRow File
+        {
+            get; set;
+        }
 
-        public long NewVersionId { get; set; }
+        public long NewVersionId
+        {
+            get; set;
+        }
 
-        public string NewVersionDate { get; set; }
+        public string NewVersionDate
+        {
+            get; set;
+        }
     }
 }

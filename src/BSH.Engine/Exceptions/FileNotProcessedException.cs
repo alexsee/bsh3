@@ -20,7 +20,10 @@ namespace Brightbits.BSH.Engine.Exceptions
     [Serializable]
     public class FileNotProcessedException : Exception
     {
-        public bool RequestCancel { get; set; }
+        public bool RequestCancel
+        {
+            get; set;
+        }
 
         public FileNotProcessedException() : base() { }
 

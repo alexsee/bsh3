@@ -26,7 +26,7 @@ namespace Brightbits.BSH.Main
         private void frmCreateBackup_Load(object sender, EventArgs e)
         {
             // Quellordner auflisten
-            foreach (string Folder in BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder.Split('|'))
+            foreach (string Folder in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
             {
                 // Ordner hinzufügen
                 clstSources.Items.Add(Folder, true);

@@ -1,8 +1,15 @@
-﻿using BSH.MainApp.Activation;
+﻿using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Contracts.Storage;
+using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Storage;
+using BSH.MainApp.Activation;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Core.Contracts.Services;
 using BSH.MainApp.Core.Services;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using BSH.MainApp.Notifications;
 using BSH.MainApp.Services;
@@ -41,6 +48,8 @@ public partial class App : Application
 
     public static MainWindow MainWindow { get; } = new MainWindow();
 
+    public static string DatabaseFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
+
     public App()
     {
         InitializeComponent();
@@ -61,9 +70,27 @@ public partial class App : Application
             services.AddSingleton<IActivationService, ActivationService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<IStatusService, StatusService>();
+            services.AddTransient<IWaitForMediaService, WaitForMediaService>();
+            services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();
+            services.AddSingleton<IOrchestrationService, OrchestrationService>();
+            services.AddSingleton<IJobService, JobService>();
+            services.AddSingleton<IPresentationService, PresentationService>();
+
+            // Engine Services
+            services.AddSingleton<IConfigurationManager, ConfigurationManager>();
+            services.AddSingleton<IQueryManager, QueryManager>();
+
+            services.AddSingleton<IDbClientFactory, DbClientFactory>();
+            services.AddSingleton<IDbMigrationService, DbMigrationService>();
+
+            services.AddSingleton<IBackupService, BackupService>();
+
+            services.AddSingleton<IStorageFactory, StorageFactory>();
 
             // Views and ViewModels
             services.AddTransient<BrowserViewModel>();
@@ -90,6 +117,19 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+
+        // init database, read configuration, and perform potential schema migrations
+        await App.GetService<IDbClientFactory>().InitializeAsync(DatabaseFile);
+        await App.GetService<IConfigurationManager>().InitializeAsync();
+        await App.GetService<IDbMigrationService>().InitializeAsync();
+
+        // init scheduled backups
+        await App.GetService<IScheduledBackupService>().InitializeAsync();
+
+        // start application
+        App.GetService<IStatusService>().Initialize();
+
+        await App.GetService<IOrchestrationService>().InitializeAsync();
         await App.GetService<IActivationService>().ActivateAsync(args);
     }
 }

@@ -1,10 +1,29 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Brightbits.BSH.Engine.Contracts;
+using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Contracts.ViewModels;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BSH.MainApp.ViewModels;
 
-public class MainViewModel : ObservableRecipient
+public partial class MainViewModel : ObservableRecipient, INavigationAware
 {
-    public MainViewModel()
+    private readonly IStatusService statusService;
+    private readonly IQueryManager queryManager;
+
+    [ObservableProperty]
+    private string? lastBackupDate;
+
+    public MainViewModel(IStatusService statusService, IQueryManager queryManager)
+    {
+        this.statusService = statusService;
+        this.queryManager = queryManager;
+    }
+
+    public async void OnNavigatedTo(object parameter)
+    {
+        LastBackupDate = (await queryManager.GetLastBackupAsync()).CreationDate.ToLongDateString();
+    }
+    public void OnNavigatedFrom()
     {
     }
 }

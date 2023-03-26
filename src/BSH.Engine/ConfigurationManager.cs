@@ -12,436 +12,571 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Database;
 using System;
 using System.Data;
 using System.Threading.Tasks;
+using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Database;
 
-namespace Brightbits.BSH.Engine
+namespace Brightbits.BSH.Engine;
+
+public class ConfigurationManager : IConfigurationManager
 {
-    public class ConfigurationManager
+    private readonly IDbClientFactory dbClientFactory;
+
+    private string taskType = "2";
+
+    public TaskType TaskType
     {
-        private readonly DbClientFactory dbClientFactory;
-
-        private string taskType = "2";
-
-        public TaskType TaskType
+        get => (TaskType)int.Parse(taskType);
+        set
         {
-            get { return (TaskType)int.Parse(taskType); }
-            set { taskType = ((int)value).ToString(); SaveProperty(nameof(TaskType), ((int)value).ToString()); }
+            taskType = ((int)value).ToString(); SaveProperty(nameof(TaskType), ((int)value).ToString());
         }
+    }
 
-        private string sourceFolder = "";
+    private string sourceFolder = "";
 
-        public string SourceFolder
+    public string SourceFolder
+    {
+        get => sourceFolder;
+        set
         {
-            get { return sourceFolder; }
-            set { sourceFolder = value; SaveProperty(nameof(SourceFolder), value); }
+            sourceFolder = value; SaveProperty(nameof(SourceFolder), value);
         }
+    }
 
-        private string backupFolder = "";
+    private string backupFolder = "";
 
-        public string BackupFolder
+    public string BackupFolder
+    {
+        get => backupFolder;
+        set
         {
-            get { return backupFolder; }
-            set { backupFolder = value; SaveProperty(nameof(BackupFolder), value); }
+            backupFolder = value; SaveProperty(nameof(BackupFolder), value);
         }
+    }
 
-        private string remindAfterDays = "7";
+    private string remindAfterDays = "7";
 
-        public string RemindAfterDays
+    public string RemindAfterDays
+    {
+        get => remindAfterDays;
+        set
         {
-            get { return remindAfterDays; }
-            set { remindAfterDays = value; SaveProperty(nameof(RemindAfterDays), value); }
+            remindAfterDays = value; SaveProperty(nameof(RemindAfterDays), value);
         }
+    }
 
-        private string autoBackup = "";
+    private string autoBackup = "";
 
-        public string AutoBackup
+    public string AutoBackup
+    {
+        get => autoBackup;
+        set
         {
-            get { return autoBackup; }
-            set { autoBackup = value; SaveProperty(nameof(AutoBackup), value); }
+            autoBackup = value; SaveProperty(nameof(AutoBackup), value);
         }
+    }
 
-        private string medium = "1";
+    private string medium = "1";
 
-        public string Medium
+    public string Medium
+    {
+        get => medium;
+        set
         {
-            get { return medium; }
-            set { medium = value; SaveProperty(nameof(Medium), value); }
+            medium = value; SaveProperty(nameof(Medium), value);
         }
+    }
 
-        private int mediumType = 1;
+    private int mediumType = 1;
 
-        public int MediumType
+    public int MediumType
+    {
+        get => mediumType;
+        set
         {
-            get { return mediumType; }
-            set { mediumType = value; SaveProperty(nameof(MediumType), value.ToString()); }
+            mediumType = value; SaveProperty(nameof(MediumType), value.ToString());
         }
+    }
 
-        private string lastBackupDone = "";
+    private string lastBackupDone = "";
 
-        public string LastBackupDone
+    public string LastBackupDone
+    {
+        get => lastBackupDone;
+        set
         {
-            get { return lastBackupDone; }
-            set { lastBackupDone = value; SaveProperty(nameof(LastBackupDone), value); }
+            lastBackupDone = value; SaveProperty(nameof(LastBackupDone), value);
         }
+    }
 
-        private string lastVersionDate = "";
+    private string lastVersionDate = "";
 
-        public string LastVersionDate
+    public string LastVersionDate
+    {
+        get => lastVersionDate;
+        set
         {
-            get { return lastVersionDate; }
-            set { lastVersionDate = value; SaveProperty(nameof(LastVersionDate), value); }
+            lastVersionDate = value; SaveProperty(nameof(LastVersionDate), value);
         }
+    }
 
-        private string oldBackupPrevent = "0";
+    private string oldBackupPrevent = "0";
 
-        public string OldBackupPrevent
+    public string OldBackupPrevent
+    {
+        get => oldBackupPrevent;
+        set
         {
-            get { return oldBackupPrevent; }
-            set { oldBackupPrevent = value; SaveProperty(nameof(OldBackupPrevent), value); }
+            oldBackupPrevent = value; SaveProperty(nameof(OldBackupPrevent), value);
         }
+    }
 
-        private int compression = 0;
+    private int compression = 0;
 
-        public int Compression
+    public int Compression
+    {
+        get => compression;
+        set
         {
-            get { return compression; }
-            set { compression = value; SaveProperty(nameof(Compression), value.ToString()); }
+            compression = value; SaveProperty(nameof(Compression), value.ToString());
         }
+    }
 
-        private string compressionLevel = "9";
+    private string compressionLevel = "9";
 
-        public string CompressionLevel
+    public string CompressionLevel
+    {
+        get => compressionLevel;
+        set
         {
-            get { return compressionLevel; }
-            set { compressionLevel = value; SaveProperty(nameof(CompressionLevel), value.ToString()); }
+            compressionLevel = value; SaveProperty(nameof(CompressionLevel), value.ToString());
         }
+    }
 
 
-        private string excludeCompression = ".zip|.rar|.7zip";
+    private string excludeCompression = ".zip|.rar|.7zip";
 
-        public string ExcludeCompression
+    public string ExcludeCompression
+    {
+        get => excludeCompression;
+        set
         {
-            get { return excludeCompression; }
-            set { excludeCompression = value; SaveProperty(nameof(ExcludeCompression), value); }
+            excludeCompression = value; SaveProperty(nameof(ExcludeCompression), value);
         }
+    }
 
-        private int encrypt = 0;
+    private int encrypt = 0;
 
-        public int Encrypt
+    public int Encrypt
+    {
+        get => encrypt;
+        set
         {
-            get { return encrypt; }
-            set { encrypt = value; SaveProperty(nameof(Encrypt), value.ToString()); }
+            encrypt = value; SaveProperty(nameof(Encrypt), value.ToString());
         }
+    }
 
-        private string encryptPassMd5 = "";
+    private string encryptPassMd5 = "";
 
-        public string EncryptPassMD5
+    public string EncryptPassMD5
+    {
+        get => encryptPassMd5;
+        set
         {
-            get { return encryptPassMd5; }
-            set { encryptPassMd5 = value; SaveProperty(nameof(EncryptPassMD5), value.ToString()); }
+            encryptPassMd5 = value; SaveProperty(nameof(EncryptPassMD5), value.ToString());
         }
+    }
 
-        private string excludeFolder = "";
+    private string excludeFolder = "";
 
-        public string ExcludeFolder
+    public string ExcludeFolder
+    {
+        get => excludeFolder;
+        set
         {
-            get { return excludeFolder; }
-            set { excludeFolder = value; SaveProperty(nameof(ExcludeFolder), value); }
+            excludeFolder = value; SaveProperty(nameof(ExcludeFolder), value);
         }
+    }
 
-        private string exludeFileTypes = "";
+    private string exludeFileTypes = "";
 
-        public string ExcludeFileTypes
+    public string ExcludeFileTypes
+    {
+        get => exludeFileTypes;
+        set
         {
-            get { return exludeFileTypes; }
-            set { exludeFileTypes = value; SaveProperty(nameof(ExcludeFileTypes), value); }
+            exludeFileTypes = value; SaveProperty(nameof(ExcludeFileTypes), value);
         }
+    }
 
-        private string excludeFileBigger = "";
+    private string excludeFileBigger = "";
 
-        public string ExcludeFileBigger
+    public string ExcludeFileBigger
+    {
+        get => excludeFileBigger;
+        set
         {
-            get { return excludeFileBigger; }
-            set { excludeFileBigger = value; SaveProperty(nameof(ExcludeFileBigger), value); }
+            excludeFileBigger = value; SaveProperty(nameof(ExcludeFileBigger), value);
         }
+    }
 
-        private string excludeMask = "";
+    private string excludeMask = "";
 
-        public string ExcludeMask
+    public string ExcludeMask
+    {
+        get => excludeMask;
+        set
         {
-            get { return excludeMask; }
-            set { excludeMask = value; SaveProperty(nameof(ExcludeMask), value); }
+            excludeMask = value; SaveProperty(nameof(ExcludeMask), value);
         }
+    }
 
-        private string excludeFile = "";
+    private string excludeFile = "";
 
-        public string ExcludeFile
+    public string ExcludeFile
+    {
+        get => excludeFile;
+        set
         {
-            get { return excludeFile; }
-            set { excludeFile = value; SaveProperty(nameof(ExcludeFile), value); }
+            excludeFile = value; SaveProperty(nameof(ExcludeFile), value);
         }
+    }
 
-        private string freeSpace = "0";
+    private string freeSpace = "0";
 
-        public string FreeSpace
+    public string FreeSpace
+    {
+        get => freeSpace;
+        set
         {
-            get { return freeSpace; }
-            set { freeSpace = value; SaveProperty(nameof(FreeSpace), value.ToString()); }
+            freeSpace = value; SaveProperty(nameof(FreeSpace), value.ToString());
         }
+    }
 
-        private string remindSpace = "-1";
+    private string remindSpace = "-1";
 
-        public string RemindSpace
+    public string RemindSpace
+    {
+        get => remindSpace;
+        set
         {
-            get { return remindSpace; }
-            set { remindSpace = value; SaveProperty(nameof(RemindSpace), value.ToString()); }
+            remindSpace = value; SaveProperty(nameof(RemindSpace), value.ToString());
         }
+    }
 
-        private string doPastBackups = "0";
+    private string doPastBackups = "0";
 
-        public string DoPastBackups
+    public string DoPastBackups
+    {
+        get => doPastBackups;
+        set
         {
-            get { return doPastBackups; }
-            set { doPastBackups = value; SaveProperty(nameof(DoPastBackups), value.ToString()); }
+            doPastBackups = value; SaveProperty(nameof(DoPastBackups), value.ToString());
         }
+    }
 
-        private string ftpHost = "";
+    private string ftpHost = "";
 
-        public string FtpHost
+    public string FtpHost
+    {
+        get => ftpHost;
+        set
         {
-            get { return ftpHost; }
-            set { ftpHost = value; SaveProperty(nameof(FtpHost), value.ToString()); }
+            ftpHost = value; SaveProperty(nameof(FtpHost), value.ToString());
         }
+    }
 
-        private string ftpUser = "";
+    private string ftpUser = "";
 
-        public string FtpUser
+    public string FtpUser
+    {
+        get => ftpUser;
+        set
         {
-            get { return ftpUser; }
-            set { ftpUser = value; SaveProperty(nameof(FtpUser), value.ToString()); }
+            ftpUser = value; SaveProperty(nameof(FtpUser), value.ToString());
         }
+    }
 
-        private string ftpPass = "";
+    private string ftpPass = "";
 
-        public string FtpPass
+    public string FtpPass
+    {
+        get => ftpPass;
+        set
         {
-            get { return ftpPass; }
-            set { ftpPass = value; SaveProperty(nameof(FtpPass), value.ToString()); }
+            ftpPass = value; SaveProperty(nameof(FtpPass), value.ToString());
         }
+    }
 
-        private string ftpFolder;
+    private string ftpFolder;
 
-        public string FtpFolder
+    public string FtpFolder
+    {
+        get => ftpFolder;
+        set
         {
-            get { return ftpFolder; }
-            set { ftpFolder = value; SaveProperty(nameof(FtpFolder), value.ToString()); }
+            ftpFolder = value; SaveProperty(nameof(FtpFolder), value.ToString());
         }
+    }
 
-        private string ftpPort = "21";
+    private string ftpPort = "21";
 
-        public string FtpPort
+    public string FtpPort
+    {
+        get => ftpPort;
+        set
         {
-            get { return ftpPort; }
-            set { ftpPort = value; SaveProperty(nameof(FtpPort), value.ToString()); }
+            ftpPort = value; SaveProperty(nameof(FtpPort), value.ToString());
         }
+    }
 
-        private string ftpCoding = "ISO-8859-1";
+    private string ftpCoding = "ISO-8859-1";
 
-        public string FtpCoding
+    public string FtpCoding
+    {
+        get => string.IsNullOrEmpty(ftpCoding) ? "ISO-8859-1" : ftpCoding;
+        set
         {
-            get { return string.IsNullOrEmpty(ftpCoding) ? "ISO-8859-1" : ftpCoding; }
-            set { ftpCoding = value; SaveProperty(nameof(FtpCoding), value.ToString()); }
+            ftpCoding = value; SaveProperty(nameof(FtpCoding), value.ToString());
         }
+    }
 
-        private string ftpEncryptionMode = "3";
+    private string ftpEncryptionMode = "3";
 
-        public string FtpEncryptionMode
+    public string FtpEncryptionMode
+    {
+        get => string.IsNullOrEmpty(ftpEncryptionMode) ? "3" : ftpEncryptionMode;
+        set
         {
-            get { return string.IsNullOrEmpty(ftpEncryptionMode) ? "3" : ftpEncryptionMode; }
-            set { ftpEncryptionMode = value; SaveProperty(nameof(FtpEncryptionMode), value.ToString()); }
+            ftpEncryptionMode = value; SaveProperty(nameof(FtpEncryptionMode), value.ToString());
         }
+    }
 
-        private string ftpSslProtocols = "0";
+    private string ftpSslProtocols = "0";
 
-        public string FtpSslProtocols
+    public string FtpSslProtocols
+    {
+        get => string.IsNullOrEmpty(ftpSslProtocols) ? "0" : ftpSslProtocols;
+        set
         {
-            get { return string.IsNullOrEmpty(ftpSslProtocols) ? "0" : ftpSslProtocols; }
-            set { ftpSslProtocols = value; SaveProperty(nameof(FtpSslProtocols), value.ToString()); }
+            ftpSslProtocols = value; SaveProperty(nameof(FtpSslProtocols), value.ToString());
         }
+    }
 
-        private string isConfigured = "0";
+    private string isConfigured = "0";
 
-        public string IsConfigured
+    public string IsConfigured
+    {
+        get => isConfigured;
+        set
         {
-            get { return isConfigured; }
-            set { isConfigured = value; SaveProperty(nameof(IsConfigured), value.ToString()); }
+            isConfigured = value; SaveProperty(nameof(IsConfigured), value.ToString());
         }
+    }
 
-        private string dbStatus = "0";
+    private string dbStatus = "0";
 
-        public string DbStatus
+    public string DbStatus
+    {
+        get => dbStatus;
+        set
         {
-            get { return dbStatus; }
-            set { dbStatus = value; SaveProperty(nameof(DbStatus), value.ToString()); }
+            dbStatus = value; SaveProperty(nameof(DbStatus), value.ToString());
         }
+    }
 
-        private string deactivateAutoBackupsWhenAkku = "1";
+    private string deactivateAutoBackupsWhenAkku = "1";
 
-        public string DeativateAutoBackupsWhenAkku
+    public string DeativateAutoBackupsWhenAkku
+    {
+        get => deactivateAutoBackupsWhenAkku;
+        set
         {
-            get { return deactivateAutoBackupsWhenAkku; }
-            set { deactivateAutoBackupsWhenAkku = value; SaveProperty(nameof(DeativateAutoBackupsWhenAkku), value.ToString()); }
+            deactivateAutoBackupsWhenAkku = value; SaveProperty(nameof(DeativateAutoBackupsWhenAkku), value.ToString());
         }
+    }
 
-        private string intervallDelete = "";
+    private string intervallDelete = "";
 
-        public string IntervallDelete
+    public string IntervallDelete
+    {
+        get => intervallDelete;
+        set
         {
-            get { return intervallDelete; }
-            set { intervallDelete = value; SaveProperty(nameof(IntervallDelete), value.ToString()); }
+            intervallDelete = value; SaveProperty(nameof(IntervallDelete), value.ToString());
         }
+    }
 
-        private string dbVersion = "";
+    private string dbVersion = "";
 
-        public string DBVersion
+    public string DBVersion
+    {
+        get => dbVersion;
+        set
         {
-            get { return dbVersion; }
-            set { dbVersion = value; SaveProperty(nameof(DBVersion), value.ToString()); }
+            dbVersion = value; SaveProperty(nameof(DBVersion), value.ToString());
         }
+    }
 
-        private string showLocalizedPath = "1";
+    private string showLocalizedPath = "1";
 
-        public string ShowLocalizedPath
+    public string ShowLocalizedPath
+    {
+        get => showLocalizedPath;
+        set
         {
-            get { return showLocalizedPath; }
-            set { showLocalizedPath = value; SaveProperty(nameof(ShowLocalizedPath), value.ToString()); }
+            showLocalizedPath = value; SaveProperty(nameof(ShowLocalizedPath), value.ToString());
         }
+    }
 
-        private string infoBackupDone = "0";
+    private string infoBackupDone = "0";
 
-        public string InfoBackupDone
+    public string InfoBackupDone
+    {
+        get => infoBackupDone;
+        set
         {
-            get { return infoBackupDone; }
-            set { infoBackupDone = value; SaveProperty(nameof(InfoBackupDone), value.ToString()); }
+            infoBackupDone = value; SaveProperty(nameof(InfoBackupDone), value.ToString());
         }
+    }
 
-        private string mediaVolumeSerial = "";
+    private string mediaVolumeSerial = "";
 
-        public string MediaVolumeSerial
+    public string MediaVolumeSerial
+    {
+        get => mediaVolumeSerial;
+        set
         {
-            get { return mediaVolumeSerial; }
-            set { mediaVolumeSerial = value; SaveProperty(nameof(MediaVolumeSerial), value?.ToString()); }
+            mediaVolumeSerial = value; SaveProperty(nameof(MediaVolumeSerial), value?.ToString());
         }
+    }
 
-        private string backupSize = "";
+    private string backupSize = "";
 
-        public string BackupSize
+    public string BackupSize
+    {
+        get => backupSize;
+        set
         {
-            get { return backupSize; }
-            set { backupSize = value; SaveProperty(nameof(BackupSize), value.ToString()); }
+            backupSize = value; SaveProperty(nameof(BackupSize), value.ToString());
         }
+    }
 
-        private string intervallAutoHourBackups = "24";
+    private string intervallAutoHourBackups = "24";
 
-        public string IntervallAutoHourBackups
+    public string IntervallAutoHourBackups
+    {
+        get => intervallAutoHourBackups;
+        set
         {
-            get { return intervallAutoHourBackups; }
-            set { intervallAutoHourBackups = value; SaveProperty(nameof(IntervallAutoHourBackups), value.ToString()); }
+            intervallAutoHourBackups = value; SaveProperty(nameof(IntervallAutoHourBackups), value.ToString());
         }
+    }
 
-        private string scheduleFullBackup = "";
+    private string scheduleFullBackup = "";
 
-        public string ScheduleFullBackup
+    public string ScheduleFullBackup
+    {
+        get => scheduleFullBackup;
+        set
         {
-            get { return scheduleFullBackup; }
-            set { scheduleFullBackup = value; SaveProperty(nameof(ScheduleFullBackup), value.ToString()); }
+            scheduleFullBackup = value; SaveProperty(nameof(ScheduleFullBackup), value.ToString());
         }
+    }
 
-        private string uncUserName = "";
+    private string uncUserName = "";
 
-        public string UNCUsername
+    public string UNCUsername
+    {
+        get => uncUserName;
+        set
         {
-            get { return uncUserName; }
-            set { uncUserName = value; SaveProperty(nameof(UNCUsername), value.ToString()); }
+            uncUserName = value; SaveProperty(nameof(UNCUsername), value.ToString());
         }
+    }
 
-        private string uncPassword = "";
+    private string uncPassword = "";
 
-        public string UNCPassword
+    public string UNCPassword
+    {
+        get => uncPassword;
+        set
         {
-            get { return uncPassword; }
-            set { uncPassword = value; SaveProperty(nameof(UNCPassword), value.ToString()); }
+            uncPassword = value; SaveProperty(nameof(UNCPassword), value.ToString());
         }
+    }
 
-        private string showWaitOnMediaAutoBackups = "0";
+    private string showWaitOnMediaAutoBackups = "0";
 
-        public string ShowWaitOnMediaAutoBackups
+    public string ShowWaitOnMediaAutoBackups
+    {
+        get => showWaitOnMediaAutoBackups;
+        set
         {
-            get { return showWaitOnMediaAutoBackups; }
-            set { showWaitOnMediaAutoBackups = value; SaveProperty(nameof(ShowWaitOnMediaAutoBackups), value.ToString()); }
+            showWaitOnMediaAutoBackups = value; SaveProperty(nameof(ShowWaitOnMediaAutoBackups), value.ToString());
         }
+    }
 
 
-        public ConfigurationManager(DbClientFactory dbClientFactory)
+    public ConfigurationManager(IDbClientFactory dbClientFactory)
+    {
+        this.dbClientFactory = dbClientFactory;
+    }
+
+    public async Task InitializeAsync()
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+
+        foreach (var configEntry in GetType().GetProperties())
         {
-            this.dbClientFactory = dbClientFactory;
-        }
-
-        public async Task LoadConfigurationAsync()
-        {
-            using var dbClient = dbClientFactory.CreateDbClient();
-            
-            foreach (var configEntry in GetType().GetProperties())
+            if (configEntry == null)
             {
-                if (configEntry == null)
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                var parameters = new IDataParameter[] {
-                       dbClient.CreateParameter("value", DbType.String, 1024, configEntry.Name.Replace("_", ""))
-                    };
+            var parameters = new IDataParameter[] {
+                   dbClient.CreateParameter("value", DbType.String, 1024, configEntry.Name.Replace("_", ""))
+                };
 
-                var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT confValue FROM configuration WHERE confProperty LIKE @value LIMIT 1", parameters);
+            var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT confValue FROM configuration WHERE confProperty LIKE @value LIMIT 1", parameters);
 
-                if (result == null || result.Equals(DBNull.Value))
-                {
-                    continue;
-                }
+            if (result == null || result.Equals(DBNull.Value))
+            {
+                continue;
+            }
 
-                if (configEntry.Name == "Status" || configEntry.Name == "TaskType" || configEntry.Name == "Compression" || configEntry.Name == "Encrypt" || configEntry.Name == "MediumType")
+            if (configEntry.Name == "Status" || configEntry.Name == "TaskType" || configEntry.Name == "Compression" || configEntry.Name == "Encrypt" || configEntry.Name == "MediumType")
+            {
+                if (int.TryParse(result.ToString(), out int val))
                 {
-                    if (int.TryParse(result.ToString(), out int val))
-                    {
-                        configEntry.SetValue(this, val);
-                    }
-                }
-                else
-                {
-                    configEntry.SetValue(this, result);
+                    configEntry.SetValue(this, val);
                 }
             }
-        }
-
-        private void SaveProperty(string property, string value)
-        {
-            using var dbClient = dbClientFactory.CreateDbClient();
-            
-            var parameters = new IDataParameter[]
+            else
             {
-                    dbClient.CreateParameter("value", DbType.String, 255, value),
-                    dbClient.CreateParameter("prop", DbType.String, 255, property.ToLower())
-            };
-
-            var result = dbClient.ExecuteNonQuery(CommandType.Text, "UPDATE configuration SET confValue = @value WHERE confProperty = @prop", parameters);
-
-            if (result == 0)
-            {
-                dbClient.ExecuteNonQuery(CommandType.Text, "INSERT INTO configuration VALUES (@prop, @value)", parameters);
+                configEntry.SetValue(this, result);
             }
+        }
+    }
+
+    private void SaveProperty(string property, string value)
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+
+        var parameters = new IDataParameter[]
+        {
+                dbClient.CreateParameter("value", DbType.String, 255, value),
+                dbClient.CreateParameter("prop", DbType.String, 255, property.ToLower())
+        };
+
+        var result = dbClient.ExecuteNonQuery(CommandType.Text, "UPDATE configuration SET confValue = @value WHERE confProperty = @prop", parameters);
+
+        if (result == 0)
+        {
+            dbClient.ExecuteNonQuery(CommandType.Text, "INSERT INTO configuration VALUES (@prop, @value)", parameters);
         }
     }
 }

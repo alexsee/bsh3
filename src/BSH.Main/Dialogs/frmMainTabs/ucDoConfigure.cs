@@ -256,7 +256,7 @@ namespace Brightbits.BSH.Main
 
                     // set basic configuration
                     {
-                        var configurationManager = BackupLogic.GlobalBackup.ConfigurationManager;
+                        var configurationManager = BackupLogic.ConfigurationManager;
                         configurationManager.TaskType = rdFullAutomated.Checked ? TaskType.Auto : TaskType.Manual;
 
                         if (tcSource.SelectedIndex == 0)
@@ -293,13 +293,13 @@ namespace Brightbits.BSH.Main
 
                             if (txtUNCPath.Text.StartsWith(@"\\"))
                             {
-                                BackupLogic.GlobalBackup.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
-                                BackupLogic.GlobalBackup.ConfigurationManager.UNCPassword = Crypto.EncryptString(Crypto.ToSecureString(txtUNCPassword.Text), System.Security.Cryptography.DataProtectionScope.LocalMachine);
+                                BackupLogic.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
+                                BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(Crypto.ToSecureString(txtUNCPassword.Text), System.Security.Cryptography.DataProtectionScope.LocalMachine);
                             }
                             else
                             {
-                                BackupLogic.GlobalBackup.ConfigurationManager.UNCUsername = "";
-                                BackupLogic.GlobalBackup.ConfigurationManager.UNCPassword = "";
+                                BackupLogic.ConfigurationManager.UNCUsername = "";
+                                BackupLogic.ConfigurationManager.UNCPassword = "";
                             }
                         }
 
@@ -479,9 +479,6 @@ namespace Brightbits.BSH.Main
                     lblStatus.Text = Resources.DLG_UC_DO_CONFIGURE_STATUS_IMPORT_TEXT;
                     Application.DoEvents();
 
-                    // reset application
-                    BackupLogic.GlobalBackup = null;
-
                     // local or network directory
                     if (tcStep5.SelectedIndex == 0)
                     {
@@ -551,33 +548,33 @@ namespace Brightbits.BSH.Main
                     if (tcStep5.SelectedIndex == 0)
                     {
                         // refresh directory
-                        BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder = lvBackups.SelectedItems[0].Tag.ToString();
-                        BackupLogic.GlobalBackup.ConfigurationManager.MediumType = 1;
+                        BackupLogic.ConfigurationManager.BackupFolder = lvBackups.SelectedItems[0].Tag.ToString();
+                        BackupLogic.ConfigurationManager.MediumType = 1;
 
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
+                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
+                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
+                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
                     }
                     else if (tcStep5.SelectedIndex == 1)
                     {
                         // refresh ftp credentials
-                        BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder = "";
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpFolder = txtFTPPath2.Text;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpHost = txtFTPServer2.Text;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpPass = txtFTPPass2.Text;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpPort = txtFTPPort2.Text;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpUser = txtFTPUser2.Text;
-                        BackupLogic.GlobalBackup.ConfigurationManager.FtpCoding = Convert.ToString(cboFtpEncoding2.SelectedItem);
-                        BackupLogic.GlobalBackup.ConfigurationManager.MediumType = 3;
+                        BackupLogic.ConfigurationManager.BackupFolder = "";
+                        BackupLogic.ConfigurationManager.FtpFolder = txtFTPPath2.Text;
+                        BackupLogic.ConfigurationManager.FtpHost = txtFTPServer2.Text;
+                        BackupLogic.ConfigurationManager.FtpPass = txtFTPPass2.Text;
+                        BackupLogic.ConfigurationManager.FtpPort = txtFTPPort2.Text;
+                        BackupLogic.ConfigurationManager.FtpUser = txtFTPUser2.Text;
+                        BackupLogic.ConfigurationManager.FtpCoding = Convert.ToString(cboFtpEncoding2.SelectedItem);
+                        BackupLogic.ConfigurationManager.MediumType = 3;
 
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
+                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
+                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
+                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
                     }
                     else
                     {
                         // refresh directory
-                        BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder = txtPath.Text;
+                        BackupLogic.ConfigurationManager.BackupFolder = txtPath.Text;
                     }
 
                     // show controls
@@ -588,7 +585,7 @@ namespace Brightbits.BSH.Main
                     cmdNext.Enabled = true;
                     lvSourceDirs.Items.Clear();
 
-                    foreach (string entry in BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder.Split('|'))
+                    foreach (string entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
                     {
                         var newSource = new ListViewItem
                         {
@@ -605,7 +602,7 @@ namespace Brightbits.BSH.Main
                     // store source directories
                     var sourcePaths = string.Join("|", lvSourceDirs.Items.Cast<ListViewItem>().Select(x => x.Text));
 
-                    foreach (var version in BackupLogic.GlobalBackup.QueryManager.GetVersions())
+                    foreach (var version in BackupLogic.QueryManager.GetVersions())
                     {
                         var sources = version.Sources.Split('|').Select(x => new VersionEntry(x, false)).ToList();
 
@@ -635,11 +632,11 @@ namespace Brightbits.BSH.Main
                             }
                         }
 
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE versiontable SET versionSources = \"" + string.Join("|", sources.Select(x => x.Path).ToArray()) + "\" WHERE versionID = " + version.Id);
+                        await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE versiontable SET versionSources = \"" + string.Join("|", sources.Select(x => x.Path).ToArray()) + "\" WHERE versionID = " + version.Id);
                     }
 
-                    BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder = sourcePaths;
-                    BackupLogic.GlobalBackup.ConfigurationManager.TaskType = TaskType.Manual;
+                    BackupLogic.ConfigurationManager.SourceFolder = sourcePaths;
+                    BackupLogic.ConfigurationManager.TaskType = TaskType.Manual;
 
                     // show overview window
                     SuperBase.CurrentTab = frmMain.AvailableTabs.TabOverview;
