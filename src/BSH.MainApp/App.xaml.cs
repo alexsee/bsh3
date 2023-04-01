@@ -15,10 +15,11 @@ using BSH.MainApp.Notifications;
 using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
 using BSH.MainApp.Views;
-
+using H.NotifyIcon;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Input;
 
 namespace BSH.MainApp;
 
@@ -33,6 +34,11 @@ public partial class App : Application
     public IHost Host
     {
         get;
+    }
+
+    public TaskbarIcon? TrayIcon
+    {
+        get; private set;
     }
 
     public static T GetService<T>()
@@ -131,5 +137,23 @@ public partial class App : Application
 
         await App.GetService<IOrchestrationService>().InitializeAsync();
         await App.GetService<IActivationService>().ActivateAsync(args);
+
+        InitializeTrayIcon();
+    }
+
+
+    private void InitializeTrayIcon()
+    {
+        var exitApplicationCommand = (XamlUICommand)Resources["ExitApplicationCommand"];
+        exitApplicationCommand.ExecuteRequested += ExitApplicationCommand_ExecuteRequested;
+
+        TrayIcon = (TaskbarIcon)Resources["TrayIcon"];
+        TrayIcon.ForceCreate();
+    }
+
+    private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    {
+        TrayIcon?.Dispose();
+        Environment.Exit(0);
     }
 }

@@ -9,6 +9,7 @@
                 <ResourceDictionary Source="/Styles/FontSizes.xaml" />
                 <ResourceDictionary Source="/Styles/Thickness.xaml" />
                 <ResourceDictionary Source="/Styles/TextBlock.xaml" />
+                <ResourceDictionary Source="/TrayIconResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <SolidColorBrush x:Key="WindowCaptionBackground">Transparent</SolidColorBrush>
             <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled">Transparent</SolidColorBrush>
