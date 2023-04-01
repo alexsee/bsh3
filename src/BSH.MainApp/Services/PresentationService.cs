@@ -53,7 +53,9 @@ public class PresentationService : IPresentationService
     public async Task<IUICommand> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
     {
         if (commands != null && commands.Count > 3)
+        {
             throw new InvalidOperationException("A maximum of 3 commands can be specified");
+        }
 
         IUICommand defaultCommand = new UICommand("OK");
         IUICommand? secondaryCommand = null;

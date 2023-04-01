@@ -2,7 +2,6 @@
 using System.Web;
 
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.ViewModels;
 
 using Microsoft.Windows.AppNotifications;
 

@@ -1,23 +1,40 @@
-﻿using Microsoft.UI.Xaml.Media.Imaging;
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace BSH.MainApp.Models;
 
 public class FileOrFolderItem : INotifyPropertyChanged
 {
-    public string Name { get; set; }
+    public string Name
+    {
+        get; set;
+    }
 
-    public string FullPath { get; set; }
+    public string FullPath
+    {
+        get; set;
+    }
 
-    public DateTime FileDateModified { get; set; }
+    public DateTime FileDateModified
+    {
+        get; set;
+    }
 
-    public DateTime FileDateCreated { get; set; }
+    public DateTime FileDateCreated
+    {
+        get; set;
+    }
 
-    public double FileSize { get; set; }
+    public double FileSize
+    {
+        get; set;
+    }
 
-    public bool IsFile { get; set; }
+    public bool IsFile
+    {
+        get; set;
+    }
 
     private BitmapSource _icon;
     public BitmapSource Icon

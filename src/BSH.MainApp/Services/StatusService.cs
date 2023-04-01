@@ -1,12 +1,10 @@
-﻿using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Exceptions;
-using Microsoft.UI.Xaml.Controls;
-using BSH.MainApp.Contracts;
-using BSH.MainApp.Models;
+﻿using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
+using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Models;
 
 namespace BSH.MainApp.Services;
 public class StatusService : IJobReport, IStatusService

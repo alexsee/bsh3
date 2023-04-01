@@ -1,10 +1,8 @@
 ﻿using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.ViewModels;
 
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
-using Microsoft.Windows.AppNotifications;
 
 namespace BSH.MainApp.Activation;
 

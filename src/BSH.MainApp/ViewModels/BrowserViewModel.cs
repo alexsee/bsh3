@@ -1,7 +1,7 @@
-﻿using BSH.MainApp.Models;
-using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine.Models;
+using BSH.MainApp.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BSH.MainApp.ViewModels;
 
