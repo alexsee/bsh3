@@ -1,11 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Web;
-using System.Windows;
 
 using BSH.MainApp.Contracts.Services;
-using H.NotifyIcon;
-using H.NotifyIcon.Core;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.Windows.AppNotifications;
 
 namespace BSH.MainApp.Notifications;

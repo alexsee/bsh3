@@ -4,5 +4,5 @@ namespace BSH.MainApp.ViewModels;
 
 public class SettingsViewModel : ObservableRecipient
 {
-    
+
 }
