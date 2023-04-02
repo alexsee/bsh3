@@ -6,14 +6,11 @@ namespace BSH.MainApp.Views;
 
 public sealed partial class BrowserPage : Page
 {
-    public BrowserViewModel ViewModel
-    {
-        get;
-    }
+    public BrowserViewModel ViewModel => (BrowserViewModel)DataContext;
 
     public BrowserPage()
     {
-        ViewModel = App.GetService<BrowserViewModel>();
+        DataContext = App.GetService<BrowserViewModel>();
         InitializeComponent();
     }
 }

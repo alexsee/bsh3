@@ -23,6 +23,7 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware
     {
         LastBackupDate = (await queryManager.GetLastBackupAsync()).CreationDate.ToLongDateString();
     }
+
     public void OnNavigatedFrom()
     {
     }

@@ -15,6 +15,13 @@ public sealed partial class MainWindow : WindowEx
 
     private void MainNavigation_ItemInvoked(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
     {
-        App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
+        if (args.InvokedItemContainer == nviOverviewPage)
+        {
+            App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.MainViewModel");
+        }
+        else if (args.InvokedItemContainer == nviBackupBrowser)
+        {
+            App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
+        }
     }
 }
