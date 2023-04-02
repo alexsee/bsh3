@@ -6,14 +6,11 @@ namespace BSH.MainApp.Views;
 
 public sealed partial class MainPage : Page
 {
-    public MainViewModel ViewModel
-    {
-        get;
-    }
+    public MainViewModel ViewModel => (MainViewModel)DataContext;
 
     public MainPage()
     {
-        ViewModel = App.GetService<MainViewModel>();
+        DataContext = App.GetService<MainViewModel>();
         InitializeComponent();
     }
 

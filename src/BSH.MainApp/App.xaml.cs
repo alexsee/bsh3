@@ -18,6 +18,7 @@ using BSH.MainApp.Views;
 using H.NotifyIcon;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 
@@ -97,6 +98,8 @@ public partial class App : Application
             services.AddSingleton<IBackupService, BackupService>();
 
             services.AddSingleton<IStorageFactory, StorageFactory>();
+
+            services.AddSingleton<DispatcherQueue>((x) => DispatcherQueue.GetForCurrentThread());
 
             // Views and ViewModels
             services.AddTransient<BrowserViewModel>();

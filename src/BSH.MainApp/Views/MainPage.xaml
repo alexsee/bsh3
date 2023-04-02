@@ -7,7 +7,7 @@
     Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -62,7 +62,7 @@
                     <TextBlock Grid.Column="1" Grid.Row="2" x:Name="tbDiskspaceFullyFilled">noch nicht vorhersehbar</TextBlock>
 
                     <TextBlock Grid.Column="0" Grid.Row="3">Letzte Sicherung:</TextBlock>
-                    <TextBlock Grid.Column="1" Grid.Row="3" Text="{x:Bind ViewModel.LastBackupDate}">Heute, 13:00 Uhr</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding LastBackupDate}">Heute, 13:00 Uhr</TextBlock>
 
 
                     <TextBlock Grid.Column="0" Grid.Row="5">Sicherungsmodus:</TextBlock>
@@ -78,7 +78,7 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="1" Background="#fafafa" Padding="30,20" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+        <Grid Grid.Row="1" Visibility="{Binding NextBackupGridVisibility}" Background="#fafafa" Padding="30,20" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -87,13 +87,37 @@
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <FontIcon FontSize="18" FontFamily="Segoe MDL2 Assets" Glyph="&#xE787;" Margin="0,0,10,0" VerticalAlignment="Center"/>
                 <TextBlock Margin="10,0,10,0" VerticalAlignment="Center">Nächste Sicherung:</TextBlock>
-                <TextBlock x:Name="tbNextBackupDate" FontWeight="Bold" VerticalAlignment="Center">Heute um 12:00 Uhr</TextBlock>
+                <TextBlock FontWeight="Bold" VerticalAlignment="Center" Text="{Binding NextBackupDate}" />
             </StackPanel>
 
-            <Button Grid.Column="1" Grid.Row="6" x:Name="btnExecuteBackup" Click="btnExecuteBackup_Click" Style="{StaticResource AccentButtonStyle}">
+            <Button Grid.Column="1" Style="{StaticResource AccentButtonStyle}" Command="{Binding StartManualBackupCommand}">
                 <StackPanel Orientation="Horizontal">
                     <FontIcon FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE74E;" Margin="0,0,10,0"/>
                     <TextBlock>Sicherung starten</TextBlock>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1" Visibility="{Binding ProgressGridVisibility}" Background="#fafafa" ColumnSpacing="20" Padding="30,20" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <FontIcon Grid.Column="0" FontSize="24" FontFamily="Segoe MDL2 Assets" Glyph="&#xE895;" Margin="0,0,10,0"/>
+
+            <StackPanel Grid.Column="1" Spacing="5">
+                <TextBlock Text="{Binding CurrentProgressStatusTitle}" />
+                <ProgressBar Maximum="{Binding CurrentProgressMax}" Value="{Binding CurrentProgressValue}" />
+            </StackPanel>
+        
+            <Button Grid.Column="2" Style="{StaticResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Abbrechen</TextBlock>
                 </StackPanel>
             </Button>
         </Grid>
