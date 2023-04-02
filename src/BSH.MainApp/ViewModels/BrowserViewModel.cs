@@ -13,19 +13,11 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
 {
     private readonly IQueryManager queryManager;
 
+    [ObservableProperty]
     private VersionDetails? currentVersion;
-    public VersionDetails? CurrentVersion
-    {
-        get => currentVersion;
-        set => SetProperty(ref currentVersion, value, true);
-    }
 
+    [ObservableProperty]
     private FileOrFolderItem? currentItem;
-    public FileOrFolderItem? CurrentItem
-    {
-        get => currentItem;
-        set => SetProperty(ref currentItem, value, true);
-    }
 
     public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; } = new();
 
