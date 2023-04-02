@@ -1,0 +1,39 @@
+﻿<Page
+    x:Class="BSH.MainApp.Views.SettingsPages.EnhancedSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="White">
+
+    <Grid>
+        <StackPanel>
+            <StackPanel>
+                <CheckBox Content="Warnen, wenn weniger Speicherplatz auf dem Sicherungsmedium verfügbar ist als:" />
+                <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
+                    <NumberBox HorizontalAlignment="Left" Width="100" />
+                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="MB" />
+                </StackPanel>
+            </StackPanel>
+
+            <CheckBox Content="Im Akkubetrieb automatische Sicherungen aussetzen" />
+
+            <CheckBox Content="Auf Medium warten, wenn Sicherungsmedium nicht verfügbar ist" />
+
+            <CheckBox Content="Ordnerlokalisierungen anzeigen" />
+
+            <CheckBox Content="Benachrichtigung anzeigen, wenn eine Sicherung abgeschlossen wurde" />
+
+            <CheckBox Content="Aufforderung bei fehlendem Sicherungsmedium anzeigen" />
+
+            <StackPanel>
+                <CheckBox Content="Benachrichtung anzeigen, wenn die letzte Sicherung länger her ist als:" />
+                <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
+                    <NumberBox HorizontalAlignment="Left" Width="100" />
+                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Tage" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

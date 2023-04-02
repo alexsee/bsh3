@@ -1,0 +1,39 @@
+﻿<Page
+    x:Class="BSH.MainApp.Views.SettingsPages.ModeSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="White">
+
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <RadioButton x:Name="rbAutomaticMode">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Vollautomatische Sicherung (empfohlen)" />
+                    <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords" Text="Der vollautomatische Sicherungsmodus sicherte Ihre Dateien stündlich. Diese Sicherungen sind für 24 Stunden verfügbar. Danach sind tägliche Sicherungen für 30 Tage verfügbar. Anschließend sind wöchentliche Sicherungen verfügbar, solange genug Speicherplatz verfügbar ist." />
+                </StackPanel>
+            </RadioButton>
+
+            <RadioButton x:Name="rbScheduleMode" Margin="0,10,0,0">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Zeitplangesteuerte Sicherung" />
+                    <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords" Text="Sie legen fest, wann eine Datensicherung durchgeführt wird und wie lange diese verfügbar bleiben." />
+
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button Content="Zeitplan festlegen" />
+                        <CheckBox Margin="20,1,0,0" Content="Verpasste Sicherungen nachholen" />
+                    </StackPanel>
+                </StackPanel>
+            </RadioButton>
+
+            <RadioButton x:Name="rbManualMode" Margin="0,10,0,0">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Manuelle Sicherung" />
+                    <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords" Text="Sicherungen werden nicht automatisch erstellt, sondern Sie erstellen die Sicherungen manuell." />
+                </StackPanel>
+            </RadioButton>
+        </StackPanel>
+    </Grid>
+</Page>

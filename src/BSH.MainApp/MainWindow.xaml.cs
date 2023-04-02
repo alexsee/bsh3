@@ -23,5 +23,9 @@ public sealed partial class MainWindow : WindowEx
         {
             App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
         }
+        else if (args.IsSettingsInvoked)
+        {
+            App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.SettingsViewModel");
+        }
     }
 }

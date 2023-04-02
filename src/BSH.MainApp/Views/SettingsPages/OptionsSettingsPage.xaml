@@ -1,0 +1,38 @@
+﻿<Page
+    x:Class="BSH.MainApp.Views.SettingsPages.OptionsSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="White">
+
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <RadioButton x:Name="rbNoCompressionOrEncryption">
+                <TextBlock FontWeight="Bold" Text="Keine Kompression oder Verschlüsselung" />
+            </RadioButton>
+
+            <RadioButton x:Name="rbCompression" Margin="0,10,0,0">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Datensicherung komprimieren" />
+                    <TextBlock TextWrapping="WrapWholeWords" Text="(erfordert mehr Rechenleistung; langsamere Sicherungen)" />
+
+                    <StackPanel Orientation="Horizontal">
+                        <Slider VerticalAlignment="Center" Width="400" Margin="0,10,0,0" TickFrequency="1" Maximum="9" TickPlacement="Outside" />
+                        <Button VerticalAlignment="Center" Margin="10,0,0,0" Content="Ausschließen" />
+                    </StackPanel>
+                </StackPanel>
+            </RadioButton>
+
+            <RadioButton x:Name="rbEncryption" Margin="0,10,0,0">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Datensicherung verschlüsseln" />
+                    <TextBlock TextWrapping="WrapWholeWords" Text="(erfordert mehr Rechenleistung; langsamere Sicherungen)" />
+                    
+                    <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords" Text="Um die Datensicherung vor unberechtigten Zugriffen zu schützen kann diese verschlüsselt werden. Sie werden dann bei jeder Sitzung nach Ihrem Kennwort gefragt. Die Verschlüsselung kann nicht rückwirkend angewendet werden." />
+                </StackPanel>
+            </RadioButton>
+        </StackPanel>
+    </Grid>
+</Page>
