@@ -369,12 +369,12 @@ namespace Brightbits.BSH.Main
             BackupLogic.BackupController.Cancel();
         }
 
-#if !WIN_UWP
         private void btnUpdates_Click(object sender, EventArgs e)
         {
+#if !WIN_UWP
             Program.mainUpdateController.updateInteractive(ParentForm);
-        }
 #endif
+        }
 
         private void btnSettings_Click(object sender, EventArgs e)
         {

@@ -61,7 +61,7 @@ namespace Brightbits.BSH.Main
                     var proc = Process.Start(procInfo);
                     proc.WaitForExit();
 #else
-                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\..\SmartPreview\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"" + (isTmp.Item2 ? " -c" : ""));
+                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\..\SmartPreview\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"" + (tmpFile.Item2 ? " -c" : ""));
                     procInfo.WindowStyle = ProcessWindowStyle.Normal;
 
                     var proc = Process.Start(procInfo);
