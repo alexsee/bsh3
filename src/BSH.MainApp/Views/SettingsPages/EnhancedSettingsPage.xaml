@@ -10,28 +10,28 @@
     <Grid>
         <StackPanel>
             <StackPanel>
-                <CheckBox Content="Warnen, wenn weniger Speicherplatz auf dem Sicherungsmedium verfügbar ist als:" />
+                <CheckBox Content="Show notification if less diskspace is available than:" />
                 <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
                     <NumberBox HorizontalAlignment="Left" Width="100" />
                     <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="MB" />
                 </StackPanel>
             </StackPanel>
 
-            <CheckBox Content="Im Akkubetrieb automatische Sicherungen aussetzen" />
+            <CheckBox Content="Stop backups when device is in battery mode" />
 
-            <CheckBox Content="Auf Medium warten, wenn Sicherungsmedium nicht verfügbar ist" />
+            <CheckBox Content="Wait for storage device if not available" />
 
-            <CheckBox Content="Ordnerlokalisierungen anzeigen" />
+            <CheckBox Content="Show directory localization names" />
 
-            <CheckBox Content="Benachrichtigung anzeigen, wenn eine Sicherung abgeschlossen wurde" />
+            <CheckBox Content="Show notification if backup is completed" />
 
-            <CheckBox Content="Aufforderung bei fehlendem Sicherungsmedium anzeigen" />
+            <CheckBox Content="Show notification to request storage device if not available" />
 
             <StackPanel>
-                <CheckBox Content="Benachrichtung anzeigen, wenn die letzte Sicherung länger her ist als:" />
+                <CheckBox Content="Show notification if backup is older than:" />
                 <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
                     <NumberBox HorizontalAlignment="Left" Width="100" />
-                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Tage" />
+                    <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Days" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>

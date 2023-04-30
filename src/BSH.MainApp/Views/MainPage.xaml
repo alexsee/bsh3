@@ -20,7 +20,7 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold">Übersicht</TextBlock>
+            <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold">Overview</TextBlock>
 
             <Grid Grid.Row="1" Margin="0, 20, 0, 0">
                 <Grid.ColumnDefinitions>
@@ -52,28 +52,30 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Column="0" Grid.ColumnSpan="2" FontSize="18" x:Name="tbBigStatus">
-                        Backup Service Home wird ordnungsgemäß ausgeführt
+                        Backup Service Home is running successfully
                     </TextBlock>
 
-                    <TextBlock Grid.Column="0" Grid.Row="1">Verfügbar:</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="1">Available:</TextBlock>
                     <TextBlock Grid.Column="1" Grid.Row="1" x:Name="tbAvailableDiskspace">653 GB</TextBlock>
 
-                    <TextBlock Grid.Column="0" Grid.Row="2">Vorraussichtlich voll am:</TextBlock>
-                    <TextBlock Grid.Column="1" Grid.Row="2" x:Name="tbDiskspaceFullyFilled">noch nicht vorhersehbar</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="2">Diskspace full expected on:</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="2" x:Name="tbDiskspaceFullyFilled">currently unpredictable</TextBlock>
 
-                    <TextBlock Grid.Column="0" Grid.Row="3">Letzte Sicherung:</TextBlock>
-                    <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding LastBackupDate}">Heute, 13:00 Uhr</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="3">Last Backup:</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding LastBackupDate}">Today, 13:00</TextBlock>
 
 
                     <TextBlock Grid.Column="0" Grid.Row="5">Sicherungsmodus:</TextBlock>
-                    <TextBlock Grid.Column="1" Grid.Row="5" x:Name="tbBackupMode">Vollautomatische Sicherung</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="5" x:Name="tbBackupMode">Automatic Backup</TextBlock>
                 </Grid>
             </Grid>
 
             <Grid Grid.Row="2" Margin="0, 40, 0, 0">
                 <StackPanel>
-                    <TextBlock FontWeight="Bold">Sicherungseinstellungen</TextBlock>
-                    <TextBlock x:Name="tbBackupDetails" TextWrapping="WrapWholeWords">Backup Service Home sichert Ihre Dateien (1 Quellverzeichnis(se)) vollautomatisch stündlich auf dem lokalen Datenträger (D:)</TextBlock>
+                    <TextBlock FontWeight="Bold">Backup Settings</TextBlock>
+                    <TextBlock x:Name="tbBackupDetails" TextWrapping="WrapWholeWords">
+                        Backup Service Home backups your data (1 source(s)) full automatically hourly on the local disk (D:)
+                    </TextBlock>
                 </StackPanel>
             </Grid>
         </Grid>
@@ -86,14 +88,14 @@
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <FontIcon FontSize="18" FontFamily="Segoe MDL2 Assets" Glyph="&#xE787;" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                <TextBlock Margin="10,0,10,0" VerticalAlignment="Center">Nächste Sicherung:</TextBlock>
+                <TextBlock Margin="10,0,10,0" VerticalAlignment="Center">Next Backup:</TextBlock>
                 <TextBlock FontWeight="Bold" VerticalAlignment="Center" Text="{Binding NextBackupDate}" />
             </StackPanel>
 
             <Button Grid.Column="1" Style="{StaticResource AccentButtonStyle}" Command="{Binding StartManualBackupCommand}">
                 <StackPanel Orientation="Horizontal">
                     <FontIcon FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE74E;" Margin="0,0,10,0"/>
-                    <TextBlock>Sicherung starten</TextBlock>
+                    <TextBlock>Start Backup</TextBlock>
                 </StackPanel>
             </Button>
         </Grid>
@@ -117,7 +119,7 @@
         
             <Button Grid.Column="2" Style="{StaticResource AccentButtonStyle}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock>Abbrechen</TextBlock>
+                    <TextBlock>Cancel</TextBlock>
                 </StackPanel>
             </Button>
         </Grid>

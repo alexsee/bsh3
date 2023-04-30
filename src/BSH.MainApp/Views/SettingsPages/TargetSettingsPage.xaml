@@ -21,9 +21,9 @@
         </Grid.ColumnDefinitions>
 
         <!-- target type selection -->
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Sicherungsmedium:" />
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Backup storage:" />
         <ComboBox Grid.Row="0" Grid.Column="1" Width="300">
-            <x:String>Verzeichnis oder Laufwerk</x:String>
+            <x:String>Directory or disk</x:String>
             <x:String>Server (FTP)</x:String>
         </ComboBox>
         
@@ -35,9 +35,9 @@
                 <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" Text="Speicherort:" />
+            <TextBlock Grid.Column="0" Text="Storage path:" />
             <TextBox Grid.Column="1" />
-            <Button Grid.Column="2" Content="Ändern" />
+            <Button Grid.Column="2" Content="Change" />
         </Grid>
 
         <!-- ftp server options -->
@@ -61,12 +61,12 @@
             <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0" Text="Port:" />
             <NumberBox Grid.Column="3" Grid.Row="0" />
 
-            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Text="Benutzername:" />
+            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Text="Username:" />
             <TextBox Grid.Column="1" Grid.Row="1" />
-            <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Text="Kennwort:" />
+            <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Text="Password:" />
             <PasswordBox Grid.Column="3" Grid.Row="1" />
 
-            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="Verzeichnis:" />
+            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="Path:" />
             <TextBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" />
 
             <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="Encoding:" />
@@ -75,11 +75,11 @@
                 <x:String>UTF8</x:String>
             </ComboBox>
 
-            <Button Grid.Column="1" Grid.Row="4" Content="Verbindung testen" />
+            <Button Grid.Column="1" Grid.Row="4" Content="Test connection" />
         </Grid>
 
         <!-- switch backup target -->
-        <Button Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Content="Wechseln" />
-        <TextBlock VerticalAlignment="Center" TextWrapping="WrapWholeWords" Grid.Row="3" Grid.Column="1" Text="Ermöglicht das Wechseln des Sicherungsmediums auf ein neues (leeres) Medium ohne die Einstellungen zu verlieren." />
+        <Button Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Content="Switch storage" />
+        <TextBlock VerticalAlignment="Center" TextWrapping="WrapWholeWords" Grid.Row="3" Grid.Column="1" Text="Allows changing the backup medium to a new (empty) medium without losing the settings." />
     </Grid>
 </Page>

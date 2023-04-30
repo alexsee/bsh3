@@ -54,7 +54,7 @@
                 </BreadcrumbBar.ItemTemplate>
             </BreadcrumbBar>
 
-            <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Suche" />
+            <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" />
         </Grid>
 
         <Grid Grid.Row="1">
@@ -63,33 +63,33 @@
             </Grid.Resources>
 
             <CommandBar IsOpen="False" DefaultLabelPosition="Right" ClosedDisplayMode="Compact">
-                <AppBarButton Icon="Edit" Label="Organisieren">
+                <AppBarButton Icon="Edit" Label="Organize">
                     <AppBarButton.Flyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem Icon="Copy" Text="Wiederherstellen" />
-                            <MenuFlyoutItem Text="Alles Wiederherstellen"/>
-                            <MenuFlyoutItem Text="Eigenschaften" />
+                            <MenuFlyoutItem Icon="Copy" Text="Restore" />
+                            <MenuFlyoutItem Text="Restore all"/>
+                            <MenuFlyoutItem Text="Properties" />
                             <MenuFlyoutSeparator />
-                            <MenuFlyoutItem Icon="View" Text="Schnellansicht" />
-                            <MenuFlyoutItem Text="Zu Ordnerfavoriten hinzufügen"/>
+                            <MenuFlyoutItem Icon="View" Text="Quick preview" />
+                            <MenuFlyoutItem Text="Add to folder favorites"/>
                             <MenuFlyoutSeparator />
-                            <MenuFlyoutItem Icon="Edit" Text="Sicherung bearbeiten" />
-                            <MenuFlyoutItem Icon="Delete" Text="Sicherung löschen"/>
-                            <MenuFlyoutItem Text="Sicherung fixieren" />
+                            <MenuFlyoutItem Icon="Edit" Text="Edit backup" />
+                            <MenuFlyoutItem Icon="Delete" Text="Delete backup"/>
+                            <MenuFlyoutItem Text="Lock backup" />
                             <MenuFlyoutSeparator />
-                            <MenuFlyoutItem Text="Mehrere Sicherungen löschen"/>
+                            <MenuFlyoutItem Text="Delete multiple backups"/>
                         </MenuFlyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
-                <AppBarButton Icon="View" Label="Schnellansicht" />
+                <AppBarButton Icon="View" Label="Quick preview" />
                 <AppBarSeparator />
-                <AppBarButton Icon="Copy" Label="Wiederherstellen" />
-                <AppBarButton Label="Ansichten">
+                <AppBarButton Icon="Copy" Label="Restore" />
+                <AppBarButton Label="View">
                     <AppBarButton.Flyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem Text="Große Symbole" />
-                            <MenuFlyoutItem Icon="List" Text="Listenansicht"/>
-                            <MenuFlyoutItem Text="Detailansicht" />
+                            <MenuFlyoutItem Text="Large symbols" />
+                            <MenuFlyoutItem Icon="List" Text="List"/>
+                            <MenuFlyoutItem Text="Details" />
                         </MenuFlyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
@@ -107,13 +107,13 @@
                     </Grid.RowDefinitions>
 
                     <!-- favorites -->
-                    <TextBlock Grid.Row="0" Text="Favoriten" Margin="20,10,0,0" Style="{StaticResource BaseTextBlockStyle}" />
+                    <TextBlock Grid.Row="0" Text="Favorites" Margin="20,10,0,0" Style="{StaticResource BaseTextBlockStyle}" />
                     <ListView x:Name="lvFavorites" Grid.Row="1" MaxHeight="300" ItemsSource="{Binding Favorites}">
 
                     </ListView>
 
                     <!-- backup list -->
-                    <TextBlock Grid.Row="2" Text="Sicherungen" Margin="20,0,0,0" Style="{StaticResource BaseTextBlockStyle}" />
+                    <TextBlock Grid.Row="2" Text="Backups" Margin="20,0,0,0" Style="{StaticResource BaseTextBlockStyle}" />
                     <ListView 
                         Grid.Row="3" 
                         ItemTemplate="{StaticResource VersionTemplate}" 
@@ -147,13 +147,13 @@
                             <DataTemplate>
                                 <Grid Padding="12">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="408"/>
-                                        <ColumnDefinition Width="360"/>
-                                        <ColumnDefinition Width="360"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="200"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="Name" Style="{ThemeResource CaptionTextBlockStyle}"/>
-                                    <TextBlock Grid.Column="1" Text="Zuletzt bearbeitet" Style="{ThemeResource CaptionTextBlockStyle}"/>
-                                    <TextBlock Grid.Column="2" Text="Größe" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                                    <TextBlock Grid.Column="1" Text="Last modified" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                                    <TextBlock Grid.Column="2" Text="Size" Style="{ThemeResource CaptionTextBlockStyle}"/>
                                 </Grid>
                             </DataTemplate>
                         </ListView.HeaderTemplate>
@@ -161,9 +161,9 @@
                             <DataTemplate x:Name="TableDataTemplate" x:DataType="models:FileOrFolderItem">
                                 <Grid Height="30">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="408"/>
-                                        <ColumnDefinition Width="360"/>
-                                        <ColumnDefinition Width="360"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="200"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Orientation="Horizontal">
                                         <FontIcon Visibility="{Binding Path=IsFile, Converter={StaticResource BooleanInverter}}" VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B7;" Margin="0,0,10,0" />
@@ -192,10 +192,10 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{Binding CurrentItem.Name}" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding CurrentItem.FullPath}" />
 
-                    <TextBlock Grid.Row="0" Grid.Column="1" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Erstellt am:</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Date created:</TextBlock>
                     <TextBlock Grid.Row="0" Grid.Column="2" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}" Text="{Binding CurrentItem.FileDateCreated}" />
 
-                    <TextBlock Grid.Row="1" Grid.Column="1" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Zuletzt bearbeitet am:</TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Last modified:</TextBlock>
                     <TextBlock Grid.Row="1" Grid.Column="2" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}" Text="{Binding CurrentItem.FileDateModified}" />
                 </Grid>
             </Grid>

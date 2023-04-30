@@ -16,7 +16,7 @@
             <ColumnDefinition Width="*" MaxWidth="1400" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold">Einstellungen</TextBlock>
+        <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold">Settings</TextBlock>
 
         <Grid Grid.Row="1" Margin="0, 20, 0, 0">
             <NavigationView x:Name="navSettings" 
@@ -25,11 +25,11 @@
                             IsSettingsVisible="False"
                             ItemInvoked="navSettings_ItemInvoked">
                 <NavigationView.MenuItems>
-                    <NavigationViewItem x:Name="nviSources" IsSelected="True" Content="Quellverzeichnisse" />
-                    <NavigationViewItem x:Name="nviTarget" Content="Medium" />
-                    <NavigationViewItem x:Name="nviMode" Content="Modus" />
-                    <NavigationViewItem x:Name="nviOptions" Content="Sicherungsoptionen" />
-                    <NavigationViewItem x:Name="nviEnhanced" Content="Erweitert" />
+                    <NavigationViewItem x:Name="nviSources" IsSelected="True" Content="Sources" />
+                    <NavigationViewItem x:Name="nviTarget" Content="Backup Disk" />
+                    <NavigationViewItem x:Name="nviMode" Content="Mode" />
+                    <NavigationViewItem x:Name="nviOptions" Content="Options" />
+                    <NavigationViewItem x:Name="nviEnhanced" Content="Enhanced" />
                 </NavigationView.MenuItems>
                 <Frame Margin="0,20,0,0" x:Name="contentFrame" />
             </NavigationView>

@@ -27,7 +27,7 @@
                   ItemTemplate="{StaticResource SourceFolderTemplate}">
             <ListView.HeaderTemplate>
                 <DataTemplate>
-                    <TextBlock FontWeight="Bold" Margin="0,5,0,5">Verzeichnis</TextBlock>
+                    <TextBlock FontWeight="Bold" Margin="0,5,0,5">Directory</TextBlock>
                 </DataTemplate>
             </ListView.HeaderTemplate>
         </ListView>
@@ -39,11 +39,11 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Column="0">
-                <Button x:Name="btnAddSource" Content="Hinzufügen" />
-                <Button x:Name="btnDeleteSource" Content="Löschen" Margin="10,0,0,0" />
+                <Button x:Name="btnAddSource" Content="Add Directory" />
+                <Button x:Name="btnDeleteSource" Content="Delete" Margin="10,0,0,0" />
             </StackPanel>
 
-            <Button x:Name="btnExcludeFiles" Grid.Column="1" Content="Dateien ausschließen" HorizontalAlignment="Right" />
+            <Button x:Name="btnExcludeFiles" Grid.Column="1" Content="Exclude file(s)" HorizontalAlignment="Right" />
         </Grid>
     </Grid>
 </Page>

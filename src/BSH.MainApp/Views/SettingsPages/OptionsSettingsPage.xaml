@@ -10,27 +10,27 @@
     <Grid>
         <StackPanel Orientation="Vertical">
             <RadioButton x:Name="rbNoCompressionOrEncryption">
-                <TextBlock FontWeight="Bold" Text="Keine Kompression oder Verschlüsselung" />
+                <TextBlock FontWeight="Bold" Text="No compression or encryption" />
             </RadioButton>
 
             <RadioButton x:Name="rbCompression" Margin="0,10,0,0">
                 <StackPanel>
-                    <TextBlock FontWeight="Bold" Text="Datensicherung komprimieren" />
-                    <TextBlock TextWrapping="WrapWholeWords" Text="(erfordert mehr Rechenleistung; langsamere Sicherungen)" />
+                    <TextBlock FontWeight="Bold" Text="Compress backups" />
+                    <TextBlock TextWrapping="WrapWholeWords" Text="(requires more computation power; slower backups)" />
 
                     <StackPanel Orientation="Horizontal">
                         <Slider VerticalAlignment="Center" Width="400" Margin="0,10,0,0" TickFrequency="1" Maximum="9" TickPlacement="Outside" />
-                        <Button VerticalAlignment="Center" Margin="10,0,0,0" Content="Ausschließen" />
+                        <Button VerticalAlignment="Center" Margin="10,0,0,0" Content="Turn off" />
                     </StackPanel>
                 </StackPanel>
             </RadioButton>
 
             <RadioButton x:Name="rbEncryption" Margin="0,10,0,0">
                 <StackPanel>
-                    <TextBlock FontWeight="Bold" Text="Datensicherung verschlüsseln" />
-                    <TextBlock TextWrapping="WrapWholeWords" Text="(erfordert mehr Rechenleistung; langsamere Sicherungen)" />
-                    
-                    <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords" Text="Um die Datensicherung vor unberechtigten Zugriffen zu schützen kann diese verschlüsselt werden. Sie werden dann bei jeder Sitzung nach Ihrem Kennwort gefragt. Die Verschlüsselung kann nicht rückwirkend angewendet werden." />
+                    <TextBlock FontWeight="Bold" Text="Encrypt backups" />
+                    <TextBlock TextWrapping="WrapWholeWords" Text="(requires more computation power; slower backups)" />
+
+                    <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords" Text="To protect the backup from unauthorized access, it can be encrypted. You will then be asked for your password at each session. The encryption cannot be applied retroactively." />
                 </StackPanel>
             </RadioButton>
         </StackPanel>
