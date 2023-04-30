@@ -1,13 +1,17 @@
 ﻿using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Helpers;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 
 namespace BSH.MainApp;
 
-public sealed partial class MainWindow : WindowEx
+public sealed partial class MainWindow : Window
 {
     public MainWindow()
     {
         InitializeComponent();
+
+        SystemBackdrop = new MicaBackdrop();
 
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/app_ico.ico"));
         Title = "AppDisplayName".GetLocalized();
