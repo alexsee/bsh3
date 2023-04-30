@@ -1,4 +1,7 @@
-﻿namespace BSH.MainApp.Activation;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+namespace BSH.MainApp.Activation;
 
 // Extend this class to implement new ActivationHandlers. See DefaultActivationHandler for an example.
 // https://github.com/microsoft/TemplateStudio/blob/main/docs/WinUI/activation.md

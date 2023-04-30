@@ -1,4 +1,7 @@
-﻿namespace BSH.MainApp.Helpers;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+namespace BSH.MainApp.Helpers;
 public static class Formatter
 {
     public static string HumanizeDate(this DateTime date)

@@ -1,4 +1,7 @@
-﻿using Brightbits.BSH.Engine.Contracts.Services;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using Brightbits.BSH.Engine.Contracts.Services;
 using BSH.MainApp.Contracts.Services;
 
 namespace BSH.MainApp.Services;

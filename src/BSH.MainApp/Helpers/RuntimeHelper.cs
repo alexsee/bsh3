@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace BSH.MainApp.Helpers;

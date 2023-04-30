@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using System.Diagnostics.CodeAnalysis;
 
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;

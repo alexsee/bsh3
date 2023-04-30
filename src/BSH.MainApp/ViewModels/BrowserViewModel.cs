@@ -1,4 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Models;

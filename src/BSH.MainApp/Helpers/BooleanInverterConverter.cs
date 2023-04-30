@@ -1,4 +1,7 @@
-﻿using Microsoft.UI.Xaml.Data;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using Microsoft.UI.Xaml.Data;
 
 namespace BSH.MainApp.Helpers;
 

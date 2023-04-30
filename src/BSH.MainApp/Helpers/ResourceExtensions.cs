@@ -1,4 +1,7 @@
-﻿using Microsoft.Windows.ApplicationModel.Resources;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace BSH.MainApp.Helpers;
 

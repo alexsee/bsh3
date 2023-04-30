@@ -1,4 +1,7 @@
-﻿using System.Collections.Specialized;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using System.Collections.Specialized;
 using System.Web;
 
 using BSH.MainApp.Contracts.Services;

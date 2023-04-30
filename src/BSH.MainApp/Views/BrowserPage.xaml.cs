@@ -1,4 +1,7 @@
-﻿using BSH.MainApp.ViewModels;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using BSH.MainApp.ViewModels;
 
 using Microsoft.UI.Xaml.Controls;
 

@@ -1,4 +1,7 @@
-﻿using BSH.MainApp.Views.SettingsPages;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using BSH.MainApp.Views.SettingsPages;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 

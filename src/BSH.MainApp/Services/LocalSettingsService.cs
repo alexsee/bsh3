@@ -1,4 +1,7 @@
-﻿using BSH.MainApp.Contracts.Services;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Core.Contracts.Services;
 using BSH.MainApp.Core.Helpers;
 using BSH.MainApp.Helpers;

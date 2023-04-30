@@ -1,4 +1,7 @@
-﻿using BSH.MainApp.Core.Helpers;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using BSH.MainApp.Core.Helpers;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
