@@ -23,6 +23,7 @@
         </DataTemplate>
 
         <helpers:BooleanInverterConverter x:Key="BooleanInverter" />
+        <helpers:FileSizeConverter x:Key="FileSizeConverter" />
     </Page.Resources>
 
     <Grid Background="White">
@@ -149,7 +150,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="200"/>
-                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="Name" Style="{ThemeResource CaptionTextBlockStyle}"/>
                                     <TextBlock Grid.Column="1" Text="Last modified" Style="{ThemeResource CaptionTextBlockStyle}"/>
@@ -163,7 +164,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="200"/>
-                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Orientation="Horizontal">
                                         <FontIcon Visibility="{Binding Path=IsFile, Converter={StaticResource BooleanInverter}}" VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B7;" Margin="0,0,10,0" />
@@ -171,7 +172,7 @@
                                         <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding Name}" />
                                     </StackPanel>
                                     <TextBlock Visibility="{Binding IsFile}" Grid.Column="1" VerticalAlignment="Center" Text="{Binding FileDateModified}"/>
-                                    <TextBlock Visibility="{Binding IsFile}" Grid.Column="2" VerticalAlignment="Center" Text="{Binding FileSize}"/>
+                                    <TextBlock Visibility="{Binding IsFile}" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}}"/>
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
