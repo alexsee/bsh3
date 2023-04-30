@@ -65,8 +65,8 @@
                     <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding LastBackupDate}">Today, 13:00</TextBlock>
 
 
-                    <TextBlock Grid.Column="0" Grid.Row="5">Sicherungsmodus:</TextBlock>
-                    <TextBlock Grid.Column="1" Grid.Row="5" x:Name="tbBackupMode">Automatic Backup</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="5">Backup mode:</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding BackupMode}">Automatic Backup</TextBlock>
                 </Grid>
             </Grid>
 

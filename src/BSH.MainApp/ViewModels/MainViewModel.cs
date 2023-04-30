@@ -5,6 +5,7 @@ using Brightbits.BSH.Engine.Jobs;
 using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
+using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -20,11 +21,16 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
     private readonly IJobService jobService;
     private readonly IScheduledBackupService scheduledBackupService;
     private readonly DispatcherQueue dispatcherQueue;
+    private readonly IConfigurationManager configurationManager;
+
     [ObservableProperty]
     private string? lastBackupDate;
 
     [ObservableProperty]
     private DateTime? nextBackupDate;
+
+    [ObservableProperty]
+    private string? backupMode;
 
     [ObservableProperty]
     private Visibility nextBackupGridVisibility = Visibility.Visible;
@@ -54,6 +60,7 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         IQueryManager queryManager,
         IJobService jobService,
         IScheduledBackupService scheduledBackupService,
+        IConfigurationManager configurationManager,
         DispatcherQueue dispatcherQueue)
     {
         this.statusService = statusService;
@@ -62,6 +69,7 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         this.scheduledBackupService = scheduledBackupService;
         this.dispatcherQueue = dispatcherQueue;
         this.statusService.AddObserver(this, true);
+        this.configurationManager = configurationManager;
 
         // init commands
         StartManualBackupCommand = new AsyncRelayCommand(StartManualBackupCommandAsync);
@@ -69,8 +77,23 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
 
     public async void OnNavigatedTo(object parameter)
     {
+        // set backup dates
         LastBackupDate = (await queryManager.GetLastBackupAsync()).CreationDate.ToLongDateString();
         NextBackupDate = scheduledBackupService.GetNextBackupDate();
+
+        // set configuration
+        if (configurationManager.TaskType == TaskType.Auto)
+        {
+            BackupMode = "MainView_BackupMode_Automatic".GetLocalized();
+        }
+        else if (configurationManager.TaskType == TaskType.Schedule)
+        {
+            BackupMode = "MainView_BackupMode_Scheduled".GetLocalized();
+        }
+        else
+        {
+            BackupMode = "MainView_BackupMode_Manual".GetLocalized();
+        }
     }
 
     public void OnNavigatedFrom()
@@ -80,7 +103,7 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
 
     private async Task StartManualBackupCommandAsync()
     {
-        await jobService.CreateBackupAsync("MainView.BtnCreateBackup.Title", "", true);
+        await jobService.CreateBackupAsync("MainView_BtnCreateBackup_Title".GetLocalized(), "", true);
     }
 
     public void ReportAction(ActionType action, bool silent)

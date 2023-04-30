@@ -146,7 +146,6 @@ public partial class App : Application
         InitializeTrayIcon();
     }
 
-
     private void InitializeTrayIcon()
     {
         var exitApplicationCommand = (XamlUICommand)Resources["ExitApplicationCommand"];

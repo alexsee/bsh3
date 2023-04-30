@@ -124,7 +124,7 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
     public void OnNavigatedTo(object parameter)
     {
         LoadVersions();
-        currentVersion = Versions[0];
+        CurrentVersion = Versions[0];
     }
 
     public void OnNavigatedFrom()
