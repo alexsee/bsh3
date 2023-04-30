@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
@@ -80,7 +80,7 @@
     <PackageReference Include="System.Data.SQLite.Core">
       <Version>1.0.117</Version>
     </PackageReference>
-    <PackageReference Include="System.Management" Version="7.0.0" />
+    <PackageReference Include="System.Management" Version="7.0.1" />
     <PackageReference Include="System.Net.Primitives">
       <Version>4.3.1</Version>
     </PackageReference>
