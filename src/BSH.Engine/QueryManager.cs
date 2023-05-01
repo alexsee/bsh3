@@ -776,4 +776,18 @@ public class QueryManager : IQueryManager
             return path;
         }
     }
+
+    public async Task<int> GetNumberOfFilesAsync()
+    {
+        using (var dbClient = dbClientFactory.CreateDbClient())
+        {
+            var result = await dbClient.ExecuteScalarAsync("SELECT COUNT(1) FROM filetable");
+            if (result == null)
+            {
+                return 0;
+            }
+
+            return int.Parse(result.ToString());
+        }
+    }
 }

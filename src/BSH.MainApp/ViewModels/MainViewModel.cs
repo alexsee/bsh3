@@ -12,6 +12,7 @@ using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Humanizer;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 
@@ -30,10 +31,19 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
     private string? lastBackupDate;
 
     [ObservableProperty]
-    private DateTime? nextBackupDate;
+    private string? nextBackupDate;
 
     [ObservableProperty]
     private string? backupMode;
+
+    [ObservableProperty]
+    private string? availableDiskSpace;
+
+    [ObservableProperty]
+    private string? totalFilesBackuped;
+
+    [ObservableProperty]
+    private string? totalBackups;
 
     [ObservableProperty]
     private Visibility nextBackupGridVisibility = Visibility.Visible;
@@ -82,21 +92,28 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
     {
         // set backup dates
         LastBackupDate = (await queryManager.GetLastBackupAsync()).CreationDate.ToLongDateString();
-        NextBackupDate = scheduledBackupService.GetNextBackupDate();
 
         // set configuration
         if (configurationManager.TaskType == TaskType.Auto)
         {
+            NextBackupDate = scheduledBackupService.GetNextBackupDate().ToString("DATETIME_FORMAT".GetLocalized());
             BackupMode = "MainView_BackupMode_Automatic".GetLocalized();
         }
         else if (configurationManager.TaskType == TaskType.Schedule)
         {
+            NextBackupDate = scheduledBackupService.GetNextBackupDate().ToString("DATETIME_FORMAT".GetLocalized());
             BackupMode = "MainView_BackupMode_Scheduled".GetLocalized();
         }
         else
         {
+            NextBackupDate = "None planned";
             BackupMode = "MainView_BackupMode_Manual".GetLocalized();
         }
+
+        AvailableDiskSpace = double.Parse(configurationManager.FreeSpace).Bytes().Humanize();
+
+        TotalFilesBackuped = (await queryManager.GetNumberOfFilesAsync()).ToString("g");
+        TotalBackups = (await queryManager.GetNumberOfVersionsAsync()).ToString("g");
     }
 
     public void OnNavigatedFrom()

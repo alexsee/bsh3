@@ -157,4 +157,7 @@
   <data name="MainView_BackupMode_Scheduled" xml:space="preserve">
     <value>Scheduled backups</value>
   </data>
+  <data name="DATETIME_FORMAT" xml:space="preserve">
+    <value>dd. MMM yyyy hh:mm</value>
+  </data>
 </root>

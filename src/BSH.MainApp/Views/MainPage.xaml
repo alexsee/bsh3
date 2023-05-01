@@ -56,7 +56,7 @@
                     </TextBlock>
 
                     <TextBlock Grid.Column="0" Grid.Row="1">Available:</TextBlock>
-                    <TextBlock Grid.Column="1" Grid.Row="1" x:Name="tbAvailableDiskspace">653 GB</TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding AvailableDiskSpace}">653 GB</TextBlock>
 
                     <TextBlock Grid.Column="0" Grid.Row="2">Diskspace full expected on:</TextBlock>
                     <TextBlock Grid.Column="1" Grid.Row="2" x:Name="tbDiskspaceFullyFilled">currently unpredictable</TextBlock>
@@ -72,10 +72,17 @@
 
             <Grid Grid.Row="2" Margin="0, 40, 0, 0">
                 <StackPanel>
-                    <TextBlock FontWeight="Bold">Backup Settings</TextBlock>
-                    <TextBlock x:Name="tbBackupDetails" TextWrapping="WrapWholeWords">
-                        Backup Service Home backups your data (1 source(s)) full automatically hourly on the local disk (D:)
-                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel>
+                            <TextBlock Text="{Binding TotalFilesBackuped}" FontSize="24"></TextBlock>
+                            <TextBlock>Files</TextBlock>
+                        </StackPanel>
+
+                        <StackPanel>
+                            <TextBlock Text="{Binding TotalBackups}" FontSize="24"></TextBlock>
+                            <TextBlock>Backups</TextBlock>
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Grid>
@@ -116,7 +123,7 @@
                 <TextBlock Text="{Binding CurrentProgressStatusTitle}" />
                 <ProgressBar Maximum="{Binding CurrentProgressMax}" Value="{Binding CurrentProgressValue}" />
             </StackPanel>
-        
+
             <Button Grid.Column="2" Style="{StaticResource AccentButtonStyle}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Cancel</TextBlock>
