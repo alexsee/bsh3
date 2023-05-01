@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows.Input;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Models;
@@ -22,6 +23,9 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
     [ObservableProperty]
     private FileOrFolderItem? currentItem;
 
+    [ObservableProperty]
+    private string blub;
+
     public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; } = new();
 
     public ObservableCollection<string> Favorites { get; } = new();
@@ -30,25 +34,13 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
 
     public ObservableCollection<VersionDetails> Versions { get; } = new();
 
-    public ICommand LoadVersionCommand
-    {
-        get;
-    }
-
-    public ICommand LoadFolderCommand
-    {
-        get;
-    }
-
     public BrowserViewModel(IQueryManager queryManager)
     {
         this.queryManager = queryManager;
-
-        this.LoadVersionCommand = new AsyncRelayCommand(LoadVersionCommandAsync);
-        this.LoadFolderCommand = new AsyncRelayCommand(LoadFolderCommandAsync);
     }
 
-    private async Task LoadVersionCommandAsync()
+    [RelayCommand]
+    private async Task LoadVersion()
     {
         var sources = CurrentVersion.Sources.Split("|")
             .Select(x => x[(x.LastIndexOf("\\") + 1)..])
@@ -60,12 +52,41 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
         await LoadFolderAsync(CurrentVersion.Id, sources[0]);
     }
 
-    private async Task LoadFolderCommandAsync()
+    [RelayCommand]
+    private async Task LoadFolder()
     {
-        if (CurrentItem != null && !CurrentItem.IsFile)
+        if (CurrentItem == null || CurrentItem.IsFile || CurrentVersion == null)
         {
-            await LoadFolderAsync(CurrentVersion.Id, CurrentItem.FullPath);
+            return;
         }
+
+        // load folder
+        await LoadFolderAsync(CurrentVersion.Id, CurrentItem.FullPath);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanUpFolder))]
+    private async Task UpFolder()
+    {
+        if (CurrentFolderPath.Count < 2 || CurrentVersion == null)
+        {
+            return;
+        }
+
+        // load parent folder
+        await LoadFolderAsync(CurrentVersion.Id, CurrentFolderPath[^2].FullPath);
+    }
+
+    private bool CanUpFolder() => CurrentFolderPath.Count > 1;
+
+    [RelayCommand]
+    private async Task LoadFolderWithParam(FileOrFolderItem selectedItem)
+    {
+        if (selectedItem == null || CurrentVersion == null)
+        {
+            return;
+        }
+
+        await LoadFolderAsync(CurrentVersion.Id, selectedItem.FullPath);
     }
 
     private void LoadVersions()
@@ -122,6 +143,11 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
         Items.Clear();
         folderList.ForEach(Items.Add);
         fileList.ForEach(Items.Add);
+
+        // notify UI about potential changes
+        LoadVersionCommand.NotifyCanExecuteChanged();
+        LoadFolderCommand.NotifyCanExecuteChanged();
+        UpFolderCommand.NotifyCanExecuteChanged();
     }
 
     public void OnNavigatedTo(object parameter)

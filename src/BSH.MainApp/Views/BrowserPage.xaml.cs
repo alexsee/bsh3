@@ -16,4 +16,9 @@ public sealed partial class BrowserPage : Page
         DataContext = App.GetService<BrowserViewModel>();
         InitializeComponent();
     }
+
+    private async void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
+    {
+        await ViewModel.LoadFolderWithParamCommand.ExecuteAsync(args.Item);
+    }
 }

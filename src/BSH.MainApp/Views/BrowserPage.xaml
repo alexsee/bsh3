@@ -14,7 +14,7 @@
         <DataTemplate x:Name="VersionTemplate" x:DataType="engine:VersionDetails">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <FontIcon VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" Margin="0,0,10,0"/>
-                <TextBlock VerticalAlignment="Center" Text="{Binding CreationDate}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding Path=CreationDate}" />
             </StackPanel>
         </DataTemplate>
 
@@ -42,12 +42,12 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <Button VerticalAlignment="Center">
+                <Button VerticalAlignment="Center" Command="{x:Bind ViewModel.UpFolderCommand}">
                     <FontIcon FontSize="16" Glyph="&#xe72b;" />
                 </Button>
             </StackPanel>
 
-            <BreadcrumbBar Grid.Column="1" ItemsSource="{Binding CurrentFolderPath}">
+            <BreadcrumbBar Grid.Column="1" ItemsSource="{Binding CurrentFolderPath}" ItemClicked="BreadcrumbBar_ItemClicked">
                 <BreadcrumbBar.ItemTemplate>
                     <DataTemplate x:DataType="models:FileOrFolderItem">
                         <TextBlock Text="{Binding Name}" />
@@ -55,7 +55,7 @@
                 </BreadcrumbBar.ItemTemplate>
             </BreadcrumbBar>
 
-            <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" />
+            <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" Text="{Binding Blub}" />
         </Grid>
 
         <Grid Grid.Row="1">
