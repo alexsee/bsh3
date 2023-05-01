@@ -15,6 +15,8 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
 
         SystemBackdrop = new MicaBackdrop();
+        ExtendsContentIntoTitleBar = true;
+        SetTitleBar(titleBar);
 
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/app_ico.ico"));
         Title = "AppDisplayName".GetLocalized();

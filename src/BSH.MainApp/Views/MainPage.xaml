@@ -18,6 +18,7 @@
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold">Overview</TextBlock>
@@ -70,20 +71,43 @@
                 </Grid>
             </Grid>
 
-            <Grid Grid.Row="2" Margin="0, 40, 0, 0">
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel>
-                            <TextBlock Text="{Binding TotalFilesBackuped}" FontSize="24"></TextBlock>
-                            <TextBlock>Files</TextBlock>
-                        </StackPanel>
+            <Grid Grid.Row="3" Margin="0, 40, 0, 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-                        <StackPanel>
-                            <TextBlock Text="{Binding TotalBackups}" FontSize="24"></TextBlock>
-                            <TextBlock>Backups</TextBlock>
-                        </StackPanel>
-                    </StackPanel>
-                </StackPanel>
+                <Grid Grid.Column="0" Padding="20,0,20,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="{Binding TotalFilesBackuped}" FontSize="24"></TextBlock>
+                    <TextBlock Grid.Row="1">Files</TextBlock>
+                </Grid>
+
+                <Border Grid.Column="1" BorderBrush="LightGray" BorderThickness="1,0,0,0" Padding="20,0,20,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="{Binding TotalBackups}" FontSize="24"></TextBlock>
+                        <TextBlock Grid.Row="1">Backups</TextBlock>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2" BorderBrush="LightGray" BorderThickness="1,0,0,0" Padding="20,0,20,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="{Binding TotalFileSize}" FontSize="24"></TextBlock>
+                        <TextBlock Grid.Row="1">Total size backuped</TextBlock>
+                    </Grid>
+                </Border>
             </Grid>
         </Grid>
 

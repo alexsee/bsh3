@@ -779,15 +779,25 @@ public class QueryManager : IQueryManager
 
     public async Task<int> GetNumberOfFilesAsync()
     {
-        using (var dbClient = dbClientFactory.CreateDbClient())
+        using var dbClient = dbClientFactory.CreateDbClient();
+        var result = await dbClient.ExecuteScalarAsync("SELECT COUNT(1) FROM filetable");
+        if (result == null)
         {
-            var result = await dbClient.ExecuteScalarAsync("SELECT COUNT(1) FROM filetable");
-            if (result == null)
-            {
-                return 0;
-            }
-
-            return int.Parse(result.ToString());
+            return 0;
         }
+
+        return int.Parse(result.ToString());
+    }
+
+    public async Task<double> GetTotalFileSizeAsync()
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+        var result = await dbClient.ExecuteScalarAsync("SELECT SUM(fileSize) FROM fileversiontable");
+        if (result == null)
+        {
+            return 0;
+        }
+
+        return double.Parse(result.ToString());
     }
 }

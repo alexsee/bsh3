@@ -46,6 +46,9 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
     private string? totalBackups;
 
     [ObservableProperty]
+    private string? totalFileSize;
+
+    [ObservableProperty]
     private Visibility nextBackupGridVisibility = Visibility.Visible;
 
     [ObservableProperty]
@@ -113,6 +116,7 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         AvailableDiskSpace = double.Parse(configurationManager.FreeSpace).Bytes().Humanize();
 
         TotalFilesBackuped = (await queryManager.GetNumberOfFilesAsync()).ToString("g");
+        TotalFileSize = (await queryManager.GetTotalFileSizeAsync()).Bytes().Humanize();
         TotalBackups = (await queryManager.GetNumberOfVersionsAsync()).ToString("g");
     }
 

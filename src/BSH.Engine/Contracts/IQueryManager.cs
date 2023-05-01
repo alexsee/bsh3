@@ -35,6 +35,7 @@ public interface IQueryManager
     Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path);
     Task<int> GetNumberOfVersionsAsync();
     Task<int> GetNumberOfFilesAsync();
+    Task<double> GetTotalFileSizeAsync();
     Task<VersionDetails> GetOldestBackupAsync();
     Task<VersionDetails> GetVersionByIdAsync(string id);
     List<VersionDetails> GetVersions(bool desc = true);
