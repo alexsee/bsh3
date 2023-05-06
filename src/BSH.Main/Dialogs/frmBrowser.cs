@@ -1480,13 +1480,13 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Version suchen, in der die Datei ist
-                string Result = await BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
-                if (Result is null)
+                var backupVersion = await BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
+                if (backupVersion == null)
                 {
                     return;
                 }
 
-                selectedVersion = await BackupLogic.GlobalBackup.QueryManager.GetVersionByIdAsync(Result);
+                selectedVersion = await BackupLogic.GlobalBackup.QueryManager.GetVersionByIdAsync(backupVersion);
 
                 // Alles leeren
                 lvFiles.Items.Clear();
@@ -1499,13 +1499,13 @@ namespace Brightbits.BSH.Main
             }
             else
             {
-                string Result = await BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFilesInFolderAsync(selectedVersion.Id, selectedFolder);
-                if (Result is null)
+                var backupVersion = await BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFilesInFolderAsync(selectedVersion.Id, selectedFolder);
+                if (backupVersion == null)
                 {
                     return;
                 }
 
-                AVersionList1.SelectItem(Result);
+                AVersionList1.SelectItem(backupVersion);
             }
         }
 
@@ -1526,13 +1526,13 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Version suchen, in der die Datei ist
-                string Result = await BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
-                if (Result is null)
+                var backupVersion = await BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
+                if (backupVersion == null)
                 {
                     return;
                 }
 
-                selectedVersion = await BackupLogic.GlobalBackup.QueryManager.GetVersionByIdAsync(Result);
+                selectedVersion = await BackupLogic.GlobalBackup.QueryManager.GetVersionByIdAsync(backupVersion);
                 lvFiles.Items.Clear();
 
                 // Nun neuen Prozess starten
@@ -1543,13 +1543,13 @@ namespace Brightbits.BSH.Main
             }
             else
             {
-                string Result = await BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFilesInFolderAsync(selectedVersion.Id, selectedFolder);
-                if (Result is null)
+                var backupVersion = await BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFilesInFolderAsync(selectedVersion.Id, selectedFolder);
+                if (backupVersion == null)
                 {
                     return;
                 }
 
-                AVersionList1.SelectItem(Result);
+                AVersionList1.SelectItem(backupVersion);
             }
         }
 
