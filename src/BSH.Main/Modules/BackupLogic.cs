@@ -667,19 +667,22 @@ static class BackupLogic
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        // Vollsicherung durchführen?
-        bool FullBackup = false;
-        if (!string.IsNullOrEmpty(ConfigurationManager.ScheduleFullBackup))
-        {
-            // Letzte Vollsicherung ermitteln
-            var Item = ConfigurationManager.ScheduleFullBackup.Split('|');
-            if (Item[0] == "day")
+            // Vollsicherung durchführen?
+            bool FullBackup = false;
+            if (!string.IsNullOrEmpty(ConfigurationManager.ScheduleFullBackup))
             {
-                var lastFullBackup = await QueryManager.GetLastFullBackupAsync();
-                var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
-                FullBackup = Diff.Days >= Convert.ToInt32(Item[1]);
+                // Letzte Vollsicherung ermitteln
+                var Item = ConfigurationManager.ScheduleFullBackup.Split('|');
+                if (Item[0] == "day")
+                {
+                    var lastFullBackup = await QueryManager.GetLastFullBackupAsync();
+                    if (lastFullBackup != null)
+                    {
+                        var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
+                        FullBackup = Diff.Days >= Convert.ToInt32(Item[1]);
+                    }
+                }
             }
-        }
 
         // Backup durchführen
         var cancellationToken = BackupController.GetNewCancellationToken();
