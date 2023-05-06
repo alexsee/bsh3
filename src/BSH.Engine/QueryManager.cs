@@ -327,7 +327,7 @@ public class QueryManager : IQueryManager
                 "WHERE a.versionID < @startVersion " +
                 "AND a.versionStatus = 0 " +
                 "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
-                "WHERE fileversiontable.fileversionid = filelink.fileversionid " +
+                "WHERE fileversiontable.fileversionID = filelink.fileversionID " +
                 "AND filelink.versionID = a.versionID " +
                 "AND filetable.fileID = fileversiontable.fileID " +
                 "AND filetable.filePath = @path) " +
