@@ -47,7 +47,7 @@ jobs:
 
     - name: Build application
       run: |
-        dotnet build
+        dotnet build $env:Solution_Name --configuration Release
 
     - name: Test application and collect coverage
       run: |
