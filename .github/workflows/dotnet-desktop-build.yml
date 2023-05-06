@@ -56,7 +56,7 @@ jobs:
 
     - name: Test application and collect coverage
       run: |
-        dotnet-coverage collect 'dotnet test' -f xml -o '../coverage.xml'
+        dotnet-coverage collect 'dotnet test' -f xml -o 'coverage.xml'
       working-directory: ./src
 
     - name: Finish the sonar cloud scanner
