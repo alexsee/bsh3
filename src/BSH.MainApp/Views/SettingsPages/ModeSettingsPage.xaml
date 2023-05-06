@@ -1,0 +1,45 @@
+﻿<Page
+    x:Class="BSH.MainApp.Views.SettingsPages.ModeSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="White">
+
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <RadioButton x:Name="rbAutomaticMode">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Full automatic backups (recommended)" />
+                    <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords">
+                        The full automatic backup model backups your files hourly. These backups are available for 24 hours. Afterwards, daily backups are available for 30 days. Then, weekly backups are available as long as enough disk space is available.
+                    </TextBlock>
+                </StackPanel>
+            </RadioButton>
+
+            <RadioButton x:Name="rbScheduleMode" Margin="0,10,0,0">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Scheduled backups" />
+                    <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords">
+                        You define when backups should be performed and how long these should stay available.
+                    </TextBlock>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button Content="Set schedule" />
+                        <CheckBox Margin="20,1,0,0" Content="Catch up missed backups" />
+                    </StackPanel>
+                </StackPanel>
+            </RadioButton>
+
+            <RadioButton x:Name="rbManualMode" Margin="0,10,0,0">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Manual backups" />
+                    <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords">
+                        Backups are not executed automatically, but you manually start the backup.
+                    </TextBlock>
+                </StackPanel>
+            </RadioButton>
+        </StackPanel>
+    </Grid>
+</Page>

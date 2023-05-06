@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Models;
 using System.Collections.Generic;
+using Brightbits.BSH.Engine.Models;
 
 namespace Brightbits.BSH.Engine.Jobs
 {

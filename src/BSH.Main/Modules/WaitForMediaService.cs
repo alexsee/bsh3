@@ -13,90 +13,89 @@
 // limitations under the License.
 
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Contracts.Services;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public class WaitForMediaService
 {
-    public class WaitForMediaService
+    private const int THREAD_SLEEP_SECONDS = 5000;
+
+    private const int MAX_WAITING_SECONDS = 300000;
+
+    private readonly IBackupService backupService;
+
+    private readonly bool silent;
+
+    private readonly ActionType action;
+
+    private readonly CancellationTokenSource cancellationTokenSource;
+
+    private frmWaitForMedia window;
+
+    private long currentWaitingTime = 0L;
+
+    public WaitForMediaService(IBackupService backupService, bool silent, ActionType action, CancellationTokenSource cancellationTokenSource)
     {
-        private const int THREAD_SLEEP_SECONDS = 5000;
+        this.backupService = backupService;
+        this.silent = silent;
+        this.action = action;
+        this.cancellationTokenSource = cancellationTokenSource;
+    }
 
-        private const int MAX_WAITING_SECONDS = 300000;
-
-        private readonly BackupService backupService;
-
-        private readonly bool silent;
-
-        private readonly ActionType action;
-
-        private readonly CancellationTokenSource cancellationTokenSource;
-
-        private frmWaitForMedia window;
-
-        private long currentWaitingTime = 0L;
-
-        public WaitForMediaService(BackupService backupService, bool silent, ActionType action, CancellationTokenSource cancellationTokenSource)
+    public async Task<bool> ExecuteAsync()
+    {
+        // show window?
+        if (!silent)
         {
-            this.backupService = backupService;
-            this.silent = silent;
-            this.action = action;
-            this.cancellationTokenSource = cancellationTokenSource;
+            window = new frmWaitForMedia();
+            window.OnAbort_Click += cancellationTokenSource.Cancel;
+            window.Show();
         }
 
-        public async Task<bool> ExecuteAsync()
-        {
-            // show window?
-            if (!silent)
+        // wait for media
+        bool result = await Task.Run(() =>
             {
-                window = new frmWaitForMedia();
-                window.OnAbort_Click += cancellationTokenSource.Cancel;
-                window.Show();
-            }
-
-            // wait for media
-            bool result = await Task.Run(() =>
+                while (true)
                 {
-                    while (true)
+                    if (cancellationTokenSource.Token.IsCancellationRequested)
                     {
-                        if (cancellationTokenSource.Token.IsCancellationRequested)
-                        {
-                            break;
-                        }
-
-                        try
-                        {
-                            Thread.Sleep(THREAD_SLEEP_SECONDS);
-                            currentWaitingTime += THREAD_SLEEP_SECONDS;
-
-                            if (silent && currentWaitingTime > MAX_WAITING_SECONDS)
-                            {
-                                break;
-                            }
-
-                            if (backupService.CheckMedia())
-                            {
-                                return true;
-                            }
-                        }
-                        catch
-                        {
-                            break;
-                        }
+                        break;
                     }
 
-                    return false;
-                });
+                    try
+                    {
+                        Thread.Sleep(THREAD_SLEEP_SECONDS);
+                        currentWaitingTime += THREAD_SLEEP_SECONDS;
 
-            // close window
-            if (!silent)
-            {
-                window.Hide();
-                window.Dispose();
-            }
+                        if (silent && currentWaitingTime > MAX_WAITING_SECONDS)
+                        {
+                            break;
+                        }
 
-            return result;
+                        if (backupService.CheckMedia())
+                        {
+                            return true;
+                        }
+                    }
+                    catch
+                    {
+                        break;
+                    }
+                }
+
+                return false;
+            });
+
+        // close window
+        if (!silent)
+        {
+            window.Hide();
+            window.Dispose();
         }
+
+        return result;
     }
 }

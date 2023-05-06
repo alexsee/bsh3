@@ -31,7 +31,7 @@ namespace Brightbits.BSH.Engine.Security
             var sBuilder = new StringBuilder();
 
             // loop through each byte of the hashed data and format each one as a hexadecimal string
-            for (int i = 0; i < data.Length; i++)
+            for (var i = 0; i < data.Length; i++)
             {
                 sBuilder.Append(data[i].ToString("x2"));
             }

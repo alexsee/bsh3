@@ -37,7 +37,7 @@ namespace Brightbits.BSH.Main
             try
             {
                 // Verzeichnisse ausschließen
-                foreach (string entry in BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFolder.Split('|'))
+                foreach (string entry in BackupLogic.ConfigurationManager.ExcludeFolder.Split('|'))
                 {
                     // Verzeichnis gefunden
                     if (!string.IsNullOrEmpty(entry))
@@ -47,7 +47,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Dateien ausschließen
-                foreach (string entry in BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFileTypes.Split('|'))
+                foreach (string entry in BackupLogic.ConfigurationManager.ExcludeFileTypes.Split('|'))
                 {
                     // Datei gefunden
                     if (!string.IsNullOrEmpty(entry))
@@ -57,14 +57,14 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Dateigröße einschränken
-                chkFilesBigger.Checked = string.IsNullOrEmpty(BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFileBigger) ? false : true;
+                chkFilesBigger.Checked = string.IsNullOrEmpty(BackupLogic.ConfigurationManager.ExcludeFileBigger) ? false : true;
                 if (chkFilesBigger.Checked)
                 {
-                    txtFilesBigger.Value = decimal.Parse(BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFileBigger);
+                    txtFilesBigger.Value = decimal.Parse(BackupLogic.ConfigurationManager.ExcludeFileBigger);
                 }
 
                 // Dateien ausschließen
-                foreach (string entry in BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFile.Split('|'))
+                foreach (string entry in BackupLogic.ConfigurationManager.ExcludeFile.Split('|'))
                 {
                     // Datei gefunden
                     if (!string.IsNullOrEmpty(entry))
@@ -73,9 +73,9 @@ namespace Brightbits.BSH.Main
                     }
                 }
 
-                if (!string.IsNullOrEmpty(BackupLogic.GlobalBackup.ConfigurationManager.ExcludeMask))
+                if (!string.IsNullOrEmpty(BackupLogic.ConfigurationManager.ExcludeMask))
                 {
-                    txtRegEx.Text = BackupLogic.GlobalBackup.ConfigurationManager.ExcludeMask.Replace("|", "\r\n");
+                    txtRegEx.Text = BackupLogic.ConfigurationManager.ExcludeMask.Replace("|", "\r\n");
                 }
             }
             catch
@@ -92,32 +92,32 @@ namespace Brightbits.BSH.Main
             if (lstExcludeFolders.Items.Count > 0)
             {
                 string sExcludeFolders = string.Join("|", lstExcludeFolders.Items.Cast<object>().Select(x => lstExcludeFolders.GetItemText(x)));
-                BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFolder = sExcludeFolders;
+                BackupLogic.ConfigurationManager.ExcludeFolder = sExcludeFolders;
             }
             else
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFolder = "";
+                BackupLogic.ConfigurationManager.ExcludeFolder = "";
             }
 
             // Dateitypen ausschließen
             if (lstExcludeFiles.Items.Count > 0)
             {
                 string sExcludeFiles = string.Join("|", lstExcludeFiles.Items.Cast<object>().Select(x => lstExcludeFiles.GetItemText(x)));
-                BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFileTypes = sExcludeFiles;
+                BackupLogic.ConfigurationManager.ExcludeFileTypes = sExcludeFiles;
             }
             else
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFileTypes = "";
+                BackupLogic.ConfigurationManager.ExcludeFileTypes = "";
             }
 
             // Dateigröße einschränken
             if (chkFilesBigger.Checked)
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFileBigger = txtFilesBigger.Value.ToString();
+                BackupLogic.ConfigurationManager.ExcludeFileBigger = txtFilesBigger.Value.ToString();
             }
             else
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFileBigger = "";
+                BackupLogic.ConfigurationManager.ExcludeFileBigger = "";
             }
 
             // check if regex is parsable
@@ -129,7 +129,7 @@ namespace Brightbits.BSH.Main
                     Regex.IsMatch(@"C:\test.txt", regularExpression, RegexOptions.Singleline, TimeSpan.FromSeconds(10));
                 }
 
-                BackupLogic.GlobalBackup.ConfigurationManager.ExcludeMask = regularExpression;
+                BackupLogic.ConfigurationManager.ExcludeMask = regularExpression;
             }
             catch
             {
@@ -141,11 +141,11 @@ namespace Brightbits.BSH.Main
             if (lstExcludeSingleFile.Items.Count > 0)
             {
                 string sExcludeSingleFile = string.Join("|", lstExcludeSingleFile.Items.Cast<object>().Select(x => lstExcludeSingleFile.GetItemText(x))); ;
-                BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFile = sExcludeSingleFile;
+                BackupLogic.ConfigurationManager.ExcludeFile = sExcludeSingleFile;
             }
             else
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.ExcludeFile = "";
+                BackupLogic.ConfigurationManager.ExcludeFile = "";
             }
 
             // Fenster schließen
@@ -166,7 +166,7 @@ namespace Brightbits.BSH.Main
                 // Verzeichnis soll gefiltert werden
                 // Zunächst prüfen, ob Verzeichnis in einem der Quellverzeichnisse
                 bool bAdded = false;
-                foreach (string entry in BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder.Split('|'))
+                foreach (string entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
                 {
                     if (!dlgFolderBrowser.SelectedPath.ToLower().Contains(entry.ToLower()))
                     {
@@ -334,7 +334,7 @@ namespace Brightbits.BSH.Main
                 {
                     // Zunächst prüfen, ob Datei in einem der Quellverzeichnisse
                     bool bAdded = false;
-                    foreach (string entry in BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder.Split('|'))
+                    foreach (string entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
                     {
                         if (!System.IO.Path.GetFullPath(File).ToLower().Contains(entry.ToLower()))
                         {

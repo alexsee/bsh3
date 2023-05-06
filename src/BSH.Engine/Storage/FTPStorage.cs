@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.IO;
+using System.Net;
+using System.Security;
+using System.Text;
+using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
 using FluentFTP;
@@ -19,11 +25,6 @@ using FluentFTP.Exceptions;
 using FluentFTP.Helpers;
 using Ionic.Zip;
 using Serilog;
-using System;
-using System.IO;
-using System.Net;
-using System.Security;
-using System.Text;
 
 namespace Brightbits.BSH.Engine.Storage
 {
@@ -51,7 +52,7 @@ namespace Brightbits.BSH.Engine.Storage
 
         private FtpClient ftpClient;
 
-        public FTPStorage(ConfigurationManager configurationManager)
+        public FTPStorage(IConfigurationManager configurationManager)
         {
             this.serverAddress = configurationManager.FtpHost;
             this.serverPort = int.Parse(configurationManager.FtpPort);
@@ -123,7 +124,7 @@ namespace Brightbits.BSH.Engine.Storage
             };
 
             using var client = new FtpClient(host, credentials, port, config);
-            
+
             // set encoding
             if (encoding == "UTF-8")
             {

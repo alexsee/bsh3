@@ -13,9 +13,13 @@
 // limitations under the License.
 
 using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
 using BSH.Main.Properties;
 using Humanizer;
@@ -29,628 +33,649 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+static class BackupLogic
 {
-    static class BackupLogic
+    public static IDbClientFactory DbClientFactory
     {
-        public static EngineService GlobalBackup { get; set; }
+        get; private set;
+    }
 
-        public static BackupController BackupController { get; set; }
+    public static IBackupService BackupService
+    {
+        get; private set;
+    }
 
-        public static string DatabaseFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
+    public static BackupController BackupController
+    {
+        get; set;
+    }
 
-        private static UsbWatchService dCWatcher;
+    public static IConfigurationManager ConfigurationManager
+    {
+        get; private set;
+    }
 
-        private static SchedulerService schedulerService;
+    public static IQueryManager QueryManager
+    {
+        get; private set;
+    }
 
-        private static Timer tmrUserReminder;
+    public static string DatabaseFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
 
-        private async static Task LoadDatabaseAsync()
+    private static UsbWatchService dCWatcher;
+
+    private static SchedulerService schedulerService;
+
+    private static Timer tmrUserReminder;
+
+    private static async Task LoadDatabaseAsync()
+    {
+        try
         {
-            try
-            {
-                // load database
-                GlobalBackup = new EngineService(DatabaseFile);
-                await GlobalBackup.InitAsync();
+            // init database and configuration manager
+            DbClientFactory = new DbClientFactory();
+            await DbClientFactory.InitializeAsync(DatabaseFile);
 
-                BackupController = new BackupController(GlobalBackup.BackupService, GlobalBackup.ConfigurationManager);
-            }
-            catch (Exception ex)
-            {
-                // global error
-                ExceptionController.HandleGlobalException(null, new System.Threading.ThreadExceptionEventArgs(ex));
-            }
+            ConfigurationManager = new ConfigurationManager(DbClientFactory);
+            await ConfigurationManager.InitializeAsync();
+
+            // database migration?
+            var dbMigration = new DbMigrationService(DbClientFactory, ConfigurationManager);
+            await dbMigration.InitializeAsync();
+        }
+        catch (Exception ex)
+        {
+            // global error
+            ExceptionController.HandleGlobalException(null, new System.Threading.ThreadExceptionEventArgs(ex));
+        }
+    }
+
+    /// <summary>
+    /// Loads the database and starts the backup engine if BSH is configured.
+    /// </summary>
+    public static async Task StartupAsync()
+    {
+        // init database
+        await LoadDatabaseAsync();
+
+        // start main system
+        var storageFactory = new StorageFactory(ConfigurationManager);
+        QueryManager = new QueryManager(DbClientFactory, ConfigurationManager, storageFactory);
+
+        BackupService = new BackupService(ConfigurationManager, QueryManager, DbClientFactory, storageFactory);
+        BackupController = new BackupController(BackupService, ConfigurationManager);
+
+        // first time start?
+        if (ConfigurationManager.IsConfigured == "0")
+        {
+            // Status: unconfigured
+            StatusController.Current.SetSystemStatus(SystemStatus.NOT_CONFIGURED);
+            return;
         }
 
-        /// <summary>
-        /// Loads the database and starts the backup engine if BSH is configured.
-        /// </summary>
-        public async static Task StartupAsync()
+        // Status: OK
+        await StartSystemAsync();
+    }
+
+    public static async Task StartSystemAsync(bool doOn = false)
+    {
+        // check system status
+        if (doOn || ConfigurationManager.DbStatus == "0")
         {
-            // first time start?
-            if (!System.IO.File.Exists(DatabaseFile))
+            // check battery status
+            if (ConfigurationManager.DeativateAutoBackupsWhenAkku == "1")
             {
-                // Status: unconfigured
-                StatusController.Current.SetSystemStatus(SystemStatus.NOT_CONFIGURED);
-
-                // create database
-                System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(DatabaseFile));
-                await LoadDatabaseAsync();
+                StartBatteryCheck();
             }
-            else
+
+            // is system activated?
+            if (doOn)
             {
-                // load existing database
-                await LoadDatabaseAsync();
-                if (GlobalBackup.ConfigurationManager.IsConfigured == "0")
-                {
-                    // Status: unconfigured
-                    StatusController.Current.SetSystemStatus(SystemStatus.NOT_CONFIGURED);
-                }
-                else
-                {
-                    // Status: OK
-                    await StartSystemAsync();
-                }
+                ConfigurationManager.DbStatus = "0";
             }
-        }
 
-        public async static Task StartSystemAsync(bool doOn = false)
-        {
-            // check system status
-            if (doOn || GlobalBackup.ConfigurationManager.DbStatus == "0")
+            StatusController.Current.SetSystemStatus(SystemStatus.ACTIVATED);
+
+            // are we running on battery mode?
+            if (SystemInformation.PowerStatus.BatteryChargeStatus == BatteryChargeStatus.NoSystemBattery || SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online || ConfigurationManager.DeativateAutoBackupsWhenAkku == "0")
             {
-                // check battery status
-                if (GlobalBackup.ConfigurationManager.DeativateAutoBackupsWhenAkku == "1")
+                // automatic or scheduled backups
+                if (ConfigurationManager.TaskType == TaskType.Auto)
                 {
-                    StartBatteryCheck();
+                    StartFullAutomatedSystem();
                 }
-
-                // is system activated?
-                if (doOn)
+                else if (ConfigurationManager.TaskType == TaskType.Schedule)
                 {
-                    GlobalBackup.ConfigurationManager.DbStatus = "0";
-                }
-
-                StatusController.Current.SetSystemStatus(SystemStatus.ACTIVATED);
-
-                // are we running on battery mode?
-                if (SystemInformation.PowerStatus.BatteryChargeStatus == BatteryChargeStatus.NoSystemBattery || SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online || GlobalBackup.ConfigurationManager.DeativateAutoBackupsWhenAkku == "0")
-                {
-                    // automatic or scheduled backups
-                    if (GlobalBackup.ConfigurationManager.TaskType == TaskType.Auto)
-                    {
-                        StartFullAutomatedSystem();
-                    }
-                    else if (GlobalBackup.ConfigurationManager.TaskType == TaskType.Schedule)
-                    {
-                        await StartScheduleSystem();
-                    }
-                }
-                else
-                {
-                    StatusController.Current.SetSystemStatus(SystemStatus.PAUSED_DUE_TO_BATTERY);
-                }
-
-                // check free space
-                if (GlobalBackup.ConfigurationManager.RemindSpace != "-1" && GlobalBackup.ConfigurationManager.FreeSpace != "0" && Convert.ToDouble(GlobalBackup.ConfigurationManager.FreeSpace) < Convert.ToDouble(GlobalBackup.ConfigurationManager.RemindSpace) * 1024L * 1024L)
-                {
-                    NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_NO_DISKSPACE_LEFT_TITLE, Resources.INFO_NO_DISKSPACE_LEFT_TEXT, ToolTipIcon.Warning);
-                }
-
-                // check if backup is running
-                if (StatusController.Current.IsTaskRunning())
-                {
-                    return;
-                }
-
-                // check unexpected end of last backup
-                if (!string.IsNullOrEmpty(GlobalBackup.ConfigurationManager.LastVersionDate))
-                {
-                    GlobalBackup.ConfigurationManager.LastVersionDate = "";
-                }
-
-                // remind user about last backup
-                if (!string.IsNullOrEmpty(GlobalBackup.ConfigurationManager.RemindAfterDays))
-                {
-                    var lastBackup = await GlobalBackup.QueryManager.GetLastBackupAsync();
-                    if (lastBackup != null)
-                    {
-                        try
-                        {
-                            // check if backup is older than x-days
-                            if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > Convert.ToInt32(GlobalBackup.ConfigurationManager.RemindAfterDays) &&
-                                GlobalBackup.QueryManager.GetVersions().Count > 0 &&
-                                tmrUserReminder == null)
-                            {
-                                tmrUserReminder = new Timer
-                                {
-                                    Interval = 60000
-                                };
-                                tmrUserReminder.Tick += RemindUserOldBackup;
-                                tmrUserReminder.Start();
-                            }
-                        }
-                        catch
-                        {
-                            GlobalBackup.ConfigurationManager.LastBackupDone = "";
-                        }
-                    }
+                    await StartScheduleSystem();
                 }
             }
             else
             {
-                StatusController.Current.SetSystemStatus(SystemStatus.DEACTIVATED);
+                StatusController.Current.SetSystemStatus(SystemStatus.PAUSED_DUE_TO_BATTERY);
             }
-        }
 
-        private async static void RemindUserOldBackup(object sender, EventArgs e)
-        {
-            Timer tmr = (Timer)sender;
-            tmr.Stop();
-            tmr.Dispose();
-
-            var lastBackup = await GlobalBackup.QueryManager.GetLastBackupAsync();
-            if (lastBackup == null)
+            // check free space
+            if (ConfigurationManager.RemindSpace != "-1" && ConfigurationManager.FreeSpace != "0" && Convert.ToDouble(ConfigurationManager.FreeSpace) < Convert.ToDouble(ConfigurationManager.RemindSpace) * 1024L * 1024L)
             {
-                return;
+                NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_NO_DISKSPACE_LEFT_TITLE, Resources.INFO_NO_DISKSPACE_LEFT_TEXT, ToolTipIcon.Warning);
             }
 
-            if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > 0)
-            {
-                NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_OLD_TITLE, Resources.INFO_BACKUP_OLD_TEXT.FormatWith(DateTime.Now.Subtract(lastBackup.CreationDate).Days), ToolTipIcon.Info);
-            }
-        }
-
-        public static void StopSystem(bool doOff = false)
-        {
-            if (doOff)
-            {
-                GlobalBackup.ConfigurationManager.DbStatus = "1";
-            }
-
-            // stop all systems
-            StopFullAutomatedSystem();
-            StopScheduleSystem();
-            StopDoBackupWhenDriveIsAvailable();
-
-            // set status to deactivated
-            StatusController.Current.SetSystemStatus(SystemStatus.DEACTIVATED);
-        }
-
-        private static PowerLineStatus LastBatteryStatus;
-        private static bool BatteryStatusUnderCheck = false;
-
-        public static void StartBatteryCheck()
-        {
-            if (BatteryStatusUnderCheck)
-            {
-                return;
-            }
-
-            // observe battery status
-            if (SystemInformation.PowerStatus.BatteryChargeStatus != BatteryChargeStatus.NoSystemBattery)
-            {
-                LastBatteryStatus = SystemInformation.PowerStatus.PowerLineStatus;
-                SystemEvents.PowerModeChanged += PowerChanged;
-                BatteryStatusUnderCheck = true;
-            }
-        }
-
-        public static void StopBatteryCheck()
-        {
-            if (!BatteryStatusUnderCheck)
-            {
-                return;
-            }
-
-            // stop battery status observation
-            SystemEvents.PowerModeChanged -= PowerChanged;
-            BatteryStatusUnderCheck = false;
-        }
-
-        private async static void PowerChanged(object sender, PowerModeChangedEventArgs e)
-        {
-            if (GlobalBackup.ConfigurationManager.DeativateAutoBackupsWhenAkku == "0")
-            {
-                StopBatteryCheck();
-                return;
-            }
-
-            if (LastBatteryStatus != SystemInformation.PowerStatus.PowerLineStatus)
-            {
-                LastBatteryStatus = SystemInformation.PowerStatus.PowerLineStatus;
-
-                // check status
-                if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online)
-                {
-                    await StartSystemAsync();
-                }
-                else
-                {
-                    StopSystem();
-                }
-            }
-        }
-
-        #region  Full Automated System 
-
-        public static void StartFullAutomatedSystem()
-        {
-            Log.Information("Service for \"Full automatic backup\" is started.");
-
-            // start scheduler
-            schedulerService = new SchedulerService();
-            schedulerService.Start();
-            schedulerService.ScheduleAutoBackup(() => RunAutoBackup());
-
-            // start backup when device is connected
-            DoBackupWhenDriveIsAvailable(RunBackupMethod.Auto);
-        }
-
-        public static void StopFullAutomatedSystem()
-        {
-            // stop scheduler
-            if (schedulerService == null)
-            {
-                return;
-            }
-
-            schedulerService.Stop();
-            Log.Information("Service for \"Full automatic backup\" is stopped.");
-        }
-
-        private static void RunAutoBackup()
-        {
-            Log.Information("Automatic backup is scheduled and will be performed now.");
-
-            // check if backup is in progress
+            // check if backup is running
             if (StatusController.Current.IsTaskRunning())
             {
-                Log.Warning("Automatic backup cancelled due to other task in progress.");
                 return;
             }
 
-            // check if device is ready
-            if (!GlobalBackup.BackupService.CheckMedia())
+            // check unexpected end of last backup
+            if (!string.IsNullOrEmpty(ConfigurationManager.LastVersionDate))
             {
-                Log.Warning("Automatic backup cancelled due to not reachable storage device.");
-                return;
+                ConfigurationManager.LastVersionDate = "";
             }
 
-            // request password
-            if (!BackupController.RequestPassword())
+            // remind user about last backup
+            if (!string.IsNullOrEmpty(ConfigurationManager.RemindAfterDays))
             {
-                Log.Warning("Automatic backup cancelled due to wrong password.");
-                return;
+                var lastBackup = await QueryManager.GetLastBackupAsync();
+                if (lastBackup != null)
+                {
+                    try
+                    {
+                        // check if backup is older than x-days
+                        if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > Convert.ToInt32(ConfigurationManager.RemindAfterDays) &&
+                            QueryManager.GetVersions().Count > 0 &&
+                            tmrUserReminder == null)
+                        {
+                            tmrUserReminder = new Timer
+                            {
+                                Interval = 60000
+                            };
+                            tmrUserReminder.Tick += RemindUserOldBackup;
+                            tmrUserReminder.Start();
+                        }
+                    }
+                    catch
+                    {
+                        ConfigurationManager.LastBackupDone = "";
+                    }
+                }
+            }
+        }
+        else
+        {
+            StatusController.Current.SetSystemStatus(SystemStatus.DEACTIVATED);
+        }
+    }
+
+    private static async void RemindUserOldBackup(object sender, EventArgs e)
+    {
+        Timer tmr = (Timer)sender;
+        tmr.Stop();
+        tmr.Dispose();
+
+        var lastBackup = await QueryManager.GetLastBackupAsync();
+        if (lastBackup == null)
+        {
+            return;
+        }
+
+        if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > 0)
+        {
+            NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_OLD_TITLE, Resources.INFO_BACKUP_OLD_TEXT.FormatWith(DateTime.Now.Subtract(lastBackup.CreationDate).Days), ToolTipIcon.Info);
+        }
+    }
+
+    public static void StopSystem(bool doOff = false)
+    {
+        if (doOff)
+        {
+            ConfigurationManager.DbStatus = "1";
+        }
+
+        // stop all systems
+        StopFullAutomatedSystem();
+        StopScheduleSystem();
+        StopDoBackupWhenDriveIsAvailable();
+
+        // set status to deactivated
+        StatusController.Current.SetSystemStatus(SystemStatus.DEACTIVATED);
+    }
+
+    private static PowerLineStatus LastBatteryStatus;
+    private static bool BatteryStatusUnderCheck = false;
+
+    public static void StartBatteryCheck()
+    {
+        if (BatteryStatusUnderCheck)
+        {
+            return;
+        }
+
+        // observe battery status
+        if (SystemInformation.PowerStatus.BatteryChargeStatus != BatteryChargeStatus.NoSystemBattery)
+        {
+            LastBatteryStatus = SystemInformation.PowerStatus.PowerLineStatus;
+            SystemEvents.PowerModeChanged += PowerChanged;
+            BatteryStatusUnderCheck = true;
+        }
+    }
+
+    public static void StopBatteryCheck()
+    {
+        if (!BatteryStatusUnderCheck)
+        {
+            return;
+        }
+
+        // stop battery status observation
+        SystemEvents.PowerModeChanged -= PowerChanged;
+        BatteryStatusUnderCheck = false;
+    }
+
+    private static async void PowerChanged(object sender, PowerModeChangedEventArgs e)
+    {
+        if (ConfigurationManager.DeativateAutoBackupsWhenAkku == "0")
+        {
+            StopBatteryCheck();
+            return;
+        }
+
+        if (LastBatteryStatus != SystemInformation.PowerStatus.PowerLineStatus)
+        {
+            LastBatteryStatus = SystemInformation.PowerStatus.PowerLineStatus;
+
+            // check status
+            if (SystemInformation.PowerStatus.PowerLineStatus == PowerLineStatus.Online)
+            {
+                await StartSystemAsync();
+            }
+            else
+            {
+                StopSystem();
+            }
+        }
+    }
+
+    #region  Full Automated System 
+
+    public static void StartFullAutomatedSystem()
+    {
+        Log.Information("Service for \"Full automatic backup\" is started.");
+
+        // start scheduler
+        schedulerService = new SchedulerService();
+        schedulerService.Start();
+        schedulerService.ScheduleAutoBackup(() => RunAutoBackup());
+
+        // start backup when device is connected
+        DoBackupWhenDriveIsAvailable(RunBackupMethod.Auto);
+    }
+
+    public static void StopFullAutomatedSystem()
+    {
+        // stop scheduler
+        if (schedulerService == null)
+        {
+            return;
+        }
+
+        schedulerService.Stop();
+        Log.Information("Service for \"Full automatic backup\" is stopped.");
+    }
+
+    private static void RunAutoBackup()
+    {
+        Log.Information("Automatic backup is scheduled and will be performed now.");
+
+        // check if backup is in progress
+        if (StatusController.Current.IsTaskRunning())
+        {
+            Log.Warning("Automatic backup cancelled due to other task in progress.");
+            return;
+        }
+
+        // check if device is ready
+        if (!BackupService.CheckMedia())
+        {
+            Log.Warning("Automatic backup cancelled due to not reachable storage device.");
+            return;
+        }
+
+        // request password
+        if (!BackupController.RequestPassword())
+        {
+            Log.Warning("Automatic backup cancelled due to wrong password.");
+            return;
+        }
+
+        // stop automatic backup when device ready
+        StopDoBackupWhenDriveIsAvailable();
+
+        // lower process priority
+        Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
+
+        // run backup
+        var cancellationToken = BackupController.GetNewCancellationToken();
+        Engine.Jobs.IJobReport argjobReport = StatusController.Current;
+
+        var task = BackupService.StartBackup("Automatisches Backup", "", ref argjobReport, cancellationToken, false, "", true);
+        if (task == null)
+        {
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
+            return;
+        }
+
+        task.ContinueWith((x) =>
+        {
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                RemoveOldBackups();
+            }
+        }, TaskContinuationOptions.OnlyOnRanToCompletion)
+            .ContinueWith((x) => Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal,
+            TaskContinuationOptions.None);
+    }
+
+    private static List<VersionDetails> GetAutomaticVersionsToDelete()
+    {
+        var listDelete = new List<VersionDetails>();
+        var listVersions = QueryManager.GetVersions();
+
+        foreach (var version in listVersions)
+        {
+            // ignore fixed versions
+            if (version.Stable)
+            {
+                continue;
             }
 
-            // stop automatic backup when device ready
-            StopDoBackupWhenDriveIsAvailable();
+            // version not older than 24h
+            if (DateTime.Now.Subtract(version.CreationDate) <= new TimeSpan(24, 0, 0))
+            {
+                continue;
+            }
 
-            // lower process priority
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
+            // version older than 1 month
+            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(DateTime.DaysInMonth(version.CreationDate.Year, version.CreationDate.Month), 0, 0, 0))
+            {
+                // keep if last backup of the week
+                if (listVersions.Any(x =>
+                    version.CreationDate != x.CreationDate &&
+                    version.CreationDate.Year == x.CreationDate.Year &&
+                    version.CreationDate.Month == x.CreationDate.Month &&
+                    version.CreationDate.Day - (int)version.CreationDate.DayOfWeek == x.CreationDate.Day - (int)x.CreationDate.DayOfWeek &&
+                    version.CreationDate.DayOfWeek < x.CreationDate.DayOfWeek)
+                    )
+                {
+                    listDelete.Add(version);
+                }
+            }
+            else
+            {
+                // keep if last backup on that day
+                if (listVersions.Any(x =>
+                    version.CreationDate != x.CreationDate &&
+                    version.CreationDate.Year == x.CreationDate.Year &&
+                    version.CreationDate.Month == x.CreationDate.Month &&
+                    version.CreationDate.Day == x.CreationDate.Day &&
+                    version.CreationDate.TimeOfDay < x.CreationDate.TimeOfDay)
+                    )
+                {
+                    listDelete.Add(version);
+                }
+            }
+        }
 
-            // run backup
+        return listDelete;
+    }
+
+    private static void RemoveOldBackups()
+    {
+        // get versions to clean
+        var listDelete = GetAutomaticVersionsToDelete();
+
+        // delete old versions
+        foreach (var version in listDelete)
+        {
             var cancellationToken = BackupController.GetNewCancellationToken();
             Engine.Jobs.IJobReport argjobReport = StatusController.Current;
 
-            var task = GlobalBackup.BackupService.StartBackup("Automatisches Backup", "", ref argjobReport, cancellationToken, false, "", true);
-            if (task == null)
-            {
-                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
-                return;
-            }
-
-            task.ContinueWith((x) =>
-            {
-                if (!cancellationToken.IsCancellationRequested)
-                {
-                    RemoveOldBackups();
-                }
-            }, TaskContinuationOptions.OnlyOnRanToCompletion)
-                .ContinueWith((x) => Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal,
-                TaskContinuationOptions.None);
+            var task = BackupService.StartDelete(version.Id, ref argjobReport, cancellationToken, true);
+            task.Wait();
         }
+    }
 
-        private static List<VersionDetails> GetAutomaticVersionsToDelete()
+    #endregion
+
+    #region  Schedule System 
+
+    private static async void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+    {
+        if (e.Mode == PowerModes.Resume)
         {
-            var listDelete = new List<VersionDetails>();
-            var listVersions = GlobalBackup.QueryManager.GetVersions();
+            // restart system after standby resume
+            StopScheduleSystem();
+            await StartScheduleSystem();
+        }
+    }
 
-            foreach (var version in listVersions)
+    public static async Task StartScheduleSystem()
+    {
+        Log.Information("Service for \"Scheduled backups\" is started.");
+
+        // start scheduler
+        schedulerService = new SchedulerService();
+        schedulerService.Start();
+
+        // observe power mode
+        SystemEvents.PowerModeChanged += PowerModeChanged;
+
+        // read scheduler entries in database
+        using var dbClient = DbClientFactory.CreateDbClient();
+        using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
+
+        while (reader.Read())
+        {
+            var scheduleDate = reader.GetDateTimeParsed("timDate");
+            int scheduleType = reader.GetInt32("timType");
+
+            if (scheduleType == 1)
             {
-                // ignore fixed versions
-                if (version.Stable)
+                // once
+                if (DateTime.Compare(DateTime.Now, scheduleDate) < 0)
                 {
-                    continue;
-                }
-
-                // version not older than 24h
-                if (DateTime.Now.Subtract(version.CreationDate) <= new TimeSpan(24, 0, 0))
-                {
-                    continue;
-                }
-
-                // version older than 1 month
-                if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(DateTime.DaysInMonth(version.CreationDate.Year, version.CreationDate.Month), 0, 0, 0))
-                {
-                    // keep if last backup of the week
-                    if (listVersions.Any(x =>
-                        version.CreationDate != x.CreationDate &&
-                        version.CreationDate.Year == x.CreationDate.Year &&
-                        version.CreationDate.Month == x.CreationDate.Month &&
-                        version.CreationDate.Day - (int)version.CreationDate.DayOfWeek == x.CreationDate.Day - (int)x.CreationDate.DayOfWeek &&
-                        version.CreationDate.DayOfWeek < x.CreationDate.DayOfWeek)
-                        )
-                    {
-                        listDelete.Add(version);
-                    }
-                }
-                else
-                {
-                    // keep if last backup on that day
-                    if (listVersions.Any(x =>
-                        version.CreationDate != x.CreationDate &&
-                        version.CreationDate.Year == x.CreationDate.Year &&
-                        version.CreationDate.Month == x.CreationDate.Month &&
-                        version.CreationDate.Day == x.CreationDate.Day &&
-                        version.CreationDate.TimeOfDay < x.CreationDate.TimeOfDay)
-                        )
-                    {
-                        listDelete.Add(version);
-                    }
+                    schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), scheduleDate);
                 }
             }
-
-            return listDelete;
-        }
-
-        private static void RemoveOldBackups()
-        {
-            // get versions to clean
-            var listDelete = GetAutomaticVersionsToDelete();
-
-            // delete old versions
-            foreach (var version in listDelete)
+            else if (scheduleType == 2)
             {
-                var cancellationToken = BackupController.GetNewCancellationToken();
-                Engine.Jobs.IJobReport argjobReport = StatusController.Current;
-
-                var task = GlobalBackup.BackupService.StartDelete(version.Id, ref argjobReport, cancellationToken, true);
-                task.Wait();
+                // hourly
+                schedulerService.ScheduleHourly(async () => await thScheduleSysRunBackup(), scheduleDate);
             }
-        }
-
-        #endregion
-
-        #region  Schedule System 
-
-        private async static void PowerModeChanged(object sender, PowerModeChangedEventArgs e)
-        {
-            if (e.Mode == PowerModes.Resume)
+            else if (scheduleType == 3)
             {
-                // restart system after standby resume
-                StopScheduleSystem();
-                await StartScheduleSystem();
+                // daily
+
+                // catch up old backup?
+                if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
+                {
+                    schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                }
+
+                schedulerService.ScheduleDaily(async () => await thScheduleSysRunBackup(), scheduleDate);
             }
-        }
-
-        public async static Task StartScheduleSystem()
-        {
-            Log.Information("Service for \"Scheduled backups\" is started.");
-
-            // start scheduler
-            schedulerService = new SchedulerService();
-            schedulerService.Start();
-
-            // observe power mode
-            SystemEvents.PowerModeChanged += PowerModeChanged;
-
-            // read scheduler entries in database
-            using var dbClient = GlobalBackup.DbClientFactory.CreateDbClient();
-            using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
-
-            while (reader.Read())
+            else if (scheduleType == 4)
             {
-                var scheduleDate = reader.GetDateTimeParsed("timDate");
-                int scheduleType = reader.GetInt32("timType");
+                // weekly
 
-                if (scheduleType == 1)
+                // catch up old backup?
+                if (DateTime.Now.DayOfWeek == scheduleDate.DayOfWeek)
                 {
-                    // once
-                    if (DateTime.Compare(DateTime.Now, scheduleDate) < 0)
-                    {
-                        schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), scheduleDate);
-                    }
-                }
-                else if (scheduleType == 2)
-                {
-                    // hourly
-                    schedulerService.ScheduleHourly(async () => await thScheduleSysRunBackup(), scheduleDate);
-                }
-                else if (scheduleType == 3)
-                {
-                    // daily
-
-                    // catch up old backup?
+                    // backup was performed already earlier
                     if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                     {
                         schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                     }
-
-                    schedulerService.ScheduleDaily(async () => await thScheduleSysRunBackup(), scheduleDate);
                 }
-                else if (scheduleType == 4)
+                else
                 {
-                    // weekly
+                    // check of backup was done the last 7 days
+                    var versions = QueryManager.GetVersions(true);
+                    var checkDate = DateUtils.GetDateToWeekDay(scheduleDate.DayOfWeek, DateTime.Now);
 
-                    // catch up old backup?
-                    if (DateTime.Now.DayOfWeek == scheduleDate.DayOfWeek)
+                    foreach (var versionDate in versions.Select(x => x.CreationDate))
                     {
-                        // backup was performed already earlier
-                        if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
-                        {
-                            schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
-                        }
-                    }
-                    else
-                    {
-                        // check of backup was done the last 7 days
-                        var versions = GlobalBackup.QueryManager.GetVersions(true);
-                        var checkDate = DateUtils.GetDateToWeekDay(scheduleDate.DayOfWeek, DateTime.Now);
-
-                        foreach (var versionDate in versions.Select(x => x.CreationDate))
-                        {
-                            if (versionDate.Subtract(checkDate).Days < 0)
-                            {
-                                // backup was performed already earlier
-                                if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
-                                {
-                                    schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
-                                }
-
-                                break;
-                            }
-
-                            if (versionDate.DayOfWeek == scheduleDate.DayOfWeek)
-                            {
-                                break;
-                            }
-                        }
-                    }
-
-                    schedulerService.ScheduleWeekly(async () => await thScheduleSysRunBackup(), scheduleDate);
-                }
-                else if (scheduleType == 5)
-                {
-                    // monthly
-
-                    // catch up old backup?
-                    if (DateTime.Now.Day == scheduleDate.Day)
-                    {
-                        // backup was performed already earlier
-                        if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
-                        {
-                            schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
-                        }
-                    }
-                    else
-                    {
-                        // check of backup was done the last 7 days
-                        var versions = GlobalBackup.QueryManager.GetVersions(true);
-                        var checkDate = DateUtils.GetDateToMonth(scheduleDate.Day, DateTime.Now);
-
-                        foreach (var versionDate in versions.Select(x => x.CreationDate))
+                        if (versionDate.Subtract(checkDate).Days < 0)
                         {
                             // backup was performed already earlier
-                            if (versionDate.Subtract(checkDate).Days < 0)
+                            if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                             {
-                                if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
-                                {
-                                    schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
-                                }
-
-                                break;
+                                schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                             }
 
-                            if (versionDate.Day == scheduleDate.Day)
-                            {
-                                break;
-                            }
+                            break;
+                        }
+
+                        if (versionDate.DayOfWeek == scheduleDate.DayOfWeek)
+                        {
+                            break;
                         }
                     }
-
-                    schedulerService.ScheduleMonthly(async () => await thScheduleSysRunBackup(), scheduleDate);
                 }
+
+                schedulerService.ScheduleWeekly(async () => await thScheduleSysRunBackup(), scheduleDate);
             }
-
-            reader.Close();
-        }
-
-        public static bool DoPastBackup(DateTime date, bool orOlder = false)
-        {
-            if (GlobalBackup.ConfigurationManager.DoPastBackups != "1")
+            else if (scheduleType == 5)
             {
-                return false;
-            }
+                // monthly
 
-            // backup is after the last backup
-            if (!string.IsNullOrEmpty(GlobalBackup.ConfigurationManager.LastBackupDone) && DateUtils.ReformatVersionDate(GlobalBackup.ConfigurationManager.LastBackupDone) >= date)
-            {
-                return false;
-            }
-
-            // check if this backup was performed
-            foreach (var versionDate in GlobalBackup.QueryManager.GetVersions().Select(x => x.CreationDate))
-            {
-                if (orOlder)
+                // catch up old backup?
+                if (DateTime.Now.Day == scheduleDate.Day)
                 {
-                    if (versionDate >= date)
+                    // backup was performed already earlier
+                    if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                     {
-                        return false;
+                        schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                     }
                 }
-                else if (versionDate > date.AddMinutes(-5) && versionDate < date.AddMinutes(5))
+                else
+                {
+                    // check of backup was done the last 7 days
+                    var versions = QueryManager.GetVersions(true);
+                    var checkDate = DateUtils.GetDateToMonth(scheduleDate.Day, DateTime.Now);
+
+                    foreach (var versionDate in versions.Select(x => x.CreationDate))
+                    {
+                        // backup was performed already earlier
+                        if (versionDate.Subtract(checkDate).Days < 0)
+                        {
+                            if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
+                            {
+                                schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                            }
+
+                            break;
+                        }
+
+                        if (versionDate.Day == scheduleDate.Day)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                schedulerService.ScheduleMonthly(async () => await thScheduleSysRunBackup(), scheduleDate);
+            }
+        }
+
+        reader.Close();
+    }
+
+    public static bool DoPastBackup(DateTime date, bool orOlder = false)
+    {
+        if (ConfigurationManager.DoPastBackups != "1")
+        {
+            return false;
+        }
+
+        // backup is after the last backup
+        if (!string.IsNullOrEmpty(ConfigurationManager.LastBackupDone) && DateUtils.ReformatVersionDate(ConfigurationManager.LastBackupDone) >= date)
+        {
+            return false;
+        }
+
+        // check if this backup was performed
+        foreach (var versionDate in QueryManager.GetVersions().Select(x => x.CreationDate))
+        {
+            if (orOlder)
+            {
+                if (versionDate >= date)
                 {
                     return false;
                 }
             }
-
-            // backup must be performed
-            return true;
+            else if (versionDate > date.AddMinutes(-5) && versionDate < date.AddMinutes(5))
+            {
+                return false;
+            }
         }
 
-        public static void StopScheduleSystem()
-        {
-            if (schedulerService != null)
-            {
-                Log.Information("Service for \"Scheduled backups\" is stopped.");
-                schedulerService.Stop();
-                schedulerService = null;
-            }
+        // backup must be performed
+        return true;
+    }
 
-            StopDoBackupWhenDriveIsAvailable();
-            SystemEvents.PowerModeChanged -= PowerModeChanged;
+    public static void StopScheduleSystem()
+    {
+        if (schedulerService != null)
+        {
+            Log.Information("Service for \"Scheduled backups\" is stopped.");
+            schedulerService.Stop();
+            schedulerService = null;
         }
 
-        public async static Task thScheduleSysRunBackup()
+        StopDoBackupWhenDriveIsAvailable();
+        SystemEvents.PowerModeChanged -= PowerModeChanged;
+    }
+
+    public static async Task thScheduleSysRunBackup()
+    {
+        Log.Information("Scheduled backup is planned and will be performed now.");
+
+        // Prüfen, ob was in Arbeit ist
+        if (StatusController.Current.IsTaskRunning())
         {
-            Log.Information("Scheduled backup is planned and will be performed now.");
+            Log.Warning("Scheduled backup cancelled due to other task in progress.");
+            return;
+        }
 
-            // Prüfen, ob was in Arbeit ist
-            if (StatusController.Current.IsTaskRunning())
-            {
-                Log.Warning("Scheduled backup cancelled due to other task in progress.");
-                return;
-            }
+        if (!BackupService.CheckMedia())
+        {
+            Log.Warning("Scheduled backup cancelled due to not reachable storage device.");
+            return;
+        }
 
-            if (!GlobalBackup.BackupService.CheckMedia())
-            {
-                Log.Warning("Scheduled backup cancelled due to not reachable storage device.");
-                return;
-            }
+        if (!BackupController.RequestPassword())
+        {
+            Log.Warning("Scheduled backup cancelled due to wrong password.");
+            return;
+        }
 
-            if (!BackupController.RequestPassword())
-            {
-                Log.Warning("Scheduled backup cancelled due to wrong password.");
-                return;
-            }
+        // Automatisches nachholen abbrechen
+        StopDoBackupWhenDriveIsAvailable();
 
-            // Automatisches nachholen abbrechen
-            StopDoBackupWhenDriveIsAvailable();
-
-            // Priorität heruntersetzen
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
+        // Priorität heruntersetzen
+        Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
             // Vollsicherung durchführen?
             bool FullBackup = false;
-            if (!string.IsNullOrEmpty(GlobalBackup.ConfigurationManager.ScheduleFullBackup))
+            if (!string.IsNullOrEmpty(ConfigurationManager.ScheduleFullBackup))
             {
                 // Letzte Vollsicherung ermitteln
-                var Item = GlobalBackup.ConfigurationManager.ScheduleFullBackup.Split('|');
+                var Item = ConfigurationManager.ScheduleFullBackup.Split('|');
                 if (Item[0] == "day")
                 {
-                    var lastFullBackup = await GlobalBackup.QueryManager.GetLastFullBackupAsync();
+                    var lastFullBackup = await QueryManager.GetLastFullBackupAsync();
                     if (lastFullBackup != null)
                     {
                         var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
@@ -659,209 +684,208 @@ namespace Brightbits.BSH.Main
                 }
             }
 
-            // Backup durchführen
-            var cancellationToken = BackupController.GetNewCancellationToken();
-            Engine.Jobs.IJobReport argjobReport = StatusController.Current;
+        // Backup durchführen
+        var cancellationToken = BackupController.GetNewCancellationToken();
+        Engine.Jobs.IJobReport argjobReport = StatusController.Current;
 
-            var task = GlobalBackup.BackupService.StartBackup(Resources.BACKUP_TITLE_AUTOMATIC, "", ref argjobReport, cancellationToken, FullBackup, "", true);
-            if (task == null)
-            {
-                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
-                return;
-            }
-
-            await task.ContinueWith((x) =>
-            {
-                if (!cancellationToken.IsCancellationRequested)
-                {
-                    RemoveOldBackupsScheduled();
-                }
-            }, TaskContinuationOptions.OnlyOnRanToCompletion)
-                .ContinueWith((x) => Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal, TaskContinuationOptions.None);
+        var task = BackupService.StartBackup(Resources.BACKUP_TITLE_AUTOMATIC, "", ref argjobReport, cancellationToken, FullBackup, "", true);
+        if (task == null)
+        {
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
+            return;
         }
 
-        private static void RemoveOldBackupsScheduled()
+        await task.ContinueWith((x) =>
         {
-            // lower process priority
-            var proc = Process.GetCurrentProcess();
-            proc.PriorityClass = ProcessPriorityClass.BelowNormal;
-
-            // obtain versions for deletion
-            var listDelete = new List<VersionDetails>();
-
-            try
+            if (!cancellationToken.IsCancellationRequested)
             {
-                if (GlobalBackup.ConfigurationManager.IntervallDelete == "auto")
-                {
-                    // automatic deletion
-                    listDelete.AddRange(GetAutomaticVersionsToDelete());
-                }
-                else if (string.IsNullOrEmpty(GlobalBackup.ConfigurationManager.IntervallDelete))
-                {
-                    // don't delete anything
-                }
-                else
-                {
-                    // custom intervals
-                    var intervals = GlobalBackup.ConfigurationManager.IntervallDelete.Split('|');
-                    var listVersions = GlobalBackup.QueryManager.GetVersions();
+                RemoveOldBackupsScheduled();
+            }
+        }, TaskContinuationOptions.OnlyOnRanToCompletion)
+            .ContinueWith((x) => Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal, TaskContinuationOptions.None);
+    }
 
-                    foreach (var version in listVersions)
+    private static void RemoveOldBackupsScheduled()
+    {
+        // lower process priority
+        var proc = Process.GetCurrentProcess();
+        proc.PriorityClass = ProcessPriorityClass.BelowNormal;
+
+        // obtain versions for deletion
+        var listDelete = new List<VersionDetails>();
+
+        try
+        {
+            if (ConfigurationManager.IntervallDelete == "auto")
+            {
+                // automatic deletion
+                listDelete.AddRange(GetAutomaticVersionsToDelete());
+            }
+            else if (string.IsNullOrEmpty(ConfigurationManager.IntervallDelete))
+            {
+                // don't delete anything
+            }
+            else
+            {
+                // custom intervals
+                var intervals = ConfigurationManager.IntervallDelete.Split('|');
+                var listVersions = QueryManager.GetVersions();
+
+                foreach (var version in listVersions)
+                {
+                    // ignore fixed versions
+                    if (version.Stable)
                     {
-                        // ignore fixed versions
-                        if (version.Stable)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        // Löschung
-                        switch (intervals[0] ?? "")
-                        {
-                            case "hour":
-                                if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0) && !listDelete.Contains(version))
-                                {
-                                    listDelete.Add(version);
-                                }
+                    // Löschung
+                    switch (intervals[0] ?? "")
+                    {
+                        case "hour":
+                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0) && !listDelete.Contains(version))
+                            {
+                                listDelete.Add(version);
+                            }
 
-                                break;
+                            break;
 
-                            case "day":
-                                if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0, 0) && !listDelete.Contains(version))
-                                {
-                                    listDelete.Add(version);
-                                }
+                        case "day":
+                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0, 0) && !listDelete.Contains(version))
+                            {
+                                listDelete.Add(version);
+                            }
 
-                                break;
+                            break;
 
-                            case "week":
+                        case "week":
 
-                                if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan((int)Math.Round(Convert.ToDouble(intervals[1]) * 7d), 0, 0, 0) && !listDelete.Contains(version))
-                                {
-                                    listDelete.Add(version);
-                                }
+                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan((int)Math.Round(Convert.ToDouble(intervals[1]) * 7d), 0, 0, 0) && !listDelete.Contains(version))
+                            {
+                                listDelete.Add(version);
+                            }
 
-                                break;
-                        }
+                            break;
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                // although this is a major issue, we don't want the backup to fail
-                Log.Error(ex, "Could not determine backups for deletion");
-            }
-
-            // delete versions
-            foreach (var version in listDelete)
-            {
-                var cancellationToken = BackupController.GetNewCancellationToken();
-                Engine.Jobs.IJobReport argjobReport = StatusController.Current;
-
-                var task = GlobalBackup.BackupService.StartDelete(version.Id, ref argjobReport, cancellationToken, true);
-                task.Wait();
-            }
         }
-
-        #endregion
-
-        private static RunBackupMethod _RunBackupDelegate;
-
-        public enum RunBackupMethod
+        catch (Exception ex)
         {
-            Schedule,
-            Auto,
-            Manuell
+            // although this is a major issue, we don't want the backup to fail
+            Log.Error(ex, "Could not determine backups for deletion");
         }
 
-        public static void DoBackupWhenDriveIsAvailable(RunBackupMethod RunBackupDelegate)
+        // delete versions
+        foreach (var version in listDelete)
+        {
+            var cancellationToken = BackupController.GetNewCancellationToken();
+            Engine.Jobs.IJobReport argjobReport = StatusController.Current;
+
+            var task = BackupService.StartDelete(version.Id, ref argjobReport, cancellationToken, true);
+            task.Wait();
+        }
+    }
+
+    #endregion
+
+    private static RunBackupMethod _RunBackupDelegate;
+
+    public enum RunBackupMethod
+    {
+        Schedule,
+        Auto,
+        Manuell
+    }
+
+    public static void DoBackupWhenDriveIsAvailable(RunBackupMethod RunBackupDelegate)
+    {
+        if (dCWatcher != null)
+        {
+            return;
+        }
+
+        // only start, if local device
+        if (ConfigurationManager.MediumType != 3)
+        {
+            dCWatcher = new UsbWatchService();
+            dCWatcher.StartWatching();
+
+            // observe devices
+            dCWatcher.DeviceAdded += DriveArrived;
+            _RunBackupDelegate = RunBackupDelegate;
+        }
+    }
+
+    public static void StopDoBackupWhenDriveIsAvailable()
+    {
+        try
         {
             if (dCWatcher != null)
             {
-                return;
-            }
-
-            // only start, if local device
-            if (GlobalBackup.ConfigurationManager.MediumType != 3)
-            {
-                dCWatcher = new UsbWatchService();
-                dCWatcher.StartWatching();
-
-                // observe devices
-                dCWatcher.DeviceAdded += DriveArrived;
-                _RunBackupDelegate = RunBackupDelegate;
+                dCWatcher.DeviceAdded -= DriveArrived;
+                dCWatcher.StopWatching();
+                dCWatcher = null;
             }
         }
+        catch
+        {
+            // ignore error
+        }
+    }
 
-        public static void StopDoBackupWhenDriveIsAvailable()
+    private static async void DriveArrived(object sender, string driveLetter)
+    {
+        if (!await BackupController.CheckMediaAsync(ActionType.Backup, true))
+        {
+            return;
+        }
+
+        // check is backup device is connected
+        if (ConfigurationManager.BackupFolder.ToLower().StartsWith(driveLetter.ToLower()))
         {
             try
             {
-                if (dCWatcher != null)
-                {
-                    dCWatcher.DeviceAdded -= DriveArrived;
-                    dCWatcher.StopWatching();
-                    dCWatcher = null;
-                }
+                dCWatcher.DeviceAdded -= DriveArrived;
+                dCWatcher.StopWatching();
+                dCWatcher = null;
             }
             catch
             {
                 // ignore error
             }
-        }
 
-        private async static void DriveArrived(object sender, string driveLetter)
+            // start backup
+            if (_RunBackupDelegate == RunBackupMethod.Auto)
+            {
+                RunAutoBackup();
+            }
+            else if (_RunBackupDelegate == RunBackupMethod.Schedule)
+            {
+                await thScheduleSysRunBackup();
+            }
+        }
+    }
+
+    public static void CommandAutoDelete()
+    {
+        // check device
+        if (!BackupService.CheckMedia())
         {
-            if (!await BackupController.CheckMediaAsync(ActionType.Backup, true))
-            {
-                return;
-            }
-
-            // check is backup device is connected
-            if (GlobalBackup.ConfigurationManager.BackupFolder.ToLower().StartsWith(driveLetter.ToLower()))
-            {
-                try
-                {
-                    dCWatcher.DeviceAdded -= DriveArrived;
-                    dCWatcher.StopWatching();
-                    dCWatcher = null;
-                }
-                catch
-                {
-                    // ignore error
-                }
-
-                // start backup
-                if (_RunBackupDelegate == RunBackupMethod.Auto)
-                {
-                    RunAutoBackup();
-                }
-                else if (_RunBackupDelegate == RunBackupMethod.Schedule)
-                {
-                    await thScheduleSysRunBackup();
-                }
-            }
+            return;
         }
 
-        public static void CommandAutoDelete()
+        // delete old versions
+        RemoveOldBackups();
+    }
+
+    public static DateTime GetNextBackupDate()
+    {
+        if (schedulerService == null)
         {
-            // check device
-            if (!GlobalBackup.BackupService.CheckMedia())
-            {
-                return;
-            }
-
-            // delete old versions
-            RemoveOldBackups();
+            return DateTime.MaxValue;
         }
 
-        public static DateTime GetNextBackupDate()
-        {
-            if (schedulerService == null)
-            {
-                return DateTime.MaxValue;
-            }
-
-            return schedulerService.GetNextRun();
-        }
+        return schedulerService.GetNextRun();
     }
 }

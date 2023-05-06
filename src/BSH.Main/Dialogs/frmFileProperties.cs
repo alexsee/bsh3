@@ -51,8 +51,8 @@ namespace Brightbits.BSH.Main
                 {
                     int id = int.Parse(((FileTableRow)lvVersions.SelectedItems[0].Tag).FilePackage);
 
-                    var password = BackupLogic.GlobalBackup.BackupService.GetPassword();
-                    tmpFile = await BackupLogic.GlobalBackup.QueryManager.GetFileNameFromDriveAsync(id, lblFileName.Text, CurrentFileFolder, password);
+                    var password = BackupLogic.BackupService.GetPassword();
+                    tmpFile = await BackupLogic.QueryManager.GetFileNameFromDriveAsync(id, lblFileName.Text, CurrentFileFolder, password);
 
 #if !WIN_UWP
                     var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"" + (tmpFile.Item2 ? " -c" : ""));

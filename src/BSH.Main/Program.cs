@@ -60,13 +60,7 @@ namespace Brightbits.BSH.Main
         }
 #endif
 
-        public static string CurrentVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
-        }
+        public static string CurrentVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         [STAThread()]
         public static void Main(string[] args)
@@ -130,7 +124,7 @@ namespace Brightbits.BSH.Main
                 BackupLogic.StartupAsync().Wait();
 
                 // parse command line if system is configured
-                if (BackupLogic.GlobalBackup.ConfigurationManager.IsConfigured == "1")
+                if (BackupLogic.ConfigurationManager.IsConfigured == "1")
                 {
                     CheckCommands(args);
                 }

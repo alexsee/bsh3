@@ -1,0 +1,66 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:tb="using:H.NotifyIcon"
+    >
+    <XamlUICommand
+        x:Key="ShowBrowserWindowCommand"
+        Label="Show Backup Browser"
+        Description="Show Backup Browser"
+        >
+        <XamlUICommand.IconSource>
+            <SymbolIconSource Symbol="BrowsePhotos" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="ShowMainWindowCommand"
+        Label="Status and Configuration"
+        Description="Status and Configuration"
+        >
+        <XamlUICommand.IconSource>
+            <SymbolIconSource Symbol="Setting" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="StartManualBackupCommand"
+        Label="Start Manual Backup"
+        Description="Start Manual Backup"
+        >
+        <XamlUICommand.IconSource>
+            <SymbolIconSource Symbol="Save" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="StartManualBackupExtendedCommand"
+        Label="Start Manual Backup (+ Settings)"
+        Description="Start Manual Backup (+ Settings)"
+        >
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="ExitApplicationCommand"
+        Label="Exit Backup Service Home"
+        Description="Exit Backup Service Home"
+        >
+    </XamlUICommand>
+    <tb:TaskbarIcon
+        x:Key="TrayIcon"
+        Visibility="Visible"
+        ToolTipText="ToolTip"
+        ContextMenuMode="SecondWindow"
+        LeftClickCommand="{StaticResource ShowMainWindowCommand}"
+        NoLeftClickDelay="True"
+        IconSource="ms-appx:///Assets/app_ico.ico"
+        >
+        <tb:TaskbarIcon.ContextFlyout>
+            <MenuFlyout>
+                <MenuFlyoutItem Command="{StaticResource ShowMainWindowCommand}" />
+                <MenuFlyoutItem Command="{StaticResource ShowBrowserWindowCommand}" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Command="{StaticResource StartManualBackupCommand}" />
+                <MenuFlyoutItem Command="{StaticResource StartManualBackupExtendedCommand}" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Command="{StaticResource ExitApplicationCommand}" />
+            </MenuFlyout>
+        </tb:TaskbarIcon.ContextFlyout>
+    </tb:TaskbarIcon>
+</ResourceDictionary>

@@ -78,16 +78,16 @@ namespace Brightbits.BSH.Engine.Security
         {
             try
             {
-                using (FileStream InFileStream = new FileStream(SourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var InFileStream = new FileStream(SourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     using (FileStream OutFileStream = new(TargetFile, FileMode.Create))
                     {
                         CryptoStream CryptStream = null;
 
-                        byte[] Data = new byte[BufferSize - 1 + 1];
+                        var Data = new byte[BufferSize - 1 + 1];
                         long Buffer;
                         long BufferCount = 0;
-                        long FileLen = InFileStream.Length;
+                        var FileLen = InFileStream.Length;
 
                         Rfc2898DeriveBytes MakeKey = new(Crypto.ToInsecureString(Password), mKeySalt);
                         Rfc2898DeriveBytes MakeIV = new(Crypto.ToInsecureString(Password), mIVSalt);
@@ -137,10 +137,10 @@ namespace Brightbits.BSH.Engine.Security
                 FileStream OutFileStream = new(TargetFile, FileMode.Create);
                 CryptoStream CryptStream = null;
 
-                byte[] Data = new byte[BufferSize - 1 + 1];
+                var Data = new byte[BufferSize - 1 + 1];
                 long Buffer;
                 long BufferCount = 0;
-                long FileLen = InFileStream.Length;
+                var FileLen = InFileStream.Length;
 
                 Rfc2898DeriveBytes MakeKey = new(Crypto.ToInsecureString(Password), mKeySalt);
                 Rfc2898DeriveBytes MakeIV = new(Crypto.ToInsecureString(Password), mIVSalt);

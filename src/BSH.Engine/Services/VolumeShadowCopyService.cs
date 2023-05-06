@@ -12,39 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IO;
 using BSH.Service.Shared;
 using Serilog;
 using ServiceWire.NamedPipes;
-using System.IO;
 
-namespace Brightbits.BSH.Engine.Services
+namespace Brightbits.BSH.Engine.Services;
+
+public static class VolumeShadowCopyService
 {
-    public static class VolumeShadowCopyService
+    public static bool CopyFile(string fileName, string destFileName)
     {
-        public static bool CopyFile(string fileName, string destFileName)
+        try
         {
-            try
+            using var npClient = new NpClient<IVSSRemoteObject>(new NpEndPoint("backupservicehome"));
+
+            var serviceFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            var destination = destFileName.Replace("\\\\", "\\");
+
+            // copy file
+            var result = npClient.Proxy.CopyFileWithVSS(serviceFilePath, fileName, destination);
+
+            if (!result)
             {
-                using var npClient = new NpClient<IVSSRemoteObject>(new NpEndPoint("backupservicehome"));
-                
-                var serviceFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                var destination = destFileName.Replace("\\\\", "\\");
-
-                // copy file
-                var result = npClient.Proxy.CopyFileWithVSS(serviceFilePath, fileName, destination);
-
-                if (!result)
-                {
-                    Log.Error(npClient.Proxy.GetException(), "Could not copy file via VSS.");
-                    return false;
-                }
-
-                return true;
-            }
-            catch
-            {
+                Log.Error(npClient.Proxy.GetException(), "Could not copy file via VSS.");
                 return false;
             }
+
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 }

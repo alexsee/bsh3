@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Models;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using Brightbits.BSH.Engine.Models;
 
 namespace Brightbits.BSH.Engine
 {
@@ -145,7 +145,7 @@ namespace Brightbits.BSH.Engine
 
         public static string GetDisplayName(string path)
         {
-            SHFILEINFO shfi = new SHFILEINFO();
+            var shfi = new SHFILEINFO();
             if (0 != SHGetFileInfo(path, FILE_ATTRIBUTE_NORMAL, out shfi,
                 (uint)Marshal.SizeOf(typeof(SHFILEINFO)), SHGFI_DISPLAYNAME))
             {
@@ -158,9 +158,9 @@ namespace Brightbits.BSH.Engine
         {
             uint serial_number = 0;
             uint max_component_length = 0;
-            StringBuilder sb_volume_name = new StringBuilder(256);
-            UInt32 file_system_flags = new UInt32();
-            StringBuilder sb_file_system_name = new StringBuilder(256);
+            var sb_volume_name = new StringBuilder(256);
+            var file_system_flags = new UInt32();
+            var sb_file_system_name = new StringBuilder(256);
 
             if (GetVolumeInformation(pathName, sb_volume_name,
                 (UInt32)sb_volume_name.Capacity, ref serial_number,
@@ -208,7 +208,7 @@ namespace Brightbits.BSH.Engine
             try
             {
                 var ws = o.Windows();
-                for (int i = 0; i < ws.Count; i++)
+                for (var i = 0; i < ws.Count; i++)
                 {
                     var ie = ws.Item(i);
 

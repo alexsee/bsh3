@@ -1,0 +1,38 @@
+﻿<Page
+    x:Class="BSH.MainApp.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="White">
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MaxWidth="1400" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold">Settings</TextBlock>
+
+        <Grid Grid.Row="1" Margin="0, 20, 0, 0">
+            <NavigationView x:Name="navSettings" 
+                            PaneDisplayMode="Top" 
+                            IsBackButtonVisible="Collapsed" 
+                            IsSettingsVisible="False"
+                            ItemInvoked="navSettings_ItemInvoked">
+                <NavigationView.MenuItems>
+                    <NavigationViewItem x:Name="nviSources" IsSelected="True" Content="Sources" />
+                    <NavigationViewItem x:Name="nviTarget" Content="Backup Disk" />
+                    <NavigationViewItem x:Name="nviMode" Content="Mode" />
+                    <NavigationViewItem x:Name="nviOptions" Content="Options" />
+                    <NavigationViewItem x:Name="nviEnhanced" Content="Enhanced" />
+                </NavigationView.MenuItems>
+                <Frame Margin="0,20,0,0" x:Name="contentFrame" />
+            </NavigationView>
+        </Grid>
+    </Grid>
+</Page>

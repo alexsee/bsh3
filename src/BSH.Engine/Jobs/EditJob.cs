@@ -12,12 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Exceptions;
-using Brightbits.BSH.Engine.Models;
-using Brightbits.BSH.Engine.Properties;
-using Brightbits.BSH.Engine.Storage;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -25,6 +19,14 @@ using System.Globalization;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Exceptions;
+using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Properties;
+using Brightbits.BSH.Engine.Storage;
+using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs
 {
@@ -35,11 +37,17 @@ namespace Brightbits.BSH.Engine.Jobs
     {
         private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
 
-        public SecureString Password { get; set; }
+        public SecureString Password
+        {
+            get; set;
+        }
 
-        public List<FileExceptionEntry> FileErrorList { get; set; }
+        public List<FileExceptionEntry> FileErrorList
+        {
+            get; set;
+        }
 
-        public EditJob(IStorage storage, DbClientFactory dbClientFactory, QueryManager queryManager) : base(storage, dbClientFactory, queryManager)
+        public EditJob(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
         {
             FileErrorList = new List<FileExceptionEntry>();
         }
@@ -88,7 +96,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 // determine files of backup to edit
                 using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * " + commandSQL, null))
                 {
-                    int i = 0;
+                    var i = 0;
                     while (reader.Read())
                     {
                         // determine remote file
@@ -141,8 +149,8 @@ namespace Brightbits.BSH.Engine.Jobs
             }
 
             // set new metadata
-            queryManager.Configuration.Encrypt = 0;
-            queryManager.Configuration.EncryptPassMD5 = "";
+            configurationManager.Encrypt = 0;
+            configurationManager.EncryptPassMD5 = "";
 
             // close all database connections
             DbClientFactory.ClosePool();

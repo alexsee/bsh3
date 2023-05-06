@@ -30,7 +30,7 @@ namespace Brightbits.BSH.Main
         private async void frmEditScheduler_Load(object sender, EventArgs e)
         {
             // Zeitplaner lesen
-            using (var dbClient = BackupLogic.GlobalBackup.DbClientFactory.CreateDbClient())
+            using (var dbClient = BackupLogic.DbClientFactory.CreateDbClient())
             {
                 using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null))
                 {
@@ -89,7 +89,7 @@ namespace Brightbits.BSH.Main
             }
 
             // Löschintervalle festlegen
-            switch (BackupLogic.GlobalBackup.ConfigurationManager.IntervallDelete ?? "")
+            switch (BackupLogic.ConfigurationManager.IntervallDelete ?? "")
             {
                 case var @case when @case == "":
                     rdDontDelete.Checked = true;
@@ -103,7 +103,7 @@ namespace Brightbits.BSH.Main
                     rdDeleteIntervall.Checked = true;
 
                     // Intervall auslesen
-                    var Intervall = BackupLogic.GlobalBackup.ConfigurationManager.IntervallDelete.Split('|');
+                    var Intervall = BackupLogic.ConfigurationManager.IntervallDelete.Split('|');
                     txtIntervall.Text = Intervall[1];
                     switch (Intervall[0] ?? "")
                     {
@@ -123,13 +123,13 @@ namespace Brightbits.BSH.Main
                     break;
             }
 
-            nudIntervallHourBackups.Value = decimal.Parse(BackupLogic.GlobalBackup.ConfigurationManager.IntervallAutoHourBackups);
+            nudIntervallHourBackups.Value = decimal.Parse(BackupLogic.ConfigurationManager.IntervallAutoHourBackups);
 
             // Vollsicherung
-            if (!string.IsNullOrEmpty(BackupLogic.GlobalBackup.ConfigurationManager.ScheduleFullBackup))
+            if (!string.IsNullOrEmpty(BackupLogic.ConfigurationManager.ScheduleFullBackup))
             {
                 chkFullBackup.Checked = true;
-                var Item = BackupLogic.GlobalBackup.ConfigurationManager.ScheduleFullBackup.Split('|');
+                var Item = BackupLogic.ConfigurationManager.ScheduleFullBackup.Split('|');
                 if (Item[0] == "day")
                 {
                     cboFullBackup.SelectedIndex = 0;
@@ -201,7 +201,8 @@ namespace Brightbits.BSH.Main
 
         private async void cmdOK_Click(object sender, EventArgs e)
         {
-            await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("DELETE FROM schedule");
+            using var dbClient = BackupLogic.DbClientFactory.CreateDbClient();
+            await dbClient.ExecuteNonQueryAsync("DELETE FROM schedule");
 
             // Automatische Backups
             foreach (ListViewItem entry in lwTimeSchedule.Items)
@@ -210,23 +211,23 @@ namespace Brightbits.BSH.Main
                 switch (entry.SubItems[0].Tag)
                 {
                     case 0:
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 1, '" + parsedDate + "' )");
+                        await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 1, '" + parsedDate + "' )");
                         break;
 
                     case 1:
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 2, '" + parsedDate + "' )");
+                        await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 2, '" + parsedDate + "' )");
                         break;
 
                     case 2:
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 3, '" + parsedDate + "' )");
+                        await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 3, '" + parsedDate + "' )");
                         break;
 
                     case 3:
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 4, '" + parsedDate + "' )");
+                        await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 4, '" + parsedDate + "' )");
                         break;
 
                     case 4:
-                        await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 5, '" + parsedDate + "' )");
+                        await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 5, '" + parsedDate + "' )");
                         break;
                 }
             }
@@ -234,7 +235,7 @@ namespace Brightbits.BSH.Main
             // Löschintervalle speichern
             if (rdDontDelete.Checked)
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.IntervallDelete = "";
+                BackupLogic.ConfigurationManager.IntervallDelete = "";
             }
             else if (rdDeleteIntervall.Checked)
             {
@@ -245,25 +246,25 @@ namespace Brightbits.BSH.Main
                     {
                         case 0:
                             // Stündlich
-                            BackupLogic.GlobalBackup.ConfigurationManager.IntervallDelete = "hour|" + txtIntervall.Text;
+                            BackupLogic.ConfigurationManager.IntervallDelete = "hour|" + txtIntervall.Text;
                             break;
 
                         case 1:
                             // Täglich
-                            BackupLogic.GlobalBackup.ConfigurationManager.IntervallDelete = "day|" + txtIntervall.Text;
+                            BackupLogic.ConfigurationManager.IntervallDelete = "day|" + txtIntervall.Text;
                             break;
 
                         case 2:
                             // Wöchentlich
-                            BackupLogic.GlobalBackup.ConfigurationManager.IntervallDelete = "week|" + txtIntervall.Text;
+                            BackupLogic.ConfigurationManager.IntervallDelete = "week|" + txtIntervall.Text;
                             break;
                     }
                 }
             }
             else if (rdDeleteAuto.Checked)
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.IntervallDelete = "auto";
-                BackupLogic.GlobalBackup.ConfigurationManager.IntervallAutoHourBackups = nudIntervallHourBackups.Value.ToString();
+                BackupLogic.ConfigurationManager.IntervallDelete = "auto";
+                BackupLogic.ConfigurationManager.IntervallAutoHourBackups = nudIntervallHourBackups.Value.ToString();
             }
 
             // Vollsicherung nach Sicherung oder Tag anlegen
@@ -271,12 +272,12 @@ namespace Brightbits.BSH.Main
             {
                 if (cboFullBackup.SelectedIndex == 0)
                 {
-                    BackupLogic.GlobalBackup.ConfigurationManager.ScheduleFullBackup = "day|" + nudFullBackup.Value.ToString();
+                    BackupLogic.ConfigurationManager.ScheduleFullBackup = "day|" + nudFullBackup.Value.ToString();
                 }
             }
             else
             {
-                BackupLogic.GlobalBackup.ConfigurationManager.ScheduleFullBackup = "";
+                BackupLogic.ConfigurationManager.ScheduleFullBackup = "";
             }
 
             Close();

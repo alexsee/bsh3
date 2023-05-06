@@ -288,7 +288,6 @@ namespace Brightbits.BSH.Main
                 CurrentTab = AvailableTabs.TabNothing;
                 BackupLogic.StopSystem();
                 DbClientFactory.ClosePool();
-                BackupLogic.GlobalBackup = null;
 
                 System.IO.File.Delete(BackupLogic.DatabaseFile);
 

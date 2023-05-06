@@ -123,7 +123,7 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         private async Task CreateFolderListAsync(string path)
         {
-            var folders = await BackupLogic.GlobalBackup.QueryManager.GetFolderListAsync(selectedVersion.Id, $"\\{path}\\%");
+            var folders = await BackupLogic.QueryManager.GetFolderListAsync(selectedVersion.Id, $"\\{path}\\%");
 
             // determine the above folder
             if (!string.IsNullOrEmpty(selectedFolder))
@@ -185,8 +185,8 @@ namespace Brightbits.BSH.Main
                         newFolder.Group = lvFiles.Groups["Ordner"];
 
                         // localize folder
-                        newFolder.Text = System.IO.Path.GetFileName(await BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(folderTag));
-                        if (chkFilesOfThisVersion.Checked && !await BackupLogic.GlobalBackup.QueryManager.HasChangesOrNewAsync(folderTag, selectedVersion.Id))
+                        newFolder.Text = System.IO.Path.GetFileName(await BackupLogic.QueryManager.GetLocalizedPathAsync(folderTag));
+                        if (chkFilesOfThisVersion.Checked && !await BackupLogic.QueryManager.HasChangesOrNewAsync(folderTag, selectedVersion.Id))
                         {
                             newFolder.ForeColor = Color.Gray;
                         }
@@ -204,7 +204,7 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         private async Task CreateFilesListAsync(string path)
         {
-            var files = await BackupLogic.GlobalBackup.QueryManager.GetFilesByVersionAsync(selectedVersion.Id, $"\\{path}\\");
+            var files = await BackupLogic.QueryManager.GetFilesByVersionAsync(selectedVersion.Id, $"\\{path}\\");
 
             foreach (var file in files)
             {
@@ -301,7 +301,7 @@ namespace Brightbits.BSH.Main
             }
 
             // fill navigation
-            var destFolder = await BackupLogic.GlobalBackup.QueryManager.GetFullRestoreFolderAsync(path, selectedVersion.Id);
+            var destFolder = await BackupLogic.QueryManager.GetFullRestoreFolderAsync(path, selectedVersion.Id);
             if (destFolder == null)
             {
                 // update UI
@@ -315,7 +315,7 @@ namespace Brightbits.BSH.Main
             }
 
             UcNav.Path = path;
-            UcNav.PathLocalized = await BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(path);
+            UcNav.PathLocalized = await BackupLogic.QueryManager.GetLocalizedPathAsync(path);
             UcNav.CreateNavi(destFolder);
 
             selectedFolder = path;
@@ -359,7 +359,7 @@ namespace Brightbits.BSH.Main
             if (isMedium && file.FileType == "1")
             {
                 // get file path
-                var fileName = BackupLogic.GlobalBackup.QueryManager.GetFileNameFromDrive(file);
+                var fileName = BackupLogic.QueryManager.GetFileNameFromDrive(file);
 
                 if (IsFileAvailable(fileName))
                 {
@@ -522,11 +522,11 @@ namespace Brightbits.BSH.Main
             // get current drive
             try
             {
-                if (BackupLogic.GlobalBackup.ConfigurationManager.MediumType == 1D
-                    && BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder.Substring(0, 1) != "/"
-                    && !BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder.StartsWith("\\\\"))
+                if (BackupLogic.ConfigurationManager.MediumType == 1D
+                    && BackupLogic.ConfigurationManager.BackupFolder.Substring(0, 1) != "/"
+                    && !BackupLogic.ConfigurationManager.BackupFolder.StartsWith("\\\\"))
                 {
-                    drive = new System.IO.DriveInfo(BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder.Substring(0, 1));
+                    drive = new System.IO.DriveInfo(BackupLogic.ConfigurationManager.BackupFolder.Substring(0, 1));
                 }
             }
             catch (Exception ex)
@@ -560,7 +560,7 @@ namespace Brightbits.BSH.Main
                 string sourceFolders;
                 if (string.IsNullOrEmpty(selectedVersion.Sources))
                 {
-                    sourceFolders = BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder;
+                    sourceFolders = BackupLogic.ConfigurationManager.SourceFolder;
                 }
                 else
                 {
@@ -580,7 +580,7 @@ namespace Brightbits.BSH.Main
                     // Ordnername ermitteln
                     var newEntry = new ListViewItem
                     {
-                        Text = await BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(entry.Substring(entry.LastIndexOf(@"\") + 1)),
+                        Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry.Substring(entry.LastIndexOf(@"\") + 1)),
                         ImageIndex = 2,
                         Tag = @"\" + entry.Substring(entry.LastIndexOf(@"\") + 1) + @"\"
                     };
@@ -601,7 +601,7 @@ namespace Brightbits.BSH.Main
                             entry = entry.Substring(0, entry.Length - 1);
                         }
 
-                        Settings.Default.BrowserFavoritsName += System.IO.Path.GetFileName(await BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(entry));
+                        Settings.Default.BrowserFavoritsName += System.IO.Path.GetFileName(await BackupLogic.QueryManager.GetLocalizedPathAsync(entry));
                     }
                 }
 
@@ -628,7 +628,7 @@ namespace Brightbits.BSH.Main
                         Text = Settings.Default.BrowserFavoritsName.Split('|')[i],
                         ImageIndex = 1,
                         Tag = @"\" + entry.Substring(entry.IndexOf(@"\") + 1) + @"\",
-                        ToolTipText = Resources.DLG_BACKUPBROWSER_TT_FOLDER.FormatWith(BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(entry.Substring(entry.LastIndexOf(@"\") + 1)), entry.Substring(entry.IndexOf(@"\") + 1))
+                        ToolTipText = Resources.DLG_BACKUPBROWSER_TT_FOLDER.FormatWith(BackupLogic.QueryManager.GetLocalizedPathAsync(entry.Substring(entry.LastIndexOf(@"\") + 1)), entry.Substring(entry.IndexOf(@"\") + 1))
                     };
 
                     lvFavorite.Items.Add(newEntry);
@@ -669,7 +669,7 @@ namespace Brightbits.BSH.Main
         {
             // determine new windows
             var explorerFolders = GetWindowsExplorerPaths();
-            var sourceFolders = BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder.Split('|');
+            var sourceFolders = BackupLogic.ConfigurationManager.SourceFolder.Split('|');
             var result = new List<ExplorerWindow>();
 
             // only select explorer windows
@@ -1021,7 +1021,7 @@ namespace Brightbits.BSH.Main
             {
                 // add
                 Settings.Default.BrowserFavorits += "|" + @"\" + selectedFolder + @"\";
-                Settings.Default.BrowserFavoritsName += "|" + System.IO.Path.GetFileName(await BackupLogic.GlobalBackup.QueryManager.GetLocalizedPathAsync(@"\" + selectedFolder + @"\"));
+                Settings.Default.BrowserFavoritsName += "|" + System.IO.Path.GetFileName(await BackupLogic.QueryManager.GetLocalizedPathAsync(@"\" + selectedFolder + @"\"));
 
                 // store
                 Settings.Default.Save();
@@ -1096,7 +1096,7 @@ namespace Brightbits.BSH.Main
         {
             // edit version
             using (var dlgEditVersion = new frmEditVersion())
-            using (var dbClient = BackupLogic.GlobalBackup.DbClientFactory.CreateDbClient())
+            using (var dbClient = BackupLogic.DbClientFactory.CreateDbClient())
             {
                 using (var dbRead = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionID = " + selectedVersion.Id, null))
                 {
@@ -1111,7 +1111,7 @@ namespace Brightbits.BSH.Main
 
                 if (dlgEditVersion.ShowDialog(this) == DialogResult.OK)
                 {
-                    await BackupLogic.GlobalBackup.ExecuteNonQueryAsync("UPDATE versiontable SET versionTitle = '" + dlgEditVersion.txtTitle.Text + "', versionDescription = '" + dlgEditVersion.txtDescription.Text + "' WHERE versionID = " + selectedVersion.Id);
+                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE versiontable SET versionTitle = '" + dlgEditVersion.txtTitle.Text + "', versionDescription = '" + dlgEditVersion.txtDescription.Text + "' WHERE versionID = " + selectedVersion.Id);
                     foreach (aVersionListItem entry in AVersionList1.Items)
                     {
                         if ((entry.VersionID ?? "") == (selectedVersion.Id ?? ""))
@@ -1144,8 +1144,8 @@ namespace Brightbits.BSH.Main
                 Tuple<string, bool> tmpFile = null;
                 try
                 {
-                    var password = BackupLogic.GlobalBackup.BackupService.GetPassword();
-                    tmpFile = await BackupLogic.GlobalBackup.QueryManager.GetFileNameFromDriveAsync(int.Parse(selectedVersion.Id), lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString(), password);
+                    var password = BackupLogic.BackupService.GetPassword();
+                    tmpFile = await BackupLogic.QueryManager.GetFileNameFromDriveAsync(int.Parse(selectedVersion.Id), lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString(), password);
 
 #if !WIN_UWP
                     var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"" + (tmpFile.Item2 ? " -c" : ""));
@@ -1333,7 +1333,7 @@ namespace Brightbits.BSH.Main
             Invoke(new ThreadSafe_UcNav_Callback(ThreadSafe_UcNav));
 
             // retrieve folder list from database
-            using (var dbClient = BackupLogic.GlobalBackup.DbClientFactory.CreateDbClient())
+            using (var dbClient = BackupLogic.DbClientFactory.CreateDbClient())
             {
                 var searchParameters = new[] {
                     dbClient.CreateParameter("filePath", DbType.String, default, "%" + txtSearch.Text + "%"),
@@ -1416,7 +1416,7 @@ namespace Brightbits.BSH.Main
         private void ReloadBrowser()
         {
             // retrieve versions
-            var lstVersions = BackupLogic.GlobalBackup.QueryManager.GetVersions(true);
+            var lstVersions = BackupLogic.QueryManager.GetVersions(true);
             if (lstVersions.Count <= 0)
             {
                 Close();
@@ -1450,7 +1450,7 @@ namespace Brightbits.BSH.Main
 
         private async void VersionAlsStabilMarkierenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await BackupLogic.GlobalBackup.BackupService.SetStableAsync(selectedVersion.Id, !VersionAlsStabilMarkierenToolStripMenuItem.Checked);
+            await BackupLogic.BackupService.SetStableAsync(selectedVersion.Id, !VersionAlsStabilMarkierenToolStripMenuItem.Checked);
             VersionAlsStabilMarkierenToolStripMenuItem.Checked = !VersionAlsStabilMarkierenToolStripMenuItem.Checked;
 
             foreach (var entry in AVersionList1.Items)
@@ -1480,13 +1480,13 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Version suchen, in der die Datei ist
-                var backupVersion = await BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
+                var backupVersion = await BackupLogic.QueryManager.GetBackVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
                 if (backupVersion == null)
                 {
                     return;
                 }
 
-                selectedVersion = await BackupLogic.GlobalBackup.QueryManager.GetVersionByIdAsync(backupVersion);
+                selectedVersion = await BackupLogic.QueryManager.GetVersionByIdAsync(backupVersion);
 
                 // Alles leeren
                 lvFiles.Items.Clear();
@@ -1499,7 +1499,7 @@ namespace Brightbits.BSH.Main
             }
             else
             {
-                var backupVersion = await BackupLogic.GlobalBackup.QueryManager.GetBackVersionWhereFilesInFolderAsync(selectedVersion.Id, selectedFolder);
+                var backupVersion = await BackupLogic.QueryManager.GetBackVersionWhereFilesInFolderAsync(selectedVersion.Id, selectedFolder);
                 if (backupVersion == null)
                 {
                     return;
@@ -1526,13 +1526,13 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Version suchen, in der die Datei ist
-                var backupVersion = await BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
+                var backupVersion = await BackupLogic.QueryManager.GetNextVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
                 if (backupVersion == null)
                 {
                     return;
                 }
 
-                selectedVersion = await BackupLogic.GlobalBackup.QueryManager.GetVersionByIdAsync(backupVersion);
+                selectedVersion = await BackupLogic.QueryManager.GetVersionByIdAsync(backupVersion);
                 lvFiles.Items.Clear();
 
                 // Nun neuen Prozess starten
@@ -1543,7 +1543,7 @@ namespace Brightbits.BSH.Main
             }
             else
             {
-                var backupVersion = await BackupLogic.GlobalBackup.QueryManager.GetNextVersionWhereFilesInFolderAsync(selectedVersion.Id, selectedFolder);
+                var backupVersion = await BackupLogic.QueryManager.GetNextVersionWhereFilesInFolderAsync(selectedVersion.Id, selectedFolder);
                 if (backupVersion == null)
                 {
                     return;
@@ -1575,7 +1575,7 @@ namespace Brightbits.BSH.Main
             {
                 dlgFileProperties.browserWindow = this;
                 dlgFileProperties.lblFileName.Text = lvFiles.SelectedItems[0].Text;
-                dlgFileProperties.lblFilePath.Text = await BackupLogic.GlobalBackup.QueryManager.GetFullRestoreFolderAsync(lvFiles.SelectedItems[0].Tag.ToString(), selectedVersion.Id);
+                dlgFileProperties.lblFilePath.Text = await BackupLogic.QueryManager.GetFullRestoreFolderAsync(lvFiles.SelectedItems[0].Tag.ToString(), selectedVersion.Id);
                 dlgFileProperties.toolTipCtl.SetToolTip(dlgFileProperties.lblFilePath, dlgFileProperties.lblFilePath.Text);
                 dlgFileProperties.lblFileType.Text = lvFiles.SelectedItems[0].SubItems[2].Text;
                 dlgFileProperties.lblFileSize.Text = lvFiles.SelectedItems[0].SubItems[1].Text;
@@ -1584,7 +1584,7 @@ namespace Brightbits.BSH.Main
                 dlgFileProperties.CurrentFileFolder = lvFiles.SelectedItems[0].Tag.ToString();
                 dlgFileProperties.PictureBox1.Image = imgFileType.Image;
 
-                var versions = await BackupLogic.GlobalBackup.QueryManager.GetVersionsByFileAsync(lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString());
+                var versions = await BackupLogic.QueryManager.GetVersionsByFileAsync(lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString());
                 foreach (var item in versions)
                 {
                     var newItem = new ListViewItem();
@@ -1634,7 +1634,7 @@ namespace Brightbits.BSH.Main
 
             using (var dlgMultiVersionDelete = new frmMultiVersionDeletion())
             {
-                foreach (VersionDetails Version in BackupLogic.GlobalBackup.QueryManager.GetVersions())
+                foreach (VersionDetails Version in BackupLogic.QueryManager.GetVersions())
                 {
                     var newItem = new ListViewItem();
                     newItem.Text = Version.CreationDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
@@ -1663,7 +1663,7 @@ namespace Brightbits.BSH.Main
             }
 
             // load versions
-            var lstVersions = BackupLogic.GlobalBackup.QueryManager.GetVersions(true);
+            var lstVersions = BackupLogic.QueryManager.GetVersions(true);
             if (lstVersions.Count <= 0)
             {
                 Close();

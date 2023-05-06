@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Properties;
 using System;
 using System.Runtime.Serialization;
+using Brightbits.BSH.Engine.Properties;
 
 namespace Brightbits.BSH.Engine.Exceptions
 {

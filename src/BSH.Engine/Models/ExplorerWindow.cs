@@ -16,9 +16,15 @@ namespace Brightbits.BSH.Engine.Models
 {
     public class ExplorerWindow
     {
-        public string Path { get; set; }
+        public string Path
+        {
+            get; set;
+        }
 
-        public string WindowTitle { get; set; }
+        public string WindowTitle
+        {
+            get; set;
+        }
 
         public ExplorerWindow(string path, string windowTitle)
         {

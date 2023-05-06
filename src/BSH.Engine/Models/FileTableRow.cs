@@ -12,42 +12,84 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Database;
 using System;
 using System.Data;
 using System.IO;
+using Brightbits.BSH.Engine.Database;
 
 namespace Brightbits.BSH.Engine.Models
 {
     public class FileTableRow
     {
-        public string VersionId { get; set; }
+        public string VersionId
+        {
+            get; set;
+        }
 
-        public string FileId { get; set; }
+        public string FileId
+        {
+            get; set;
+        }
 
-        public string FileName { get; set; }
+        public string FileName
+        {
+            get; set;
+        }
 
-        public string FilePath { get; set; }
+        public string FilePath
+        {
+            get; set;
+        }
 
-        public double FileSize { get; set; }
+        public double FileSize
+        {
+            get; set;
+        }
 
-        public DateTime FileDateCreated { get; set; }
+        public DateTime FileDateCreated
+        {
+            get; set;
+        }
 
-        public DateTime FileDateModified { get; set; }
+        public DateTime FileDateModified
+        {
+            get; set;
+        }
 
-        public string FilePackage { get; set; }
+        public string FilePackage
+        {
+            get; set;
+        }
 
-        public string FileType { get; set; }
+        public string FileType
+        {
+            get; set;
+        }
 
-        public string FileStatus { get; set; }
+        public string FileStatus
+        {
+            get; set;
+        }
 
-        public string FileRoot { get; set; }
+        public string FileRoot
+        {
+            get; set;
+        }
 
-        public DateTime FileVersionDate { get; set; }
+        public DateTime FileVersionDate
+        {
+            get; set;
+        }
 
-        public string FileLongFileName { get; set; }
+        public string FileLongFileName
+        {
+            get; set;
+        }
 
-        public string VersionStatus { get; set; }
+        public string VersionStatus
+        {
+            get; set;
+        }
 
         public string FileNamePath()
         {

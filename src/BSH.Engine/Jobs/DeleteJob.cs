@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Exceptions;
-using Brightbits.BSH.Engine.Models;
-using Brightbits.BSH.Engine.Properties;
-using Brightbits.BSH.Engine.Storage;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Exceptions;
+using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Properties;
+using Brightbits.BSH.Engine.Storage;
+using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs
 {
@@ -34,14 +36,21 @@ namespace Brightbits.BSH.Engine.Jobs
     {
         private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
 
-        public string Version { get; set; }
+        public string Version
+        {
+            get; set;
+        }
 
-        public List<FileExceptionEntry> FileErrorList { get; set; }
+        public List<FileExceptionEntry> FileErrorList
+        {
+            get; set;
+        }
 
         public DeleteJob(IStorage storage,
-            DbClientFactory dbClientFactory,
-            QueryManager queryManager,
-            bool silent = false) : base(storage, dbClientFactory, queryManager, silent)
+            IDbClientFactory dbClientFactory,
+            IQueryManager queryManager,
+            IConfigurationManager configurationManager,
+            bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
         {
             FileErrorList = new List<FileExceptionEntry>();
         }
@@ -106,7 +115,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 ReportStatus(Resources.STATUS_DELETE_REMOVE_SHORT, Resources.STATUS_DELETE_REMOVE_TEXT);
 
                 // delete files
-                for (int i = 0; i < files.Tables[0].Rows.Count; i++)
+                for (var i = 0; i < files.Tables[0].Rows.Count; i++)
                 {
                     var file = files.Tables[0].Rows[i];
 
@@ -164,10 +173,10 @@ namespace Brightbits.BSH.Engine.Jobs
             // refresh free diskspace
             try
             {
-                queryManager.Configuration.FreeSpace = storage.GetFreeSpace().ToString();
+                configurationManager.FreeSpace = storage.GetFreeSpace().ToString();
 
                 using var dbClient = dbClientFactory.CreateDbClient();
-                queryManager.Configuration.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
+                configurationManager.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
             }
             catch (Exception ex)
             {
@@ -198,9 +207,9 @@ namespace Brightbits.BSH.Engine.Jobs
             }
 
             // store database version
-            if (int.TryParse(queryManager.Configuration.OldBackupPrevent, out int databaseVersion))
+            if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
             {
-                queryManager.Configuration.OldBackupPrevent = (databaseVersion + 1).ToString();
+                configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
             }
 
             // refresh free diskspace

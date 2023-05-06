@@ -103,13 +103,13 @@ namespace Brightbits.BSH.Main
                 }
 
                 // retrieve details from database
-                long freeSpace = long.Parse(BackupLogic.GlobalBackup.ConfigurationManager.FreeSpace);
+                long freeSpace = long.Parse(BackupLogic.ConfigurationManager.FreeSpace);
                 lblBdSpaceAvailable.Text = (freeSpace == 0L) ? Resources.DLG_UC_OVERVIEW_LBL_FREE_SPACE_NOT_AVAILABLE_TEXT : freeSpace.Bytes().Humanize();
 
                 // compression
-                if (BackupLogic.GlobalBackup.ConfigurationManager.Compression == 1)
+                if (BackupLogic.ConfigurationManager.Compression == 1)
                 {
-                    var oldestBackup = await BackupLogic.GlobalBackup.QueryManager.GetOldestBackupAsync();
+                    var oldestBackup = await BackupLogic.QueryManager.GetOldestBackupAsync();
 
                     lblBdOldestBackup.Text = (oldestBackup != null) ? oldestBackup.CreationDate.Humanize(false) : Resources.DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT;
                     lblOldBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT;
@@ -120,14 +120,14 @@ namespace Brightbits.BSH.Main
                     lblOldBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT;
                     lblBdOldestBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT;
 
-                    int countBackup = await BackupLogic.GlobalBackup.QueryManager.GetNumberOfVersionsAsync();
-                    if (countBackup >= 20 && !string.IsNullOrEmpty(BackupLogic.GlobalBackup.ConfigurationManager.BackupSize))
+                    int countBackup = await BackupLogic.QueryManager.GetNumberOfVersionsAsync();
+                    if (countBackup >= 20 && !string.IsNullOrEmpty(BackupLogic.ConfigurationManager.BackupSize))
                     {
                         try
                         {
-                            var oldestBackup = (await BackupLogic.GlobalBackup.QueryManager.GetOldestBackupAsync()).CreationDate;
+                            var oldestBackup = (await BackupLogic.QueryManager.GetOldestBackupAsync()).CreationDate;
                             double tmp;
-                            tmp = Convert.ToDouble(BackupLogic.GlobalBackup.ConfigurationManager.FreeSpace) / (Convert.ToDouble(BackupLogic.GlobalBackup.ConfigurationManager.BackupSize) / countBackup);
+                            tmp = Convert.ToDouble(BackupLogic.ConfigurationManager.FreeSpace) / (Convert.ToDouble(BackupLogic.ConfigurationManager.BackupSize) / countBackup);
                             double getDaysToOldestBackup;
                             getDaysToOldestBackup = (DateTime.Now.Subtract(oldestBackup).Days + 1) * tmp;
                             lblBdOldestBackup.Text = DateTime.Now.Add(new TimeSpan((int)Math.Round(getDaysToOldestBackup), 0, 0, 0)).ToLongDateString();
@@ -140,17 +140,17 @@ namespace Brightbits.BSH.Main
                 }
 
                 // retrieve newest backup
-                var lastBackup = await BackupLogic.GlobalBackup.QueryManager.GetLastBackupAsync();
+                var lastBackup = await BackupLogic.QueryManager.GetLastBackupAsync();
                 lblBdNewestBackup.Text = (lastBackup != null) ? lastBackup.CreationDate.Humanize(false) : Resources.DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT;
 
                 var nextDate = BackupLogic.GetNextBackupDate();
                 lblNextBackup.Text = nextDate != DateTime.MaxValue ? nextDate.Humanize() : Resources.DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT;
 
-                if (BackupLogic.GlobalBackup.ConfigurationManager.TaskType == TaskType.Auto)
+                if (BackupLogic.ConfigurationManager.TaskType == TaskType.Auto)
                 {
                     lblBackupMode.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_MODE_AUTO_TEXT;
                 }
-                else if (BackupLogic.GlobalBackup.ConfigurationManager.TaskType == TaskType.Schedule)
+                else if (BackupLogic.ConfigurationManager.TaskType == TaskType.Schedule)
                 {
                     lblBackupMode.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_MODE_SCHEDULED_TEXT;
                 }
@@ -276,14 +276,14 @@ namespace Brightbits.BSH.Main
                     }
 
                     // source folder
-                    infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT.FormatWith(BackupLogic.GlobalBackup.ConfigurationManager.SourceFolder.Split('|').Length));
+                    infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT.FormatWith(BackupLogic.ConfigurationManager.SourceFolder.Split('|').Length));
 
                     // backup type
-                    if (BackupLogic.GlobalBackup.ConfigurationManager.TaskType == TaskType.Auto)
+                    if (BackupLogic.ConfigurationManager.TaskType == TaskType.Auto)
                     {
                         infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT);
                     }
-                    else if (BackupLogic.GlobalBackup.ConfigurationManager.TaskType == TaskType.Schedule)
+                    else if (BackupLogic.ConfigurationManager.TaskType == TaskType.Schedule)
                     {
                         infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT);
                     }
@@ -293,16 +293,16 @@ namespace Brightbits.BSH.Main
                     }
 
                     // backup device
-                    if (BackupLogic.GlobalBackup.ConfigurationManager.MediumType != 3)
+                    if (BackupLogic.ConfigurationManager.MediumType != 3)
                     {
                         infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_ON_TEXT);
-                        if (BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder.Substring(0, 1) == @"\")
+                        if (BackupLogic.ConfigurationManager.BackupFolder.Substring(0, 1) == @"\")
                         {
-                            infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT.FormatWith(BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder));
+                            infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT.FormatWith(BackupLogic.ConfigurationManager.BackupFolder));
                         }
                         else
                         {
-                            var drive = new System.IO.DriveInfo(BackupLogic.GlobalBackup.ConfigurationManager.BackupFolder.Substring(0, 1));
+                            var drive = new System.IO.DriveInfo(BackupLogic.ConfigurationManager.BackupFolder.Substring(0, 1));
                             switch (drive.DriveType)
                             {
                                 case System.IO.DriveType.Fixed:
@@ -321,15 +321,15 @@ namespace Brightbits.BSH.Main
                     }
                     else
                     {
-                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT.FormatWith(BackupLogic.GlobalBackup.ConfigurationManager.FtpHost));
+                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT.FormatWith(BackupLogic.ConfigurationManager.FtpHost));
                     }
 
                     // compressed or encrypted
-                    if (BackupLogic.GlobalBackup.ConfigurationManager.Compression == 1)
+                    if (BackupLogic.ConfigurationManager.Compression == 1)
                     {
                         infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_COMPRESSED_TEXT);
                     }
-                    else if (BackupLogic.GlobalBackup.ConfigurationManager.Encrypt == 1)
+                    else if (BackupLogic.ConfigurationManager.Encrypt == 1)
                     {
                         infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_ENCRYPTED_TEXT);
                     }

@@ -1,0 +1,53 @@
+﻿<Window
+    x:Class="BSH.MainApp.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BSH.MainApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <Border
+            Canvas.ZIndex="0"
+            IsHitTestVisible="False">
+            <Grid x:Name="titleBar"
+                Height="48"
+                Margin="48,0,0,0"
+                VerticalAlignment="Top"
+                Padding="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Image
+                    x:Name="AppFontIcon"
+                    Width="16"
+                    Height="16"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Source="/Assets/app_ico.ico" />
+                <TextBlock
+                    Margin="12,0,0,0"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="Backup Service Home"/>
+            </Grid>
+        </Border>
+
+        <NavigationView x:Name="MainNavigation"
+                        PaneDisplayMode="LeftCompact"
+                        IsBackButtonVisible="Collapsed"
+                        IsPaneToggleButtonVisible="False"
+                        PaneTitle="Backup Service Home"
+                        ItemInvoked="MainNavigation_ItemInvoked">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Icon="Home" Content="Übersicht" x:Name="nviOverviewPage" />
+                <NavigationViewItem Icon="BrowsePhotos" Content="Backupbrowser" x:Name="nviBackupBrowser" />
+            </NavigationView.MenuItems>
+            <Frame x:Name="ContentArea" x:FieldModifier="public" />
+        </NavigationView>
+
+    </Grid>
+</Window>
