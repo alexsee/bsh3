@@ -651,8 +651,11 @@ namespace Brightbits.BSH.Main
                 if (Item[0] == "day")
                 {
                     var lastFullBackup = await GlobalBackup.QueryManager.GetLastFullBackupAsync();
-                    var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
-                    FullBackup = Diff.Days >= Convert.ToInt32(Item[1]);
+                    if (lastFullBackup != null)
+                    {
+                        var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
+                        FullBackup = Diff.Days >= Convert.ToInt32(Item[1]);
+                    }
                 }
             }
 
