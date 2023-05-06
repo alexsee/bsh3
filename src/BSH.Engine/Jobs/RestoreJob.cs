@@ -199,7 +199,7 @@ public class RestoreJob : Job
             // restore files
             using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, getFileSQL, null))
             {
-                int i = 0;
+                var i = 0;
                 while (reader.Read())
                 {
                     var filePath = reader.GetString("filePath");

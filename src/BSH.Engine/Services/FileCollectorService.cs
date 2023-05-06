@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Utils;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Services;
@@ -69,7 +70,7 @@ public class FileCollectorService : IFileCollectorService
                 var file = new FileTableRow()
                 {
                     FileName = fileEntry.Name,
-                    FilePath = GetRelativeFolder(fileEntry.DirectoryName, this.root),
+                    FilePath = IOUtils.GetRelativeFolder(fileEntry.DirectoryName, this.root),
                     FileRoot = this.root,
                     FileDateCreated = fileEntry.CreationTimeUtc,
                     FileDateModified = fileEntry.LastWriteTimeUtc,
@@ -236,7 +237,7 @@ public class FileCollectorService : IFileCollectorService
                     return true;
                 }
 
-                if (("\\" + Path.Combine(Path.GetFileName(this.root), GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\").StartsWith(entry + "\\", StringComparison.CurrentCultureIgnoreCase))
+                if (("\\" + Path.Combine(Path.GetFileName(this.root), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\").StartsWith(entry + "\\", StringComparison.CurrentCultureIgnoreCase))
                 {
                     _logger.Debug("{folderName} was ignored due to folder path filter.", folder.Folder);
                     return true;
@@ -260,22 +261,5 @@ public class FileCollectorService : IFileCollectorService
         }
 
         return false;
-    }
-
-    public static string GetRelativeFolder(string path, string rootPath)
-    {
-        var result = path;
-        result = result.Replace(rootPath, "");
-
-        if (result.StartsWith("\\") && result.Length > 1)
-        {
-            result = result[1..];
-        }
-        else if (result == "\\")
-        {
-            return "";
-        }
-
-        return result;
     }
 }

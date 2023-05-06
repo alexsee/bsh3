@@ -115,7 +115,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 ReportStatus(Resources.STATUS_DELETE_REMOVE_SHORT, Resources.STATUS_DELETE_REMOVE_TEXT);
 
                 // delete files
-                for (int i = 0; i < files.Tables[0].Rows.Count; i++)
+                for (var i = 0; i < files.Tables[0].Rows.Count; i++)
                 {
                     var file = files.Tables[0].Rows[i];
 
@@ -207,7 +207,7 @@ namespace Brightbits.BSH.Engine.Jobs
             }
 
             // store database version
-            if (int.TryParse(configurationManager.OldBackupPrevent, out int databaseVersion))
+            if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
             {
                 configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
             }

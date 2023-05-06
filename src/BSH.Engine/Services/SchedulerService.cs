@@ -50,7 +50,7 @@ public class SchedulerService : ISchedulerService
     private IJobDetail GetJob(Action action)
     {
         // define the job and tie it to our HelloJob class
-        IJobDetail job = JobBuilder.Create<RunActionJob>()
+        var job = JobBuilder.Create<RunActionJob>()
             .SetJobData(new JobDataMap
             {
                 {"action", action}
@@ -62,7 +62,7 @@ public class SchedulerService : ISchedulerService
 
     public void ScheduleAutoBackup(Action action)
     {
-        ITrigger trigger = TriggerBuilder.Create()
+        var trigger = TriggerBuilder.Create()
             .WithCronSchedule("0 0 * * * ?")
             .Build();
 
@@ -71,7 +71,7 @@ public class SchedulerService : ISchedulerService
 
     public void ScheduleOnce(Action action, DateTime time)
     {
-        ITrigger trigger = TriggerBuilder.Create()
+        var trigger = TriggerBuilder.Create()
             .StartAt(time)
             .Build();
 
@@ -80,7 +80,7 @@ public class SchedulerService : ISchedulerService
 
     public void ScheduleHourly(Action action, DateTime time)
     {
-        ITrigger trigger = TriggerBuilder.Create()
+        var trigger = TriggerBuilder.Create()
             .WithCronSchedule("0 " + time.Minute + " * * * ?")
             .Build();
 
@@ -89,7 +89,7 @@ public class SchedulerService : ISchedulerService
 
     public void ScheduleDaily(Action action, DateTime time)
     {
-        ITrigger trigger = TriggerBuilder.Create()
+        var trigger = TriggerBuilder.Create()
             .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(time.Hour, time.Minute))
             .Build();
 
@@ -98,7 +98,7 @@ public class SchedulerService : ISchedulerService
 
     public void ScheduleWeekly(Action action, DateTime time)
     {
-        ITrigger trigger = TriggerBuilder.Create()
+        var trigger = TriggerBuilder.Create()
             .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(time.DayOfWeek, time.Hour, time.Minute))
             .Build();
 
@@ -107,7 +107,7 @@ public class SchedulerService : ISchedulerService
 
     public void ScheduleMonthly(Action action, DateTime time)
     {
-        ITrigger trigger = TriggerBuilder.Create()
+        var trigger = TriggerBuilder.Create()
             .WithSchedule(CronScheduleBuilder.MonthlyOnDayAndHourAndMinute(time.Day, time.Hour, time.Minute))
             .Build();
 

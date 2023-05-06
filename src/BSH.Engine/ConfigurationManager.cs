@@ -550,7 +550,7 @@ public class ConfigurationManager : IConfigurationManager
 
             if (configEntry.Name == "Status" || configEntry.Name == "TaskType" || configEntry.Name == "Compression" || configEntry.Name == "Encrypt" || configEntry.Name == "MediumType")
             {
-                if (int.TryParse(result.ToString(), out int val))
+                if (int.TryParse(result.ToString(), out var val))
                 {
                     configEntry.SetValue(this, val);
                 }

@@ -141,7 +141,7 @@ public class DeleteSingleJob : Job
                                                     "  fvt.filePackage = vt.versionID " +
                                                     "WHERE fvt.fileID = @fileId",
                     deleteFileParams);
-                int i = 0;
+                var i = 0;
                 while (reader.Read())
                 {
                     // get file name
@@ -217,7 +217,7 @@ public class DeleteSingleJob : Job
         await UpdateFreeDiskSpaceAsync();
 
         // store database version
-        if (int.TryParse(configurationManager.OldBackupPrevent, out int databaseVersion))
+        if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
         {
             configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
         }

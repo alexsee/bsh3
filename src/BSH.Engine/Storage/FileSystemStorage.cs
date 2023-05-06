@@ -226,7 +226,7 @@ public class FileSystemStorage : Storage, IStorage
         }
 
         // check version Id
-        if (int.TryParse(versionId, out int versionIdInt) && versionIdInt != currentStorageVersion)
+        if (int.TryParse(versionId, out var versionIdInt) && versionIdInt != currentStorageVersion)
         {
             throw new DeviceContainsWrongStateException();
         }
@@ -439,7 +439,7 @@ public class FileSystemStorage : Storage, IStorage
         {
             BitLen = 256
         };
-        bool result = crypto.Decode(remoteFilePath, remoteFilePathDecrypted, password);
+        var result = crypto.Decode(remoteFilePath, remoteFilePathDecrypted, password);
         File.Delete(remoteFilePath);
 
         return result;

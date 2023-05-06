@@ -153,6 +153,7 @@ public class BackupService : IBackupService
             dbClientFactory,
             queryManager,
             configurationManager,
+            new FileCollectorServiceFactory(),
             silent)
         {
             Title = title,

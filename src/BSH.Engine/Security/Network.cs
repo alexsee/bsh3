@@ -24,13 +24,13 @@ namespace Brightbits.BSH.Engine.Security
 
         public NetworkConnection(string remoteHost, string remoteUser, string remotePassword)
         {
-            if (string.IsNullOrEmpty(remoteUser) || string.IsNullOrEmpty(remotePassword) || !Uri.TryCreate(remoteHost, UriKind.Absolute, out Uri loc) || !loc.IsUnc)
+            if (string.IsNullOrEmpty(remoteUser) || string.IsNullOrEmpty(remotePassword) || !Uri.TryCreate(remoteHost, UriKind.Absolute, out var loc) || !loc.IsUnc)
             {
                 return;
             }
 
-            string auth = loc.Host;
-            string[] segments = loc.Segments;
+            var auth = loc.Host;
+            var segments = loc.Segments;
 
             // decrypt password
             var pw = Crypto.DecryptString(remotePassword, System.Security.Cryptography.DataProtectionScope.LocalMachine);
@@ -77,7 +77,7 @@ namespace Brightbits.BSH.Engine.Security
                 remoteUser = String.Format(@"{0}\{1}", new Uri(RemoteShare).Host, remoteUser);
             }
 
-            int dwResult = WNetAddConnection2(netResource, remotePassword, remoteUser, 0);
+            var dwResult = WNetAddConnection2(netResource, remotePassword, remoteUser, 0);
 
             // are we already connected?
             if (1219 == dwResult)

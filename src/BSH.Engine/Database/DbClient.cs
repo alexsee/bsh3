@@ -285,7 +285,7 @@ public class DbClient : IDisposable
     {
         await OpenConnectionAsync();
 
-        DbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
         return await command.ExecuteReaderAsync();
     }
 
@@ -303,8 +303,8 @@ public class DbClient : IDisposable
     {
         OpenConnection();
 
-        DbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-        object result = await command.ExecuteScalarAsync();
+        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        var result = await command.ExecuteScalarAsync();
 
         CloseConnection();
 
@@ -320,8 +320,8 @@ public class DbClient : IDisposable
     {
         OpenConnection();
 
-        DbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-        int result = command.ExecuteNonQuery();
+        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        var result = command.ExecuteNonQuery();
 
         CloseConnection();
 
@@ -342,8 +342,8 @@ public class DbClient : IDisposable
     {
         await OpenConnectionAsync();
 
-        DbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-        int result = await command.ExecuteNonQueryAsync();
+        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        var result = await command.ExecuteNonQueryAsync();
 
         CloseConnection();
 
@@ -373,7 +373,7 @@ public class DbClient : IDisposable
 
             if (parameters != null)
             {
-                foreach (IDataParameter parameter in parameters)
+                foreach (var parameter in parameters)
                 {
                     (command.Parameters[parameter.ParameterName] as IDataParameter).Value = parameter.Value;
                 }
@@ -394,7 +394,7 @@ public class DbClient : IDisposable
 
         if (parameters != null)
         {
-            foreach (IDataParameter parameter in parameters)
+            foreach (var parameter in parameters)
             {
                 command.Parameters.Add(parameter);
             }
@@ -441,7 +441,7 @@ public class DbClient : IDisposable
     /// <returns>the new parameter</returns>
     public IDataParameter CreateParameter(string parameterName, DbType dbType, int size, ParameterDirection parameterDirection, object value)
     {
-        DbParameter parameter = _factory.CreateParameter();
+        var parameter = _factory.CreateParameter();
         parameter.ParameterName = parameterName;
         parameter.Direction = parameterDirection;
         parameter.DbType = dbType;

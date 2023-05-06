@@ -22,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
@@ -41,6 +42,8 @@ public class BackupJob : Job
     private static readonly ILogger _logger = Log.ForContext<BackupJob>();
 
     private readonly HashSet<string> junctionFolders = new();
+
+    private readonly IFileCollectorServiceFactory fileCollectorServiceFactory;
 
     public string Title
     {
@@ -81,9 +84,11 @@ public class BackupJob : Job
         IDbClientFactory dbClientFactory,
         IQueryManager queryManager,
         IConfigurationManager configurationManager,
+        IFileCollectorServiceFactory fileCollectorServiceFactory,
         bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
     {
         FileErrorList = new List<FileExceptionEntry>();
+        this.fileCollectorServiceFactory = fileCollectorServiceFactory;
     }
 
     /// <summary>
@@ -183,7 +188,7 @@ public class BackupJob : Job
 
             foreach (var folderEntry in folderList)
             {
-                var fileCollector = new FileCollectorService(configurationManager);
+                var fileCollector = fileCollectorServiceFactory.Create(configurationManager);
                 var filesList = fileCollector.GetLocalFileList(folderEntry, true);
 
                 emptyFolder.AddRange(fileCollector.EmptyFolders);
@@ -205,7 +210,7 @@ public class BackupJob : Job
                 // backup folder
                 var folderParameters = new IDataParameter[]
                 {
-                    dbClient.CreateParameter("folder", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(folder.RootPath), FileCollectorService.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\")
+                    dbClient.CreateParameter("folder", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\")
                 };
 
                 var folderId = await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT OR IGNORE INTO foldertable ( folder ) VALUES ( @folder ); SELECT id FROM foldertable WHERE folder = @folder", folderParameters);
@@ -220,8 +225,8 @@ public class BackupJob : Job
             }
 
             // process all files
-            bool cancel = false;
-            for (int i = 0; i < files.Count; i++)
+            var cancel = false;
+            for (var i = 0; i < files.Count; i++)
             {
                 var file = files[i];
                 ReportProgress(files.Count, i);
@@ -242,7 +247,7 @@ public class BackupJob : Job
 
                     file.FileId = (await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT fileID FROM filetable WHERE fileName = @fileName AND filePath = @filePath LIMIT 1", fileSelectParameters))?.ToString();
 
-                    if (!long.TryParse(file.FileId, out long fileId))
+                    if (!long.TryParse(file.FileId, out var fileId))
                     {
                         // file does not have an entry
                         var fileInsertParameters = new IDataParameter[] {
@@ -266,7 +271,7 @@ public class BackupJob : Job
                             file.FilePackage = (await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT fileversionID FROM fileversiontable WHERE" +
                                 " fileID = @fileID AND fileStatus = 1 AND fileSize = @fileSize AND datetime(fileDateModified) = datetime(@fileDateModified) ORDER BY fileversionID DESC LIMIT 1", fileSelectParameters2))?.ToString();
 
-                            if (long.TryParse(file.FilePackage, out long filePackage))
+                            if (long.TryParse(file.FilePackage, out var filePackage))
                             {
                                 // file is the same, so only create a link
                                 var fileInsertParameters2 = new IDataParameter[] {
@@ -299,7 +304,7 @@ public class BackupJob : Job
                 }
                 catch (FileNotProcessedException ex)
                 {
-                    FileExceptionEntry fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
+                    var fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
                     _logger.Error(ex.InnerException, "File {fileName} could not be backuped.", file.FileNamePath(), new { fileExceptionEntry });
 
                     if (ex.RequestCancel)
@@ -312,7 +317,7 @@ public class BackupJob : Job
                 }
                 catch (Exception ex)
                 {
-                    FileExceptionEntry fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
+                    var fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
                     _logger.Error(ex.InnerException, "File {fileName} could not be backuped.", file.FileNamePath(), new { fileExceptionEntry });
                 }
 
@@ -395,7 +400,7 @@ public class BackupJob : Job
             configurationManager.LastBackupDone = newVersionDate;
             configurationManager.LastVersionDate = "";
 
-            if (int.TryParse(configurationManager.OldBackupPrevent, out int databaseVersion))
+            if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
             {
                 configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
             }

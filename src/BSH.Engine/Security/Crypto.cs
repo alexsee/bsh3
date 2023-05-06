@@ -29,7 +29,7 @@ namespace Brightbits.BSH.Engine.Security
 
         public static string EncryptString(SecureString input, System.Security.Cryptography.DataProtectionScope scope)
         {
-            byte[] encryptedData = System.Security.Cryptography.ProtectedData.Protect(
+            var encryptedData = System.Security.Cryptography.ProtectedData.Protect(
                 Encoding.Unicode.GetBytes(ToInsecureString(input)),
                 entropy,
                 scope);
@@ -45,7 +45,7 @@ namespace Brightbits.BSH.Engine.Security
         {
             try
             {
-                byte[] decryptedData = System.Security.Cryptography.ProtectedData.Unprotect(
+                var decryptedData = System.Security.Cryptography.ProtectedData.Unprotect(
                     Convert.FromBase64String(encryptedData),
                     entropy,
                     scope);
@@ -60,7 +60,7 @@ namespace Brightbits.BSH.Engine.Security
         public static SecureString ToSecureString(string input)
         {
             SecureString secure = new();
-            foreach (char c in input)
+            foreach (var c in input)
             {
                 secure.AppendChar(c);
             }
@@ -70,8 +70,8 @@ namespace Brightbits.BSH.Engine.Security
 
         public static string ToInsecureString(SecureString input)
         {
-            string returnValue = string.Empty;
-            IntPtr ptr = System.Runtime.InteropServices.Marshal.SecureStringToBSTR(input);
+            var returnValue = string.Empty;
+            var ptr = System.Runtime.InteropServices.Marshal.SecureStringToBSTR(input);
             try
             {
                 returnValue = System.Runtime.InteropServices.Marshal.PtrToStringBSTR(ptr);

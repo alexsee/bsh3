@@ -96,7 +96,7 @@ namespace Brightbits.BSH.Engine.Jobs
                 // determine files of backup to edit
                 using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * " + commandSQL, null))
                 {
-                    int i = 0;
+                    var i = 0;
                     while (reader.Read())
                     {
                         // determine remote file
