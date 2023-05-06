@@ -23,53 +23,38 @@ jobs:
         java-version: 11
         distribution: 'zulu'
 
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.1
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0
 
     - name: Checkout
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    
-    - name: Cache SonarCloud packages
-      uses: actions/cache@v3
-      with:
-        path: ~\sonar\cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
-  
-    - name: Cache SonarCloud scanner
-      id: cache-sonar-scanner
-      uses: actions/cache@v3
-      with:
-        path: .\.sonar\scanner
-        key: ${{ runner.os }}-sonar-scanner
-        restore-keys: ${{ runner.os }}-sonar-scanner
 
     - name: Install SonarCloud scanner
-      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      shell: powershell
       run: |
-        New-Item -Path .\.sonar\scanner -ItemType Directory
-        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release -p:RestorePackagesConfig=true
+        dotnet tool install --global dotnet-sonarscanner
+        dotnet tool install --global dotnet-coverage
     
-    - name: Begin the sonar cloud scanner
-      shell: powershell
-      run: .\.sonar\scanner\dotnet-sonarscanner begin /k:"alexsee_bsh3" /o:"alexsee" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+    - name: Start sonarcloud scanner
+      run: |
+        dotnet sonarscanner begin /k:"alexsee_bsh3" /o:"alexsee" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-    - name: Build the application
-      shell: powershell
-      run: msbuild $env:Solution_Name /t:Rebuild /p:Configuration=Release
+    - name: Build application
+      run: |
+        dotnet build
+
+    - name: Test application and collect coverage
+      run: |
+        dotnet-coverage collect 'dotnet test' -f xml -o 'coverage.xml'
 
     - name: Finish the sonar cloud scanner
-      shell: powershell
-      run: .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
