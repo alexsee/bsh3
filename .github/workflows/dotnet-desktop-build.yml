@@ -51,7 +51,8 @@ jobs:
 
     - name: Test application and collect coverage
       run: |
-        dotnet-coverage collect 'dotnet test "${{ env.Solution_Name }}"' -f xml -o 'coverage.xml'
+        dotnet-coverage collect 'dotnet test "${{ env.Solution_Name }}"' -f xml -o '../coverage.xml'
+      working-directory: ./src
 
     - name: Finish the sonar cloud scanner
       run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
