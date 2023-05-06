@@ -10,13 +10,8 @@ jobs:
 
   build:
     runs-on: windows-latest
-    
-    env:
-      Solution_Name: src\Backup Service Home 3.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: src\BSH.Test\BSH.Test.csproj                      # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
 
     steps:
-    
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
@@ -47,7 +42,8 @@ jobs:
 
     - name: Build application
       run: |
-        dotnet build $env:Solution_Name --configuration Release
+        dotnet build --configuration Release
+      working-directory: ./src
 
     - name: Test application and collect coverage
       run: |
