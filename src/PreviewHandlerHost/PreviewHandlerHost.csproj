@@ -16,22 +16,8 @@
     <FileVersion>4.0.0.0</FileVersion>
     <Title>Backup Service Home</Title>
     <Platforms>x64</Platforms>
-    <Configurations>Debug;Release;Windows 10</Configurations>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <OutputPath>bin\x64\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>..\..\output\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows 10|x64'">
-    <OutputPath>..\..\output\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Windows 10|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Windows 10\</OutputPath>
-    <Optimize>true</Optimize>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Configurations>Debug;Release</Configurations>
+    <IsPublishable>False</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="PreviewHandlerHostControl.cs">

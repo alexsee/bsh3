@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
@@ -6,7 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-BSH.Service-3e0461bd-41b4-4b3f-8540-d22ccc314554</UserSecretsId>
     <PlatformTarget>x64</PlatformTarget>
-    <BaseOutputPath>D:\Git\bsh3\output</BaseOutputPath>
     <Authors>Alexander Seeliger</Authors>
     <Company>Alexander Seeliger Software</Company>
     <Copyright>Alexander Seeliger</Copyright>
@@ -14,7 +13,7 @@
     <FileVersion>4.0.0.0</FileVersion>
     <Title>Backup Service Home</Title>
     <Platforms>x64</Platforms>
-    <Configurations>Debug;Release;Windows 10</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

@@ -11,21 +11,9 @@
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <Title>Backup Service Home</Title>
-    <Configurations>Debug;Release;Windows 10</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <Platforms>x64</Platforms>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <OutputPath>bin\x64\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>..\..\output\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows 10|x64'">
-    <OutputPath>..\..\output\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Windows 10|x64'">
-    <OutputPath>bin\x64\Windows 10\</OutputPath>
-    <Optimize>true</Optimize>
+	<IsPublishable>False</IsPublishable>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="UI\aVersionList.cs">
