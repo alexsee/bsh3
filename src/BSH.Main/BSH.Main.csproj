@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0-windows7.0</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -20,15 +20,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <Platforms>x64</Platforms>
-    <Configurations>Debug;Release;Windows 10</Configurations>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>Brightbits.BSH.Main.Program</StartupObject>
+    <Configurations>Debug;Release</Configurations>
+	  <StartupObject>Brightbits.BSH.Main.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>AppIco.ico</ApplicationIcon>
     <PlatformTarget>x64</PlatformTarget>
-    <BaseOutputPath>D:\Git\bsh3\output</BaseOutputPath>
     <Authors>Alexander Seeliger</Authors>
     <Company>Alexander Seeliger Software</Company>
     <Copyright>Alexander Seeliger</Copyright>
@@ -36,20 +33,6 @@
     <FileVersion>4.0.0.0</FileVersion>
     <Version>4.0.0.0</Version>
     <Title>Backup Service Home</Title>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <OutputPath>bin\x64\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>..\..\output\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Windows 10|x64'">
-    <OutputPath>..\..\output\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Windows 10|x64'">
-    <OutputPath>bin\x64\Windows 10\</OutputPath>
-    <DefineConstants>TRACE;WIN_UWP</DefineConstants>
-    <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="updateSystemDotNet.Controller">
@@ -113,9 +96,6 @@
     <PackageReference Include="System.Data.SQLite.Core">
       <Version>1.0.117</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Properties\Settings.settings">
