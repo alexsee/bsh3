@@ -21,6 +21,7 @@ using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Utils;
 using Serilog;
+using System.Linq;
 
 namespace Brightbits.BSH.Engine.Services;
 
@@ -143,14 +144,10 @@ public class FileCollectorService : IFileCollectorService
         if (!string.IsNullOrEmpty(configurationManager.ExcludeFolder))
         {
             var excludeFolders = configurationManager.ExcludeFolder.Split('|');
-
-            foreach (var entry in excludeFolders)
+            if (excludeFolders.Any(entry => ("\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\").StartsWith(entry + "\\", StringComparison.CurrentCultureIgnoreCase)))
             {
-                if (("\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\").StartsWith(entry + "\\", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    _logger.Debug("{fileName} was ignored due to file path filter.", file.FileNamePath());
-                    return true;
-                }
+                _logger.Debug("{fileName} was ignored due to file path filter.", file.FileNamePath());
+                return true;
             }
         }
 
@@ -183,10 +180,7 @@ public class FileCollectorService : IFileCollectorService
         {
             try
             {
-                if (_regexExcludeCache == null)
-                {
-                    _regexExcludeCache = new Regex(configurationManager.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline, TimeSpan.FromSeconds(10));
-                }
+                _regexExcludeCache ??= new Regex(configurationManager.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline, TimeSpan.FromSeconds(10));
 
                 if (_regexExcludeCache.IsMatch(file.FileNamePath()))
                 {
@@ -207,14 +201,10 @@ public class FileCollectorService : IFileCollectorService
         if (!string.IsNullOrEmpty(configurationManager.ExcludeFile))
         {
             var excludeFile = configurationManager.ExcludeFile.Split('|');
-
-            foreach (var entry in excludeFile)
+            if (excludeFile.Any(entry => file.FileNamePath().ToLower().EndsWith(entry.ToLower())))
             {
-                if (file.FileNamePath().ToLower().EndsWith(entry.ToLower()))
-                {
-                    _logger.Debug("{fileName} was ignored due to file name filter.", file.FileNamePath());
-                    return true;
-                }
+                _logger.Debug("{fileName} was ignored due to file name filter.", file.FileNamePath());
+                return true;
             }
         }
 
@@ -248,10 +238,7 @@ public class FileCollectorService : IFileCollectorService
         // mask filter
         if (!string.IsNullOrEmpty(configurationManager.ExcludeMask))
         {
-            if (_regexExcludeCache == null)
-            {
-                _regexExcludeCache = new Regex(configurationManager.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline, TimeSpan.FromSeconds(10));
-            }
+            _regexExcludeCache ??= new Regex(configurationManager.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline, TimeSpan.FromSeconds(10));
 
             if (_regexExcludeCache.IsMatch(folder.Folder))
             {

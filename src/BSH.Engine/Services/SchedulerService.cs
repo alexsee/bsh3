@@ -47,7 +47,7 @@ public class SchedulerService : ISchedulerService
         }).Wait();
     }
 
-    private IJobDetail GetJob(Action action)
+    private static IJobDetail GetJob(Action action)
     {
         // define the job and tie it to our HelloJob class
         var job = JobBuilder.Create<RunActionJob>()
