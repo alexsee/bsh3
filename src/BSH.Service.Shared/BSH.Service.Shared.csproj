@@ -13,6 +13,7 @@
 		<Platforms>x64</Platforms>
 		<Configurations>Debug;Release</Configurations>
 		<IsPublishable>False</IsPublishable>
+		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
 	</PropertyGroup>
 	<ItemGroup>
 		<Folder Include="Properties\" />

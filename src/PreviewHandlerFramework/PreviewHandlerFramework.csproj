@@ -19,6 +19,7 @@
 		<Platforms>x64</Platforms>
 		<Configurations>Debug;Release</Configurations>
 		<IsPublishable>False</IsPublishable>
+		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
 	</PropertyGroup>
 	<ItemGroup>
 		<Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />

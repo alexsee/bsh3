@@ -14,6 +14,7 @@
 		<Configurations>Debug;Release</Configurations>
 		<Platforms>x64</Platforms>
 		<IsPublishable>False</IsPublishable>
+		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Update="UI\aVersionList.cs">

@@ -22,6 +22,7 @@
 		<Platforms>x64</Platforms>
 		<Configurations>Debug;Release</Configurations>
 		<StartupObject>Brightbits.BSH.Main.Program</StartupObject>
+		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
 	</PropertyGroup>
 	<PropertyGroup>
 		<ApplicationIcon>AppIco.ico</ApplicationIcon>

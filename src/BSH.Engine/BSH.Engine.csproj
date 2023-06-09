@@ -19,6 +19,7 @@
 		<Configurations>Debug;Release</Configurations>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<IsPublishable>False</IsPublishable>
+		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Update="System.Data">
