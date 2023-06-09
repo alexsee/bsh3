@@ -579,7 +579,7 @@ public class QueryManager : IQueryManager
     /// <param name="password"></param>
     /// <param name="temp"></param>
     /// <returns></returns>
-    public async Task<Tuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, SecureString password)
+    public async Task<ValueTuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, SecureString password)
     {
         using var dbClient = dbClientFactory.CreateDbClient();
         using var storage = storageFactory.GetCurrentStorageProvider();
@@ -651,7 +651,7 @@ public class QueryManager : IQueryManager
             reader.Close();
         }
 
-        return new Tuple<string, bool>(result, temp);
+        return (result, temp);
     }
 
     /// <summary>

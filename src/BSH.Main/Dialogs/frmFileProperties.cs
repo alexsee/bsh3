@@ -46,48 +46,39 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Schnellansicht laden
-                Tuple<string, bool> tmpFile = null;
                 try
                 {
-                    int id = int.Parse(((FileTableRow)lvVersions.SelectedItems[0].Tag).FilePackage);
+                    var id = int.Parse(((FileTableRow)lvVersions.SelectedItems[0].Tag).FilePackage);
 
                     var password = BackupLogic.BackupService.GetPassword();
-                    tmpFile = await BackupLogic.QueryManager.GetFileNameFromDriveAsync(id, lblFileName.Text, CurrentFileFolder, password);
+                    var tmpFile = await BackupLogic.QueryManager.GetFileNameFromDriveAsync(id, lblFileName.Text, CurrentFileFolder, password);
 
-#if !WIN_UWP
                     var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"" + (tmpFile.Item2 ? " -c" : ""));
                     procInfo.WindowStyle = ProcessWindowStyle.Normal;
 
                     var proc = Process.Start(procInfo);
                     proc.WaitForExit();
-#else
-                    var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\..\SmartPreview\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"" + (isTmp.Item2 ? " -c" : ""));
-                    procInfo.WindowStyle = ProcessWindowStyle.Normal;
 
-                    var proc = Process.Start(procInfo);
-                    proc.WaitForExit();
-#endif
+                    if (tmpFile.Item1 != null && tmpFile.Item2)
+                    {
+                        for (var i = 0; i < 5; i++)
+                        {
+                            try
+                            {
+                                System.IO.File.Delete(tmpFile.Item1);
+                                break;
+                            }
+                            catch
+                            {
+                                // next try
+                            }
+                        }
+                    }
                 }
                 catch
                 {
                     // Fehler: Feature nicht installiert?
                     MessageBox.Show(Resources.DLG_FEATURE_NOT_AVAILABLE_TEXT, Resources.DLG_FEATURE_NOT_AVAILABLE_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-
-                if (tmpFile != null && tmpFile.Item2)
-                {
-                    for (int i = 0; i < 5; i++)
-                    {
-                        try
-                        {
-                            System.IO.File.Delete(tmpFile.Item1);
-                            break;
-                        }
-                        catch
-                        {
-                            // next try
-                        }
-                    }
                 }
             }
         }

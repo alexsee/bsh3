@@ -36,7 +36,9 @@ public class QueryManagerTests
 
         configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
+
         configurationManager.BackupFolder = "X:\\Backups";
+        configurationManager.SourceFolder = "Y:\\MyFiles\\source_1";
 
         var storageFactory = new StorageFactory(configurationManager);
         queryManager = new QueryManager(dbClientFactory, configurationManager, storageFactory);
@@ -48,7 +50,7 @@ public class QueryManagerTests
     public async Task PopulateExampleData()
     {
         // versions
-        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO versiontable (versionID, versionDate, versionTitle, versionDescription, versionStable, versionSources, versionStatus, versionType) VALUES (1, '01-01-2021 00-00-00', '1.0.0', 'Initial full version', 1, '', 0, 2)");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO versiontable (versionID, versionDate, versionTitle, versionDescription, versionStable, versionSources, versionStatus, versionType) VALUES (1, '01-01-2021 00-00-00', '1.0.0', 'Initial full version', 1, 'Y:\\MyFiles\\source_1|Y:\\MyFiles\\source_2\\', 0, 2)");
         await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO versiontable (versionID, versionDate, versionTitle, versionDescription, versionStable, versionSources, versionStatus, versionType) VALUES (2, '02-01-2021 00-00-00', '2.0.0', 'Incremental version', 1, '', 0, 1)");
 
         // files
@@ -243,5 +245,71 @@ public class QueryManagerTests
         file.FileType = "2";
         result = queryManager.GetFileNameFromDrive(file);
         Assert.IsNull(result);
+    }
+
+    [Test]
+    public async Task GetFileNameFromDriveAsyncTest()
+    {
+        var result = await queryManager.GetFileNameFromDriveAsync(1, "file1.txt", "\\source_1\\", null);
+        Assert.AreEqual(("X:\\Backups\\01-01-2021 00-00-00\\source_1\\file1.txt", false), result);
+    }
+
+    [Test]
+    public async Task HasChangesOrNewAsyncTest()
+    {
+        var result = await queryManager.HasChangesOrNewAsync("\\source_1\\", "1");
+        Assert.IsTrue(result);
+    }
+
+    [Test]
+    public async Task GetFullRestoreFolderAsyncTest()
+    {
+        var result = await queryManager.GetFullRestoreFolderAsync("\\source_1\\", "1");
+        Assert.AreEqual("Y:\\MyFiles\\source_1", result);
+
+        result = await queryManager.GetFullRestoreFolderAsync("source_1", "1");
+        Assert.AreEqual("Y:\\MyFiles\\source_1", result);
+
+        result = await queryManager.GetFullRestoreFolderAsync("source_1", "2");
+        Assert.AreEqual("Y:\\MyFiles\\source_1", result);
+
+        result = await queryManager.GetFullRestoreFolderAsync("source_2", "1");
+        Assert.AreEqual("Y:\\MyFiles\\source_2", result);
+
+        result = await queryManager.GetFullRestoreFolderAsync("source_3", "1");
+        Assert.IsNull(result);
+    }
+
+    [Test]
+    public async Task GetLocalizedPathAsyncTest()
+    {
+        var result = await queryManager.GetLocalizedPathAsync("\\source_1\\");
+        Assert.AreEqual("source_1", result);
+
+        // activate configuration
+        configurationManager.ShowLocalizedPath = "1";
+
+        result = await queryManager.GetLocalizedPathAsync("\\source_1\\");
+        Assert.AreEqual("source_1", result);
+
+        // add junction
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO folderjunctiontable VALUES ('source_1', 'source_1_localized')");
+
+        result = await queryManager.GetLocalizedPathAsync("\\source_1\\");
+        Assert.AreEqual("source_1_localized", result);
+    }
+
+    [Test]
+    public async Task GetNumberOfFilesAsyncTest()
+    {
+        var result = await queryManager.GetNumberOfFilesAsync();
+        Assert.AreEqual(3, result);
+    }
+
+    [Test]
+    public async Task GetTotalFileSizeAsyncTest()
+    {
+        var result = await queryManager.GetTotalFileSizeAsync();
+        Assert.AreEqual(300d, result);
     }
 }
