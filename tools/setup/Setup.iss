@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=Backup Service Home
-AppVerName=Backup Service Home 3.8.5
+AppVerName=Backup Service Home 3.9.0 (Beta)
 AppPublisher=Alexander Seeliger Software
 AppPublisherURL=https://www.brightbits.de/
 AppSupportURL=https://www.brightbits.de/
@@ -12,23 +12,23 @@ DefaultDirName={pf}\Alexosoft\Backup Service Home 3
 DefaultGroupName=Backup Service Home 3
 LicenseFile=apache-license-2.0.rtf
 OutputDir=output
-OutputBaseFilename=backupservicehome-3.8.5.0-win64
+OutputBaseFilename=backupservicehome-3.9.0.0-beta-win64
 Compression=lzma/ultra64
 SolidCompression=true
 AppCopyright=Alexander Seeliger
-AppID={{5979B77A-9AE6-4E75-AED8-283C5E16C02D}
+AppID={{5979B77A-9AE6-4E75-AED8-283C5E16C02D}}
 InternalCompressLevel=ultra64
 ShowLanguageDialog=no
 WindowVisible=false
 AlwaysShowDirOnReadyPage=true
 AlwaysShowGroupOnReadyPage=true
-VersionInfoVersion=3.8.5.0
-AppVersion=3.8.5.0
+VersionInfoVersion=3.9.0.0
+AppVersion=3.9.0.0
 VersionInfoCompany=Alexander Seeliger Software
 VersionInfoCopyright=Alexander Seeliger
 MinVersion=0,6.1.7600
 UninstallDisplayIcon={app}\BSH.Main.exe
-VersionInfoProductVersion=3.8.5.0
+VersionInfoProductVersion=3.9.0.0
 AppMutex=BackupServiceHome3
 UsePreviousAppDir=true
 DisableWelcomePage=false
@@ -41,7 +41,7 @@ Name: "{group}\Backup Service Home"; Filename: "{app}\BSH.Main.exe"; Parameters:
 
 [Run]
 Filename: "net"; Parameters: "stop ""Backup Service Home-Dienst"""; Flags: runhidden
-Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\installutil.exe"; Parameters: """{app}\BSH.Service.exe"""; WorkingDir: "{app}"; Flags: runhidden runascurrentuser; StatusMsg: "Backup Service Home-Dienst wird eingerichtet..."
+Filename: "sc"; Parameters: "create ""Backup Service Home-Dienst"" binpath=""{app}\BSH.Service.exe"" start=auto"; WorkingDir: "{app}"; Flags: runhidden runascurrentuser; StatusMsg: "Backup Service Home-Dienst wird eingerichtet..."
 Filename: "net"; Parameters: "start ""Backup Service Home-Dienst"""; Flags: runascurrentuser runhidden; StatusMsg: "Backup Service Home-Dienst wird gestartet..."
 Filename: "{app}\BSH.Main.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,Backup Service Home}"
 
@@ -50,55 +50,368 @@ Root: "HKCU"; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType
 
 [UninstallRun]
 Filename: "net"; Parameters: "stop ""Backup Service Home-Dienst"""; Flags: runhidden
-Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\installutil.exe"; Parameters: "/U ""{app}\BSH.Service.exe"""; WorkingDir: "{app}"; Flags: runhidden
-
-[ThirdParty]
-CompileLogMethod=append
+Filename: "sc"; Parameters: "delete ""Backup Service Home-Dienst"""; WorkingDir: "{app}"; Flags: runhidden
 
 [Files]
+Source: "..\..\output\appsettings.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\AxInterop.WMPLib.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Controls.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Controls.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Engine.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Engine.dll.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Engine.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Main.deps.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Main.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\BSH.Main.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\BSH.Main.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Main.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Main.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Service.deps.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Service.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\BSH.Service.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\BSH.Service.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Service.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Service.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\BSH.Service.Shared.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\BSH.Service.Shared.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\C4F.DevKit.PreviewHandler.PreviewHandlerFramework.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\C4F.DevKit.PreviewHandler.PreviewHandlerFramework.dll.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\C4F.DevKit.PreviewHandler.PreviewHandlerFramework.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\C4F.DevKit.PreviewHandler.PreviewHandlerHost.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\C4F.DevKit.PreviewHandler.PreviewHandlerHost.dll.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\C4F.DevKit.PreviewHandler.PreviewHandlerHost.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\clretwrc.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\clrgc.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\clrjit.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\CommandLine.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\coreclr.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\createdump.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\D3DCompiler_47_cor3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\DirectWriteForwarder.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\DotNetZip.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\FluentFTP.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\Interop.WMPLib.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\Microsoft.Extensions.Logging.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\hostfxr.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\hostpolicy.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Humanizer.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\Microsoft.WindowsAPICodePack.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\CommandLine.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\Microsoft.WindowsAPICodePack.Shell.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Ijwhost.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Interop.WMPLib.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Bcl.AsyncInterfaces.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.CSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.DiaSymReader.Native.amd64.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Configuration.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Configuration.Binder.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Configuration.CommandLine.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Configuration.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Configuration.EnvironmentVariables.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Configuration.FileExtensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Configuration.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Configuration.UserSecrets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.DependencyInjection.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.DependencyInjection.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.FileProviders.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.FileProviders.Physical.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.FileSystemGlobbing.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Hosting.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Hosting.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Hosting.WindowsServices.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Logging.Abstractions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Logging.Configuration.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Logging.Console.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Logging.Debug.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Logging.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Logging.EventLog.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Logging.EventSource.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.ObjectPool.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Options.ConfigurationExtensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Options.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Extensions.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.VisualBasic.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.VisualBasic.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.VisualBasic.Forms.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Win32.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Win32.Registry.AccessControl.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Win32.Registry.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Win32.SystemEvents.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\mscordaccore.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\mscordaccore_amd64_amd64_7.0.523.17405.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\mscordbi.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\mscorlib.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\mscorrc.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\msquic.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\netstandard.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PenImc_cor3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationCore.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework.Aero.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework.Aero2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework.AeroLite.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework.Classic.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework.Luna.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework.Royale.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework-SystemCore.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework-SystemData.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework-SystemDrawing.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework-SystemXml.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationFramework-SystemXmlLinq.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationNative_cor3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\PresentationUI.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Quartz.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\ReachFramework.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Serilog.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Serilog.Settings.AppSettings.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Serilog.Sinks.Debug.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Serilog.Sinks.File.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\ServiceWire.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\SmartPreview.deps.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\SmartPreview.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\SmartPreview.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\SmartPreview.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\SmartPreview.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\SmartPreview.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\sni.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\SQLite.Interop.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.AppContext.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\System.Buffers.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.CodeDom.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Collections.Concurrent.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Collections.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Collections.Immutable.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Collections.NonGeneric.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Collections.Specialized.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ComponentModel.Annotations.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ComponentModel.Composition.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ComponentModel.Composition.Registration.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ComponentModel.DataAnnotations.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ComponentModel.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ComponentModel.EventBasedAsync.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ComponentModel.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ComponentModel.TypeConverter.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Configuration.ConfigurationManager.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Configuration.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Console.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Data.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Data.DataSetExtensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Data.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Data.Odbc.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Data.OleDb.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Data.SqlClient.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\System.Data.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Design.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.Contracts.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.Debug.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\System.Diagnostics.DiagnosticSource.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.EventLog.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.EventLog.Messages.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.FileVersionInfo.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.PerformanceCounter.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.Process.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.StackTrace.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.TextWriterTraceListener.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.Tools.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.TraceSource.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Diagnostics.Tracing.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.DirectoryServices.AccountManagement.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.DirectoryServices.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.DirectoryServices.Protocols.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Drawing.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Drawing.Design.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Drawing.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Drawing.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Dynamic.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Formats.Asn1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Formats.Tar.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Globalization.Calendars.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Globalization.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Globalization.Extensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.Compression.Brotli.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.Compression.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.Compression.FileSystem.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.Compression.Native.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.Compression.ZipFile.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.FileSystem.AccessControl.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.FileSystem.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.FileSystem.DriveInfo.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.FileSystem.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.FileSystem.Watcher.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.IsolatedStorage.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.MemoryMappedFiles.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.Packaging.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.Pipes.AccessControl.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.Pipes.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.Ports.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.IO.UnmanagedMemoryStream.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Linq.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Linq.Expressions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Linq.Parallel.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Linq.Queryable.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Management.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\System.Memory.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.Http.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.Http.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.HttpListener.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.Mail.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.NameResolution.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.NetworkInformation.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.Ping.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.Quic.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.Requests.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.Security.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.ServicePoint.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.Sockets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.WebClient.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.WebHeaderCollection.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.WebProxy.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.WebSockets.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Net.WebSockets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Numerics.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\System.Numerics.Vectors.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\de\Humanizer.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\System.ObjectModel.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Printing.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Private.CoreLib.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Private.DataContractSerialization.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Private.ServiceModel.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Private.Uri.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Private.Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Private.Xml.Linq.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Reflection.Context.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Reflection.DispatchProxy.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Reflection.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Reflection.Emit.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Reflection.Emit.ILGeneration.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Reflection.Emit.Lightweight.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Reflection.Extensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Reflection.Metadata.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Reflection.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Reflection.TypeExtensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Resources.Extensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Resources.Reader.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Resources.ResourceManager.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Resources.Writer.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Caching.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\System.Runtime.CompilerServices.Unsafe.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.CompilerServices.VisualC.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Extensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Handles.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.InteropServices.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.InteropServices.JavaScript.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.InteropServices.RuntimeInformation.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Intrinsics.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Loader.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Numerics.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Serialization.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Serialization.Formatters.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Serialization.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Serialization.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Runtime.Serialization.Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.AccessControl.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Claims.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.Algorithms.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.Cng.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.Csp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.Encoding.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.OpenSsl.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.Pkcs.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.ProtectedData.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.X509Certificates.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Cryptography.Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Permissions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Principal.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.Principal.Windows.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Security.SecureString.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ServiceModel.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ServiceModel.Duplex.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ServiceModel.Http.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ServiceModel.NetTcp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ServiceModel.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ServiceModel.Security.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ServiceModel.Syndication.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ServiceModel.Web.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ServiceProcess.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ServiceProcess.ServiceController.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Speech.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Text.Encoding.CodePages.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Text.Encoding.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Text.Encoding.Extensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Text.Encodings.Web.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Text.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Text.RegularExpressions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.AccessControl.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.Channels.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.Overlapped.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.Tasks.Dataflow.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.Tasks.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.Tasks.Extensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.Tasks.Parallel.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.Thread.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.ThreadPool.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Threading.Timer.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Transactions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Transactions.Local.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.ValueTuple.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Web.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Web.HttpUtility.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Web.Services.Description.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Windows.Controls.Ribbon.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Windows.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Windows.Extensions.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Windows.Forms.Design.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Windows.Forms.Design.Editors.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Windows.Forms.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Windows.Forms.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Windows.Input.Manipulations.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Windows.Presentation.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Xaml.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Xml.Linq.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Xml.ReaderWriter.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Xml.Serialization.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Xml.XDocument.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Xml.XmlDocument.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Xml.XmlSerializer.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Xml.XPath.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\System.Xml.XPath.XDocument.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\UIAutomationClient.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\UIAutomationClientSideProviders.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\UIAutomationProvider.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\UIAutomationTypes.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\updateSystemDotNet.Controller.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\updateSystemDotNet.Controller.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\vcruntime140_cor3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\WindowsBase.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\WindowsFormsIntegration.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\wpfgfx_cor3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Accessibility.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\AlphaVSS.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\AlphaVSS.x64.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\AlphaVSS.x86.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\App.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\AxInterop.WMPLib.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\BSH.Controls.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\BSH.Engine.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\BSH.Engine.dll.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\appsettings.Development.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\de\Humanizer.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\Microsoft.VisualBasic.Forms.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\PresentationCore.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\PresentationFramework.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\PresentationUI.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\ReachFramework.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\System.Private.ServiceModel.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\System.Web.Services.Description.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\System.Windows.Controls.Ribbon.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\System.Windows.Forms.Design.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\System.Windows.Forms.Primitives.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\System.Windows.Forms.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\System.Windows.Input.Manipulations.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\System.Xaml.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\UIAutomationClient.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\UIAutomationClientSideProviders.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\UIAutomationProvider.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\UIAutomationTypes.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\WindowsBase.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
+Source: "..\..\output\de\WindowsFormsIntegration.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
 Source: "..\..\output\de-DE\BSH.Main.resources.dll"; DestDir: "{app}\de-DE"; Flags: ignoreversion
-Source: "..\..\output\x64\SQLite.Interop.dll"; DestDir: "{app}\x64"; Flags: ignoreversion
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -107,98 +420,6 @@ begin
 	if CurStep = ssInstall then begin
 		shellExec('open', 'net', 'stop "Backup Service Home-Dienst"', '', SW_HIDE, ewWaitUntilTerminated, ErrorCode);
 	end;
-end;
-function IsDotNetDetected(version: string; service: cardinal): boolean;
-// Indicates whether the specified version and service pack of the .NET Framework is installed.
-//
-// version -- Specify one of these strings for the required .NET Framework version:
-//    'v1.1'          .NET Framework 1.1
-//    'v2.0'          .NET Framework 2.0
-//    'v3.0'          .NET Framework 3.0
-//    'v3.5'          .NET Framework 3.5
-//    'v4\Client'     .NET Framework 4.0 Client Profile
-//    'v4\Full'       .NET Framework 4.0 Full Installation
-//    'v4.5'          .NET Framework 4.5
-//    'v4.5.1'        .NET Framework 4.5.1
-//    'v4.5.2'        .NET Framework 4.5.2
-//    'v4.6'          .NET Framework 4.6
-//    'v4.6.1'        .NET Framework 4.6.1
-//    'v4.6.2'        .NET Framework 4.6.2
-//    'v4.7'          .NET Framework 4.7
-//    'v4.7.1'        .NET Framework 4.7.1
-//    'v4.7.2'        .NET Framework 4.7.2
-//    'v4.8'          .NET Framework 4.8
-//
-// service -- Specify any non-negative integer for the required service pack level:
-//    0               No service packs required
-//    1, 2, etc.      Service pack 1, 2, etc. required
-var
-    key, versionKey: string;
-    install, release, serviceCount, versionRelease: cardinal;
-    success: boolean;
-begin
-    versionKey := version;
-    versionRelease := 0;
-
-    // .NET 1.1 and 2.0 embed release number in version key
-    if version = 'v1.1' then begin
-        versionKey := 'v1.1.4322';
-    end else if version = 'v2.0' then begin
-        versionKey := 'v2.0.50727';
-    end
-
-    // .NET 4.5 and newer install as update to .NET 4.0 Full
-    else if Pos('v4.', version) = 1 then begin
-        versionKey := 'v4\Full';
-        case version of
-          'v4.5':   versionRelease := 378389;
-          'v4.5.1': versionRelease := 378675; // 378758 on Windows 8 and older
-          'v4.5.2': versionRelease := 379893;
-          'v4.6':   versionRelease := 393295; // 393297 on Windows 8.1 and older
-          'v4.6.1': versionRelease := 394254; // 394271 before Win10 November Update
-          'v4.6.2': versionRelease := 394802; // 394806 before Win10 Anniversary Update
-          'v4.7':   versionRelease := 460798; // 460805 before Win10 Creators Update
-          'v4.7.1': versionRelease := 461308; // 461310 before Win10 Fall Creators Update
-          'v4.7.2': versionRelease := 461808; // 461814 before Win10 April 2018 Update
-          'v4.8':   versionRelease := 528040; // 528049 before Win10 May 2019 Update
-        end;
-    end;
-
-    // installation key group for all .NET versions
-    key := 'SOFTWARE\Microsoft\NET Framework Setup\NDP\' + versionKey;
-
-    // .NET 3.0 uses value InstallSuccess in subkey Setup
-    if Pos('v3.0', version) = 1 then begin
-        success := RegQueryDWordValue(HKLM, key + '\Setup', 'InstallSuccess', install);
-    end else begin
-        success := RegQueryDWordValue(HKLM, key, 'Install', install);
-    end;
-
-    // .NET 4.0 and newer use value Servicing instead of SP
-    if Pos('v4', version) = 1 then begin
-        success := success and RegQueryDWordValue(HKLM, key, 'Servicing', serviceCount);
-    end else begin
-        success := success and RegQueryDWordValue(HKLM, key, 'SP', serviceCount);
-    end;
-
-    // .NET 4.5 and newer use additional value Release
-    if versionRelease > 0 then begin
-        success := success and RegQueryDWordValue(HKLM, key, 'Release', release);
-        success := success and (release >= versionRelease);
-    end;
-
-    result := success and (install = 1) and (serviceCount >= service);
-end;
-
-function InitializeSetup(): Boolean;
-begin
-    if not IsDotNetDetected('v4.8', 0) then begin
-        MsgBox('Backup Service Home benötigt das Microsoft .NET Framework 4.8.'#13#13
-            'Bitte benutzen Sie Windows Update um das .NET Framework zu installieren,'#13
-            'und starten Sie danach das Setup erneut.', mbInformation, MB_OK);
-        result := false;
-    end else
-        result := true;
 end;
 
 [_ISTool]
