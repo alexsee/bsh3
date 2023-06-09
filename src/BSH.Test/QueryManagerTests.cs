@@ -7,6 +7,7 @@ using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Storage;
+using BSH.Test.Mocks;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -40,7 +41,7 @@ public class QueryManagerTests
         configurationManager.BackupFolder = "X:\\Backups";
         configurationManager.SourceFolder = "Y:\\MyFiles\\source_1";
 
-        var storageFactory = new StorageFactory(configurationManager);
+        var storageFactory = new StorageFactoryMock();
         queryManager = new QueryManager(dbClientFactory, configurationManager, storageFactory);
 
         // insert some data
