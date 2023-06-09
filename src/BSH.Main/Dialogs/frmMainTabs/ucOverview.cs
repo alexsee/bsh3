@@ -42,7 +42,7 @@ namespace Brightbits.BSH.Main
         public void OpenTab()
         {
             StatusController.Current.AddObserver(this);
-            Task.WaitAll(RefreshInfo());
+            RefreshInfo().Wait();
 
 #if !WIN_UWP
             try
@@ -355,7 +355,7 @@ namespace Brightbits.BSH.Main
         {
             if ((ModifierKeys & Keys.Control) == Keys.Control)
             {
-                await PresentationController.Current.ShowCreateBackupWindow();
+                await PresentationController.ShowCreateBackupWindow();
             }
             else
             {

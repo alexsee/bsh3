@@ -37,7 +37,7 @@ namespace Brightbits.BSH.Main
             try
             {
                 // Verzeichnisse ausschließen
-                foreach (string entry in BackupLogic.ConfigurationManager.ExcludeFolder.Split('|'))
+                foreach (var entry in BackupLogic.ConfigurationManager.ExcludeFolder.Split('|'))
                 {
                     // Verzeichnis gefunden
                     if (!string.IsNullOrEmpty(entry))
@@ -47,7 +47,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Dateien ausschließen
-                foreach (string entry in BackupLogic.ConfigurationManager.ExcludeFileTypes.Split('|'))
+                foreach (var entry in BackupLogic.ConfigurationManager.ExcludeFileTypes.Split('|'))
                 {
                     // Datei gefunden
                     if (!string.IsNullOrEmpty(entry))
@@ -64,7 +64,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Dateien ausschließen
-                foreach (string entry in BackupLogic.ConfigurationManager.ExcludeFile.Split('|'))
+                foreach (var entry in BackupLogic.ConfigurationManager.ExcludeFile.Split('|'))
                 {
                     // Datei gefunden
                     if (!string.IsNullOrEmpty(entry))
@@ -123,7 +123,7 @@ namespace Brightbits.BSH.Main
             // check if regex is parsable
             try
             {
-                string regularExpression = txtRegEx.Text.Trim().Replace("\r\n", "|").Trim().Replace("||", "|");
+                var regularExpression = txtRegEx.Text.Trim().Replace("\r\n", "|").Trim().Replace("||", "|");
                 if (!string.IsNullOrEmpty(regularExpression))
                 {
                     Regex.IsMatch(@"C:\test.txt", regularExpression, RegexOptions.Singleline, TimeSpan.FromSeconds(10));
@@ -140,7 +140,7 @@ namespace Brightbits.BSH.Main
             // Datei ausschließen
             if (lstExcludeSingleFile.Items.Count > 0)
             {
-                string sExcludeSingleFile = string.Join("|", lstExcludeSingleFile.Items.Cast<object>().Select(x => lstExcludeSingleFile.GetItemText(x))); ;
+                var sExcludeSingleFile = string.Join("|", lstExcludeSingleFile.Items.Cast<object>().Select(x => lstExcludeSingleFile.GetItemText(x))); ;
                 BackupLogic.ConfigurationManager.ExcludeFile = sExcludeSingleFile;
             }
             else
@@ -166,7 +166,7 @@ namespace Brightbits.BSH.Main
                 // Verzeichnis soll gefiltert werden
                 // Zunächst prüfen, ob Verzeichnis in einem der Quellverzeichnisse
                 bool bAdded = false;
-                foreach (string entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
+                foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
                 {
                     if (!dlgFolderBrowser.SelectedPath.ToLower().Contains(entry.ToLower()))
                     {
@@ -174,12 +174,12 @@ namespace Brightbits.BSH.Main
                     }
 
                     // Verzeichnis kann sortiert werden
-                    string sTemp = dlgFolderBrowser.SelectedPath.Replace(entry.Substring(0, entry.LastIndexOf(@"\")), "");
+                    var sTemp = dlgFolderBrowser.SelectedPath.Replace(entry.Substring(0, entry.LastIndexOf(@"\")), "");
 
                     if (!string.IsNullOrEmpty(sTemp))
                     {
                         // Nachschauen, ob schon drin
-                        foreach (object entry2 in lstExcludeFolders.Items)
+                        foreach (var entry2 in lstExcludeFolders.Items)
                         {
                             if (lstExcludeFolders.GetItemText(entry2) == sTemp)
                             {
@@ -226,24 +226,24 @@ namespace Brightbits.BSH.Main
         {
             try
             {
-                string sInput = InputBox.ShowInputBox(this, Resources.DLG_FILTER_INPUT_FILE_TYPE_TEXT, Resources.DLG_FILTER_INPUT_FILE_TYPE_TITLE, "");
+                var sInput = InputBox.ShowInputBox(this, Resources.DLG_FILTER_INPUT_FILE_TYPE_TEXT, Resources.DLG_FILTER_INPUT_FILE_TYPE_TITLE, "");
                 if (string.IsNullOrEmpty(sInput))
                 {
                     return;
                 }
 
-                if (sInput.StartsWith("*"))
+                if (sInput.StartsWith('*'))
                 {
                     sInput = sInput.Substring(1, sInput.Length - 1);
                 }
 
-                if (sInput.StartsWith("."))
+                if (sInput.StartsWith('.'))
                 {
                     sInput = sInput.Substring(1, sInput.Length - 1);
                 }
 
                 // Nachschauen, ob schon drin
-                foreach (object entry2 in lstExcludeFiles.Items)
+                foreach (var entry2 in lstExcludeFiles.Items)
                 {
                     if (lstExcludeFiles.GetItemText(entry2) == sInput)
                     {
@@ -330,11 +330,11 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Dateien soll gefiltert werden
-                foreach (string File in dlgOpenFile.FileNames)
+                foreach (var File in dlgOpenFile.FileNames)
                 {
                     // Zunächst prüfen, ob Datei in einem der Quellverzeichnisse
                     bool bAdded = false;
-                    foreach (string entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
+                    foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
                     {
                         if (!System.IO.Path.GetFullPath(File).ToLower().Contains(entry.ToLower()))
                         {

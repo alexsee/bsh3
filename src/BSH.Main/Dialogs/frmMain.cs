@@ -298,7 +298,7 @@ namespace Brightbits.BSH.Main
 
         private void ÜberBackupServiceHome3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PresentationController.Current.ShowAboutWindow(this);
+            PresentationController.ShowAboutWindow(this);
         }
 
         private void BackupServiceHome3BeendenToolStripMenuItem_Click(object sender, EventArgs e)

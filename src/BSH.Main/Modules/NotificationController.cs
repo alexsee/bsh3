@@ -159,7 +159,7 @@ namespace Brightbits.BSH.Main
 
         private async void eventMainContextStartBackupOptions(object sender, EventArgs e)
         {
-            await PresentationController.Current.ShowCreateBackupWindow();
+            await PresentationController.ShowCreateBackupWindow();
         }
 
         private void eventMainContextClick(object sender, EventArgs e)

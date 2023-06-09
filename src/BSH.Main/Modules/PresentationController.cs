@@ -148,7 +148,7 @@ namespace Brightbits.BSH.Main
         }
 
 
-        public void ShowAboutWindow(IWin32Window owner)
+        public static void ShowAboutWindow(IWin32Window owner)
         {
             using var aboutWindow = new frmAbout();
             aboutWindow.ShowDialog(owner);
@@ -167,31 +167,29 @@ namespace Brightbits.BSH.Main
             return (null, false);
         }
 
-        public void ShowErrorInsufficientDiskSpace()
+        public static void ShowErrorInsufficientDiskSpace()
         {
             using var errorWindow = new frmErrorInsufficientDiskSpace();
             errorWindow.ShowDialog();
         }
 
-        public async Task ShowCreateBackupWindow()
+        public static async Task ShowCreateBackupWindow()
         {
-            using (var dlgCreateBackup = new frmCreateBackup())
+            using var dlgCreateBackup = new frmCreateBackup();
+            if (dlgCreateBackup.ShowDialog() != DialogResult.OK)
             {
-                if (dlgCreateBackup.ShowDialog() != DialogResult.OK)
-                {
-                    return;
-                }
-
-                // retrieve sources
-                string sources = string.Join("|", dlgCreateBackup.clstSources.CheckedItems.Cast<string>());
-                if (string.IsNullOrEmpty(sources))
-                {
-                    return;
-                }
-
-                // start backup
-                await BackupLogic.BackupController.CreateBackupAsync(dlgCreateBackup.txtTitle.Text, dlgCreateBackup.txtDescription.Text, true, dlgCreateBackup.cbFullBackup.Checked, dlgCreateBackup.chkShutdownPC.Checked, sourceFolders: sources);
+                return;
             }
+
+            // retrieve sources
+            var sources = string.Join("|", dlgCreateBackup.clstSources.CheckedItems.Cast<string>());
+            if (string.IsNullOrEmpty(sources))
+            {
+                return;
+            }
+
+            // start backup
+            await BackupLogic.BackupController.CreateBackupAsync(dlgCreateBackup.txtTitle.Text, dlgCreateBackup.txtDescription.Text, true, dlgCreateBackup.cbFullBackup.Checked, dlgCreateBackup.chkShutdownPC.Checked, sourceFolders: sources);
         }
     }
 }

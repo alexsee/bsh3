@@ -49,7 +49,7 @@ namespace Brightbits.BSH.Main
                 return;
             }
 
-            Task.WaitAll(StoreSettingsAsync());
+            StoreSettingsAsync().Wait();
         }
 
         public void OpenTab()

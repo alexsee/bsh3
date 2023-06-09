@@ -6,7 +6,7 @@ public static class IOUtils
         var result = path;
         result = result.Replace(rootPath, "");
 
-        if (result.StartsWith("\\") && result.Length > 1)
+        if (result.StartsWith('\\') && result.Length > 1)
         {
             result = result[1..];
         }

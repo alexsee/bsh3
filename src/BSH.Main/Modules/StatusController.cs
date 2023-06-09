@@ -239,7 +239,7 @@ namespace Brightbits.BSH.Main
 
         public void RequestShowErrorInsufficientDiskSpace()
         {
-            PresentationController.Current.ShowErrorInsufficientDiskSpace();
+            PresentationController.ShowErrorInsufficientDiskSpace();
         }
     }
 }

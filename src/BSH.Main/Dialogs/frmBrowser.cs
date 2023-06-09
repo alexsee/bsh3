@@ -103,7 +103,7 @@ namespace Brightbits.BSH.Main
         /// <returns></returns>
         private bool IsFileAvailable(string fileName)
         {
-            if (!isMedium || string.IsNullOrEmpty(fileName) || fileName.StartsWith("\\"))
+            if (!isMedium || string.IsNullOrEmpty(fileName) || fileName.StartsWith('\\'))
             {
                 return false;
             }
@@ -243,7 +243,7 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        private ListViewItem.ListViewSubItem CreateFileSizeListViewSubItem(double fileSize)
+        private static ListViewItem.ListViewSubItem CreateFileSizeListViewSubItem(double fileSize)
         {
             return new ListViewItem.ListViewSubItem()
             {
@@ -252,7 +252,7 @@ namespace Brightbits.BSH.Main
             };
         }
 
-        private ListViewItem.ListViewSubItem CreateDateTimeListViewSubItem(DateTime dateTime)
+        private static ListViewItem.ListViewSubItem CreateDateTimeListViewSubItem(DateTime dateTime)
         {
             return new ListViewItem.ListViewSubItem()
             {
@@ -261,7 +261,7 @@ namespace Brightbits.BSH.Main
             };
         }
 
-        private ListViewItem.ListViewSubItem CreateStringListViewSubItem(string str)
+        private static ListViewItem.ListViewSubItem CreateStringListViewSubItem(string str)
         {
             return new ListViewItem.ListViewSubItem()
             {
