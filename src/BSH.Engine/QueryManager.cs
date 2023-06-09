@@ -327,7 +327,7 @@ public class QueryManager : IQueryManager
                 "WHERE a.versionID < @startVersion " +
                 "AND a.versionStatus = 0 " +
                 "AND EXISTS (SELECT 1 FROM fileversiontable, filelink, filetable " +
-                "WHERE fileversiontable.fileversionid = filelink.fileversionid " +
+                "WHERE fileversiontable.fileversionID = filelink.fileversionID " +
                 "AND filelink.versionID = a.versionID " +
                 "AND filetable.fileID = fileversiontable.fileID " +
                 "AND filetable.filePath = @path) " +
@@ -579,7 +579,7 @@ public class QueryManager : IQueryManager
     /// <param name="password"></param>
     /// <param name="temp"></param>
     /// <returns></returns>
-    public async Task<Tuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, SecureString password)
+    public async Task<ValueTuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, SecureString password)
     {
         using var dbClient = dbClientFactory.CreateDbClient();
         using var storage = storageFactory.GetCurrentStorageProvider();
@@ -651,7 +651,7 @@ public class QueryManager : IQueryManager
             reader.Close();
         }
 
-        return new Tuple<string, bool>(result, temp);
+        return (result, temp);
     }
 
     /// <summary>
@@ -703,14 +703,14 @@ public class QueryManager : IQueryManager
 
         foreach (var destination in destFolders)
         {
-            var directory = new DirectoryInfo(destination);
+            var directoryName = destination.Split("\\", StringSplitOptions.RemoveEmptyEntries)[^1];
 
-            if (folder.StartsWith("\\" + directory.Name + "\\"))
+            if (folder.StartsWith("\\" + directoryName + "\\"))
             {
-                var idx = folder.IndexOf("\\" + directory.Name + "\\");
+                var idx = folder.IndexOf("\\" + directoryName + "\\");
 
                 // path found
-                var result = Path.Combine(destination, folder[(idx + directory.Name.Length + 2)..]);
+                var result = Path.Combine(destination, folder[(idx + directoryName.Length + 2)..]);
 
                 if (result.EndsWith("\\"))
                 {
