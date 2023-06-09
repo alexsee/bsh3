@@ -703,14 +703,14 @@ public class QueryManager : IQueryManager
 
         foreach (var destination in destFolders)
         {
-            var directory = new DirectoryInfo(destination);
+            var directoryName = destination.Split("\\", StringSplitOptions.RemoveEmptyEntries)[^1];
 
-            if (folder.StartsWith("\\" + directory.Name + "\\"))
+            if (folder.StartsWith("\\" + directoryName + "\\"))
             {
-                var idx = folder.IndexOf("\\" + directory.Name + "\\");
+                var idx = folder.IndexOf("\\" + directoryName + "\\");
 
                 // path found
-                var result = Path.Combine(destination, folder[(idx + directory.Name.Length + 2)..]);
+                var result = Path.Combine(destination, folder[(idx + directoryName.Length + 2)..]);
 
                 if (result.EndsWith("\\"))
                 {
