@@ -209,12 +209,12 @@ public class QueryManager : IQueryManager
                 {
                     var folder = reader.GetString("filePath");
 
-                    if (folder.StartsWith("\\"))
+                    if (folder.StartsWith('\\'))
                     {
                         folder = folder[1..];
                     }
 
-                    if (folder.EndsWith("\\"))
+                    if (folder.EndsWith('\\'))
                     {
                         folder = folder[..^1];
                     }
@@ -237,12 +237,12 @@ public class QueryManager : IQueryManager
                 {
                     var folder = reader.GetString("folder");
 
-                    if (folder.StartsWith("\\"))
+                    if (folder.StartsWith('\\'))
                     {
                         folder = folder[1..];
                     }
 
-                    if (folder.EndsWith("\\"))
+                    if (folder.EndsWith('\\'))
                     {
                         folder = folder[..^1];
                     }
@@ -306,12 +306,12 @@ public class QueryManager : IQueryManager
     {
         try
         {
-            if (!path.StartsWith("\\"))
+            if (!path.StartsWith('\\'))
             {
                 path = "\\" + path;
             }
 
-            if (!path.EndsWith("\\"))
+            if (!path.EndsWith('\\'))
             {
                 path += "\\";
             }
@@ -396,12 +396,12 @@ public class QueryManager : IQueryManager
     {
         try
         {
-            if (!path.StartsWith("\\"))
+            if (!path.StartsWith('\\'))
             {
                 path = "\\" + path;
             }
 
-            if (!path.EndsWith("\\"))
+            if (!path.EndsWith('\\'))
             {
                 path += "\\";
             }
@@ -485,12 +485,12 @@ public class QueryManager : IQueryManager
         var result = new List<FileTableRow>();
 
         // fix path
-        if (!path.StartsWith("\\"))
+        if (!path.StartsWith('\\'))
         {
             path = "\\" + path;
         }
 
-        if (!path.EndsWith("\\"))
+        if (!path.EndsWith('\\'))
         {
             path += "\\";
         }
@@ -555,7 +555,7 @@ public class QueryManager : IQueryManager
                 return Path.Combine(folderPath, "_LONGFILES_", file.FileLongFileName);
             }
 
-            if (file.FilePath.StartsWith("\\"))
+            if (file.FilePath.StartsWith('\\'))
             {
                 folderPath = Path.Combine(folderPath, file.FilePath[1..]);
             }
@@ -681,12 +681,12 @@ public class QueryManager : IQueryManager
     public async Task<string> GetFullRestoreFolderAsync(string folder, string version)
     {
         // correct path
-        if (!folder.StartsWith("\\"))
+        if (!folder.StartsWith('\\'))
         {
             folder = "\\" + folder;
         }
 
-        if (!folder.EndsWith("\\"))
+        if (!folder.EndsWith('\\'))
         {
             folder += "\\";
         }
@@ -703,7 +703,7 @@ public class QueryManager : IQueryManager
 
         foreach (var destination in destFolders)
         {
-            var directoryName = destination.Split("\\", StringSplitOptions.RemoveEmptyEntries)[^1];
+            var directoryName = destination.Split('\\', StringSplitOptions.RemoveEmptyEntries)[^1];
 
             if (folder.StartsWith("\\" + directoryName + "\\"))
             {
@@ -712,7 +712,7 @@ public class QueryManager : IQueryManager
                 // path found
                 var result = Path.Combine(destination, folder[(idx + directoryName.Length + 2)..]);
 
-                if (result.EndsWith("\\"))
+                if (result.EndsWith('\\'))
                 {
                     return result[..^1];
                 }
@@ -729,12 +729,12 @@ public class QueryManager : IQueryManager
         try
         {
             // correct path
-            if (path.StartsWith("\\"))
+            if (path.StartsWith('\\'))
             {
                 path = path[1..];
             }
 
-            if (path.EndsWith("\\"))
+            if (path.EndsWith('\\'))
             {
                 path = path[..^1];
             }
