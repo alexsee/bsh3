@@ -27,6 +27,7 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
+using System.Linq;
 
 namespace Brightbits.BSH.Engine.Jobs;
 
@@ -120,12 +121,12 @@ public class RestoreJob : Job
                 var fileName = Path.GetFileName(File);
                 var filePath = Path.GetDirectoryName(File);
 
-                if (!filePath.EndsWith("\\"))
+                if (!filePath.EndsWith('\\'))
                 {
                     filePath += "\\";
                 }
 
-                if (!filePath.StartsWith("\\"))
+                if (!filePath.StartsWith('\\'))
                 {
                     filePath = "\\" + filePath;
                 }
@@ -146,7 +147,7 @@ public class RestoreJob : Job
             else
             {
                 // correct path
-                if (!File.EndsWith("\\"))
+                if (!File.EndsWith('\\'))
                 {
                     File += "\\";
                 }
@@ -215,26 +216,19 @@ public class RestoreJob : Job
 
                     if (destFolders.Count > 1)
                     {
-                        foreach (var folder in destFolders)
-                        {
-                            if (fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\"))
-                            {
-                                var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower());
-
-                                fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
-                                break;
-                            }
-                        }
+                        var folder = destFolders.FirstOrDefault(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\"));
+                        var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower());
+                        fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
                     }
                     else
                     {
                         // path found
-                        fileDest = fileDest[(fileDest.IndexOf("\\", 2) + 1)..];
+                        fileDest = fileDest[(fileDest.IndexOf('\\', 2) + 1)..];
                         fileDest = destFolders[0] + "\\" + fileDest;
                     }
 
                     // correct path
-                    if (!fileDest.EndsWith("\\"))
+                    if (!fileDest.EndsWith('\\'))
                     {
                         fileDest += "\\";
                     }
@@ -292,26 +286,19 @@ public class RestoreJob : Job
 
                     if (destFolders.Count > 1)
                     {
-                        foreach (var folder in destFolders)
-                        {
-                            if (fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\"))
-                            {
-                                var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower());
-
-                                fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
-                                break;
-                            }
-                        }
+                        var folder = destFolders.FirstOrDefault(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\"));
+                        var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower());
+                        fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
                     }
                     else
                     {
                         // path found
-                        fileDest = fileDest[(fileDest.IndexOf("\\", 2) + 1)..];
+                        fileDest = fileDest[(fileDest.IndexOf('\\', 2) + 1)..];
                         fileDest = destFolders[0] + "\\" + fileDest;
                     }
 
                     // correct path
-                    if (!fileDest.EndsWith("\\"))
+                    if (!fileDest.EndsWith('\\'))
                     {
                         fileDest += "\\";
                     }

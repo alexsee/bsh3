@@ -252,7 +252,10 @@ namespace MRG.Controls.UI
          DefaultValue(typeof(StylePresets), "Custom")]
         public StylePresets StylePreset
         {
-            get { return m_StylePreset; }
+            get
+            {
+                return m_StylePreset;
+            }
             set
             {
                 m_StylePreset = value;
@@ -376,7 +379,7 @@ namespace MRG.Controls.UI
         /// <param name="_objColor">Color to darken.</param>
         /// <param name="_intPercent">The percent of darken.</param>
         /// <returns>The new color generated.</returns>
-        private Color Darken(Color _objColor, int _intPercent)
+        private static Color Darken(Color _objColor, int _intPercent)
         {
             int intRed = _objColor.R;
             int intGreen = _objColor.G;
@@ -467,7 +470,7 @@ namespace MRG.Controls.UI
         /// <param name="_objPointTwo">The point two.</param>
         /// <param name="_objColor">Color of the spoke.</param>
         /// <param name="_intLineThickness">The thickness of spoke.</param>
-        private void DrawLine(Graphics _objGraphics, PointF _objPointOne, PointF _objPointTwo,
+        private static void DrawLine(Graphics _objGraphics, PointF _objPointOne, PointF _objPointTwo,
                               Color _objColor, int _intLineThickness)
         {
             using (Pen objPen = new Pen(new SolidBrush(_objColor), _intLineThickness))
@@ -485,7 +488,7 @@ namespace MRG.Controls.UI
         /// <param name="_intRadius">The radius.</param>
         /// <param name="_dblAngle">The angle.</param>
         /// <returns></returns>
-        private PointF GetCoordinate(PointF _objCircleCenter, int _intRadius, double _dblAngle)
+        private static PointF GetCoordinate(PointF _objCircleCenter, int _intRadius, double _dblAngle)
         {
             double dblAngle = Math.PI * _dblAngle / NumberOfDegreesInHalfCircle;
 
@@ -506,10 +509,10 @@ namespace MRG.Controls.UI
         /// </summary>
         /// <param name="_shtNumberSpoke">The number spoke.</param>
         /// <returns>An array of angle.</returns>
-        private double[] GetSpokesAngles(int _intNumberSpoke)
+        private static double[] GetSpokesAngles(int _intNumberSpoke)
         {
             double[] Angles = new double[_intNumberSpoke];
-            double dblAngle = (double)NumberOfDegreesInCircle / _intNumberSpoke;
+            double dblAngle = NumberOfDegreesInCircle / _intNumberSpoke;
 
             for (int shtCounter = 0; shtCounter < _intNumberSpoke; shtCounter++)
             {
