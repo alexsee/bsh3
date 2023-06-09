@@ -5,6 +5,7 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Storage;
 using NUnit.Framework;
 
@@ -35,6 +36,7 @@ public class QueryManagerTests
 
         configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
+        configurationManager.BackupFolder = "X:\\Backups";
 
         var storageFactory = new StorageFactory(configurationManager);
         queryManager = new QueryManager(dbClientFactory, configurationManager, storageFactory);
@@ -214,5 +216,32 @@ public class QueryManagerTests
         result = await queryManager.GetFilesByVersionAsync("2", "\\source_1\\");
         Assert.AreEqual(1, result.Count);
         Assert.AreEqual("file1.txt", result[0].FileName);
+    }
+
+    [Test]
+    public void GetFileNameFromDriveTest()
+    {
+        var file = new FileTableRow()
+        {
+            FileType = "1",
+            FileVersionDate = DateTime.Now,
+            FilePath = "\\source_1",
+            FileName = "file1.txt"
+        };
+
+        var result = queryManager.GetFileNameFromDrive(file);
+        Assert.AreEqual("X:\\Backups\\" + file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss") + "\\source_1\\file1.txt", result);
+
+        file.FilePath = "source_1";
+        result = queryManager.GetFileNameFromDrive(file);
+        Assert.AreEqual("X:\\Backups\\" + file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss") + "\\source_1\\file1.txt", result);
+
+        file.FileLongFileName = "XYZ";
+        result = queryManager.GetFileNameFromDrive(file);
+        Assert.AreEqual("X:\\Backups\\" + file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss") + "\\_LONGFILES_\\XYZ", result);
+
+        file.FileType = "2";
+        result = queryManager.GetFileNameFromDrive(file);
+        Assert.IsNull(result);
     }
 }
