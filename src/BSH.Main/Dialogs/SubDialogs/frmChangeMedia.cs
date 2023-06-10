@@ -31,42 +31,7 @@ public partial class frmChangeMedia
         switch (cboMedia.SelectedIndex)
         {
             case 0:
-                // Laufwerke hinzufügen
-                var Drives = System.IO.DriveInfo.GetDrives();
-                lvBackupDrive.Items.Clear();
-                foreach (var entry in Drives)
-                {
-                    // Bereit?
-                    if (!entry.IsReady)
-                    {
-                        continue;
-                    }
-
-                    // Bild
-                    var iImageKey = 2;
-                    var gGroup = lvBackupDrive.Groups[0];
-                    if (entry.DriveType == System.IO.DriveType.Fixed)
-                    {
-                        iImageKey = 2;
-                        gGroup = lvBackupDrive.Groups[0];
-                    }
-
-                    if (entry.DriveType == System.IO.DriveType.Removable)
-                    {
-                        iImageKey = 3;
-                        gGroup = lvBackupDrive.Groups[1];
-                    }
-
-                    if (entry.DriveType == System.IO.DriveType.Network)
-                    {
-                        iImageKey = 1;
-                        gGroup = lvBackupDrive.Groups[2];
-                    }
-
-                    var newEntry = lvBackupDrive.Items.Add(entry.Name + " (" + entry.VolumeLabel + ")", iImageKey);
-                    newEntry.Group = gGroup;
-                    newEntry.Tag = entry.RootDirectory.FullName;
-                }
+                PopulateDrives();
 
                 plDevice.Visible = true;
                 plFTP.Visible = false;
@@ -81,13 +46,13 @@ public partial class frmChangeMedia
         }
     }
 
-    private void cmdRefresh_Click(object sender, EventArgs e)
+    private void PopulateDrives()
     {
         // Laufwerke hinzufügen
-        var Drives = System.IO.DriveInfo.GetDrives();
+        var drives = System.IO.DriveInfo.GetDrives();
         lvBackupDrive.Items.Clear();
 
-        foreach (var entry in Drives)
+        foreach (var entry in drives)
         {
             // Bereit?
             if (!entry.IsReady)
@@ -120,6 +85,11 @@ public partial class frmChangeMedia
             newEntry.Group = gGroup;
             newEntry.Tag = entry.RootDirectory.FullName;
         }
+    }
+
+    private void cmdRefresh_Click(object sender, EventArgs e)
+    {
+        PopulateDrives();
     }
 
     private void Button1_Click(object sender, EventArgs e)
