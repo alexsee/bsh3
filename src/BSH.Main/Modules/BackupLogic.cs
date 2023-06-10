@@ -400,7 +400,7 @@ static class BackupLogic
             if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(DateTime.DaysInMonth(version.CreationDate.Year, version.CreationDate.Month), 0, 0, 0))
             {
                 // keep if last backup of the week
-                if (listVersions.Any(x =>
+                if (listVersions.Exists(x =>
                     version.CreationDate != x.CreationDate &&
                     version.CreationDate.Year == x.CreationDate.Year &&
                     version.CreationDate.Month == x.CreationDate.Month &&
@@ -414,7 +414,7 @@ static class BackupLogic
             else
             {
                 // keep if last backup on that day
-                if (listVersions.Any(x =>
+                if (listVersions.Exists(x =>
                     version.CreationDate != x.CreationDate &&
                     version.CreationDate.Year == x.CreationDate.Year &&
                     version.CreationDate.Month == x.CreationDate.Month &&

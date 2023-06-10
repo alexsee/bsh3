@@ -17,179 +17,178 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+/// <summary>
+/// The PresentationController is responsible for handling all window and user interface
+/// activities (e.g., show and hide windows).
+/// </summary>
+public class PresentationController
 {
-    /// <summary>
-    /// The PresentationController is responsible for handling all window and user interface
-    /// activities (e.g., show and hide windows).
-    /// </summary>
-    public class PresentationController
+    private static PresentationController _presentationController;
+
+    public static PresentationController Current
     {
-        private static PresentationController _presentationController;
-
-        public static PresentationController Current
+        get
         {
-            get
+            if (_presentationController == null)
             {
-                if (_presentationController == null)
-                {
-                    _presentationController = new PresentationController();
-                }
-
-                return _presentationController;
+                _presentationController = new PresentationController();
             }
+
+            return _presentationController;
         }
+    }
 
-        private frmStatusBackup statusWindow;
+    private frmStatusBackup statusWindow;
 
-        public void ShowStatusWindow()
+    public void ShowStatusWindow()
+    {
+        if (statusWindow != null)
         {
-            if (statusWindow != null)
+            if (!statusWindow.IsDisposed)
             {
-                if (!statusWindow.IsDisposed)
-                {
-                    return;
-                }
-
-                statusWindow.Dispose();
+                return;
             }
 
-            statusWindow = new frmStatusBackup();
-            statusWindow.Show();
-            StatusController.Current.AddObserver(statusWindow);
-        }
-
-        public TaskCompleteAction CloseStatusWindow()
-        {
-            if (statusWindow == null)
-            {
-                return TaskCompleteAction.NoAction;
-            }
-
-            StatusController.Current.RemoveObserver(statusWindow);
-            TaskCompleteAction CloseStatusWindowRet;
-            if (statusWindow.chkOptions.Checked && statusWindow.cboOptions.SelectedIndex == 0)
-            {
-                CloseStatusWindowRet = TaskCompleteAction.ShutdownPC;
-            }
-            else if (statusWindow.chkOptions.Checked && statusWindow.cboOptions.SelectedIndex == 1)
-            {
-                CloseStatusWindowRet = TaskCompleteAction.HibernatePC;
-            }
-            else
-            {
-                CloseStatusWindowRet = TaskCompleteAction.NoAction;
-            }
-
-            statusWindow.Close();
             statusWindow.Dispose();
-            statusWindow = null;
-            return CloseStatusWindowRet;
         }
 
-        private frmMain mainWindow;
+        statusWindow = new frmStatusBackup();
+        statusWindow.Show();
+        StatusController.Current.AddObserver(statusWindow);
+    }
 
-        public void ShowMainWindow()
+    public TaskCompleteAction CloseStatusWindow()
+    {
+        if (statusWindow == null)
         {
-            if (mainWindow != null)
-            {
-                if (!mainWindow.IsDisposed)
-                {
-                    return;
-                }
-
-                mainWindow.Dispose();
-            }
-
-            mainWindow = new frmMain();
-            mainWindow.Show();
+            return TaskCompleteAction.NoAction;
         }
 
-        public void CloseMainWindow()
+        StatusController.Current.RemoveObserver(statusWindow);
+        TaskCompleteAction CloseStatusWindowRet;
+        if (statusWindow.chkOptions.Checked && statusWindow.cboOptions.SelectedIndex == 0)
         {
-            if (mainWindow == null)
+            CloseStatusWindowRet = TaskCompleteAction.ShutdownPC;
+        }
+        else if (statusWindow.chkOptions.Checked && statusWindow.cboOptions.SelectedIndex == 1)
+        {
+            CloseStatusWindowRet = TaskCompleteAction.HibernatePC;
+        }
+        else
+        {
+            CloseStatusWindowRet = TaskCompleteAction.NoAction;
+        }
+
+        statusWindow.Close();
+        statusWindow.Dispose();
+        statusWindow = null;
+        return CloseStatusWindowRet;
+    }
+
+    private frmMain mainWindow;
+
+    public void ShowMainWindow()
+    {
+        if (mainWindow != null)
+        {
+            if (!mainWindow.IsDisposed)
             {
                 return;
             }
 
-            mainWindow.Close();
             mainWindow.Dispose();
-            mainWindow = null;
         }
 
-        private frmBrowser browserWindow;
+        mainWindow = new frmMain();
+        mainWindow.Show();
+    }
 
-        public void ShowBackupBrowserWindow()
+    public void CloseMainWindow()
+    {
+        if (mainWindow == null)
         {
-            if (browserWindow != null)
-            {
-                if (!browserWindow.IsDisposed)
-                {
-                    return;
-                }
-
-                browserWindow.Dispose();
-            }
-
-            browserWindow = new frmBrowser();
-            browserWindow.Show();
+            return;
         }
 
-        public void CloseBackupBrowserWindow()
+        mainWindow.Close();
+        mainWindow.Dispose();
+        mainWindow = null;
+    }
+
+    private frmBrowser browserWindow;
+
+    public void ShowBackupBrowserWindow()
+    {
+        if (browserWindow != null)
         {
-            if (browserWindow == null)
+            if (!browserWindow.IsDisposed)
             {
                 return;
             }
 
-            browserWindow.Close();
             browserWindow.Dispose();
-            browserWindow = null;
         }
 
+        browserWindow = new frmBrowser();
+        browserWindow.Show();
+    }
 
-        public static void ShowAboutWindow(IWin32Window owner)
+    public void CloseBackupBrowserWindow()
+    {
+        if (browserWindow == null)
         {
-            using var aboutWindow = new frmAbout();
-            aboutWindow.ShowDialog(owner);
+            return;
         }
 
-        public (string password, bool persist) RequestPassword()
+        browserWindow.Close();
+        browserWindow.Dispose();
+        browserWindow = null;
+    }
+
+
+    public static void ShowAboutWindow(IWin32Window owner)
+    {
+        using var aboutWindow = new frmAbout();
+        aboutWindow.ShowDialog(owner);
+    }
+
+    public (string password, bool persist) RequestPassword()
+    {
+        using (var passwordWindow = new frmPassword())
         {
-            using (var passwordWindow = new frmPassword())
+            if (passwordWindow.ShowDialog() == DialogResult.OK)
             {
-                if (passwordWindow.ShowDialog() == DialogResult.OK)
-                {
-                    return (passwordWindow.txtPassword.Text, passwordWindow.chkSavePwd.Checked);
-                }
+                return (passwordWindow.txtPassword.Text, passwordWindow.chkSavePwd.Checked);
             }
-
-            return (null, false);
         }
 
-        public static void ShowErrorInsufficientDiskSpace()
+        return (null, false);
+    }
+
+    public static void ShowErrorInsufficientDiskSpace()
+    {
+        using var errorWindow = new frmErrorInsufficientDiskSpace();
+        errorWindow.ShowDialog();
+    }
+
+    public static async Task ShowCreateBackupWindow()
+    {
+        using var dlgCreateBackup = new frmCreateBackup();
+        if (dlgCreateBackup.ShowDialog() != DialogResult.OK)
         {
-            using var errorWindow = new frmErrorInsufficientDiskSpace();
-            errorWindow.ShowDialog();
+            return;
         }
 
-        public static async Task ShowCreateBackupWindow()
+        // retrieve sources
+        var sources = string.Join("|", dlgCreateBackup.clstSources.CheckedItems.Cast<string>());
+        if (string.IsNullOrEmpty(sources))
         {
-            using var dlgCreateBackup = new frmCreateBackup();
-            if (dlgCreateBackup.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-
-            // retrieve sources
-            var sources = string.Join("|", dlgCreateBackup.clstSources.CheckedItems.Cast<string>());
-            if (string.IsNullOrEmpty(sources))
-            {
-                return;
-            }
-
-            // start backup
-            await BackupLogic.BackupController.CreateBackupAsync(dlgCreateBackup.txtTitle.Text, dlgCreateBackup.txtDescription.Text, true, dlgCreateBackup.cbFullBackup.Checked, dlgCreateBackup.chkShutdownPC.Checked, sourceFolders: sources);
+            return;
         }
+
+        // start backup
+        await BackupLogic.BackupController.CreateBackupAsync(dlgCreateBackup.txtTitle.Text, dlgCreateBackup.txtDescription.Text, true, dlgCreateBackup.cbFullBackup.Checked, dlgCreateBackup.chkShutdownPC.Checked, sourceFolders: sources);
     }
 }

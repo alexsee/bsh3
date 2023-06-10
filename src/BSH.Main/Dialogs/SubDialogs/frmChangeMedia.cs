@@ -17,192 +17,191 @@ using BSH.Main.Properties;
 using System;
 using System.Windows.Forms;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public partial class frmChangeMedia
 {
-    public partial class frmChangeMedia
+    public frmChangeMedia()
     {
-        public frmChangeMedia()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void cboMedia_SelectedIndexChanged(object sender, EventArgs e)
+    private void cboMedia_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        switch (cboMedia.SelectedIndex)
         {
-            switch (cboMedia.SelectedIndex)
-            {
-                case 0:
-                    // Laufwerke hinzufügen
-                    var Drives = System.IO.DriveInfo.GetDrives();
-                    lvBackupDrive.Items.Clear();
-                    foreach (var entry in Drives)
+            case 0:
+                // Laufwerke hinzufügen
+                var Drives = System.IO.DriveInfo.GetDrives();
+                lvBackupDrive.Items.Clear();
+                foreach (var entry in Drives)
+                {
+                    // Bereit?
+                    if (!entry.IsReady)
                     {
-                        // Bereit?
-                        if (!entry.IsReady)
-                        {
-                            continue;
-                        }
-
-                        // Bild
-                        var iImageKey = 2;
-                        var gGroup = lvBackupDrive.Groups[0];
-                        if (entry.DriveType == System.IO.DriveType.Fixed)
-                        {
-                            iImageKey = 2;
-                            gGroup = lvBackupDrive.Groups[0];
-                        }
-
-                        if (entry.DriveType == System.IO.DriveType.Removable)
-                        {
-                            iImageKey = 3;
-                            gGroup = lvBackupDrive.Groups[1];
-                        }
-
-                        if (entry.DriveType == System.IO.DriveType.Network)
-                        {
-                            iImageKey = 1;
-                            gGroup = lvBackupDrive.Groups[2];
-                        }
-
-                        var newEntry = lvBackupDrive.Items.Add(entry.Name + " (" + entry.VolumeLabel + ")", iImageKey);
-                        newEntry.Group = gGroup;
-                        newEntry.Tag = entry.RootDirectory.FullName;
+                        continue;
                     }
 
-                    plDevice.Visible = true;
-                    plFTP.Visible = false;
-
-                    break;
-
-                case 1:
-                    plDevice.Visible = false;
-                    plFTP.Visible = true;
-
-                    break;
-            }
-        }
-
-        private void cmdRefresh_Click(object sender, EventArgs e)
-        {
-            // Laufwerke hinzufügen
-            var Drives = System.IO.DriveInfo.GetDrives();
-            lvBackupDrive.Items.Clear();
-
-            foreach (var entry in Drives)
-            {
-                // Bereit?
-                if (!entry.IsReady)
-                {
-                    continue;
-                }
-
-                // Bild
-                var iImageKey = 2;
-                var gGroup = lvBackupDrive.Groups[0];
-                if (entry.DriveType == System.IO.DriveType.Fixed)
-                {
-                    iImageKey = 2;
-                    gGroup = lvBackupDrive.Groups[0];
-                }
-
-                if (entry.DriveType == System.IO.DriveType.Removable)
-                {
-                    iImageKey = 3;
-                    gGroup = lvBackupDrive.Groups[1];
-                }
-
-                if (entry.DriveType == System.IO.DriveType.Network)
-                {
-                    iImageKey = 1;
-                    gGroup = lvBackupDrive.Groups[2];
-                }
-
-                var newEntry = lvBackupDrive.Items.Add(entry.Name + " (" + entry.VolumeLabel + ")", iImageKey);
-                newEntry.Group = gGroup;
-                newEntry.Tag = entry.RootDirectory.FullName;
-            }
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            // Wenigstens eine Option ist korrekt gewählt
-            if (cboMedia.SelectedIndex == 0)
-            {
-                if (lvBackupDrive.SelectedItems.Count <= 0)
-                {
-                    MessageBox.Show(Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT, Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-                else if (System.IO.File.Exists(lvBackupDrive.SelectedItems[0].Tag.ToString() + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName + @"\backup.bshdb"))
-                {
-                    MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-            }
-            else
-            {
-                // FTP testen
-                try
-                {
-                    txtFTPPath.Text = FTPStorage.GetFtpPath(txtFTPPath.Text);
-
-                    using (var storage = new FTPStorage(
-                        txtFTPServer.Text,
-                        int.Parse(txtFTPPort.Text),
-                        txtFTPUsername.Text,
-                        txtFTPPassword.Text,
-                        txtFTPPath.Text,
-                        cboFtpEncoding.SelectedItem.ToString(),
-                        !chkFtpEncryption.Checked,
-                        0))
+                    // Bild
+                    var iImageKey = 2;
+                    var gGroup = lvBackupDrive.Groups[0];
+                    if (entry.DriveType == System.IO.DriveType.Fixed)
                     {
-                        storage.Open();
-
-                        if (storage.FileExists("backup.bshdb"))
-                        {
-                            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
+                        iImageKey = 2;
+                        gGroup = lvBackupDrive.Groups[0];
                     }
+
+                    if (entry.DriveType == System.IO.DriveType.Removable)
+                    {
+                        iImageKey = 3;
+                        gGroup = lvBackupDrive.Groups[1];
+                    }
+
+                    if (entry.DriveType == System.IO.DriveType.Network)
+                    {
+                        iImageKey = 1;
+                        gGroup = lvBackupDrive.Groups[2];
+                    }
+
+                    var newEntry = lvBackupDrive.Items.Add(entry.Name + " (" + entry.VolumeLabel + ")", iImageKey);
+                    newEntry.Group = gGroup;
+                    newEntry.Tag = entry.RootDirectory.FullName;
                 }
-                catch (Exception ex)
-                {
-                    // Verbindungdaten falsch
-                    MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+
+                plDevice.Visible = true;
+                plFTP.Visible = false;
+
+                break;
+
+            case 1:
+                plDevice.Visible = false;
+                plFTP.Visible = true;
+
+                break;
+        }
+    }
+
+    private void cmdRefresh_Click(object sender, EventArgs e)
+    {
+        // Laufwerke hinzufügen
+        var Drives = System.IO.DriveInfo.GetDrives();
+        lvBackupDrive.Items.Clear();
+
+        foreach (var entry in Drives)
+        {
+            // Bereit?
+            if (!entry.IsReady)
+            {
+                continue;
             }
 
-            DialogResult = DialogResult.OK;
-            Close();
-        }
+            // Bild
+            var iImageKey = 2;
+            var gGroup = lvBackupDrive.Groups[0];
+            if (entry.DriveType == System.IO.DriveType.Fixed)
+            {
+                iImageKey = 2;
+                gGroup = lvBackupDrive.Groups[0];
+            }
 
-        private void frmChangeMedia_Load(object sender, EventArgs e)
+            if (entry.DriveType == System.IO.DriveType.Removable)
+            {
+                iImageKey = 3;
+                gGroup = lvBackupDrive.Groups[1];
+            }
+
+            if (entry.DriveType == System.IO.DriveType.Network)
+            {
+                iImageKey = 1;
+                gGroup = lvBackupDrive.Groups[2];
+            }
+
+            var newEntry = lvBackupDrive.Items.Add(entry.Name + " (" + entry.VolumeLabel + ")", iImageKey);
+            newEntry.Group = gGroup;
+            newEntry.Tag = entry.RootDirectory.FullName;
+        }
+    }
+
+    private void Button1_Click(object sender, EventArgs e)
+    {
+        // Wenigstens eine Option ist korrekt gewählt
+        if (cboMedia.SelectedIndex == 0)
         {
-            cboMedia.SelectedIndex = 0;
+            if (lvBackupDrive.SelectedItems.Count <= 0)
+            {
+                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT, Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else if (System.IO.File.Exists(lvBackupDrive.SelectedItems[0].Tag.ToString() + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName + @"\backup.bshdb"))
+            {
+                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
-
-        private void cmdFTPCheck_Click(object sender, EventArgs e)
+        else
         {
             // FTP testen
             try
             {
                 txtFTPPath.Text = FTPStorage.GetFtpPath(txtFTPPath.Text);
 
-                var profile = FTPStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, cboFtpEncoding.SelectedItem.ToString());
-
-                if (!profile)
+                using (var storage = new FTPStorage(
+                    txtFTPServer.Text,
+                    int.Parse(txtFTPPort.Text),
+                    txtFTPUsername.Text,
+                    txtFTPPassword.Text,
+                    txtFTPPath.Text,
+                    cboFtpEncoding.SelectedItem.ToString(),
+                    !chkFtpEncryption.Checked,
+                    0))
                 {
-                    MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TEXT, Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+                    storage.Open();
 
-                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT, Resources.DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (storage.FileExists("backup.bshdb"))
+                    {
+                        MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
             }
             catch (Exception ex)
             {
                 // Verbindungdaten falsch
                 MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
+        }
+
+        DialogResult = DialogResult.OK;
+        Close();
+    }
+
+    private void frmChangeMedia_Load(object sender, EventArgs e)
+    {
+        cboMedia.SelectedIndex = 0;
+    }
+
+    private void cmdFTPCheck_Click(object sender, EventArgs e)
+    {
+        // FTP testen
+        try
+        {
+            txtFTPPath.Text = FTPStorage.GetFtpPath(txtFTPPath.Text);
+
+            var profile = FTPStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, cboFtpEncoding.SelectedItem.ToString());
+
+            if (!profile)
+            {
+                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TEXT, Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT, Resources.DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            // Verbindungdaten falsch
+            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

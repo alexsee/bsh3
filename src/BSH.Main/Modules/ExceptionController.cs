@@ -16,49 +16,48 @@ using Serilog;
 using System;
 using System.Windows.Forms;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+static class ExceptionController
 {
-    static class ExceptionController
+    public static void HandleGlobalException(object sender, System.Threading.ThreadExceptionEventArgs e)
     {
-        public static void HandleGlobalException(object sender, System.Threading.ThreadExceptionEventArgs e)
+        Log.Error("An unexpected error occurred {msg}.", e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString(), e.Exception);
+
+        using var dlgException = new frmError();
+        dlgException.txtError.Text = e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString();
+
+        var DialogRes = dlgException.ShowDialog();
+        if (DialogRes == DialogResult.Cancel)
         {
-            Log.Error("An unexpected error occurred {msg}.", e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString(), e.Exception);
-
-            using var dlgException = new frmError();
-            dlgException.txtError.Text = e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString();
-
-            var DialogRes = dlgException.ShowDialog();
-            if (DialogRes == DialogResult.Cancel)
-            {
-                Application.Exit();
-                Environment.Exit(0);
-            }
-            else if (DialogRes == DialogResult.Retry)
-            {
-                Application.Restart();
-                Environment.Exit(0);
-            }
+            Application.Exit();
+            Environment.Exit(0);
         }
-
-        public static void HandleGlobalException(object sender, UnhandledExceptionEventArgs e)
+        else if (DialogRes == DialogResult.Retry)
         {
-            var exception = (Exception)e.ExceptionObject;
-            Log.Error("An unexpected error occurred {msg}.", exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString(), exception);
+            Application.Restart();
+            Environment.Exit(0);
+        }
+    }
 
-            using var dlgException = new frmError();
-            dlgException.txtError.Text = exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString();
+    public static void HandleGlobalException(object sender, UnhandledExceptionEventArgs e)
+    {
+        var exception = (Exception)e.ExceptionObject;
+        Log.Error("An unexpected error occurred {msg}.", exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString(), exception);
 
-            var DialogRes = dlgException.ShowDialog();
-            if (DialogRes == DialogResult.Cancel)
-            {
-                Application.Exit();
-                Environment.Exit(0);
-            }
-            else if (DialogRes == DialogResult.Retry)
-            {
-                Application.Restart();
-                Environment.Exit(0);
-            }
+        using var dlgException = new frmError();
+        dlgException.txtError.Text = exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString();
+
+        var DialogRes = dlgException.ShowDialog();
+        if (DialogRes == DialogResult.Cancel)
+        {
+            Application.Exit();
+            Environment.Exit(0);
+        }
+        else if (DialogRes == DialogResult.Retry)
+        {
+            Application.Restart();
+            Environment.Exit(0);
         }
     }
 }

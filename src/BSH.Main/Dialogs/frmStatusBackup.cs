@@ -18,90 +18,90 @@ using BSH.Main.Properties;
 using Humanizer;
 using System;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public partial class frmStatusBackup : IStatusReport
 {
-    public partial class frmStatusBackup : IStatusReport
+    public frmStatusBackup()
     {
-        public frmStatusBackup()
+        InitializeComponent();
+    }
+
+    public void ReportAction(ActionType action, bool silent)
+    {
+        // not used
+    }
+
+    public void ReportState(JobState jobState)
+    {
+        // not used
+    }
+
+    public void ReportStatus(string title, string text)
+    {
+        if (!IsHandleCreated)
         {
-            InitializeComponent();
+            return;
         }
 
-        public bool abort = false;
+        Invoke(new Action(() => lblStatus.Text = text));
+    }
 
-        public void ReportAction(ActionType action, bool silent)
+    private DateTime lastTimeProgressRefreshed = DateTime.Now;
+
+    public void ReportProgress(int total, int current)
+    {
+        if (DateTime.Now - lastTimeProgressRefreshed < TimeSpan.FromMilliseconds(100d))
         {
+            return;
         }
 
-        public void ReportState(JobState jobState)
+        if (!IsHandleCreated)
         {
+            return;
         }
 
-        public void ReportStatus(string title, string text)
+        lastTimeProgressRefreshed = DateTime.Now;
+        Invoke(new Action(() =>
         {
-            if (!IsHandleCreated)
-            {
-                return;
-            }
+            pbarTotal.Maximum = total;
+            pbarTotal.Value = current;
+            lblFiles.Text = Resources.DLG_STATUS_FILES_PROCESSED_TEXT.FormatWith(current, total);
+        }));
+    }
 
-            Invoke(new Action(() => lblStatus.Text = text));
+    private DateTime lastTimeRefreshed = DateTime.Now;
+
+    public void ReportFileProgress(string file)
+    {
+        if (DateTime.Now - lastTimeRefreshed < TimeSpan.FromMilliseconds(100d))
+        {
+            return;
         }
 
-        private DateTime lastTimeProgressRefreshed = DateTime.Now;
-
-        public void ReportProgress(int total, int current)
+        if (!IsHandleCreated)
         {
-            if (DateTime.Now - lastTimeProgressRefreshed < TimeSpan.FromMilliseconds(100d))
-            {
-                return;
-            }
-
-            if (!IsHandleCreated)
-            {
-                return;
-            }
-
-            lastTimeProgressRefreshed = DateTime.Now;
-            Invoke(new Action(() =>
-            {
-                pbarTotal.Maximum = total;
-                pbarTotal.Value = current;
-                lblFiles.Text = Resources.DLG_STATUS_FILES_PROCESSED_TEXT.FormatWith(current, total);
-            }));
+            return;
         }
 
-        private DateTime lastTimeRefreshed = DateTime.Now;
+        lastTimeRefreshed = DateTime.Now;
+        Invoke(new Action(() => lblFile.Text = file));
+    }
 
-        public void ReportFileProgress(string file)
-        {
-            if (DateTime.Now - lastTimeRefreshed < TimeSpan.FromMilliseconds(100d))
-            {
-                return;
-            }
+    public void ReportSystemStatus(SystemStatus systemStatus)
+    {
+        // not used
+    }
 
-            if (!IsHandleCreated)
-            {
-                return;
-            }
+    private void cmdCancel_Click(object sender, EventArgs e)
+    {
+        BackupLogic.BackupController.Cancel();
+        cmdCancel.Enabled = false;
+        cmdCancel.Text = Resources.DLG_STATUS_STATUS_CANCELED_TEXT;
+    }
 
-            lastTimeRefreshed = DateTime.Now;
-            Invoke(new Action(() => lblFile.Text = file));
-        }
-
-        public void ReportSystemStatus(SystemStatus systemStatus)
-        {
-        }
-
-        private void cmdCancel_Click(object sender, EventArgs e)
-        {
-            BackupLogic.BackupController.Cancel();
-            cmdCancel.Enabled = false;
-            cmdCancel.Text = Resources.DLG_STATUS_STATUS_CANCELED_TEXT;
-        }
-
-        private void chkOptions_CheckedChanged(object sender, EventArgs e)
-        {
-            cboOptions.Enabled = chkOptions.Checked;
-        }
+    private void chkOptions_CheckedChanged(object sender, EventArgs e)
+    {
+        cboOptions.Enabled = chkOptions.Checked;
     }
 }

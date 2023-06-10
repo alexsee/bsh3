@@ -14,10 +14,9 @@
 
 using CommandLine;
 
-namespace BSH.Main.Model.CommandLine
+namespace BSH.Main.Model.CommandLine;
+
+[Verb("config", HelpText = "Shows the configuration window.")]
+public class ShowConfigurationWindowOptions
 {
-    [Verb("config", HelpText = "Shows the configuration window.")]
-    public class ShowConfigurationWindowOptions
-    {
-    }
 }

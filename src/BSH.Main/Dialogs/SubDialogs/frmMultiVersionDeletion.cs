@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public partial class frmMultiVersionDeletion
 {
-    public partial class frmMultiVersionDeletion
+    public frmMultiVersionDeletion()
     {
-        public frmMultiVersionDeletion()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

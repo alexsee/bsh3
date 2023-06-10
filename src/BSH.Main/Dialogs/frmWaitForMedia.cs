@@ -15,24 +15,23 @@
 using BSH.Main.Properties;
 using System;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public partial class frmWaitForMedia
 {
-    public partial class frmWaitForMedia
+    public frmWaitForMedia()
     {
-        public frmWaitForMedia()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        public event OnAbort_ClickEventHandler OnAbort_Click;
+    public event OnAbort_ClickEventHandler OnAbort_Click;
 
-        public delegate void OnAbort_ClickEventHandler();
+    public delegate void OnAbort_ClickEventHandler();
 
-        private void cmdCancel_Click(object sender, EventArgs e)
-        {
-            cmdCancel.Text = Resources.DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT;
-            cmdCancel.Enabled = false;
-            OnAbort_Click?.Invoke();
-        }
+    private void cmdCancel_Click(object sender, EventArgs e)
+    {
+        cmdCancel.Text = Resources.DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT;
+        cmdCancel.Enabled = false;
+        OnAbort_Click?.Invoke();
     }
 }

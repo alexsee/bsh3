@@ -15,27 +15,26 @@
 using System;
 using System.Windows.Forms;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public partial class frmPassword
 {
-    public partial class frmPassword
+    public frmPassword()
     {
-        public frmPassword()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void txtPassword_KeyDown(object sender, KeyEventArgs e)
+    private void txtPassword_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Enter)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                Button1.PerformClick();
-            }
+            Button1.PerformClick();
         }
+    }
 
-        private void txtPassword_TextChanged(object sender, EventArgs e)
-        {
-            txtPassword.Text = txtPassword.Text.Replace("\"", "");
-            txtPassword.Text = txtPassword.Text.Replace("'", "");
-        }
+    private void txtPassword_TextChanged(object sender, EventArgs e)
+    {
+        txtPassword.Text = txtPassword.Text.Replace("\"", "");
+        txtPassword.Text = txtPassword.Text.Replace("'", "");
     }
 }

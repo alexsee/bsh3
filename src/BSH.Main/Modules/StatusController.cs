@@ -22,224 +22,223 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public class StatusController : IJobReport
 {
-    public class StatusController : IJobReport
+    private static StatusController _statusController;
+
+    public static StatusController Current
     {
-        private static StatusController _statusController;
-
-        public static StatusController Current
+        get
         {
-            get
+            if (_statusController == null)
             {
-                if (_statusController == null)
+                _statusController = new StatusController();
+            }
+
+            return _statusController;
+        }
+    }
+
+    private readonly List<IStatusReport> observers = new List<IStatusReport>();
+
+    private RequestOverwriteResult lastFileOverwriteChoice = RequestOverwriteResult.None;
+
+    private ActionType lastActionType = ActionType.Check;
+
+    public JobState JobState { get; set; }
+
+    public SystemStatus SystemStatus { get; set; }
+
+    public string LastStatusTitle { get; set; }
+
+    public string LastStatusText { get; set; }
+
+    public int LastProgressTotal { get; set; }
+
+    public int LastProgressCurrent { get; set; }
+
+    public string LastFileProgress { get; set; }
+
+    public List<FileExceptionEntry> LastFilesException { get; set; }
+
+    private StatusController()
+    {
+    }
+
+    public RequestOverwriteResult LastFileOverwriteChoice { get { return lastFileOverwriteChoice; } }
+
+    public bool IsTaskRunning()
+    {
+        return JobState == JobState.RUNNING;
+    }
+
+    public void SetSystemStatus(SystemStatus status)
+    {
+        SystemStatus = status;
+        observers.ForEach(x => x.ReportSystemStatus(status));
+    }
+
+    public void ReportAction(ActionType action, bool silent)
+    {
+        lastFileOverwriteChoice = RequestOverwriteResult.None;
+        lastActionType = action;
+        observers.ForEach(x => x.ReportAction(action, silent));
+    }
+
+    public void ReportState(JobState jobState)
+    {
+        JobState = jobState;
+        foreach (var x in observers)
+        {
+            x.ReportState(jobState);
+        }
+
+        // finished successfully
+        if (jobState == JobState.FINISHED && lastActionType == ActionType.Backup && BackupLogic.ConfigurationManager.InfoBackupDone == "1")
+        {
+            NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_SUCCESSFUL_TITLE, Resources.INFO_BACKUP_SUCCESSFUL_TEXT, ToolTipIcon.Info);
+        }
+
+        if (jobState == JobState.ERROR && lastActionType == ActionType.Backup && BackupLogic.ConfigurationManager.InfoBackupDone == "1")
+        {
+            NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_UNSUCCESSFUL_TITLE, Resources.INFO_BACKUP_UNSUCCESSFUL_TEXT, ToolTipIcon.Warning);
+        }
+    }
+
+    public void ReportStatus(string title, string text)
+    {
+        LastStatusTitle = title;
+        LastStatusText = text;
+        observers.ForEach(x => x.ReportStatus(title, text));
+    }
+
+    public void ReportProgress(int total, int current)
+    {
+        LastProgressTotal = total;
+        LastProgressCurrent = current;
+        observers.ForEach(x => x.ReportProgress(total, current));
+    }
+
+    public void ReportFileProgress(string file)
+    {
+        LastFileProgress = file;
+        observers.ForEach(x => x.ReportFileProgress(file));
+    }
+
+    public void ReportExceptions(List<FileExceptionEntry> files, bool silent)
+    {
+        LastFilesException = files;
+        if (files.Count == 0 || silent)
+        {
+            return;
+        }
+
+        ShowExceptionDialog();
+    }
+
+    public RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
+    {
+        if (lastFileOverwriteChoice != RequestOverwriteResult.None)
+        {
+            return lastFileOverwriteChoice;
+        }
+
+        using (var dlgFilesOverwrite = new frmFileOverrides())
+        {
+            dlgFilesOverwrite.lblFileName1.Text = remoteFile.FileName;
+            dlgFilesOverwrite.lblFileName2.Text = localFile.FileName;
+            dlgFilesOverwrite.lblFileDateChanged1.Text = Resources.LBL_CHANGE_DATE + remoteFile.FileDateModified.ToString();
+            dlgFilesOverwrite.lblFileDateChanged2.Text = Resources.LBL_CHANGE_DATE + localFile.FileDateModified.ToString();
+            dlgFilesOverwrite.lblFileSize1.Text = Resources.LBL_SIZE + remoteFile.FileSize.Bytes().Humanize();
+            dlgFilesOverwrite.lblFileSize2.Text = Resources.LBL_SIZE + localFile.FileSize.Bytes().Humanize();
+            if (!localFile.FilePath.StartsWith(@"\\"))
+            {
+                dlgFilesOverwrite.picIco1.Image = Icon.ExtractAssociatedIcon(localFile.FilePath + localFile.FileName).ToBitmap();
+            }
+
+            dlgFilesOverwrite.picIco2.Image = dlgFilesOverwrite.picIco1.Image;
+
+            // cancel
+            if (dlgFilesOverwrite.ShowDialog() == DialogResult.Cancel)
+            {
+                BackupLogic.BackupController.Cancel();
+                return RequestOverwriteResult.NoOverwrite;
+            }
+
+            // overwrite
+            if (dlgFilesOverwrite.DialogResult == DialogResult.OK)
+            {
+                if (dlgFilesOverwrite.chkAllConflicts.Checked)
                 {
-                    _statusController = new StatusController();
+                    lastFileOverwriteChoice = RequestOverwriteResult.OverwriteAll;
+                    return RequestOverwriteResult.OverwriteAll;
                 }
 
-                return _statusController;
-            }
-        }
-
-        private readonly List<IStatusReport> observers = new List<IStatusReport>();
-
-        private RequestOverwriteResult lastFileOverwriteChoice = RequestOverwriteResult.None;
-
-        private ActionType lastActionType = ActionType.Check;
-
-        public JobState JobState { get; set; }
-
-        public SystemStatus SystemStatus { get; set; }
-
-        public string LastStatusTitle { get; set; }
-
-        public string LastStatusText { get; set; }
-
-        public int LastProgressTotal { get; set; }
-
-        public int LastProgressCurrent { get; set; }
-
-        public string LastFileProgress { get; set; }
-
-        public List<FileExceptionEntry> LastFilesException { get; set; }
-
-        private StatusController()
-        {
-        }
-
-        public RequestOverwriteResult LastFileOverwriteChoice { get { return lastFileOverwriteChoice; } }
-
-        public bool IsTaskRunning()
-        {
-            return JobState == JobState.RUNNING;
-        }
-
-        public void SetSystemStatus(SystemStatus status)
-        {
-            SystemStatus = status;
-            observers.ForEach(x => x.ReportSystemStatus(status));
-        }
-
-        public void ReportAction(ActionType action, bool silent)
-        {
-            lastFileOverwriteChoice = RequestOverwriteResult.None;
-            lastActionType = action;
-            observers.ForEach(x => x.ReportAction(action, silent));
-        }
-
-        public void ReportState(JobState jobState)
-        {
-            JobState = jobState;
-            foreach (var x in observers)
-            {
-                x.ReportState(jobState);
+                return RequestOverwriteResult.Overwrite;
             }
 
-            // finished successfully
-            if (jobState == JobState.FINISHED && lastActionType == ActionType.Backup && BackupLogic.ConfigurationManager.InfoBackupDone == "1")
+            // ignore
+            if (dlgFilesOverwrite.DialogResult == DialogResult.Ignore)
             {
-                NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_SUCCESSFUL_TITLE, Resources.INFO_BACKUP_SUCCESSFUL_TEXT, ToolTipIcon.Info);
-            }
-
-            if (jobState == JobState.ERROR && lastActionType == ActionType.Backup && BackupLogic.ConfigurationManager.InfoBackupDone == "1")
-            {
-                NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_UNSUCCESSFUL_TITLE, Resources.INFO_BACKUP_UNSUCCESSFUL_TEXT, ToolTipIcon.Warning);
-            }
-        }
-
-        public void ReportStatus(string title, string text)
-        {
-            LastStatusTitle = title;
-            LastStatusText = text;
-            observers.ForEach(x => x.ReportStatus(title, text));
-        }
-
-        public void ReportProgress(int total, int current)
-        {
-            LastProgressTotal = total;
-            LastProgressCurrent = current;
-            observers.ForEach(x => x.ReportProgress(total, current));
-        }
-
-        public void ReportFileProgress(string file)
-        {
-            LastFileProgress = file;
-            observers.ForEach(x => x.ReportFileProgress(file));
-        }
-
-        public void ReportExceptions(List<FileExceptionEntry> files, bool silent)
-        {
-            LastFilesException = files;
-            if (files.Count == 0 || silent)
-            {
-                return;
-            }
-
-            ShowExceptionDialog();
-        }
-
-        public RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
-        {
-            if (lastFileOverwriteChoice != RequestOverwriteResult.None)
-            {
-                return lastFileOverwriteChoice;
-            }
-
-            using (var dlgFilesOverwrite = new frmFileOverrides())
-            {
-                dlgFilesOverwrite.lblFileName1.Text = remoteFile.FileName;
-                dlgFilesOverwrite.lblFileName2.Text = localFile.FileName;
-                dlgFilesOverwrite.lblFileDateChanged1.Text = Resources.LBL_CHANGE_DATE + remoteFile.FileDateModified.ToString();
-                dlgFilesOverwrite.lblFileDateChanged2.Text = Resources.LBL_CHANGE_DATE + localFile.FileDateModified.ToString();
-                dlgFilesOverwrite.lblFileSize1.Text = Resources.LBL_SIZE + remoteFile.FileSize.Bytes().Humanize();
-                dlgFilesOverwrite.lblFileSize2.Text = Resources.LBL_SIZE + localFile.FileSize.Bytes().Humanize();
-                if (!localFile.FilePath.StartsWith(@"\\"))
+                if (dlgFilesOverwrite.chkAllConflicts.Checked)
                 {
-                    dlgFilesOverwrite.picIco1.Image = Icon.ExtractAssociatedIcon(localFile.FilePath + localFile.FileName).ToBitmap();
-                }
-
-                dlgFilesOverwrite.picIco2.Image = dlgFilesOverwrite.picIco1.Image;
-
-                // cancel
-                if (dlgFilesOverwrite.ShowDialog() == DialogResult.Cancel)
-                {
-                    BackupLogic.BackupController.Cancel();
-                    return RequestOverwriteResult.NoOverwrite;
-                }
-
-                // overwrite
-                if (dlgFilesOverwrite.DialogResult == DialogResult.OK)
-                {
-                    if (dlgFilesOverwrite.chkAllConflicts.Checked)
-                    {
-                        lastFileOverwriteChoice = RequestOverwriteResult.OverwriteAll;
-                        return RequestOverwriteResult.OverwriteAll;
-                    }
-
-                    return RequestOverwriteResult.Overwrite;
-                }
-
-                // ignore
-                if (dlgFilesOverwrite.DialogResult == DialogResult.Ignore)
-                {
-                    if (dlgFilesOverwrite.chkAllConflicts.Checked)
-                    {
-                        lastFileOverwriteChoice = RequestOverwriteResult.NoOverwriteAll;
-                        return RequestOverwriteResult.NoOverwriteAll;
-                    }
-
-                    return RequestOverwriteResult.NoOverwrite;
+                    lastFileOverwriteChoice = RequestOverwriteResult.NoOverwriteAll;
+                    return RequestOverwriteResult.NoOverwriteAll;
                 }
 
                 return RequestOverwriteResult.NoOverwrite;
             }
+
+            return RequestOverwriteResult.NoOverwrite;
+        }
+    }
+
+    public void AddObserver(IStatusReport jobReport, bool triggerLastState = false)
+    {
+        observers.Add(jobReport);
+    }
+
+    public void RemoveObserver(IStatusReport jobReport)
+    {
+        observers.Remove(jobReport);
+    }
+
+    public void ShowExceptionDialog()
+    {
+        if (LastFilesException.Count == 0)
+        {
+            return;
         }
 
-        public void AddObserver(IStatusReport jobReport, bool triggerLastState = false)
+        // files with exceptions
+        using (var dlgFileNotCopied = new frmFileNotCopied())
         {
-            observers.Add(jobReport);
-        }
-
-        public void RemoveObserver(IStatusReport jobReport)
-        {
-            observers.Remove(jobReport);
-        }
-
-        public void ShowExceptionDialog()
-        {
-            if (LastFilesException.Count == 0)
+            foreach (var entry in LastFilesException)
             {
-                return;
-            }
+                var innerException = entry.Exception.Message.ToString();
 
-            // files with exceptions
-            using (var dlgFileNotCopied = new frmFileNotCopied())
-            {
-                foreach (var entry in LastFilesException)
+                // show inner exception if file not processed exception
+                if (entry.Exception.GetType() == typeof(FileNotProcessedException) &&
+                    entry.Exception.InnerException != null)
                 {
-                    var innerException = entry.Exception.Message.ToString();
-
-                    // show inner exception if file not processed exception
-                    if (entry.Exception.GetType() == typeof(FileNotProcessedException) &&
-                        entry.Exception.InnerException != null)
-                    {
-                        innerException = entry.Exception.InnerException.Message.ToString();
-                    }
-
-                    var newEntry = new ListViewItem();
-                    newEntry.Text = entry.File.FileNamePath();
-                    newEntry.SubItems.Add(innerException);
-                    newEntry.Tag = entry;
-                    dlgFileNotCopied.lvFiles.Items.Add(newEntry);
+                    innerException = entry.Exception.InnerException.Message.ToString();
                 }
 
-                dlgFileNotCopied.ShowDialog();
+                var newEntry = new ListViewItem();
+                newEntry.Text = entry.File.FileNamePath();
+                newEntry.SubItems.Add(innerException);
+                newEntry.Tag = entry;
+                dlgFileNotCopied.lvFiles.Items.Add(newEntry);
             }
-        }
 
-        public void RequestShowErrorInsufficientDiskSpace()
-        {
-            PresentationController.ShowErrorInsufficientDiskSpace();
+            dlgFileNotCopied.ShowDialog();
         }
+    }
+
+    public void RequestShowErrorInsufficientDiskSpace()
+    {
+        PresentationController.ShowErrorInsufficientDiskSpace();
     }
 }

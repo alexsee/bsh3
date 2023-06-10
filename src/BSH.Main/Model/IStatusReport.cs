@@ -15,20 +15,19 @@
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public interface IStatusReport
 {
-    public interface IStatusReport
-    {
-        void ReportAction(ActionType action, bool silent);
+    void ReportAction(ActionType action, bool silent);
 
-        void ReportState(JobState jobState);
+    void ReportState(JobState jobState);
 
-        void ReportStatus(string title, string text);
+    void ReportStatus(string title, string text);
 
-        void ReportProgress(int total, int current);
+    void ReportProgress(int total, int current);
 
-        void ReportFileProgress(string file);
+    void ReportFileProgress(string file);
 
-        void ReportSystemStatus(SystemStatus systemStatus);
-    }
+    void ReportSystemStatus(SystemStatus systemStatus);
 }
