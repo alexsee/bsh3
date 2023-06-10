@@ -347,7 +347,7 @@ public class BackupController
         // run restore job
         var fileOverwrite = FileOverwrite.Ask;
 
-        foreach (string file in files)
+        foreach (var file in files)
         {
             try
             {
@@ -425,7 +425,7 @@ public class BackupController
         }
 
         // run delete job
-        foreach (string version in versions)
+        foreach (var version in versions)
         {
             try
             {

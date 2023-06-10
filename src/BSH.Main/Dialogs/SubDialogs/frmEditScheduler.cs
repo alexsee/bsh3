@@ -207,7 +207,7 @@ namespace Brightbits.BSH.Main
             // Automatische Backups
             foreach (ListViewItem entry in lwTimeSchedule.Items)
             {
-                string parsedDate = Convert.ToDateTime(entry.Tag).ToString("dd.MM.yyyy HH:mm:ss");
+                var parsedDate = Convert.ToDateTime(entry.Tag).ToString("dd.MM.yyyy HH:mm:ss");
                 switch (entry.SubItems[0].Tag)
                 {
                     case 0:

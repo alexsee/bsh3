@@ -158,7 +158,7 @@ namespace Brightbits.BSH.Main
 
         private static void CheckSingleInstance()
         {
-            mutex = new System.Threading.Mutex(true, "BackupServiceHome3", out bool exclusive);
+            mutex = new System.Threading.Mutex(true, "BackupServiceHome3", out var exclusive);
             if (!exclusive)
             {
                 Log.Warning("Another instance is already running. Exiting...");

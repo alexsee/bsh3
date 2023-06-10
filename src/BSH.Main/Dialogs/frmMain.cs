@@ -359,7 +359,7 @@ namespace Brightbits.BSH.Main
         {
             try
             {
-                string d = DateTime.Now.ToString("yyyyMMdd");
+                var d = DateTime.Now.ToString("yyyyMMdd");
                 Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\Alexosoft\\Backup Service Home 3\\log" + d + ".txt");
             }
             catch

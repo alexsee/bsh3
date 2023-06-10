@@ -210,7 +210,7 @@ static class BackupLogic
 
     private static async void RemindUserOldBackup(object sender, EventArgs e)
     {
-        Timer tmr = (Timer)sender;
+        var tmr = (Timer)sender;
         tmr.Stop();
         tmr.Dispose();
 
@@ -478,7 +478,7 @@ static class BackupLogic
         while (reader.Read())
         {
             var scheduleDate = reader.GetDateTimeParsed("timDate");
-            int scheduleType = reader.GetInt32("timType");
+            var scheduleType = reader.GetInt32("timType");
 
             if (scheduleType == 1)
             {
@@ -668,7 +668,7 @@ static class BackupLogic
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
             // Vollsicherung durchführen?
-            bool FullBackup = false;
+            var FullBackup = false;
             if (!string.IsNullOrEmpty(ConfigurationManager.ScheduleFullBackup))
             {
                 // Letzte Vollsicherung ermitteln

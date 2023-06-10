@@ -42,7 +42,7 @@ namespace Brightbits.BSH.Main
 
         public static void HandleGlobalException(object sender, UnhandledExceptionEventArgs e)
         {
-            Exception exception = (Exception)e.ExceptionObject;
+            var exception = (Exception)e.ExceptionObject;
             Log.Error("An unexpected error occurred {msg}.", exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString(), exception);
 
             using var dlgException = new frmError();

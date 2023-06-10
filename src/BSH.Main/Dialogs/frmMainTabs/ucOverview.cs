@@ -103,7 +103,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // retrieve details from database
-                long freeSpace = long.Parse(BackupLogic.ConfigurationManager.FreeSpace);
+                var freeSpace = long.Parse(BackupLogic.ConfigurationManager.FreeSpace);
                 lblBdSpaceAvailable.Text = (freeSpace == 0L) ? Resources.DLG_UC_OVERVIEW_LBL_FREE_SPACE_NOT_AVAILABLE_TEXT : freeSpace.Bytes().Humanize();
 
                 // compression
@@ -120,7 +120,7 @@ namespace Brightbits.BSH.Main
                     lblOldBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT;
                     lblBdOldestBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT;
 
-                    int countBackup = await BackupLogic.QueryManager.GetNumberOfVersionsAsync();
+                    var countBackup = await BackupLogic.QueryManager.GetNumberOfVersionsAsync();
                     if (countBackup >= 20 && !string.IsNullOrEmpty(BackupLogic.ConfigurationManager.BackupSize))
                     {
                         try

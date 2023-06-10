@@ -1562,7 +1562,7 @@ public partial class frmBrowser : IStatusReport
         // Eigenschaften anzeigen
         using (var dlgFileProperties = new frmFileProperties())
         {
-            dlgFileProperties.browserWindow = this;
+            dlgFileProperties.BrowserWindow = this;
             dlgFileProperties.lblFileName.Text = lvFiles.SelectedItems[0].Text;
             dlgFileProperties.lblFilePath.Text = await BackupLogic.QueryManager.GetFullRestoreFolderAsync(lvFiles.SelectedItems[0].Tag.ToString(), selectedVersion.Id);
             dlgFileProperties.toolTipCtl.SetToolTip(dlgFileProperties.lblFilePath, dlgFileProperties.lblFilePath.Text);

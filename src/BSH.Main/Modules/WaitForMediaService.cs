@@ -56,7 +56,7 @@ public class WaitForMediaService
         }
 
         // wait for media
-        bool result = await Task.Run(() =>
+        var result = await Task.Run(() =>
             {
                 while (true)
                 {

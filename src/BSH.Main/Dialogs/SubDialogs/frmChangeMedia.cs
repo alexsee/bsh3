@@ -34,7 +34,7 @@ namespace Brightbits.BSH.Main
                     // Laufwerke hinzufügen
                     var Drives = System.IO.DriveInfo.GetDrives();
                     lvBackupDrive.Items.Clear();
-                    foreach (System.IO.DriveInfo entry in Drives)
+                    foreach (var entry in Drives)
                     {
                         // Bereit?
                         if (!entry.IsReady)
@@ -43,7 +43,7 @@ namespace Brightbits.BSH.Main
                         }
 
                         // Bild
-                        int iImageKey = 2;
+                        var iImageKey = 2;
                         var gGroup = lvBackupDrive.Groups[0];
                         if (entry.DriveType == System.IO.DriveType.Fixed)
                         {
@@ -87,7 +87,7 @@ namespace Brightbits.BSH.Main
             var Drives = System.IO.DriveInfo.GetDrives();
             lvBackupDrive.Items.Clear();
 
-            foreach (System.IO.DriveInfo entry in Drives)
+            foreach (var entry in Drives)
             {
                 // Bereit?
                 if (!entry.IsReady)
@@ -96,7 +96,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Bild
-                int iImageKey = 2;
+                var iImageKey = 2;
                 var gGroup = lvBackupDrive.Groups[0];
                 if (entry.DriveType == System.IO.DriveType.Fixed)
                 {

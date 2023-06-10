@@ -90,7 +90,7 @@ namespace Brightbits.BSH.Main
         public void ReportState(JobState jobState)
         {
             JobState = jobState;
-            foreach (IStatusReport x in observers)
+            foreach (var x in observers)
             {
                 x.ReportState(jobState);
             }
