@@ -191,7 +191,7 @@ public class FileSystemStorage : Storage, IStorage
     /// Check if we can actually write to the storage
     /// </summary>
     /// <returns></returns>
-    private bool CanWriteToStorage(string folder)
+    private static bool CanWriteToStorage(string folder)
     {
         try
         {

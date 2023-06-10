@@ -12,37 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Engine.Storage
+namespace Brightbits.BSH.Engine.Storage;
+
+public abstract class Storage
 {
-    public abstract class Storage
+    protected static string CleanRemoteFileName(string remoteFile)
     {
-        protected string CleanRemoteFileName(string remoteFile)
+        var result = remoteFile;
+
+        if (remoteFile.StartsWith('\\'))
         {
-            var result = remoteFile;
-
-            if (remoteFile.StartsWith("\\"))
+            if (remoteFile.Length > 1)
             {
-                if (remoteFile.Length > 1)
-                {
-                    result = remoteFile.Substring(1);
-                }
-                else
-                {
-                    return "";
-                }
+                result = remoteFile.Substring(1);
             }
-
-            return result;
+            else
+            {
+                return "";
+            }
         }
 
-        protected string GetLocalFileName(string localFile)
-        {
-            if (localFile.StartsWith("\\\\"))
-            {
-                return localFile;
-            }
+        return result;
+    }
 
-            return "\\\\?\\" + localFile;
+    protected static string GetLocalFileName(string localFile)
+    {
+        if (localFile.StartsWith("\\\\"))
+        {
+            return localFile;
         }
+
+        return "\\\\?\\" + localFile;
     }
 }

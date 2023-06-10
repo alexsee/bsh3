@@ -57,7 +57,7 @@ namespace Brightbits.BSH.Main
                 }
 
                 // Dateigröße einschränken
-                chkFilesBigger.Checked = string.IsNullOrEmpty(BackupLogic.ConfigurationManager.ExcludeFileBigger) ? false : true;
+                chkFilesBigger.Checked = !string.IsNullOrEmpty(BackupLogic.ConfigurationManager.ExcludeFileBigger);
                 if (chkFilesBigger.Checked)
                 {
                     txtFilesBigger.Value = decimal.Parse(BackupLogic.ConfigurationManager.ExcludeFileBigger);
@@ -91,7 +91,7 @@ namespace Brightbits.BSH.Main
             // Verzeichnisse ausschließen
             if (lstExcludeFolders.Items.Count > 0)
             {
-                string sExcludeFolders = string.Join("|", lstExcludeFolders.Items.Cast<object>().Select(x => lstExcludeFolders.GetItemText(x)));
+                var sExcludeFolders = string.Join("|", lstExcludeFolders.Items.Cast<object>().Select(x => lstExcludeFolders.GetItemText(x)));
                 BackupLogic.ConfigurationManager.ExcludeFolder = sExcludeFolders;
             }
             else
@@ -102,7 +102,7 @@ namespace Brightbits.BSH.Main
             // Dateitypen ausschließen
             if (lstExcludeFiles.Items.Count > 0)
             {
-                string sExcludeFiles = string.Join("|", lstExcludeFiles.Items.Cast<object>().Select(x => lstExcludeFiles.GetItemText(x)));
+                var sExcludeFiles = string.Join("|", lstExcludeFiles.Items.Cast<object>().Select(x => lstExcludeFiles.GetItemText(x)));
                 BackupLogic.ConfigurationManager.ExcludeFileTypes = sExcludeFiles;
             }
             else
@@ -140,7 +140,7 @@ namespace Brightbits.BSH.Main
             // Datei ausschließen
             if (lstExcludeSingleFile.Items.Count > 0)
             {
-                var sExcludeSingleFile = string.Join("|", lstExcludeSingleFile.Items.Cast<object>().Select(x => lstExcludeSingleFile.GetItemText(x))); ;
+                var sExcludeSingleFile = string.Join("|", lstExcludeSingleFile.Items.Cast<object>().Select(lstExcludeSingleFile.GetItemText));
                 BackupLogic.ConfigurationManager.ExcludeFile = sExcludeSingleFile;
             }
             else
@@ -154,57 +154,55 @@ namespace Brightbits.BSH.Main
 
         private void cmdAddFolders_Click(object sender, EventArgs e)
         {
-            using (var dlgFolderBrowser = new FolderBrowserDialog())
+            using var dlgFolderBrowser = new FolderBrowserDialog();
+            dlgFolderBrowser.SelectedPath = onLoadPath;
+
+            if (dlgFolderBrowser.ShowDialog() != DialogResult.OK)
             {
-                dlgFolderBrowser.SelectedPath = onLoadPath;
-
-                if (dlgFolderBrowser.ShowDialog() != DialogResult.OK)
-                {
-                    return;
-                }
-
-                // Verzeichnis soll gefiltert werden
-                // Zunächst prüfen, ob Verzeichnis in einem der Quellverzeichnisse
-                bool bAdded = false;
-                foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
-                {
-                    if (!dlgFolderBrowser.SelectedPath.ToLower().Contains(entry.ToLower()))
-                    {
-                        continue;
-                    }
-
-                    // Verzeichnis kann sortiert werden
-                    var sTemp = dlgFolderBrowser.SelectedPath.Replace(entry.Substring(0, entry.LastIndexOf(@"\")), "");
-
-                    if (!string.IsNullOrEmpty(sTemp))
-                    {
-                        // Nachschauen, ob schon drin
-                        foreach (var entry2 in lstExcludeFolders.Items)
-                        {
-                            if (lstExcludeFolders.GetItemText(entry2) == sTemp)
-                            {
-                                // Eintrag gibts schon
-                                onLoadPath = dlgFolderBrowser.SelectedPath;
-                                return;
-                            }
-                        }
-
-                        lstExcludeFolders.Items.Add(sTemp);
-                        bAdded = true;
-                        onLoadPath = dlgFolderBrowser.SelectedPath;
-                        return;
-                    }
-                }
-
-                if (!bAdded)
-                {
-                    // Verzeichnis nicht in Quellverzeichnis
-                    MessageBox.Show(Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT, Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                onLoadPath = dlgFolderBrowser.SelectedPath;
+                return;
             }
+
+            // Verzeichnis soll gefiltert werden
+            // Zunächst prüfen, ob Verzeichnis in einem der Quellverzeichnisse
+            var bAdded = false;
+            foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
+            {
+                if (!dlgFolderBrowser.SelectedPath.ToLower().Contains(entry.ToLower()))
+                {
+                    continue;
+                }
+
+                // Verzeichnis kann sortiert werden
+                var sTemp = dlgFolderBrowser.SelectedPath.Replace(entry[..entry.LastIndexOf(@"\")], "");
+
+                if (!string.IsNullOrEmpty(sTemp))
+                {
+                    // Nachschauen, ob schon drin
+                    foreach (var entry2 in lstExcludeFolders.Items)
+                    {
+                        if (lstExcludeFolders.GetItemText(entry2) == sTemp)
+                        {
+                            // Eintrag gibts schon
+                            onLoadPath = dlgFolderBrowser.SelectedPath;
+                            return;
+                        }
+                    }
+
+                    lstExcludeFolders.Items.Add(sTemp);
+                    bAdded = true;
+                    onLoadPath = dlgFolderBrowser.SelectedPath;
+                    return;
+                }
+            }
+
+            if (!bAdded)
+            {
+                // Verzeichnis nicht in Quellverzeichnis
+                MessageBox.Show(Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT, Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            onLoadPath = dlgFolderBrowser.SelectedPath;
         }
 
         private void cmdDeleteFolders_Click(object sender, EventArgs e)
@@ -234,12 +232,12 @@ namespace Brightbits.BSH.Main
 
                 if (sInput.StartsWith('*'))
                 {
-                    sInput = sInput.Substring(1, sInput.Length - 1);
+                    sInput = sInput[1..];
                 }
 
                 if (sInput.StartsWith('.'))
                 {
-                    sInput = sInput.Substring(1, sInput.Length - 1);
+                    sInput = sInput[1..];
                 }
 
                 // Nachschauen, ob schon drin
@@ -333,7 +331,7 @@ namespace Brightbits.BSH.Main
                 foreach (var File in dlgOpenFile.FileNames)
                 {
                     // Zunächst prüfen, ob Datei in einem der Quellverzeichnisse
-                    bool bAdded = false;
+                    var bAdded = false;
                     foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
                     {
                         if (!System.IO.Path.GetFullPath(File).ToLower().Contains(entry.ToLower()))
@@ -342,11 +340,11 @@ namespace Brightbits.BSH.Main
                         }
 
                         // Datei kann sortiert werden
-                        string sTemp = File.Replace(entry.Substring(0, entry.LastIndexOf(@"\")), "");
+                        var sTemp = File.Replace(entry.Substring(0, entry.LastIndexOf(@"\")), "");
                         if (!string.IsNullOrEmpty(sTemp))
                         {
                             // Nachschauen, ob schon drin
-                            foreach (object entry2 in lstExcludeSingleFile.Items)
+                            foreach (var entry2 in lstExcludeSingleFile.Items)
                             {
                                 if ((lstExcludeSingleFile.GetItemText(entry2) ?? "") == (sTemp ?? ""))
                                 {

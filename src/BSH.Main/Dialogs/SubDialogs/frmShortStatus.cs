@@ -20,77 +20,89 @@ using Humanizer;
 using System;
 using System.Collections.Generic;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public partial class frmShortStatus : IJobReport
 {
-    public partial class frmShortStatus : IJobReport
+    public frmShortStatus()
     {
-        public frmShortStatus()
+        InitializeComponent();
+    }
+
+    public void ReportAction(ActionType action, bool silent)
+    {
+        // not used
+    }
+
+    public void ReportState(JobState jobState)
+    {
+        // not used
+    }
+
+    public void ReportStatus(string title, string text)
+    {
+        if (!IsHandleCreated)
         {
-            InitializeComponent();
+            return;
         }
 
-        public void ReportAction(ActionType action, bool silent)
+        Invoke(new Action(() => lblStatus.Text = title));
+    }
+
+    public void ReportProgress(int total, int current)
+    {
+        if (!IsHandleCreated)
         {
+            return;
         }
 
-        public void ReportState(JobState jobState)
+        Invoke(new Action(() =>
         {
+            pbarStatus.Maximum = total;
+            pbarStatus.Value = current;
+        }));
+    }
+
+    private DateTime lastTimeRefreshed = DateTime.Now;
+
+    public void ReportFileProgress(string file)
+    {
+        if (!IsHandleCreated)
+        {
+            return;
         }
 
-        public void ReportStatus(string title, string text)
+        if (DateTime.Now - lastTimeRefreshed < TimeSpan.FromMilliseconds(100d))
         {
-            if (!IsHandleCreated)
+            return;
+        }
+
+        lastTimeRefreshed = DateTime.Now;
+        Invoke(new Action(() =>
+        {
+            if (string.IsNullOrEmpty(file))
             {
-                return;
+                lblStatus.Text = Resources.DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT;
             }
-
-            Invoke(new Action(() => lblStatus.Text = title));
-        }
-
-        public void ReportProgress(int total, int current)
-        {
-            if (!IsHandleCreated)
+            else
             {
-                return;
+                lblStatus.Text = Resources.DLG_SHORT_STATUS_FILES_STATUS_TEXT.FormatWith(System.IO.Path.GetFileName(file));
             }
+        }));
+    }
 
-            Invoke(new Action(() =>
-            {
-                pbarStatus.Maximum = total;
-                pbarStatus.Value = current;
-            }));
-        }
+    public void ReportExceptions(List<FileExceptionEntry> files, bool silent)
+    {
+        // not used
+    }
 
-        private DateTime lastTimeRefreshed = DateTime.Now;
+    public RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
+    {
+        return RequestOverwriteResult.NoOverwriteAll;
+    }
 
-        public void ReportFileProgress(string file)
-        {
-            if (!IsHandleCreated)
-            {
-                return;
-            }
-
-            if (DateTime.Now - lastTimeRefreshed < TimeSpan.FromMilliseconds(100d))
-            {
-                return;
-            }
-
-            lastTimeRefreshed = DateTime.Now;
-            Invoke(new Action(() => { if (string.IsNullOrEmpty(file)) { lblStatus.Text = Resources.DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT; } else { lblStatus.Text = Resources.DLG_SHORT_STATUS_FILES_STATUS_TEXT.FormatWith(System.IO.Path.GetFileName(file)); } }));
-        }
-
-        public void ReportExceptions(List<FileExceptionEntry> files, bool silent)
-        {
-        }
-
-        public RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
-        {
-            return RequestOverwriteResult.NoOverwriteAll;
-        }
-
-        public void RequestShowErrorInsufficientDiskSpace()
-        {
-
-        }
+    public void RequestShowErrorInsufficientDiskSpace()
+    {
+        // not used
     }
 }
