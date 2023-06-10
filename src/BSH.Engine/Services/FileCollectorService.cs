@@ -144,7 +144,7 @@ public class FileCollectorService : IFileCollectorService
         if (!string.IsNullOrEmpty(configurationManager.ExcludeFolder))
         {
             var excludeFolders = configurationManager.ExcludeFolder.Split('|');
-            if (excludeFolders.Any(entry => ("\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\").StartsWith(entry + "\\", StringComparison.CurrentCultureIgnoreCase)))
+            if (Array.Exists(excludeFolders, entry => ("\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\").StartsWith(entry + "\\", StringComparison.CurrentCultureIgnoreCase)))
             {
                 _logger.Debug("{fileName} was ignored due to file path filter.", file.FileNamePath());
                 return true;
@@ -201,7 +201,7 @@ public class FileCollectorService : IFileCollectorService
         if (!string.IsNullOrEmpty(configurationManager.ExcludeFile))
         {
             var excludeFile = configurationManager.ExcludeFile.Split('|');
-            if (excludeFile.Any(entry => file.FileNamePath().ToLower().EndsWith(entry.ToLower())))
+            if (Array.Exists(excludeFile, entry => file.FileNamePath().ToLower().EndsWith(entry.ToLower())))
             {
                 _logger.Debug("{fileName} was ignored due to file name filter.", file.FileNamePath());
                 return true;
