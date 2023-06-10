@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Engine.Jobs
+namespace Brightbits.BSH.Engine.Jobs;
+
+public enum JobState
 {
-    public enum JobState
-    {
-        NOT_STARTED,
-        RUNNING,
-        CANCELED,
-        ERROR,
-        FINISHED
-    }
+    NOT_STARTED,
+    RUNNING,
+    CANCELED,
+    ERROR,
+    FINISHED
 }

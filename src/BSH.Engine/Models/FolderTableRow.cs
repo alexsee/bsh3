@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Engine.Models
+namespace Brightbits.BSH.Engine.Models;
+
+public class FolderTableRow
 {
-    public class FolderTableRow
+    public string Folder
     {
-        public string Folder
-        {
-            get; set;
-        }
+        get; set;
+    }
 
-        public string RootPath
-        {
-            get; set;
-        }
+    public string RootPath
+    {
+        get; set;
+    }
 
-        public FolderTableRow(string folder, string rootPath)
-        {
-            Folder = folder;
-            RootPath = rootPath;
-        }
+    public FolderTableRow(string folder, string rootPath)
+    {
+        Folder = folder;
+        RootPath = rootPath;
     }
 }

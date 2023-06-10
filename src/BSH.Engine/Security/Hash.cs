@@ -14,30 +14,29 @@
 
 using System.Text;
 
-namespace Brightbits.BSH.Engine.Security
+namespace Brightbits.BSH.Engine.Security;
+
+public static class Hash
 {
-    public static class Hash
+    public static string GetMD5Hash(string input)
     {
-        public static string GetMD5Hash(string input)
+        // create a new instance of the MD5 object
+        System.Security.Cryptography.MD5.Create();
+        var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+
+        // convert the input string to a byte array and compute the hash
+        var data = md5.ComputeHash(Encoding.Default.GetBytes(input));
+
+        // Create a new Stringbuilder to collect the bytes and create a string.
+        var sBuilder = new StringBuilder();
+
+        // loop through each byte of the hashed data and format each one as a hexadecimal string
+        for (var i = 0; i < data.Length; i++)
         {
-            // create a new instance of the MD5 object
-            System.Security.Cryptography.MD5.Create();
-            var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-
-            // convert the input string to a byte array and compute the hash
-            var data = md5.ComputeHash(Encoding.Default.GetBytes(input));
-
-            // Create a new Stringbuilder to collect the bytes and create a string.
-            var sBuilder = new StringBuilder();
-
-            // loop through each byte of the hashed data and format each one as a hexadecimal string
-            for (var i = 0; i < data.Length; i++)
-            {
-                sBuilder.Append(data[i].ToString("x2"));
-            }
-
-            // Return the hexadecimal string
-            return sBuilder.ToString();
+            sBuilder.Append(data[i].ToString("x2"));
         }
+
+        // Return the hexadecimal string
+        return sBuilder.ToString();
     }
 }

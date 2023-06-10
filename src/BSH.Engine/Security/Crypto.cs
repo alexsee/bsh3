@@ -16,71 +16,70 @@ using System;
 using System.Security;
 using System.Text;
 
-namespace Brightbits.BSH.Engine.Security
+namespace Brightbits.BSH.Engine.Security;
+
+public static class Crypto
 {
-    public static class Crypto
+    static readonly byte[] entropy = Encoding.Unicode.GetBytes("vUNHSdlkflk+#sdFwe48p");
+
+    public static string EncryptString(SecureString input)
     {
-        static readonly byte[] entropy = Encoding.Unicode.GetBytes("vUNHSdlkflk+#sdFwe48p");
+        return EncryptString(input, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+    }
 
-        public static string EncryptString(SecureString input)
-        {
-            return EncryptString(input, System.Security.Cryptography.DataProtectionScope.CurrentUser);
-        }
+    public static string EncryptString(SecureString input, System.Security.Cryptography.DataProtectionScope scope)
+    {
+        var encryptedData = System.Security.Cryptography.ProtectedData.Protect(
+            Encoding.Unicode.GetBytes(ToInsecureString(input)),
+            entropy,
+            scope);
+        return Convert.ToBase64String(encryptedData);
+    }
 
-        public static string EncryptString(SecureString input, System.Security.Cryptography.DataProtectionScope scope)
+    public static SecureString DecryptString(string encryptedData)
+    {
+        return DecryptString(encryptedData, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+    }
+
+    public static SecureString DecryptString(string encryptedData, System.Security.Cryptography.DataProtectionScope scope)
+    {
+        try
         {
-            var encryptedData = System.Security.Cryptography.ProtectedData.Protect(
-                Encoding.Unicode.GetBytes(ToInsecureString(input)),
+            var decryptedData = System.Security.Cryptography.ProtectedData.Unprotect(
+                Convert.FromBase64String(encryptedData),
                 entropy,
                 scope);
-            return Convert.ToBase64String(encryptedData);
+            return ToSecureString(Encoding.Unicode.GetString(decryptedData));
         }
-
-        public static SecureString DecryptString(string encryptedData)
+        catch
         {
-            return DecryptString(encryptedData, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+            return new SecureString();
         }
+    }
 
-        public static SecureString DecryptString(string encryptedData, System.Security.Cryptography.DataProtectionScope scope)
+    public static SecureString ToSecureString(string input)
+    {
+        SecureString secure = new();
+        foreach (var c in input)
         {
-            try
-            {
-                var decryptedData = System.Security.Cryptography.ProtectedData.Unprotect(
-                    Convert.FromBase64String(encryptedData),
-                    entropy,
-                    scope);
-                return ToSecureString(Encoding.Unicode.GetString(decryptedData));
-            }
-            catch
-            {
-                return new SecureString();
-            }
+            secure.AppendChar(c);
         }
+        secure.MakeReadOnly();
+        return secure;
+    }
 
-        public static SecureString ToSecureString(string input)
+    public static string ToInsecureString(SecureString input)
+    {
+        var returnValue = string.Empty;
+        var ptr = System.Runtime.InteropServices.Marshal.SecureStringToBSTR(input);
+        try
         {
-            SecureString secure = new();
-            foreach (var c in input)
-            {
-                secure.AppendChar(c);
-            }
-            secure.MakeReadOnly();
-            return secure;
+            returnValue = System.Runtime.InteropServices.Marshal.PtrToStringBSTR(ptr);
         }
-
-        public static string ToInsecureString(SecureString input)
+        finally
         {
-            var returnValue = string.Empty;
-            var ptr = System.Runtime.InteropServices.Marshal.SecureStringToBSTR(input);
-            try
-            {
-                returnValue = System.Runtime.InteropServices.Marshal.PtrToStringBSTR(ptr);
-            }
-            finally
-            {
-                System.Runtime.InteropServices.Marshal.ZeroFreeBSTR(ptr);
-            }
-            return returnValue;
+            System.Runtime.InteropServices.Marshal.ZeroFreeBSTR(ptr);
         }
+        return returnValue;
     }
 }

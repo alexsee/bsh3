@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Engine
+namespace Brightbits.BSH.Engine;
+
+public enum ActionType
 {
-    public enum ActionType
-    {
-        Backup = 0,
-        Restore = 1,
-        Delete = 2,
-        Modify = 3,
-        Check = 4,
-        Preview = 5
-    }
+    Backup = 0,
+    Restore = 1,
+    Delete = 2,
+    Modify = 3,
+    Check = 4,
+    Preview = 5
 }

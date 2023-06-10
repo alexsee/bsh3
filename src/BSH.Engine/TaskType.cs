@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Engine
+namespace Brightbits.BSH.Engine;
+
+public enum TaskType
 {
-    public enum TaskType
-    {
-        Manual = 0,
-        Schedule = 1,
-        Auto = 2
-    }
+    Manual = 0,
+    Schedule = 1,
+    Auto = 2
 }

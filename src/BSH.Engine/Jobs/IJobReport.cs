@@ -15,24 +15,23 @@
 using System.Collections.Generic;
 using Brightbits.BSH.Engine.Models;
 
-namespace Brightbits.BSH.Engine.Jobs
+namespace Brightbits.BSH.Engine.Jobs;
+
+public interface IJobReport
 {
-    public interface IJobReport
-    {
-        void ReportAction(ActionType action, bool silent);
+    void ReportAction(ActionType action, bool silent);
 
-        void ReportState(JobState jobState);
+    void ReportState(JobState jobState);
 
-        void ReportStatus(string title, string text);
+    void ReportStatus(string title, string text);
 
-        void ReportProgress(int total, int current);
+    void ReportProgress(int total, int current);
 
-        void ReportFileProgress(string file);
+    void ReportFileProgress(string file);
 
-        void ReportExceptions(List<FileExceptionEntry> files, bool silent);
+    void ReportExceptions(List<FileExceptionEntry> files, bool silent);
 
-        RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
+    RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
 
-        void RequestShowErrorInsufficientDiskSpace();
-    }
+    void RequestShowErrorInsufficientDiskSpace();
 }
