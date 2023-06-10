@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -45,7 +46,7 @@ namespace Brightbits.BSH.Main
 
             CompletePath = CompletePath.Replace(Path, "");
 
-            for (int i = 0; i < sPath.Length; i++)
+            for (var i = 0; i < sPath.Length; i++)
             {
                 // create item
                 var newEntry = new ucNavigationItem();
@@ -62,13 +63,13 @@ namespace Brightbits.BSH.Main
                 newEntry.Width = newEntry.getWidth();
 
                 // build original path
-                string tmpPath = "";
-                for (int j = 0; j <= i; j++)
+                var tmpPath = new StringBuilder();
+                for (var j = 0; j <= i; j++)
                 {
-                    tmpPath += sPath[j] + @"\";
+                    tmpPath.Append(sPath[j] + @"\");
                 }
 
-                newEntry.Tag = tmpPath;
+                newEntry.Tag = tmpPath.ToString();
                 if (!NoClick)
                 {
                     newEntry.ItemClick += event_ItemClick;
@@ -98,7 +99,10 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        public string PathLocalized { get; set; }
+        public string PathLocalized
+        {
+            get; set;
+        }
 
         private void ucNavigation_Resize(object sender, EventArgs e)
         {

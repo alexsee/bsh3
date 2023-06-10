@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public enum TaskCompleteAction
 {
-    public enum TaskCompleteAction
-    {
-        NoAction = 0,
-        ShutdownPC = 1,
-        HibernatePC = 2
-    }
+    NoAction = 0,
+    ShutdownPC = 1,
+    HibernatePC = 2
 }

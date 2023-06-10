@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public enum SystemStatus
 {
-    public enum SystemStatus
-    {
-        NOT_CONFIGURED,
-        ACTIVATED,
-        DEACTIVATED,
-        PAUSED_DUE_TO_BATTERY,
-        UNKNOWN
-    }
+    NOT_CONFIGURED,
+    ACTIVATED,
+    DEACTIVATED,
+    PAUSED_DUE_TO_BATTERY,
+    UNKNOWN
 }

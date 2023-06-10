@@ -15,31 +15,30 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Brightbits.BSH.Engine.Exceptions
+namespace Brightbits.BSH.Engine.Exceptions;
+
+[Serializable]
+public class FileNotProcessedException : Exception
 {
-    [Serializable]
-    public class FileNotProcessedException : Exception
+    public bool RequestCancel
     {
-        public bool RequestCancel
-        {
-            get; set;
-        }
+        get; set;
+    }
 
-        public FileNotProcessedException() : base() { }
+    public FileNotProcessedException() : base() { }
 
-        public FileNotProcessedException(Exception ex, bool cancel = false) : base($"Datei konnte nicht von/nach Backupmedium kopiert werden ({ex.Message}).", ex)
-        {
-            this.RequestCancel = cancel;
-        }
+    public FileNotProcessedException(Exception ex, bool cancel = false) : base($"Datei konnte nicht von/nach Backupmedium kopiert werden ({ex.Message}).", ex)
+    {
+        this.RequestCancel = cancel;
+    }
 
-        protected FileNotProcessedException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            // ...
-        }
+    protected FileNotProcessedException(SerializationInfo info, StreamingContext context) : base(info, context)
+    {
+        // ...
+    }
 
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-        }
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        base.GetObjectData(info, context);
     }
 }

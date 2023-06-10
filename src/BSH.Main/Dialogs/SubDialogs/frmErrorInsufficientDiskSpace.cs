@@ -14,13 +14,12 @@
 
 using System.Windows.Forms;
 
-namespace BSH.Main.Dialogs.SubDialogs
+namespace BSH.Main.Dialogs.SubDialogs;
+
+public partial class frmErrorInsufficientDiskSpace : Form
 {
-    public partial class frmErrorInsufficientDiskSpace : Form
+    public frmErrorInsufficientDiskSpace()
     {
-        public frmErrorInsufficientDiskSpace()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

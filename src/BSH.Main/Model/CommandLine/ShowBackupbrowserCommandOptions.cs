@@ -14,10 +14,9 @@
 
 using CommandLine;
 
-namespace BSH.Main.Model.CommandLine
+namespace BSH.Main.Model.CommandLine;
+
+[Verb("browser", HelpText = "Shows the backup browser.")]
+public class ShowBackupbrowserCommandOptions
 {
-    [Verb("browser", HelpText = "Shows the backup browser.")]
-    public class ShowBackupbrowserCommandOptions
-    {
-    }
 }

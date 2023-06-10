@@ -27,258 +27,257 @@ using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
-namespace Brightbits.BSH.Engine.Jobs
+namespace Brightbits.BSH.Engine.Jobs;
+
+/// <summary>
+/// Class for the restore task
+/// </summary>
+public class DeleteJob : Job
 {
-    /// <summary>
-    /// Class for the restore task
-    /// </summary>
-    public class DeleteJob : Job
+    private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+
+    public string Version
     {
-        private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+        get; set;
+    }
 
-        public string Version
+    public List<FileExceptionEntry> FileErrorList
+    {
+        get; set;
+    }
+
+    public DeleteJob(IStorage storage,
+        IDbClientFactory dbClientFactory,
+        IQueryManager queryManager,
+        IConfigurationManager configurationManager,
+        bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
+    {
+        FileErrorList = new List<FileExceptionEntry>();
+    }
+
+    /// <summary>
+    /// Starts the delete task and removes files from the backup device that
+    /// are only needed to restore the specific backup.
+    /// </summary>
+    /// <exception cref="DeviceNotReadyException"></exception>
+    /// <exception cref="DatabaseFileNotUpdatedException"></exception>
+    public async Task DeleteAsync()
+    {
+        Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
+
+        // report status
+        _logger.Information("Begin delete backup.");
+
+        ReportState(JobState.RUNNING);
+        ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_DELETE_PREPARE);
+        ReportProgress(0, 0);
+
+        // check medium
+        if (!storage.CheckMedium())
         {
-            get; set;
+            _logger.Error("Backup storage is not ready. Backup will be cancelled.");
+
+            ReportState(JobState.ERROR);
+            throw new DeviceNotReadyException();
         }
 
-        public List<FileExceptionEntry> FileErrorList
+        // connect to database
+        using (var dbClient = dbClientFactory.CreateDbClient())
         {
-            get; set;
-        }
+            // begin with transaction
+            dbClient.BeginTransaction();
 
-        public DeleteJob(IStorage storage,
-            IDbClientFactory dbClientFactory,
-            IQueryManager queryManager,
-            IConfigurationManager configurationManager,
-            bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
-        {
-            FileErrorList = new List<FileExceptionEntry>();
-        }
+            // open storage
+            storage.Open();
 
-        /// <summary>
-        /// Starts the delete task and removes files from the backup device that
-        /// are only needed to restore the specific backup.
-        /// </summary>
-        /// <exception cref="DeviceNotReadyException"></exception>
-        /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-        public async Task DeleteAsync()
-        {
-            Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
+            Win32Stuff.KeepSystemAwake();
 
-            // report status
-            _logger.Information("Begin delete backup.");
-
-            ReportState(JobState.RUNNING);
-            ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_DELETE_PREPARE);
-            ReportProgress(0, 0);
-
-            // check medium
-            if (!storage.CheckMedium())
+            // obtain files to delete
+            var parameters = new IDataParameter[]
             {
-                _logger.Error("Backup storage is not ready. Backup will be cancelled.");
+                dbClient.CreateParameter("version", DbType.Int32, 0, int.Parse(Version))
+            };
 
-                ReportState(JobState.ERROR);
-                throw new DeviceNotReadyException();
-            }
+            var files = dbClient.ExecuteDataSet(CommandType.Text,
+                "SELECT b.fileName, b.filePath, c.fileversionid, c.fileType, d.versionDate, c.longfilename " +
+                "FROM filelink a, filetable b, fileversiontable c, versiontable d " +
+                "WHERE a.versionID = @version AND a.fileversionid NOT IN " +
+                "   (SELECT fileversionid FROM filelink WHERE (versionID <> @version)) " +
+                "AND a.fileversionid = c.fileversionid " +
+                "AND c.fileid = b.fileid " +
+                "AND d.versionid = c.filepackage",
+                parameters);
 
-            // connect to database
-            using (var dbClient = dbClientFactory.CreateDbClient())
+            // report progress
+            _logger.Information("{numFiles} files determined for deletion.", files.Tables[0].Rows.Count);
+
+            ReportProgress(files.Tables[0].Rows.Count, 0);
+            ReportStatus(Resources.STATUS_DELETE_REMOVE_SHORT, Resources.STATUS_DELETE_REMOVE_TEXT);
+
+            // delete files
+            for (var i = 0; i < files.Tables[0].Rows.Count; i++)
             {
-                // begin with transaction
-                dbClient.BeginTransaction();
+                var file = files.Tables[0].Rows[i];
 
-                // open storage
-                storage.Open();
+                ReportProgress(files.Tables[0].Rows.Count, i);
+                ReportFileProgress(file["fileName"]?.ToString());
 
-                Win32Stuff.KeepSystemAwake();
-
-                // obtain files to delete
-                var parameters = new IDataParameter[]
+                try
                 {
-                    dbClient.CreateParameter("version", DbType.Int32, 0, int.Parse(Version))
+                    // delete file from storage device
+                    DeleteFileFromDevice(
+                        file["fileName"].ToString(),
+                        file["filePath"].ToString(),
+                        file["longfilename"].ToString(),
+                        file["versionDate"].ToString(),
+                        file["fileType"].ToString());
+                }
+                catch (Exception ex)
+                {
+                    // file not deleted
+                    FileErrorList.Add(new FileExceptionEntry()
+                    {
+                        File = new FileTableRow() { FileName = file["fileName"].ToString(), FilePath = file["filePath"].ToString() },
+                        Exception = ex,
+                        NewVersionDate = file["versionDate"].ToString()
+                    });
+
+                    _logger.Error(ex.InnerException, "File {fileName} could not be deleted.", file["fileName"].ToString());
+                }
+
+                // update database
+                var deleteFileParams = new IDataParameter[]
+                {
+                    dbClient.CreateParameter("id", DbType.VarNumeric, 0, file["fileversionid"])
                 };
-
-                var files = dbClient.ExecuteDataSet(CommandType.Text,
-                    "SELECT b.fileName, b.filePath, c.fileversionid, c.fileType, d.versionDate, c.longfilename " +
-                    "FROM filelink a, filetable b, fileversiontable c, versiontable d " +
-                    "WHERE a.versionID = @version AND a.fileversionid NOT IN " +
-                    "   (SELECT fileversionid FROM filelink WHERE (versionID <> @version)) " +
-                    "AND a.fileversionid = c.fileversionid " +
-                    "AND c.fileid = b.fileid " +
-                    "AND d.versionid = c.filepackage",
-                    parameters);
-
-                // report progress
-                _logger.Information("{numFiles} files determined for deletion.", files.Tables[0].Rows.Count);
-
-                ReportProgress(files.Tables[0].Rows.Count, 0);
-                ReportStatus(Resources.STATUS_DELETE_REMOVE_SHORT, Resources.STATUS_DELETE_REMOVE_TEXT);
-
-                // delete files
-                for (var i = 0; i < files.Tables[0].Rows.Count; i++)
-                {
-                    var file = files.Tables[0].Rows[i];
-
-                    ReportProgress(files.Tables[0].Rows.Count, i);
-                    ReportFileProgress(file["fileName"]?.ToString());
-
-                    try
-                    {
-                        // delete file from storage device
-                        DeleteFileFromDevice(
-                            file["fileName"].ToString(),
-                            file["filePath"].ToString(),
-                            file["longfilename"].ToString(),
-                            file["versionDate"].ToString(),
-                            file["fileType"].ToString());
-                    }
-                    catch (Exception ex)
-                    {
-                        // file not deleted
-                        FileErrorList.Add(new FileExceptionEntry()
-                        {
-                            File = new FileTableRow() { FileName = file["fileName"].ToString(), FilePath = file["filePath"].ToString() },
-                            Exception = ex,
-                            NewVersionDate = file["versionDate"].ToString()
-                        });
-
-                        _logger.Error(ex.InnerException, "File {fileName} could not be deleted.", file["fileName"].ToString());
-                    }
-
-                    // update database
-                    var deleteFileParams = new IDataParameter[]
-                    {
-                        dbClient.CreateParameter("id", DbType.VarNumeric, 0, file["fileversionid"])
-                    };
-                    await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileversiontable WHERE fileversionid = @id", deleteFileParams);
-                }
-
-                // update backup metadata
-                await dbClient.ExecuteNonQueryAsync($"DELETE FROM filelink WHERE versionID = {Version}");
-                await dbClient.ExecuteNonQueryAsync("DELETE FROM filetable WHERE fileid NOT IN (SELECT fileid FROM fileversiontable)");
-                await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStatus = 1 WHERE versionID = {Version}");
-
-                await dbClient.ExecuteNonQueryAsync($"DELETE FROM folderlink WHERE versionID = {Version}");
-                await dbClient.ExecuteNonQueryAsync("DELETE FROM foldertable WHERE id NOT IN (SELECT folderid FROM folderlink)");
-
-                dbClient.CommitTransaction();
+                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileversiontable WHERE fileversionid = @id", deleteFileParams);
             }
 
-            // report exceptions during job
-            if (FileErrorList.Count > 0)
-            {
-                _logger.Error("{numFiles} could not be deleted to device.", FileErrorList.Count);
-            }
+            // update backup metadata
+            await dbClient.ExecuteNonQueryAsync($"DELETE FROM filelink WHERE versionID = {Version}");
+            await dbClient.ExecuteNonQueryAsync("DELETE FROM filetable WHERE fileid NOT IN (SELECT fileid FROM fileversiontable)");
+            await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStatus = 1 WHERE versionID = {Version}");
 
-            // refresh free diskspace
-            try
-            {
-                configurationManager.FreeSpace = storage.GetFreeSpace().ToString();
+            await dbClient.ExecuteNonQueryAsync($"DELETE FROM folderlink WHERE versionID = {Version}");
+            await dbClient.ExecuteNonQueryAsync("DELETE FROM foldertable WHERE id NOT IN (SELECT folderid FROM folderlink)");
 
-                using var dbClient = dbClientFactory.CreateDbClient();
-                configurationManager.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
-            }
-            catch (Exception ex)
-            {
-                // not important
-                _logger.Warning(ex, "Could not update free space variable due to exception.");
-            }
-
-            // clean storage folders
-            if (storage is FileSystemStorage)
-            {
-                using var dbClient = dbClientFactory.CreateDbClient();
-                using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT versiondate FROM versiontable WHERE versionid NOT IN (SELECT filepackage FROM fileversiontable)", null);
-
-                while (reader.Read())
-                {
-                    try
-                    {
-                        var remoteFolder = reader.GetString("versiondate");
-                        storage.DeleteDirectory(remoteFolder);
-                    }
-                    catch
-                    {
-                        // not necessary to handle this error
-                    }
-                }
-
-                reader.Close();
-            }
-
-            // store database version
-            if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
-            {
-                configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
-            }
-
-            // refresh free diskspace
-            await UpdateFreeDiskSpaceAsync();
-
-            // close all database connections
-            DbClientFactory.ClosePool();
-
-            // store database
-            UpdateDatabaseOnStorage();
-
-            // close storage provider
-            storage.Dispose();
-
-            // standby mode
-            Win32Stuff.AllowSystemSleep();
-
-            // report exceptions during job
-            if (FileErrorList.Count > 0)
-            {
-                ReportExceptions(FileErrorList);
-            }
-
-            _logger.Information("Deletion of backup {version} successfully.", Version);
-            ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
+            dbClient.CommitTransaction();
         }
 
-        /// <summary>
-        /// Deletes a single file from the backup device via the StorageManager.
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <param name="filePath"></param>
-        /// <param name="longFileName"></param>
-        /// <param name="versionDate"></param>
-        /// <param name="fileType"></param>
-        /// <exception cref="FileNotProcessedException"></exception>
-        private void DeleteFileFromDevice(string fileName, string filePath, string longFileName, string versionDate, string fileType)
+        // report exceptions during job
+        if (FileErrorList.Count > 0)
         {
-            // determine remote file name
-            string remoteFile;
-            if ((fileType == "1" || fileType == "2" || fileType == "6") && !string.IsNullOrEmpty(longFileName))
+            _logger.Error("{numFiles} could not be deleted to device.", FileErrorList.Count);
+        }
+
+        // refresh free diskspace
+        try
+        {
+            configurationManager.FreeSpace = storage.GetFreeSpace().ToString();
+
+            using var dbClient = dbClientFactory.CreateDbClient();
+            configurationManager.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
+        }
+        catch (Exception ex)
+        {
+            // not important
+            _logger.Warning(ex, "Could not update free space variable due to exception.");
+        }
+
+        // clean storage folders
+        if (storage is FileSystemStorage)
+        {
+            using var dbClient = dbClientFactory.CreateDbClient();
+            using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT versiondate FROM versiontable WHERE versionid NOT IN (SELECT filepackage FROM fileversiontable)", null);
+
+            while (reader.Read())
             {
-                remoteFile = Path.Combine(versionDate, "_LONGFILES_", longFileName);
-            }
-            else
-            {
-                remoteFile = Path.Combine(versionDate + filePath, fileName);
+                try
+                {
+                    var remoteFolder = reader.GetString("versiondate");
+                    storage.DeleteDirectory(remoteFolder);
+                }
+                catch
+                {
+                    // not necessary to handle this error
+                }
             }
 
-            // delete file
-            try
+            reader.Close();
+        }
+
+        // store database version
+        if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
+        {
+            configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
+        }
+
+        // refresh free diskspace
+        await UpdateFreeDiskSpaceAsync();
+
+        // close all database connections
+        DbClientFactory.ClosePool();
+
+        // store database
+        UpdateDatabaseOnStorage();
+
+        // close storage provider
+        storage.Dispose();
+
+        // standby mode
+        Win32Stuff.AllowSystemSleep();
+
+        // report exceptions during job
+        if (FileErrorList.Count > 0)
+        {
+            ReportExceptions(FileErrorList);
+        }
+
+        _logger.Information("Deletion of backup {version} successfully.", Version);
+        ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
+    }
+
+    /// <summary>
+    /// Deletes a single file from the backup device via the StorageManager.
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <param name="filePath"></param>
+    /// <param name="longFileName"></param>
+    /// <param name="versionDate"></param>
+    /// <param name="fileType"></param>
+    /// <exception cref="FileNotProcessedException"></exception>
+    private void DeleteFileFromDevice(string fileName, string filePath, string longFileName, string versionDate, string fileType)
+    {
+        // determine remote file name
+        string remoteFile;
+        if ((fileType == "1" || fileType == "2" || fileType == "6") && !string.IsNullOrEmpty(longFileName))
+        {
+            remoteFile = Path.Combine(versionDate, "_LONGFILES_", longFileName);
+        }
+        else
+        {
+            remoteFile = Path.Combine(versionDate + filePath, fileName);
+        }
+
+        // delete file
+        try
+        {
+            if (fileType == "1" || fileType == "3")
             {
-                if (fileType == "1" || fileType == "3")
-                {
-                    storage.DeleteFileFromStorage(remoteFile);
-                }
-                else if (fileType == "2" || fileType == "4")
-                {
-                    storage.DeleteFileFromStorageCompressed(remoteFile);
-                }
-                else if (fileType == "5" || fileType == "6")
-                {
-                    storage.DeleteFileFromStorageEncryped(remoteFile);
-                }
+                storage.DeleteFileFromStorage(remoteFile);
             }
-            catch (Exception ex)
+            else if (fileType == "2" || fileType == "4")
             {
-                throw new FileNotProcessedException(ex);
+                storage.DeleteFileFromStorageCompressed(remoteFile);
             }
+            else if (fileType == "5" || fileType == "6")
+            {
+                storage.DeleteFileFromStorageEncryped(remoteFile);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new FileNotProcessedException(ex);
         }
     }
 }

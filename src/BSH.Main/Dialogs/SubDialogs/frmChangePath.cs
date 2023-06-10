@@ -14,18 +14,17 @@
 
 using System;
 
-namespace Brightbits.BSH.Main
-{
-    public partial class frmChangePath
-    {
-        public frmChangePath()
-        {
-            InitializeComponent();
-        }
+namespace Brightbits.BSH.Main;
 
-        private void cboMethod_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Button1.Enabled = true;
-        }
+public partial class frmChangePath
+{
+    public frmChangePath()
+    {
+        InitializeComponent();
+    }
+
+    private void cboMethod_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        Button1.Enabled = true;
     }
 }

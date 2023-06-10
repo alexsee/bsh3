@@ -14,25 +14,24 @@
 
 using System;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public partial class frmEditVersion
 {
-    public partial class frmEditVersion
+    public frmEditVersion()
     {
-        public frmEditVersion()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void txtTitle_TextChanged(object sender, EventArgs e)
-        {
-            txtTitle.Text = txtTitle.Text.Replace("\"", "");
-            txtTitle.Text = txtTitle.Text.Replace("'", "");
-        }
+    private void txtTitle_TextChanged(object sender, EventArgs e)
+    {
+        txtTitle.Text = txtTitle.Text.Replace("\"", "");
+        txtTitle.Text = txtTitle.Text.Replace("'", "");
+    }
 
-        private void txtDescription_TextChanged(object sender, EventArgs e)
-        {
-            txtTitle.Text = txtTitle.Text.Replace("\"", "");
-            txtTitle.Text = txtTitle.Text.Replace("'", "");
-        }
+    private void txtDescription_TextChanged(object sender, EventArgs e)
+    {
+        txtTitle.Text = txtTitle.Text.Replace("\"", "");
+        txtTitle.Text = txtTitle.Text.Replace("'", "");
     }
 }

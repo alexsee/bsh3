@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Brightbits.BSH.Engine.Models
+namespace Brightbits.BSH.Engine.Models;
+
+public class ExplorerWindow
 {
-    public class ExplorerWindow
+    public string Path
     {
-        public string Path
-        {
-            get; set;
-        }
+        get; set;
+    }
 
-        public string WindowTitle
-        {
-            get; set;
-        }
+    public string WindowTitle
+    {
+        get; set;
+    }
 
-        public ExplorerWindow(string path, string windowTitle)
-        {
-            Path = path;
-            WindowTitle = windowTitle;
-        }
+    public ExplorerWindow(string path, string windowTitle)
+    {
+        Path = path;
+        WindowTitle = windowTitle;
     }
 }

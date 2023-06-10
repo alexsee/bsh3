@@ -16,22 +16,21 @@ using System;
 using System.Runtime.Serialization;
 using Brightbits.BSH.Engine.Properties;
 
-namespace Brightbits.BSH.Engine.Exceptions
+namespace Brightbits.BSH.Engine.Exceptions;
+
+[Serializable]
+public class DatabaseIncompatibleException : Exception
 {
-    [Serializable]
-    public class DatabaseIncompatibleException : Exception
+    public DatabaseIncompatibleException() : base(Resources.EXCEPTION_NEWER_DATABASE) { }
+
+    protected DatabaseIncompatibleException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
-        public DatabaseIncompatibleException() : base(Resources.EXCEPTION_NEWER_DATABASE) { }
-
-        protected DatabaseIncompatibleException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            // ...
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-        }
-
+        // ...
     }
+
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        base.GetObjectData(info, context);
+    }
+
 }

@@ -15,21 +15,20 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Brightbits.BSH.Engine.Exceptions
+namespace Brightbits.BSH.Engine.Exceptions;
+
+[Serializable]
+public class PasswordRequiredException : Exception
 {
-    [Serializable]
-    public class PasswordRequiredException : Exception
+    public PasswordRequiredException() : base() { }
+
+    protected PasswordRequiredException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
-        public PasswordRequiredException() : base() { }
+        // ...
+    }
 
-        protected PasswordRequiredException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            // ...
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-        }
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        base.GetObjectData(info, context);
     }
 }

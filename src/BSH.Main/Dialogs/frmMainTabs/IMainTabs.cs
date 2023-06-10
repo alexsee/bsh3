@@ -14,15 +14,14 @@
 
 using System.Windows.Forms;
 
-namespace Brightbits.BSH.Main
-{
-    public interface IMainTabs
-    {
-        void OpenTab();
-        void CloseTab();
+namespace Brightbits.BSH.Main;
 
-        string Title { get; }
-        UserControl UserControlInstance { get; }
-        frmMain Super { set; }
-    }
+public interface IMainTabs
+{
+    void OpenTab();
+    void CloseTab();
+
+    string Title { get; }
+    UserControl UserControlInstance { get; }
+    frmMain Super { set; }
 }

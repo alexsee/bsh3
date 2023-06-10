@@ -15,56 +15,55 @@
 using BSH.Main.Properties;
 using System;
 
-namespace Brightbits.BSH.Main
+namespace Brightbits.BSH.Main;
+
+public partial class frmAddSchedule
 {
-    public partial class frmAddSchedule
+    public frmAddSchedule()
     {
-        public frmAddSchedule()
+        InitializeComponent();
+    }
+
+    private void cbIntervall_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        switch (cbIntervall.SelectedIndex)
         {
-            InitializeComponent();
+            case 0:
+                // once
+                dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_ONCE;
+                dtpStartTime.ShowUpDown = false;
+
+                break;
+
+            case 1:
+                // hourly
+                dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_HOURLY;
+                dtpStartTime.ShowUpDown = true;
+
+                break;
+
+            case 2:
+                // daily
+                dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_DAILY;
+                dtpStartTime.ShowUpDown = true;
+
+                break;
+
+            case 3:
+                // weekly
+                dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_WEEKLY;
+                dtpStartTime.ShowUpDown = false;
+
+                break;
+
+            case 4:
+                // monthly
+                dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_MONTHLY;
+                dtpStartTime.ShowUpDown = true;
+
+                break;
         }
 
-        private void cbIntervall_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            switch (cbIntervall.SelectedIndex)
-            {
-                case 0:
-                    // once
-                    dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_ONCE;
-                    dtpStartTime.ShowUpDown = false;
-
-                    break;
-
-                case 1:
-                    // hourly
-                    dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_HOURLY;
-                    dtpStartTime.ShowUpDown = true;
-
-                    break;
-
-                case 2:
-                    // daily
-                    dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_DAILY;
-                    dtpStartTime.ShowUpDown = true;
-
-                    break;
-
-                case 3:
-                    // weekly
-                    dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_WEEKLY;
-                    dtpStartTime.ShowUpDown = false;
-
-                    break;
-
-                case 4:
-                    // monthly
-                    dtpStartTime.CustomFormat = Resources.DLG_ADD_SCHEDULE_FORMAT_MONTHLY;
-                    dtpStartTime.ShowUpDown = true;
-
-                    break;
-            }
-
-            dtpStartTime.Enabled = true;
-        }
+        dtpStartTime.Enabled = true;
     }
 }

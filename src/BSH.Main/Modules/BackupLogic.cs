@@ -210,7 +210,7 @@ static class BackupLogic
 
     private static async void RemindUserOldBackup(object sender, EventArgs e)
     {
-        Timer tmr = (Timer)sender;
+        var tmr = (Timer)sender;
         tmr.Stop();
         tmr.Dispose();
 
@@ -400,7 +400,7 @@ static class BackupLogic
             if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(DateTime.DaysInMonth(version.CreationDate.Year, version.CreationDate.Month), 0, 0, 0))
             {
                 // keep if last backup of the week
-                if (listVersions.Any(x =>
+                if (listVersions.Exists(x =>
                     version.CreationDate != x.CreationDate &&
                     version.CreationDate.Year == x.CreationDate.Year &&
                     version.CreationDate.Month == x.CreationDate.Month &&
@@ -414,7 +414,7 @@ static class BackupLogic
             else
             {
                 // keep if last backup on that day
-                if (listVersions.Any(x =>
+                if (listVersions.Exists(x =>
                     version.CreationDate != x.CreationDate &&
                     version.CreationDate.Year == x.CreationDate.Year &&
                     version.CreationDate.Month == x.CreationDate.Month &&
@@ -478,7 +478,7 @@ static class BackupLogic
         while (reader.Read())
         {
             var scheduleDate = reader.GetDateTimeParsed("timDate");
-            int scheduleType = reader.GetInt32("timType");
+            var scheduleType = reader.GetInt32("timType");
 
             if (scheduleType == 1)
             {
@@ -668,7 +668,7 @@ static class BackupLogic
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
             // Vollsicherung durchführen?
-            bool FullBackup = false;
+            var FullBackup = false;
             if (!string.IsNullOrEmpty(ConfigurationManager.ScheduleFullBackup))
             {
                 // Letzte Vollsicherung ermitteln

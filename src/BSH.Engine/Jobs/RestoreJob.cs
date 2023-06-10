@@ -27,6 +27,7 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
+using System.Linq;
 
 namespace Brightbits.BSH.Engine.Jobs;
 
@@ -120,12 +121,12 @@ public class RestoreJob : Job
                 var fileName = Path.GetFileName(File);
                 var filePath = Path.GetDirectoryName(File);
 
-                if (!filePath.EndsWith("\\"))
+                if (!filePath.EndsWith('\\'))
                 {
                     filePath += "\\";
                 }
 
-                if (!filePath.StartsWith("\\"))
+                if (!filePath.StartsWith('\\'))
                 {
                     filePath = "\\" + filePath;
                 }
@@ -146,7 +147,7 @@ public class RestoreJob : Job
             else
             {
                 // correct path
-                if (!File.EndsWith("\\"))
+                if (!File.EndsWith('\\'))
                 {
                     File += "\\";
                 }
@@ -211,33 +212,7 @@ public class RestoreJob : Job
                     i++;
 
                     // determine target folder
-                    var fileDest = filePath;
-
-                    if (destFolders.Count > 1)
-                    {
-                        foreach (var folder in destFolders)
-                        {
-                            if (fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\"))
-                            {
-                                var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower());
-
-                                fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // path found
-                        fileDest = fileDest[(fileDest.IndexOf("\\", 2) + 1)..];
-                        fileDest = destFolders[0] + "\\" + fileDest;
-                    }
-
-                    // correct path
-                    if (!fileDest.EndsWith("\\"))
-                    {
-                        fileDest += "\\";
-                    }
+                    var fileDest = GetFileDestination(destFolders, filePath);
 
                     // create path
                     try
@@ -288,33 +263,7 @@ public class RestoreJob : Job
             {
                 while (reader.Read())
                 {
-                    var fileDest = reader.GetString("folder");
-
-                    if (destFolders.Count > 1)
-                    {
-                        foreach (var folder in destFolders)
-                        {
-                            if (fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\"))
-                            {
-                                var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower());
-
-                                fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // path found
-                        fileDest = fileDest[(fileDest.IndexOf("\\", 2) + 1)..];
-                        fileDest = destFolders[0] + "\\" + fileDest;
-                    }
-
-                    // correct path
-                    if (!fileDest.EndsWith("\\"))
-                    {
-                        fileDest += "\\";
-                    }
+                    var fileDest = GetFileDestination(destFolders, reader.GetString("folder"));
 
                     // create path
                     try
@@ -336,6 +285,36 @@ public class RestoreJob : Job
         ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
 
         _logger.Information("Restore of files successfully finished.");
+    }
+
+    /// <summary>
+    /// Retrieves the destination path for a file.
+    /// </summary>
+    /// <param name="destFolders"></param>
+    /// <param name="fileDest"></param>
+    /// <returns></returns>
+    private static string GetFileDestination(List<string> destFolders, string fileDest)
+    {
+        if (destFolders.Count > 1)
+        {
+            var folder = destFolders.Find(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\"));
+            var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower());
+            fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
+        }
+        else
+        {
+            // path found
+            fileDest = fileDest[(fileDest.IndexOf('\\', 2) + 1)..];
+            fileDest = destFolders[0] + "\\" + fileDest;
+        }
+
+        // correct path
+        if (!fileDest.EndsWith('\\'))
+        {
+            fileDest += "\\";
+        }
+
+        return fileDest;
     }
 
     /// <summary>

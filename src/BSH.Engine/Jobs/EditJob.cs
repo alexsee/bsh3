@@ -28,172 +28,171 @@ using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
-namespace Brightbits.BSH.Engine.Jobs
+namespace Brightbits.BSH.Engine.Jobs;
+
+/// <summary>
+/// Class for edit tasks
+/// </summary>
+public class EditJob : Job
 {
-    /// <summary>
-    /// Class for edit tasks
-    /// </summary>
-    public class EditJob : Job
+    private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+
+    public SecureString Password
     {
-        private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+        get; set;
+    }
 
-        public SecureString Password
+    public List<FileExceptionEntry> FileErrorList
+    {
+        get; set;
+    }
+
+    public EditJob(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
+    {
+        FileErrorList = new List<FileExceptionEntry>();
+    }
+
+    /// <summary>
+    /// Starts the decryption task for all files of all backups that are encrypted.
+    /// </summary>
+    /// <exception cref="DeviceNotReadyException"></exception>
+    /// <exception cref="DatabaseFileNotUpdatedException"></exception>
+    public async Task EditAsync()
+    {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+
+        // report status
+        _logger.Information("Begin edit backup.");
+
+        ReportState(JobState.RUNNING);
+        ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_EDIT_PREPARE);
+        ReportProgress(0, 0);
+
+        // check medium
+        if (!storage.CheckMedium())
         {
-            get; set;
+            _logger.Error("Backup storage is not ready. Backup will be cancelled.");
+
+            ReportState(JobState.ERROR);
+            throw new DeviceNotReadyException();
         }
 
-        public List<FileExceptionEntry> FileErrorList
+        // connect to database
+        using (var dbClient = dbClientFactory.CreateDbClient())
         {
-            get; set;
-        }
+            // begin with transaction
+            dbClient.BeginTransaction();
 
-        public EditJob(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
-        {
-            FileErrorList = new List<FileExceptionEntry>();
-        }
+            // open storage
+            storage.Open();
 
-        /// <summary>
-        /// Starts the decryption task for all files of all backups that are encrypted.
-        /// </summary>
-        /// <exception cref="DeviceNotReadyException"></exception>
-        /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-        public async Task EditAsync()
-        {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+            var commandSQL = "FROM filetable a, fileversiontable b, filelink c, versiontable d " +
+                "WHERE(c.fileversionid = b.fileversionid And a.fileid = b.fileid) " +
+                "and d.versionid = b.filepackage";
 
-            // report status
-            _logger.Information("Begin edit backup.");
+            var numFiles = int.Parse((await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT COUNT(1) " + commandSQL, null)).ToString());
+            ReportProgress(numFiles, 0);
 
-            ReportState(JobState.RUNNING);
-            ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_EDIT_PREPARE);
-            ReportProgress(0, 0);
-
-            // check medium
-            if (!storage.CheckMedium())
+            // determine files of backup to edit
+            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * " + commandSQL, null))
             {
-                _logger.Error("Backup storage is not ready. Backup will be cancelled.");
-
-                ReportState(JobState.ERROR);
-                throw new DeviceNotReadyException();
-            }
-
-            // connect to database
-            using (var dbClient = dbClientFactory.CreateDbClient())
-            {
-                // begin with transaction
-                dbClient.BeginTransaction();
-
-                // open storage
-                storage.Open();
-
-                var commandSQL = "FROM filetable a, fileversiontable b, filelink c, versiontable d " +
-                    "WHERE(c.fileversionid = b.fileversionid And a.fileid = b.fileid) " +
-                    "and d.versionid = b.filepackage";
-
-                var numFiles = int.Parse((await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT COUNT(1) " + commandSQL, null)).ToString());
-                ReportProgress(numFiles, 0);
-
-                // determine files of backup to edit
-                using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * " + commandSQL, null))
+                var i = 0;
+                while (reader.Read())
                 {
-                    var i = 0;
-                    while (reader.Read())
+                    // determine remote file
+                    string remoteFilePath;
+
+                    if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
                     {
-                        // determine remote file
-                        string remoteFilePath;
-
-                        if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
-                        {
-                            remoteFilePath = reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
-                        }
-                        else
-                        {
-                            remoteFilePath = reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
-                        }
-
-                        ReportFileProgress(remoteFilePath);
-                        ReportProgress(numFiles, i);
-                        i++;
-
-                        // change file
-                        try
-                        {
-                            await EditFileFromDeviceAsync(
-                                dbClient,
-                                remoteFilePath,
-                                reader.GetInt32("fileType"),
-                                reader.GetInt32("fileversionid"));
-                        }
-                        catch (Exception ex)
-                        {
-                            var fileExceptionEntry = new FileExceptionEntry()
-                            {
-                                Exception = ex,
-                                File = new FileTableRow()
-                                {
-                                    FilePath = reader.GetString("filePath"),
-                                    FileName = reader.GetString("fileName")
-                                }
-                            };
-
-                            FileErrorList.Add(fileExceptionEntry);
-
-                            _logger.Error(ex.InnerException, "File {fileName} could not be edited.", remoteFilePath, new { fileExceptionEntry });
-                        }
+                        remoteFilePath = reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
+                    }
+                    else
+                    {
+                        remoteFilePath = reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
                     }
 
-                    reader.Close();
+                    ReportFileProgress(remoteFilePath);
+                    ReportProgress(numFiles, i);
+                    i++;
+
+                    // change file
+                    try
+                    {
+                        await EditFileFromDeviceAsync(
+                            dbClient,
+                            remoteFilePath,
+                            reader.GetInt32("fileType"),
+                            reader.GetInt32("fileversionid"));
+                    }
+                    catch (Exception ex)
+                    {
+                        var fileExceptionEntry = new FileExceptionEntry()
+                        {
+                            Exception = ex,
+                            File = new FileTableRow()
+                            {
+                                FilePath = reader.GetString("filePath"),
+                                FileName = reader.GetString("fileName")
+                            }
+                        };
+
+                        FileErrorList.Add(fileExceptionEntry);
+
+                        _logger.Error(ex.InnerException, "File {fileName} could not be edited.", remoteFilePath, new { fileExceptionEntry });
+                    }
                 }
 
-                dbClient.CommitTransaction();
+                reader.Close();
             }
 
-            // set new metadata
-            configurationManager.Encrypt = 0;
-            configurationManager.EncryptPassMD5 = "";
-
-            // close all database connections
-            DbClientFactory.ClosePool();
-
-            // store database
-            UpdateDatabaseOnStorage();
-
-            // close storage provider
-            storage.Dispose();
-
-            ReportExceptions(FileErrorList);
-
-            ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
-            ReportStatus(Resources.STATUS_EDIT_FINISHED_SHORT, Resources.STATUS_EDIT_FINISHED_TEXT);
-
-            _logger.Information("Edit job finished.");
+            dbClient.CommitTransaction();
         }
 
-        /// <summary>
-        /// Decrypts a single file from the backup device via the StorageManager.
-        /// </summary>
-        /// <param name="dbClient"></param>
-        /// <param name="remoteFile"></param>
-        /// <param name="fileType"></param>
-        /// <param name="fileVersionId"></param>
-        private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, int fileVersionId)
+        // set new metadata
+        configurationManager.Encrypt = 0;
+        configurationManager.EncryptPassMD5 = "";
+
+        // close all database connections
+        DbClientFactory.ClosePool();
+
+        // store database
+        UpdateDatabaseOnStorage();
+
+        // close storage provider
+        storage.Dispose();
+
+        ReportExceptions(FileErrorList);
+
+        ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
+        ReportStatus(Resources.STATUS_EDIT_FINISHED_SHORT, Resources.STATUS_EDIT_FINISHED_TEXT);
+
+        _logger.Information("Edit job finished.");
+    }
+
+    /// <summary>
+    /// Decrypts a single file from the backup device via the StorageManager.
+    /// </summary>
+    /// <param name="dbClient"></param>
+    /// <param name="remoteFile"></param>
+    /// <param name="fileType"></param>
+    /// <param name="fileVersionId"></param>
+    private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, int fileVersionId)
+    {
+        if (fileType == 5)
         {
-            if (fileType == 5)
-            {
-                // decrypt on device
-                storage.DecryptOnStorage(remoteFile, Password);
+            // decrypt on device
+            storage.DecryptOnStorage(remoteFile, Password);
 
-                // modify entry
-                await dbClient.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = 3 WHERE fileversionid = {fileVersionId}");
-            }
-            else if (fileType == 6)
-            {
-                // decrypt on device
-                storage.DecryptOnStorage(remoteFile, Password);
+            // modify entry
+            await dbClient.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = 3 WHERE fileversionid = {fileVersionId}");
+        }
+        else if (fileType == 6)
+        {
+            // decrypt on device
+            storage.DecryptOnStorage(remoteFile, Password);
 
-                // modify entry
-                await dbClient.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = 1 WHERE fileversionid = {fileVersionId}");
-            }
+            // modify entry
+            await dbClient.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = 1 WHERE fileversionid = {fileVersionId}");
         }
     }
 }
