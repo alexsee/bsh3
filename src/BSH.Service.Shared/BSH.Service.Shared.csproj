@@ -6,8 +6,8 @@
 		<Authors>Alexander Seeliger</Authors>
 		<Company>Alexander Seeliger Software</Company>
 		<Copyright>Alexander Seeliger</Copyright>
-		<AssemblyVersion>4.0.0.0</AssemblyVersion>
-		<FileVersion>4.0.0.0</FileVersion>
+		<AssemblyVersion>3.9.0.0</AssemblyVersion>
+		<FileVersion>3.9.0.0</FileVersion>
 		<Product>$(AssemblyName)</Product>
 		<Title>Backup Service Home</Title>
 		<Platforms>x64</Platforms>
