@@ -131,7 +131,7 @@ Source: "..\..\output\Microsoft.Win32.Registry.AccessControl.dll"; DestDir: "{ap
 Source: "..\..\output\Microsoft.Win32.Registry.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Microsoft.Win32.SystemEvents.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\mscordaccore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\mscordaccore_amd64_amd64_7.0.523.17405.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\mscordaccore_amd64_amd64_7.0.823.31807.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\mscordbi.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\mscorlib.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\mscorrc.dll"; DestDir: "{app}"; Flags: ignoreversion
