@@ -8,13 +8,14 @@
 		<Authors>Alexander Seeliger</Authors>
 		<Company>Alexander Seeliger Software</Company>
 		<Copyright>Alexander Seeliger</Copyright>
-		<AssemblyVersion>3.9.0.0</AssemblyVersion>
-		<FileVersion>3.9.0.0</FileVersion>
+		<AssemblyVersion>3.9.0.1</AssemblyVersion>
+		<FileVersion>3.9.0.1</FileVersion>
 		<Title>Backup Service Home</Title>
 		<Configurations>Debug;Release</Configurations>
 		<Platforms>x64</Platforms>
 		<IsPublishable>False</IsPublishable>
 		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
+		<Version>3.9.0.1-beta</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Update="UI\aVersionList.cs">

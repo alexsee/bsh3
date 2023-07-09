@@ -30,10 +30,10 @@
 		<Authors>Alexander Seeliger</Authors>
 		<Company>Alexander Seeliger Software</Company>
 		<Copyright>Alexander Seeliger</Copyright>
-		<AssemblyVersion>3.9.0.0</AssemblyVersion>
-		<FileVersion>3.9.0.0</FileVersion>
-		<Version>4.0.0.0</Version>
+		<Version>3.9.0.1-beta</Version>
 		<Title>Backup Service Home</Title>
+		<AssemblyVersion>3.9.0.1</AssemblyVersion>
+		<FileVersion>3.9.0.1</FileVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="updateSystemDotNet.Controller">
