@@ -19,7 +19,7 @@ jobs:
     steps:
     - name: Set env
       run: |
-        $env:VERSION=${{ github.ref_name }}
+        $env:VERSION="${{ github.ref_name }}"
         echo "$env:VERSION".substring(1) >> $GITHUB_ENV
 
     - name: Setup dotnet
