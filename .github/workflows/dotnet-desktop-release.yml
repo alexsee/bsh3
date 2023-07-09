@@ -20,7 +20,9 @@ jobs:
     - name: Set env
       run: |
         $version = "${{ github.ref_name }}".substring(1)
+        $info_version = $version.replace('-beta', '.')
         echo "BUILD_VERSION=$version" >> $env:GITHUB_ENV
+        echo "INFO_VERSION=$info_version" >> $env:GITHUB_ENV
 
     - name: Setup dotnet
       uses: actions/setup-dotnet@v3
@@ -39,7 +41,7 @@ jobs:
 
     - name: Building the installer
       run: |
-        iscc.exe tools\setup\Setup.iss /DApplicationVersion=$env:BUILD_VERSION
+        iscc.exe tools\setup\Setup.iss /DApplicationVersion=$env:BUILD_VERSION /DApplicationInfoVersion=$env:INFO_VERSION
 
     - name: Release to Github
       uses: softprops/action-gh-release@v0.1.15
