@@ -48,4 +48,4 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          ${{runner.workspace}}/bsh3/tools/setup/output/backupservicehome-${{ env.BUILD_VERSION }}.exe
+          ${{runner.workspace}}/bsh3/tools/setup/output/backupservicehome-${{ env.BUILD_VERSION }}-win64.exe
