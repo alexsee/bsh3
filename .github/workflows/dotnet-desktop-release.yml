@@ -19,8 +19,8 @@ jobs:
     steps:
     - name: Set env
       run: |
-        $env:VERSION="${{ github.ref_name }}"
-        echo "$env:VERSION".substring(1) >> $GITHUB_ENV
+        $version = "${{ github.ref_name }}".substring(1)
+        echo "BUILD_VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Setup dotnet
       uses: actions/setup-dotnet@v3
@@ -34,13 +34,13 @@ jobs:
 
     - name: Build the application
       run: |
-        dotnet publish -c Release -o ../output -a x64 --self-contained /p:Version=$VERSION /p:FileVersion=$VERSION
+        dotnet publish -c Release -o ../output -a x64 --self-contained /p:Version=$BUILD_VERSION /p:FileVersion=$BUILD_VERSION
       shell: cmd
       working-directory: ./src
 
     - name: Building the installer
       run: |
-        iscc.exe tools\setup\Setup.iss /DApplicationVersion=$VERSION
+        iscc.exe tools\setup\Setup.iss /DApplicationVersion=$BUILD_VERSION
       shell: cmd
 
     - name: Release to Github
@@ -48,10 +48,10 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          ${{runner.workspace}}/bsh3/tools/setup/output/backupservicehome-$VERSION.exe
+          ${{runner.workspace}}/bsh3/tools/setup/output/backupservicehome-$BUILD_VERSION.exe
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: backup-service-home-setup
-        path: ${{runner.workspace}}/bsh3/tools/setup/output/backupservicehome-$VERSION.exe
+        path: ${{runner.workspace}}/bsh3/tools/setup/output/backupservicehome-$BUILD_VERSION.exe
