@@ -22,7 +22,8 @@
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
 
-        <ListView x:Name="lvSources"
+        <ListView ItemsSource="{Binding Sources}"
+                  SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
                   Grid.Row="0" 
                   ItemTemplate="{StaticResource SourceFolderTemplate}">
             <ListView.HeaderTemplate>
@@ -39,8 +40,8 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Column="0">
-                <Button x:Name="btnAddSource" Content="Add Directory" />
-                <Button x:Name="btnDeleteSource" Content="Delete" Margin="10,0,0,0" />
+                <Button Command="{x:Bind ViewModel.AddSourceFolderCommand}" Content="Add Directory" />
+                <Button Command="{x:Bind ViewModel.DeleteSourceFolderCommand}" Content="Delete" Margin="10,0,0,0" />
             </StackPanel>
 
             <Button x:Name="btnExcludeFiles" Grid.Column="1" Content="Exclude file(s)" HorizontalAlignment="Right" />
