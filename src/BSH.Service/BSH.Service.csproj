@@ -15,7 +15,7 @@
 		<Platforms>x64</Platforms>
 		<Configurations>Debug;Release</Configurations>
 		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
-		<Version>3.9.0.1-beta</Version>
+		<Version>3.9.0-beta1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

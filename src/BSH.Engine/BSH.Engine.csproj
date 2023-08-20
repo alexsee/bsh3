@@ -20,7 +20,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<IsPublishable>False</IsPublishable>
 		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
-		<Version>3.9.0.1-beta</Version>
+		<Version>3.9.0-beta1</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Update="System.Data">

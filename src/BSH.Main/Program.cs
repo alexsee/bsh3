@@ -107,7 +107,7 @@ static class Program
                 updateUrl = "https://updates.brightbits.de/_bsh_3",
                 restartApplication = true,
             };
-            mainUpdateController.releaseInfo.Version = Application.ProductVersion;
+            mainUpdateController.releaseInfo.Version = Application.ProductVersion.Replace("-beta", ".");
 
             if (Settings.Default.AutoSearchUpdates)
             {
