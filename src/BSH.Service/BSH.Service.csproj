@@ -69,6 +69,7 @@
     <Compile Include="VSSService.cs" />
     <Compile Include="VSS\Snapshot.cs" />
     <Compile Include="VSS\VssBackup.cs" />
+    <Compile Include="VSS\XCopy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
