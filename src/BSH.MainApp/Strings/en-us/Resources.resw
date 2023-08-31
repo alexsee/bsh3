@@ -160,4 +160,10 @@
   <data name="DATETIME_FORMAT" xml:space="preserve">
     <value>dd. MMM yyyy hh:mm</value>
   </data>
+  <data name="MediaType_FileTransferServer" xml:space="preserve">
+    <value>File Transfer Protocol (FTP)</value>
+  </data>
+  <data name="MediaType_LocalDevice" xml:space="preserve">
+    <value>Local Device</value>
+  </data>
 </root>

@@ -5,6 +5,8 @@
     xmlns:local="using:Brightbits.BSH.Main.Views.SettingsPages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:BSH.MainApp.ViewModels" xmlns:system="using:System" xmlns:Interactivity="using:Microsoft.Xaml.Interactivity" xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
     Background="White">
 
@@ -22,13 +24,16 @@
 
         <!-- target type selection -->
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Backup storage:" />
-        <ComboBox Grid.Row="0" Grid.Column="1" Width="300">
-            <x:String>Directory or disk</x:String>
-            <x:String>Server (FTP)</x:String>
+        <ComboBox Grid.Row="0" Grid.Column="1" Width="300"
+                  ItemsSource="{Binding MediaTypes}"
+                  SelectedValuePath="Key"
+                  DisplayMemberPath="Value"
+                  SelectedValue="{Binding SelectedMediaType, Mode=TwoWay}">
+
         </ComboBox>
-        
+
         <!-- local file system options -->
-        <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnSpacing="20" Visibility="Collapsed">
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnSpacing="20" Visibility="{Binding LocalDeviceVisibility}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200" />
                 <ColumnDefinition />
@@ -36,16 +41,16 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Text="Storage path:" />
-            <TextBox Grid.Column="1" />
+            <TextBox Grid.Column="1" Text="{Binding LocalDevicePath}" />
             <Button Grid.Column="2" Content="Change" />
         </Grid>
 
         <!-- ftp server options -->
-        <Grid Grid.Row="1" Grid.ColumnSpan="2" RowSpacing="10" ColumnSpacing="20">
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" RowSpacing="10" ColumnSpacing="20" Visibility="{Binding FtpRemoteVisibility}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="200" />
                 <ColumnDefinition />
-                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="200" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -54,28 +59,31 @@
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
 
             <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Text="Server:" />
-            <TextBox Grid.Column="1" />
+            <TextBox Grid.Column="1" Text="{Binding FtpRemoteHost}" />
             <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0" Text="Port:" />
-            <NumberBox Grid.Column="3" Grid.Row="0" />
+            <NumberBox Grid.Column="3" Grid.Row="0" Value="{Binding FtpRemotePort}" />
 
             <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Text="Username:" />
-            <TextBox Grid.Column="1" Grid.Row="1" />
+            <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding FtpRemoteUser}" />
             <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Text="Password:" />
-            <PasswordBox Grid.Column="3" Grid.Row="1" />
+            <PasswordBox Grid.Column="3" Grid.Row="1" Password="{Binding FtpRemotePassword}" />
 
             <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="Path:" />
-            <TextBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" />
+            <TextBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2"  Text="{Binding FtpRemotePath}" />
 
             <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="Encoding:" />
-            <ComboBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch">
+            <ComboBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch" SelectedValue="{Binding FtpRemoteEncoding, Mode=TwoWay}">
                 <x:String>ISO-8859-1</x:String>
                 <x:String>UTF8</x:String>
             </ComboBox>
 
-            <Button Grid.Column="1" Grid.Row="4" Content="Test connection" />
+            <CheckBox Grid.Column="0" Grid.Row="4" Content="Enforce unencrypted connection" IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
+
+            <Button Grid.Column="1" Grid.Row="5" Content="Test connection" />
         </Grid>
 
         <!-- switch backup target -->
