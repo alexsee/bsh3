@@ -166,4 +166,16 @@
   <data name="MediaType_LocalDevice" xml:space="preserve">
     <value>Local Device</value>
   </data>
+  <data name="MsgBox_Ftp_Successful_Text" xml:space="preserve">
+    <value>The connection test to the specified FTP server was successful.</value>
+  </data>
+  <data name="MsgBox_Ftp_Successful_Title" xml:space="preserve">
+    <value>Connection to FTP Server successful</value>
+  </data>
+  <data name="MsgBox_Ftp_Unuccessful_Text" xml:space="preserve">
+    <value>The connection test to the specified FTP server was unsuccessful.</value>
+  </data>
+  <data name="MsgBox_Ftp_Unuccessful_Title" xml:space="preserve">
+    <value>Connection to FTP Server unsuccessful</value>
+  </data>
 </root>

@@ -5,7 +5,7 @@
     xmlns:local="using:Brightbits.BSH.Main.Views.SettingsPages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:BSH.MainApp.ViewModels" xmlns:system="using:System" xmlns:Interactivity="using:Microsoft.Xaml.Interactivity" xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:viewmodels="using:BSH.MainApp.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
     Background="White">
@@ -29,7 +29,6 @@
                   SelectedValuePath="Key"
                   DisplayMemberPath="Value"
                   SelectedValue="{Binding SelectedMediaType, Mode=TwoWay}">
-
         </ComboBox>
 
         <!-- local file system options -->
@@ -81,9 +80,9 @@
                 <x:String>UTF8</x:String>
             </ComboBox>
 
-            <CheckBox Grid.Column="0" Grid.Row="4" Content="Enforce unencrypted connection" IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
+            <CheckBox Grid.Column="1" Grid.Row="4" Content="Enforce unencrypted connection" IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
 
-            <Button Grid.Column="1" Grid.Row="5" Content="Test connection" />
+            <Button Grid.Column="1" Grid.Row="5" Content="Test connection" Command="{Binding CheckFtpRemoteCommand}" />
         </Grid>
 
         <!-- switch backup target -->

@@ -4,12 +4,14 @@
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using Windows.Storage.Pickers;
+using Windows.UI.Popups;
 using WinUIEx;
 
 namespace BSH.MainApp.ViewModels;
@@ -166,9 +168,37 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         }
     }
 
-    public void CheckFtpRemote()
+    [RelayCommand(CanExecute = nameof(CanExecuteCheckFtpRemote))]
+    public async Task CheckFtpRemote()
     {
+        // check FTP
+        var profile = FTPStorage.CheckConnection(FtpRemoteHost, FtpRemotePort, FtpRemoteUser, FtpRemotePassword, FtpRemotePath, FtpRemoteEncoding);
 
+        if (profile)
+        {
+            var messageBoxDlg = new MessageDialog("MsgBox_Ftp_Successful_Text".GetLocalized(), "MsgBox_Ftp_Successful_Title".GetLocalized());
+            messageBoxDlg.Commands.Add(new UICommand("OK"));
+
+            var hwnd = App.MainWindow.GetWindowHandle();
+            WinRT.Interop.InitializeWithWindow.Initialize(messageBoxDlg, hwnd);
+
+            await messageBoxDlg.ShowAsync();
+        }
+        else
+        {
+            var messageBoxDlg = new MessageDialog("MsgBox_Ftp_Unuccessful_Text".GetLocalized(), "MsgBox_Ftp_Unuccessful_Title".GetLocalized());
+            messageBoxDlg.Commands.Add(new UICommand("OK"));
+
+            var hwnd = App.MainWindow.GetWindowHandle();
+            WinRT.Interop.InitializeWithWindow.Initialize(messageBoxDlg, hwnd);
+
+            await messageBoxDlg.ShowAsync();
+        }
+    }
+
+    private bool CanExecuteCheckFtpRemote()
+    {
+        return !string.IsNullOrEmpty(this.FtpRemoteHost) && !string.IsNullOrEmpty(this.FtpRemoteUser) && !string.IsNullOrEmpty(this.FtpRemotePassword);
     }
 
     #endregion
