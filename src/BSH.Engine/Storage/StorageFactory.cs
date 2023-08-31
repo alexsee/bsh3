@@ -28,7 +28,7 @@ public class StorageFactory : IStorageFactory
 
     public IStorage GetCurrentStorageProvider()
     {
-        if (configurationManager.MediumType != 3)
+        if (configurationManager.MediumType != MediaType.FileTransferServer)
         {
             return new FileSystemStorage(configurationManager);
         }

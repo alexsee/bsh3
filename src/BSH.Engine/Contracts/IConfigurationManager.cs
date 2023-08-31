@@ -187,7 +187,7 @@ public interface IConfigurationManager
         get;
         set;
     }
-    int MediumType
+    MediaType MediumType
     {
         get;
         set;
