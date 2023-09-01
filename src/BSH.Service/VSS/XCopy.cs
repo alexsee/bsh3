@@ -39,8 +39,6 @@ public class XCopy
 
     private int IsCancelled;
     private int FilePercentCompleted;
-    private string Source;
-    private string Destination;
 
     private XCopy()
     {
@@ -51,7 +49,7 @@ public class XCopy
     {
         try
         {
-            CopyFileFlags copyFileFlags = CopyFileFlags.COPY_FILE_RESTARTABLE;
+            var copyFileFlags = CopyFileFlags.COPY_FILE_RESTARTABLE;
             if (!overwrite)
             {
                 copyFileFlags |= CopyFileFlags.COPY_FILE_FAIL_IF_EXISTS;
@@ -62,15 +60,12 @@ public class XCopy
                 copyFileFlags |= CopyFileFlags.COPY_FILE_NO_BUFFERING;
             }
 
-            Source = source;
-            Destination = destination;
-
             if (handler != null)
             {
                 ProgressChanged += handler;
             }
 
-            bool result = CopyFileEx(Source, Destination, new CopyProgressRoutine(CopyProgressHandler), IntPtr.Zero, ref IsCancelled, copyFileFlags);
+            var result = CopyFileEx(source, destination, new CopyProgressRoutine(CopyProgressHandler), IntPtr.Zero, ref IsCancelled, copyFileFlags);
             if (!result)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -94,21 +89,13 @@ public class XCopy
         {
             FilePercentCompleted = (int)percent;
 
-            var handler = ProgressChanged;
-            if (handler != null)
-            {
-                handler(this, new ProgressChangedEventArgs((int)FilePercentCompleted, null));
-            }
+            ProgressChanged?.Invoke(this, new ProgressChangedEventArgs(FilePercentCompleted, null));
         }
     }
 
     private void OnCompleted()
     {
-        var handler = Completed;
-        if (handler != null)
-        {
-            handler(this, EventArgs.Empty);
-        }
+        Completed?.Invoke(this, EventArgs.Empty);
     }
 
     #region PInvoke
