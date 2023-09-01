@@ -53,25 +53,35 @@ public class XCopy
         {
             CopyFileFlags copyFileFlags = CopyFileFlags.COPY_FILE_RESTARTABLE;
             if (!overwrite)
+            {
                 copyFileFlags |= CopyFileFlags.COPY_FILE_FAIL_IF_EXISTS;
+            }
 
             if (nobuffering)
+            {
                 copyFileFlags |= CopyFileFlags.COPY_FILE_NO_BUFFERING;
+            }
 
             Source = source;
             Destination = destination;
 
             if (handler != null)
+            {
                 ProgressChanged += handler;
+            }
 
             bool result = CopyFileEx(Source, Destination, new CopyProgressRoutine(CopyProgressHandler), IntPtr.Zero, ref IsCancelled, copyFileFlags);
             if (!result)
+            {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
         }
         catch (Exception)
         {
             if (handler != null)
+            {
                 ProgressChanged -= handler;
+            }
 
             throw;
         }
@@ -86,7 +96,9 @@ public class XCopy
 
             var handler = ProgressChanged;
             if (handler != null)
+            {
                 handler(this, new ProgressChangedEventArgs((int)FilePercentCompleted, null));
+            }
         }
     }
 
@@ -94,7 +106,9 @@ public class XCopy
     {
         var handler = Completed;
         if (handler != null)
+        {
             handler(this, EventArgs.Empty);
+        }
     }
 
     #region PInvoke
@@ -134,10 +148,14 @@ public class XCopy
                                                    CopyProgressCallbackReason reason, IntPtr hSourceFile, IntPtr hDestinationFile, IntPtr lpData)
     {
         if (reason == CopyProgressCallbackReason.CALLBACK_CHUNK_FINISHED)
+        {
             OnProgressChanged((transferred / (double)total) * 100.0);
+        }
 
         if (transferred >= total)
+        {
             OnCompleted();
+        }
 
         return CopyProgressResult.PROGRESS_CONTINUE;
     }
