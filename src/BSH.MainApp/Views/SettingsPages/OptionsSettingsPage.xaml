@@ -11,34 +11,42 @@
     Background="White">
 
     <Page.Resources>
-        <local:EnumComparisonConverter x:Key="ComparisonConverter" />
+        <local:EnumComparisonConverter x:Key="EnumComparisonConverter" />
+
+        <viewmodels:ModeType x:Key="ModeType_RegularCopy">RegularCopy</viewmodels:ModeType>
+        <viewmodels:ModeType x:Key="ModeType_Compression">Compression</viewmodels:ModeType>
+        <viewmodels:ModeType x:Key="ModeType_Encryption">Encryption</viewmodels:ModeType>
     </Page.Resources>
 
     <Grid>
         <StackPanel Orientation="Vertical">
-            <RadioButton>
+            <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_RegularCopy}}">
                 <TextBlock FontWeight="Bold" Text="No compression or encryption" />
             </RadioButton>
 
-            <RadioButton x:Name="rbCompression" Margin="0,10,0,0">
-                <StackPanel>
-                    <TextBlock FontWeight="Bold" Text="Compress backups" />
-                    <TextBlock TextWrapping="WrapWholeWords" Text="(requires more computation power; slower backups)" />
+            <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Compression}}" Margin="0,10,0,0">
+                <ContentControl IsEnabled="{Binding ModeType, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Compression}}">
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" Text="Compress backups" />
+                        <TextBlock TextWrapping="WrapWholeWords" Text="(requires more computation power; slower backups)" />
 
-                    <StackPanel Orientation="Horizontal">
-                        <Slider VerticalAlignment="Center" Width="400" Margin="0,10,0,0" TickFrequency="1" Maximum="9" TickPlacement="Outside" />
-                        <Button VerticalAlignment="Center" Margin="10,0,0,0" Content="Turn off" />
+                        <StackPanel Orientation="Horizontal">
+                            <Slider VerticalAlignment="Center" Width="400" Margin="0,10,0,0" TickFrequency="1" Maximum="9" TickPlacement="Outside" />
+                            <Button VerticalAlignment="Center" Margin="10,0,0,0" Content="Turn off" />
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
+                </ContentControl>
             </RadioButton>
 
-            <RadioButton x:Name="rbEncryption" Margin="0,10,0,0">
-                <StackPanel>
-                    <TextBlock FontWeight="Bold" Text="Encrypt backups" />
-                    <TextBlock TextWrapping="WrapWholeWords" Text="(requires more computation power; slower backups)" />
+            <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}" Margin="0,10,0,0">
+                <ContentControl IsEnabled="{Binding ModeType, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}">
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" Text="Encrypt backups" />
+                        <TextBlock TextWrapping="WrapWholeWords" Text="(requires more computation power; slower backups)" />
 
-                    <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords" Text="To protect the backup from unauthorized access, it can be encrypted. You will then be asked for your password at each session. The encryption cannot be applied retroactively." />
-                </StackPanel>
+                        <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords" Text="To protect the backup from unauthorized access, it can be encrypted. You will then be asked for your password at each session. The encryption cannot be applied retroactively." />
+                    </StackPanel>
+                </ContentControl>
             </RadioButton>
         </StackPanel>
     </Grid>

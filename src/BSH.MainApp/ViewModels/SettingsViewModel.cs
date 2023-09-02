@@ -16,6 +16,13 @@ using WinUIEx;
 
 namespace BSH.MainApp.ViewModels;
 
+public enum ModeType
+{
+    RegularCopy = 0,
+    Compression = 1,
+    Encryption = 2,
+}
+
 public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 {
     private readonly IConfigurationManager configurationManager;
@@ -203,6 +210,29 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     #endregion
 
+    #region Options Settings
+
+    [ObservableProperty]
+    private ModeType modeType;
+
+    private void InitOptionsSettings()
+    {
+        if (this.configurationManager.Compression == 1)
+        {
+            this.ModeType = ModeType.Compression;
+        }
+        else if (this.configurationManager.Encrypt == 1)
+        {
+            this.ModeType = ModeType.Encryption;
+        }
+        else
+        {
+            this.ModeType = ModeType.RegularCopy;
+        }
+    }
+
+    #endregion
+
     #region Mode Settings
 
     [ObservableProperty]
@@ -229,5 +259,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.InitSourcesSettings();
         this.InitTargetSettings();
         this.InitModeSettings();
+        this.InitOptionsSettings();
     }
 }

@@ -13,6 +13,7 @@
 
     <Page.Resources>
         <local:EnumComparisonConverter x:Key="EnumComparisonConverter" />
+
         <engine:TaskType x:Key="TaskType_Auto">Auto</engine:TaskType>
         <engine:TaskType x:Key="TaskType_Schedule">Schedule</engine:TaskType>
         <engine:TaskType x:Key="TaskType_Manual">Manual</engine:TaskType>
