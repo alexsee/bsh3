@@ -245,6 +245,52 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     #endregion
 
+    #region Enhanced Settings
+
+    [ObservableProperty]
+    private bool showNotificationWhenDiskspaceLow;
+
+    [ObservableProperty]
+    private int notificationWhenDiskspaceLow;
+
+    [ObservableProperty]
+    private bool stopBackupWhenBatteryMode;
+
+    [ObservableProperty]
+    private bool waitForDevice;
+
+    [ObservableProperty]
+    private bool showDirectoryLocalization;
+
+    [ObservableProperty]
+    private bool showNotificationWhenBackupFinished;
+
+    [ObservableProperty]
+    private bool showNotificationWhenBackupDeviceNotReady;
+
+    [ObservableProperty]
+    private bool showNotificationWhenBackupOutdated;
+
+    [ObservableProperty]
+    private int notificationWhenBackupOutdated;
+
+    void InitEnhancedSettings()
+    {
+        this.ShowNotificationWhenDiskspaceLow = !string.IsNullOrEmpty(this.configurationManager.RemindSpace);
+        this.NotificationWhenDiskspaceLow = int.Parse(this.configurationManager.RemindSpace);
+
+        this.StopBackupWhenBatteryMode = this.configurationManager.DeativateAutoBackupsWhenAkku == "1";
+        this.WaitForDevice = this.configurationManager.ShowWaitOnMediaAutoBackups == "1";
+        this.ShowDirectoryLocalization = this.configurationManager.ShowLocalizedPath == "1";
+        this.ShowNotificationWhenBackupFinished = this.configurationManager.InfoBackupDone == "1";
+        this.ShowNotificationWhenBackupDeviceNotReady = this.configurationManager.Medium == "1";
+
+        this.ShowNotificationWhenBackupOutdated = !string.IsNullOrEmpty(this.configurationManager.RemindAfterDays);
+        this.NotificationWhenBackupOutdated = int.Parse(this.configurationManager.RemindAfterDays);
+    }
+
+    #endregion
+
     public SettingsViewModel(IConfigurationManager configurationManager)
     {
         this.configurationManager = configurationManager;
@@ -260,5 +306,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.InitTargetSettings();
         this.InitModeSettings();
         this.InitOptionsSettings();
+        this.InitEnhancedSettings();
     }
 }
