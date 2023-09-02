@@ -203,6 +203,18 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     #endregion
 
+    #region Mode Settings
+
+    [ObservableProperty]
+    private TaskType taskType;
+
+    private void InitModeSettings()
+    {
+        this.TaskType = this.configurationManager.TaskType;
+    }
+
+    #endregion
+
     public SettingsViewModel(IConfigurationManager configurationManager)
     {
         this.configurationManager = configurationManager;
@@ -216,5 +228,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     {
         this.InitSourcesSettings();
         this.InitTargetSettings();
+        this.InitModeSettings();
     }
 }
