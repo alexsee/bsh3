@@ -37,7 +37,7 @@
             IsTabStop="False"
             VerticalScrollBarVisibility="Auto"
             VerticalScrollMode="Auto">
-            <StackPanel Orientation="Vertical">
+            <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
                 <toolkit:SettingsExpander Header="Backup mode" Description="Specify the automation of backups" IsExpanded="True">
                     <toolkit:SettingsExpander.HeaderIcon>
                         <FontIcon Glyph="&#xE787;" />
