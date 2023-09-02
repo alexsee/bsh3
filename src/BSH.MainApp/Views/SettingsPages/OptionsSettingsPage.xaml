@@ -8,9 +8,21 @@
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     Background="White">
 
     <Page.Resources>
+        <x:Double x:Key="SettingsCardSpacing">3</x:Double>
+
+        <Style
+            x:Key="SettingsSectionHeaderTextBlockStyle"
+            BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+            TargetType="TextBlock">
+            <Style.Setters>
+                <Setter Property="Margin" Value="1,29,0,5" />
+            </Style.Setters>
+        </Style>
+
         <local:EnumComparisonConverter x:Key="EnumComparisonConverter" />
 
         <viewmodels:ModeType x:Key="ModeType_RegularCopy">RegularCopy</viewmodels:ModeType>
@@ -19,35 +31,62 @@
     </Page.Resources>
 
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_RegularCopy}}">
-                <TextBlock FontWeight="Bold" Text="No compression or encryption" />
-            </RadioButton>
+        <ScrollViewer
+            Padding="20,0,20,0"
+            IsTabStop="False"
+            VerticalScrollBarVisibility="Auto"
+            VerticalScrollMode="Auto">
+            <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                <toolkit:SettingsExpander Header="Storage options" Description="Specify how the backup should be stored." IsExpanded="True">
+                    <toolkit:SettingsExpander.HeaderIcon>
+                        <FontIcon Glyph="&#xF8A6;" />
+                    </toolkit:SettingsExpander.HeaderIcon>
+                    <toolkit:SettingsExpander.Items>
+                        <toolkit:SettingsCard>
+                            <toolkit:SettingsCard.Header>
+                                <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
+                                    <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_RegularCopy}}">
+                                        No compression or encryption
+                                    </RadioButton>
+                                </StackPanel>
+                            </toolkit:SettingsCard.Header>
+                        </toolkit:SettingsCard>
 
-            <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Compression}}" Margin="0,10,0,0">
-                <ContentControl IsEnabled="{Binding ModeType, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Compression}}">
-                    <StackPanel>
-                        <TextBlock FontWeight="Bold" Text="Compress backups" />
-                        <TextBlock TextWrapping="WrapWholeWords" Text="(requires more computation power; slower backups)" />
+                        <toolkit:SettingsCard>
+                            <toolkit:SettingsCard.Header>
+                                <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
+                                    <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Compression}}">
+                                        Compress backups
+                                    </RadioButton>
+                                    <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords">
+                                        (requires more computation power; slower backups)
+                                    </TextBlock>
+                                </StackPanel>
+                            </toolkit:SettingsCard.Header>
+                            <ContentControl IsEnabled="{Binding ModeType, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Compression}}">
+                                <Slider Width="400" Margin="0,10,0,0" TickFrequency="1" Maximum="9" TickPlacement="Outside" />
+                            </ContentControl>
+                        </toolkit:SettingsCard>
 
-                        <StackPanel Orientation="Horizontal">
-                            <Slider VerticalAlignment="Center" Width="400" Margin="0,10,0,0" TickFrequency="1" Maximum="9" TickPlacement="Outside" />
-                            <Button VerticalAlignment="Center" Margin="10,0,0,0" Content="Turn off" />
-                        </StackPanel>
-                    </StackPanel>
-                </ContentControl>
-            </RadioButton>
-
-            <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}" Margin="0,10,0,0">
-                <ContentControl IsEnabled="{Binding ModeType, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}">
-                    <StackPanel>
-                        <TextBlock FontWeight="Bold" Text="Encrypt backups" />
-                        <TextBlock TextWrapping="WrapWholeWords" Text="(requires more computation power; slower backups)" />
-
-                        <TextBlock Margin="0,10,0,0" TextWrapping="WrapWholeWords" Text="To protect the backup from unauthorized access, it can be encrypted. You will then be asked for your password at each session. The encryption cannot be applied retroactively." />
-                    </StackPanel>
-                </ContentControl>
-            </RadioButton>
-        </StackPanel>
+                        <toolkit:SettingsCard>
+                            <toolkit:SettingsCard.Header>
+                                <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
+                                    <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}">
+                                        Encrypt backups
+                                    </RadioButton>
+                                    <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords">
+                                        (requires more computation power; slower backups)
+                                    </TextBlock>
+                                    <TextBlock Margin="29,10,0,0" TextWrapping="WrapWholeWords" Text="To protect the backup from unauthorized access, it can be encrypted. You will then be asked for your password at each session. The encryption cannot be applied retroactively." />
+                                </StackPanel>
+                            </toolkit:SettingsCard.Header>
+                            <ContentControl IsEnabled="{Binding ModeType, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}">
+                                <Button Content="Turn off" />
+                            </ContentControl>
+                        </toolkit:SettingsCard>
+                    </toolkit:SettingsExpander.Items>
+                </toolkit:SettingsExpander>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>
