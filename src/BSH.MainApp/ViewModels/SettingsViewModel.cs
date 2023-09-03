@@ -279,6 +279,9 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     [ObservableProperty]
     private ModeType modeType;
 
+    [ObservableProperty]
+    private bool waitForDevice;
+
     private void InitOptionsSettings()
     {
         if (this.configurationManager.Compression == 1)
@@ -293,6 +296,8 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         {
             this.ModeType = ModeType.RegularCopy;
         }
+
+        this.WaitForDevice = this.configurationManager.ShowWaitOnMediaAutoBackups == "1";
     }
 
     #endregion
@@ -302,9 +307,13 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     [ObservableProperty]
     private TaskType taskType;
 
+    [ObservableProperty]
+    private bool stopBackupWhenBatteryMode;
+
     private void InitModeSettings()
     {
         this.TaskType = this.configurationManager.TaskType;
+        this.StopBackupWhenBatteryMode = this.configurationManager.DeativateAutoBackupsWhenAkku == "1";
     }
 
     #endregion
@@ -316,12 +325,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     [ObservableProperty]
     private int notificationWhenDiskspaceLow;
-
-    [ObservableProperty]
-    private bool stopBackupWhenBatteryMode;
-
-    [ObservableProperty]
-    private bool waitForDevice;
 
     [ObservableProperty]
     private bool showDirectoryLocalization;
@@ -343,8 +346,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.ShowNotificationWhenDiskspaceLow = !string.IsNullOrEmpty(this.configurationManager.RemindSpace);
         this.NotificationWhenDiskspaceLow = int.Parse(this.configurationManager.RemindSpace);
 
-        this.StopBackupWhenBatteryMode = this.configurationManager.DeativateAutoBackupsWhenAkku == "1";
-        this.WaitForDevice = this.configurationManager.ShowWaitOnMediaAutoBackups == "1";
         this.ShowDirectoryLocalization = this.configurationManager.ShowLocalizedPath == "1";
         this.ShowNotificationWhenBackupFinished = this.configurationManager.InfoBackupDone == "1";
         this.ShowNotificationWhenBackupDeviceNotReady = this.configurationManager.Medium == "1";
