@@ -321,36 +321,36 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     #region Enhanced Settings
 
     [ObservableProperty]
-    private bool showNotificationWhenDiskspaceLow;
+    private bool enableNotificationWhenDiskspaceLow;
 
     [ObservableProperty]
     private int notificationWhenDiskspaceLow;
 
     [ObservableProperty]
-    private bool showDirectoryLocalization;
+    private bool enableDirectoryLocalization;
 
     [ObservableProperty]
-    private bool showNotificationWhenBackupFinished;
+    private bool enableNotificationWhenBackupFinished;
 
     [ObservableProperty]
-    private bool showNotificationWhenBackupDeviceNotReady;
+    private bool enableNotificationWhenBackupDeviceNotReady;
 
     [ObservableProperty]
-    private bool showNotificationWhenBackupOutdated;
+    private bool enableNotificationWhenBackupOutdated;
 
     [ObservableProperty]
     private int notificationWhenBackupOutdated;
 
     void InitEnhancedSettings()
     {
-        this.ShowNotificationWhenDiskspaceLow = !string.IsNullOrEmpty(this.configurationManager.RemindSpace);
+        this.EnableNotificationWhenDiskspaceLow = !string.IsNullOrEmpty(this.configurationManager.RemindSpace);
         this.NotificationWhenDiskspaceLow = int.Parse(this.configurationManager.RemindSpace);
 
-        this.ShowDirectoryLocalization = this.configurationManager.ShowLocalizedPath == "1";
-        this.ShowNotificationWhenBackupFinished = this.configurationManager.InfoBackupDone == "1";
-        this.ShowNotificationWhenBackupDeviceNotReady = this.configurationManager.Medium == "1";
+        this.EnableDirectoryLocalization = this.configurationManager.ShowLocalizedPath == "1";
+        this.EnableNotificationWhenBackupFinished = this.configurationManager.InfoBackupDone == "1";
+        this.EnableNotificationWhenBackupDeviceNotReady = this.configurationManager.Medium == "1";
 
-        this.ShowNotificationWhenBackupOutdated = !string.IsNullOrEmpty(this.configurationManager.RemindAfterDays);
+        this.EnableNotificationWhenBackupOutdated = !string.IsNullOrEmpty(this.configurationManager.RemindAfterDays);
         this.NotificationWhenBackupOutdated = int.Parse(this.configurationManager.RemindAfterDays);
     }
 

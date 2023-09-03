@@ -35,12 +35,12 @@
                     <toolkit:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xF2B7;" />
                     </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding ShowDirectoryLocalization, Mode=TwoWay}" />
+                    <ToggleSwitch IsOn="{Binding EnableDirectoryLocalization, Mode=TwoWay}" />
                 </toolkit:SettingsCard>
 
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Notifications</TextBlock>
                 <toolkit:SettingsExpander Header="Low diskspace" Description="Show notification if less diskspace is available">
-                    <ToggleSwitch IsOn="{Binding ShowNotificationWhenDiskspaceLow, Mode=TwoWay}" />
+                    <ToggleSwitch IsOn="{Binding EnableNotificationWhenDiskspaceLow, Mode=TwoWay}" />
                     <toolkit:SettingsExpander.Items>
                         <toolkit:SettingsCard Header="Diskspace lower than">
                             <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
@@ -52,15 +52,15 @@
                 </toolkit:SettingsExpander>
 
                 <toolkit:SettingsCard Header="Backup completed" Description="Show notification if backup is completed">
-                    <ToggleSwitch IsOn="{Binding ShowNotificationWhenBackupFinished, Mode=TwoWay}" />
+                    <ToggleSwitch IsOn="{Binding EnableNotificationWhenBackupFinished, Mode=TwoWay}" />
                 </toolkit:SettingsCard>
 
                 <toolkit:SettingsCard Header="Storage device" Description="Show notification to request storage device if not available">
-                    <ToggleSwitch IsOn="{Binding ShowNotificationWhenBackupDeviceNotReady, Mode=TwoWay}" />
+                    <ToggleSwitch IsOn="{Binding EnableNotificationWhenBackupDeviceNotReady, Mode=TwoWay}" />
                 </toolkit:SettingsCard>
 
                 <toolkit:SettingsExpander Header="Backup outdated" Description="Show notification if backup is outdated">
-                    <ToggleSwitch IsOn="{Binding ShowNotificationWhenBackupOutdated, Mode=TwoWay}" />
+                    <ToggleSwitch IsOn="{Binding EnableNotificationWhenBackupOutdated, Mode=TwoWay}" />
                     <toolkit:SettingsExpander.Items>
                         <toolkit:SettingsCard Header="Backup is outdated when older than">
                             <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
