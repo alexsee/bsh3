@@ -7,7 +7,7 @@
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
-    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls" xmlns:engine="using:Brightbits.BSH.Engine"
     Background="White">
 
     <Page.Resources>
@@ -40,10 +40,12 @@
                         <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Text="Backup storage:" />
                         <ComboBox VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="300"
                             ItemsSource="{Binding MediaTypes}"
-                            SelectedValuePath="Key"
-                            DisplayMemberPath="Value"
-                                  x:DefaultBindMode="TwoWay"
-                            SelectedValue="{Binding SelectedMediaType}">
+                            SelectedItem="{Binding SelectedMediaType, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="engine:MediaType">
+                                    <TextBlock Text="{x:Bind viewmodels:SettingsViewModel.GetMediaTypeDisplayName((engine:MediaType))}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
                         </ComboBox>
                     </StackPanel>
 

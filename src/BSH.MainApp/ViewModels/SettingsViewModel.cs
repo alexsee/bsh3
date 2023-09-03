@@ -30,6 +30,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     #region Sources Settings
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(DeleteSourceFolderCommand))]
     private string? selectedSource = null;
 
     public ObservableCollection<string> Sources { get; } = new();
@@ -82,9 +83,9 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     #region Target Settings
 
-    public IDictionary<MediaType, string> MediaTypes
+    public IList<MediaType> MediaTypes
     {
-        get => Enum.GetValues(typeof(MediaType)).Cast<MediaType>().ToDictionary(x => x, this.GetMediaTypeDisplayName);
+        get => Enum.GetValues(typeof(MediaType)).Cast<MediaType>().ToList();
     }
 
     private MediaType selectedMediaType;
@@ -163,7 +164,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         }
     }
 
-    public string GetMediaTypeDisplayName(MediaType mediaType)
+    public static string GetMediaTypeDisplayName(MediaType mediaType)
     {
         if (mediaType == MediaType.LocalDevice)
         {
