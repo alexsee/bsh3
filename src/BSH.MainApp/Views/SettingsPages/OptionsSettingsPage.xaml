@@ -86,6 +86,13 @@
                         </toolkit:SettingsCard>
                     </toolkit:SettingsExpander.Items>
                 </toolkit:SettingsExpander>
+
+                <toolkit:SettingsCard Header="Storage device behavior" Description="Wait for storage device if not available">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xEDA2;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{Binding WaitForDevice, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
             </StackPanel>
         </ScrollViewer>
     </Grid>

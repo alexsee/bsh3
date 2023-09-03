@@ -30,22 +30,6 @@
             VerticalScrollBarVisibility="Auto"
             VerticalScrollMode="Auto">
             <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Advanced Settings</TextBlock>
-
-                <toolkit:SettingsCard Header="Battery saver mode" Description="Stops automatic and scheduled backups when device is in battery mode">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE865;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding StopBackupWhenBatteryMode, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
-
-                <toolkit:SettingsCard Header="Storage device behavior" Description="Wait for storage device if not available">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xEDA2;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding WaitForDevice, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
-
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Backupbrowser</TextBlock>
                 <toolkit:SettingsCard Header="Directory localization" Description="Show directory localization names if available">
                     <toolkit:SettingsCard.HeaderIcon>

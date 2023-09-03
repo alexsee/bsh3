@@ -84,6 +84,13 @@
                         </toolkit:SettingsCard>
                     </toolkit:SettingsExpander.Items>
                 </toolkit:SettingsExpander>
+
+                <toolkit:SettingsCard Header="Battery saver mode" Description="Stops automatic and scheduled backups when device is in battery mode">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE865;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{Binding StopBackupWhenBatteryMode, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
             </StackPanel>
         </ScrollViewer>
     </Grid>
