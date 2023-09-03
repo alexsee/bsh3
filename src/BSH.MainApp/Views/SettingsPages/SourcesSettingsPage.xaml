@@ -4,10 +4,24 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:BSH.MainApp.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     Background="White">
 
     <Page.Resources>
+        <x:Double x:Key="SettingsCardSpacing">3</x:Double>
+
+        <Style
+            x:Key="SettingsSectionHeaderTextBlockStyle"
+            BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+            TargetType="TextBlock">
+            <Style.Setters>
+                <Setter Property="Margin" Value="1,29,0,5" />
+            </Style.Setters>
+        </Style>
+
         <DataTemplate x:Name="SourceFolderTemplate" x:DataType="x:String">
             <StackPanel Orientation="Horizontal">
                 <FontIcon VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" Margin="0,0,10,0"/>
@@ -17,34 +31,62 @@
     </Page.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
+        <ScrollViewer
+            Padding="20,0,20,0"
+            IsTabStop="False"
+            VerticalScrollBarVisibility="Auto"
+            VerticalScrollMode="Auto">
+            <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                <toolkit:SettingsExpander Header="Source directories" Description="Select the directories to be included in the backup." IsExpanded="True">
+                    <toolkit:SettingsExpander.HeaderIcon>
+                        <FontIcon Glyph="&#xE8F4;" />
+                    </toolkit:SettingsExpander.HeaderIcon>
+                    <toolkit:SettingsExpander.Items>
+                        <toolkit:SettingsCard
+                            ContentAlignment="Vertical"
+                            HorizontalContentAlignment="Stretch">
+                            <Grid Height="250">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="40" />
+                                </Grid.RowDefinitions>
 
-        <ListView ItemsSource="{Binding Sources}"
-                  SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
-                  Grid.Row="0" 
-                  ItemTemplate="{StaticResource SourceFolderTemplate}">
-            <ListView.HeaderTemplate>
-                <DataTemplate>
-                    <TextBlock FontWeight="Bold" Margin="0,5,0,5">Directory</TextBlock>
-                </DataTemplate>
-            </ListView.HeaderTemplate>
-        </ListView>
+                                <ListView ItemsSource="{Binding Sources}"
+                                    SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
+                                    Grid.Row="0" 
+                                    ItemTemplate="{StaticResource SourceFolderTemplate}">
+                                    <ListView.HeaderTemplate>
+                                        <DataTemplate>
+                                            <TextBlock FontWeight="Bold" Margin="0,5,0,5">Directory</TextBlock>
+                                        </DataTemplate>
+                                    </ListView.HeaderTemplate>
+                                </ListView>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="0">
-                <Button Command="{x:Bind ViewModel.AddSourceFolderCommand}" Content="Add Directory" />
-                <Button Command="{x:Bind ViewModel.DeleteSourceFolderCommand}" Content="Delete" Margin="10,0,0,0" />
+                                    <StackPanel Orientation="Horizontal" Grid.Column="0">
+                                        <Button Command="{x:Bind ViewModel.AddSourceFolderCommand}" Content="Add Directory" />
+                                        <Button Command="{x:Bind ViewModel.DeleteSourceFolderCommand}" Content="Delete" Margin="10,0,0,0" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </toolkit:SettingsCard>
+                    </toolkit:SettingsExpander.Items>
+                </toolkit:SettingsExpander>
+
+                <toolkit:SettingsCard
+                    Header="Exclude files and folders"
+                    Description="Exclude single files and folder, or define custom rules for exclusion."
+                    IsClickEnabled="True">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xECC9;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                </toolkit:SettingsCard>
             </StackPanel>
-
-            <Button x:Name="btnExcludeFiles" Grid.Column="1" Content="Exclude file(s)" HorizontalAlignment="Right" />
-        </Grid>
+        </ScrollViewer>
     </Grid>
 </Page>
