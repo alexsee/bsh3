@@ -178,4 +178,38 @@
   <data name="MsgBox_Ftp_Unuccessful_Title" xml:space="preserve">
     <value>Connection to FTP Server unsuccessful</value>
   </data>
+  <data name="MsgBox_MediaType_Change_Text" xml:space="preserve">
+    <value>Existing backups will be deleted.
+
+If you decide to switch the media type, all existing backups will be deleted. Switching the backup device type is not supported.
+
+Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
+  </data>
+  <data name="MsgBox_MediaType_Change_Title" xml:space="preserve">
+    <value>Existing backups deletion</value>
+  </data>
+  <data name="MsgBox_No" xml:space="preserve">
+    <value>&amp;No</value>
+  </data>
+  <data name="MsgBox_Yes" xml:space="preserve">
+    <value>&amp;Yes</value>
+  </data>
+  <data name="MsgBox_Cancel" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="MsgBox_LocalPath_Change_Move" xml:space="preserve">
+    <value>&amp;Move</value>
+  </data>
+  <data name="MsgBox_LocalPath_Change_Text" xml:space="preserve">
+    <value>You can decide to either use or move the location of the backups:
+
+Use: You already moved the path to the backups or the paths have changed.
+Move: You want to move the backups to a different path and want BSH to move the files.</value>
+  </data>
+  <data name="MsgBox_LocalPath_Change_Title" xml:space="preserve">
+    <value>Change local path</value>
+  </data>
+  <data name="MsgBox_LocalPath_Change_Use" xml:space="preserve">
+    <value>&amp;Use</value>
+  </data>
 </root>

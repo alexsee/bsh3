@@ -85,29 +85,11 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     public IList<MediaType> MediaTypes
     {
-        get => Enum.GetValues(typeof(MediaType)).Cast<MediaType>().ToList();
+        get => new List<MediaType>() { MediaType.LocalDevice, MediaType.FileTransferServer };
     }
 
+    [ObservableProperty]
     private MediaType selectedMediaType;
-    public MediaType SelectedMediaType
-    {
-        get => selectedMediaType;
-        set
-        {
-            if (value == MediaType.LocalDevice)
-            {
-                this.FtpRemoteVisibility = Visibility.Collapsed;
-                this.LocalDeviceVisibility = Visibility.Visible;
-            }
-            else
-            {
-                this.FtpRemoteVisibility = Visibility.Visible;
-                this.LocalDeviceVisibility = Visibility.Collapsed;
-            }
-
-            SetProperty(ref selectedMediaType, value);
-        }
-    }
 
     [ObservableProperty]
     private Visibility localDeviceVisibility = Visibility.Collapsed;
@@ -141,7 +123,19 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     private void InitTargetSettings()
     {
+        // selected media type
         this.SelectedMediaType = this.configurationManager.MediumType;
+
+        if (SelectedMediaType == MediaType.LocalDevice)
+        {
+            this.FtpRemoteVisibility = Visibility.Collapsed;
+            this.LocalDeviceVisibility = Visibility.Visible;
+        }
+        else
+        {
+            this.FtpRemoteVisibility = Visibility.Visible;
+            this.LocalDeviceVisibility = Visibility.Collapsed;
+        }
 
         // local device
         this.LocalDevicePath = this.configurationManager.BackupFolder;
@@ -207,6 +201,75 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     private bool CanExecuteCheckFtpRemote()
     {
         return !string.IsNullOrEmpty(this.FtpRemoteHost) && !string.IsNullOrEmpty(this.FtpRemoteUser) && !string.IsNullOrEmpty(this.FtpRemotePassword);
+    }
+
+    [RelayCommand]
+    public async Task ChangeLocalPath()
+    {
+        var folderPicker = new FolderPicker
+        {
+            ViewMode = PickerViewMode.Thumbnail,
+            SuggestedStartLocation = PickerLocationId.DocumentsLibrary
+        };
+
+        var hwnd = App.MainWindow.GetWindowHandle();
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
+
+        var folder = await folderPicker.PickSingleFolderAsync();
+        if (folder == null)
+        {
+            return;
+        }
+
+        var messageBoxDlg = new MessageDialog("MsgBox_LocalPath_Change_Text".GetLocalized(), "MsgBox_LocalPath_Change_Title".GetLocalized());
+        messageBoxDlg.Commands.Add(new UICommand("MsgBox_LocalPath_Change_Use".GetLocalized(), (x) =>
+        {
+            this.LocalDevicePath = folder.Path;
+            this.configurationManager.BackupFolder = folder.Path;
+        }));
+        messageBoxDlg.Commands.Add(new UICommand("MsgBox_LocalPath_Change_Move".GetLocalized(), (x) =>
+        {
+            this.LocalDevicePath = folder.Path;
+
+            // TODO: add move logic
+        }));
+        messageBoxDlg.Commands.Add(new UICommand("MsgBox_Cancel".GetLocalized()));
+
+        WinRT.Interop.InitializeWithWindow.Initialize(messageBoxDlg, hwnd);
+        await messageBoxDlg.ShowAsync();
+    }
+
+    async partial void OnSelectedMediaTypeChanged(MediaType oldValue, MediaType newValue)
+    {
+        if (oldValue == MediaType.Unset) return;
+
+        var messageBoxDlg = new MessageDialog("MsgBox_MediaType_Change_Text".GetLocalized(), "MsgBox_MediaType_Change_Title".GetLocalized());
+        messageBoxDlg.Options = MessageDialogOptions.AcceptUserInputAfterDelay;
+        messageBoxDlg.Commands.Add(new UICommand("MsgBox_Yes".GetLocalized(), (x) =>
+        {
+            // TODO: add remove all backups logic
+
+            // update UI
+            if (newValue == MediaType.LocalDevice)
+            {
+                this.FtpRemoteVisibility = Visibility.Collapsed;
+                this.LocalDeviceVisibility = Visibility.Visible;
+            }
+            else
+            {
+                this.FtpRemoteVisibility = Visibility.Visible;
+                this.LocalDeviceVisibility = Visibility.Collapsed;
+            }
+        }));
+        messageBoxDlg.Commands.Add(new UICommand("MsgBox_No".GetLocalized(), (x) =>
+        {
+            this.SetProperty(ref selectedMediaType, oldValue, nameof(this.SelectedMediaType));
+        }));
+
+        var hwnd = App.MainWindow.GetWindowHandle();
+        WinRT.Interop.InitializeWithWindow.Initialize(messageBoxDlg, hwnd);
+
+        await messageBoxDlg.ShowAsync();
     }
 
     #endregion
