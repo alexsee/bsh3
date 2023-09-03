@@ -300,6 +300,11 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.WaitForDevice = this.configurationManager.ShowWaitOnMediaAutoBackups == "1";
     }
 
+    partial void OnWaitForDeviceChanged(bool value)
+    {
+        this.configurationManager.ShowWaitOnMediaAutoBackups = value ? "1" : "0";
+    }
+
     #endregion
 
     #region Mode Settings
@@ -314,6 +319,11 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     {
         this.TaskType = this.configurationManager.TaskType;
         this.StopBackupWhenBatteryMode = this.configurationManager.DeativateAutoBackupsWhenAkku == "1";
+    }
+
+    partial void OnStopBackupWhenBatteryModeChanged(bool value)
+    {
+        this.configurationManager.DeativateAutoBackupsWhenAkku = value ? "1" : "0";
     }
 
     #endregion
