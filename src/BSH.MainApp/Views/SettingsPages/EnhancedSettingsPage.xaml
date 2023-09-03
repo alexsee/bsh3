@@ -44,7 +44,7 @@
                     <toolkit:SettingsExpander.Items>
                         <toolkit:SettingsCard Header="Diskspace lower than">
                             <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
-                                <NumberBox Value="{Binding NotificationWhenDiskspaceLow, Mode=TwoWay}" />
+                                <NumberBox Minimum="1" Value="{Binding NotificationWhenDiskspaceLow, Mode=TwoWay}" />
                                 <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="MB" />
                             </StackPanel>
                         </toolkit:SettingsCard>
@@ -64,7 +64,7 @@
                     <toolkit:SettingsExpander.Items>
                         <toolkit:SettingsCard Header="Backup is outdated when older than">
                             <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
-                                <NumberBox Value="{Binding NotificationWhenBackupOutdated, Mode=TwoWay}" />
+                                <NumberBox Minimum="1" Value="{Binding NotificationWhenBackupOutdated, Mode=TwoWay}" />
                                 <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Days" />
                             </StackPanel>
                         </toolkit:SettingsCard>

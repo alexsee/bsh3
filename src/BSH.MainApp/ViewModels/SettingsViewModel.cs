@@ -354,6 +354,57 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.NotificationWhenBackupOutdated = int.Parse(this.configurationManager.RemindAfterDays);
     }
 
+    partial void OnEnableNotificationWhenDiskspaceLowChanged(bool value)
+    {
+        if (value)
+        {
+            this.configurationManager.RemindSpace = this.NotificationWhenDiskspaceLow.ToString();
+        }
+        else
+        {
+            this.configurationManager.RemindSpace = string.Empty;
+        }
+    }
+
+    partial void OnNotificationWhenDiskspaceLowChanged(int value)
+    {
+        if (value == 0) return;
+        this.configurationManager.RemindSpace = value.ToString();
+    }
+
+    partial void OnEnableDirectoryLocalizationChanged(bool value)
+    {
+        this.configurationManager.ShowLocalizedPath = value ? "1" : "0";
+    }
+
+    partial void OnEnableNotificationWhenBackupFinishedChanged(bool value)
+    {
+        this.configurationManager.InfoBackupDone = value ? "1" : "0";
+    }
+
+    partial void OnEnableNotificationWhenBackupDeviceNotReadyChanged(bool value)
+    {
+        this.configurationManager.Medium = value ? "1" : "0";
+    }
+
+    partial void OnEnableNotificationWhenBackupOutdatedChanged(bool value)
+    {
+        if (value)
+        {
+            this.configurationManager.RemindAfterDays = this.NotificationWhenBackupOutdated.ToString();
+        }
+        else
+        {
+            this.configurationManager.RemindAfterDays = string.Empty;
+        }
+    }
+
+    partial void OnNotificationWhenBackupOutdatedChanged(int value)
+    {
+        if (value == 0) return;
+        this.configurationManager.RemindAfterDays = value.ToString();
+    }
+
     #endregion
 
     public SettingsViewModel(IConfigurationManager configurationManager)
