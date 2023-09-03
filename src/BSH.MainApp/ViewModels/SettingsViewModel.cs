@@ -101,6 +101,12 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     private string localDevicePath;
 
     [ObservableProperty]
+    private string localUNCUser;
+
+    [ObservableProperty]
+    private string localUNCPassword;
+
+    [ObservableProperty]
     private string ftpRemoteHost;
 
     [ObservableProperty]
@@ -226,6 +232,18 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         {
             this.LocalDevicePath = folder.Path;
             this.configurationManager.BackupFolder = folder.Path;
+
+            // update media serial (if local path)
+            if (folder.Path.StartsWith(@"\\")) return;
+
+            this.LocalUNCUser = "";
+            this.LocalUNCPassword = "";
+
+            this.configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(folder.Path.Substring(0, 3));
+            if (this.configurationManager.MediaVolumeSerial == null || this.configurationManager.MediaVolumeSerial == "0")
+            {
+                this.configurationManager.MediaVolumeSerial = "";
+            }
         }));
         messageBoxDlg.Commands.Add(new UICommand("MsgBox_LocalPath_Change_Move".GetLocalized(), (x) =>
         {
@@ -270,6 +288,16 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         WinRT.Interop.InitializeWithWindow.Initialize(messageBoxDlg, hwnd);
 
         await messageBoxDlg.ShowAsync();
+    }
+
+    partial void OnLocalUNCUserChanged(string value)
+    {
+        this.configurationManager.UNCUsername = value;
+    }
+
+    partial void OnLocalUNCPasswordChanged(string value)
+    {
+        this.configurationManager.UNCPassword = value;
     }
 
     #endregion

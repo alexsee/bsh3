@@ -54,26 +54,38 @@
                             ContentAlignment="Vertical"
                             HorizontalContentAlignment="Stretch">
                             <Grid ColumnSpacing="20" RowSpacing="20">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="200" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-
                                 <!-- local file system options -->
-                                <Grid Grid.Row="0" Grid.ColumnSpan="2" ColumnSpacing="20" Visibility="{Binding LocalDeviceVisibility}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="200" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                                <StackPanel Visibility="{Binding LocalDeviceVisibility}">
+                                    <Grid ColumnSpacing="20">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Column="0" Text="Storage path:" />
-                                    <TextBox Grid.Column="1" Text="{Binding LocalDevicePath}" IsReadOnly="True" />
-                                    <Button Grid.Column="2" Content="Change" Command="{x:Bind ViewModel.ChangeLocalPathCommand}" />
-                                </Grid>
+                                        <TextBlock Grid.Column="0" Text="Storage path:" />
+                                        <TextBox Grid.Column="1" Text="{Binding LocalDevicePath}" IsReadOnly="True" />
+                                        <Button Grid.Column="2" Content="Change" Command="{x:Bind ViewModel.ChangeLocalPathCommand}" />
+                                    </Grid>
+
+                                    <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Network authentication</TextBlock>
+                                    <Grid ColumnSpacing="20">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">Username:</TextBlock>
+                                        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding LocalUNCUser, Mode=TwoWay}"></TextBox>
+
+                                        <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0">Password:</TextBlock>
+                                        <PasswordBox Grid.Column="3" Grid.Row="0" Password="{Binding LocalUNCPassword, Mode=TwoWay}"></PasswordBox>
+                                    </Grid>
+                                </StackPanel>
 
                                 <!-- ftp server options -->
-                                <Grid Grid.Row="0" Grid.ColumnSpan="2" RowSpacing="10" ColumnSpacing="20" Visibility="{Binding FtpRemoteVisibility}">
+                                <Grid RowSpacing="10" ColumnSpacing="20" Visibility="{Binding FtpRemoteVisibility}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="200" />
                                         <ColumnDefinition />
