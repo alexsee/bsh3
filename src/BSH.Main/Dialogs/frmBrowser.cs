@@ -1623,11 +1623,11 @@ public partial class frmBrowser : IStatusReport
 
         using (var dlgMultiVersionDelete = new frmMultiVersionDeletion())
         {
-            foreach (var Version in BackupLogic.QueryManager.GetVersions())
+            foreach (var version in BackupLogic.QueryManager.GetVersions())
             {
                 var newItem = new ListViewItem();
-                newItem.Text = Version.CreationDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
-                newItem.Tag = Version.Id;
+                newItem.Text = version.CreationDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
+                newItem.Tag = version.Id;
                 dlgMultiVersionDelete.lstVersions.Items.Add(newItem);
             }
 
@@ -1647,41 +1647,19 @@ public partial class frmBrowser : IStatusReport
                     }
                 }
 
+                // disable automatic browser refresh by unregistering observer
+                StatusController.Current.RemoveObserver(this);
+
+                // delete all selected backups
                 await BackupLogic.BackupController.DeleteBackupsAsync(toDeleteItems, true);
+
+                // enable automatic browser refresh by registering observer
+                StatusController.Current.AddObserver(this);
             }
         }
 
         // load versions
-        var lstVersions = BackupLogic.QueryManager.GetVersions(true);
-        if (lstVersions.Count <= 0)
-        {
-            Close();
-            NotificationController.Current.ShowIconBalloon(1000, Resources.INFO_NO_BACKUP_AVAILABLE_TITLE, Resources.INFO_NO_BACKUP_AVAILABLE_TEXT, ToolTipIcon.Info);
-
-            return;
-        }
-
-        AVersionList1.Items.Clear();
-        AVersionList1.DrawItems();
-
-        foreach (var entry in lstVersions)
-        {
-            var newEntry = new aVersionListItem
-            {
-                VersionDate = entry.CreationDate.HumanizeDate(),
-                VersionID = entry.Id,
-                Version = entry,
-                ToolTipTitle = entry.Title
-            };
-            newEntry.ToolTip = Resources.DLG_BACKUPBROWSER_TT_VERSION.FormatWith(entry.CreationDate, entry.Size.Bytes().Humanize(), entry.Description).Trim();
-            newEntry.VersionStable = entry.Stable;
-            AVersionList1.Items.Add(newEntry);
-        }
-
-        // change to current version
-        AVersionList1.DrawItems();
-        AVersionList1.SelectItem(lstVersions[0].Id);
-        Enabled = true;
+        ReloadBrowser();
     }
 
     private void lvFavorite_SizeChanged(object sender, EventArgs e)
