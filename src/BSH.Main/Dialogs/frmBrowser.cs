@@ -1632,15 +1632,15 @@ namespace Brightbits.BSH.Main
         {
             Enabled = false;
 
-        using (var dlgMultiVersionDelete = new frmMultiVersionDeletion())
-        {
-            foreach (var version in BackupLogic.QueryManager.GetVersions())
+            using (var dlgMultiVersionDelete = new frmMultiVersionDeletion())
             {
-                var newItem = new ListViewItem();
-                newItem.Text = version.CreationDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
-                newItem.Tag = version.Id;
-                dlgMultiVersionDelete.lstVersions.Items.Add(newItem);
-            }
+                foreach (var version in BackupLogic.GlobalBackup.QueryManager.GetVersions())
+                {
+                    var newItem = new ListViewItem();
+                    newItem.Text = version.CreationDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
+                    newItem.Tag = version.Id;
+                    dlgMultiVersionDelete.lstVersions.Items.Add(newItem);
+                }
 
                 if (dlgMultiVersionDelete.ShowDialog() == DialogResult.OK)
                 {
@@ -1658,20 +1658,20 @@ namespace Brightbits.BSH.Main
                         }
                     }
 
-                // disable automatic browser refresh by unregistering observer
-                StatusController.Current.RemoveObserver(this);
+                    // disable automatic browser refresh by unregistering observer
+                    StatusController.Current.RemoveObserver(this);
 
-                // delete all selected backups
-                await BackupLogic.BackupController.DeleteBackupsAsync(toDeleteItems, true);
+                    // delete all selected backups
+                    await BackupLogic.BackupController.DeleteBackupsAsync(toDeleteItems, true);
 
-                // enable automatic browser refresh by registering observer
-                StatusController.Current.AddObserver(this);
+                    // enable automatic browser refresh by registering observer
+                    StatusController.Current.AddObserver(this);
+                }
             }
-        }
 
-        // load versions
-        ReloadBrowser();
-    }
+            // load versions
+            ReloadBrowser();
+        }
 
         private void lvFavorite_SizeChanged(object sender, EventArgs e)
         {
