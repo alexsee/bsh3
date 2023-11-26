@@ -63,6 +63,8 @@ static class Program
             Microsoft.Win32.SystemEvents.SessionEnding += Shutdown;
 
             // setup software updater
+            AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
+            AutoUpdater.HttpUserAgent = $"{APP_TITLE}/{CurrentVersion}";
             AutoUpdater.TopMost = true;
 
             // start backup engine
@@ -82,6 +84,27 @@ static class Program
         catch (Exception ex)
         {
             ExceptionController.HandleGlobalException(null, new System.Threading.ThreadExceptionEventArgs(ex));
+        }
+    }
+
+    private static void AutoUpdater_ApplicationExitEvent()
+    {
+        // close application
+        NotificationController.Current.Shutdown();
+        BackupLogic.StopSystem();
+        Settings.Default.StartParameters = Environment.CommandLine;
+        Settings.Default.Save();
+
+        PresentationController.Current.CloseMainWindow();
+        PresentationController.Current.CloseBackupBrowserWindow();
+
+        try
+        {
+            Application.Exit();
+        }
+        catch
+        {
+            Environment.Exit(0);
         }
     }
 
