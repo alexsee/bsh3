@@ -36,11 +36,6 @@
 		<FileVersion>3.9.0.1</FileVersion>
 	</PropertyGroup>
 	<ItemGroup>
-		<Reference Include="updateSystemDotNet.Controller">
-			<HintPath>..\..\assemblies\updateSystemDotNet.Controller.dll</HintPath>
-		</Reference>
-	</ItemGroup>
-	<ItemGroup>
 		<Compile Update="Dialogs\frmMainTabs\ucConfig.cs">
 			<SubType>UserControl</SubType>
 		</Compile>

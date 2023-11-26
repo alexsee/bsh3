@@ -17,7 +17,6 @@ using Brightbits.BSH.Engine.Jobs;
 using BSH.Main.Properties;
 using Humanizer;
 using System;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -43,20 +42,6 @@ public partial class ucOverview : IMainTabs, IStatusReport
     {
         StatusController.Current.AddObserver(this);
         RefreshInfo().Wait();
-
-#if !WIN_UWP
-        try
-        {
-            if (Program.mainUpdateController.currentUpdateResult.UpdatesAvailable)
-            {
-                plUpdates.Visible = true;
-            }
-        }
-        catch
-        {
-            // ignore error
-        }
-#endif
 
         Visible = true;
     }
@@ -369,12 +354,10 @@ public partial class ucOverview : IMainTabs, IStatusReport
         BackupLogic.BackupController.Cancel();
     }
 
-#if !WIN_UWP
     private void btnUpdates_Click(object sender, EventArgs e)
     {
-        Program.mainUpdateController.updateInteractive(ParentForm);
+
     }
-#endif
 
     private void btnSettings_Click(object sender, EventArgs e)
     {
