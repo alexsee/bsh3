@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoUpdaterDotNET;
 using BSH.Main.Model.CommandLine;
 using BSH.Main.Properties;
 using CommandLine;
@@ -60,6 +61,9 @@ static class Program
 
             NotificationController.Current.InitializeSystemTrayIcon();
             Microsoft.Win32.SystemEvents.SessionEnding += Shutdown;
+
+            // setup software updater
+            AutoUpdater.TopMost = true;
 
             // start backup engine
             BackupLogic.StartupAsync().Wait();

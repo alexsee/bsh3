@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoUpdaterDotNET;
 using Brightbits.BSH.Engine.Database;
 using BSH.Main.Properties;
 using Serilog;
@@ -231,7 +232,7 @@ public partial class frmMain
 
     private void AufAktualisierungenPrüfenToolStripMenuItem_Click(object sender, EventArgs e)
     {
-
+        AutoUpdater.Start("https://updates.brightbits.de/backup_service_home/v3/auto_updater.xml");
     }
 
     private async void ZurücksetzenToolStripMenuItem_Click(object sender, EventArgs e)
