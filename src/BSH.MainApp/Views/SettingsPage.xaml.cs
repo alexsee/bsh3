@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using BSH.MainApp.ViewModels;
 using BSH.MainApp.Views.SettingsPages;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -9,8 +10,11 @@ namespace BSH.MainApp.Views;
 
 public sealed partial class SettingsPage : Page
 {
+    public SettingsViewModel ViewModel => (SettingsViewModel)DataContext;
+
     public SettingsPage()
     {
+        DataContext = App.GetService<SettingsViewModel>();
         InitializeComponent();
     }
 
@@ -40,6 +44,8 @@ public sealed partial class SettingsPage : Page
         {
             pageType = typeof(EnhancedSettingsPage);
         }
+        contentFrame.DataContext = this.ViewModel;
         contentFrame.NavigateToType(pageType, null, navOptions);
+
     }
 }

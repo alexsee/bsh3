@@ -248,7 +248,7 @@ public partial class ucDoConfigure : IMainTabs
                     if (tcSource.SelectedIndex == 0)
                     {
                         // directory
-                        configurationManager.MediumType = 1;
+                        configurationManager.MediumType = MediaType.LocalDevice;
                         configurationManager.BackupFolder = Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName;
                         configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(configurationManager.BackupFolder.Substring(0, 1) + @":\");
                         if (configurationManager.MediaVolumeSerial == null || configurationManager.MediaVolumeSerial == "0")
@@ -259,7 +259,7 @@ public partial class ucDoConfigure : IMainTabs
                     else if (tcSource.SelectedIndex == 1)
                     {
                         // ftp server
-                        configurationManager.MediumType = 3;
+                        configurationManager.MediumType = MediaType.FileTransferServer;
                         configurationManager.FtpHost = txtFTPServer.Text;
                         configurationManager.FtpPort = txtFTPPort.Text;
                         configurationManager.FtpUser = txtFTPUsername.Text;
@@ -273,7 +273,7 @@ public partial class ucDoConfigure : IMainTabs
                     else
                     {
                         // UNC directory
-                        configurationManager.MediumType = 1;
+                        configurationManager.MediumType = MediaType.LocalDevice;
                         configurationManager.BackupFolder = txtUNCPath.Text;
                         configurationManager.MediaVolumeSerial = "";
 
@@ -533,7 +533,7 @@ public partial class ucDoConfigure : IMainTabs
                 {
                     // refresh directory
                     BackupLogic.ConfigurationManager.BackupFolder = lvBackups.SelectedItems[0].Tag.ToString();
-                    BackupLogic.ConfigurationManager.MediumType = 1;
+                    BackupLogic.ConfigurationManager.MediumType = MediaType.LocalDevice;
 
                     await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
                     await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
@@ -549,7 +549,7 @@ public partial class ucDoConfigure : IMainTabs
                     BackupLogic.ConfigurationManager.FtpPort = txtFTPPort2.Text;
                     BackupLogic.ConfigurationManager.FtpUser = txtFTPUser2.Text;
                     BackupLogic.ConfigurationManager.FtpCoding = Convert.ToString(cboFtpEncoding2.SelectedItem);
-                    BackupLogic.ConfigurationManager.MediumType = 3;
+                    BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
 
                     await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
                     await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
