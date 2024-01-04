@@ -63,8 +63,10 @@ static class Program
             Microsoft.Win32.SystemEvents.SessionEnding += Shutdown;
 
             // setup software updater
+            var uniqueUserId = GetUniqueUserId();
+
             AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
-            AutoUpdater.HttpUserAgent = $"{APP_TITLE}/{CurrentVersion}";
+            AutoUpdater.HttpUserAgent = $"{APP_TITLE}/{CurrentVersion} {uniqueUserId}";
             AutoUpdater.TopMost = true;
 
             // start backup engine
@@ -214,5 +216,16 @@ static class Program
         {
             ShowBackupbrowserWindowExitCode();
         }
+    }
+
+    public static string GetUniqueUserId()
+    {
+        if (string.IsNullOrEmpty(Settings.Default.UniqueUserId))
+        {
+            Settings.Default.UniqueUserId = Guid.NewGuid().ToString();
+            Settings.Default.Save();
+        }
+
+        return Settings.Default.UniqueUserId;
     }
 }
