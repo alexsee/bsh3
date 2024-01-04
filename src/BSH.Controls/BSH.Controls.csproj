@@ -44,6 +44,6 @@
 		<ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.4" />
+		<PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.0" />
 	</ItemGroup>
 </Project>
