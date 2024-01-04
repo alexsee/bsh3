@@ -322,4 +322,10 @@ public partial class frmMain
             // ignore error
         }
     }
+
+    private void btnResetUserId_Click(object sender, EventArgs e)
+    {
+        Settings.Default.UniqueUserId = Guid.NewGuid().ToString();
+        Settings.Default.Save();
+    }
 }
