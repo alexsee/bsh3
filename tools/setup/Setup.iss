@@ -53,7 +53,11 @@ Filename: "net"; Parameters: "stop ""Backup Service Home-Dienst"""; Flags: runhi
 Filename: "sc"; Parameters: "delete ""Backup Service Home-Dienst"""; WorkingDir: "{app}"; Flags: runhidden
 
 [Files]
+Source: "..\..\output\AlphaVSS.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\AlphaVSS.x64.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\appsettings.Development.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\appsettings.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\AutoUpdater.NET.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\AxInterop.WMPLib.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\BSH.Controls.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\BSH.Controls.pdb"; DestDir: "{app}"; Flags: ignoreversion
@@ -126,12 +130,15 @@ Source: "..\..\output\Microsoft.Extensions.Primitives.dll"; DestDir: "{app}"; Fl
 Source: "..\..\output\Microsoft.VisualBasic.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Microsoft.VisualBasic.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Microsoft.VisualBasic.Forms.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Web.WebView2.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Web.WebView2.WinForms.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\Microsoft.Web.WebView2.Wpf.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Microsoft.Win32.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Microsoft.Win32.Registry.AccessControl.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Microsoft.Win32.Registry.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\Microsoft.Win32.SystemEvents.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\mscordaccore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\mscordaccore_amd64_amd64_7.0.1023.36312.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\mscordaccore_amd64_amd64_8.0.23.53103.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\mscordbi.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\mscorlib.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\mscorrc.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -381,37 +388,14 @@ Source: "..\..\output\UIAutomationClient.dll"; DestDir: "{app}"; Flags: ignoreve
 Source: "..\..\output\UIAutomationClientSideProviders.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\UIAutomationProvider.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\UIAutomationTypes.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\updateSystemDotNet.Controller.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\updateSystemDotNet.Controller.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\vcruntime140_cor3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\WebView2Loader.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\WindowsBase.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\WindowsFormsIntegration.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\wpfgfx_cor3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\output\de\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\..\output\de-DE\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\..\output\Accessibility.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\AlphaVSS.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\AlphaVSS.x64.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\appsettings.Development.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\de\Humanizer.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\Microsoft.VisualBasic.Forms.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\PresentationCore.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\PresentationFramework.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\PresentationUI.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\ReachFramework.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\System.Private.ServiceModel.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\System.Web.Services.Description.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\System.Windows.Controls.Ribbon.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\System.Windows.Forms.Design.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\System.Windows.Forms.Primitives.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\System.Windows.Forms.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\System.Windows.Input.Manipulations.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\System.Xaml.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\UIAutomationClient.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\UIAutomationClientSideProviders.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\UIAutomationProvider.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\UIAutomationTypes.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\WindowsBase.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de\WindowsFormsIntegration.resources.dll"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de-DE\BSH.Main.resources.dll"; DestDir: "{app}\de-DE"; Flags: ignoreversion
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);
