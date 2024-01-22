@@ -63,7 +63,7 @@
 		<PackageReference Include="System.Data.SQLite.Core">
 			<Version>1.0.118</Version>
 		</PackageReference>
-		<PackageReference Include="System.Management" Version="7.0.2" />
+		<PackageReference Include="System.Management" Version="8.0.0" />
 		<PackageReference Include="System.Net.Primitives">
 			<Version>4.3.1</Version>
 		</PackageReference>
