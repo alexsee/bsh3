@@ -63,15 +63,9 @@ public class Encryption
             CheckBitLen();
 
             var aes = Aes.Create();
+
             using var CryptStream = new CryptoStream(OutFileStream, aes.CreateEncryptor(MakeKey.GetBytes(mBitLen), MakeIV.GetBytes(16)), CryptoStreamMode.Write); // 16,24,32
-
-            var buffer = new byte[BufferSize];
-            int read;
-
-            while ((read = InFileStream.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                CryptStream.Write(buffer, 0, read);
-            }
+            InFileStream.CopyTo(CryptStream, BufferSize);
 
             return true;
         }
@@ -94,15 +88,9 @@ public class Encryption
             CheckBitLen();
 
             var aes = Aes.Create();
-            using var CryptStream = new CryptoStream(InFileStream, aes.CreateDecryptor(MakeKey.GetBytes(mBitLen), MakeIV.GetBytes(16)), CryptoStreamMode.Read);
+            using var CryptStream = new CryptoStream(OutFileStream, aes.CreateDecryptor(MakeKey.GetBytes(mBitLen), MakeIV.GetBytes(16)), CryptoStreamMode.Write);
 
-            var buffer = new byte[BufferSize];
-            int read;
-
-            while ((read = CryptStream.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                OutFileStream.Write(buffer, 0, read);
-            }
+            InFileStream.CopyTo(CryptStream, BufferSize);
 
             return true;
         }
