@@ -106,7 +106,7 @@ public partial class ucOverview : IMainTabs, IStatusReport
                 lblBdOldestBackup.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT;
 
                 var countBackup = await BackupLogic.QueryManager.GetNumberOfVersionsAsync();
-                if (countBackup >= 20 && !string.IsNullOrEmpty(BackupLogic.ConfigurationManager.BackupSize))
+                if (countBackup >= 20 && !string.IsNullOrEmpty(BackupLogic.ConfigurationManager.BackupSize) && freeSpace > 0)
                 {
                     try
                     {
