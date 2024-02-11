@@ -57,8 +57,8 @@ public class Encryption
             using var InFileStream = new FileStream(SourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using FileStream OutFileStream = new(TargetFile, FileMode.Create);
 
-            Rfc2898DeriveBytes MakeKey = new(Crypto.ToInsecureString(Password), mKeySalt);
-            Rfc2898DeriveBytes MakeIV = new(Crypto.ToInsecureString(Password), mIVSalt);
+            Rfc2898DeriveBytes MakeKey = new(Crypto.ToInsecureString(Password), mKeySalt, 1000, HashAlgorithmName.SHA1);
+            Rfc2898DeriveBytes MakeIV = new(Crypto.ToInsecureString(Password), mIVSalt, 1000, HashAlgorithmName.SHA1);
 
             CheckBitLen();
 
@@ -88,8 +88,8 @@ public class Encryption
             using var InFileStream = new FileStream(SourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var OutFileStream = new FileStream(TargetFile, FileMode.Create);
 
-            Rfc2898DeriveBytes MakeKey = new(Crypto.ToInsecureString(Password), mKeySalt);
-            Rfc2898DeriveBytes MakeIV = new(Crypto.ToInsecureString(Password), mIVSalt);
+            Rfc2898DeriveBytes MakeKey = new(Crypto.ToInsecureString(Password), mKeySalt, 1000, HashAlgorithmName.SHA1);
+            Rfc2898DeriveBytes MakeIV = new(Crypto.ToInsecureString(Password), mIVSalt, 1000, HashAlgorithmName.SHA1);
 
             CheckBitLen();
 
