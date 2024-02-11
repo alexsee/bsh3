@@ -138,7 +138,7 @@ public class QueryManager : IQueryManager
 
         // obtain oldest backup
         using (var dbClient = dbClientFactory.CreateDbClient())
-        using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable ORDER BY versionID ASC LIMIT 1", null))
+        using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionStatus = 0 ORDER BY versionID ASC LIMIT 1", null))
         {
             if (reader.Read())
             {
