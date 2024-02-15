@@ -27,10 +27,7 @@ public class Encryption
 
     public int BitLen
     {
-        get
-        {
-            return mBitLen * 8;
-        }
+        get => mBitLen * 8;
         set
         {
             if (value % 8 == 1)
@@ -57,14 +54,14 @@ public class Encryption
             using var InFileStream = new FileStream(SourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using FileStream OutFileStream = new(TargetFile, FileMode.Create);
 
-            Rfc2898DeriveBytes MakeKey = new(Crypto.ToInsecureString(Password), mKeySalt, 1000, HashAlgorithmName.SHA1);
-            Rfc2898DeriveBytes MakeIV = new(Crypto.ToInsecureString(Password), mIVSalt, 1000, HashAlgorithmName.SHA1);
+            var key = new Rfc2898DeriveBytes(Crypto.ToInsecureString(Password), mKeySalt, 1000, HashAlgorithmName.SHA1);
+            var iv = new Rfc2898DeriveBytes(Crypto.ToInsecureString(Password), mIVSalt, 1000, HashAlgorithmName.SHA1);
 
             CheckBitLen();
 
             var aes = Aes.Create();
 
-            using var CryptStream = new CryptoStream(OutFileStream, aes.CreateEncryptor(MakeKey.GetBytes(mBitLen), MakeIV.GetBytes(16)), CryptoStreamMode.Write); // 16,24,32
+            using var CryptStream = new CryptoStream(OutFileStream, aes.CreateEncryptor(key.GetBytes(mBitLen), iv.GetBytes(16)), CryptoStreamMode.Write); // 16,24,32
             InFileStream.CopyTo(CryptStream, BufferSize);
 
             return true;
@@ -82,13 +79,13 @@ public class Encryption
             using var InFileStream = new FileStream(SourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var OutFileStream = new FileStream(TargetFile, FileMode.Create);
 
-            Rfc2898DeriveBytes MakeKey = new(Crypto.ToInsecureString(Password), mKeySalt, 1000, HashAlgorithmName.SHA1);
-            Rfc2898DeriveBytes MakeIV = new(Crypto.ToInsecureString(Password), mIVSalt, 1000, HashAlgorithmName.SHA1);
+            var key = new Rfc2898DeriveBytes(Crypto.ToInsecureString(Password), mKeySalt, 1000, HashAlgorithmName.SHA1);
+            var iv = new Rfc2898DeriveBytes(Crypto.ToInsecureString(Password), mIVSalt, 1000, HashAlgorithmName.SHA1);
 
             CheckBitLen();
 
             var aes = Aes.Create();
-            using var CryptStream = new CryptoStream(OutFileStream, aes.CreateDecryptor(MakeKey.GetBytes(mBitLen), MakeIV.GetBytes(16)), CryptoStreamMode.Write);
+            using var CryptStream = new CryptoStream(OutFileStream, aes.CreateDecryptor(key.GetBytes(mBitLen), iv.GetBytes(16)), CryptoStreamMode.Write);
 
             InFileStream.CopyTo(CryptStream, BufferSize);
 
