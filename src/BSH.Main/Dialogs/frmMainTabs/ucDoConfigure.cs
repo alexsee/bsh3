@@ -280,7 +280,7 @@ public partial class ucDoConfigure : IMainTabs
                         if (txtUNCPath.Text.StartsWith(@"\\"))
                         {
                             BackupLogic.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
-                            BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(Crypto.ToSecureString(txtUNCPassword.Text), System.Security.Cryptography.DataProtectionScope.LocalMachine);
+                            BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(txtUNCPassword.Text, System.Security.Cryptography.DataProtectionScope.LocalMachine);
                         }
                         else
                         {

@@ -15,7 +15,6 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Security;
 using System.Text;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
@@ -273,16 +272,14 @@ public class FTPStorage : Storage, IStorage
         return result == FtpStatus.Success;
     }
 
-    public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, SecureString password)
+    public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password)
     {
         // create directory if not exists
         var remoteFilePath = Combine(folderPath, remoteFile + ".enc").GetFtpPath();
 
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile)) + ".enc";
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
+
+        var crypto = new Encryption();
         if (!crypto.Encode(GetLocalFileName(localFile), tmpFile, password))
         {
             return false;
@@ -395,7 +392,7 @@ public class FTPStorage : Storage, IStorage
         return true;
     }
 
-    public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, SecureString password)
+    public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
     {
         var remoteFilePath = Combine(folderPath, remoteFile + ".enc").GetFtpPath();
 
@@ -410,10 +407,7 @@ public class FTPStorage : Storage, IStorage
             return false;
         }
 
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
+        var crypto = new Encryption();
         crypto.Decode(tmpFile, GetLocalFileName(localFile), password);
 
         File.Delete(tmpFile);
@@ -456,7 +450,7 @@ public class FTPStorage : Storage, IStorage
         return true;
     }
 
-    public bool DecryptOnStorage(string remoteFile, SecureString password)
+    public bool DecryptOnStorage(string remoteFile, string password)
     {
         var remoteFilePath = Combine(folderPath, remoteFile + ".enc").GetFtpPath();
         var remoteFilePathDecrypted = Combine(folderPath, remoteFile).GetFtpPath();
@@ -469,10 +463,7 @@ public class FTPStorage : Storage, IStorage
             return false;
         }
 
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
+        var crypto = new Encryption();
         crypto.Decode(tmpFile + ".enc", tmpFile, password);
         File.Delete(tmpFile + ".enc");
 

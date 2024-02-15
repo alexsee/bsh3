@@ -171,7 +171,7 @@ public class BackupTests
         backupJob.SourceFolder = "D:\\Meine Dokumente";
         backupJob.Title = "Blub";
         backupJob.Description = "";
-        backupJob.Password = Crypto.ToSecureString("test123");
+        backupJob.Password = "test123";
 
         // start backup
         var token = new CancellationTokenSource().Token;

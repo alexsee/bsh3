@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -37,7 +36,7 @@ public class EditJob : Job
 {
     private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
 
-    public SecureString Password
+    public string Password
     {
         get; set;
     }

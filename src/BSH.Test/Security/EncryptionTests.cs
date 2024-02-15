@@ -28,16 +28,13 @@ public class EncryptionTests
         var password = "password";
 
         // Act
-        var encryption = new Encryption
-        {
-            BitLen = 256
-        };
+        var encryption = new Encryption();
 
-        var result = encryption.Encode(tempFile, targetFile, Crypto.ToSecureString(password));
+        var result = encryption.Encode(tempFile, targetFile, password);
         Assert.IsTrue(result);
 
         // Act
-        result = encryption.Decode(targetFile, sourceFile, Crypto.ToSecureString(password));
+        result = encryption.Decode(targetFile, sourceFile, password);
         Assert.IsTrue(result);
 
         // Assert

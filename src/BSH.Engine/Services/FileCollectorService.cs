@@ -21,7 +21,6 @@ using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Utils;
 using Serilog;
-using System.Linq;
 
 namespace Brightbits.BSH.Engine.Services;
 

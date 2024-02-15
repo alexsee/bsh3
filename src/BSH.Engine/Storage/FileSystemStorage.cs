@@ -15,7 +15,6 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Security;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
@@ -325,17 +324,13 @@ public class FileSystemStorage : Storage, IStorage
         return true;
     }
 
-    public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, SecureString password)
+    public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password)
     {
         // create directory if not exists
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".enc");
         Directory.CreateDirectory(Path.GetDirectoryName(remoteFilePath));
 
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
-
+        var crypto = new Encryption();
         if (!crypto.Encode(GetLocalFileName(localFile), remoteFilePath, password))
         {
             return false;
@@ -370,17 +365,14 @@ public class FileSystemStorage : Storage, IStorage
         return true;
     }
 
-    public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, SecureString password)
+    public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
     {
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".enc");
 
         // create directory if not exists
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
+        var crypto = new Encryption();
         crypto.Decode(remoteFilePath, GetLocalFileName(localFile), password);
 
         return true;
@@ -430,15 +422,12 @@ public class FileSystemStorage : Storage, IStorage
         return true;
     }
 
-    public bool DecryptOnStorage(string remoteFile, SecureString password)
+    public bool DecryptOnStorage(string remoteFile, string password)
     {
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".enc");
         var remoteFilePathDecrypted = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
 
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
+        var crypto = new Encryption();
         var result = crypto.Decode(remoteFilePath, remoteFilePathDecrypted, password);
         File.Delete(remoteFilePath);
 

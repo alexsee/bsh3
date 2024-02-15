@@ -485,12 +485,12 @@ public class JobService : IJobService
         {
             if ((Hash.GetMD5Hash(request.password) ?? "") == (configurationManager.EncryptPassMD5 ?? ""))
             {
-                backupService.SetPassword(Crypto.ToSecureString(request.password));
+                backupService.SetPassword(request.password);
 
                 // persist password?
                 if (request.persist)
                 {
-                    await localSettingsService.SaveSettingAsync("BackupPassword", Crypto.EncryptString(Crypto.ToSecureString(request.password)));
+                    await localSettingsService.SaveSettingAsync("BackupPassword", Crypto.EncryptString(request.password));
                 }
                 return true;
             }

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -42,7 +41,7 @@ public class BackupService : IBackupService
 
     private Task currentTask;
 
-    private SecureString password;
+    private string password;
 
     private DateTime lastMediaCheckDate;
 
@@ -83,7 +82,7 @@ public class BackupService : IBackupService
     /// Sets the current password.
     /// </summary>
     /// <param name="password"></param>
-    public void SetPassword(SecureString password)
+    public void SetPassword(string password)
     {
         this.password = password;
     }
@@ -92,7 +91,7 @@ public class BackupService : IBackupService
     /// Returns the current password.
     /// </summary>
     /// <returns></returns>
-    public SecureString GetPassword()
+    public string GetPassword()
     {
         return this.password;
     }

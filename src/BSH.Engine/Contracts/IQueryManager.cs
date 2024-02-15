@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Models;
 
@@ -24,7 +23,7 @@ public interface IQueryManager
     Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString);
     Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path);
     string GetFileNameFromDrive(FileTableRow file);
-    Task<ValueTuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, SecureString password);
+    Task<ValueTuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password);
     Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path);
     Task<List<string>> GetFolderListAsync(string version, string path);
     Task<string> GetFullRestoreFolderAsync(string folder, string version);

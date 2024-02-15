@@ -129,7 +129,7 @@ public partial class ucConfig : IMainTabs
             if (txtBackupPath.Text.StartsWith(@"\\"))
             {
                 BackupLogic.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
-                BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(Crypto.ToSecureString(txtUNCPassword.Text), System.Security.Cryptography.DataProtectionScope.LocalMachine);
+                BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(txtUNCPassword.Text, System.Security.Cryptography.DataProtectionScope.LocalMachine);
                 BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
             }
             else
@@ -281,7 +281,7 @@ public partial class ucConfig : IMainTabs
         if (txtBackupPath.Text.StartsWith('\\'))
         {
             txtUNCUsername.Text = configurationManager.UNCUsername;
-            txtUNCPassword.Text = Crypto.ToInsecureString(Crypto.DecryptString(configurationManager.UNCPassword, System.Security.Cryptography.DataProtectionScope.LocalMachine));
+            txtUNCPassword.Text = Crypto.DecryptString(configurationManager.UNCPassword, System.Security.Cryptography.DataProtectionScope.LocalMachine);
         }
 
         // backup mode
