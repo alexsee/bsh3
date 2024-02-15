@@ -516,12 +516,12 @@ public class BackupController
         {
             if ((Hash.GetMD5Hash(request.password) ?? "") == (configurationManager.EncryptPassMD5 ?? ""))
             {
-                backupService.SetPassword(Crypto.ToSecureString(request.password));
+                backupService.SetPassword(request.password);
 
                 // persist password?
                 if (request.persist)
                 {
-                    Settings.Default.BackupPwd = Crypto.EncryptString(Crypto.ToSecureString(request.password));
+                    Settings.Default.BackupPwd = Crypto.EncryptString(request.password);
                     Settings.Default.Save();
                 }
 

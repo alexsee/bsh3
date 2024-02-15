@@ -17,7 +17,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -70,7 +69,7 @@ public class BackupJob : Job
         get; set;
     }
 
-    public SecureString Password
+    public string Password
     {
         get; set;
     }

@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -27,7 +26,6 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
-using System.Linq;
 
 namespace Brightbits.BSH.Engine.Jobs;
 
@@ -58,7 +56,7 @@ public class RestoreJob : Job
         get; set;
     }
 
-    public SecureString Password
+    public string Password
     {
         get; set;
     }

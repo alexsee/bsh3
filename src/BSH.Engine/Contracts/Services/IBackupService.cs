@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Jobs;
@@ -21,9 +20,9 @@ namespace Brightbits.BSH.Engine.Contracts.Services;
 public interface IBackupService
 {
     bool CheckMedia(bool quickCheck = false);
-    SecureString GetPassword();
+    string GetPassword();
     bool HasPassword();
-    void SetPassword(SecureString password);
+    void SetPassword(string password);
     Task SetStableAsync(string version, bool stable);
     Task StartBackup(string title, string description, ref IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false);
     Task StartDelete(string version, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false);

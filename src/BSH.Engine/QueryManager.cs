@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Security;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -533,7 +532,7 @@ public class QueryManager : IQueryManager
     /// <param name="password"></param>
     /// <param name="temp"></param>
     /// <returns></returns>
-    public async Task<ValueTuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, SecureString password)
+    public async Task<ValueTuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password)
     {
         using var dbClient = dbClientFactory.CreateDbClient();
         using var storage = storageFactory.GetCurrentStorageProvider();

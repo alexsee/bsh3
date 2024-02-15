@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Security;
 
 namespace Brightbits.BSH.Engine.Storage;
 
@@ -29,15 +28,15 @@ public interface IStorage : IDisposable
 
     bool CopyFileToStorageCompressed(string localFile, string remoteFile);
 
-    bool CopyFileToStorageEncrypted(string localFile, string remoteFile, SecureString password);
+    bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password);
 
     bool CopyFileFromStorage(string localFile, string remoteFile);
 
     bool CopyFileFromStorageCompressed(string localFile, string remoteFile);
 
-    bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, SecureString password);
+    bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password);
 
-    bool DecryptOnStorage(string remoteFile, SecureString password);
+    bool DecryptOnStorage(string remoteFile, string password);
 
     bool DeleteFileFromStorage(string remoteFile);
 
