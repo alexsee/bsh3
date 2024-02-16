@@ -226,7 +226,7 @@ public class FileCollectorService : IFileCollectorService
                     return true;
                 }
 
-                if (("\\" + Path.Combine(Path.GetFileName(this.root), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\").StartsWith(entry + "\\", StringComparison.CurrentCultureIgnoreCase))
+                if (("\\" + Path.Combine(Path.GetFileName(this.root), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\").StartsWith(entry + "\\", StringComparison.OrdinalIgnoreCase))
                 {
                     _logger.Debug("{folderName} was ignored due to folder path filter.", folder.Folder);
                     return true;

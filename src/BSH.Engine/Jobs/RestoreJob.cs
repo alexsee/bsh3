@@ -296,8 +296,8 @@ public class RestoreJob : Job
     {
         if (destFolders.Count > 1)
         {
-            var folder = destFolders.Find(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\", StringComparison.InvariantCultureIgnoreCase));
-            var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower(), StringComparison.InvariantCultureIgnoreCase);
+            var folder = destFolders.Find(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\", StringComparison.OrdinalIgnoreCase));
+            var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower(), StringComparison.OrdinalIgnoreCase);
             fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
         }
         else

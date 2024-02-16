@@ -520,7 +520,7 @@ public class BackupJob : Job
 
         if (!string.IsNullOrEmpty(displayName) && Path.GetFileName(path) != displayName)
         {
-            path = Path.GetFileName(file.FileRoot) + path.Replace(file.FileRoot, "", StringComparison.InvariantCultureIgnoreCase);
+            path = Path.GetFileName(file.FileRoot) + path.Replace(file.FileRoot, "", StringComparison.OrdinalIgnoreCase);
 
             var junctionInsertParameters = new IDataParameter[] {
                 dbClient.CreateParameter("path", DbType.String, 0, path),
@@ -650,7 +650,7 @@ public class BackupJob : Job
                 result = storage.CopyFileToStorage(localFileName, remoteFileName);
             }
 
-            if (useVss && localFileName.StartsWith(Path.GetTempPath(), StringComparison.CurrentCultureIgnoreCase))
+            if (useVss && localFileName.StartsWith(Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
             {
                 try
                 {
@@ -723,7 +723,7 @@ public class BackupJob : Job
     private async Task AddFileVersionDatabaseEntryAsync(DbClient dbClient, FileTableRow file, double newVersionId, string longFileName, bool compress, bool encrypt)
     {
         // correct path
-        if (!file.FilePath.EndsWith("\\", StringComparison.InvariantCultureIgnoreCase))
+        if (!file.FilePath.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
         {
             file.FilePath += "\\";
         }

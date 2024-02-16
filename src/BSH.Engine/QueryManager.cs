@@ -650,9 +650,9 @@ public class QueryManager : IQueryManager
         {
             var directoryName = destination.Split('\\', StringSplitOptions.RemoveEmptyEntries)[^1];
 
-            if (folder.StartsWith("\\" + directoryName + "\\", StringComparison.InvariantCultureIgnoreCase))
+            if (folder.StartsWith("\\" + directoryName + "\\", StringComparison.OrdinalIgnoreCase))
             {
-                var idx = folder.IndexOf("\\" + directoryName + "\\", StringComparison.InvariantCultureIgnoreCase);
+                var idx = folder.IndexOf("\\" + directoryName + "\\", StringComparison.OrdinalIgnoreCase);
 
                 // path found
                 var result = GetPathWithoutSlashes(Path.Combine(destination, folder[(idx + directoryName.Length + 2)..]));
@@ -689,11 +689,11 @@ public class QueryManager : IQueryManager
                     var junction = reader.GetString("junction");
                     var folder = reader.GetString("folder");
 
-                    if (path.Contains(junction, StringComparison.InvariantCultureIgnoreCase))
+                    if (path.Contains(junction, StringComparison.OrdinalIgnoreCase))
                     {
                         await reader.CloseAsync();
 
-                        return path.Replace(junction, folder, StringComparison.InvariantCultureIgnoreCase);
+                        return path.Replace(junction, folder, StringComparison.OrdinalIgnoreCase);
                     }
                 }
 
