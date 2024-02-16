@@ -34,7 +34,7 @@ public class StorageFactory : IStorageFactory
         }
         else
         {
-            return new FTPStorage(configurationManager);
+            return new FtpStorage(configurationManager);
         }
     }
 }

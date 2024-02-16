@@ -14,7 +14,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -74,9 +76,9 @@ public class BackupJob : Job
         get; set;
     }
 
-    public List<FileExceptionEntry> FileErrorList
+    public Collection<FileExceptionEntry> FileErrorList
     {
-        get; set;
+        get;
     }
 
     public BackupJob(IStorage storage,
@@ -86,7 +88,7 @@ public class BackupJob : Job
         IFileCollectorServiceFactory fileCollectorServiceFactory,
         bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
     {
-        FileErrorList = new List<FileExceptionEntry>();
+        FileErrorList = new Collection<FileExceptionEntry>();
         this.fileCollectorServiceFactory = fileCollectorServiceFactory;
     }
 
@@ -459,7 +461,7 @@ public class BackupJob : Job
     /// </summary>
     /// <param name="selectedFolders">List of source folders.</param>
     /// <returns></returns>
-    private List<string> GetSourceFolders(string[] selectedFolders)
+    private static List<string> GetSourceFolders(string[] selectedFolders)
     {
         var folderList = new List<string>();
 
@@ -518,7 +520,7 @@ public class BackupJob : Job
 
         if (!string.IsNullOrEmpty(displayName) && Path.GetFileName(path) != displayName)
         {
-            path = Path.GetFileName(file.FileRoot) + path.Replace(file.FileRoot, "");
+            path = Path.GetFileName(file.FileRoot) + path.Replace(file.FileRoot, "", StringComparison.InvariantCultureIgnoreCase);
 
             var junctionInsertParameters = new IDataParameter[] {
                 dbClient.CreateParameter("path", DbType.String, 0, path),
@@ -598,9 +600,9 @@ public class BackupJob : Job
 
         if (configurationManager.Compression == 1)
         {
-            var fileExt = Path.GetExtension(file.FileNamePath()).ToLower();
+            var fileExt = Path.GetExtension(file.FileNamePath()).ToLower(CultureInfo.InvariantCulture);
 
-            if (fileExt != "")
+            if (!string.IsNullOrEmpty(fileExt))
             {
                 var exts = configurationManager.ExcludeCompression.Split('|');
 
@@ -648,7 +650,7 @@ public class BackupJob : Job
                 result = storage.CopyFileToStorage(localFileName, remoteFileName);
             }
 
-            if (useVss && localFileName.StartsWith(Path.GetTempPath()))
+            if (useVss && localFileName.StartsWith(Path.GetTempPath(), StringComparison.CurrentCultureIgnoreCase))
             {
                 try
                 {
@@ -721,7 +723,7 @@ public class BackupJob : Job
     private async Task AddFileVersionDatabaseEntryAsync(DbClient dbClient, FileTableRow file, double newVersionId, string longFileName, bool compress, bool encrypt)
     {
         // correct path
-        if (!file.FilePath.EndsWith("\\"))
+        if (!file.FilePath.EndsWith("\\", StringComparison.InvariantCultureIgnoreCase))
         {
             file.FilePath += "\\";
         }

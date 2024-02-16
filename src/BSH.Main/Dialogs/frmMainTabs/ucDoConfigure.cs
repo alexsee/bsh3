@@ -165,9 +165,9 @@ public partial class ucDoConfigure : IMainTabs
                     // check ftp credentials
                     try
                     {
-                        txtFTPPath.Text = FTPStorage.GetFtpPath(txtFTPPath.Text);
+                        txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-                        var profile = FTPStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+                        var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
                         if (!profile)
                         {
                             // directory not found
@@ -417,9 +417,9 @@ public partial class ucDoConfigure : IMainTabs
                     // check ftp server credentials
                     try
                     {
-                        txtFTPPath2.Text = FTPStorage.GetFtpPath(txtFTPPath2.Text);
+                        txtFTPPath2.Text = FtpStorage.GetFtpPath(txtFTPPath2.Text);
 
-                        using (var storage = new FTPStorage(
+                        using (var storage = new FtpStorage(
                             txtFTPServer2.Text,
                             Convert.ToInt32(txtFTPPort2.Text),
                             txtFTPUser2.Text,
@@ -489,7 +489,7 @@ public partial class ucDoConfigure : IMainTabs
                         File.Delete(BackupLogic.DatabaseFile);
 
                         // download backup database
-                        using IStorage storage = new FTPStorage(
+                        using IStorage storage = new FtpStorage(
                             txtFTPServer2.Text,
                             int.Parse(txtFTPPort2.Text),
                             txtFTPUser2.Text,
@@ -695,7 +695,7 @@ public partial class ucDoConfigure : IMainTabs
         // check ftp credentials
         try
         {
-            var profile = FTPStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
 
             if (!profile)
             {

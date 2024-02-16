@@ -81,6 +81,10 @@
 		<PackageReference Include="Humanizer.Core.de">
 			<Version>2.14.1</Version>
 		</PackageReference>
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Serilog.Settings.AppSettings">
 			<Version>2.2.2</Version>
 		</PackageReference>

@@ -207,7 +207,7 @@ public partial class frmMain
         cmsHelp.Show(picHelp, new Point((int)Math.Round(-cmsHelp.Width / 2d + picHelp.Width / 2d), picHelp.Height));
     }
 
-    private async void MitWindowsStartenToolStripMenuItem_Click(object sender, EventArgs e)
+    private void MitWindowsStartenToolStripMenuItem_Click(object sender, EventArgs e)
     {
         try
         {

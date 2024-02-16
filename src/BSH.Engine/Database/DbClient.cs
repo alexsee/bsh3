@@ -39,13 +39,7 @@ public class DbClient : IDisposable
     /// <summary>
     /// Gets the connection string
     /// </summary>
-    public string ConnectionString
-    {
-        get
-        {
-            return _connection.ConnectionString;
-        }
-    }
+    public string ConnectionString => _connection.ConnectionString;
 
     /// <summary>
     /// Gets or sets the command timeout
@@ -138,6 +132,14 @@ public class DbClient : IDisposable
         }
     }
 
+    private async Task CloseConnectionAsync()
+    {
+        if (_connection != null && _connection.State != ConnectionState.Closed && _transaction == null)
+        {
+            await _connection.CloseAsync();
+        }
+    }
+
     /// <summary>
     /// Starts a new database transaction and adds all commands to this transaction.
     /// </summary>
@@ -222,9 +224,9 @@ public class DbClient : IDisposable
         // open the connection
         OpenConnection();
 
-        IDbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
 
-        IDbDataAdapter adapter = _factory.CreateDataAdapter();
+        var adapter = _factory.CreateDataAdapter();
         adapter.SelectCommand = command;
         adapter.Fill(dsResult);
 
@@ -301,12 +303,12 @@ public class DbClient : IDisposable
 
     public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
     {
-        OpenConnection();
+        await OpenConnectionAsync();
 
         var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
         var result = await command.ExecuteScalarAsync();
 
-        CloseConnection();
+        await CloseConnectionAsync();
 
         return result;
     }
@@ -345,7 +347,7 @@ public class DbClient : IDisposable
         var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
         var result = await command.ExecuteNonQueryAsync();
 
-        CloseConnection();
+        await CloseConnectionAsync();
 
         return result;
     }
@@ -360,12 +362,8 @@ public class DbClient : IDisposable
     /// <returns>the command</returns>
     private DbCommand CreateCommand(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
     {
-        DbCommand command;
-
-        if (_commands.ContainsKey(commandText))
+        if (_commands.TryGetValue(commandText, out var command))
         {
-            command = _commands[commandText];
-
             if (_transaction != null)
             {
                 command.Transaction = _transaction;

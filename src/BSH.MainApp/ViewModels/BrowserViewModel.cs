@@ -42,6 +42,11 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
     [RelayCommand]
     private async Task LoadVersion()
     {
+        if (CurrentVersion == null)
+        {
+            return;
+        }
+
         var sources = CurrentVersion.Sources.Split("|")
             .Select(x => x[(x.LastIndexOf("\\") + 1)..])
             .ToList();

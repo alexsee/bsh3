@@ -30,7 +30,7 @@ public class FileCollectorService : IFileCollectorService
 
     private readonly IConfigurationManager configurationManager;
 
-    private Regex _regexExcludeCache = null;
+    private Regex _regexExcludeCache;
 
     private string root;
 
@@ -44,7 +44,7 @@ public class FileCollectorService : IFileCollectorService
     public FileCollectorService(IConfigurationManager configurationManager)
     {
         this.configurationManager = configurationManager;
-        this.appDataFolder = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\").ToLower();
+        this.appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\";
     }
 
     public List<FileTableRow> GetLocalFileList(string root, bool subFolders = true)
@@ -134,7 +134,7 @@ public class FileCollectorService : IFileCollectorService
     private bool IsFileFiltered(FileTableRow file)
     {
         // database file
-        if (file.FileNamePath().ToLower().StartsWith(appDataFolder))
+        if (file.FileNamePath().StartsWith(appDataFolder, StringComparison.OrdinalIgnoreCase))
         {
             return true;
         }
@@ -143,7 +143,7 @@ public class FileCollectorService : IFileCollectorService
         if (!string.IsNullOrEmpty(configurationManager.ExcludeFolder))
         {
             var excludeFolders = configurationManager.ExcludeFolder.Split('|');
-            if (Array.Exists(excludeFolders, entry => ("\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\").StartsWith(entry + "\\", StringComparison.CurrentCultureIgnoreCase)))
+            if (Array.Exists(excludeFolders, entry => ("\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\").StartsWith(entry + "\\", StringComparison.OrdinalIgnoreCase)))
             {
                 _logger.Debug("{fileName} was ignored due to file path filter.", file.FileNamePath());
                 return true;
@@ -157,9 +157,9 @@ public class FileCollectorService : IFileCollectorService
 
             foreach (var entry in excludeFileTypes)
             {
-                var fileExt = Path.GetExtension(file.FileNamePath()).ToLower();
+                var fileExt = Path.GetExtension(file.FileNamePath());
 
-                if (("." + entry.ToLower()) == fileExt)
+                if (string.Equals("." + entry, fileExt, StringComparison.OrdinalIgnoreCase))
                 {
                     _logger.Debug("{fileName} was ignored due to file extension filter.", file.FileNamePath());
                     return true;
@@ -200,7 +200,7 @@ public class FileCollectorService : IFileCollectorService
         if (!string.IsNullOrEmpty(configurationManager.ExcludeFile))
         {
             var excludeFile = configurationManager.ExcludeFile.Split('|');
-            if (Array.Exists(excludeFile, entry => file.FileNamePath().ToLower().EndsWith(entry.ToLower())))
+            if (Array.Exists(excludeFile, entry => file.FileNamePath().EndsWith(entry, StringComparison.OrdinalIgnoreCase)))
             {
                 _logger.Debug("{fileName} was ignored due to file name filter.", file.FileNamePath());
                 return true;
@@ -220,7 +220,7 @@ public class FileCollectorService : IFileCollectorService
             foreach (var entry in excludeFolders)
             {
                 // check if source folder (for drive backup)
-                if (("\\" + Path.GetFileName(folder.Folder) + "\\").StartsWith(entry + "\\", StringComparison.CurrentCultureIgnoreCase))
+                if (("\\" + Path.GetFileName(folder.Folder) + "\\").StartsWith(entry + "\\", StringComparison.OrdinalIgnoreCase))
                 {
                     _logger.Debug("{folderName} was ignored due to root folder path filter.", folder.Folder);
                     return true;

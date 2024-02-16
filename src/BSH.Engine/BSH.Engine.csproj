@@ -21,6 +21,12 @@
 		<IsPublishable>False</IsPublishable>
 		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
 		<Version>3.9.0-beta1</Version>
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+		<WarningsNotAsErrors>CA1014</WarningsNotAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Update="System.Data">
@@ -50,6 +56,10 @@
 		</PackageReference>
 		<PackageReference Include="FluentFTP">
 			<Version>49.0.2</Version>
+		</PackageReference>
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions">
 			<Version>8.0.0</Version>

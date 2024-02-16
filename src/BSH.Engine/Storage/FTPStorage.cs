@@ -27,9 +27,9 @@ using Serilog;
 
 namespace Brightbits.BSH.Engine.Storage;
 
-public class FTPStorage : Storage, IStorage
+public class FtpStorage : Storage, IStorage
 {
-    private static readonly ILogger _logger = Log.ForContext<FTPStorage>();
+    private static readonly ILogger _logger = Log.ForContext<FtpStorage>();
 
     private readonly int currentStorageVersion;
 
@@ -51,8 +51,10 @@ public class FTPStorage : Storage, IStorage
 
     private FtpClient ftpClient;
 
-    public FTPStorage(IConfigurationManager configurationManager)
+    public FtpStorage(IConfigurationManager configurationManager)
     {
+        ArgumentNullException.ThrowIfNull(configurationManager);
+
         this.serverAddress = configurationManager.FtpHost;
         this.serverPort = int.Parse(configurationManager.FtpPort);
         this.userName = configurationManager.FtpUser;
@@ -63,7 +65,7 @@ public class FTPStorage : Storage, IStorage
         this.currentStorageVersion = int.Parse(configurationManager.OldBackupPrevent);
     }
 
-    public FTPStorage(
+    public FtpStorage(
         string serverAddress, int serverPort, string userName, string password, string folderPath, string encoding,
         bool encryption, int currentStorageVersion)
     {
@@ -84,16 +86,16 @@ public class FTPStorage : Storage, IStorage
 
     private FtpProfile GetFtpProfile(bool quickCheck = false)
     {
-        Encoding encoding;
+        Encoding finalEncoding;
 
         // set encoding
         if (this.encoding == "UTF-8")
         {
-            encoding = new UTF8Encoding(false);
+            finalEncoding = new UTF8Encoding(false);
         }
         else
         {
-            encoding = Encoding.GetEncoding(this.encoding);
+            finalEncoding = Encoding.GetEncoding(this.encoding);
         }
 
         // determine profile
@@ -101,7 +103,7 @@ public class FTPStorage : Storage, IStorage
         {
             Host = this.serverAddress,
             Credentials = new NetworkCredential(this.userName, this.password),
-            Encoding = encoding,
+            Encoding = finalEncoding,
             Timeout = quickCheck ? 15000 : 60000,
             RetryAttempts = 1,
         };
