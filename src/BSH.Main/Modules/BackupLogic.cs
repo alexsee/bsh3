@@ -475,7 +475,7 @@ static class BackupLogic
         using var dbClient = DbClientFactory.CreateDbClient();
         using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
 
-        while (reader.Read())
+        while (await reader.ReadAsync())
         {
             var scheduleDate = reader.GetDateTimeParsed("timDate");
             var scheduleType = reader.GetInt32("timType");
@@ -589,7 +589,7 @@ static class BackupLogic
             }
         }
 
-        reader.Close();
+        await reader.CloseAsync();
     }
 
     public static bool DoPastBackup(DateTime date, bool orOlder = false)

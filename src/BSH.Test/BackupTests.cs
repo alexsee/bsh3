@@ -236,7 +236,7 @@ public class BackupTests
         // start backup
         var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
-        tokenSource.Cancel();
+        await tokenSource.CancelAsync();
 
         await backupJob.BackupAsync(token);
 
