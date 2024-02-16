@@ -12,6 +12,7 @@
 		<UseApplicationTrust>false</UseApplicationTrust>
 		<BootstrapperEnabled>true</BootstrapperEnabled>
 		<UseWindowsForms>true</UseWindowsForms>
+		<UseWPF>true</UseWPF>
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
 		<Platforms>x64</Platforms>
 		<Configurations>Debug;Release</Configurations>
@@ -46,7 +47,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\BSH.Controls\BSH.Controls.csproj" />
-		<ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj" />
 		<ProjectReference Include="..\PreviewHandlerFramework\PreviewHandlerFramework.csproj" />
 		<ProjectReference Include="..\PreviewHandlerHost\PreviewHandlerHost.csproj" />
 	</ItemGroup>
@@ -64,7 +64,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Humanizer.Core.de" Version="2.14.1" />
-		<PackageReference Include="WMPLib" Version="1.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Remove="My Project\Resources.resx" />
