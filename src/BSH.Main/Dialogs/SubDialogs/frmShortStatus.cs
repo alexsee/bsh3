@@ -19,6 +19,7 @@ using BSH.Main.Properties;
 using Humanizer;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Brightbits.BSH.Main;
 
@@ -91,7 +92,7 @@ public partial class frmShortStatus : IJobReport
         }));
     }
 
-    public void ReportExceptions(List<FileExceptionEntry> files, bool silent)
+    public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)
     {
         // not used
     }
