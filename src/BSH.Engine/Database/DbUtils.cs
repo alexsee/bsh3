@@ -31,6 +31,8 @@ public static class DbUtils
     /// <returns></returns>
     public static string GetString(this IDataReader reader, string column)
     {
+        ArgumentNullException.ThrowIfNull(reader);
+
         var index = reader.GetOrdinal(column);
 
         if (reader.IsDBNull(index))
@@ -49,6 +51,8 @@ public static class DbUtils
     /// <returns></returns>
     public static int GetInt32(this IDataReader reader, string column)
     {
+        ArgumentNullException.ThrowIfNull(reader);
+
         var index = reader.GetOrdinal(column);
         return reader.GetInt32(index);
     }
@@ -61,6 +65,8 @@ public static class DbUtils
     /// <returns></returns>
     public static double GetDouble(this IDataReader reader, string column)
     {
+        ArgumentNullException.ThrowIfNull(reader);
+
         var index = reader.GetOrdinal(column);
         return reader.GetDouble(index);
     }
@@ -73,6 +79,8 @@ public static class DbUtils
     /// <returns></returns>
     public static DateTime GetDateTime(this IDataReader reader, string column)
     {
+        ArgumentNullException.ThrowIfNull(reader);
+
         var index = reader.GetOrdinal(column);
         return reader.GetDateTime(index);
     }
@@ -86,6 +94,8 @@ public static class DbUtils
     /// <returns></returns>
     public static DateTime GetDateTimeParsed(this IDataReader reader, string column, string format)
     {
+        ArgumentNullException.ThrowIfNull(reader);
+
         var value = GetString(reader, column);
         return DateTime.ParseExact(value, format, CultureInfo.InvariantCulture);
     }
@@ -98,6 +108,8 @@ public static class DbUtils
     /// <returns></returns>
     public static DateTime GetDateTimeParsed(this IDataReader reader, string column)
     {
+        ArgumentNullException.ThrowIfNull(reader);
+
         var value = GetString(reader, column);
         return DateTime.Parse(value);
     }

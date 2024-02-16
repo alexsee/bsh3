@@ -2,8 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Windows.Input;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.ViewModels;
@@ -42,6 +40,11 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
     [RelayCommand]
     private async Task LoadVersion()
     {
+        if (CurrentVersion == null)
+        {
+            return;
+        }
+
         var sources = CurrentVersion.Sources.Split("|")
             .Select(x => x[(x.LastIndexOf("\\") + 1)..])
             .ToList();

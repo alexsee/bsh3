@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Threading;
@@ -61,9 +62,9 @@ public class RestoreJob : Job
         get; set;
     }
 
-    public List<FileExceptionEntry> FileErrorList
+    public Collection<FileExceptionEntry> FileErrorList
     {
-        get; set;
+        get;
     }
 
     private RequestOverwriteResult overwriteRequestPersistent = RequestOverwriteResult.None;
@@ -73,7 +74,7 @@ public class RestoreJob : Job
         IQueryManager queryManager,
         IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
     {
-        FileErrorList = new List<FileExceptionEntry>();
+        FileErrorList = new Collection<FileExceptionEntry>();
     }
 
     /// <summary>
@@ -199,7 +200,7 @@ public class RestoreJob : Job
             using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, getFileSQL, null))
             {
                 var i = 0;
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     var filePath = reader.GetString("filePath");
                     var fileName = reader.GetString("fileName");
@@ -253,13 +254,13 @@ public class RestoreJob : Job
                     }
                 }
 
-                reader.Close();
+                await reader.CloseAsync();
             }
 
             // restore folders
             using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, $"SELECT folder FROM foldertable, folderlink WHERE foldertable.id = folderlink.folderid AND folderlink.versionid = {Version} AND foldertable.folder LIKE \"{File}%\"", null))
             {
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     var fileDest = GetFileDestination(destFolders, reader.GetString("folder"));
 
@@ -274,7 +275,7 @@ public class RestoreJob : Job
                     }
                 }
 
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
@@ -295,8 +296,8 @@ public class RestoreJob : Job
     {
         if (destFolders.Count > 1)
         {
-            var folder = destFolders.Find(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\"));
-            var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower());
+            var folder = destFolders.Find(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\", StringComparison.OrdinalIgnoreCase));
+            var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower(), StringComparison.OrdinalIgnoreCase);
             fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
         }
         else
@@ -326,6 +327,8 @@ public class RestoreJob : Job
     /// <exception cref="FileNotProcessedException"></exception>
     public void CopyFileFromDevice(IStorage storage, IDataReader reader, string destination, bool warning = true)
     {
+        ArgumentNullException.ThrowIfNull(storage);
+
         var localFilePath = Path.Combine(destination, reader.GetString("fileName"));
         var fileType = reader.GetInt32("fileType");
 

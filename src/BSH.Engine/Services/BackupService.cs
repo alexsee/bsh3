@@ -64,7 +64,7 @@ public class BackupService : IBackupService
         using (var storage = storageFactory.GetCurrentStorageProvider())
         {
             // have we checked before?
-            if (lastMediaCheckResult && storage.GetType() != typeof(FTPStorage) && DateTime.Now.Subtract(lastMediaCheckDate).TotalSeconds < 30)
+            if (lastMediaCheckResult && storage.GetType() != typeof(FtpStorage) && DateTime.Now.Subtract(lastMediaCheckDate).TotalSeconds < 30)
             {
                 lastMediaCheckDate = DateTime.Now;
                 return lastMediaCheckResult;
@@ -135,6 +135,8 @@ public class BackupService : IBackupService
         string sources = "",
         bool silent = false)
     {
+        ArgumentNullException.ThrowIfNull(jobReport);
+
         // check if password is set
         if (configurationManager.Encrypt == 1 && (password == null || password.Length == 0))
         {
@@ -197,6 +199,8 @@ public class BackupService : IBackupService
         FileOverwrite overwrite = FileOverwrite.Ask,
         bool silent = false)
     {
+        ArgumentNullException.ThrowIfNull(jobReport);
+
         // check if we have a running task
         if (currentTask != null && currentTask.Status == TaskStatus.Running)
         {
@@ -250,6 +254,8 @@ public class BackupService : IBackupService
         CancellationToken cancellationToken,
         bool silent = false)
     {
+        ArgumentNullException.ThrowIfNull(jobReport);
+
         // check if we have a running task
         if (currentTask != null && currentTask.Status == TaskStatus.Running)
         {
@@ -296,6 +302,8 @@ public class BackupService : IBackupService
         CancellationToken cancellationToken,
         bool silent = false)
     {
+        ArgumentNullException.ThrowIfNull(jobReport);
+
         // check if we have a running task
         if (currentTask != null && currentTask.Status == TaskStatus.Running)
         {
@@ -334,6 +342,8 @@ public class BackupService : IBackupService
         CancellationToken cancellationToken,
         bool silent = false)
     {
+        ArgumentNullException.ThrowIfNull(jobReport);
+
         // check if we have a running task
         if (currentTask != null && currentTask.Status == TaskStatus.Running)
         {

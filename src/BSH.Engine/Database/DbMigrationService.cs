@@ -87,7 +87,7 @@ public class DbMigrationService : IDbMigrationService
 
                 using (var sqlRead = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT fileversionid, filedatecreated, filedatemodified FROM fileversiontable", null))
                 {
-                    while (sqlRead.Read())
+                    while (await sqlRead.ReadAsync())
                     {
                         var parameters = new IDataParameter[] {
                                 dbClient2.CreateParameter("fileversionid", DbType.Int32, 32, sqlRead.GetInt32(sqlRead.GetOrdinal("fileversionid"))),
@@ -98,7 +98,7 @@ public class DbMigrationService : IDbMigrationService
                         await dbClient2.ExecuteNonQueryAsync(CommandType.Text, "UPDATE fileversiontable SET filedatecreated = @filedatecreated, filedatemodified = @filedatemodified WHERE fileversionid = @fileversionid", parameters);
                     }
 
-                    sqlRead.Close();
+                    await sqlRead.CloseAsync();
                 }
 
                 dbClient2.CommitTransaction();

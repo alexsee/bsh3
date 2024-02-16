@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -112,7 +113,7 @@ public abstract class Job
         }
     }
 
-    protected void ReportExceptions(List<FileExceptionEntry> files)
+    protected void ReportExceptions(Collection<FileExceptionEntry> files)
     {
         foreach (var observer in observers)
         {

@@ -113,9 +113,9 @@ public partial class frmChangeMedia
             // FTP testen
             try
             {
-                txtFTPPath.Text = FTPStorage.GetFtpPath(txtFTPPath.Text);
+                txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-                using (var storage = new FTPStorage(
+                using (var storage = new FtpStorage(
                     txtFTPServer.Text,
                     int.Parse(txtFTPPort.Text),
                     txtFTPUsername.Text,
@@ -156,9 +156,9 @@ public partial class frmChangeMedia
         // FTP testen
         try
         {
-            txtFTPPath.Text = FTPStorage.GetFtpPath(txtFTPPath.Text);
+            txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-            var profile = FTPStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, cboFtpEncoding.SelectedItem.ToString());
+            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, cboFtpEncoding.SelectedItem.ToString());
 
             if (!profile)
             {

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.IO;
 using BSH.Service.Shared;
 using Serilog;
@@ -23,12 +24,15 @@ public static class VolumeShadowCopyService
 {
     public static bool CopyFile(string fileName, string destFileName)
     {
+        ArgumentNullException.ThrowIfNull(fileName);
+        ArgumentNullException.ThrowIfNull(destFileName);
+
         try
         {
             using var npClient = new NpClient<IVSSRemoteObject>(new NpEndPoint("backupservicehome"));
 
             var serviceFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            var destination = destFileName.Replace("\\\\", "\\");
+            var destination = destFileName.Replace("\\\\", "\\", StringComparison.OrdinalIgnoreCase);
 
             // copy file
             var result = npClient.Proxy.CopyFileWithVSS(serviceFilePath, fileName, destination);

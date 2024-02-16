@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
 using System.Threading;
@@ -41,14 +41,14 @@ public class EditJob : Job
         get; set;
     }
 
-    public List<FileExceptionEntry> FileErrorList
+    public Collection<FileExceptionEntry> FileErrorList
     {
-        get; set;
+        get;
     }
 
     public EditJob(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
     {
-        FileErrorList = new List<FileExceptionEntry>();
+        FileErrorList = new Collection<FileExceptionEntry>();
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public class EditJob : Job
             using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * " + commandSQL, null))
             {
                 var i = 0;
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     // determine remote file
                     string remoteFilePath;
@@ -141,7 +141,7 @@ public class EditJob : Job
                     }
                 }
 
-                reader.Close();
+                await reader.CloseAsync();
             }
 
             dbClient.CommitTransaction();

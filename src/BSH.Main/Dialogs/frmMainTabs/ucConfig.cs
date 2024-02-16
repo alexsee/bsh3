@@ -152,7 +152,7 @@ public partial class ucConfig : IMainTabs
         configurationManager.FtpPort = txtFTPPort.Text;
         configurationManager.FtpUser = txtFTPUsername.Text;
         configurationManager.FtpPass = txtFTPPassword.Text;
-        configurationManager.FtpFolder = FTPStorage.GetFtpPath(txtFTPPath.Text);
+        configurationManager.FtpFolder = FtpStorage.GetFtpPath(txtFTPPath.Text);
         configurationManager.FtpCoding = cboFtpEncoding.SelectedItem?.ToString();
 
         if (chkFtpEncryption.Checked)
@@ -486,7 +486,7 @@ public partial class ucConfig : IMainTabs
         try
         {
             // check FTP
-            var profile = FTPStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
 
             if (profile)
             {

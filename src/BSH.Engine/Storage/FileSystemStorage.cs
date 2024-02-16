@@ -35,7 +35,7 @@ public class FileSystemStorage : Storage, IStorage
 
     private readonly int currentStorageVersion;
 
-    private readonly bool networkStorage = false;
+    private readonly bool networkStorage;
 
     private readonly string networkUserName;
 
@@ -47,6 +47,8 @@ public class FileSystemStorage : Storage, IStorage
 
     public FileSystemStorage(IConfigurationManager configurationManager)
     {
+        ArgumentNullException.ThrowIfNull(configurationManager);
+
         this.configurationManager = configurationManager;
         this.backupFolder = configurationManager.BackupFolder;
         this.volumeSerialNumber = configurationManager.MediaVolumeSerial;
@@ -66,6 +68,8 @@ public class FileSystemStorage : Storage, IStorage
         string networkPassword,
         int compressionLevel)
     {
+        ArgumentNullException.ThrowIfNull(configurationManager);
+
         this.configurationManager = configurationManager;
         this.backupFolder = backupFolder;
         this.volumeSerialNumber = volumeSerialNumber;
@@ -195,7 +199,7 @@ public class FileSystemStorage : Storage, IStorage
         try
         {
             var testFile = Path.Combine(folder, "bsh.writetest");
-            File.WriteAllText(testFile, DateTime.Now.ToString());
+            File.WriteAllText(testFile, DateTime.UtcNow.ToString());
             File.Delete(testFile);
 
             return true;
