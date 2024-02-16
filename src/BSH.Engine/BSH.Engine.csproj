@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows8.0</TargetFramework>
 		<OutputType>Library</OutputType>
@@ -21,12 +21,6 @@
 		<IsPublishable>False</IsPublishable>
 		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
 		<Version>3.9.0-beta1</Version>
-		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
-		<AnalysisLevel>latest</AnalysisLevel>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-		<EnableNETAnalyzers>True</EnableNETAnalyzers>
-		<WarningsNotAsErrors>CA1014</WarningsNotAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Update="System.Data">
