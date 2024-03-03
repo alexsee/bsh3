@@ -23,6 +23,7 @@
 		<Configurations>Debug;Release</Configurations>
 		<StartupObject>Brightbits.BSH.Main.Program</StartupObject>
 		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 	<PropertyGroup>
 		<ApplicationIcon>AppIco.ico</ApplicationIcon>

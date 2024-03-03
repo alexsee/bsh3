@@ -37,6 +37,7 @@ jobs:
     - name: Build the application
       run: |
         dotnet publish -c Release -o ../output -a x64 --self-contained /p:Version=$env:BUILD_VERSION /p:FileVersion=$env:INFO_VERSION
+        rm -R ../output/*.pdb
       working-directory: ./src
 
     - name: Building the installer
