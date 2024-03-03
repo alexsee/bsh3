@@ -23,6 +23,7 @@
 		<Configurations>Debug;Release</Configurations>
 		<StartupObject>Brightbits.BSH.Main.Program</StartupObject>
 		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
 	<PropertyGroup>
 		<ApplicationIcon>AppIco.ico</ApplicationIcon>
@@ -53,7 +54,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="AppIco.ico" />
-		<Content Include="appsettings.json" />
 		<Content Include="status_red.ico" />
 		<Content Include="status_refresh.ico" />
 	</ItemGroup>
