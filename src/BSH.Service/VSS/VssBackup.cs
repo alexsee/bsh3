@@ -87,7 +87,7 @@ namespace BSH.Service.VSS
             // Here we are retrieving an OS-dependent object that encapsulates
             // all of the VSS functionality.  The OS indepdence that this single
             // factory method provides is one of AlphaVSS's major strengths!
-            IVssFactory vss = VssFactoryProvider.Default.GetVssFactory();
+            var vss = VssFactoryProvider.Default.GetVssFactory();
 
             // Now we create a BackupComponents object to manage the backup.
             // This object will have a one-to-one relationship with its backup
@@ -163,7 +163,7 @@ namespace BSH.Service.VSS
             foreach (IVssExamineWriterMetadata metadata in writer_mds)
             {
                 // We can see the name of the writer, if we like.
-                Trace.WriteLine("Examining metadata for " + metadata.WriterName);
+                Trace.TraceInformation("Examining metadata for " + metadata.WriterName);
 
                 // The important bit of the writers' metadata is the list of
                 // components each writer is broken into.  These components are
@@ -173,8 +173,8 @@ namespace BSH.Service.VSS
                 foreach (IVssWMComponent cmp in metadata.Components)
                 {
                     // Print out some info for each component.
-                    Trace.WriteLine("  Component: " + cmp.ComponentName);
-                    Trace.WriteLine("  Component info: " + cmp.Caption);
+                    Trace.TraceInformation("  Component: " + cmp.ComponentName);
+                    Trace.TraceInformation("  Component info: " + cmp.Caption);
 
                     // If a component is available for backup, it's then up to us to
                     // decide whether it is relevant to the current backup.  To do
@@ -191,8 +191,8 @@ namespace BSH.Service.VSS
                         // I'm not worried about that stuff for this example, though,
                         // so instead I'm printing out the stuff you might need to
                         // examine if you have requirements of that sort.
-                        Trace.WriteLine("    Path: " + file.Path);
-                        Trace.WriteLine("       Spec: " + file.FileSpecification);
+                        Trace.TraceInformation("    Path: " + file.Path);
+                        Trace.TraceInformation("       Spec: " + file.FileSpecification);
 
                         // Here we might insert some logic to:
                         //
@@ -279,7 +279,7 @@ namespace BSH.Service.VSS
         /// <returns>A full path to the same file on the snapshot.</returns>
         public string GetSnapshotPath(string localPath)
         {
-            Trace.WriteLine("New volume: " + _snap.Root);
+            Trace.TraceInformation("New volume: " + _snap.Root);
 
             // This bit replaces the file's normal root information with root
             // info from our new shadow copy.
@@ -296,7 +296,7 @@ namespace BSH.Service.VSS
 
             localPath = localPath.Insert(0, _snap.Root);
 
-            Trace.WriteLine("Converted path: " + localPath);
+            Trace.TraceInformation("Converted path: " + localPath);
 
             return localPath;
         }
