@@ -206,24 +206,7 @@ public class BackupJob : Job
             Win32Stuff.KeepSystemAwake();
 
             // process empty folders
-            foreach (var folder in emptyFolder)
-            {
-                // backup folder
-                var folderParameters = new IDataParameter[]
-                {
-                    dbClient.CreateParameter("folder", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\")
-                };
-
-                var folderId = await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT OR IGNORE INTO foldertable ( folder ) VALUES ( @folder ); SELECT id FROM foldertable WHERE folder = @folder", folderParameters);
-
-                // add folder link
-                var folderLinkParameters = new IDataParameter[] {
-                    dbClient.CreateParameter("folderid", DbType.Int32, 0, folderId),
-                    dbClient.CreateParameter("versionID", DbType.Int32, 0, newVersionId)
-                };
-
-                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO folderlink ( folderid, versionid ) VALUES ( @folderid, @versionID )", folderLinkParameters);
-            }
+            await ProcessEmptyFolders(dbClient, newVersionId, emptyFolder);
 
             // process all files
             var cancel = false;
@@ -434,6 +417,28 @@ public class BackupJob : Job
         _logger.Information("Backup job finished.");
     }
 
+    private static async Task ProcessEmptyFolders(DbClient dbClient, long newVersionId, List<FolderTableRow> emptyFolder)
+    {
+        foreach (var folder in emptyFolder)
+        {
+            // backup folder
+            var folderParameters = new IDataParameter[]
+            {
+                dbClient.CreateParameter("folder", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\")
+            };
+
+            var folderId = await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT OR IGNORE INTO foldertable ( folder ) VALUES ( @folder ); SELECT id FROM foldertable WHERE folder = @folder", folderParameters);
+
+            // add folder link
+            var folderLinkParameters = new IDataParameter[] {
+                dbClient.CreateParameter("folderid", DbType.Int32, 0, folderId),
+                dbClient.CreateParameter("versionID", DbType.Int32, 0, newVersionId)
+            };
+
+            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO folderlink ( folderid, versionid ) VALUES ( @folderid, @versionID )", folderLinkParameters);
+        }
+    }
+
     /// <summary>
     /// Adds the given exception to the file exception list.
     /// </summary>
@@ -620,7 +625,7 @@ public class BackupJob : Job
 
         // compress or encrypt?
         var compress = configurationManager.Compression == 1 && !normalCopy && !doNotCompress;
-        var encrypt = configurationManager.Encrypt == 1 && !normalCopy && file.FileSize != 0;
+        var encrypt = configurationManager.Encrypt == 1 && !normalCopy && file.FileSize > 0;
 
         // check if path is too long
         if (storage.IsPathTooLong(remoteFileName, compress, encrypt))

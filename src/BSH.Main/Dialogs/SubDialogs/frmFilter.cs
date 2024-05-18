@@ -173,7 +173,7 @@ public partial class frmFilter
             }
 
             // Verzeichnis kann sortiert werden
-            var sTemp = dlgFolderBrowser.SelectedPath.Replace(entry[..entry.LastIndexOf(@"\")], "");
+            var sTemp = dlgFolderBrowser.SelectedPath.Replace(entry[..entry.LastIndexOf('\\')], "");
 
             if (!string.IsNullOrEmpty(sTemp))
             {
@@ -340,7 +340,7 @@ public partial class frmFilter
                     }
 
                     // Datei kann sortiert werden
-                    var sTemp = File.Replace(entry.Substring(0, entry.LastIndexOf(@"\")), "");
+                    var sTemp = File.Replace(entry.Substring(0, entry.LastIndexOf('\\')), "");
                     if (!string.IsNullOrEmpty(sTemp))
                     {
                         // Nachschauen, ob schon drin

@@ -148,7 +148,7 @@ public partial class ucDoConfigure : IMainTabs
                     }
 
                     // directory is not empty?
-                    var BackupFolder = new DirectoryInfo(Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName);
+                    var BackupFolder = new DirectoryInfo(Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + '\\' + Environment.UserName);
 
                     if (BackupFolder.Exists)
                     {
@@ -249,7 +249,7 @@ public partial class ucDoConfigure : IMainTabs
                     {
                         // directory
                         configurationManager.MediumType = 1;
-                        configurationManager.BackupFolder = Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName;
+                        configurationManager.BackupFolder = Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + '\\' + Environment.UserName;
                         configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(configurationManager.BackupFolder.Substring(0, 1) + @":\");
                         if (configurationManager.MediaVolumeSerial == null || configurationManager.MediaVolumeSerial == "0")
                         {
@@ -363,7 +363,7 @@ public partial class ucDoConfigure : IMainTabs
                                 }
 
                                 // add directory to list
-                                var computerName = computerDirectory.Substring(computerDirectory.LastIndexOf(@"\") + 1);
+                                var computerName = computerDirectory.Substring(computerDirectory.LastIndexOf('\\') + 1);
                                 try
                                 {
                                     lvBackups.Groups.Add(new ListViewGroup(computerName, Resources.DLG_UC_DO_CONFIGURE_COMPUTER + computerName));
@@ -374,7 +374,7 @@ public partial class ucDoConfigure : IMainTabs
                                 }
 
                                 // add to list
-                                var newSicherung = lvBackups.Items.Add(userDirectory.Replace(computerDirectory + @"\", ""), 4);
+                                var newSicherung = lvBackups.Items.Add(userDirectory.Replace(computerDirectory + '\\', ""), 4);
                                 newSicherung.Tag = userDirectory;
                                 newSicherung.Group = lvBackups.Groups[computerName];
                             }

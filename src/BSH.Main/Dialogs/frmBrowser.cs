@@ -147,7 +147,7 @@ public partial class frmBrowser : IStatusReport
         if (lvFiles.SelectedItems.Count <= 0)
         {
             lblFileName.Text = path.Split('\\')[currentFolderIdx];
-            lblFileType.Text = @"\" + path + @"\";
+            lblFileType.Text = '\\' + path + '\\';
             flpColumn2.Visible = false;
             flpColumn3.Visible = false;
             lblIntegrityCheck.Text = "";
@@ -222,7 +222,7 @@ public partial class frmBrowser : IStatusReport
             fileListItem.SubItems.Add(CreateStringListViewSubItem(""));
             fileListItem.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
             fileListItem.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
-            fileListItem.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")"));
+            fileListItem.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")"));
             fileListItem.ForeColor = (file.FileStatus == "1" ? Color.Black : Color.Red);
             fileListItem.Tag = file.FilePath;
 
@@ -256,7 +256,7 @@ public partial class frmBrowser : IStatusReport
     {
         return new ListViewItem.ListViewSubItem()
         {
-            Text = dateTime.ToString("dd.MM.yyyy HH:mm"),
+            Text = dateTime.ToString(UiFormatUtils.DATE_FORMAT_LONG),
             Tag = dateTime
         };
     }
@@ -366,7 +366,7 @@ public partial class frmBrowser : IStatusReport
                 var fileInfo = new System.IO.FileInfo(fileName);
                 var fiIcon = Icon.ExtractAssociatedIcon(fileInfo.FullName);
 
-                if (fileInfo.Extension.ToUpper() == ".EXE")
+                if (fileInfo.Extension.Equals(".EXE", StringComparison.CurrentCultureIgnoreCase))
                 {
                     ilBigIcons.Images.Add(fileInfo.Name, fiIcon);
                     ilSmallIcons.Images.Add(fileInfo.Name, fiIcon);
@@ -383,7 +383,7 @@ public partial class frmBrowser : IStatusReport
                 listViewItem.SubItems[2].Text = shFi.szTypeName;
 
                 // set icon to ListViewItem
-                listViewItem.ImageKey = fileInfo.Extension.ToUpper() == ".EXE" ? fileInfo.Name : fileInfo.Extension.ToUpper();
+                listViewItem.ImageKey = fileInfo.Extension.Equals(".EXE", StringComparison.CurrentCultureIgnoreCase) ? fileInfo.Name : fileInfo.Extension.ToUpper();
                 return;
             }
         }
@@ -520,7 +520,7 @@ public partial class frmBrowser : IStatusReport
         // get current drive
         try
         {
-            if (BackupLogic.ConfigurationManager.MediumType == 1D
+            if (BackupLogic.ConfigurationManager.MediumType == 1
                 && BackupLogic.ConfigurationManager.BackupFolder[..1] != "/"
                 && !BackupLogic.ConfigurationManager.BackupFolder.StartsWith("\\\\"))
             {
@@ -570,7 +570,7 @@ public partial class frmBrowser : IStatusReport
             {
                 var entry = e;
 
-                if (entry.EndsWith(@"\"))
+                if (entry.EndsWith('\\'))
                 {
                     entry = entry[..^1];
                 }
@@ -578,9 +578,9 @@ public partial class frmBrowser : IStatusReport
                 // Ordnername ermitteln
                 var newEntry = new ListViewItem
                 {
-                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf(@"\") + 1)..]),
+                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
                     ImageIndex = 2,
-                    Tag = @"\" + entry[(entry.LastIndexOf(@"\") + 1)..] + @"\"
+                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
                 };
 
                 lvFavorite.Items.Add(newEntry);
@@ -594,7 +594,7 @@ public partial class frmBrowser : IStatusReport
                     var entry = e;
 
                     // store favorite name
-                    if (entry.EndsWith(@"\"))
+                    if (entry.EndsWith('\\'))
                     {
                         entry = entry[..^1];
                     }
@@ -615,7 +615,7 @@ public partial class frmBrowser : IStatusReport
                     continue;
                 }
 
-                if (entry.EndsWith(@"\"))
+                if (entry.EndsWith('\\'))
                 {
                     entry = entry[..^1];
                 }
@@ -625,8 +625,8 @@ public partial class frmBrowser : IStatusReport
                 {
                     Text = Settings.Default.BrowserFavoritsName.Split('|')[i],
                     ImageIndex = 1,
-                    Tag = @"\" + entry[(entry.IndexOf(@"\") + 1)..] + @"\",
-                    ToolTipText = Resources.DLG_BACKUPBROWSER_TT_FOLDER.FormatWith(BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf(@"\") + 1)..]), entry[(entry.IndexOf(@"\") + 1)..])
+                    Tag = '\\' + entry[(entry.IndexOf('\\') + 1)..] + '\\',
+                    ToolTipText = Resources.DLG_BACKUPBROWSER_TT_FOLDER.FormatWith(BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]), entry[(entry.IndexOf('\\') + 1)..])
                 };
 
                 lvFavorite.Items.Add(newEntry);
@@ -684,9 +684,9 @@ public partial class frmBrowser : IStatusReport
                 try
                 {
                     var parent = System.IO.Directory.GetParent(folder).FullName;
-                    if (!entry.Path.EndsWith(@"\"))
+                    if (!entry.Path.EndsWith('\\'))
                     {
-                        entry.Path += @"\";
+                        entry.Path += '\\';
                     }
 
                     result.Add(new ExplorerWindow(entry.Path.Replace(parent, ""), entry.WindowTitle));
@@ -797,7 +797,7 @@ public partial class frmBrowser : IStatusReport
                 // show folder name
                 var sSelFolderSplit = selectedFolder.Split('\\');
                 lblFileName.Text = sSelFolderSplit[sSelFolderSplit.Length - 1];
-                lblFileType.Text = @"\" + selectedFolder + @"\";
+                lblFileType.Text = '\\' + selectedFolder + '\\';
                 imgFileType.Image = ilBigFolder.Images[1];
                 flpDetails.Visible = true;
                 return;
@@ -996,7 +996,7 @@ public partial class frmBrowser : IStatusReport
         else
         {
             // restore entire folder
-            await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, @"\" + selectedFolder + @"\", destinationFolder);
+            await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, '\\' + selectedFolder + '\\', destinationFolder);
         }
     }
 
@@ -1018,8 +1018,8 @@ public partial class frmBrowser : IStatusReport
         else
         {
             // add
-            Settings.Default.BrowserFavorits += "|" + @"\" + selectedFolder + @"\";
-            Settings.Default.BrowserFavoritsName += "|" + System.IO.Path.GetFileName(await BackupLogic.QueryManager.GetLocalizedPathAsync(@"\" + selectedFolder + @"\"));
+            Settings.Default.BrowserFavorits += "|" + '\\' + selectedFolder + '\\';
+            Settings.Default.BrowserFavoritsName += "|" + System.IO.Path.GetFileName(await BackupLogic.QueryManager.GetLocalizedPathAsync('\\' + selectedFolder + '\\'));
 
             // store
             Settings.Default.Save();
@@ -1348,7 +1348,7 @@ public partial class frmBrowser : IStatusReport
                     newEntry.SubItems.Add(CreateStringListViewSubItem(""));
                     newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
                     newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
-                    newEntry.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")"));
+                    newEntry.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")"));
                     newEntry.Tag = file.FilePath;
 
                     // retrieve file icon
@@ -1577,9 +1577,9 @@ public partial class frmBrowser : IStatusReport
             foreach (var item in versions)
             {
                 var newItem = new ListViewItem();
-                newItem.Text = item.FilePackage + " (" + item.FileVersionDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm") + ")";
+                newItem.Text = item.FilePackage + " (" + item.FileVersionDate.ToLocalTime().ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")";
                 newItem.Tag = item;
-                newItem.SubItems.Add(item.FileDateModified.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
+                newItem.SubItems.Add(item.FileDateModified.ToLocalTime().ToString(UiFormatUtils.DATE_FORMAT_LONG));
                 dlgFileProperties.lvVersions.Items.Add(newItem);
             }
 
@@ -1626,7 +1626,7 @@ public partial class frmBrowser : IStatusReport
             foreach (var version in BackupLogic.QueryManager.GetVersions())
             {
                 var newItem = new ListViewItem();
-                newItem.Text = version.CreationDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
+                newItem.Text = version.CreationDate.ToLocalTime().ToString(UiFormatUtils.DATE_FORMAT_LONG);
                 newItem.Tag = version.Id;
                 dlgMultiVersionDelete.lstVersions.Items.Add(newItem);
             }
@@ -1678,7 +1678,7 @@ public partial class frmBrowser : IStatusReport
 
         for (int i = 0, loopTo = splitF.Length - 2; i <= loopTo; i++)
         {
-            temp += splitF[i] + @"\";
+            temp += splitF[i] + '\\';
         }
 
         temp = temp[..^1];
@@ -1748,7 +1748,7 @@ public partial class frmBrowser : IStatusReport
 
     private async void AllesWiederherstellenToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, @"\", "");
+        await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, "\\", "");
     }
 
     public void ReportAction(ActionType action, bool silent)
