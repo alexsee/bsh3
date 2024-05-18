@@ -106,9 +106,9 @@ public partial class frmSmartPreview
     {
         try
         {
-            string fileExt = System.IO.Path.GetExtension(fileName).ToLower();
+            var fileExt = System.IO.Path.GetExtension(fileName).ToLower();
 
-            switch (fileExt ?? "")
+            switch (fileExt)
             {
                 // pictures
                 case ".jpg":

@@ -520,7 +520,7 @@ public partial class frmBrowser : IStatusReport
         // get current drive
         try
         {
-            if (BackupLogic.ConfigurationManager.MediumType == 1D
+            if (BackupLogic.ConfigurationManager.MediumType == 1
                 && BackupLogic.ConfigurationManager.BackupFolder[..1] != "/"
                 && !BackupLogic.ConfigurationManager.BackupFolder.StartsWith("\\\\"))
             {

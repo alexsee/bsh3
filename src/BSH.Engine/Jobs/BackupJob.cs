@@ -620,7 +620,7 @@ public class BackupJob : Job
 
         // compress or encrypt?
         var compress = configurationManager.Compression == 1 && !normalCopy && !doNotCompress;
-        var encrypt = configurationManager.Encrypt == 1 && !normalCopy && file.FileSize != 0;
+        var encrypt = configurationManager.Encrypt == 1 && !normalCopy && file.FileSize > 0;
 
         // check if path is too long
         if (storage.IsPathTooLong(remoteFileName, compress, encrypt))
