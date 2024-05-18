@@ -68,7 +68,7 @@ public partial class frmFileProperties
             procInfo.WindowStyle = ProcessWindowStyle.Normal;
 
             var proc = Process.Start(procInfo);
-            proc.WaitForExit();
+            await proc.WaitForExitAsync();
 
             if (tmpFile.Item1 != null && tmpFile.Item2)
             {

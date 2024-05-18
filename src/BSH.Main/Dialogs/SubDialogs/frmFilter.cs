@@ -164,10 +164,9 @@ public partial class frmFilter
 
         // Verzeichnis soll gefiltert werden
         // Zunächst prüfen, ob Verzeichnis in einem der Quellverzeichnisse
-        var bAdded = false;
         foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
         {
-            if (!dlgFolderBrowser.SelectedPath.ToLower().Contains(entry.ToLower()))
+            if (!dlgFolderBrowser.SelectedPath.Contains(entry, StringComparison.CurrentCultureIgnoreCase))
             {
                 continue;
             }
@@ -189,20 +188,13 @@ public partial class frmFilter
                 }
 
                 lstExcludeFolders.Items.Add(sTemp);
-                bAdded = true;
                 onLoadPath = dlgFolderBrowser.SelectedPath;
                 return;
             }
         }
 
-        if (!bAdded)
-        {
-            // Verzeichnis nicht in Quellverzeichnis
-            MessageBox.Show(Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT, Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            return;
-        }
-
-        onLoadPath = dlgFolderBrowser.SelectedPath;
+        // Verzeichnis nicht in Quellverzeichnis
+        MessageBox.Show(Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT, Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void cmdDeleteFolders_Click(object sender, EventArgs e)
@@ -334,7 +326,7 @@ public partial class frmFilter
                 var bAdded = false;
                 foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
                 {
-                    if (!System.IO.Path.GetFullPath(File).ToLower().Contains(entry.ToLower()))
+                    if (!System.IO.Path.GetFullPath(File).Contains(entry, StringComparison.CurrentCultureIgnoreCase))
                     {
                         continue;
                     }
@@ -346,7 +338,7 @@ public partial class frmFilter
                         // Nachschauen, ob schon drin
                         foreach (var entry2 in lstExcludeSingleFile.Items)
                         {
-                            if ((lstExcludeSingleFile.GetItemText(entry2) ?? "") == (sTemp ?? ""))
+                            if ((lstExcludeSingleFile.GetItemText(entry2) ?? "") == sTemp)
                             {
                                 // Eintrag gibts schon
                                 return;
