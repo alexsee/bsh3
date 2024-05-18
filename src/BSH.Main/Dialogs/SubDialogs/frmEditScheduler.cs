@@ -22,6 +22,8 @@ namespace Brightbits.BSH.Main;
 
 public partial class frmEditScheduler
 {
+    private const string HOUR_MINUTE_FORMAT = "HH:mm";
+
     public frmEditScheduler()
     {
         InitializeComponent();
@@ -64,13 +66,13 @@ public partial class frmEditScheduler
 
                             case "4":
                                 newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY;
-                                newEntry.SubItems.Add(parsedDate.ToString("dddd") + ", " + parsedDate.ToString("HH:mm"));
+                                newEntry.SubItems.Add(parsedDate.ToString("dddd") + ", " + parsedDate.ToString(HOUR_MINUTE_FORMAT));
                                 newEntry.SubItems[0].Tag = 3;
                                 break;
 
                             case "5":
                                 newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY;
-                                newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(parsedDate.Day, parsedDate.ToString("HH:mm")));
+                                newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(parsedDate.Day, parsedDate.ToString(HOUR_MINUTE_FORMAT)));
                                 newEntry.SubItems[0].Tag = 4;
                                 break;
                         }
@@ -180,15 +182,15 @@ public partial class frmEditScheduler
                     break;
 
                 case 2:
-                    newEntry.SubItems.Add(dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm"));
+                    newEntry.SubItems.Add(dlgAddSchedule.dtpStartTime.Value.ToString(HOUR_MINUTE_FORMAT));
                     break;
 
                 case 3:
-                    newEntry.SubItems.Add(dlgAddSchedule.dtpStartTime.Value.ToString("dddd") + ", " + dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm"));
+                    newEntry.SubItems.Add(dlgAddSchedule.dtpStartTime.Value.ToString("dddd") + ", " + dlgAddSchedule.dtpStartTime.Value.ToString(HOUR_MINUTE_FORMAT));
                     break;
 
                 case 4:
-                    newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(dlgAddSchedule.dtpStartTime.Value.Day, dlgAddSchedule.dtpStartTime.Value.ToString("HH:mm")));
+                    newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(dlgAddSchedule.dtpStartTime.Value.Day, dlgAddSchedule.dtpStartTime.Value.ToString(HOUR_MINUTE_FORMAT)));
                     break;
             }
 
