@@ -125,7 +125,7 @@ public partial class frmFileProperties
         // Wurde überhaupt irgendetwas ausgewählt?
         if (lvVersions.SelectedItems.Count > 0)
         {
-            await BackupLogic.BackupController.RestoreBackupAsync(lvVersions.SelectedItems[0].Tag.ToString(), CurrentFileFolder + @"\" + lblFileName.Text, Destination);
+            await BackupLogic.BackupController.RestoreBackupAsync(lvVersions.SelectedItems[0].Tag.ToString(), CurrentFileFolder + '\\' + lblFileName.Text, Destination);
         }
     }
 

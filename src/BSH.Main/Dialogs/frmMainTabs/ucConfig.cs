@@ -711,7 +711,7 @@ public partial class ucConfig : IMainTabs
             {
                 // directory
                 BackupLogic.ConfigurationManager.MediumType = 1;
-                BackupLogic.ConfigurationManager.BackupFolder = Convert.ToString(dlgChangeMedia.lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName;
+                BackupLogic.ConfigurationManager.BackupFolder = Convert.ToString(dlgChangeMedia.lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + '\\' + Environment.UserName;
                 BackupLogic.ConfigurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(BackupLogic.ConfigurationManager.BackupFolder[..1] + @":\");
                 if (BackupLogic.ConfigurationManager.MediaVolumeSerial == "0")
                 {

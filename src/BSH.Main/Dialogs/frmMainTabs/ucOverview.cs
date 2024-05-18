@@ -281,7 +281,7 @@ public partial class ucOverview : IMainTabs, IStatusReport
                 if (BackupLogic.ConfigurationManager.MediumType != 3)
                 {
                     infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_ON_TEXT);
-                    if (BackupLogic.ConfigurationManager.BackupFolder.Substring(0, 1) == @"\")
+                    if (BackupLogic.ConfigurationManager.BackupFolder.Substring(0, 1) == "\\")
                     {
                         infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT.FormatWith(BackupLogic.ConfigurationManager.BackupFolder));
                     }

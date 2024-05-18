@@ -102,7 +102,7 @@ public partial class frmChangeMedia
                 MessageBox.Show(Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT, Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            else if (System.IO.File.Exists(lvBackupDrive.SelectedItems[0].Tag.ToString() + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName + @"\backup.bshdb"))
+            else if (System.IO.File.Exists(lvBackupDrive.SelectedItems[0].Tag.ToString() + @"Backups\" + Environment.MachineName + '\\' + Environment.UserName + @"\backup.bshdb"))
             {
                 MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;

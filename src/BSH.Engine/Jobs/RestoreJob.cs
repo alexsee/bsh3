@@ -200,7 +200,7 @@ public class RestoreJob : Job
             using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, getFileSQL, null))
             {
                 var i = 0;
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(token))
                 {
                     var filePath = reader.GetString("filePath");
                     var fileName = reader.GetString("fileName");
@@ -260,7 +260,7 @@ public class RestoreJob : Job
             // restore folders
             using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, $"SELECT folder FROM foldertable, folderlink WHERE foldertable.id = folderlink.folderid AND folderlink.versionid = {Version} AND foldertable.folder LIKE \"{File}%\"", null))
             {
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(token))
                 {
                     var fileDest = GetFileDestination(destFolders, reader.GetString("folder"));
 
