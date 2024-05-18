@@ -222,7 +222,7 @@ public partial class frmBrowser : IStatusReport
             fileListItem.SubItems.Add(CreateStringListViewSubItem(""));
             fileListItem.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
             fileListItem.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
-            fileListItem.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")"));
+            fileListItem.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")"));
             fileListItem.ForeColor = (file.FileStatus == "1" ? Color.Black : Color.Red);
             fileListItem.Tag = file.FilePath;
 
@@ -256,7 +256,7 @@ public partial class frmBrowser : IStatusReport
     {
         return new ListViewItem.ListViewSubItem()
         {
-            Text = dateTime.ToString("dd.MM.yyyy HH:mm"),
+            Text = dateTime.ToString(UiFormatUtils.DATE_FORMAT_LONG),
             Tag = dateTime
         };
     }
@@ -1348,7 +1348,7 @@ public partial class frmBrowser : IStatusReport
                     newEntry.SubItems.Add(CreateStringListViewSubItem(""));
                     newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
                     newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
-                    newEntry.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")"));
+                    newEntry.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")"));
                     newEntry.Tag = file.FilePath;
 
                     // retrieve file icon
@@ -1577,9 +1577,9 @@ public partial class frmBrowser : IStatusReport
             foreach (var item in versions)
             {
                 var newItem = new ListViewItem();
-                newItem.Text = item.FilePackage + " (" + item.FileVersionDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm") + ")";
+                newItem.Text = item.FilePackage + " (" + item.FileVersionDate.ToLocalTime().ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")";
                 newItem.Tag = item;
-                newItem.SubItems.Add(item.FileDateModified.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
+                newItem.SubItems.Add(item.FileDateModified.ToLocalTime().ToString(UiFormatUtils.DATE_FORMAT_LONG));
                 dlgFileProperties.lvVersions.Items.Add(newItem);
             }
 
@@ -1626,7 +1626,7 @@ public partial class frmBrowser : IStatusReport
             foreach (var version in BackupLogic.QueryManager.GetVersions())
             {
                 var newItem = new ListViewItem();
-                newItem.Text = version.CreationDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
+                newItem.Text = version.CreationDate.ToLocalTime().ToString(UiFormatUtils.DATE_FORMAT_LONG);
                 newItem.Tag = version.Id;
                 dlgMultiVersionDelete.lstVersions.Items.Add(newItem);
             }
