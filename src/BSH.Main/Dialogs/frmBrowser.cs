@@ -366,7 +366,7 @@ public partial class frmBrowser : IStatusReport
                 var fileInfo = new System.IO.FileInfo(fileName);
                 var fiIcon = Icon.ExtractAssociatedIcon(fileInfo.FullName);
 
-                if (fileInfo.Extension.Equals(".EXE", StringComparison.CurrentCultureIgnoreCase))
+                if (fileInfo.Extension.Equals(".EXE", StringComparison.OrdinalIgnoreCase))
                 {
                     ilBigIcons.Images.Add(fileInfo.Name, fiIcon);
                     ilSmallIcons.Images.Add(fileInfo.Name, fiIcon);
@@ -383,7 +383,7 @@ public partial class frmBrowser : IStatusReport
                 listViewItem.SubItems[2].Text = shFi.szTypeName;
 
                 // set icon to ListViewItem
-                listViewItem.ImageKey = fileInfo.Extension.Equals(".EXE", StringComparison.CurrentCultureIgnoreCase) ? fileInfo.Name : fileInfo.Extension.ToUpper();
+                listViewItem.ImageKey = fileInfo.Extension.Equals(".EXE", StringComparison.OrdinalIgnoreCase) ? fileInfo.Name : fileInfo.Extension.ToUpper();
                 return;
             }
         }
@@ -676,7 +676,7 @@ public partial class frmBrowser : IStatusReport
             // filder source folders
             foreach (var folder in sourceFolders)
             {
-                if (!entry.Path.Contains(folder, StringComparison.CurrentCultureIgnoreCase))
+                if (!entry.Path.Contains(folder, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }

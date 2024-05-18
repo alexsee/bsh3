@@ -166,7 +166,7 @@ public partial class frmFilter
         // Zunächst prüfen, ob Verzeichnis in einem der Quellverzeichnisse
         foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
         {
-            if (!dlgFolderBrowser.SelectedPath.Contains(entry, StringComparison.CurrentCultureIgnoreCase))
+            if (!dlgFolderBrowser.SelectedPath.Contains(entry, StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
@@ -326,7 +326,7 @@ public partial class frmFilter
                 var bAdded = false;
                 foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
                 {
-                    if (!System.IO.Path.GetFullPath(File).Contains(entry, StringComparison.CurrentCultureIgnoreCase))
+                    if (!System.IO.Path.GetFullPath(File).Contains(entry, StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
