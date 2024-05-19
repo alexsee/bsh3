@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows.Forms;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main
 {
@@ -89,7 +90,7 @@ namespace Brightbits.BSH.Main
             // PictureBox1
             // 
             PictureBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            PictureBox1.Image = Main.Properties.Resources.backup_service_client_32;
+            PictureBox1.Image = Resources.backup_service_client_32;
             PictureBox1.Location = new System.Drawing.Point(686, 10);
             PictureBox1.Name = "PictureBox1";
             PictureBox1.Size = new System.Drawing.Size(32, 32);
