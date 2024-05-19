@@ -27,184 +27,181 @@ namespace Brightbits.BSH.Main
         [DebuggerStepThrough()]
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAbout));
-            this.Label2 = new System.Windows.Forms.Label();
-            this.lblProduct = new System.Windows.Forms.Label();
-            this.lblVersion = new System.Windows.Forms.Label();
-            this.Panel1 = new System.Windows.Forms.Panel();
-            this.PictureBox1 = new System.Windows.Forms.PictureBox();
-            this.Panel2 = new System.Windows.Forms.Panel();
-            this.cmdOK = new System.Windows.Forms.Button();
-            this.Label1 = new System.Windows.Forms.Label();
-            this.Label3 = new System.Windows.Forms.Label();
-            this.Label4 = new System.Windows.Forms.Label();
-            this.llWebsite = new System.Windows.Forms.LinkLabel();
-            this.TextBox1 = new System.Windows.Forms.TextBox();
-            this.Panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
-            this.Panel2.SuspendLayout();
-            this.SuspendLayout();
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAbout));
+            Label2 = new Label();
+            lblProduct = new Label();
+            lblVersion = new Label();
+            Panel1 = new Panel();
+            PictureBox1 = new PictureBox();
+            Panel2 = new Panel();
+            cmdOK = new Button();
+            Label1 = new Label();
+            Label3 = new Label();
+            Label4 = new Label();
+            llWebsite = new LinkLabel();
+            TextBox1 = new TextBox();
+            Panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)PictureBox1).BeginInit();
+            Panel2.SuspendLayout();
+            SuspendLayout();
             // 
             // Label2
             // 
-            this.Label2.AutoSize = true;
-            this.Label2.BackColor = System.Drawing.Color.Transparent;
-            this.Label2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Label2.ForeColor = System.Drawing.Color.White;
-            this.Label2.Location = new System.Drawing.Point(18, 18);
-            this.Label2.Name = "Label2";
-            this.Label2.Size = new System.Drawing.Size(324, 32);
-            this.Label2.TabIndex = 1;
-            this.Label2.Text = "Über Backup Service Home 3";
+            Label2.AutoSize = true;
+            Label2.BackColor = System.Drawing.Color.Transparent;
+            Label2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            Label2.ForeColor = System.Drawing.Color.White;
+            Label2.Location = new System.Drawing.Point(18, 18);
+            Label2.Name = "Label2";
+            Label2.Size = new System.Drawing.Size(324, 32);
+            Label2.TabIndex = 1;
+            Label2.Text = "Über Backup Service Home 3";
             // 
             // lblProduct
             // 
-            this.lblProduct.AutoSize = true;
-            this.lblProduct.Location = new System.Drawing.Point(39, 86);
-            this.lblProduct.Name = "lblProduct";
-            this.lblProduct.Size = new System.Drawing.Size(216, 28);
-            this.lblProduct.TabIndex = 2;
-            this.lblProduct.Text = "Backup Service Home 3";
+            lblProduct.AutoSize = true;
+            lblProduct.Location = new System.Drawing.Point(39, 86);
+            lblProduct.Name = "lblProduct";
+            lblProduct.Size = new System.Drawing.Size(216, 28);
+            lblProduct.TabIndex = 2;
+            lblProduct.Text = "Backup Service Home 3";
             // 
             // lblVersion
             // 
-            this.lblVersion.AutoSize = true;
-            this.lblVersion.Location = new System.Drawing.Point(39, 111);
-            this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(137, 28);
-            this.lblVersion.TabIndex = 3;
-            this.lblVersion.Text = "Version 3.0.0.0";
+            lblVersion.AutoSize = true;
+            lblVersion.Location = new System.Drawing.Point(39, 111);
+            lblVersion.Name = "lblVersion";
+            lblVersion.Size = new System.Drawing.Size(137, 28);
+            lblVersion.TabIndex = 3;
+            lblVersion.Text = "Version 3.0.0.0";
             // 
             // Panel1
             // 
-            this.Panel1.BackColor = System.Drawing.Color.DarkGray;
-            this.Panel1.Controls.Add(this.PictureBox1);
-            this.Panel1.Controls.Add(this.Label2);
-            this.Panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.Panel1.Location = new System.Drawing.Point(0, 0);
-            this.Panel1.Name = "Panel1";
-            this.Panel1.Size = new System.Drawing.Size(740, 69);
-            this.Panel1.TabIndex = 4;
+            Panel1.BackColor = System.Drawing.Color.DarkGray;
+            Panel1.Controls.Add(PictureBox1);
+            Panel1.Controls.Add(Label2);
+            Panel1.Dock = DockStyle.Top;
+            Panel1.Location = new System.Drawing.Point(0, 0);
+            Panel1.Name = "Panel1";
+            Panel1.Size = new System.Drawing.Size(740, 69);
+            Panel1.TabIndex = 4;
             // 
             // PictureBox1
             // 
-            this.PictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.PictureBox1.Image = global::BSH.Main.Properties.Resources.backup_service_client_32;
-            this.PictureBox1.Location = new System.Drawing.Point(686, 10);
-            this.PictureBox1.Name = "PictureBox1";
-            this.PictureBox1.Size = new System.Drawing.Size(32, 32);
-            this.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.PictureBox1.TabIndex = 5;
-            this.PictureBox1.TabStop = false;
+            PictureBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            PictureBox1.Image = Main.Properties.Resources.backup_service_client_32;
+            PictureBox1.Location = new System.Drawing.Point(686, 10);
+            PictureBox1.Name = "PictureBox1";
+            PictureBox1.Size = new System.Drawing.Size(32, 32);
+            PictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
+            PictureBox1.TabIndex = 5;
+            PictureBox1.TabStop = false;
             // 
             // Panel2
             // 
-            this.Panel2.BackColor = System.Drawing.SystemColors.Control;
-            this.Panel2.Controls.Add(this.cmdOK);
-            this.Panel2.Controls.Add(this.Label1);
-            this.Panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Panel2.Location = new System.Drawing.Point(0, 579);
-            this.Panel2.Name = "Panel2";
-            this.Panel2.Size = new System.Drawing.Size(740, 54);
-            this.Panel2.TabIndex = 83;
+            Panel2.BackColor = System.Drawing.SystemColors.Control;
+            Panel2.Controls.Add(cmdOK);
+            Panel2.Controls.Add(Label1);
+            Panel2.Dock = DockStyle.Bottom;
+            Panel2.Location = new System.Drawing.Point(0, 579);
+            Panel2.Name = "Panel2";
+            Panel2.Size = new System.Drawing.Size(740, 54);
+            Panel2.TabIndex = 83;
             // 
             // cmdOK
             // 
-            this.cmdOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.cmdOK.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmdOK.Location = new System.Drawing.Point(614, 10);
-            this.cmdOK.Name = "cmdOK";
-            this.cmdOK.Size = new System.Drawing.Size(111, 32);
-            this.cmdOK.TabIndex = 0;
-            this.cmdOK.Text = "&OK";
-            this.cmdOK.UseVisualStyleBackColor = true;
+            cmdOK.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            cmdOK.DialogResult = DialogResult.OK;
+            cmdOK.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            cmdOK.Location = new System.Drawing.Point(614, 10);
+            cmdOK.Name = "cmdOK";
+            cmdOK.Size = new System.Drawing.Size(111, 32);
+            cmdOK.TabIndex = 0;
+            cmdOK.Text = "&OK";
+            cmdOK.UseVisualStyleBackColor = true;
             // 
             // Label1
             // 
-            this.Label1.BackColor = System.Drawing.Color.DarkGray;
-            this.Label1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.Label1.Location = new System.Drawing.Point(0, 0);
-            this.Label1.Name = "Label1";
-            this.Label1.Size = new System.Drawing.Size(740, 2);
-            this.Label1.TabIndex = 5;
+            Label1.BackColor = System.Drawing.Color.DarkGray;
+            Label1.Dock = DockStyle.Top;
+            Label1.Location = new System.Drawing.Point(0, 0);
+            Label1.Name = "Label1";
+            Label1.Size = new System.Drawing.Size(740, 2);
+            Label1.TabIndex = 5;
             // 
             // Label3
             // 
-            this.Label3.AutoSize = true;
-            this.Label3.Location = new System.Drawing.Point(39, 140);
-            this.Label3.Name = "Label3";
-            this.Label3.Size = new System.Drawing.Size(384, 56);
-            this.Label3.TabIndex = 84;
-            this.Label3.Text = "© 2008-2023 Alexander Seeliger Software.\r\nAlle Rechte vorbehalten.";
+            Label3.AutoSize = true;
+            Label3.Location = new System.Drawing.Point(39, 140);
+            Label3.Name = "Label3";
+            Label3.Size = new System.Drawing.Size(384, 56);
+            Label3.TabIndex = 84;
+            Label3.Text = "© 2008-2024 Alexander Seeliger Software.\r\nAlle Rechte vorbehalten.";
             // 
             // Label4
             // 
-            this.Label4.AutoSize = true;
-            this.Label4.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Label4.Location = new System.Drawing.Point(39, 204);
-            this.Label4.Name = "Label4";
-            this.Label4.Size = new System.Drawing.Size(110, 28);
-            this.Label4.TabIndex = 85;
-            this.Label4.Text = "Copyright:";
+            Label4.AutoSize = true;
+            Label4.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+            Label4.Location = new System.Drawing.Point(39, 204);
+            Label4.Name = "Label4";
+            Label4.Size = new System.Drawing.Size(110, 28);
+            Label4.TabIndex = 85;
+            Label4.Text = "Copyright:";
             // 
             // llWebsite
             // 
-            this.llWebsite.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.llWebsite.AutoSize = true;
-            this.llWebsite.Location = new System.Drawing.Point(498, 86);
-            this.llWebsite.Name = "llWebsite";
-            this.llWebsite.Size = new System.Drawing.Size(235, 28);
-            this.llWebsite.TabIndex = 87;
-            this.llWebsite.TabStop = true;
-            this.llWebsite.Text = "https://www.brightbits.de";
-            this.llWebsite.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llWebsite_LinkClicked);
+            llWebsite.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            llWebsite.AutoSize = true;
+            llWebsite.Location = new System.Drawing.Point(498, 86);
+            llWebsite.Name = "llWebsite";
+            llWebsite.Size = new System.Drawing.Size(235, 28);
+            llWebsite.TabIndex = 87;
+            llWebsite.TabStop = true;
+            llWebsite.Text = "https://www.brightbits.de";
+            llWebsite.LinkClicked += llWebsite_LinkClicked;
             // 
             // TextBox1
             // 
-            this.TextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextBox1.BackColor = System.Drawing.Color.White;
-            this.TextBox1.Location = new System.Drawing.Point(42, 236);
-            this.TextBox1.Multiline = true;
-            this.TextBox1.Name = "TextBox1";
-            this.TextBox1.ReadOnly = true;
-            this.TextBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TextBox1.Size = new System.Drawing.Size(679, 306);
-            this.TextBox1.TabIndex = 88;
-            this.TextBox1.Text = resources.GetString("TextBox1.Text");
+            TextBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            TextBox1.BackColor = System.Drawing.Color.White;
+            TextBox1.Location = new System.Drawing.Point(42, 236);
+            TextBox1.Multiline = true;
+            TextBox1.Name = "TextBox1";
+            TextBox1.ReadOnly = true;
+            TextBox1.ScrollBars = ScrollBars.Vertical;
+            TextBox1.Size = new System.Drawing.Size(679, 306);
+            TextBox1.TabIndex = 88;
+            TextBox1.Text = resources.GetString("TextBox1.Text");
             // 
             // frmAbout
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(740, 633);
-            this.Controls.Add(this.TextBox1);
-            this.Controls.Add(this.llWebsite);
-            this.Controls.Add(this.Label4);
-            this.Controls.Add(this.Label3);
-            this.Controls.Add(this.Panel2);
-            this.Controls.Add(this.lblVersion);
-            this.Controls.Add(this.lblProduct);
-            this.Controls.Add(this.Panel1);
-            this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "frmAbout";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Über Backup Service Home 3";
-            this.Load += new System.EventHandler(this.frmAbout_Load);
-            this.Panel1.ResumeLayout(false);
-            this.Panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).EndInit();
-            this.Panel2.ResumeLayout(false);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+            BackColor = System.Drawing.Color.White;
+            ClientSize = new System.Drawing.Size(740, 633);
+            Controls.Add(TextBox1);
+            Controls.Add(llWebsite);
+            Controls.Add(Label4);
+            Controls.Add(Label3);
+            Controls.Add(Panel2);
+            Controls.Add(lblVersion);
+            Controls.Add(lblProduct);
+            Controls.Add(Panel1);
+            Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "frmAbout";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Über Backup Service Home 3";
+            Load += frmAbout_Load;
+            Panel1.ResumeLayout(false);
+            Panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)PictureBox1).EndInit();
+            Panel2.ResumeLayout(false);
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         internal Label Label2;
