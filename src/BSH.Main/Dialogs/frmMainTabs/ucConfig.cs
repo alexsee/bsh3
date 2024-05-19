@@ -770,7 +770,7 @@ public partial class ucConfig : IMainTabs
         // check if entry is already present
         foreach (var entry2 in lstExcludeCompress.Items)
         {
-            if ((lstExcludeCompress.GetItemText(entry2) ?? "") == (extension ?? ""))
+            if ((lstExcludeCompress.GetItemText(entry2) ?? "") == extension)
             {
                 return;
             }

@@ -36,7 +36,7 @@ public partial class frmEditScheduler
             using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null))
             {
                 lwTimeSchedule.Items.Clear();
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     try
                     {
@@ -85,7 +85,7 @@ public partial class frmEditScheduler
                     }
                 }
 
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
