@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!--
     Microsoft ResX Schema 
@@ -117,400 +117,69 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="&gt;&gt;lblExtras.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="MitWindowsStartenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
+  <data name="Label7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>81, 23</value>
   </data>
-  <data name="ÜberBackupServiceHome3ToolStripMenuItem.Text" xml:space="preserve">
-    <value>Über Backup Service Home 3</value>
+  <data name="Label7.Text" xml:space="preserve">
+    <value>Modified:</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="lblExtras.TabIndex" type="System.Int32, mscorlib">
-    <value>36</value>
+  <data name="Label5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>74, 23</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="picHelp.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+  <data name="Label5.Text" xml:space="preserve">
+    <value>Created:</value>
   </data>
-  <data name="MitWindowsStartenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Mit Windows automatisch starten</value>
+  <data name="Label4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>44, 23</value>
   </data>
-  <data name="picHelp.TabIndex" type="System.Int32, mscorlib">
-    <value>35</value>
+  <data name="Label4.Text" xml:space="preserve">
+    <value>Size:</value>
   </data>
-  <data name="&gt;&gt;btnResetUserId.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="Label3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 23</value>
   </data>
-  <data name="BetaversionenÜberAktualiserungenHerunterladenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
+  <data name="Label3.Text" xml:space="preserve">
+    <value>Path:</value>
   </data>
-  <data name="&gt;&gt;picHelp.Parent" xml:space="preserve">
-    <value>$this</value>
+  <data name="Label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>79, 23</value>
   </data>
-  <data name="plMain.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 58</value>
+  <data name="Label1.Text" xml:space="preserve">
+    <value>File Type:</value>
   </data>
-  <data name="&gt;&gt;picHome.Name" xml:space="preserve">
-    <value>picHome</value>
+  <data name="TabPage1.Text" xml:space="preserve">
+    <value>General</value>
   </data>
-  <data name="&gt;&gt;lblHeadTitle.ZOrder" xml:space="preserve">
-    <value>5</value>
+  <data name="cmdChange.Text" xml:space="preserve">
+    <value>&amp;Switch</value>
   </data>
-  <data name="&gt;&gt;cmsHelp.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="cmdPreview.Text" xml:space="preserve">
+    <value>&amp;Preview</value>
   </data>
-  <data name="HilfeUndSupportToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>F1</value>
+  <data name="cmdRestore.Text" xml:space="preserve">
+    <value>&amp;Restore</value>
   </data>
-  <data name="lblHeadTitle.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="ColumnHeader1.Text" xml:space="preserve">
+    <value>Backup</value>
   </data>
-  <data name="lblHeadTitle.Location" type="System.Drawing.Point, System.Drawing">
-    <value>64, 14</value>
+  <data name="ColumnHeader2.Text" xml:space="preserve">
+    <value>Last Modified at</value>
   </data>
-  <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="Label8.Text" xml:space="preserve">
+    <value>File Versions</value>
   </data>
-  <data name="&gt;&gt;picHelp.Name" xml:space="preserve">
-    <value>picHelp</value>
+  <data name="TabPage2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 32</value>
   </data>
-  <data name="&gt;&gt;btnResetUserId.Name" xml:space="preserve">
-    <value>btnResetUserId</value>
+  <data name="TabPage2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>648, 519</value>
   </data>
-  <data name="lblExtras.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>Backups</value>
   </data>
-  <data name="&gt;&gt;AlteDatensicherungImportierenToolStripMenuItem.Name" xml:space="preserve">
-    <value>AlteDatensicherungImportierenToolStripMenuItem</value>
-  </data>
-  <data name="picHelp.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
-    <value>Zoom</value>
-  </data>
-  <data name="picHelp.ToolTip" xml:space="preserve">
-    <value>Extras und Support.
-
-Hier haben Sie die Möglichkeit, sich Hilfe zu holen oder Aktualisierungen
-von Backup Service Home herunterzuladen.</value>
-  </data>
-  <data name="ToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>419, 6</value>
-  </data>
-  <data name="BackupServiceHome3BeendenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
-  </data>
-  <data name="GespeichertesKennwortLöschenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Gespeichertes Kennwort löschen</value>
-  </data>
-  <data name="&gt;&gt;MitWindowsStartenToolStripMenuItem.Name" xml:space="preserve">
-    <value>MitWindowsStartenToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;ttMain.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="lblHeadTitle.Size" type="System.Drawing.Size, System.Drawing">
-    <value>606, 33</value>
-  </data>
-  <data name="AufAktualisierungenPrüfenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
-  </data>
-  <data name="&gt;&gt;lblHeadTitle.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>144, 144</value>
-  </data>
-  <data name="cmsHelp.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;MitWindowsStartenToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;AufAktualisierungenPrüfenToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;GespeichertesKennwortLöschenToolStripMenuItem.Name" xml:space="preserve">
-    <value>GespeichertesKennwortLöschenToolStripMenuItem</value>
-  </data>
-  <data name="ZurücksetzenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
-  </data>
-  <data name="&gt;&gt;ToolStripMenuItem2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="picHome.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
-    <value>Zoom</value>
-  </data>
-  <data name="cmsHelp.Size" type="System.Drawing.Size, System.Drawing">
-    <value>423, 406</value>
-  </data>
-  <data name="&gt;&gt;BackupServiceHome3BeendenToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;GespeichertesKennwortLöschenToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblHeadTitle.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="$this.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="EreignisprotokollAnzeigenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
-  </data>
-  <data name="&gt;&gt;ZurücksetzenToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;plMain.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="lblExtras.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;BackupServiceHome3BeendenToolStripMenuItem.Name" xml:space="preserve">
-    <value>BackupServiceHome3BeendenToolStripMenuItem</value>
-  </data>
-  <data name="plMain.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1036, 570</value>
-  </data>
-  <data name="ToolStripMenuItem4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>419, 6</value>
-  </data>
-  <data name="&gt;&gt;ttMain.Name" xml:space="preserve">
-    <value>ttMain</value>
-  </data>
-  <data name="&gt;&gt;picHome.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="plMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Bottom</value>
-  </data>
-  <data name="HilfeUndSupportToolStripMenuItem.Text" xml:space="preserve">
-    <value>Hilfe und Support</value>
-  </data>
-  <data name="&gt;&gt;ToolStripMenuItem1.Name" xml:space="preserve">
-    <value>ToolStripMenuItem1</value>
-  </data>
-  <data name="&gt;&gt;lblExtras.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="EreignisprotokollAnzeigenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Ereignisprotokoll anzeigen</value>
-  </data>
-  <data name="GespeichertesKennwortLöschenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
-  </data>
-  <data name="&gt;&gt;BetaversionenÜberAktualiserungenHerunterladenToolStripMenuItem.Name" xml:space="preserve">
-    <value>BetaversionenÜberAktualiserungenHerunterladenToolStripMenuItem</value>
-  </data>
-  <data name="plMain.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="picHelp.Location" type="System.Drawing.Point, System.Drawing">
-    <value>986, 14</value>
-  </data>
-  <data name="&gt;&gt;AlteDatensicherungImportierenToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblHeadTitle.Name" xml:space="preserve">
-    <value>lblHeadTitle</value>
-  </data>
-  <data name="&gt;&gt;AutomatischNachAktualisierungenSuchenToolStripMenuItem.Name" xml:space="preserve">
-    <value>AutomatischNachAktualisierungenSuchenToolStripMenuItem</value>
-  </data>
-  <data name="picHome.TabIndex" type="System.Int32, mscorlib">
-    <value>21</value>
-  </data>
-  <data name="lblHeadTitle.Text" xml:space="preserve">
-    <value>Backup Service Home</value>
-  </data>
-  <data name="ZurücksetzenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Zurücksetzen</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="picHelp.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
-  </data>
-  <data name="ÜberBackupServiceHome3ToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
-  </data>
-  <data name="lblHeadTitle.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 0, 4, 0</value>
-  </data>
-  <data name="lblExtras.Text" xml:space="preserve">
-    <value>Extras und Support</value>
-  </data>
-  <data name="BetaversionenÜberAktualiserungenHerunterladenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Betaversionen herunterladen</value>
-  </data>
-  <data name="&gt;&gt;HilfeUndSupportToolStripMenuItem.Name" xml:space="preserve">
-    <value>HilfeUndSupportToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;ToolStripMenuItem4.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="lblExtras.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 0, 4, 0</value>
-  </data>
-  <data name="&gt;&gt;plMain.Name" xml:space="preserve">
-    <value>plMain</value>
-  </data>
-  <data name="lblHeadTitle.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;EreignisprotokollAnzeigenToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="btnResetUserId.ToolTipText" xml:space="preserve">
-    <value>Setzt die eindeutige Benutzerkennung für die Aktualisierungsfunktion zurück.</value>
-  </data>
-  <data name="&gt;&gt;ZurücksetzenToolStripMenuItem.Name" xml:space="preserve">
-    <value>ZurücksetzenToolStripMenuItem</value>
-  </data>
-  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
-    <value>CenterScreen</value>
-  </data>
-  <data name="AutomatischNachAktualisierungenSuchenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
-  </data>
-  <data name="HilfeUndSupportToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
-  </data>
-  <data name="&gt;&gt;picHelp.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="lblHeadTitle.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 9.75pt</value>
-  </data>
-  <data name="AufAktualisierungenPrüfenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Auf Aktualisierungen prüfen</value>
-  </data>
-  <data name="picHome.Size" type="System.Drawing.Size, System.Drawing">
-    <value>32, 32</value>
-  </data>
-  <data name="&gt;&gt;AufAktualisierungenPrüfenToolStripMenuItem.Name" xml:space="preserve">
-    <value>AufAktualisierungenPrüfenToolStripMenuItem</value>
-  </data>
-  <data name="picHelp.Size" type="System.Drawing.Size, System.Drawing">
-    <value>32, 32</value>
-  </data>
-  <data name="plMain.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="lblExtras.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 9.75pt</value>
-  </data>
-  <data name="&gt;&gt;lblExtras.Name" xml:space="preserve">
-    <value>lblExtras</value>
-  </data>
-  <data name="&gt;&gt;BetaversionenÜberAktualiserungenHerunterladenToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="picHome.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
-  </data>
-  <data name="&gt;&gt;plMain.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;plMain.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="plMain.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
-  </data>
-  <data name="lblExtras.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleRight</value>
-  </data>
-  <data name="&gt;&gt;lblExtras.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>1036, 628</value>
-  </data>
-  <data name="BetaversionenÜberAktualiserungenHerunterladenToolStripMenuItem.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="&gt;&gt;ToolStripMenuItem2.Name" xml:space="preserve">
-    <value>ToolStripMenuItem2</value>
-  </data>
-  <data name="&gt;&gt;ÜberBackupServiceHome3ToolStripMenuItem.Name" xml:space="preserve">
-    <value>ÜberBackupServiceHome3ToolStripMenuItem</value>
-  </data>
-  <data name="btnResetUserId.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
-  </data>
-  <data name="&gt;&gt;picHelp.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="lblExtras.Location" type="System.Drawing.Point, System.Drawing">
-    <value>768, 14</value>
-  </data>
-  <data name="&gt;&gt;cmsHelp.Name" xml:space="preserve">
-    <value>cmsHelp</value>
-  </data>
-  <data name="picHome.ToolTip" xml:space="preserve">
-    <value>Zur Startseite wechseln.
-(Nur aktiviert, wenn nicht die Startseite angezeigt wird.)</value>
-  </data>
-  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
-  </data>
-  <data name="lblExtras.Size" type="System.Drawing.Size, System.Drawing">
-    <value>208, 33</value>
-  </data>
-  <data name="&gt;&gt;picHome.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="AlteDatensicherungImportierenToolStripMenuItem.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="btnResetUserId.Text" xml:space="preserve">
-    <value>Eindeutige Benutzerkennung zurücksetzen</value>
-  </data>
-  <data name="AlteDatensicherungImportierenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Alte Datensicherung importieren</value>
-  </data>
-  <data name="&gt;&gt;HilfeUndSupportToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 9.75pt</value>
-  </data>
-  <data name="&gt;&gt;picHome.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;ÜberBackupServiceHome3ToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;AutomatischNachAktualisierungenSuchenToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Backup Service Home</value>
-  </data>
-  <data name="&gt;&gt;EreignisprotokollAnzeigenToolStripMenuItem.Name" xml:space="preserve">
-    <value>EreignisprotokollAnzeigenToolStripMenuItem</value>
-  </data>
-  <data name="BackupServiceHome3BeendenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Backup Service Home 3 beenden</value>
-  </data>
-  <data name="&gt;&gt;ToolStripMenuItem4.Name" xml:space="preserve">
-    <value>ToolStripMenuItem4</value>
-  </data>
-  <data name="AlteDatensicherungImportierenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
-  </data>
-  <data name="lblHeadTitle.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleLeft</value>
-  </data>
-  <data name="picHome.Location" type="System.Drawing.Point, System.Drawing">
-    <value>22, 14</value>
-  </data>
-  <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>frmMain</value>
+  <data name="cmdCancel.Text" xml:space="preserve">
+    <value>&amp;Close</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1008,13 +677,13 @@ von Backup Service Home herunterzuladen.</value>
         gf8ApoD/AKR+/wCifP8Ay6P/AMyk/wDLo/8AyaH/AMef/wDFnf8Aw5z/AMKa/wDBmf8Av5j/AL+X/wC+
         l/8Av5f/AL+Y/wDAmf8Awpr/AMOc/wDGnv8AyKD/AMuj/wDLo/8AyKD/AMSd/wDAmP8AvJT/ALeQ/wCz
         jP8Arof/AKqD/wCmgP8AoXv/AJ54/wCbdf8Annj/AKF7/wCjff8ApX//AKeB/wCogv8AqYL/AKmC/wCp
-        gv8AqIL/AKeB/wCmgP8ApX//AKN9/wChe/8AAAAAAADc/QAAAAAAANz9AAAAAAAA3P0AAAAAAADc/QAA
-        AAAAANz9AAAAAAAA3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA
-        3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA3P0AAAAAAADc/QAA
-        AAAAANz9AAAAAAAA3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA
-        3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA3P0AAAAAAADc/QAA
-        AAAAANz9AAAAAAAA3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA
-        3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA3P0AAAAAAADc/QAAAAAAANz9AAAAAAAA3P0oAAAAIAAAAEAA
+        gv8AqIL/AKeB/wCmgP8ApX//AKN9/wChe/8AAAAAAAD8/QAAAAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAA
+        AAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA
+        /P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAA
+        AAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA
+        /P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAA
+        AAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA
+        /P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA/P0AAAAAAAD8/QAAAAAAAPz9AAAAAAAA/P0oAAAAIAAAAEAA
         AAABACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKB6/wCbdf8AoXv/AKeB/wCshv8Asov/AJJy/wCU
         df8Alnb/AJd4/wCigP8ApYP/AK6J/wC2kP8At5D/ALSN/wCwif8Aq4X/AKeB/wCkfv8AoXv/AJ13/wCb
         df8AnHb/AJx2/wCcdv8Am3X/AJ13/wChe/8ApX//AKqD/wCviP8AoXv/AJt1/wCgev8ApoD/AKuE/wCw
@@ -1148,25 +817,7 @@ von Backup Service Home herunterzuladen.</value>
         nEEAAJxBAACcQQAAnEEAAJxBAACcQQ==
 </value>
   </data>
-  <data name="AutomatischNachAktualisierungenSuchenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Automatisch nach Aktualisierungen suchen</value>
+  <data name="$this.Text" xml:space="preserve">
+    <value>File Properties</value>
   </data>
-  <data name="ToolStripMenuItem2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>419, 6</value>
-  </data>
-  <data name="&gt;&gt;ToolStripMenuItem1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <metadata name="$this.Language" type="System.Globalization.CultureInfo, System.Private.CoreLib, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
-    <value>en</value>
-  </metadata>
-  <metadata name="ttMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="cmsHelp.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>99, 17</value>
-  </metadata>
 </root>

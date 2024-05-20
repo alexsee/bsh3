@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!--
     Microsoft ResX Schema 
@@ -118,253 +118,41 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="lblFileName2.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Calibri, 9.75pt, style=Bold</value>
+  <data name="chkAllConflicts.Size" type="System.Drawing.Size, System.Drawing">
+    <value>212, 28</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="plReplace.BackgroundImageLayout" type="System.Windows.Forms.ImageLayout, System.Windows.Forms">
-    <value>None</value>
+  <data name="chkAllConflicts.Text" xml:space="preserve">
+    <value>Apply for all conflicts</value>
   </data>
-  <data name="lblFileDateChanged2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>138, 22</value>
+  <data name="cmdCancel.Text" xml:space="preserve">
+    <value>&amp;Cancel</value>
   </data>
-  <data name="&gt;&gt;plReplace.ZOrder" xml:space="preserve">
-    <value>1</value>
+  <data name="Label2.Text" xml:space="preserve">
+    <value>There is already a file with the same name at this location.</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Label1.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="&gt;&gt;cmdCancel.Parent" xml:space="preserve">
-    <value>Panel1</value>
-  </data>
-  <data name="lblOverride.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 12pt</value>
-  </data>
-  <data name="lblFileName1.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Calibri, 9.75pt, style=Bold</value>
-  </data>
-  <data name="&gt;&gt;Label5.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="lblOverride.Text" xml:space="preserve">
-    <value>Kopieren und ersetzen</value>
-  </data>
-  <data name="&gt;&gt;plCancel.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Datei überschreiben?</value>
-  </data>
-  <data name="lblFileName2.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="Panel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 445</value>
-  </data>
-  <data name="picIco1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>48, 48</value>
-  </data>
-  <data name="&gt;&gt;lblFileDateChanged2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="picIco2.TabIndex" type="System.Int32, mscorlib">
-    <value>92</value>
-  </data>
-  <data name="&gt;&gt;Label2.Name" xml:space="preserve">
-    <value>Label2</value>
-  </data>
-  <data name="&gt;&gt;plReplace.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="lblOverride2.Text" xml:space="preserve">
-    <value>Datei im Zielordner durch Datei in Sicherung ersetzen:
-</value>
-  </data>
-  <data name="&gt;&gt;lblOverride2.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="Label5.Text" xml:space="preserve">
-    <value>Es werden keine Dateien verändert.</value>
-  </data>
-  <data name="&gt;&gt;Label2.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;lblFileSize2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="lblText.Text" xml:space="preserve">
+    <value>Click on the file you want to keep.</value>
   </data>
   <data name="lblOverride.Size" type="System.Drawing.Size, System.Drawing">
-    <value>255, 32</value>
+    <value>205, 32</value>
   </data>
-  <data name="&gt;&gt;lblFileDateChanged1.Parent" xml:space="preserve">
-    <value>plReplace</value>
+  <data name="lblOverride.Text" xml:space="preserve">
+    <value>Copy and Replace</value>
   </data>
-  <data name="lblFileDateChanged2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>128, 114</value>
+  <data name="lblOverride2.Text" xml:space="preserve">
+    <value>Replace file in target folder with file from backup:</value>
   </data>
-  <data name="Label2.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Left, Right</value>
+  <data name="Label5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>208, 24</value>
   </data>
-  <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>frmFileOverrides</value>
+  <data name="Label5.Text" xml:space="preserve">
+    <value>No files will be changed</value>
   </data>
-  <data name="&gt;&gt;lblFileName1.Name" xml:space="preserve">
-    <value>lblFileName1</value>
+  <data name="Label6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>154, 32</value>
   </data>
-  <data name="&gt;&gt;lblOverride.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>660, 68</value>
-  </data>
-  <data name="cmdCancel.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;picIco1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblFileName2.Name" xml:space="preserve">
-    <value>lblFileName2</value>
-  </data>
-  <data name="Label6.Location" type="System.Drawing.Point, System.Drawing">
-    <value>63, 6</value>
-  </data>
-  <data name="&gt;&gt;lblOverride.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;plReplace.Name" xml:space="preserve">
-    <value>plReplace</value>
-  </data>
-  <data name="&gt;&gt;Label1.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="chkAllConflicts.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="Label2.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 12pt</value>
-  </data>
-  <data name="lblOverride.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;Label2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;Label6.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;lblFileDateChanged1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>144, 144</value>
-  </data>
-  <data name="&gt;&gt;lblFileSize1.Name" xml:space="preserve">
-    <value>lblFileSize1</value>
-  </data>
-  <data name="&gt;&gt;lblOverride2.Parent" xml:space="preserve">
-    <value>plReplace</value>
-  </data>
-  <data name="&gt;&gt;lblText.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        AAABAAIAEBAAAAEACABoBQAAJgAAABAQAAABACAAaAQAAI4FAAAoAAAAEAAAACAAAAABAAgAAAAAAAAA
-        AAAAAAAAAAAAAAABAAAAAAAAAgKaAK6y4gAyPsYAAhrOAAIm6gAuXv4dBjLuHSIyygAWQvYAAg66ADJO
-        5gACCqoAAi72AAIy+h3u8vodPm7+AAIm4gAGLu4AIlL+AAIGogAiPt4ABjLyHRJC/h3O1vYAAh7WAAIq
-        6gA6av4ADjbqABZG9gACFsYdKlr+HQIOsgAKOv4A/v7+AEp2/gACAp4Arr7+ADI+yh0CHtIdMmL+ADI6
-        vgAyUvIAAgquAAIu+gACMv4A7vL+HUJy/h0CJuYAAi7yAAIGpgAySuIAAiruAA427gAWRvodAhrKHQAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAA
-        AB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAA
-        AB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAB0AAAAdAAAAAP//////CR8LCxMj//////////8dAwQsLCwsEAAA//////8DBA0w
-        LCwsLCwsGAD///8YEQw2BxgsLAMxMRkYAP//GBYYFw4lGAMoDgExLAD/Lwg1FA4hDiUCDiEOMSwQIwQe
-        EhsyDiEODiEOKAMsLBMVJx4SGzIOISEOAgMsLCwLFRonHjQKLSEhDiUYLCwsCwwuGggpLSEtDiEOJRgs
-        LB8NJy4NLSEtCjIOIQ4HMAQJ/ywiICQtKTQbMg4XNg0d//8sBQ8gDQgeEhsUGAwEHf///yweIi4aJx4S
-        NRYGA///////LCwnLhonHggYGP//////////DQwwMwQv///////4H0Eg4Af4H8AD4AeAAcADgAGAAQAA
-        gAEAAAAAAAAAAAAAAAAAAAAAAAAAAIABAACAAYABwAOAAeAHwAP4H+AHKAAAABAAAAAgAAAAAQAgAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEbtgAA+4vwAMsv8ACqz/AAio/wAF
-        o/8AA5+/AAKcYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWxhAAFcTPABvP/wAo6f8AM///ADP//wAz
-        //8AM///ACTh/wAPt/8AAZrPAACZIAAAAAAAAAAAAAAAAAAd0hAAG83PACfo/wAx+/8ALfL/ADP//wAz
-        //8AM///ADP//wAz//8AM///AB7V/wABmu8AAJkgAAAAAAAAAAAAH9fPBS7s/wEv9f8AGcr/IDHI/wAe
-        1f8AM///ADP//wAazv8AB6b/AAen/wAp7P8AHtX/AAGazwAAAAAAI99gBivk/xBB/f8BH9X/z9T1/+/w
-        +/8wP8v/AB7V/wAc0P8wOL3/7/D6/6+w4f8AB6f/ADP//wAPt/8AApxgACblvxZD9v8VRPn/ID3f/+/x
-        /P//////7/D7/zA/y/8wPcb/7/D6///////v8Pr/AAem/wAz//8AJOH/AAOfvwAo6f8pWf//IVL//ww0
-        6v8wS+L/7/H8///////v8Pv/7/D7///////v8Pr/MDi9/wAazv8AM///ADP//wAFo/8HMvH/MmH//ylZ
-        //8hUv//DDTq/zBL4v/v8fz////////////v8Pv/MD3G/wAc0P8AM///ADP//wAz//8ACKj/BDHz/zpp
-        //8yYf//KVn//ww27/8wTOX/7/H9////////////7/D7/zA/y/8AHtX/ADP//wAz//8AM///AAqs/wAv
-        +P9BcP//Omn//xZE9/8wUvD/7/H9///////v8f3/7/H8///////v8Pv/MD/L/wAe1f8AM///ADP//wAM
-        sv8AMvy/MmD9/0Fw//8DM/n/7/L+///////v8f3/MEzl/zBL4v/v8fz//////+/w+/8gMcj/AC3y/wAo
-        6f8AD7i/ADP/YBNE/v9Jd///CTv//6+//v/v8v7/MFLw/ww27/8MNOr/MEvi/+/x/P/P1PX/ABnK/wAx
-        +/8AG8//ABG7YAAAAAAAM//PL1///z1s//8JO///AzP5/xZE9/8pWf//IVL//ww06v8gPd//AR/V/wEv
-        9f8AJ+j/ABXEzwAAAAAAAAAAADP/IAAz/+8qWv//SXf//0Fw//86af//MmH//ylZ//8hUv//FUT5/xBB
-        /f8GMO7/ABvN7wAazCAAAAAAAAAAAAAAAAAAM/8gADP/zxNE/v8yYP3/QXD//zpp//8yYf//KVn//xZD
-        9v8GK+T/AB/XzwAd0iAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM/9gADL8vwAv+P8ALfL/ACvu/wAo
-        6f8AJuW/ACPfYAAAAAAAAAAAAAAAAAAAAADwD///wAMfC4ABI/+AAf//AAD/HQAALCwAABAAAAD//wAA
-        AwQAACwsAAAsLAAA//+AAREMgAEYLMADMTHwDwRw
-</value>
-  </data>
-  <data name="&gt;&gt;Label1.Parent" xml:space="preserve">
-    <value>Panel1</value>
-  </data>
-  <data name="&gt;&gt;Label6.Parent" xml:space="preserve">
-    <value>plCancel</value>
-  </data>
-  <data name="&gt;&gt;chkAllConflicts.Name" xml:space="preserve">
-    <value>chkAllConflicts</value>
-  </data>
-  <data name="lblFileDateChanged1.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="picIco1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>69, 68</value>
-  </data>
-  <data name="&gt;&gt;lblFileDateChanged2.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="lblFileSize1.TabIndex" type="System.Int32, mscorlib">
-    <value>90</value>
-  </data>
-  <data name="lblFileSize2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>128, 93</value>
-  </data>
-  <data name="&gt;&gt;lblText.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="lblFileDateChanged1.TabIndex" type="System.Int32, mscorlib">
-    <value>91</value>
-  </data>
-  <data name="&gt;&gt;Label5.Parent" xml:space="preserve">
-    <value>plCancel</value>
-  </data>
-  <data name="&gt;&gt;Label6.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="plReplace.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Left, Right</value>
-  </data>
-  <data name="lblText.Location" type="System.Drawing.Point, System.Drawing">
-    <value>18, 100</value>
-  </data>
-  <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="lblFileName2.Text" xml:space="preserve">
-    <value>Dateiname.txt</value>
-  </data>
-  <data name="lblOverride2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>537, 28</value>
+  <data name="Label6.Text" xml:space="preserve">
+    <value>Do Not Copy</value>
   </data>
   <data name="plReplace.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -486,257 +274,17 @@
         BQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQB//Z
 </value>
   </data>
-  <data name="lblFileName1.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="lblFileSize2.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Calibri, 9pt</value>
-  </data>
-  <data name="&gt;&gt;lblFileName2.Parent" xml:space="preserve">
-    <value>plCancel</value>
-  </data>
-  <data name="Label6.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;chkAllConflicts.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="lblFileSize2.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="cmdCancel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
-  </data>
-  <data name="cmdCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>498, 14</value>
-  </data>
-  <data name="lblFileSize1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>61, 22</value>
-  </data>
-  <data name="Label5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>64, 44</value>
-  </data>
-  <data name="plReplace.Size" type="System.Drawing.Size, System.Drawing">
-    <value>615, 136</value>
-  </data>
-  <data name="lblFileSize1.Text" xml:space="preserve">
-    <value>Größe:</value>
-  </data>
-  <data name="lblFileSize2.TabIndex" type="System.Int32, mscorlib">
-    <value>94</value>
-  </data>
-  <data name="lblFileName2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>128, 69</value>
-  </data>
-  <data name="&gt;&gt;cmdCancel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;picIco1.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="Label1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>660, 2</value>
-  </data>
-  <data name="lblFileName1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>130, 24</value>
-  </data>
-  <data name="lblText.TabIndex" type="System.Int32, mscorlib">
-    <value>85</value>
-  </data>
-  <data name="chkAllConflicts.Size" type="System.Drawing.Size, System.Drawing">
-    <value>290, 28</value>
-  </data>
-  <data name="&gt;&gt;lblFileDateChanged2.Name" xml:space="preserve">
-    <value>lblFileDateChanged2</value>
-  </data>
-  <data name="Label1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Top</value>
-  </data>
-  <data name="&gt;&gt;Label2.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;Panel1.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="chkAllConflicts.Text" xml:space="preserve">
-    <value>Für alle Konflikte übernehmen</value>
-  </data>
-  <data name="lblFileName1.TabIndex" type="System.Int32, mscorlib">
-    <value>89</value>
-  </data>
-  <data name="lblFileSize1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>128, 90</value>
-  </data>
-  <data name="picIco2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>69, 69</value>
-  </data>
-  <data name="lblFileDateChanged1.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Calibri, 9pt</value>
-  </data>
-  <data name="lblFileSize2.Text" xml:space="preserve">
-    <value>Größe:</value>
-  </data>
-  <data name="&gt;&gt;Panel1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="lblText.Text" xml:space="preserve">
-    <value>Klicken Sie auf die Datei, die Sie behalten möchten.</value>
-  </data>
-  <data name="lblFileDateChanged1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>128, 111</value>
-  </data>
-  <data name="&gt;&gt;lblFileSize1.Parent" xml:space="preserve">
-    <value>plReplace</value>
-  </data>
-  <data name="&gt;&gt;lblOverride2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="lblText.Size" type="System.Drawing.Size, System.Drawing">
-    <value>621, 28</value>
-  </data>
-  <data name="lblFileName1.Text" xml:space="preserve">
-    <value>Dateiname.txt</value>
-  </data>
-  <data name="&gt;&gt;picIco2.Name" xml:space="preserve">
-    <value>picIco2</value>
-  </data>
-  <data name="&gt;&gt;picIco2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;Label6.Name" xml:space="preserve">
-    <value>Label6</value>
-  </data>
-  <data name="&gt;&gt;plReplace.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;lblFileDateChanged2.Parent" xml:space="preserve">
-    <value>plCancel</value>
-  </data>
-  <data name="&gt;&gt;cmdCancel.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Calibri, 9.75pt</value>
-  </data>
-  <data name="lblFileName2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>130, 24</value>
-  </data>
-  <data name="Panel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Bottom</value>
-  </data>
-  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
-    <value>CenterParent</value>
-  </data>
-  <data name="Label2.Text" xml:space="preserve">
-    <value>Es befindet sich bereits eine Datei desselben Namens an diesem Ort.</value>
-  </data>
-  <data name="cmdCancel.Text" xml:space="preserve">
-    <value>&amp;Abbrechen</value>
-  </data>
-  <data name="lblFileDateChanged2.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Calibri, 9pt</value>
-  </data>
-  <data name="picIco1.TabIndex" type="System.Int32, mscorlib">
-    <value>88</value>
-  </data>
-  <data name="lblFileDateChanged2.Text" xml:space="preserve">
-    <value>Änderungsdatum:</value>
-  </data>
-  <data name="plCancel.BackgroundImageLayout" type="System.Windows.Forms.ImageLayout, System.Windows.Forms">
-    <value>None</value>
-  </data>
-  <data name="cmdCancel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>140, 39</value>
-  </data>
-  <data name="&gt;&gt;lblFileDateChanged1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;Label5.Name" xml:space="preserve">
-    <value>Label5</value>
-  </data>
-  <data name="lblFileSize1.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="chkAllConflicts.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="&gt;&gt;Label5.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="lblFileDateChanged2.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="lblText.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Left, Right</value>
-  </data>
-  <data name="&gt;&gt;lblFileSize1.ZOrder" xml:space="preserve">
-    <value>1</value>
+  <data name="lblFileDateChanged1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>115, 22</value>
   </data>
   <data name="lblFileDateChanged1.Text" xml:space="preserve">
-    <value>Änderungsdatum:</value>
+    <value>Last Modified:</value>
   </data>
-  <data name="Label6.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 12pt</value>
+  <data name="lblFileSize1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>43, 22</value>
   </data>
-  <data name="&gt;&gt;lblFileName2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblFileDateChanged1.Name" xml:space="preserve">
-    <value>lblFileDateChanged1</value>
-  </data>
-  <data name="&gt;&gt;lblFileName2.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;picIco2.Parent" xml:space="preserve">
-    <value>plCancel</value>
-  </data>
-  <data name="lblFileDateChanged1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>138, 22</value>
-  </data>
-  <data name="&gt;&gt;chkAllConflicts.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="plReplace.TabIndex" type="System.Int32, mscorlib">
-    <value>90</value>
-  </data>
-  <data name="Label2.TabIndex" type="System.Int32, mscorlib">
-    <value>84</value>
-  </data>
-  <data name="lblFileName1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>128, 68</value>
-  </data>
-  <data name="lblOverride.TabIndex" type="System.Int32, mscorlib">
-    <value>86</value>
-  </data>
-  <data name="&gt;&gt;picIco1.Parent" xml:space="preserve">
-    <value>plReplace</value>
-  </data>
-  <data name="chkAllConflicts.Location" type="System.Drawing.Point, System.Drawing">
-    <value>22, 22</value>
-  </data>
-  <data name="&gt;&gt;Panel1.Name" xml:space="preserve">
-    <value>Panel1</value>
-  </data>
-  <data name="&gt;&gt;chkAllConflicts.Parent" xml:space="preserve">
-    <value>Panel1</value>
-  </data>
-  <data name="lblFileSize2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>61, 22</value>
-  </data>
-  <data name="Panel1.TabIndex" type="System.Int32, mscorlib">
-    <value>82</value>
-  </data>
-  <data name="lblFileDateChanged2.TabIndex" type="System.Int32, mscorlib">
-    <value>95</value>
-  </data>
-  <data name="&gt;&gt;lblFileSize1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;picIco2.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="cmdCancel.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 9.75pt</value>
+  <data name="lblFileSize1.Text" xml:space="preserve">
+    <value>Size:</value>
   </data>
   <data name="plCancel.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -858,127 +406,66 @@
         BQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQB//Z
 </value>
   </data>
-  <data name="&gt;&gt;lblFileName1.ZOrder" xml:space="preserve">
-    <value>2</value>
+  <data name="lblFileDateChanged2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>115, 22</value>
   </data>
-  <data name="&gt;&gt;plCancel.Name" xml:space="preserve">
-    <value>plCancel</value>
+  <data name="lblFileDateChanged2.Text" xml:space="preserve">
+    <value>Last Modified:</value>
   </data>
-  <data name="&gt;&gt;picIco1.Name" xml:space="preserve">
-    <value>picIco1</value>
+  <data name="lblFileSize2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>43, 22</value>
   </data>
-  <data name="&gt;&gt;lblText.ZOrder" xml:space="preserve">
-    <value>2</value>
+  <data name="lblFileSize2.Text" xml:space="preserve">
+    <value>Size:</value>
   </data>
-  <data name="&gt;&gt;lblText.Name" xml:space="preserve">
-    <value>lblText</value>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAIAEBAAAAEACABoBQAAJgAAABAQAAABACAAaAQAAI4FAAAoAAAAEAAAACAAAAABAAgAAAAAAAAA
+        AAAAAAAAAAAAAAABAAAAAAAAAgKaAK6y4gAyPsYAAhrOAAIm6gAuXv4dBjLuHSIyygAWQvYAAg66ADJO
+        5gACCqoAAi72AAIy+h3u8vodPm7+AAIm4gAGLu4AIlL+AAIGogAiPt4ABjLyHRJC/h3O1vYAAh7WAAIq
+        6gA6av4ADjbqABZG9gACFsYdKlr+HQIOsgAKOv4A/v7+AEp2/gACAp4Arr7+ADI+yh0CHtIdMmL+ADI6
+        vgAyUvIAAgquAAIu+gACMv4A7vL+HUJy/h0CJuYAAi7yAAIGpgAySuIAAiruAA427gAWRvodAhrKHQAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAA
+        AB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAA
+        AB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAB0AAAAdAAAAAP//////CR8LCxMj//////////8dAwQsLCwsEAAA//////8DBA0w
+        LCwsLCwsGAD///8YEQw2BxgsLAMxMRkYAP//GBYYFw4lGAMoDgExLAD/Lwg1FA4hDiUCDiEOMSwQIwQe
+        EhsyDiEODiEOKAMsLBMVJx4SGzIOISEOAgMsLCwLFRonHjQKLSEhDiUYLCwsCwwuGggpLSEtDiEOJRgs
+        LB8NJy4NLSEtCjIOIQ4HMAQJ/ywiICQtKTQbMg4XNg0d//8sBQ8gDQgeEhsUGAwEHf///yweIi4aJx4S
+        NRYGA///////LCwnLhonHggYGP//////////DQwwMwQv///////4H0Eg4Af4H8AD4AeAAcADgAGAAQAA
+        gAEAAAAAAAAAAAAAAAAAAAAAAAAAAIABAACAAYABwAOAAeAHwAP4H+AHKAAAABAAAAAgAAAAAQAgAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEbtgAA+4vwAMsv8ACqz/AAio/wAF
+        o/8AA5+/AAKcYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWxhAAFcTPABvP/wAo6f8AM///ADP//wAz
+        //8AM///ACTh/wAPt/8AAZrPAACZIAAAAAAAAAAAAAAAAAAd0hAAG83PACfo/wAx+/8ALfL/ADP//wAz
+        //8AM///ADP//wAz//8AM///AB7V/wABmu8AAJkgAAAAAAAAAAAAH9fPBS7s/wEv9f8AGcr/IDHI/wAe
+        1f8AM///ADP//wAazv8AB6b/AAen/wAp7P8AHtX/AAGazwAAAAAAI99gBivk/xBB/f8BH9X/z9T1/+/w
+        +/8wP8v/AB7V/wAc0P8wOL3/7/D6/6+w4f8AB6f/ADP//wAPt/8AApxgACblvxZD9v8VRPn/ID3f/+/x
+        /P//////7/D7/zA/y/8wPcb/7/D6///////v8Pr/AAem/wAz//8AJOH/AAOfvwAo6f8pWf//IVL//ww0
+        6v8wS+L/7/H8///////v8Pv/7/D7///////v8Pr/MDi9/wAazv8AM///ADP//wAFo/8HMvH/MmH//ylZ
+        //8hUv//DDTq/zBL4v/v8fz////////////v8Pv/MD3G/wAc0P8AM///ADP//wAz//8ACKj/BDHz/zpp
+        //8yYf//KVn//ww27/8wTOX/7/H9////////////7/D7/zA/y/8AHtX/ADP//wAz//8AM///AAqs/wAv
+        +P9BcP//Omn//xZE9/8wUvD/7/H9///////v8f3/7/H8///////v8Pv/MD/L/wAe1f8AM///ADP//wAM
+        sv8AMvy/MmD9/0Fw//8DM/n/7/L+///////v8f3/MEzl/zBL4v/v8fz//////+/w+/8gMcj/AC3y/wAo
+        6f8AD7i/ADP/YBNE/v9Jd///CTv//6+//v/v8v7/MFLw/ww27/8MNOr/MEvi/+/x/P/P1PX/ABnK/wAx
+        +/8AG8//ABG7YAAAAAAAM//PL1///z1s//8JO///AzP5/xZE9/8pWf//IVL//ww06v8gPd//AR/V/wEv
+        9f8AJ+j/ABXEzwAAAAAAAAAAADP/IAAz/+8qWv//SXf//0Fw//86af//MmH//ylZ//8hUv//FUT5/xBB
+        /f8GMO7/ABvN7wAazCAAAAAAAAAAAAAAAAAAM/8gADP/zxNE/v8yYP3/QXD//zpp//8yYf//KVn//xZD
+        9v8GK+T/AB/XzwAd0iAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM/9gADL8vwAv+P8ALfL/ACvu/wAo
+        6f8AJuW/ACPfYAAAAAAAAAAAAAAAAAAAAADwD///wAMfC4ABI/+AAf//AAD/HQAALCwAABAAAAD//wAA
+        AwQAACwsAAAsLAAA//+AAREMgAEYLMADMTHwDwRw
+</value>
   </data>
-  <data name="plCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>22, 274</value>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Overwrite File?</value>
   </data>
-  <data name="&gt;&gt;cmdCancel.Name" xml:space="preserve">
-    <value>cmdCancel</value>
-  </data>
-  <data name="&gt;&gt;lblFileSize2.Name" xml:space="preserve">
-    <value>lblFileSize2</value>
-  </data>
-  <data name="&gt;&gt;lblOverride2.Name" xml:space="preserve">
-    <value>lblOverride2</value>
-  </data>
-  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>660, 513</value>
-  </data>
-  <data name="Label5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>307, 24</value>
-  </data>
-  <data name="&gt;&gt;lblFileSize2.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;plCancel.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="Label5.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="lblOverride2.TabIndex" type="System.Int32, mscorlib">
-    <value>87</value>
-  </data>
-  <data name="plReplace.Location" type="System.Drawing.Point, System.Drawing">
-    <value>22, 132</value>
-  </data>
-  <data name="Label5.TabIndex" type="System.Int32, mscorlib">
-    <value>89</value>
-  </data>
-  <data name="lblFileName2.TabIndex" type="System.Int32, mscorlib">
-    <value>93</value>
-  </data>
-  <data name="Label6.TabIndex" type="System.Int32, mscorlib">
-    <value>88</value>
-  </data>
-  <data name="lblOverride.Location" type="System.Drawing.Point, System.Drawing">
-    <value>63, 6</value>
-  </data>
-  <data name="&gt;&gt;lblFileName1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblFileSize2.Parent" xml:space="preserve">
-    <value>plCancel</value>
-  </data>
-  <data name="Label2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>16, 20</value>
-  </data>
-  <data name="&gt;&gt;lblFileName1.Parent" xml:space="preserve">
-    <value>plReplace</value>
-  </data>
-  <data name="&gt;&gt;plCancel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Label6.Text" xml:space="preserve">
-    <value>Nicht kopieren</value>
-  </data>
-  <data name="picIco2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>48, 48</value>
-  </data>
-  <data name="Label1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="lblFileSize1.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Calibri, 9pt</value>
-  </data>
-  <data name="&gt;&gt;Label1.Name" xml:space="preserve">
-    <value>Label1</value>
-  </data>
-  <data name="&gt;&gt;Panel1.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="plCancel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>615, 147</value>
-  </data>
-  <data name="plCancel.TabIndex" type="System.Int32, mscorlib">
-    <value>91</value>
-  </data>
-  <data name="lblOverride2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>64, 42</value>
-  </data>
-  <data name="&gt;&gt;lblOverride.Name" xml:space="preserve">
-    <value>lblOverride</value>
-  </data>
-  <data name="&gt;&gt;Label1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Label2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>622, 70</value>
-  </data>
-  <data name="&gt;&gt;lblOverride.Parent" xml:space="preserve">
-    <value>plReplace</value>
-  </data>
-  <data name="Label6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>172, 32</value>
-  </data>
-  <metadata name="$this.Language" type="System.Globalization.CultureInfo, System.Private.CoreLib, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
-    <value>en</value>
-  </metadata>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
 </root>
