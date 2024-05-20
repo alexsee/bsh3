@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main
 {
@@ -149,7 +150,7 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(cmdBackupCancel, "cmdBackupCancel");
             cmdBackupCancel.Cursor = Cursors.Hand;
-            cmdBackupCancel.Image = Main.Properties.Resources.cancel_icon_48;
+            cmdBackupCancel.Image = Resources.cancel_icon_48;
             cmdBackupCancel.Name = "cmdBackupCancel";
             cmdBackupCancel.TabStop = false;
             cmdBackupCancel.Tag = "false";
@@ -242,7 +243,7 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(btnOnOff, "btnOnOff");
             btnOnOff.Cursor = Cursors.Hand;
-            btnOnOff.Image = Main.Properties.Resources.toggle_off_icon_48;
+            btnOnOff.Image = Resources.toggle_off_icon_48;
             btnOnOff.Name = "btnOnOff";
             btnOnOff.TabStop = false;
             btnOnOff.Tag = "OFF";
@@ -253,7 +254,7 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(cmdBackupNow, "cmdBackupNow");
             cmdBackupNow.Cursor = Cursors.Hand;
-            cmdBackupNow.Image = Main.Properties.Resources.backup_icon_48;
+            cmdBackupNow.Image = Resources.backup_icon_48;
             cmdBackupNow.Name = "cmdBackupNow";
             cmdBackupNow.TabStop = false;
             ttMain.SetToolTip(cmdBackupNow, resources.GetString("cmdBackupNow.ToolTip"));
@@ -266,7 +267,7 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(btnSettings, "btnSettings");
             btnSettings.Cursor = Cursors.Hand;
-            btnSettings.Image = Main.Properties.Resources.settings_icon_48;
+            btnSettings.Image = Resources.settings_icon_48;
             btnSettings.Name = "btnSettings";
             btnSettings.TabStop = false;
             ttMain.SetToolTip(btnSettings, resources.GetString("btnSettings.ToolTip"));
@@ -315,7 +316,7 @@ namespace Brightbits.BSH.Main
             // picDataType
             // 
             resources.ApplyResources(picDataType, "picDataType");
-            picDataType.Image = Main.Properties.Resources.status_ok;
+            picDataType.Image = Resources.status_ok;
             picDataType.Name = "picDataType";
             picDataType.TabStop = false;
             ttMain.SetToolTip(picDataType, resources.GetString("picDataType.ToolTip"));

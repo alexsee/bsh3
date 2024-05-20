@@ -19,6 +19,7 @@ using CommandLine;
 using Serilog;
 using System;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main;
@@ -41,6 +42,7 @@ static class Program
         Application.EnableVisualStyles();
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
         Application.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
+        Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("en");
 
         CheckSingleInstance();
 
