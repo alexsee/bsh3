@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main
 {
@@ -94,7 +95,7 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(PictureBox1, "PictureBox1");
             PictureBox1.BackColor = Color.Transparent;
-            PictureBox1.Image = Main.Properties.Resources.password_icon_48;
+            PictureBox1.Image = Resources.password_icon_48;
             PictureBox1.Name = "PictureBox1";
             PictureBox1.TabStop = false;
             // 
@@ -111,7 +112,7 @@ namespace Brightbits.BSH.Main
             // Panel2
             // 
             resources.ApplyResources(Panel2, "Panel2");
-            Panel2.BackgroundImage = Main.Properties.Resources.topPassword;
+            Panel2.BackgroundImage = Resources.topPassword;
             Panel2.Controls.Add(Label2);
             Panel2.Controls.Add(PictureBox1);
             Panel2.Name = "Panel2";

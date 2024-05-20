@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main
 {
@@ -49,7 +50,7 @@ namespace Brightbits.BSH.Main
             // PictureBox1
             // 
             resources.ApplyResources(PictureBox1, "PictureBox1");
-            PictureBox1.Image = Main.Properties.Resources.error_icon_48;
+            PictureBox1.Image = Resources.error_icon_48;
             PictureBox1.Name = "PictureBox1";
             PictureBox1.TabStop = false;
             // 
