@@ -42,113 +42,74 @@ namespace BSH.Main.Dialogs.SubDialogs
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmErrorInsufficientDiskSpace));
-            this.Panel1 = new System.Windows.Forms.Panel();
-            this.cmdOK = new System.Windows.Forms.Button();
-            this.Label1 = new System.Windows.Forms.Label();
-            this.Label2 = new System.Windows.Forms.Label();
-            this.PictureBox1 = new System.Windows.Forms.PictureBox();
-            this.Label4 = new System.Windows.Forms.Label();
-            this.Panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
-            this.SuspendLayout();
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(frmErrorInsufficientDiskSpace));
+            Panel1 = new System.Windows.Forms.Panel();
+            cmdOK = new System.Windows.Forms.Button();
+            Label1 = new System.Windows.Forms.Label();
+            Label2 = new System.Windows.Forms.Label();
+            PictureBox1 = new System.Windows.Forms.PictureBox();
+            Label4 = new System.Windows.Forms.Label();
+            Panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)PictureBox1).BeginInit();
+            SuspendLayout();
             // 
             // Panel1
             // 
-            this.Panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.Panel1.Controls.Add(this.cmdOK);
-            this.Panel1.Controls.Add(this.Label1);
-            this.Panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Panel1.Location = new System.Drawing.Point(0, 327);
-            this.Panel1.Margin = new System.Windows.Forms.Padding(4);
-            this.Panel1.Name = "Panel1";
-            this.Panel1.Size = new System.Drawing.Size(801, 68);
-            this.Panel1.TabIndex = 83;
+            resources.ApplyResources(Panel1, "Panel1");
+            Panel1.BackColor = System.Drawing.SystemColors.Control;
+            Panel1.Controls.Add(cmdOK);
+            Panel1.Controls.Add(Label1);
+            Panel1.Name = "Panel1";
             // 
             // cmdOK
             // 
-            this.cmdOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.cmdOK.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.cmdOK.Location = new System.Drawing.Point(636, 16);
-            this.cmdOK.Margin = new System.Windows.Forms.Padding(4);
-            this.cmdOK.Name = "cmdOK";
-            this.cmdOK.Size = new System.Drawing.Size(140, 39);
-            this.cmdOK.TabIndex = 0;
-            this.cmdOK.Text = "&OK";
-            this.cmdOK.UseVisualStyleBackColor = true;
+            resources.ApplyResources(cmdOK, "cmdOK");
+            cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+            cmdOK.Name = "cmdOK";
+            cmdOK.UseVisualStyleBackColor = true;
             // 
             // Label1
             // 
-            this.Label1.BackColor = System.Drawing.Color.DarkGray;
-            this.Label1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.Label1.Location = new System.Drawing.Point(0, 0);
-            this.Label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label1.Name = "Label1";
-            this.Label1.Size = new System.Drawing.Size(801, 2);
-            this.Label1.TabIndex = 5;
+            resources.ApplyResources(Label1, "Label1");
+            Label1.BackColor = System.Drawing.Color.DarkGray;
+            Label1.Name = "Label1";
             // 
             // Label2
             // 
-            this.Label2.AutoSize = true;
-            this.Label2.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.Label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))));
-            this.Label2.Location = new System.Drawing.Point(27, 27);
-            this.Label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label2.Name = "Label2";
-            this.Label2.Size = new System.Drawing.Size(564, 32);
-            this.Label2.TabIndex = 84;
-            this.Label2.Text = "Speicherplatz auf Sicherungsmedium unzureichend";
+            resources.ApplyResources(Label2, "Label2");
+            Label2.ForeColor = System.Drawing.Color.FromArgb(0, 51, 153);
+            Label2.Name = "Label2";
             // 
             // PictureBox1
             // 
-            this.PictureBox1.Image = global::BSH.Main.Properties.Resources.error_icon_48;
-            this.PictureBox1.Location = new System.Drawing.Point(33, 81);
-            this.PictureBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.PictureBox1.Name = "PictureBox1";
-            this.PictureBox1.Size = new System.Drawing.Size(48, 48);
-            this.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.PictureBox1.TabIndex = 85;
-            this.PictureBox1.TabStop = false;
+            resources.ApplyResources(PictureBox1, "PictureBox1");
+            PictureBox1.Image = Properties.Resources.error_icon_48;
+            PictureBox1.Name = "PictureBox1";
+            PictureBox1.TabStop = false;
             // 
             // Label4
             // 
-            this.Label4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.Label4.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.Label4.Location = new System.Drawing.Point(107, 81);
-            this.Label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label4.Name = "Label4";
-            this.Label4.Size = new System.Drawing.Size(669, 232);
-            this.Label4.TabIndex = 86;
-            this.Label4.Text = resources.GetString("Label4.Text");
+            resources.ApplyResources(Label4, "Label4");
+            Label4.Name = "Label4";
             // 
             // frmErrorInsufficientDiskSpace
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 28F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(801, 395);
-            this.Controls.Add(this.Label4);
-            this.Controls.Add(this.PictureBox1);
-            this.Controls.Add(this.Label2);
-            this.Controls.Add(this.Panel1);
-            this.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "frmErrorInsufficientDiskSpace";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Speicherplatz auf Sicherungsmedium unzureichend";
-            this.TopMost = true;
-            this.Panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            resources.ApplyResources(this, "$this");
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.White;
+            Controls.Add(Label4);
+            Controls.Add(PictureBox1);
+            Controls.Add(Label2);
+            Controls.Add(Panel1);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "frmErrorInsufficientDiskSpace";
+            TopMost = true;
+            Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)PictureBox1).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!--
     Microsoft ResX Schema 
@@ -117,95 +117,106 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="cmdOK.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Label1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdCancel.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Panel1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Label2.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Label3.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="txtTitle.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="txtDescription.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Label4.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="chkShutdownPC.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TabControl1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TabPage1.ToolTip" xml:space="preserve">
+    <value />
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>618, 105</value>
+  <data name="TabPage2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 37</value>
   </data>
-  <data name="&gt;&gt;pbarStatus.Parent" xml:space="preserve">
-    <value>$this</value>
+  <data name="TabPage2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>770, 365</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="lblStatus.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="TabPage2.ToolTip" xml:space="preserve">
+    <value />
   </data>
-  <data name="lblStatus.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="clstSources.Size" type="System.Drawing.Size, System.Drawing">
+    <value>762, 357</value>
   </data>
-  <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>frmShortStatus</value>
+  <data name="clstSources.ToolTip" xml:space="preserve">
+    <value />
   </data>
-  <data name="&gt;&gt;lblStatus.Name" xml:space="preserve">
-    <value>lblStatus</value>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAIAEBAAAAEACABoBQAAJgAAABAQAAABACAAaAQAAI4FAAAoAAAAEAAAACAAAAABAAgAAAAAAAAA
+        AAAAAAAAAAAAAAABAAAAAAAAAmoCAE7mggASqh4ALrpSAB6eNgByunIdOtJWHQKKAgA61m4ACnoWAO72
+        7gAyhjIALrZKAAJ6Ah1e9pIdNs5qAAKaAgAyylIASuJ6ADKiMgA60mIAVu6KHSauSh0uwlIADo4SAEbe
+        egASdhIAApICAELabgAuwkYdEn4SHUKaQgBG2moAKrpKAAJyAgAyvloAHqY6ACJ+Ih0CggIdZv6aABKa
+        EgBCokIAUuqCADK+VgAGigoA/v7+HUKSQh1CqkIAYvqSADrKXgA60moAWvKKACa2SgBG3m4dEqIaHQJu
+        AgAuulYAHqI6AD7WXgACjgIAPtZyAA6GFh3u+u4dAn4CAErmfgBC1mIAKrJGADLCWgAClgIAQtpyHTLK
+        Sh1CnkIARt5qACq+RgACdgIAIqY6ACKCIgAChgIdEp4SHUKmQgBS6oYAQpZCAEKuQgBi+pYAPspeAFry
+        jh0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAA
+        AB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAB0AAAAdAAAAAP//////AAAAAAAA//////////8AOwNFPAgyFgAA//////83QhIZ
+        SxoABDIPOTf///8iDAFARR4KCgAIMg8kIv//IlAqATEfLS03PAgyDwD/DTEVHBQhRy0tIisDIzI0DQ1V
+        NhNPKQUtLR9RLgsJMg0YDhstLS0tLS0tLS0tJSM/LDBELS0tLS0tLS0tLSVDJk1TAkQbGy8tLSY/DUo9
+        RU0HIFMwDiAvLS1NAUASGRcH/0QnUzA1Ui0tByoBQBI7//87OidTM04KCgdQKgFJO////xsGJ1NGTigd
+        FVARG///////RERIUzAOVToiRP//////////EBAQEBAQ///////4Hwn/4Af4H8AD4AeAAcADgAGAAQAA
+        gAEAAAAAAAAAAAAAAAAAAAAAAAAAAIABAACAAYABwAOAAeAHwAP4H+AHKAAAABAAAAAgAAAAAQAgAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaQBgAGgAvwBoAP8AaAD/AGgA/wBo
+        AP8AaAC/AGkAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABsACAAawDPEoce/y64Uf9A2XP/Ptdx/zvU
+        bv840Wv/Ja9I/w2DGv8AawDPAGwAIAAAAAAAAAAAAAAAAABwACAAbgDvKrBH/0jhe/9G33n/Iac7/xB3
+        EP8AagD/HZ03/zjRa/82z2n/HaI5/wBuAO8AcAAgAAAAAAAAAAAAcgDPLLRJ/03mgP9L5H7/Q9pz/xB+
+        EP/v9u//7/bv/wBqAP871G7/ONFr/zbPaf8dpDn/AHIAzwAAAAAAdQBgFZMi/1Lrhf9Q6YP/TeaA/zjK
+        X/9Am0D///////////8AbgD/Ptdx/zvUbv840Wv/Ns9p/w2KGv8AdQBgAHgAvzzKX/9V7oj/Q9ls/zvQ
+        Yv8rukj/QJ9A////////////AHIA/zC+Vv8uu1T/ML9Z/zjRa/8ltEj/AHgAvwB7AP9a843/EKIa/zCh
+        MP9ApkD/QKNA/3C4cP///////////0CYQP9AlUD/QJJA/zCGMP8LexT/ONFr/wB7AP8MjRL/XfaQ/wCU
+        AP//////////////////////////////////////////////////////IH0g/zC/Wf8AfgD/BooJ/2D5
+        k/8AlwD//////////////////////////////////////////////////////yCAIP8ywlv/AIIA/wCF
+        AP9i+5X/Eqsc/wCXAP8AlAD/AJAA/0CpQP///////////wCBAP8AfgD/AHkA/wB1AP8Nhhb/QNlz/wCF
+        AP8AiAC/Rdlo/2L7lf9g+ZP/XfaQ/0Tbav9ArED///////////8AhQD/TeaA/0vkfv9I4Xv/Rt95/y7C
+        Uf8AiAC/AIsAYBqoJv9l/pj/YvuV/2D5k/9G3m3/QK9A////////////AIkA/1Dpg/9N5oD/S+R+/0jh
+        e/8SoB7/AIsAYAAAAAAAjgDPQNVg/2X+mP9i+5X/WvOJ/xCeEP/v+O//7/jv/wCMAP9S64X/UOmD/03m
+        gP8qv0f/AI4AzwAAAAAAAAAAAJEAIACSAO850Fb/Zf6Y/2L7lf8xykr/EJ4Q/xCaEP8swEX/Ve6I/1Lr
+        hf8yyFH/AJIA7wCRACAAAAAAAAAAAAAAAAAAkwAgAJUAzxqwJv9F3Wj/YvuV/2D5k/9d9pD/WvON/zzU
+        X/8VrCL/AJUAzwCTACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlwBgAJgAvwCYAP8AmAD/AJgA/wCY
+        AP8AmAC/AJcAYAAAAAAAAAAAAAAAAAAAAADwD///wAMAAIABAP+AAf//AAD/AAAARTwAABYAAAD//wAA
+        N0IAAEsaAAAyDwAA//+AAQwBgAEeCsADCDLwDwRw
+</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Backup Service Home</value>
+  <data name="$this.ToolTip" xml:space="preserve">
+    <value />
   </data>
-  <data name="lblStatus.Text" xml:space="preserve">
-    <value>Bitte warten...</value>
-  </data>
-  <data name="pbarStatus.Location" type="System.Drawing.Point, System.Drawing">
-    <value>18, 60</value>
-  </data>
-  <data name="&gt;&gt;lblStatus.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;pbarStatus.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="pbarStatus.Size" type="System.Drawing.Size, System.Drawing">
-    <value>582, 27</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="lblStatus.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 0, 4, 0</value>
-  </data>
-  <data name="lblStatus.Size" type="System.Drawing.Size, System.Drawing">
-    <value>128, 28</value>
-  </data>
-  <data name="pbarStatus.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
-    <value>CenterScreen</value>
-  </data>
-  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
-  </data>
-  <data name="pbarStatus.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="lblStatus.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 9.75pt</value>
-  </data>
-  <data name="&gt;&gt;pbarStatus.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ProgressBar, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="pbarStatus.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Left, Right</value>
-  </data>
-  <data name="lblStatus.Location" type="System.Drawing.Point, System.Drawing">
-    <value>18, 21</value>
-  </data>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>144, 144</value>
-  </data>
-  <data name="&gt;&gt;pbarStatus.Name" xml:space="preserve">
-    <value>pbarStatus</value>
-  </data>
-  <data name="&gt;&gt;lblStatus.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblStatus.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <metadata name="$this.Language" type="System.Globalization.CultureInfo, System.Private.CoreLib, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
-    <value>en</value>
-  </metadata>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
 </root>
