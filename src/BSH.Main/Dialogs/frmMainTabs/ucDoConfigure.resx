@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
+  <!--
     Microsoft ResX Schema 
-    
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -117,108 +117,2556 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="ilImages.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <data name="ilImages.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="tbStep1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="cmdAdd.TabIndex" type="System.Int32, mscorlib">
+    <value>15</value>
+  </data>
+  <data name="TabPage5.Text" xml:space="preserve">
+    <value>Manueller Pfad</value>
+  </data>
+  <data name="Label8.Location" type="System.Drawing.Point, System.Drawing">
+    <value>746, 36</value>
+  </data>
+  <data name="lvBackups.Location" type="System.Drawing.Point, System.Drawing">
+    <value>57, 64</value>
+  </data>
+  <data name="ProgressBar1.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Label15.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tcStep5.TabIndex" type="System.Int32, mscorlib">
+    <value>17</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Label19.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;Label4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tbStep3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Panel4.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="tcStep5.Location" type="System.Drawing.Point, System.Drawing">
+    <value>57, 62</value>
+  </data>
+  <data name="Panel2.TabIndex" type="System.Int32, mscorlib">
+    <value>28</value>
+  </data>
+  <data name="Label2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>24, 36</value>
+  </data>
+  <data name="cmdConfigure.Location" type="System.Drawing.Point, System.Drawing">
+    <value>165, 1</value>
+  </data>
+  <data name="&gt;&gt;cmdNext.Name" xml:space="preserve">
+    <value>cmdNext</value>
+  </data>
+  <data name="cmdAdd.Location" type="System.Drawing.Point, System.Drawing">
+    <value>831, 62</value>
+  </data>
+  <data name="Panel2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 471</value>
+  </data>
+  <data name="&gt;&gt;Label13.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="cboFtpEncoding2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>196, 148</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPassword.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tcSource.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="tbStep7.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdNext.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;Label19.Name" xml:space="preserve">
+    <value>Label19</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUsername.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdAdd.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer.ZOrder" xml:space="preserve">
+    <value>12</value>
+  </data>
+  <data name="Label4.Location" type="System.Drawing.Point, System.Drawing">
+    <value>24, 75</value>
+  </data>
+  <data name="tbStep2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="&gt;&gt;TableLayoutPanel1.Parent" xml:space="preserve">
+    <value>tbStep0</value>
+  </data>
+  <data name="&gt;&gt;tbStep5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtUNCPassword.Size" type="System.Drawing.Size, System.Drawing">
+    <value>304, 31</value>
+  </data>
+  <data name="cmdRefresh2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader3.Name" xml:space="preserve">
+    <value>ColumnHeader3</value>
+  </data>
+  <data name="Label8.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;txtPath.Name" xml:space="preserve">
+    <value>txtPath</value>
+  </data>
+  <data name="cmdBack.Size" type="System.Drawing.Size, System.Drawing">
+    <value>122, 48</value>
+  </data>
+  <data name="Label18.Text" xml:space="preserve">
+    <value>Encoding:</value>
+  </data>
+  <data name="lvBackups.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="tbProgress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1086, 406</value>
+  </data>
+  <data name="tbProgress.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="TableLayoutPanel1.ColumnCount" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="lblStatus.Size" type="System.Drawing.Size, System.Drawing">
+    <value>972, 22</value>
+  </data>
+  <data name="&gt;&gt;Panel2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ColumnHeader3.Width" type="System.Int32, mscorlib">
+    <value>450</value>
+  </data>
+  <data name="&gt;&gt;ProgressBar1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ProgressBar, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tbControl.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="TabPage4.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="lvSourceDirs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>925, 282</value>
+  </data>
+  <data name="&gt;&gt;ProgressBar1.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;txtUNCUsername.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="Label10.Location" type="System.Drawing.Point, System.Drawing">
+    <value>512, 75</value>
+  </data>
+  <data name="TabPage4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>919, 284</value>
+  </data>
+  <data name="Panel4.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="txtFTPPort2.TabIndex" type="System.Int32, mscorlib">
+    <value>101</value>
+  </data>
+  <data name="&gt;&gt;lblStatus.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tbStep3.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="txtFTPUser2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>196, 70</value>
+  </data>
+  <data name="Panel1.TabIndex" type="System.Int32, mscorlib">
+    <value>27</value>
+  </data>
+  <data name="&gt;&gt;Label3.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort2.Name" xml:space="preserve">
+    <value>txtFTPPort2</value>
+  </data>
+  <data name="txtFTPUsername.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;tbStep1.Name" xml:space="preserve">
+    <value>tbStep1</value>
+  </data>
+  <data name="txtUNCUsername.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;lvBackupDrive.Parent" xml:space="preserve">
+    <value>TabPage1</value>
+  </data>
+  <data name="&gt;&gt;tbProgress.Name" xml:space="preserve">
+    <value>tbProgress</value>
+  </data>
+  <data name="lvSourceDirs.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;lblStatus.Name" xml:space="preserve">
+    <value>lblStatus</value>
+  </data>
+  <data name="&gt;&gt;Label11.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="chkFtpEncryption2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 197</value>
+  </data>
+  <data name="&gt;&gt;cmdDelete.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdAdd.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="TabPage5.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label14.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="Label13.Text" xml:space="preserve">
+    <value>Sie möchten Backup Service Home 3 für diesen Computer einrichten und Sicherungen durchführen , dann klicken Sie auf "Konfigurieren".</value>
+  </data>
+  <data name="Label10.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="Label3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>483, 42</value>
+  </data>
+  <data name="&gt;&gt;cmdBack.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdBack.TabIndex" type="System.Int32, mscorlib">
+    <value>17</value>
+  </data>
+  <data name="&gt;&gt;Label6.Name" xml:space="preserve">
+    <value>Label6</value>
+  </data>
+  <data name="Panel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1056, 126</value>
+  </data>
+  <data name="&gt;&gt;Label14.Name" xml:space="preserve">
+    <value>Label14</value>
+  </data>
+  <data name="Label17.Text" xml:space="preserve">
+    <value>Benutzername:</value>
+  </data>
+  <data name="tbStep6.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lvBackupMedia.Parent" xml:space="preserve">
+    <value>TabPage3</value>
+  </data>
+  <data name="Label12.Text" xml:space="preserve">
+    <value>Server:</value>
+  </data>
+  <data name="ColumnHeader1.Width" type="System.Int32, mscorlib">
+    <value>450</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPass2.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;TabPage1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cmdRefresh2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>753, 9</value>
+  </data>
+  <data name="Label2.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="TabPage3.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="txtFTPServer.TabIndex" type="System.Int32, mscorlib">
+    <value>93</value>
+  </data>
+  <data name="cmdConfigure.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="&gt;&gt;cmdNext.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="rdFullAutomated.CheckAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>TopLeft</value>
+  </data>
+  <data name="cboFtpEncoding2.Items" xml:space="preserve">
+    <value>ISO-8859-1</value>
+  </data>
+  <data name="&gt;&gt;Panel4.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="Label13.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="txtFTPServer.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label12.TabIndex" type="System.Int32, mscorlib">
+    <value>92</value>
+  </data>
+  <data name="tbStep2.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;Label8.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;tbStep5.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="Label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>191, 25</value>
+  </data>
+  <data name="&gt;&gt;TabPage5.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPassword.Parent" xml:space="preserve">
+    <value>TabPage6</value>
+  </data>
+  <data name="txtFTPPath.Size" type="System.Drawing.Size, System.Drawing">
+    <value>676, 31</value>
+  </data>
+  <data name="Label18.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="cmdNext.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="Label9.TabIndex" type="System.Int32, mscorlib">
+    <value>98</value>
+  </data>
+  <data name="TabPage2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUsername.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="TableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>982, 322</value>
+  </data>
+  <data name="cmdRefresh.Location" type="System.Drawing.Point, System.Drawing">
+    <value>742, 9</value>
+  </data>
+  <data name="&gt;&gt;TabPage2.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="txtPath.Location" type="System.Drawing.Point, System.Drawing">
+    <value>30, 32</value>
+  </data>
+  <data name="&gt;&gt;Label18.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="tbProgress.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;rdManualMode.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblDescription.Size" type="System.Drawing.Size, System.Drawing">
+    <value>932, 58</value>
+  </data>
+  <data name="&gt;&gt;TabPage6.Name" xml:space="preserve">
+    <value>TabPage6</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding2.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;Label1.Name" xml:space="preserve">
+    <value>Label1</value>
+  </data>
+  <data name="Label19.Text" xml:space="preserve">
+    <value>Encoding:</value>
+  </data>
+  <data name="&gt;&gt;Label10.Name" xml:space="preserve">
+    <value>Label10</value>
+  </data>
+  <data name="txtFTPPath2.TabIndex" type="System.Int32, mscorlib">
+    <value>99</value>
+  </data>
+  <data name="&gt;&gt;txtPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdDelete.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 8.25pt</value>
+  </data>
+  <data name="&gt;&gt;Label16.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdFTPCheck.Size" type="System.Drawing.Size, System.Drawing">
+    <value>122, 34</value>
+  </data>
+  <data name="TabPage3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;TableLayoutPanel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="tbStep1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="TabPage6.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label8.Name" xml:space="preserve">
+    <value>Label8</value>
+  </data>
+  <data name="cmdRefresh.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label4.Text" xml:space="preserve">
+    <value>Benutzername:</value>
+  </data>
+  <data name="Label17.TabIndex" type="System.Int32, mscorlib">
+    <value>98</value>
+  </data>
+  <data name="&gt;&gt;Label1.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="ColumnHeader4.Width" type="System.Int32, mscorlib">
+    <value>579</value>
+  </data>
+  <data name="TableLayoutPanel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="txtFTPPort2.Text" xml:space="preserve">
+    <value>21</value>
+  </data>
+  <data name="Label11.Size" type="System.Drawing.Size, System.Drawing">
+    <value>128, 25</value>
+  </data>
+  <data name="&gt;&gt;Panel4.Name" xml:space="preserve">
+    <value>Panel4</value>
+  </data>
+  <data name="&gt;&gt;tbStep6.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader4.Name" xml:space="preserve">
+    <value>ColumnHeader4</value>
+  </data>
+  <data name="Label16.Size" type="System.Drawing.Size, System.Drawing">
+    <value>91, 25</value>
+  </data>
+  <data name="txtFTPServer2.TabIndex" type="System.Int32, mscorlib">
+    <value>93</value>
+  </data>
+  <data name="cmdAdd.Text" xml:space="preserve">
+    <value>&amp;Hinzufügen</value>
+  </data>
+  <data name="cmdDelete.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption2.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="txtFTPPort.Text" xml:space="preserve">
+    <value>21</value>
+  </data>
+  <data name="txtFTPUsername.Location" type="System.Drawing.Point, System.Drawing">
+    <value>194, 70</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer.Name" xml:space="preserve">
+    <value>txtFTPServer</value>
+  </data>
+  <data name="&gt;&gt;cmdConfigure.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUser2.Name" xml:space="preserve">
+    <value>txtFTPUser2</value>
+  </data>
+  <data name="&gt;&gt;rdManualMode.Parent" xml:space="preserve">
+    <value>tbStep3</value>
+  </data>
+  <data name="&gt;&gt;TableLayoutPanel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;cmdRefresh2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="txtFTPPassword.TabIndex" type="System.Int32, mscorlib">
+    <value>97</value>
+  </data>
+  <data name="rdManualMode.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPass2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label7.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="TabPage1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="cmdBack.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="cmdImport.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="cmdFTPCheck.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label13.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="Label2.Text" xml:space="preserve">
+    <value>Server:</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPath.Name" xml:space="preserve">
+    <value>txtUNCPath</value>
+  </data>
+  <data name="lvBackupDrive.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 9</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblDescription.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="lvBackupMedia.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="TabPage5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>919, 284</value>
+  </data>
+  <data name="Label16.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cmdNext.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;Label9.Name" xml:space="preserve">
+    <value>Label9</value>
+  </data>
+  <data name="rdManualMode.Text" xml:space="preserve">
+    <value>Detailierte Einstellungen jetzt vornehmen</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPassword.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="Label16.TabIndex" type="System.Int32, mscorlib">
+    <value>100</value>
+  </data>
+  <data name="tcSource.Location" type="System.Drawing.Point, System.Drawing">
+    <value>57, 62</value>
+  </data>
+  <data name="&gt;&gt;TabPage3.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cmdChange.Text" xml:space="preserve">
+    <value>&amp;Ändern</value>
+  </data>
+  <data name="Label13.Size" type="System.Drawing.Size, System.Drawing">
+    <value>483, 222</value>
+  </data>
+  <data name="&gt;&gt;Label10.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Panel3.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="cboFtpEncoding.Location" type="System.Drawing.Point, System.Drawing">
+    <value>194, 148</value>
+  </data>
+  <data name="lvSourceDirs.Location" type="System.Drawing.Point, System.Drawing">
+    <value>57, 62</value>
+  </data>
+  <data name="TabPage6.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="rdManualMode.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="cmdDelete.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;lblTitle.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label18.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="cmdChange.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdBack.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;cmdRefresh.Name" xml:space="preserve">
+    <value>cmdRefresh</value>
+  </data>
+  <data name="&gt;&gt;TabPage3.Parent" xml:space="preserve">
+    <value>tcStep5</value>
+  </data>
+  <data name="&gt;&gt;cmdRefresh2.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cboFtpEncoding.Items" xml:space="preserve">
+    <value>ISO-8859-1</value>
+  </data>
+  <data name="cmdNext.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="tbStep0.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1086, 406</value>
+  </data>
+  <data name="txtPath.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;cmdFTPCheck.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPassword.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtFTPPassword.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label17.Size" type="System.Drawing.Size, System.Drawing">
+    <value>128, 25</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPassword.Name" xml:space="preserve">
+    <value>txtUNCPassword</value>
+  </data>
+  <data name="txtFTPServer2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>546, 31</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader2.Name" xml:space="preserve">
+    <value>ColumnHeader2</value>
+  </data>
+  <data name="Label5.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtUNCPassword.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label15.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;Panel3.Name" xml:space="preserve">
+    <value>Panel3</value>
+  </data>
+  <data name="&gt;&gt;lvBackups.Name" xml:space="preserve">
+    <value>lvBackups</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Label12.Name" xml:space="preserve">
+    <value>Label12</value>
+  </data>
+  <data name="cmdChange.Location" type="System.Drawing.Point, System.Drawing">
+    <value>870, 354</value>
+  </data>
+  <data name="Panel3.TabIndex" type="System.Int32, mscorlib">
+    <value>26</value>
+  </data>
+  <data name="&gt;&gt;Label5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdBrowse.Text" xml:space="preserve">
+    <value>&amp;Durchsuchen</value>
+  </data>
+  <data name="Label14.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 42</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath.Name" xml:space="preserve">
+    <value>txtFTPPath</value>
+  </data>
+  <data name="&gt;&gt;TabPage4.Name" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="tbStep5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1086, 406</value>
+  </data>
+  <data name="&gt;&gt;lvSourceFolders.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListView, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdConfigure.TabIndex" type="System.Int32, mscorlib">
+    <value>25</value>
+  </data>
+  <data name="&gt;&gt;cmdDelete.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Label2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdDelete.Parent" xml:space="preserve">
+    <value>tbStep1</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption2.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="Label9.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cmdRefresh.Parent" xml:space="preserve">
+    <value>TabPage1</value>
+  </data>
+  <data name="TabPage4.Text" xml:space="preserve">
+    <value>FTP-Server</value>
+  </data>
+  <data name="&gt;&gt;lvSourceFolders.Name" xml:space="preserve">
+    <value>lvSourceFolders</value>
+  </data>
+  <data name="cmdRefresh.Text" xml:space="preserve">
+    <value>&amp;Aktualisieren</value>
+  </data>
+  <data name="&gt;&gt;Label6.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="lblTitle.Location" type="System.Drawing.Point, System.Drawing">
+    <value>57, 21</value>
+  </data>
+  <data name="tbStep0.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="Panel2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtUNCUsername.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;rdManualMode.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Label16.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="TabPage5.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label15.Name" xml:space="preserve">
+    <value>Label15</value>
+  </data>
+  <data name="&gt;&gt;Panel1.Name" xml:space="preserve">
+    <value>Panel1</value>
+  </data>
+  <data name="&gt;&gt;TabPage3.Name" xml:space="preserve">
+    <value>TabPage3</value>
+  </data>
+  <data name="cmdBrowse.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label5.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="&gt;&gt;TabPage2.Parent" xml:space="preserve">
+    <value>tcSource</value>
+  </data>
+  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label5.Name" xml:space="preserve">
+    <value>Label5</value>
+  </data>
+  <data name="&gt;&gt;txtPath.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="lblTitle.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 12pt</value>
+  </data>
+  <data name="lblTitle.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblDescription.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>908, 284</value>
+  </data>
+  <data name="&gt;&gt;Label4.ZOrder" xml:space="preserve">
+    <value>11</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader6.Name" xml:space="preserve">
+    <value>ColumnHeader6</value>
+  </data>
+  <data name="cmdImport.Location" type="System.Drawing.Point, System.Drawing">
+    <value>162, 1</value>
+  </data>
+  <data name="tbStep3.Text" xml:space="preserve">
+    <value>Step3</value>
+  </data>
+  <data name="&gt;&gt;cmdRefresh.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rdManualMode.Size" type="System.Drawing.Size, System.Drawing">
+    <value>358, 29</value>
+  </data>
+  <data name="Label11.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cmdChange.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Label15.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="lblStatus.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="lblDescription.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="Label17.Location" type="System.Drawing.Point, System.Drawing">
+    <value>28, 118</value>
+  </data>
+  <data name="chkFtpEncryption.Size" type="System.Drawing.Size, System.Drawing">
+    <value>411, 40</value>
+  </data>
+  <data name="&gt;&gt;Label7.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;lvBackupMedia.Name" xml:space="preserve">
+    <value>lvBackupMedia</value>
+  </data>
+  <data name="txtFTPPass2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>256, 31</value>
+  </data>
+  <data name="chkFtpEncryption.Location" type="System.Drawing.Point, System.Drawing">
+    <value>29, 199</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPassword.Name" xml:space="preserve">
+    <value>txtFTPPassword</value>
+  </data>
+  <data name="tcSource.TabIndex" type="System.Int32, mscorlib">
+    <value>16</value>
+  </data>
+  <data name="Label6.TabIndex" type="System.Int32, mscorlib">
+    <value>100</value>
+  </data>
+  <data name="lvBackupMedia.TabIndex" type="System.Int32, mscorlib">
+    <value>14</value>
+  </data>
+  <data name="tbStep7.Text" xml:space="preserve">
+    <value>Step7</value>
+  </data>
+  <data name="&gt;&gt;cmdConfigure.Name" xml:space="preserve">
+    <value>cmdConfigure</value>
+  </data>
+  <data name="&gt;&gt;cmdImport.Name" xml:space="preserve">
+    <value>cmdImport</value>
+  </data>
+  <data name="txtFTPServer2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="rdFullAutomated.Size" type="System.Drawing.Size, System.Drawing">
+    <value>852, 79</value>
+  </data>
+  <data name="cboFtpEncoding2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>304, 33</value>
+  </data>
+  <data name="Label11.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="TabPage1.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="txtUNCPassword.Location" type="System.Drawing.Point, System.Drawing">
+    <value>198, 158</value>
+  </data>
+  <data name="cmdImport.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 10pt</value>
+  </data>
+  <data name="&gt;&gt;Panel4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Panel4.TabIndex" type="System.Int32, mscorlib">
+    <value>27</value>
+  </data>
+  <data name="&gt;&gt;Label16.Name" xml:space="preserve">
+    <value>Label16</value>
+  </data>
+  <data name="Label2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="Panel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdBack.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="tbStep6.Text" xml:space="preserve">
+    <value>Step6</value>
+  </data>
+  <data name="TabPage4.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="tbStep5.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="tbStep6.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;tbStep3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Panel3.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="lblStatus.Location" type="System.Drawing.Point, System.Drawing">
+    <value>33, 218</value>
+  </data>
+  <data name="&gt;&gt;cmdBrowse.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tbStep2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tbStep1.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;rdManualMode.Name" xml:space="preserve">
+    <value>rdManualMode</value>
+  </data>
+  <data name="txtUNCPassword.TabIndex" type="System.Int32, mscorlib">
+    <value>101</value>
+  </data>
+  <data name="&gt;&gt;Label16.Parent" xml:space="preserve">
+    <value>TabPage6</value>
+  </data>
+  <data name="Panel4.Location" type="System.Drawing.Point, System.Drawing">
+    <value>495, 268</value>
+  </data>
+  <data name="&gt;&gt;Label12.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>FTP-Server</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption.Name" xml:space="preserve">
+    <value>chkFtpEncryption</value>
+  </data>
+  <data name="Label10.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Label10.Text" xml:space="preserve">
+    <value>Kennwort:</value>
+  </data>
+  <data name="Panel4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>483, 50</value>
+  </data>
+  <data name="txtFTPPort2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>806, 32</value>
+  </data>
+  <data name="Label14.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="tbStep5.Text" xml:space="preserve">
+    <value>Step5</value>
+  </data>
+  <data name="cboFtpEncoding.Size" type="System.Drawing.Size, System.Drawing">
+    <value>304, 33</value>
+  </data>
+  <data name="Label17.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lvSourceDirs.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListView, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label15.Text" xml:space="preserve">
+    <value>Erste Einrichtung</value>
+  </data>
+  <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9pt</value>
+  </data>
+  <data name="&gt;&gt;TabPage3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label5.Text" xml:space="preserve">
+    <value>Kennwort:</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort2.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;tcSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;rdFullAutomated.Name" xml:space="preserve">
+    <value>rdFullAutomated</value>
+  </data>
+  <data name="Label8.TabIndex" type="System.Int32, mscorlib">
+    <value>100</value>
+  </data>
+  <data name="Label6.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;Label18.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="&gt;&gt;txtUNCUsername.Parent" xml:space="preserve">
+    <value>TabPage6</value>
+  </data>
+  <data name="rdFullAutomated.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtFTPPort.TabIndex" type="System.Int32, mscorlib">
+    <value>101</value>
+  </data>
+  <data name="rdManualMode.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="tbStep1.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Label7.Location" type="System.Drawing.Point, System.Drawing">
+    <value>24, 114</value>
+  </data>
+  <data name="&gt;&gt;Panel3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdChange.Size" type="System.Drawing.Size, System.Drawing">
+    <value>114, 39</value>
+  </data>
+  <data name="&gt;&gt;txtUNCUsername.Name" xml:space="preserve">
+    <value>txtUNCUsername</value>
+  </data>
+  <data name="Label19.Size" type="System.Drawing.Size, System.Drawing">
+    <value>90, 25</value>
+  </data>
+  <data name="Label7.Text" xml:space="preserve">
+    <value>Verzeichnis:</value>
+  </data>
+  <data name="&gt;&gt;Label9.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Label3.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;cmdConfigure.Parent" xml:space="preserve">
+    <value>Panel4</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdChange.TabIndex" type="System.Int32, mscorlib">
+    <value>19</value>
+  </data>
+  <data name="chkFtpEncryption2.Text" xml:space="preserve">
+    <value>Unverschlüsselte Verbindung erzwingen</value>
+  </data>
+  <data name="txtFTPPort.Size" type="System.Drawing.Size, System.Drawing">
+    <value>67, 31</value>
+  </data>
+  <data name="&gt;&gt;tbControl.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="cmdBrowse.Location" type="System.Drawing.Point, System.Drawing">
+    <value>712, 75</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPass2.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;lvSourceDirs.Parent" xml:space="preserve">
+    <value>tbStep7</value>
+  </data>
+  <data name="tbStep1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="chkFtpEncryption.Text" xml:space="preserve">
+    <value>Unverschlüsselte Verbindung erzwingen</value>
+  </data>
+  <data name="Panel3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="rdFullAutomated.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUsername.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="&gt;&gt;lvBackupDrive.Name" xml:space="preserve">
+    <value>lvBackupDrive</value>
+  </data>
+  <data name="cmdRefresh2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>153, 39</value>
+  </data>
+  <data name="tbStep2.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="tbControl.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1094, 444</value>
+  </data>
+  <data name="TableLayoutPanel1.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="Label3" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="Label14" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="Label13" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="Label15" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="Panel3" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="Panel4" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,50,Percent,50" /&gt;&lt;Rows Styles="Percent,15,97938,Percent,84,02062,Absolute,57" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="&gt;&gt;TabPage1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage2.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="txtFTPUser2.TabIndex" type="System.Int32, mscorlib">
+    <value>95</value>
+  </data>
+  <data name="&gt;&gt;TabPage5.Parent" xml:space="preserve">
+    <value>tcStep5</value>
+  </data>
+  <data name="cmdConfigure.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;TableLayoutPanel1.Name" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;tcSource.Parent" xml:space="preserve">
+    <value>tbStep2</value>
+  </data>
+  <data name="Label17.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="tbStep6.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="ColumnHeader6.Text" xml:space="preserve">
+    <value>Alter Speicherort</value>
+  </data>
+  <data name="&gt;&gt;tbStep5.Name" xml:space="preserve">
+    <value>tbStep5</value>
+  </data>
+  <data name="&gt;&gt;Label10.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUsername.Name" xml:space="preserve">
+    <value>txtFTPUsername</value>
+  </data>
+  <data name="&gt;&gt;TabPage2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lvSourceFolders.Size" type="System.Drawing.Size, System.Drawing">
+    <value>763, 330</value>
+  </data>
+  <data name="Label3.TabIndex" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="cmdConfigure.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 10pt</value>
+  </data>
+  <data name="rdManualMode.Location" type="System.Drawing.Point, System.Drawing">
+    <value>57, 198</value>
+  </data>
+  <data name="lblDescription.TabIndex" type="System.Int32, mscorlib">
+    <value>12</value>
+  </data>
+  <data name="rdFullAutomated.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="Label14.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;tbControl.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;Label4.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="txtFTPPath.Location" type="System.Drawing.Point, System.Drawing">
+    <value>194, 110</value>
+  </data>
+  <data name="Label5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>91, 25</value>
+  </data>
+  <data name="Label4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>128, 25</value>
+  </data>
+  <data name="TableLayoutPanel1.RowCount" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="cmdImport.Size" type="System.Drawing.Size, System.Drawing">
+    <value>153, 48</value>
+  </data>
+  <data name="&gt;&gt;cmdAdd.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="Label12.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 25</value>
+  </data>
+  <data name="&gt;&gt;Label17.Parent" xml:space="preserve">
+    <value>TabPage6</value>
+  </data>
+  <data name="&gt;&gt;tbStep2.Name" xml:space="preserve">
+    <value>tbStep2</value>
+  </data>
+  <data name="&gt;&gt;lvBackups.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="TabPage4.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label14.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TabPage6.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="ColumnHeader5.Text" xml:space="preserve">
+    <value>Neuer Speicherort</value>
+  </data>
+  <data name="&gt;&gt;Label11.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="&gt;&gt;tbStep2.Parent" xml:space="preserve">
+    <value>tbControl</value>
+  </data>
+  <data name="Label15.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="cmdAdd.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 8.25pt</value>
+  </data>
+  <data name="&gt;&gt;lvSourceFolders.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="Label1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>28, 28</value>
+  </data>
+  <data name="txtUNCUsername.TabIndex" type="System.Int32, mscorlib">
+    <value>99</value>
+  </data>
+  <data name="cmdBack.Location" type="System.Drawing.Point, System.Drawing">
+    <value>732, 495</value>
+  </data>
+  <data name="cmdBrowse.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="Label15.TabIndex" type="System.Int32, mscorlib">
+    <value>23</value>
+  </data>
+  <data name="cmdImport.TabIndex" type="System.Int32, mscorlib">
+    <value>18</value>
+  </data>
+  <data name="lvBackupMedia.Groups2" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
-        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
-        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
-        ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAADE
-        FAAAAk1TRnQBSQFMAgEBBQEAAcwBAAHMAQABFgEAARYBAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFY
-        AwABLAMAAQEBAAEgBQABgAE8/wD/AP8A/wA6AAMGAQgDNwFdAzcBXQM3AV0DNwFdAzcBXQM3AV0DNwFd
-        Aw0BEQQAAzcBXQM3AV0DNwFdAzcBXQM3AV0DNwFdAzcBXQM3AV0DNwFdAw0BEf8AEQADEgEXAwAB/wMA
-        Af8DAAH/AwAB/wMAAf8DAAH/AwAB/wMgAS4HAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMA
-        Af8DIAEu/wARAAMSARcDAAH/AywB2QM/AXQDPwF0Az8BdAM/AXQDPwF0AxABFQQAAzYBzwMAAf8DAAH/
-        AwAB/wMAAf8DAAH/AwAB/wMAAf8DLAHcAxsBJv8AEQADDwETAyoB3gM5AcoDHAEnGAADKQE9A0UBlwM8
-        AcIDIQHmAw8B9QMcAewDNgHMA0QBogMzAVQDCQEL/wARAAMJAQsDRAGPAxMB8wM9AcEDQwGFAy0BRQMY
-        ASADCgENBAIDEgEYBAADEwEZAx8BLAMoATsDKwFBAykBPQMhATADFgEeAwUBBv8AFQAEAQMdASkDQwGl
-        AywB2wMTAfIDJgHiAywB2QMzAdQDNAHRAzAB1wM8AWgEAAMLAQ4DOQFhA0UBkgM/AXMDGgEk/wAhAAQC
-        AwoBDQMWAR4DMwFTA0UBkQM+AbwDJQHjAxMB8gMnAd8DQwGtAzwBawMuAUgDHwHoAwwB+AMXAe4DQQF8
-        AwsBDv8ARQADCQEMA0QBlgMAAf8DAAH/AwAB/wNAAbkDIAEu/wAtAAMKAQ0DQgF9Ay0B2gMgAecDPgG8
-        AxIBFwMCAQMDLgFIAx8B6AMMAfgDFwHuA0EBfAMLAQ7/ACkAAwsBDgNEAZkDFAHwAycB3wMsAdwDIAHn
-        AwAB/wMVARwDCwEOAzkBYQNFAZIDPwFzAxoBJP8ALQADNAFVAygB4ANFAZ8DKQE+AyEBLwM5AWMDAAH/
-        A0MBqv8AQQADPAFpAw8B9QNAAXcDCQELBAADGwEmAwAB/wMyAdP/AEEAAzcBXQMfAegDRAGQAx4BKwMV
-        AR0DMAFMAwAB/wNAAbn/AEEAAxkBIwNDAa4DLQHaA0IBsANEAagDPAHCAwAB/wMtAUb/AEUAAyMBMwNE
-        AaQDJAHlAxcB7gM0AdADNwFd/wBNAAMXAR8DKAE7AyoBPwMiATH/AP8A/wD/AP8A/wDSAAQBAwkBCwMS
-        ARcDGAEgAx0BKQMeASoDGAEhAxIBGAMKAQ0EAf8ANQADBAEFAxkBIwM9AWwDRAGiAzoBxgMdAesDFwHu
-        AzoByQNDAaUDPwFzAxwBJwMFAQbIAAMbASUDKAE8Ay0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMt
-        AUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAxMBGRwAAwgBCgMsBEQBqAMgAecDLQHaAzsBxAND
-        Aa4DRAGsAzwBwwMwAdcDHQHqA0MBsQMwAUwDCgENGAAEAgMqAUADMwFVAzMBVQMzAVUDMwFVAzMBVQMz
-        AVUDMwFVAzMBVQMzAVUDMwFVAzMBVQMzAVUDMwFVAzMBVQMqAUADAgEDZAADRQGdAx4B6QMAAf8DAAH/
-        AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wM3AV0YAAMK
-        AQ0DNQFXAz4BvwM2Ac8DRAGQAzMBUwMjATMDDgESAwwBDwMhATADMgFPA0QBigM5AcoDOgHGAzkBYQMN
-        AREUAAM9AbADIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/
-        AyEB/wMhAf8DIQH/Az0BrhAABAEDNQFaAz8BlQM+AZkDPgGZAz4BmQM+AZkDPgGZAz4BmQM+AZkDPgGZ
-        Az4BmQM+AZkDPgGZAz4BmQM/AZUDNAFZBAEMAAMnAd8DHQHqA0QBiwNEAYsDRAGLA0QBiwNEAYsDRAGL
-        A0QBiwNEAYsDRAGLA0QBiwNEAYsDRAGLA0QBiwNEAYsDRAGLAyMBMxQAAwUBBgMvAUoDNwHOAxwB7AM2
-        Ac8DRQGRAzMBVAMhAS8DDAEQAwsBDgMfASwDMgFPA0QBiwM5AcoDHAHsAzIB0wM1AVgDBwEJDAADFgEe
-        AyEB/wM2AV8DDQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDDQER
-        Aw0BEQM2AWADIQH/AxYBHQwAAzsBcwMwAd8DPQF/AzwBdwM8AXcDPAF3AzwBdwM8AXcDPAF3AzwBdwM8
-        AXcDPAF3AzwBdwM8AXcDPAF3Az0BfwMwAeADOgFxDwAB/wM0AdFQAAQBAxkBIgNBAbUDLAHcA0UBnwM9
-        AcEDHAHsAy0B2gM9AcEDQwGtA0QBqwM9AcADMAHXAxcB7gM5AccDRQGfAzMB1AM/Ab4DIQEvBAEIAAMf
-        ASsDIQH/AyQBNTgAAyQBNQMhAf8DHwErDAADOQHDAzMBWDAAAwcBCQQAAzMBWAM5AcMPAAH/AzQB0QQA
-        AxUBHQM8AWkDRAGWA0QBogNEAaIDRAGiA0QBogNEAaIDRAGiA0QBogNEAaIDRAGiA0QBogNEAaIDRAGi
-        A0MBhQM1AVgDBgEHBAADBQEGAzoBZAMcAewDRQGcAxoBJAMeASsDPgFwA0QBqwM3AcsDGQHtAxQB8AM3
-        Ac4DQwGuA0ABeAMgAS4DGQEiA0QBjAMdAeoDPwF0AwkBDAgAAx8BKwMhAf8DJAE1OAADJAE1AyEB/wMf
-        ASsMAAM2AcwDLwFNLAADPAF3Ay0B5wQCAy8BTQM2AcwPAAH/AzQB0QQAAyoBPwM3Ac0DCAH6AwAB/wMA
-        Af8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AxMB8gM6AcYDDQERBAADCQEL
-        A0QBkwMqAd4DNAFVBAEEAAMJAQwDEwEZAxgBIQMeASoDHgErAxkBIgMTARoDCgENBAAEAQMvAUoDMgHT
-        A0UBnwMRARYIAAMfASsDIQH/AyQBNTgAAyQBNQMhAf8DHwErDAADNwHLAzABTiwAAxsBJQM1AVwEAAMw
-        AU4DNwHLDwAB/wM0AdEEAAM2AVkDCgH5A0QBjQMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEu
-        AyABLgMgAS4DIAEuAyABLgM6AcYDCgH5AxEBFgQAAwwBEAM+AbwDNwHOAyEBLzAAAx0BKAM/Ab0DOwHE
-        AxgBIAgAAx8BKwMhAf8DJAE1OAADJAE1AyEB/wMfASsMAAM+AagDPwGhAxoBIwMZASIDGQEiAxkBIgMZ
-        ASIDGQEiAxkBIgMZASIDGQEiAxkBIgMZASIDGQEiAxkBIgMaASMDPgGiAz0Brg8AAf8DNAHRBAADNwFd
-        AwAB/wM/AXQwAANAAbkDAAH/AxIBFwQAAxABFQMdAeoDPQHAAwwBDxAAAz4BcAMsAdsDJQHjA0IBfRAA
-        AwoBDQNEAasDHAHsAx4BKggAAx8BKwMhAf8DJAE1OAADJAE1AyEB/wMfASsMAAM1AVoDIQH/AyEB/wMh
-        Af8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMjAf0DIgH+AzkBaQ8A
-        Af8DNAHRBAADNwFdAwAB/wM/AXQIAAMqAUADQQG1AwAB/wMAAf8DAAH/AwoB+QNEAaMDEAEVCAADQAG5
-        AwAB/wMSARcEAAMQARUDHgHpAz0BwQMNAREIAAMEAQUDRAGmAwgB+gMZAe0DHAHsAwQB/ANAAboDBAEF
-        CAADDAEPA0QBrAMdAesDHQEpCAADHwErAyEB/wMkATU4AAMkATUDIQH/Ax8BKwwAAwQBBQMuAeQDLAFE
-        MAADGgEkAycB9AMNARAPAAH/AzQB0QQAAzcBXQMAAf8DPwF0CAADQAF3Aw8B9QMAAf8DAAH/AwAB/wMC
-        Af4DJgHiAzkBYwgAA0ABuQMAAf8DEgEXBAADDAEQAz4BvwM3Ac4DIgExCAADJQE3AzQB0QMcAewDJAE0
-        AxkBIgMdAeoDKAHgAyoBPwgAAx4BKgM/Ab4DOgHGAxgBIAgAAx8BKwMhAf8DPQGuAz4BmQM+AZkDPgGZ
-        Az8BlwMzAVUkAAMkATUDIQH/Ax8BKxAAAz0BgAM9AbEwAAM/AY8DPgGdEwAB/wM0AdEEAAM3AV0DAAH/
-        Az8BdAgAAzUBVwMnAd8DAAH/AwAB/wMAAf8DHAHsA0QBjwMbASUIAANAAbkDAAH/AxIBFwQAAwkBCwNE
-        AZYDKgHdAzMBUggAAy8BSgMsAdkDQgGzAxcBHwMNAREDQwGqAyEB5gMzAVQIAAMtAUYDNAHRA0QBogMS
-        ARcIAAMfASsDIQH/AzgByQM7AbsDOwG7AzsBuwM5AcYDIgH+Az4BmQMEAQUcAAMkATUDIQH/Ax8BKxAA
-        AxIBGAMmAfYDGgEjKAADCQELAykB7wMlATcTAAH/AzQB0QQAAzcBXQMAAf8DPwF0CAADGwEmAzoBZQMs
-        AdkDDgH3AxkB7QNFAaAQAANAAbkDAAH/AxIBFwQAAwUBBgM3AVwDKAHgA0UBkQMOARIEAAMZASIDQAG6
-        AwYB+wNFAZEDQwGFAwQB/QM5AcoDHAEnBAADDAEPA0IBgQMqAd4DPQFsAwkBCwgAAx8BKwMhAf8DJAE1
-        EAADNQFcAyYB9wM7Ab4DMwFVAzMBVQMzAVUDMwFVAzMBVQMzAVUDMwFVAz4BmQMiAfsDDwETFAADPgGk
-        Az4BjSgAAzoBbgM4AcgXAAH/AzQB0QQAAzcBXQMAAf8DPwF0EAADLwFJA0QBjwNBAXkDKAE7EAADQAG5
-        AwAB/wMSARcIAAMTARkDRQGcAyoB3gM2AVoIAAMyAU8DPQHBAxcB7gMUAfADOQHKAzYBWQgAAzABSwMw
-        AdYDRAGoAxkBIwQBCAADHwErAyEB/wMkATUQAAQBAz8BoAMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMh
-        Af8DIQH/AycB9AM6AWwYAAMlATYDKAHwAwoBDSAAAwQBBQMwAeADMAFPFwAB/wM0AdEEAAM3AV0DAAH/
-        Az8BdDAAA0ABuQMAAf8DEgEXCAADAgEDAyUBNwM9AcEDOQHKAzwBagMVAR0EAAMoATsDOQFjAzoBZQMr
-        AUIEAAMQARUDOgFlAz0BwAM5AcoDLAFEAwQBBQwAAxYBHgMhAf8DNgFfAw0BEQMNAREDDQERAxIBFwM+
-        AaQDIwH9AzwBeQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDAgEDIAADOwG5AzkBxgM+AYgDPgGI
-        Az4BiAM+AYgDPgGIAz4BiAM+AYgDPgGIAzsBuwM3AcsEAhQAAz8BdAM4AV8EAAM3AV0DAAH/Az8BdBAA
-        AyABLgNEAYsDRAGLA0QBiwNEAYsDRAGLA0QBiwNEAYsDJwHfAxwB7AMQARUMAAMGAQgDMAFLAzcBywMe
-        AekDRQGdAzMBUwMgAS4DDAEQAwoBDQMeASsDMQFOA0UBlQMkAeUDMgHTAzUBVwMIAQoUAAM9AbIDIQH/
-        AyEB/wMhAf8DIQH/AyEB/wMnAfMDMQFRRAADCgENAzwBeAM+AZkDPgGZAz4BmQM+AZkDPgGZAz4BmQM+
-        AZkDPgGZAz0BfwMPARQkAAM3AV0DAAH/Az8BdAwAAyIBMQM9AcEDAAH/AwAB/wMAAf8DAAH/AwAB/wMA
-        Af8DAAH/AycB4QNEAagDCwEOEAADCAEKAysBQgNEAasDHwHoAyoB3QM3Ac0DPQHAAz4BvwM2AcwDLAHb
-        Ax0B6gNBAbUDLwFKAwoBDRgAAwIBAwMrAUIDMwFVAzMBVQMzAVUDMQFRAxIBGJwAAzABTAMhAeYDLAHZ
-        A0ABuQNAAbkDQAG5AzcBzgMAAf8DRQGaAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAyYBOQMbASYDAgED
-        FAADBAEFAxcBHwM4AV4DRAGQA0ABuQMhAeYDHQHqAz4BvANEAZMDOgFkAxkBIgMFAQbUAAMjATIDQgGw
-        AxYB7wMAAf8DAAH/AwAB/wMAAf8DRAGWAxABFTwABAEDBQEGAwkBCwMMBA8BFAMQARUDDAEQAwkBCwMF
-        AQYEAdgAAwMBBAMMAQ8DEAEVAxIBFwMSARcDEgEXAxIBFwMJAQz/AIkAAUIBTQE+BwABPgMAASgDAAFY
-        AwABLAMAAQEBAAEBBQABEAECFgAD/wEAAv8B/AkAAv8B/AkAAv8B/AkAAYABIAEECQABgAEgAQQJAAGA
-        ASABBAkAAYcB4AEECQABgAEQAQwJAAGAAQgBPAkAAcABAAEcCQAB/wHwARwJAAH8AQABHAkAAfgBAAE8
-        CQAB+AEHAfwJAAH4AUcB/AkAAfgBBwH8CQAB+AEHAfwJAAH8AQ8B/AkAAf4BHwH8CQAC/wH8CQAC/wH8
-        CQAC/wH8CQAL/wEAAfwBAAn/AQAB+AEAAX8F/wHgAQABBwEAAfABAAE/AgABPwL/AeABAAEHAQAB4AEA
-        AR8CAAE8AgAB4AEAAQcBAAHAAQABDgIAARwCAAHnAv8BAAGAAQABBgE/Af8BHAH/AfQB5AMAAYABAAEG
-        AT8B/wEcAf8B4AHkAwABggEBAQYBPwH/ARwB/wLkAwABhwH/AYYBPwH/ARwCAAHkAX8B+AEAAocBhgE/
-        Af8BHAIAAeQBYAEYAQABhgEBAYYBPwH/ARwBfwH4AeQBYAEYAQABhgEBAYYBAQH/AR4BfwH5AeQBYAEY
-        AQABhgEBAYYBAAF/AR4BPwHxAeQBYAF4AQABggEBAQYBPAEAAR8BPwHzAeQCeAEAAcMBAwEGATwBAAE/
-        AR8B4wHkAX8B+AEAAcABhAEOAgABfwGAAQMB5AF4AgAB4AEAAR8BAAL/AYABBwH8AXACAAHwAQABPwEB
-        BP8B/AMAAfgBAAF/Bf8B/AEBAf8BAAH8AQAG/wH8AQMB/wEAC/8BAAs=
+        AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
+        LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAiU3lzdGVtLldpbmRvd3MuRm9ybXMu
+        TGlzdFZpZXdHcm91cAYAAAAGSGVhZGVyD0hlYWRlckFsaWdubWVudAZGb290ZXIPRm9vdGVyQWxpZ25t
+        ZW50A1RhZwROYW1lAQQBBAIBKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQC
+        AAAAKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQCAAAAAgAAAAYDAAAACE5l
+        dHp3ZXJrBfz///8oU3lzdGVtLldpbmRvd3MuRm9ybXMuSG9yaXpvbnRhbEFsaWdubWVudAEAAAAHdmFs
+        dWVfXwAIAgAAAAAAAAAGBQAAAAAB+v////z///8AAAAACgYHAAAAB25ldHdvcmsL
 </value>
+  </data>
+  <data name="ProgressBar1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="tcSource.Size" type="System.Drawing.Size, System.Drawing">
+    <value>916, 322</value>
+  </data>
+  <data name="&gt;&gt;cmdBack.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="cmdRefresh.TabIndex" type="System.Int32, mscorlib">
+    <value>15</value>
+  </data>
+  <data name="&gt;&gt;Label12.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath2.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;TabPage5.Name" xml:space="preserve">
+    <value>TabPage5</value>
+  </data>
+  <data name="&gt;&gt;TabPage4.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="lvBackups.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort2.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="lvBackupMedia.Groups" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
+        LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAiU3lzdGVtLldpbmRvd3MuRm9ybXMu
+        TGlzdFZpZXdHcm91cAYAAAAGSGVhZGVyD0hlYWRlckFsaWdubWVudAZGb290ZXIPRm9vdGVyQWxpZ25t
+        ZW50A1RhZwROYW1lAQQBBAIBKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQC
+        AAAAKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQCAAAAAgAAAAYDAAAAC0Zl
+        c3RwbGF0dGVuBfz///8oU3lzdGVtLldpbmRvd3MuRm9ybXMuSG9yaXpvbnRhbEFsaWdubWVudAEAAAAH
+        dmFsdWVfXwAIAgAAAAAAAAAGBQAAAAAB+v////z///8AAAAACgYHAAAABUxvY2FsCw==
+</value>
+  </data>
+  <data name="tbStep0.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;tcStep5.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cmdRefresh2.TabIndex" type="System.Int32, mscorlib">
+    <value>15</value>
+  </data>
+  <data name="tbStep1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1086, 406</value>
+  </data>
+  <data name="Label13.TabIndex" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="&gt;&gt;Label1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPassword.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="Label18.TabIndex" type="System.Int32, mscorlib">
+    <value>104</value>
+  </data>
+  <data name="&gt;&gt;cmdChange.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lvBackupDrive.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;tbProgress.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="Label9.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="lblDescription.Location" type="System.Drawing.Point, System.Drawing">
+    <value>58, 58</value>
+  </data>
+  <data name="&gt;&gt;ProgressBar1.Name" xml:space="preserve">
+    <value>ProgressBar1</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="&gt;&gt;Label19.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;Label1.Parent" xml:space="preserve">
+    <value>TabPage6</value>
+  </data>
+  <data name="&gt;&gt;lvBackups.Parent" xml:space="preserve">
+    <value>tbStep6</value>
+  </data>
+  <data name="txtFTPPort.Location" type="System.Drawing.Point, System.Drawing">
+    <value>802, 32</value>
+  </data>
+  <data name="&gt;&gt;Label18.Name" xml:space="preserve">
+    <value>Label18</value>
+  </data>
+  <data name="&gt;&gt;lvSourceDirs.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="tbStep2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="txtUNCPath.Location" type="System.Drawing.Point, System.Drawing">
+    <value>33, 66</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath2.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="Label18.Location" type="System.Drawing.Point, System.Drawing">
+    <value>24, 156</value>
+  </data>
+  <data name="&gt;&gt;Label4.Name" xml:space="preserve">
+    <value>Label4</value>
+  </data>
+  <data name="Label5.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="Label5.Location" type="System.Drawing.Point, System.Drawing">
+    <value>508, 75</value>
+  </data>
+  <data name="&gt;&gt;Label7.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="&gt;&gt;rdFullAutomated.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lvSourceFolders.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Panel4.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="ColumnHeader2.Width" type="System.Int32, mscorlib">
+    <value>450</value>
+  </data>
+  <data name="Label6.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="cmdDelete.Text" xml:space="preserve">
+    <value>&amp;Löschen</value>
+  </data>
+  <data name="lvBackupMedia.Groups1" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
+        LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAiU3lzdGVtLldpbmRvd3MuRm9ybXMu
+        TGlzdFZpZXdHcm91cAYAAAAGSGVhZGVyD0hlYWRlckFsaWdubWVudAZGb290ZXIPRm9vdGVyQWxpZ25t
+        ZW50A1RhZwROYW1lAQQBBAIBKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQC
+        AAAAKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQCAAAAAgAAAAYDAAAAE1dl
+        Y2hzZWxkYXRlbnRyw6RnZXIF/P///yhTeXN0ZW0uV2luZG93cy5Gb3Jtcy5Ib3Jpem9udGFsQWxpZ25t
+        ZW50AQAAAAd2YWx1ZV9fAAgCAAAAAAAAAAYFAAAAAAH6/////P///wAAAAAKBgcAAAAJUmVtb3ZhYmxl
+        Cw==
+</value>
+  </data>
+  <data name="txtUNCUsername.Size" type="System.Drawing.Size, System.Drawing">
+    <value>304, 31</value>
+  </data>
+  <data name="&gt;&gt;tcSource.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cmdBack.Text" xml:space="preserve">
+    <value>&amp;Zurück</value>
+  </data>
+  <data name="Label6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 25</value>
+  </data>
+  <data name="&gt;&gt;Label17.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="lvSourceFolders.Location" type="System.Drawing.Point, System.Drawing">
+    <value>57, 62</value>
+  </data>
+  <data name="cmdBack.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 10pt</value>
+  </data>
+  <data name="&gt;&gt;lblDescription.Parent" xml:space="preserve">
+    <value>Panel1</value>
+  </data>
+  <data name="&gt;&gt;Label8.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tbStep6.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.UserControl, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdNext.Location" type="System.Drawing.Point, System.Drawing">
+    <value>862, 495</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>908, 284</value>
+  </data>
+  <data name="&gt;&gt;tbStep6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lvBackupMedia.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListView, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdRefresh.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Label12.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tbStep1.Text" xml:space="preserve">
+    <value>Step1</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUser2.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;tbStep6.Parent" xml:space="preserve">
+    <value>tbControl</value>
+  </data>
+  <data name="&gt;&gt;tcStep5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>919, 284</value>
+  </data>
+  <data name="lvBackupDrive.TabIndex" type="System.Int32, mscorlib">
+    <value>14</value>
+  </data>
+  <data name="tbStep0.Text" xml:space="preserve">
+    <value>tbStep0</value>
+  </data>
+  <data name="Label10.TabIndex" type="System.Int32, mscorlib">
+    <value>96</value>
+  </data>
+  <data name="ProgressBar1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>416, 24</value>
+  </data>
+  <data name="Label8.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 25</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="Label11.Text" xml:space="preserve">
+    <value>Benutzername:</value>
+  </data>
+  <data name="tbControl.Location" type="System.Drawing.Point, System.Drawing">
+    <value>-6, 42</value>
+  </data>
+  <data name="TabPage4.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;tbStep7.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdBack.Name" xml:space="preserve">
+    <value>cmdBack</value>
+  </data>
+  <data name="&gt;&gt;tbStep0.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ilImages.Name" xml:space="preserve">
+    <value>ilImages</value>
+  </data>
+  <data name="txtFTPPath.TabIndex" type="System.Int32, mscorlib">
+    <value>99</value>
+  </data>
+  <data name="Label7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>102, 25</value>
+  </data>
+  <data name="&gt;&gt;lvBackupMedia.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="Label19.Location" type="System.Drawing.Point, System.Drawing">
+    <value>27, 152</value>
+  </data>
+  <data name="&gt;&gt;Label6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rdManualMode.CheckAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>TopLeft</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer2.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;Label3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Label11.Name" xml:space="preserve">
+    <value>Label11</value>
+  </data>
+  <data name="ColumnHeader4.Text" xml:space="preserve">
+    <value>Benutzername</value>
+  </data>
+  <data name="&gt;&gt;cmdAdd.Parent" xml:space="preserve">
+    <value>tbStep1</value>
+  </data>
+  <data name="&gt;&gt;Label7.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Label12.ZOrder" xml:space="preserve">
+    <value>12</value>
+  </data>
+  <data name="tbStep2.Text" xml:space="preserve">
+    <value>Step2</value>
+  </data>
+  <data name="&gt;&gt;tbStep0.Name" xml:space="preserve">
+    <value>tbStep0</value>
+  </data>
+  <data name="cboFtpEncoding2.TabIndex" type="System.Int32, mscorlib">
+    <value>103</value>
+  </data>
+  <data name="Panel3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 268</value>
+  </data>
+  <data name="&gt;&gt;cmdChange.Parent" xml:space="preserve">
+    <value>tbStep7</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding2.Name" xml:space="preserve">
+    <value>cboFtpEncoding2</value>
+  </data>
+  <data name="cmdNext.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 10pt</value>
+  </data>
+  <data name="&gt;&gt;tcSource.Name" xml:space="preserve">
+    <value>tcSource</value>
+  </data>
+  <data name="Label1.Text" xml:space="preserve">
+    <value>Manuelle Pfadeingabe:</value>
+  </data>
+  <data name="&gt;&gt;tbStep0.Parent" xml:space="preserve">
+    <value>tbControl</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lvBackups.Size" type="System.Drawing.Size, System.Drawing">
+    <value>925, 326</value>
+  </data>
+  <data name="&gt;&gt;Label3.Name" xml:space="preserve">
+    <value>Label3</value>
+  </data>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>144, 144</value>
+  </data>
+  <data name="&gt;&gt;tcStep5.Parent" xml:space="preserve">
+    <value>tbStep5</value>
+  </data>
+  <data name="txtFTPUsername.TabIndex" type="System.Int32, mscorlib">
+    <value>95</value>
+  </data>
+  <data name="&gt;&gt;lblTitle.Parent" xml:space="preserve">
+    <value>Panel1</value>
+  </data>
+  <data name="tbStep0.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="lvBackupDrive.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label15.Size" type="System.Drawing.Size, System.Drawing">
+    <value>483, 42</value>
+  </data>
+  <data name="txtFTPPath.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label17.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label11.TabIndex" type="System.Int32, mscorlib">
+    <value>94</value>
+  </data>
+  <data name="&gt;&gt;cmdFTPCheck.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="tbProgress.Text" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="cmdFTPCheck.Text" xml:space="preserve">
+    <value>&amp;Testen</value>
+  </data>
+  <data name="lvBackupMedia.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 9</value>
+  </data>
+  <data name="Label2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 25</value>
+  </data>
+  <data name="&gt;&gt;TabPage6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage5.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="cmdImport.Text" xml:space="preserve">
+    <value>&amp;Importieren</value>
+  </data>
+  <data name="tbStep0.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;Label9.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="Label14.Size" type="System.Drawing.Size, System.Drawing">
+    <value>483, 222</value>
+  </data>
+  <data name="&gt;&gt;cmdRefresh2.Name" xml:space="preserve">
+    <value>cmdRefresh2</value>
+  </data>
+  <data name="Label15.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="Label16.Text" xml:space="preserve">
+    <value>Kennwort:</value>
+  </data>
+  <data name="&gt;&gt;tbStep6.Name" xml:space="preserve">
+    <value>tbStep6</value>
+  </data>
+  <data name="&gt;&gt;cmdDelete.Name" xml:space="preserve">
+    <value>cmdDelete</value>
+  </data>
+  <data name="TabPage6.Text" xml:space="preserve">
+    <value>UNC-Pfad</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="cmdNext.Text" xml:space="preserve">
+    <value>&amp;Weiter</value>
+  </data>
+  <data name="txtFTPPassword.Location" type="System.Drawing.Point, System.Drawing">
+    <value>614, 70</value>
+  </data>
+  <data name="txtFTPPass2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>616, 70</value>
+  </data>
+  <data name="lblTitle.TabIndex" type="System.Int32, mscorlib">
+    <value>11</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdRefresh2.Text" xml:space="preserve">
+    <value>&amp;Aktualisieren</value>
+  </data>
+  <data name="&gt;&gt;Panel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label14.Text" xml:space="preserve">
+    <value>Wenn Sie bereits eine Sicherung auf einem externen Datenträger oder auf einem FTP-Server erstellt haben und diese Sicherung nun wiederherstellen möchten, dann klicken Sie auf "Importieren".</value>
+  </data>
+  <data name="txtFTPUsername.Size" type="System.Drawing.Size, System.Drawing">
+    <value>304, 31</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>ucDoConfigure</value>
+  </data>
+  <data name="txtFTPUser2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;tbStep2.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;tbStep7.Parent" xml:space="preserve">
+    <value>tbControl</value>
+  </data>
+  <data name="&gt;&gt;Label13.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage6.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;lblDescription.Name" xml:space="preserve">
+    <value>lblDescription</value>
+  </data>
+  <data name="&gt;&gt;Label7.Name" xml:space="preserve">
+    <value>Label7</value>
+  </data>
+  <data name="txtFTPServer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>546, 31</value>
+  </data>
+  <data name="&gt;&gt;lvBackupDrive.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListView, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPassword.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label9.Text" xml:space="preserve">
+    <value>Verzeichnis:</value>
+  </data>
+  <data name="rdFullAutomated.Location" type="System.Drawing.Point, System.Drawing">
+    <value>57, 100</value>
+  </data>
+  <data name="TableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
+    <value>26</value>
+  </data>
+  <data name="&gt;&gt;TabPage1.Parent" xml:space="preserve">
+    <value>tcSource</value>
+  </data>
+  <data name="cmdConfigure.Size" type="System.Drawing.Size, System.Drawing">
+    <value>153, 48</value>
+  </data>
+  <data name="&gt;&gt;lblTitle.Name" xml:space="preserve">
+    <value>lblTitle</value>
+  </data>
+  <data name="txtFTPPass2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cboFtpEncoding.TabIndex" type="System.Int32, mscorlib">
+    <value>103</value>
+  </data>
+  <data name="tbStep7.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="lvSourceDirs.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="TabPage3.Text" xml:space="preserve">
+    <value>Datenträger</value>
+  </data>
+  <data name="txtUNCPath.Size" type="System.Drawing.Size, System.Drawing">
+    <value>836, 31</value>
+  </data>
+  <data name="txtFTPPort2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cboFtpEncoding2.Items1" xml:space="preserve">
+    <value>UTF-8</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="&gt;&gt;tbControl.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;tbProgress.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUser2.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;Label14.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;TabPage1.Name" xml:space="preserve">
+    <value>TabPage1</value>
+  </data>
+  <data name="&gt;&gt;Label2.Name" xml:space="preserve">
+    <value>Label2</value>
+  </data>
+  <data name="Label4.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cmdBrowse.Parent" xml:space="preserve">
+    <value>TabPage5</value>
+  </data>
+  <data name="Label19.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtFTPPath2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>676, 31</value>
+  </data>
+  <data name="&gt;&gt;Panel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tbStep3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1086, 406</value>
+  </data>
+  <data name="Label7.TabIndex" type="System.Int32, mscorlib">
+    <value>98</value>
+  </data>
+  <data name="Label10.Size" type="System.Drawing.Size, System.Drawing">
+    <value>91, 25</value>
+  </data>
+  <data name="&gt;&gt;cmdConfigure.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tbProgress.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader1.Name" xml:space="preserve">
+    <value>ColumnHeader1</value>
+  </data>
+  <data name="&gt;&gt;cmdNext.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tbStep6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1086, 406</value>
+  </data>
+  <data name="Label12.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtFTPServer2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>196, 32</value>
+  </data>
+  <data name="&gt;&gt;Label2.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="txtFTPPort2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>67, 31</value>
+  </data>
+  <data name="lvBackupDrive.Groups1" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
+        LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAiU3lzdGVtLldpbmRvd3MuRm9ybXMu
+        TGlzdFZpZXdHcm91cAYAAAAGSGVhZGVyD0hlYWRlckFsaWdubWVudAZGb290ZXIPRm9vdGVyQWxpZ25t
+        ZW50A1RhZwROYW1lAQQBBAIBKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQC
+        AAAAKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQCAAAAAgAAAAYDAAAAE1dl
+        Y2hzZWxkYXRlbnRyw6RnZXIF/P///yhTeXN0ZW0uV2luZG93cy5Gb3Jtcy5Ib3Jpem9udGFsQWxpZ25t
+        ZW50AQAAAAd2YWx1ZV9fAAgCAAAAAAAAAAYFAAAAAAH6/////P///wAAAAAKBgcAAAAJUmVtb3ZhYmxl
+        Cw==
+</value>
+  </data>
+  <data name="&gt;&gt;Label5.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;Label2.ZOrder" xml:space="preserve">
+    <value>13</value>
+  </data>
+  <data name="&gt;&gt;tbStep3.Name" xml:space="preserve">
+    <value>tbStep3</value>
+  </data>
+  <data name="&gt;&gt;TabPage2.Name" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="cmdConfigure.Text" xml:space="preserve">
+    <value>&amp;Konfigurieren</value>
+  </data>
+  <data name="&gt;&gt;rdFullAutomated.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUser2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtUNCUsername.Location" type="System.Drawing.Point, System.Drawing">
+    <value>198, 114</value>
+  </data>
+  <data name="TabPage1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label19.TabIndex" type="System.Int32, mscorlib">
+    <value>102</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer2.Name" xml:space="preserve">
+    <value>txtFTPServer2</value>
+  </data>
+  <data name="ProgressBar1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>312, 249</value>
+  </data>
+  <data name="lvBackupDrive.Groups2" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
+        LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAiU3lzdGVtLldpbmRvd3MuRm9ybXMu
+        TGlzdFZpZXdHcm91cAYAAAAGSGVhZGVyD0hlYWRlckFsaWdubWVudAZGb290ZXIPRm9vdGVyQWxpZ25t
+        ZW50A1RhZwROYW1lAQQBBAIBKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQC
+        AAAAKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQCAAAAAgAAAAYDAAAACE5l
+        dHp3ZXJrBfz///8oU3lzdGVtLldpbmRvd3MuRm9ybXMuSG9yaXpvbnRhbEFsaWdubWVudAEAAAAHdmFs
+        dWVfXwAIAgAAAAAAAAAGBQAAAAAB+v////z///8AAAAACgYHAAAAB25ldHdvcmsL
+</value>
+  </data>
+  <data name="Label2.TabIndex" type="System.Int32, mscorlib">
+    <value>92</value>
+  </data>
+  <data name="&gt;&gt;TabPage5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label8.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;txtPath.Parent" xml:space="preserve">
+    <value>TabPage5</value>
+  </data>
+  <data name="lblStatus.Text" xml:space="preserve">
+    <value>Backup Service Home wird eingerichtet...</value>
+  </data>
+  <data name="&gt;&gt;tbStep5.Parent" xml:space="preserve">
+    <value>tbControl</value>
+  </data>
+  <data name="cboFtpEncoding.Items1" xml:space="preserve">
+    <value>UTF-8</value>
+  </data>
+  <data name="&gt;&gt;Panel2.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="txtFTPPassword.Size" type="System.Drawing.Size, System.Drawing">
+    <value>256, 31</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="cmdDelete.Location" type="System.Drawing.Point, System.Drawing">
+    <value>831, 110</value>
+  </data>
+  <data name="cmdBrowse.Size" type="System.Drawing.Size, System.Drawing">
+    <value>156, 39</value>
+  </data>
+  <data name="&gt;&gt;Label15.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="cmdImport.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label14.TabIndex" type="System.Int32, mscorlib">
+    <value>22</value>
+  </data>
+  <data name="Label13.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="&gt;&gt;cmdChange.Name" xml:space="preserve">
+    <value>cmdChange</value>
+  </data>
+  <data name="&gt;&gt;tbStep1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdBack.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="chkFtpEncryption.TabIndex" type="System.Int32, mscorlib">
+    <value>105</value>
+  </data>
+  <data name="&gt;&gt;tcStep5.Name" xml:space="preserve">
+    <value>tcStep5</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort.Name" xml:space="preserve">
+    <value>txtFTPPort</value>
+  </data>
+  <data name="&gt;&gt;tbStep7.Name" xml:space="preserve">
+    <value>tbStep7</value>
+  </data>
+  <data name="ColumnHeader6.Width" type="System.Int32, mscorlib">
+    <value>341</value>
+  </data>
+  <data name="&gt;&gt;Label8.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPath.Parent" xml:space="preserve">
+    <value>TabPage6</value>
+  </data>
+  <data name="tbStep7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1086, 406</value>
+  </data>
+  <data name="Label6.Text" xml:space="preserve">
+    <value>Port:</value>
+  </data>
+  <data name="TableLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 62</value>
+  </data>
+  <data name="txtPath.Size" type="System.Drawing.Size, System.Drawing">
+    <value>836, 31</value>
+  </data>
+  <data name="TabPage6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>908, 284</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPass2.Name" xml:space="preserve">
+    <value>txtFTPPass2</value>
+  </data>
+  <data name="&gt;&gt;Label19.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="tbStep3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Panel2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1050, 15</value>
+  </data>
+  <data name="tcStep5.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="ColumnHeader5.Width" type="System.Int32, mscorlib">
+    <value>260</value>
+  </data>
+  <data name="Label3.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 12pt</value>
+  </data>
+  <data name="&gt;&gt;lblStatus.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="lvBackupMedia.Size" type="System.Drawing.Size, System.Drawing">
+    <value>733, 264</value>
+  </data>
+  <data name="Label4.TabIndex" type="System.Int32, mscorlib">
+    <value>94</value>
+  </data>
+  <data name="lblStatus.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="txtFTPPath2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="tbStep5.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="&gt;&gt;rdFullAutomated.Parent" xml:space="preserve">
+    <value>tbStep3</value>
+  </data>
+  <data name="tbStep7.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="txtFTPPort.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Label18.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtUNCPath.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label3.Text" xml:space="preserve">
+    <value>Wiederherstellen einer Sicherung</value>
+  </data>
+  <data name="tbStep7.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;cmdFTPCheck.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Label17.Name" xml:space="preserve">
+    <value>Label17</value>
+  </data>
+  <data name="&gt;&gt;lvSourceDirs.Name" xml:space="preserve">
+    <value>lvSourceDirs</value>
+  </data>
+  <data name="cmdDelete.Size" type="System.Drawing.Size, System.Drawing">
+    <value>153, 39</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding.Name" xml:space="preserve">
+    <value>cboFtpEncoding</value>
+  </data>
+  <data name="&gt;&gt;Panel2.Name" xml:space="preserve">
+    <value>Panel2</value>
+  </data>
+  <data name="tbStep5.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="Label15.Location" type="System.Drawing.Point, System.Drawing">
+    <value>495, 0</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption2.Name" xml:space="preserve">
+    <value>chkFtpEncryption2</value>
+  </data>
+  <data name="tbProgress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="lblTitle.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="cmdRefresh.Size" type="System.Drawing.Size, System.Drawing">
+    <value>153, 39</value>
+  </data>
+  <data name="&gt;&gt;TabPage4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="chkFtpEncryption2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>411, 40</value>
+  </data>
+  <data name="&gt;&gt;cmdFTPCheck.Name" xml:space="preserve">
+    <value>cmdFTPCheck</value>
+  </data>
+  <data name="Label4.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="cmdDelete.TabIndex" type="System.Int32, mscorlib">
+    <value>16</value>
+  </data>
+  <data name="&gt;&gt;cmdRefresh2.Parent" xml:space="preserve">
+    <value>TabPage3</value>
+  </data>
+  <data name="TabPage6.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;Label13.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPath.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;Label13.Name" xml:space="preserve">
+    <value>Label13</value>
+  </data>
+  <data name="&gt;&gt;tbStep1.Parent" xml:space="preserve">
+    <value>tbControl</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer2.ZOrder" xml:space="preserve">
+    <value>11</value>
+  </data>
+  <data name="tcStep5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>927, 322</value>
+  </data>
+  <data name="txtFTPPath2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>196, 110</value>
+  </data>
+  <data name="Label11.Location" type="System.Drawing.Point, System.Drawing">
+    <value>27, 75</value>
+  </data>
+  <data name="Label18.Size" type="System.Drawing.Size, System.Drawing">
+    <value>90, 25</value>
+  </data>
+  <data name="Label16.Location" type="System.Drawing.Point, System.Drawing">
+    <value>28, 162</value>
+  </data>
+  <data name="&gt;&gt;cmdAdd.Name" xml:space="preserve">
+    <value>cmdAdd</value>
+  </data>
+  <data name="&gt;&gt;lvSourceFolders.Parent" xml:space="preserve">
+    <value>tbStep1</value>
+  </data>
+  <data name="&gt;&gt;cmdBrowse.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cmdFTPCheck.TabIndex" type="System.Int32, mscorlib">
+    <value>102</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding2.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="Label12.Location" type="System.Drawing.Point, System.Drawing">
+    <value>27, 36</value>
+  </data>
+  <data name="lvBackupDrive.Size" type="System.Drawing.Size, System.Drawing">
+    <value>722, 264</value>
+  </data>
+  <data name="tbStep3.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="lblStatus.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="Label13.Location" type="System.Drawing.Point, System.Drawing">
+    <value>495, 42</value>
+  </data>
+  <data name="&gt;&gt;ilImages.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ImageList, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Label6.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="Label3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 0</value>
+  </data>
+  <data name="txtFTPUser2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>304, 31</value>
+  </data>
+  <data name="&gt;&gt;tbControl.Name" xml:space="preserve">
+    <value>tbControl</value>
+  </data>
+  <data name="&gt;&gt;TabPage6.Parent" xml:space="preserve">
+    <value>tcSource</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Panel2.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;Label19.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtPath.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;ProgressBar1.Parent" xml:space="preserve">
+    <value>tbProgress</value>
+  </data>
+  <data name="txtUNCPath.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="cmdNext.Size" type="System.Drawing.Size, System.Drawing">
+    <value>122, 48</value>
+  </data>
+  <data name="chkFtpEncryption2.TabIndex" type="System.Int32, mscorlib">
+    <value>104</value>
+  </data>
+  <data name="lvBackupDrive.Groups" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
+        LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAiU3lzdGVtLldpbmRvd3MuRm9ybXMu
+        TGlzdFZpZXdHcm91cAYAAAAGSGVhZGVyD0hlYWRlckFsaWdubWVudAZGb290ZXIPRm9vdGVyQWxpZ25t
+        ZW50A1RhZwROYW1lAQQBBAIBKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQC
+        AAAAKFN5c3RlbS5XaW5kb3dzLkZvcm1zLkhvcml6b250YWxBbGlnbm1lbnQCAAAAAgAAAAYDAAAAC0Zl
+        c3RwbGF0dGVuBfz///8oU3lzdGVtLldpbmRvd3MuRm9ybXMuSG9yaXpvbnRhbEFsaWdubWVudAEAAAAH
+        dmFsdWVfXwAIAgAAAAAAAAAGBQAAAAAB+v////z///8AAAAACgYHAAAABUxvY2FsCw==
+</value>
+  </data>
+  <data name="Label8.Text" xml:space="preserve">
+    <value>Port:</value>
+  </data>
+  <data name="&gt;&gt;Label9.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="Label15.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 12pt</value>
+  </data>
+  <data name="&gt;&gt;tbStep0.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="TabPage1.Text" xml:space="preserve">
+    <value>Datenträger</value>
+  </data>
+  <data name="&gt;&gt;cmdImport.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Panel3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>483, 50</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TabPage4.Parent" xml:space="preserve">
+    <value>tcStep5</value>
+  </data>
+  <data name="lvSourceFolders.TabIndex" type="System.Int32, mscorlib">
+    <value>14</value>
+  </data>
+  <data name="&gt;&gt;Label10.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;tbStep3.Parent" xml:space="preserve">
+    <value>tbControl</value>
+  </data>
+  <data name="tbStep2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1086, 406</value>
+  </data>
+  <data name="Label1.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;tbProgress.Parent" xml:space="preserve">
+    <value>tbControl</value>
+  </data>
+  <data name="lblTitle.Size" type="System.Drawing.Size, System.Drawing">
+    <value>0, 32</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader5.Name" xml:space="preserve">
+    <value>ColumnHeader5</value>
+  </data>
+  <data name="&gt;&gt;Panel1.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="cmdAdd.Size" type="System.Drawing.Size, System.Drawing">
+    <value>153, 39</value>
+  </data>
+  <data name="tbStep3.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label14.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="TabPage3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath2.Name" xml:space="preserve">
+    <value>txtFTPPath2</value>
+  </data>
+  <data name="Label6.Location" type="System.Drawing.Point, System.Drawing">
+    <value>748, 36</value>
+  </data>
+  <data name="Panel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>-6, 4</value>
+  </data>
+  <data name="Label5.TabIndex" type="System.Int32, mscorlib">
+    <value>96</value>
+  </data>
+  <data name="txtFTPPass2.TabIndex" type="System.Int32, mscorlib">
+    <value>97</value>
+  </data>
+  <data name="txtFTPServer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>194, 32</value>
+  </data>
+  <data name="Label9.Location" type="System.Drawing.Point, System.Drawing">
+    <value>27, 114</value>
   </data>
   <data name="rdFullAutomated.Text" xml:space="preserve">
     <value>Datensicherung automatisch einrichten (empfohlen)
 Backup Service Home legt automatisch die für Ihre Zwecke passenden Einstellungen fest, die Sie später 
 noch ändern können. Außerdem wird die erste Datensicherung durchgeführt.</value>
   </data>
+  <data name="TabPage5.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="tbControl.TabIndex" type="System.Int32, mscorlib">
+    <value>26</value>
+  </data>
+  <data name="&gt;&gt;lvBackups.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListView, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdImport.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;tbStep7.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="TabPage2.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label3.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="&gt;&gt;Label11.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblTitle.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;cmdImport.Parent" xml:space="preserve">
+    <value>Panel3</value>
+  </data>
+  <data name="&gt;&gt;lblStatus.Parent" xml:space="preserve">
+    <value>tbProgress</value>
+  </data>
+  <data name="tbStep5.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="TabPage3.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label1.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="TabPage2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="Label9.Size" type="System.Drawing.Size, System.Drawing">
+    <value>102, 25</value>
+  </data>
+  <data name="&gt;&gt;Panel3.Parent" xml:space="preserve">
+    <value>TableLayoutPanel1</value>
+  </data>
+  <data name="Label7.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1050, 570</value>
+  </data>
+  <data name="&gt;&gt;cmdBrowse.Name" xml:space="preserve">
+    <value>cmdBrowse</value>
+  </data>
+  <data name="Label3.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="cmdFTPCheck.Location" type="System.Drawing.Point, System.Drawing">
+    <value>748, 152</value>
+  </data>
+  <data name="Label16.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="ilImages.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
+        LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAmU3lzdGVtLldpbmRvd3MuRm9ybXMu
+        SW1hZ2VMaXN0U3RyZWFtZXIBAAAABERhdGEHAgIAAAAJAwAAAA8DAAAAwhQAAAJNU0Z0AUkBTAIBAQUB
+        AAHUAQAB3AEAARYBAAEWAQAE/wEhARAI/wFCAU0BNgcAATYDAAEoAwABWAMAASwDAAEBAQABIAUAAYAB
+        PP8A/wD/AP8AOgADBgEIAzgBXQM4AV0DOAFdAzgBXQM4AV0DOAFdAzgBXQMNAREEAAM4AV0DOAFdAzgB
+        XQM4AV0DOAFdAzgBXQM4AV0DOAFdAzgBXQMNARH/ABEAAxIBFwMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB
+        /wMAAf8DIAEuBwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AyABLv8AEQADEgEXAwAB
+        /wM6AdkDQgF0A0IBdANCAXQDQgF0A0IBdAMQARUEAANEAc8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8D
+        AAH/AzoB3AMbASb/ABEAAw8BEwM4Ad4DRgHKAxwBJxgAAykBPQNLAZcDSQHCAy4B5gMUAfUDJwHsA0MB
+        zANMAaIDNAFUAwkBC/8AEQADCQELA0kBjwMaAfMDSQHBA0cBhQMtAUUDGAEgAwoBDQQCAxIBGAQAAxMB
+        GQMfASwDKAE7AysBQQMpAT0DIQEwAxYBHgMFAQb/ABUABAEDHQEpA0wBpQM6AdsDGwHyAzMB4gM6AdkD
+        QQHUA0IB0QM+AdcDPQFoBAADCwEOAzoBYQNKAZIDQQFzAxoBJP8AIQAEAgMKAQ0DFgEeAzQBUwNKAZED
+        SgG8AzIB4wMbAfIDNAHfA00BrQM+AWsDLgFIAyoB6AMSAfgDIQHuA0QBfAMLAQ7/AEUAAwkBDANKAZYD
+        AAH/AwAB/wMAAf8DSwG5AyABLv8ALQADCgENA0UBfQM7AdoDLAHnA0oBvAMSARcDAgEDAy4BSAMqAegD
+        EgH4AyEB7gNEAXwDCwEO/wApAAMLAQ4DSwGZAx0B8AM0Ad8DOgHcAywB5wMAAf8DFQEcAwsBDgM6AWED
+        SgGSA0EBcwMaAST/AC0AAzUBVQM1AeADSwGfAykBPgMhAS8DOwFjAwAB/wNNAar/AEEAAz0BaQMUAfUD
+        QwF3AwkBCwQAAxsBJgMAAf8DQAHT/wBBAAM4AV0DKgHoA0kBkAMeASsDFQEdAzABTAMAAf8DSwG5/wBB
+        AAMZASMDTQGuAzsB2gNNAbADTQGoA0kBwgMAAf8DLQFG/wBFAAMjATMDTQGkAzAB5QMhAe4DQgHQAzgB
+        Xf8ATQADFwEfAygBOwMqAT8DIgEx/wD/AP8A/wD/AP8A0gAEAQMJAQsDEgEXAxgBIAMdASkDHgEqAxgB
+        IQMSARgDCgENBAH/ADUAAwQBBQMZASMDPwFsA0wBogNHAcYDKQHrAyEB7gNIAckDTAGlA0EBcwMcAScD
+        BQEGyAADGwElAygBPAMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0B
+        RgMtAUYDLQFGAy0BRgMTARkcAAMIAQoDLQFEA00BqAMsAecDOwHaA0gBxANNAa4DTgGsA0kBwwM+AdcD
+        KAHqA04BsQMwAUwDCgENGAAEAgMqAUADNQFVAzUBVQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUBVQM1AVUD
+        NQFVAzUBVQM1AVUDNQFVAzUBVQMqAUADAgEDZAADTAGdAygB6QMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB
+        /wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wM4AV0YAAMKAQ0DNgFXA0oBvwNEAc8D
+        SQGQAzQBUwMjATMDDgESAwwBDwMhATADMgFPA0kBigNGAcoDRwHGAzoBYQMNAREUAANJAbADIQH/AyEB
+        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/A0oB
+        rhAABAEDNwFaA0kBlQNJAZkDSQGZA0kBmQNJAZkDSQGZA0kBmQNJAZkDSQGZA0kBmQNJAZkDSQGZA0kB
+        mQNJAZUDNgFZBAEMAAM0Ad8DKAHqA0kBiwNJAYsDSQGLA0kBiwNJAYsDSQGLA0kBiwNJAYsDSQGLA0kB
+        iwNJAYsDSQGLA0kBiwNJAYsDSQGLAyMBMxQAAwUBBgMwAUoDRQHOAycB7ANEAc8DSgGRAzQBVAMhAS8D
+        DAEQAwsBDgMfASwDMgFPA0kBiwNGAcoDJwHsA0AB0wM2AVgDBwEJDAADFgEeAyEB/wM5AV8DDQERAw0B
+        EQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQM5AWADIQH/AxYB
+        HQwAA0ABcwM7Ad8DRAF/A0IBdwNCAXcDQgF3A0IBdwNCAXcDQgF3A0IBdwNCAXcDQgF3A0IBdwNCAXcD
+        QgF3A0QBfwM7AeADPwFxDwAB/wNCAdFQAAQBAxkBIgNLAbUDOgHcA0sBnwNJAcEDJwHsAzsB2gNJAcED
+        TQGtA04BqwNKAcADPgHXAyEB7gNGAccDSwGfA0EB1ANLAb4DIQEvBAEIAAMeASsDIQH/AyQBNTgAAyQB
+        NQMhAf8DHgErDAADSAHDAzYBWDAAAwcBCQQAAzYBWANIAcMPAAH/A0IB0QQAAxUBHQM9AWkDSgGWA0wB
+        ogNMAaIDTAGiA0wBogNMAaIDTAGiA0wBogNMAaIDTAGiA0wBogNMAaIDTAGiA0cBhQM2AVgDBgEHBAAD
+        BQEGAzsBZAMnAewDTAGcAxoBJAMeASsDQAFwA04BqwNFAcsDIgHtAx0B8ANFAc4DTQGuA0MBeAMgAS4D
+        GQEiA0gBjAMoAeoDQgF0AwkBDAgAAx4BKwMhAf8DJAE1OAADJAE1AyEB/wMeASsMAANDAcwDMQFNLAAD
+        QgF3AzcB5wQCAzEBTQNDAcwPAAH/A0IB0QQAAyoBPwNEAc0DDAH6AwAB/wMAAf8DAAH/AwAB/wMAAf8D
+        AAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AxsB8gNHAcYDDQERBAADCQELA0oBkwM4Ad4DNQFVBAEE
+        AAMJAQwDEwEZAxgBIQMeASoDHgErAxkBIgMTARoDCgENBAAEAQMwAUoDQAHTA0sBnwMRARYIAAMeASsD
+        IQH/AyQBNTgAAyQBNQMhAf8DHgErDAADRQHLAzEBTiwAAxsBJQM4AVwEAAMxAU4DRQHLDwAB/wNCAdEE
+        AAM2AVkDDwH5A0kBjQMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyAB
+        LgNHAcYDDwH5AxEBFgQAAwwBEANKAbwDRQHOAyEBLzAAAx0BKANMAb0DSAHEAxgBIAgAAx4BKwMhAf8D
+        JAE1OAADJAE1AyEB/wMeASsMAANKAagDSwGhAxoBIwMZASIDGQEiAxkBIgMZASIDGQEiAxkBIgMZASID
+        GQEiAxkBIgMZASIDGQEiAxkBIgMaASMDSgGiA0oBrg8AAf8DQgHRBAADOAFdAwAB/wNCAXQwAANLAbkD
+        AAH/AxIBFwQAAxABFQMoAeoDSgHAAwwBDxAAA0ABcAM6AdsDMgHjA0UBfRAAAwoBDQNOAasDJwHsAx4B
+        KggAAx4BKwMhAf8DJAE1OAADJAE1AyEB/wMeASsMAAM3AVoDIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8D
+        IQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMlAf0DIwH+Az0BaQ8AAf8DQgHRBAADOAFdAwAB
+        /wNCAXQIAAMqAUADSwG1AwAB/wMAAf8DAAH/Aw8B+QNMAaMDEAEVCAADSwG5AwAB/wMSARcEAAMQARUD
+        KAHpA0kBwQMNAREIAAMEAQUDTQGmAwwB+gMiAe0DJwHsAwYB/ANMAboDBAEFCAADDAEPA04BrAMpAesD
+        HQEpCAADHgErAyEB/wMkATU4AAMkATUDIQH/Ax4BKwwAAwQBBQM3AeQDLQFEMAADGgEkAysB9AMMARAP
+        AAH/A0IB0QQAAzgBXQMAAf8DQgF0CAADQwF3AxQB9QMAAf8DAAH/AwAB/wMDAf4DMwHiAzsBYwgAA0sB
+        uQMAAf8DEgEXBAADDAEQA0oBvwNFAc4DIgExCAADJQE3A0IB0QMnAewDJAE0AxkBIgMoAeoDNQHgAyoB
+        PwgAAx4BKgNLAb4DRwHGAxgBIAgAAx4BKwMhAf8DSgGuA0kBmQNJAZkDSQGZA0kBlwM1AVUkAAMkATUD
+        IQH/Ax4BKxAAA0QBgANKAbEwAANIAY8DSQGdEwAB/wNCAdEEAAM4AV0DAAH/A0IBdAgAAzYBVwM0Ad8D
+        AAH/AwAB/wMAAf8DJwHsA0kBjwMbASUIAANLAbkDAAH/AxIBFwQAAwkBCwNKAZYDNwHdAzMBUggAAzAB
+        SgM6AdkDTQGzAxcBHwMNAREDTQGqAy4B5gM0AVQIAAMtAUYDQgHRA0wBogMSARcIAAMeASsDIQH/A0UB
+        yQNJAbsDSQG7A0kBuwNGAcYDIwH+A0kBmQMEAQUcAAMkATUDIQH/Ax4BKxAAAxIBGAMqAfYDGgEjKAAD
+        CQELAy8B7wMlATcTAAH/A0IB0QQAAzgBXQMAAf8DQgF0CAADGwEmAzsBZQM6AdkDFAH3AyIB7QNNAaAQ
+        AANLAbkDAAH/AxIBFwQAAwUBBgM4AVwDNQHgA0oBkQMOARIEAAMZASIDTAG6AwkB+wNKAZEDRwGFAwYB
+        /QNGAcoDHAEnBAADDAEPA0UBgQM4Ad4DPwFsAwkBCwgAAx4BKwMhAf8DJAE1EAADOAFcAysB9wNJAb4D
+        NQFVAzUBVQM1AVUDNQFVAzUBVQM1AVUDNQFVA0kBmQMiAfsDDwETFAADSgGkA0cBjSgAAz8BbgNHAcgX
+        AAH/A0IB0QQAAzgBXQMAAf8DQgF0EAADLwRJAY8DQwF5AygBOxAAA0sBuQMAAf8DEgEXCAADEwEZA0wB
+        nAM4Ad4DNwFaCAADMgFPA0kBwQMhAe4DHQHwA0YBygM2AVkIAAMwAUsDPQHWA00BqAMZASMEAQgAAx4B
+        KwMhAf8DJAE1EAAEAQNLAaADIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMrAfQDPgFsGAAD
+        JQE2Ay8B8AMKAQ0gAAMEAQUDOwHgAzIBTxcAAf8DQgHRBAADOAFdAwAB/wNCAXQwAANLAbkDAAH/AxIB
+        FwgAAwIBAwMlATcDSQHBA0YBygM+AWoDFQEdBAADKAQ7AWMDOwFlAysBQgQAAxABFQM7AWUDSgHAA0YB
+        ygMtAUQDBAEFDAADFgEeAyEB/wM5AV8DDQERAw0BEQMNAREDEgEXA0oBpAMlAf0DQgF5Aw0BEQMNARED
+        DQERAw0BEQMNAREDDQERAw0BEQMCAQMgAANJAbkDRgHGA0YBiANGAYgDRgGIA0YBiANGAYgDRgGIA0YB
+        iANGAYgDSQG7A0UBywQCFAADQgF0AzkBXwQAAzgBXQMAAf8DQgF0EAADIAEuA0kBiwNJAYsDSQGLA0kB
+        iwNJAYsDSQGLA0kBiwM0Ad8DJwHsAxABFQwAAwYBCAMwAUsDRQHLAygB6QNMAZ0DNAFTAyABLgMMARAD
+        CgENAx4BKwMxAU4DSwGVAzAB5QNAAdMDNgFXAwgBChQAA0sBsgMhAf8DIQH/AyEB/wMhAf8DIQH/AywB
+        8wMzAVFEAAMKAQ0DQgF4A0kBmQNJAZkDSQGZA0kBmQNJAZkDSQGZA0kBmQNJAZkDRAF/Aw8BFCQAAzgB
+        XQMAAf8DQgF0DAADIgExA0kBwQMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DNAHhA00BqAMLAQ4Q
+        AAMIAQoDKwFCA04BqwMqAegDNwHdA0QBzQNKAcADSgG/A0MBzAM6AdsDKAHqA0sBtQMwAUoDCgENGAAD
+        AgEDAysBQgM1AVUDNQFVAzUBVQMzAVEDEgEYnAADMAFMAy4B5gM6AdkDSwG5A0sBuQNLAbkDRQHOAwAB
+        /wNMAZoDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDJgE5AxsBJgMCAQMUAAMEAQUDFwEfAzkBXgNJAZAD
+        SwG5Ay4B5gMoAeoDSgG8A0oBkwM7AWQDGQEiAwUBBtQAAyMBMgNNAbADIAHvAwAB/wMAAf8DAAH/AwAB
+        /wNKAZYDEAEVPAAEAQMFAQYDCQELAwwEDwEUAxABFQMMARADCQELAwUBBgQB2AADAwEEAwwBDwMQARUD
+        EgEXAxIBFwMSARcDEgEXAwkBDP8AiQABQgFNAT4HAAE+AwABKAMAAVgDAAEsAwABAQEAAQEFAAEQAQIW
+        AAP/AQAC/wH8CQAC/wH8CQAC/wH8CQABgAEgAQQJAAGAASABBAkAAYABIAEECQABhwHgAQQJAAGAARAB
+        DAkAAYABCAE8CQABwAEAARwJAAH/AfABHAkAAfwBAAEcCQAB+AEAATwJAAH4AQcB/AkAAfgBRwH8CQAB
+        +AEHAfwJAAH4AQcB/AkAAfwBDwH8CQAB/gEfAfwJAAL/AfwJAAL/AfwJAAL/AfwJAAv/AQAB/AEACf8B
+        AAH4AQABfwX/AeABAAEHAQAB8AEAAT8CAAE/Av8B4AEAAQcBAAHgAQABHwIAATwCAAHgAQABBwEAAcAB
+        AAEOAgABHAIAAecC/wEAAYABAAEGAT8B/wEcAf8B9AHkAwABgAEAAQYBPwH/ARwB/wHgAeQDAAGCAQEB
+        BgE/Af8BHAH/AuQDAAGHAf8BhgE/Af8BHAIAAeQBfwH4AQAChwGGAT8B/wEcAgAB5AFgARgBAAGGAQEB
+        hgE/Af8BHAF/AfgB5AFgARgBAAGGAQEBhgEBAf8BHgF/AfkB5AFgARgBAAGGAQEBhgEAAX8BHgE/AfEB
+        5AFgAXgBAAGCAQEBBgE8AQABHwE/AfMB5AJ4AQABwwEDAQYBPAEAAT8BHwHjAeQBfwH4AQABwAGEAQ4C
+        AAF/AYABAwHkAXgCAAHgAQABHwEAAv8BgAEHAfwBcAIAAfABAAE/AQEE/wH8AwAB+AEAAX8F/wH8AQEB
+        /wEAAfwBAAb/AfwBAwH/AQAL/xcACw==
+</value>
+  </data>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, System.Private.CoreLib, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
+    <value>en</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="ilImages.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
 </root>

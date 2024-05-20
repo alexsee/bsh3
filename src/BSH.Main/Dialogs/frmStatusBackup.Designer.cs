@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows.Forms;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main
 {
@@ -27,180 +28,120 @@ namespace Brightbits.BSH.Main
         [DebuggerStepThrough()]
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmStatusBackup));
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.pbarTotal = new System.Windows.Forms.ProgressBar();
-            this.lblFiles = new System.Windows.Forms.Label();
-            this.Panel1 = new System.Windows.Forms.Panel();
-            this.plShutdown = new System.Windows.Forms.Panel();
-            this.cboOptions = new System.Windows.Forms.ComboBox();
-            this.chkOptions = new System.Windows.Forms.CheckBox();
-            this.Label1 = new System.Windows.Forms.Label();
-            this.cmdCancel = new System.Windows.Forms.Button();
-            this.PictureBox1 = new System.Windows.Forms.PictureBox();
-            this.lblFile = new System.Windows.Forms.Label();
-            this.Panel1.SuspendLayout();
-            this.plShutdown.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
-            this.SuspendLayout();
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(frmStatusBackup));
+            lblStatus = new Label();
+            pbarTotal = new ProgressBar();
+            lblFiles = new Label();
+            Panel1 = new Panel();
+            plShutdown = new Panel();
+            cboOptions = new ComboBox();
+            chkOptions = new CheckBox();
+            Label1 = new Label();
+            cmdCancel = new Button();
+            PictureBox1 = new PictureBox();
+            lblFile = new Label();
+            Panel1.SuspendLayout();
+            plShutdown.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)PictureBox1).BeginInit();
+            SuspendLayout();
             // 
             // lblStatus
             // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.BackColor = System.Drawing.Color.Transparent;
-            this.lblStatus.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStatus.Location = new System.Drawing.Point(98, 21);
-            this.lblStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(128, 28);
-            this.lblStatus.TabIndex = 0;
-            this.lblStatus.Text = "Initialisieren...";
+            resources.ApplyResources(lblStatus, "lblStatus");
+            lblStatus.BackColor = System.Drawing.Color.Transparent;
+            lblStatus.Name = "lblStatus";
             // 
             // pbarTotal
             // 
-            this.pbarTotal.Location = new System.Drawing.Point(102, 54);
-            this.pbarTotal.Margin = new System.Windows.Forms.Padding(4);
-            this.pbarTotal.Name = "pbarTotal";
-            this.pbarTotal.Size = new System.Drawing.Size(600, 26);
-            this.pbarTotal.TabIndex = 1;
+            resources.ApplyResources(pbarTotal, "pbarTotal");
+            pbarTotal.Name = "pbarTotal";
             // 
             // lblFiles
             // 
-            this.lblFiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblFiles.AutoEllipsis = true;
-            this.lblFiles.BackColor = System.Drawing.Color.Transparent;
-            this.lblFiles.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFiles.Location = new System.Drawing.Point(98, 88);
-            this.lblFiles.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblFiles.Name = "lblFiles";
-            this.lblFiles.Size = new System.Drawing.Size(604, 38);
-            this.lblFiles.TabIndex = 2;
+            resources.ApplyResources(lblFiles, "lblFiles");
+            lblFiles.AutoEllipsis = true;
+            lblFiles.BackColor = System.Drawing.Color.Transparent;
+            lblFiles.Name = "lblFiles";
             // 
             // Panel1
             // 
-            this.Panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.Panel1.Controls.Add(this.plShutdown);
-            this.Panel1.Controls.Add(this.Label1);
-            this.Panel1.Controls.Add(this.cmdCancel);
-            this.Panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Panel1.Location = new System.Drawing.Point(0, 170);
-            this.Panel1.Margin = new System.Windows.Forms.Padding(4);
-            this.Panel1.Name = "Panel1";
-            this.Panel1.Size = new System.Drawing.Size(730, 68);
-            this.Panel1.TabIndex = 3;
+            resources.ApplyResources(Panel1, "Panel1");
+            Panel1.BackColor = System.Drawing.SystemColors.Control;
+            Panel1.Controls.Add(plShutdown);
+            Panel1.Controls.Add(Label1);
+            Panel1.Controls.Add(cmdCancel);
+            Panel1.Name = "Panel1";
             // 
             // plShutdown
             // 
-            this.plShutdown.Controls.Add(this.cboOptions);
-            this.plShutdown.Controls.Add(this.chkOptions);
-            this.plShutdown.Location = new System.Drawing.Point(21, 9);
-            this.plShutdown.Margin = new System.Windows.Forms.Padding(4);
-            this.plShutdown.Name = "plShutdown";
-            this.plShutdown.Size = new System.Drawing.Size(542, 44);
-            this.plShutdown.TabIndex = 8;
-            this.plShutdown.Visible = false;
+            resources.ApplyResources(plShutdown, "plShutdown");
+            plShutdown.Controls.Add(cboOptions);
+            plShutdown.Controls.Add(chkOptions);
+            plShutdown.Name = "plShutdown";
             // 
             // cboOptions
             // 
-            this.cboOptions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboOptions.Enabled = false;
-            this.cboOptions.FormattingEnabled = true;
-            this.cboOptions.Items.AddRange(new object[] {
-            "PC nach Sicherung herunterfahren",
-            "PC nach Sicherung in Ruhezustand"});
-            this.cboOptions.Location = new System.Drawing.Point(42, 6);
-            this.cboOptions.Margin = new System.Windows.Forms.Padding(4);
-            this.cboOptions.Name = "cboOptions";
-            this.cboOptions.Size = new System.Drawing.Size(488, 33);
-            this.cboOptions.TabIndex = 7;
+            resources.ApplyResources(cboOptions, "cboOptions");
+            cboOptions.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboOptions.FormattingEnabled = true;
+            cboOptions.Items.AddRange(new object[] { resources.GetString("cboOptions.Items"), resources.GetString("cboOptions.Items1") });
+            cboOptions.Name = "cboOptions";
             // 
             // chkOptions
             // 
-            this.chkOptions.AutoSize = true;
-            this.chkOptions.Location = new System.Drawing.Point(10, 12);
-            this.chkOptions.Margin = new System.Windows.Forms.Padding(4);
-            this.chkOptions.Name = "chkOptions";
-            this.chkOptions.Size = new System.Drawing.Size(22, 21);
-            this.chkOptions.TabIndex = 6;
-            this.chkOptions.UseVisualStyleBackColor = true;
-            this.chkOptions.CheckedChanged += new System.EventHandler(this.chkOptions_CheckedChanged);
+            resources.ApplyResources(chkOptions, "chkOptions");
+            chkOptions.Name = "chkOptions";
+            chkOptions.UseVisualStyleBackColor = true;
+            chkOptions.CheckedChanged += chkOptions_CheckedChanged;
             // 
             // Label1
             // 
-            this.Label1.BackColor = System.Drawing.Color.DarkGray;
-            this.Label1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.Label1.Location = new System.Drawing.Point(0, 0);
-            this.Label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label1.Name = "Label1";
-            this.Label1.Size = new System.Drawing.Size(730, 2);
-            this.Label1.TabIndex = 5;
+            resources.ApplyResources(Label1, "Label1");
+            Label1.BackColor = System.Drawing.Color.DarkGray;
+            Label1.Name = "Label1";
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdCancel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmdCancel.Location = new System.Drawing.Point(562, 9);
-            this.cmdCancel.Margin = new System.Windows.Forms.Padding(4);
-            this.cmdCancel.Name = "cmdCancel";
-            this.cmdCancel.Size = new System.Drawing.Size(140, 45);
-            this.cmdCancel.TabIndex = 0;
-            this.cmdCancel.Text = "&Abbrechen";
-            this.cmdCancel.UseVisualStyleBackColor = true;
-            this.cmdCancel.Click += new System.EventHandler(this.cmdCancel_Click);
+            resources.ApplyResources(cmdCancel, "cmdCancel");
+            cmdCancel.Name = "cmdCancel";
+            cmdCancel.UseVisualStyleBackColor = true;
+            cmdCancel.Click += cmdCancel_Click;
             // 
             // PictureBox1
             // 
-            this.PictureBox1.BackColor = System.Drawing.Color.Transparent;
-            this.PictureBox1.Image = global::BSH.Main.Properties.Resources.settings_backup_restore_icon_48;
-            this.PictureBox1.Location = new System.Drawing.Point(32, 21);
-            this.PictureBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.PictureBox1.Name = "PictureBox1";
-            this.PictureBox1.Size = new System.Drawing.Size(48, 44);
-            this.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.PictureBox1.TabIndex = 0;
-            this.PictureBox1.TabStop = false;
+            resources.ApplyResources(PictureBox1, "PictureBox1");
+            PictureBox1.BackColor = System.Drawing.Color.Transparent;
+            PictureBox1.Image = Resources.settings_backup_restore_icon_48;
+            PictureBox1.Name = "PictureBox1";
+            PictureBox1.TabStop = false;
             // 
             // lblFile
             // 
-            this.lblFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblFile.AutoEllipsis = true;
-            this.lblFile.BackColor = System.Drawing.Color.Transparent;
-            this.lblFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFile.Location = new System.Drawing.Point(98, 126);
-            this.lblFile.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblFile.Name = "lblFile";
-            this.lblFile.Size = new System.Drawing.Size(604, 27);
-            this.lblFile.TabIndex = 4;
+            resources.ApplyResources(lblFile, "lblFile");
+            lblFile.AutoEllipsis = true;
+            lblFile.BackColor = System.Drawing.Color.Transparent;
+            lblFile.Name = "lblFile";
             // 
             // frmStatusBackup
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(730, 238);
-            this.Controls.Add(this.lblFile);
-            this.Controls.Add(this.Panel1);
-            this.Controls.Add(this.lblFiles);
-            this.Controls.Add(this.pbarTotal);
-            this.Controls.Add(this.lblStatus);
-            this.Controls.Add(this.PictureBox1);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.MaximizeBox = false;
-            this.Name = "frmStatusBackup";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Datensicherung";
-            this.Panel1.ResumeLayout(false);
-            this.plShutdown.ResumeLayout(false);
-            this.plShutdown.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            resources.ApplyResources(this, "$this");
+            AutoScaleMode = AutoScaleMode.Dpi;
+            BackColor = System.Drawing.Color.White;
+            Controls.Add(lblFile);
+            Controls.Add(Panel1);
+            Controls.Add(lblFiles);
+            Controls.Add(pbarTotal);
+            Controls.Add(lblStatus);
+            Controls.Add(PictureBox1);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
+            Name = "frmStatusBackup";
+            Panel1.ResumeLayout(false);
+            plShutdown.ResumeLayout(false);
+            plShutdown.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)PictureBox1).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         internal PictureBox PictureBox1;

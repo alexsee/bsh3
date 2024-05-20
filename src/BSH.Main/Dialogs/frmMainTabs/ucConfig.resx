@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
+  <!--
     Microsoft ResX Schema 
-    
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -117,71 +117,1254 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="ImageList1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>133, 18</value>
-  </metadata>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Label4.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="rbFAB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>878, 116</value>
+  </data>
+  <data name="chkAbortWhenNotAvailable.Text" xml:space="preserve">
+    <value>Auf Medium warten, wenn Sicherungsmedium nicht verfügbar ist.</value>
+  </data>
+  <data name="TabPage5.Text" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="&gt;&gt;chkInfoBackupDone.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rbTSB.CheckAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>TopLeft</value>
+  </data>
+  <data name="rdNoCompress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>26, 14</value>
+  </data>
+  <data name="chkDeactivateAutoBackupsWhenAkku.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="plFTP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdEditSchedule.Text" xml:space="preserve">
+    <value>Zeitplan</value>
+  </data>
+  <data name="Label2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>27, 27</value>
+  </data>
+  <data name="&gt;&gt;rdCompress.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPassword.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;chkInfoBackupDone.Name" xml:space="preserve">
+    <value>chkInfoBackupDone</value>
+  </data>
+  <data name="chkFtpEncryption.Text" xml:space="preserve">
+    <value>Unverschlüsselte Verbindung erzwingen</value>
+  </data>
+  <data name="&gt;&gt;chkShowLocalized.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="cmdDeleteExcludeCompress.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="rbMB.Text" xml:space="preserve">
+    <value>Manuelle Sicherung
+Sie erstellen die Sicherungen manuell.</value>
+  </data>
+  <data name="chkAbortWhenNotAvailable.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 158</value>
+  </data>
+  <data name="TabPage5.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;cmdCloseExcludeCompress.Name" xml:space="preserve">
+    <value>cmdCloseExcludeCompress</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer.ZOrder" xml:space="preserve">
+    <value>12</value>
+  </data>
+  <data name="rdEncrypt.Location" type="System.Drawing.Point, System.Drawing">
+    <value>26, 236</value>
+  </data>
+  <data name="Label4.Location" type="System.Drawing.Point, System.Drawing">
+    <value>45, 56</value>
+  </data>
+  <data name="lblCompressionLevel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>57, 192</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;cmdAddExcludeCompress.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="tcOptions.TabIndex" type="System.Int32, mscorlib">
+    <value>85</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader3.Name" xml:space="preserve">
+    <value>ColumnHeader3</value>
+  </data>
+  <data name="Label8.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;Label8.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="plExcludeCompress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>800, 436</value>
+  </data>
+  <data name="lblCompressionLevel.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;chkRemind.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage2.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;cmdEditSchedule.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="Label4.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="tcOptions.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <data name="&gt;&gt;plExcludeCompress.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="ColumnHeader3.Width" type="System.Int32, mscorlib">
+    <value>464</value>
+  </data>
+  <data name="cmdDeleteExcludeCompress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>191, 364</value>
+  </data>
+  <data name="TabPage4.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="rdNoCompress.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtUNCUsername.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="Label12.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Label10.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 8</value>
+  </data>
+  <data name="TabPage4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>936, 442</value>
+  </data>
+  <data name="cmdDeleteSource.Location" type="System.Drawing.Point, System.Drawing">
+    <value>177, 374</value>
+  </data>
+  <data name="chkRemindSpace.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="txtUNCUsername.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="chkDeactivateAutoBackupsWhenAkku.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 120</value>
+  </data>
+  <data name="rbMB.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 311</value>
+  </data>
+  <data name="&gt;&gt;txtRemindSpace.Name" xml:space="preserve">
+    <value>txtRemindSpace</value>
+  </data>
+  <data name="txtUNCPassword.Location" type="System.Drawing.Point, System.Drawing">
+    <value>146, 42</value>
+  </data>
+  <data name="txtFTPUsername.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="rbMB.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;rdNoCompress.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtFTPPassword.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdOK.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label1.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="ColumnHeader4.Width" type="System.Int32, mscorlib">
+    <value>464</value>
+  </data>
+  <data name="&gt;&gt;Label11.Parent" xml:space="preserve">
+    <value>plUNCAuthentication</value>
+  </data>
+  <data name="&gt;&gt;cmdDeleteSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage5.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdAddExcludeCompress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>150, 48</value>
+  </data>
+  <data name="&gt;&gt;cmdAddSource.Parent" xml:space="preserve">
+    <value>TabPage1</value>
+  </data>
+  <data name="&gt;&gt;tcOptions.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="Label10.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="Label3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>71, 28</value>
+  </data>
+  <data name="cboMedia.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label6.Name" xml:space="preserve">
+    <value>Label6</value>
+  </data>
+  <data name="&gt;&gt;Label14.Name" xml:space="preserve">
+    <value>Label14</value>
+  </data>
+  <data name="chkAbortWhenNotAvailable.Size" type="System.Drawing.Size, System.Drawing">
+    <value>604, 32</value>
+  </data>
+  <data name="cmdAddSource.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Left</value>
+  </data>
+  <data name="&gt;&gt;Label3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;rdNoCompress.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="ColumnHeader1.Width" type="System.Int32, mscorlib">
+    <value>522</value>
+  </data>
+  <data name="rbMB.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdDeleteSource.Size" type="System.Drawing.Size, System.Drawing">
+    <value>125, 48</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader7.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage3.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="txtFTPServer.TabIndex" type="System.Int32, mscorlib">
+    <value>82</value>
+  </data>
+  <data name="cmdFilter.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tbCompressionLevel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>50, 124</value>
+  </data>
+  <data name="plExcludeCompress.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdCloseExcludeCompress.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;cmdEditSchedule.Name" xml:space="preserve">
+    <value>cmdEditSchedule</value>
+  </data>
+  <data name="&gt;&gt;nudRemind.Name" xml:space="preserve">
+    <value>nudRemind</value>
+  </data>
+  <data name="cmdAddExcludeCompress.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="Label12.TabIndex" type="System.Int32, mscorlib">
+    <value>93</value>
+  </data>
+  <data name="chkInfoBackupDone.TabIndex" type="System.Int32, mscorlib">
+    <value>120</value>
+  </data>
+  <data name="tcOptions.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Label8.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;cmdDeactivateEncrypt.Parent" xml:space="preserve">
+    <value>TabPage3</value>
+  </data>
+  <data name="nudRemind.TabIndex" type="System.Int32, mscorlib">
+    <value>123</value>
+  </data>
+  <data name="Label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>518, 56</value>
+  </data>
+  <data name="&gt;&gt;txtRemindSpace.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TabPage5.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;lvSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListView, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblCompressionLevel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="plExcludeCompress.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPassword.Parent" xml:space="preserve">
+    <value>plUNCAuthentication</value>
+  </data>
+  <data name="txtFTPPath.Size" type="System.Drawing.Size, System.Drawing">
+    <value>478, 33</value>
+  </data>
+  <data name="cmdDeleteSource.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="cmdDeactivateEncrypt.Size" type="System.Drawing.Size, System.Drawing">
+    <value>155, 48</value>
+  </data>
+  <data name="&gt;&gt;chkRemindSpace.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="Label9.TabIndex" type="System.Int32, mscorlib">
+    <value>122</value>
+  </data>
+  <data name="TabPage2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;chkDeactivateAutoBackupsWhenAkku.Name" xml:space="preserve">
+    <value>chkDeactivateAutoBackupsWhenAkku</value>
+  </data>
+  <data name="plUNCAuthentication.Size" type="System.Drawing.Size, System.Drawing">
+    <value>696, 90</value>
+  </data>
+  <data name="&gt;&gt;TabPage2.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;chkShowLocalized.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="chkAbortWhenNotAvailable.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;plFTP.Parent" xml:space="preserve">
+    <value>TabPage5</value>
+  </data>
+  <data name="cmdExcludeCompress.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;plCompressEncrypt.Name" xml:space="preserve">
+    <value>plCompressEncrypt</value>
+  </data>
+  <data name="cmdFilter.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Right</value>
+  </data>
+  <data name="Label12.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;txtFTPPath.Name" xml:space="preserve">
+    <value>txtFTPPath</value>
+  </data>
+  <data name="&gt;&gt;Label1.Name" xml:space="preserve">
+    <value>Label1</value>
+  </data>
+  <data name="chkRemindSpace.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;Label10.Name" xml:space="preserve">
+    <value>Label10</value>
+  </data>
+  <data name="lvSource.Size" type="System.Drawing.Size, System.Drawing">
+    <value>885, 337</value>
+  </data>
+  <data name="TabPage3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;cmdEncrypt.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Label3.ZOrder" xml:space="preserve">
+    <value>13</value>
+  </data>
+  <data name="TabPage1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label15.Location" type="System.Drawing.Point, System.Drawing">
+    <value>45, 10</value>
+  </data>
+  <data name="cmdDeleteExcludeCompress.Text" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="&gt;&gt;Label8.Name" xml:space="preserve">
+    <value>Label8</value>
+  </data>
+  <data name="chkDoPastBackups.TabIndex" type="System.Int32, mscorlib">
+    <value>99</value>
+  </data>
+  <data name="tcOptions.Location" type="System.Drawing.Point, System.Drawing">
+    <value>27, 33</value>
+  </data>
+  <data name="cmdAddExcludeCompress.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="rdEncrypt.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="rdCompress.TabIndex" type="System.Int32, mscorlib">
+    <value>103</value>
+  </data>
+  <data name="&gt;&gt;cmdChangeBackupMedia.Name" xml:space="preserve">
+    <value>cmdChangeBackupMedia</value>
+  </data>
+  <data name="&gt;&gt;rdCompress.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label11.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 28</value>
+  </data>
+  <data name="txtFTPUsername.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdEncrypt.Location" type="System.Drawing.Point, System.Drawing">
+    <value>56, 369</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader4.Name" xml:space="preserve">
+    <value>ColumnHeader4</value>
+  </data>
+  <data name="&gt;&gt;plDevice.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdCloseExcludeCompress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>112, 48</value>
+  </data>
+  <data name="&gt;&gt;lstExcludeCompress.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer.Name" xml:space="preserve">
+    <value>txtFTPServer</value>
+  </data>
+  <data name="txtFTPPath.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="chkInfoBackupDone.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;rdEncrypt.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lvSource.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <data name="txtFTPPort.TabIndex" type="System.Int32, mscorlib">
+    <value>90</value>
+  </data>
+  <data name="txtFTPUsername.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 51</value>
+  </data>
+  <data name="Label10.Text" xml:space="preserve">
+    <value>Benutzername:</value>
+  </data>
+  <data name="&gt;&gt;txtRemindSpace.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;tbCompressionLevel.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="cmdExcludeCompress.Text" xml:space="preserve">
+    <value>Ausschließen</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="txtFTPPassword.TabIndex" type="System.Int32, mscorlib">
+    <value>86</value>
+  </data>
+  <data name="plUNCAuthentication.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Label7.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="chkWaitOnMediaInteractive.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TabPage1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 37</value>
+  </data>
+  <data name="&gt;&gt;Label2.Parent" xml:space="preserve">
+    <value>TabPage5</value>
+  </data>
+  <data name="cmdFTPCheck.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label2.Text" xml:space="preserve">
+    <value>Sicherungsmedium:</value>
+  </data>
+  <data name="&gt;&gt;plFTP.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;cmdFTPCheck.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="tbCompressionLevel.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="chkInfoBackupDone.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 232</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPassword.Name" xml:space="preserve">
+    <value>txtUNCPassword</value>
+  </data>
+  <data name="&gt;&gt;Label6.Parent" xml:space="preserve">
+    <value>plExcludeCompress</value>
+  </data>
+  <data name="TabPage5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>936, 442</value>
+  </data>
+  <data name="plFTP.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 69</value>
+  </data>
+  <data name="&gt;&gt;Label9.Name" xml:space="preserve">
+    <value>Label9</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPassword.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="chkDoPastBackups.Text" xml:space="preserve">
+    <value>Verpasste Sicherungen nachholen</value>
+  </data>
+  <data name="&gt;&gt;TabPage3.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="cmdChange.Text" xml:space="preserve">
+    <value>&amp;Ändern</value>
+  </data>
+  <data name="&gt;&gt;Label10.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>936, 439</value>
+  </data>
+  <data name="cmdFilter.TabIndex" type="System.Int32, mscorlib">
+    <value>116</value>
+  </data>
+  <data name="cboFtpEncoding.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 178</value>
+  </data>
+  <data name="&gt;&gt;chkDeactivateAutoBackupsWhenAkku.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdDeleteSource.TabIndex" type="System.Int32, mscorlib">
+    <value>75</value>
+  </data>
+  <data name="chkShowLocalized.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 195</value>
+  </data>
+  <data name="cmdChange.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;cboMedia.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="cmdEditSchedule.TabIndex" type="System.Int32, mscorlib">
+    <value>98</value>
+  </data>
+  <data name="chkFtpEncryption.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;TabPage3.Parent" xml:space="preserve">
+    <value>tcOptions</value>
+  </data>
+  <data name="Label6.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="cmdEditSchedule.Size" type="System.Drawing.Size, System.Drawing">
+    <value>123, 48</value>
+  </data>
+  <data name="cboFtpEncoding.Items" xml:space="preserve">
+    <value>ISO-8859-1</value>
+  </data>
+  <data name="cboMedia.Location" type="System.Drawing.Point, System.Drawing">
+    <value>218, 22</value>
+  </data>
+  <data name="&gt;&gt;cmdEncrypt.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;plFTP.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdFilter.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <data name="ImageList1.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
-        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
-        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
-        ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAACQ
-        CwAAAk1TRnQBSQFMAgEBAwEAARQBAQEUAQEBFgEAARYBAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFY
-        AwABFgMAAQEBAAEgBQABQAEe/wD/AP8AiQADGwElAygBPAMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMt
-        AUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMTARlsAAQCAyoBQAMzAVUDMwFVAzMBVQMz
-        AVUDMwFVAzMBVQMzAVUDMwFVAzMBVQMzAVUDMwFVAzMBVQMzAVUDMwFVAyoBQAMCAQNkAANPAZ0DMgHp
-        AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/
-        AzgBXWwAAz0BsAMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMh
-        Af8DIQH/AyEB/wMhAf8DPQGuEAAEAQM3AVoDSQGVA0kBmQNJAZkDSQGZA0kBmQNJAZkDSQGZA0kBmQNJ
-        AZkDSQGZA0kBmQNJAZkDSQGZA0kBlQM2AVkEAQwAAz4B3wMyAeoDSgGLA0oBiwNKAYsDSgGLA0oBiwNK
-        AYsDSgGLA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oBiwNKAYsDIwEzaAADFgEeAyEB/wM2AV8DDQER
-        Aw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQM2AWADIQH/
-        AxYBHQwAA0ABcwM7Ad8DRAF/A0IBdwNCAXcDQgF3A0IBdwNCAXcDQgF3A0IBdwNCAXcDQgF3A0IBdwNC
-        AXcDQgF3A0QBfwM7AeADPwFxDwAB/wNLAdGoAAMfASsDIQH/AyQBNTgAAyQBNQMhAf8DHwErDAADSAHD
-        AzYBWDAAAwcBCQQAAzYBWANIAcMPAAH/A0sB0QQAAxUBHQM9AWkDTQGWA08BogNPAaIDTwGiA08BogNP
-        AaIDTwGiA08BogNPAaIDTwGiA08BogNPAaIDTwGiA0gBhQM2AVgDBgEHXAADHwErAyEB/wMkATU4AAMk
-        ATUDIQH/Ax8BKwwAA0MBzAMxAU0sAANCAXcDNwHnBAIDMQFNA0MBzA8AAf8DSwHRBAADKgE/A00BzQMQ
-        AfoDAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DIwHyA04BxgMN
-        ARFcAAMfASsDIQH/AyQBNTgAAyQBNQMhAf8DHwErDAADRQHLAzEBTiwAAxsBJQM4AVwEAAMxAU4DRQHL
-        DwAB/wNLAdEEAAM2AVkDFAH5A0oBjQMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMg
-        AS4DIAEuAyABLgNOAcYDFAH5AxEBFlwAAx8BKwMhAf8DJAE1OAADJAE1AyEB/wMfASsMAANKAagDSwGh
-        AxoBIwMZASIDGQEiAxkBIgMZASIDGQEiAxkBIgMZASIDGQEiAxkBIgMZASIDGQEiAxkBIgMaASMDSgGi
-        A0oBrg8AAf8DSwHRBAADOAFdAwAB/wNCAXQwAANRAbkDAAH/AxIBF1wAAx8BKwMhAf8DJAE1OAADJAE1
-        AyEB/wMfASsMAAM3AVoDIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMh
-        Af8DIQH/AyEB/wMlAf0DIwH+Az0BaQ8AAf8DSwHRBAADOAFdAwAB/wNCAXQIAAMqAUADUQG1AwAB/wMA
-        Af8DAAH/AxQB+QNQAaMDEAEVCAADUQG5AwAB/wMSARdcAAMfASsDIQH/AyQBNTgAAyQBNQMhAf8DHwEr
-        DAADBAEFAzcB5AMtAUQwAAMaASQDKwH0AwwBEA8AAf8DSwHRBAADOAFdAwAB/wNCAXQIAANDAXcDGQH1
-        AwAB/wMAAf8DAAH/AwQB/gM8AeIDOwFjCAADUQG5AwAB/wMSARdcAAMfASsDIQH/Az0BrgM+AZkDPgGZ
-        Az4BmQM/AZcDMwFVJAADJAE1AyEB/wMfASsQAANEAYADSgGxMAADSAGPA0kBnRMAAf8DSwHRBAADOAFd
-        AwAB/wNCAXQIAAM2AVcDPgHfAwAB/wMAAf8DAAH/Ay8B7ANLAY8DGwElCAADUQG5AwAB/wMSARdcAAMf
-        ASsDIQH/AzgByQM7AbsDOwG7AzsBuwM5AcYDIgH+Az4BmQMEAQUcAAMkATUDIQH/Ax8BKxAAAxIBGAMq
-        AfYDGgEjKAADCQELAy8B7wMlATcTAAH/A0sB0QQAAzgBXQMAAf8DQgF0CAADGwEmAzsBZQNEAdkDGAH3
-        AywB7QNQAaAQAANRAbkDAAH/AxIBF1wAAx8BKwMhAf8DJAE1EAADNQFcAyYB9wM7Ab4DMwFVAzMBVQMz
-        AVUDMwFVAzMBVQMzAVUDMwFVAz4BmQMiAfsDDwETFAADSgGkA0cBjSgAAz8BbgNHAcgXAAH/A0sB0QQA
-        AzgBXQMAAf8DQgF0EAADLwFJA0sBjwNEAXkDKAE7EAADUQG5AwAB/wMSARdcAAMfASsDIQH/AyQBNRAA
-        BAEDPwGgAyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DJwH0AzoBbBgAAyUBNgMvAfADCgEN
-        IAADBAEFAzsB4AMyAU8XAAH/A0sB0QQAAzgBXQMAAf8DQgF0MAADUQG5AwAB/wMSARdcAAMWAR4DIQH/
-        AzYBXwMNAREDDQERAw0BEQMSARcDPgGkAyMB/QM8AXkDDQERAw0BEQMNAREDDQERAw0BEQMNAREDDQER
-        AwIBAyAAA0kBuQNGAcYDRgGIA0YBiANGAYgDRgGIA0YBiANGAYgDRgGIA0YBiANJAbsDRQHLBAIUAANC
-        AXQDOQFfBAADOAFdAwAB/wNCAXQQAAMgAS4DSgGLA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLAz4B3wMv
-        AewDEAEVYAADPQGyAyEB/wMhAf8DIQH/AyEB/wMhAf8DJwHzAzEBUUQAAwoBDQNCAXgDSQGZA0kBmQNJ
-        AZkDSQGZA0kBmQNJAZkDSQGZA0kBmQNEAX8DDwEUJAADOAFdAwAB/wNCAXQMAAMiATEDTwHBAwAB/wMA
-        Af8DAAH/AwAB/wMAAf8DAAH/AwAB/wM/AeEDUQGoAwsBDmAAAwIBAwMrAUIDMwFVAzMBVQMzAVUDMQFR
-        AxIBGJwAAzABTAM4AeYDRAHZA1EBuQNRAbkDUQG5A04BzgMAAf8DTwGaAy0BRgMtAUYDLQFGAy0BRgMt
-        AUYDLQFGAyYBOQMbASYDAgED/wAZAAMjATIDUQGwAygB7wMAAf8DAAH/AwAB/wMAAf8DTQGWAxABFf8A
-        PQADAwEEAwwBDwMQARUDEgEXAxIBFwMSARcDEgEXAwkBDP8A4QABQgFNAT4HAAE+AwABKAMAAVgDAAEW
-        AwABAQEAAQEFAAEIAQEWAAP/AQAI/wHAAwAI/wHAAwAF/wH4AQABAQHAAwABwAEAAQ8C/wH4AQABAQHA
-        AwABwAEAAQ8CAAE4AQABAQHAAwABgAEAAQcCAAE5Av8BwAMAAY8B/wHHAT8B/QE5BgABjwH/AccBPwH4
-        ATkGAAGPAf8BxwE/AfkBOQYAAY8B/wHHAgABOQEfAf4EAAGPAf8BxwIAATkBGAEGBAABjwH/AccBHwH+
-        ATkBGAEGBAABgAF/AccBnwH+AXkBGAEGBAABgAEfAccBjwH8AXkBGAEeBAABjwEAAQcBzwH8AfkCHgQA
-        AY8BAAEPAccB+AH5AR8B/gQAAYABAAEfAeABAAH5AR4FAAHAAT8B/wHgAQEB/wEcBQABwAF/BP8GAAb/
-        AQABfwHAAwAG/wEAAf8BwAMACP8BwAMACw==
+        AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
+        LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAmU3lzdGVtLldpbmRvd3MuRm9ybXMu
+        SW1hZ2VMaXN0U3RyZWFtZXIBAAAABERhdGEHAgIAAAAJAwAAAA8DAAAAjAsAAAJNU0Z0AUkBTAIBAQMB
+        AAEcAQEBJAEBARYBAAEWAQAE/wEhARAI/wFCAU0BNgcAATYDAAEoAwABWAMAARYDAAEBAQABIAUAAUAB
+        Hv8A/wD/AIkAAxsBJQMoATwDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0B
+        RgMtAUYDLQFGAy0BRgMtAUYDEwEZbAAEAgMqAUADNQFVAzUBVQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUB
+        VQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUBVQMqAUADAgEDZAADUAGdAzoB6QMAAf8DAAH/AwAB/wMAAf8D
+        AAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wM4AV1sAANJAbADIQH/AyEB
+        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/A0oB
+        rhAABAEDNwFaA00BlQNNAZkDTQGZA00BmQNNAZkDTQGZA00BmQNNAZkDTQGZA00BmQNNAZkDTQGZA00B
+        mQNNAZUDNgFZBAEMAANFAd8DOgHqA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oB
+        iwNKAYsDSgGLA0oBiwNKAYsDSgGLAyMBM2gAAxYBHgMhAf8DOQFfAw0BEQMNAREDDQERAw0BEQMNARED
+        DQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDOQFgAyEB/wMWAR0MAANBAXMDRAHfA0YB
+        fwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNGAX8DRQHgA0AB
+        cQ8AAf8DUQHRqAADHgErAyEB/wMkATU4AAMkATUDIQH/Ax4BKwwAA1ABwwM2AVgwAAMHAQkEAAM2AVgD
+        UAHDDwAB/wNRAdEEAAMVAR0DPQFpA04BlgNRAaIDUQGiA1EBogNRAaIDUQGiA1EBogNRAaIDUQGiA1EB
+        ogNRAaIDUQGiA1EBogNJAYUDNgFYAwYBB1wAAx4BKwMhAf8DJAE1OAADJAE1AyEB/wMeASsMAANNAcwD
+        MQFNLAADQwF3Az8B5wQCAzEETQHMDwAB/wNRAdEEAAMqAT8DUwHNAxQB+gMAAf8DAAH/AwAB/wMAAf8D
+        AAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMpAfIDVAHGAw0BEVwAAx4BKwMhAf8DJAE1OAAD
+        JAE1AyEB/wMeASsMAANOAcsDMQFOLAADGwElAzgBXAQAAzEETgHLDwAB/wNRAdEEAAM2AVkDGAH5A0sB
+        jQMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgNUAcYDGAH5AxEB
+        FlwAAx4BKwMhAf8DJAE1OAADJAE1AyEB/wMeASsMAANQAagDTwGhAxoBIwMZASIDGQEiAxkBIgMZASID
+        GQEiAxkBIgMZASIDGQEiAxkBIgMZASIDGQEiAxkBIgMaASMDTgGiA1ABrg8AAf8DUQHRBAADOAFdAwAB
+        /wNCAXQwAANVAbkDAAH/AxIBF1wAAx4BKwMhAf8DJAE1OAADJAE1AyEB/wMeASsMAAM3AVoDIQH/AyEB
+        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMnAf0DJAH+Az0B
+        aQ8AAf8DUQHRBAADOAFdAwAB/wNCAXQIAAMqAUADVAG1AwAB/wMAAf8DAAH/AxgB+QNRAaMDEAEVCAAD
+        VQG5AwAB/wMSARdcAAMeASsDIQH/AyQBNTgAAyQBNQMhAf8DHgErDAADBAEFAz8B5AMtAUQwAAMaASQD
+        LwH0AwwBEA8AAf8DUQHRBAADOAFdAwAB/wNCAXQIAANDAXcDHgH1AwAB/wMAAf8DAAH/AwUB/gNDAeID
+        OwFjCAADVQG5AwAB/wMSARdcAAMeASsDIQH/A0oBrgNJAZkDSQGZA0kBmQNJAZcDNQFVJAADJAE1AyEB
+        /wMeASsQAANGAYADUQGxMAADSwGPA04BnRMAAf8DUQHRBAADOAFdAwAB/wNCAXQIAAM2AVcDRQHfAwAB
+        /wMAAf8DAAH/AzcB7ANLAY8DGwElCAADVQG5AwAB/wMSARdcAAMeASsDIQH/A0UByQNJAbsDSQG7A0kB
+        uwNGAcYDIwH+A0kBmQMEAQUcAAMkATUDIQH/Ax4BKxAAAxIBGAMuAfYDGgEjKAADCQELAzQB7wMlATcT
+        AAH/A1EB0QQAAzgBXQMAAf8DQgF0CAADGwEmAzsBZQNMAdkDHAH3AzQB7QNRAaAQAANVAbkDAAH/AxIB
+        F1wAAx4BKwMhAf8DJAE1EAADOAFcAysB9wNJAb4DNQFVAzUBVQM1AVUDNQFVAzUBVQM1AVUDNQFVA0kB
+        mQMiAfsDDwETFAADTwGkA0oBjSgAAz8BbgNQAcgXAAH/A1EB0QQAAzgBXQMAAf8DQgF0EAADLwFJA0sB
+        jwNEAXkDKAE7EAADVQG5AwAB/wMSARdcAAMeASsDIQH/AyQBNRAABAEDSwGgAyEB/wMhAf8DIQH/AyEB
+        /wMhAf8DIQH/AyEB/wMhAf8DKwH0Az4BbBgAAyUBNgM0AfADCgENIAADBAEFA0UB4AMyAU8XAAH/A1EB
+        0QQAAzgBXQMAAf8DQgF0MAADVQG5AwAB/wMSARdcAAMWAR4DIQH/AzkBXwMNAREDDQERAw0BEQMSARcD
+        SgGkAyUB/QNCAXkDDQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAwIBAyAAA1EBuQNOAcYDSAGIA0gB
+        iANIAYgDSAGIA0gBiANIAYgDSAGIA0gBiANRAbsDTgHLBAIUAANCAXQDOQFfBAADOAFdAwAB/wNCAXQQ
+        AAMgAS4DSgGLA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0UB3wM3AewDEAEVYAADSwGyAyEB/wMhAf8D
+        IQH/AyEB/wMhAf8DLAHzAzMBUUQAAwoBDQNDAXgDTQGZA00BmQNNAZkDTQGZA00BmQNNAZkDTQGZA00B
+        mQNGAX8DDwEUJAADOAFdAwAB/wNCAXQMAAMiATEDVAHBAwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB
+        /wNHAeEDUgGoAwsBDmAAAwIBAwMrAUIDNQFVAzUBVQM1AVUDMwFRAxIBGJwAAzABTANBAeYDTAHZA1UB
+        uQNVAbkDVQG5A1MBzgMAAf8DUAGaAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAyYBOQMbASYDAgED/wAZ
+        AAMjATIDVAGwAy8B7wMAAf8DAAH/AwAB/wMAAf8DTgGWAxABFf8APQADAwEEAwwBDwMQARUDEgEXAxIB
+        FwMSARcDEgEXAwkBDP8A4QABQgFNAT4HAAE+AwABKAMAAVgDAAEWAwABAQEAAQEFAAEIAQEWAAP/AQAI
+        /wHAAwAI/wHAAwAF/wH4AQABAQHAAwABwAEAAQ8C/wH4AQABAQHAAwABwAEAAQ8CAAE4AQABAQHAAwAB
+        gAEAAQcCAAE5Av8BwAMAAY8B/wHHAT8B/QE5BgABjwH/AccBPwH4ATkGAAGPAf8BxwE/AfkBOQYAAY8B
+        /wHHAgABOQEfAf4EAAGPAf8BxwIAATkBGAEGBAABjwH/AccBHwH+ATkBGAEGBAABgAF/AccBnwH+AXkB
+        GAEGBAABgAEfAccBjwH8AXkBGAEeBAABjwEAAQcBzwH8AfkCHgQAAY8BAAEPAccB+AH5AR8B/gQAAYAB
+        AAEfAeABAAH5AR4FAAHAAT8B/wHgAQEB/wEcBQABwAF/BP8GAAb/AQABfwHAAwAG/wEAAf8BwAMACP8B
+        wBkACw==
 </value>
   </data>
-  <data name="rdEncrypt.Text" xml:space="preserve">
-    <value>Datensicherung verschlüsseln (erfordert mehr Rechenleistung)
-Um die Datensicherung vor unberechtigtem Zugriff zu schützen, kann diese verschlüsselt werden. 
-Sie werden dann bei jeder Sitzung nach Ihrem Kennwort gefragt. Die Verschlüsselung kann nicht
-rückwirkend angewendet werden.</value>
+  <data name="&gt;&gt;cmdFTPCheck.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;chkWaitOnMediaInteractive.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="txtFTPPassword.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="tbCompressionLevel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>674, 69</value>
+  </data>
+  <data name="TabPage1.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;lvSource.Parent" xml:space="preserve">
+    <value>TabPage1</value>
+  </data>
+  <data name="cmdEncrypt.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="txtFTPPort.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;ImageList1.Name" xml:space="preserve">
+    <value>ImageList1</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdChangeBackupMedia.TabIndex" type="System.Int32, mscorlib">
+    <value>97</value>
+  </data>
+  <data name="txtUNCPassword.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label15.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Label12.Name" xml:space="preserve">
+    <value>Label12</value>
+  </data>
+  <data name="cmdChange.Location" type="System.Drawing.Point, System.Drawing">
+    <value>746, 6</value>
+  </data>
+  <data name="cmdEditSchedule.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;chkShowLocalized.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;tbCompressionLevel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TrackBar, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtRemindSpace.Location" type="System.Drawing.Point, System.Drawing">
+    <value>69, 60</value>
+  </data>
+  <data name="Label14.Location" type="System.Drawing.Point, System.Drawing">
+    <value>254, 63</value>
+  </data>
+  <data name="cmdDeleteSource.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;TabPage4.Name" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;plExcludeCompress.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="txtUNCPassword.Size" type="System.Drawing.Size, System.Drawing">
+    <value>548, 33</value>
+  </data>
+  <data name="cmdFTPCheck.Size" type="System.Drawing.Size, System.Drawing">
+    <value>122, 34</value>
+  </data>
+  <data name="&gt;&gt;Label2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="chkRemind.TabIndex" type="System.Int32, mscorlib">
+    <value>121</value>
+  </data>
+  <data name="chkDeactivateAutoBackupsWhenAkku.TabIndex" type="System.Int32, mscorlib">
+    <value>112</value>
+  </data>
+  <data name="chkWaitOnMediaInteractive.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="plCompressEncrypt.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 8</value>
+  </data>
+  <data name="Label9.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="TabPage4.Text" xml:space="preserve">
+    <value>Weitere</value>
+  </data>
+  <data name="cmdCloseExcludeCompress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>650, 364</value>
+  </data>
+  <data name="Label8.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="txtBackupPath.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="rbTSB.Text" xml:space="preserve">
+    <value>Zeitplangesteuerte Sicherung
+Sie legen fest, wann eine Datensicherung durchgeführt wird und wie lange diese verfügbar 
+bleiben.</value>
+  </data>
+  <data name="&gt;&gt;txtUNCUsername.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label15.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;Label15.Name" xml:space="preserve">
+    <value>Label15</value>
+  </data>
+  <data name="chkRemindSpace.Text" xml:space="preserve">
+    <value>Warnen, wenn weniger Speicherplatz auf dem Backupmedium verfügbar ist als:</value>
+  </data>
+  <data name="&gt;&gt;TabPage3.Name" xml:space="preserve">
+    <value>TabPage3</value>
+  </data>
+  <data name="&gt;&gt;Label5.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="&gt;&gt;TabPage2.Parent" xml:space="preserve">
+    <value>tcOptions</value>
+  </data>
+  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label5.Name" xml:space="preserve">
+    <value>Label5</value>
+  </data>
+  <data name="rdNoCompress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>392, 32</value>
+  </data>
+  <data name="&gt;&gt;rdEncrypt.Name" xml:space="preserve">
+    <value>rdEncrypt</value>
+  </data>
+  <data name="&gt;&gt;Label1.Parent" xml:space="preserve">
+    <value>TabPage5</value>
+  </data>
+  <data name="chkDoPastBackups.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;Label2.Name" xml:space="preserve">
+    <value>Label2</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader7.Name" xml:space="preserve">
+    <value>ColumnHeader7</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPassword.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>936, 442</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUsername.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="&gt;&gt;Label4.ZOrder" xml:space="preserve">
+    <value>11</value>
+  </data>
+  <data name="&gt;&gt;rbMB.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="chkDoPastBackups.Size" type="System.Drawing.Size, System.Drawing">
+    <value>329, 32</value>
+  </data>
+  <data name="&gt;&gt;cmdAddExcludeCompress.Name" xml:space="preserve">
+    <value>cmdAddExcludeCompress</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader6.Name" xml:space="preserve">
+    <value>ColumnHeader6</value>
+  </data>
+  <data name="tbCompressionLevel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Left, Right</value>
+  </data>
+  <data name="&gt;&gt;cmdAddSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label2.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="rbFAB.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 22</value>
+  </data>
+  <data name="&gt;&gt;chkDoPastBackups.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdAddSource.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;cmdEditSchedule.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="Label11.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cmdChange.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;Label15.Parent" xml:space="preserve">
+    <value>plDevice</value>
+  </data>
+  <data name="&gt;&gt;cboMedia.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdFilter.Location" type="System.Drawing.Point, System.Drawing">
+    <value>676, 374</value>
+  </data>
+  <data name="chkFtpEncryption.Size" type="System.Drawing.Size, System.Drawing">
+    <value>411, 40</value>
+  </data>
+  <data name="&gt;&gt;Label7.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="cmdDeactivateEncrypt.TabIndex" type="System.Int32, mscorlib">
+    <value>105</value>
+  </data>
+  <data name="chkFtpEncryption.Location" type="System.Drawing.Point, System.Drawing">
+    <value>457, 181</value>
+  </data>
+  <data name="cmdEncrypt.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPassword.Name" xml:space="preserve">
+    <value>txtFTPPassword</value>
+  </data>
+  <data name="txtBackupPath.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;plDevice.Name" xml:space="preserve">
+    <value>plDevice</value>
+  </data>
+  <data name="&gt;&gt;chkRemindSpace.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="chkShowLocalized.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="cmdEncrypt.Size" type="System.Drawing.Size, System.Drawing">
+    <value>142, 48</value>
+  </data>
+  <data name="Label8.Location" type="System.Drawing.Point, System.Drawing">
+    <value>536, 10</value>
+  </data>
+  <data name="&gt;&gt;chkInfoBackupDone.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;plUNCAuthentication.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Label3.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="chkRemind.Size" type="System.Drawing.Size, System.Drawing">
+    <value>165, 32</value>
+  </data>
+  <data name="rbFAB.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;rbTSB.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="chkDoPastBackups.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="Label11.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="rbFAB.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;chkRemindSpace.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lstExcludeCompress.Parent" xml:space="preserve">
+    <value>plExcludeCompress</value>
+  </data>
+  <data name="txtBackupPath.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 6</value>
+  </data>
+  <data name="Label5.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Label2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="Label9.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdCloseExcludeCompress.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="plExcludeCompress.TabIndex" type="System.Int32, mscorlib">
+    <value>87</value>
+  </data>
+  <data name="cboMedia.Items" xml:space="preserve">
+    <value>Verzeichnis oder Laufwerk</value>
+  </data>
+  <data name="Label3.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TabPage3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>936, 442</value>
+  </data>
+  <data name="chkInfoBackupDone.Text" xml:space="preserve">
+    <value>Information anzeigen, dass eine Sicherung abgeschlossen ist.</value>
+  </data>
+  <data name="&gt;&gt;rdCompress.Name" xml:space="preserve">
+    <value>rdCompress</value>
+  </data>
+  <data name="TabPage4.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="&gt;&gt;cmdAddSource.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="Label6.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 12pt</value>
+  </data>
+  <data name="cmdFTPCheck.Text" xml:space="preserve">
+    <value>&amp;Testen</value>
+  </data>
+  <data name="lvSource.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="nudRemind.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdEncrypt.Text" xml:space="preserve">
+    <value>Einrichten</value>
+  </data>
+  <data name="txtFTPPort.Location" type="System.Drawing.Point, System.Drawing">
+    <value>592, 6</value>
+  </data>
+  <data name="&gt;&gt;plFTP.Name" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="cmdCloseExcludeCompress.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="txtUNCPassword.TabIndex" type="System.Int32, mscorlib">
+    <value>83</value>
+  </data>
+  <data name="&gt;&gt;Label12.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>Modus</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption.Name" xml:space="preserve">
+    <value>chkFtpEncryption</value>
+  </data>
+  <data name="Label10.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;plExcludeCompress.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cboFtpEncoding.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;rbFAB.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cboFtpEncoding.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 36</value>
+  </data>
+  <data name="cmdDeactivateEncrypt.Text" xml:space="preserve">
+    <value>Ausschalten</value>
+  </data>
+  <data name="cmdExcludeCompress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 48</value>
+  </data>
+  <data name="chkInfoBackupDone.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;rdEncrypt.Parent" xml:space="preserve">
+    <value>plCompressEncrypt</value>
+  </data>
+  <data name="txtBackupPath.TabIndex" type="System.Int32, mscorlib">
+    <value>78</value>
+  </data>
+  <data name="Label15.Text" xml:space="preserve">
+    <value>Speicherort:</value>
+  </data>
+  <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9.75pt</value>
+  </data>
+  <data name="&gt;&gt;TabPage3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label5.Text" xml:space="preserve">
+    <value>Kennwort:</value>
+  </data>
+  <data name="TabPage4.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="tcOptions.Size" type="System.Drawing.Size, System.Drawing">
+    <value>944, 480</value>
+  </data>
+  <data name="chkDoPastBackups.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label8.TabIndex" type="System.Int32, mscorlib">
+    <value>89</value>
+  </data>
+  <data name="chkDeactivateAutoBackupsWhenAkku.Text" xml:space="preserve">
+    <value>Im Akkubetrieb automatische Sicherungen ausschalten.</value>
+  </data>
+  <data name="txtRemindSpace.Size" type="System.Drawing.Size, System.Drawing">
+    <value>176, 33</value>
+  </data>
+  <data name="Label6.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;rbTSB.Name" xml:space="preserve">
+    <value>rbTSB</value>
+  </data>
+  <data name="&gt;&gt;rbFAB.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="cboMedia.TabIndex" type="System.Int32, mscorlib">
+    <value>95</value>
+  </data>
+  <data name="&gt;&gt;txtUNCUsername.Parent" xml:space="preserve">
+    <value>plUNCAuthentication</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUsername.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="&gt;&gt;cmdAddExcludeCompress.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="chkShowLocalized.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="plDevice.Size" type="System.Drawing.Size, System.Drawing">
+    <value>872, 188</value>
+  </data>
+  <data name="Label7.Location" type="System.Drawing.Point, System.Drawing">
+    <value>45, 142</value>
+  </data>
+  <data name="&gt;&gt;chkAbortWhenNotAvailable.Name" xml:space="preserve">
+    <value>chkAbortWhenNotAvailable</value>
+  </data>
+  <data name="rdCompress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>26, 74</value>
+  </data>
+  <data name="&gt;&gt;txtUNCUsername.Name" xml:space="preserve">
+    <value>txtUNCUsername</value>
+  </data>
+  <data name="rdNoCompress.TabIndex" type="System.Int32, mscorlib">
+    <value>104</value>
+  </data>
+  <data name="chkRemindSpace.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="plFTP.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="Label7.Text" xml:space="preserve">
+    <value>Verzeichnis:</value>
+  </data>
+  <data name="&gt;&gt;plUNCAuthentication.Parent" xml:space="preserve">
+    <value>plDevice</value>
+  </data>
+  <data name="&gt;&gt;Label3.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="&gt;&gt;rbTSB.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdChange.TabIndex" type="System.Int32, mscorlib">
+    <value>79</value>
+  </data>
+  <data name="Label3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="txtFTPPort.Size" type="System.Drawing.Size, System.Drawing">
+    <value>72, 33</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="&gt;&gt;lblCompressionLevel.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="chkWaitOnMediaInteractive.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 270</value>
+  </data>
+  <data name="cmdAddSource.Size" type="System.Drawing.Size, System.Drawing">
+    <value>147, 48</value>
+  </data>
+  <data name="chkRemind.Text" xml:space="preserve">
+    <value>Erinnern, wenn</value>
+  </data>
+  <data name="chkShowLocalized.Size" type="System.Drawing.Size, System.Drawing">
+    <value>315, 32</value>
+  </data>
+  <data name="cmdChangeBackupMedia.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 344</value>
+  </data>
+  <data name="plDevice.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdAddSource.Location" type="System.Drawing.Point, System.Drawing">
+    <value>22, 374</value>
+  </data>
+  <data name="&gt;&gt;chkRemind.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;TabPage1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtRemindSpace.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;rdCompress.Parent" xml:space="preserve">
+    <value>plCompressEncrypt</value>
+  </data>
+  <data name="&gt;&gt;TabPage5.Parent" xml:space="preserve">
+    <value>tcOptions</value>
+  </data>
+  <data name="cmdAddExcludeCompress.Text" xml:space="preserve">
+    <value>Hinzufügen</value>
+  </data>
+  <data name="&gt;&gt;cmdOK.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="cboMedia.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="lstExcludeCompress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>33, 76</value>
+  </data>
+  <data name="&gt;&gt;tcOptions.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdDeleteSource.Parent" xml:space="preserve">
+    <value>TabPage1</value>
+  </data>
+  <data name="TabPage1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;plDevice.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="cmdChange.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdDeleteSource.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;txtBackupPath.Parent" xml:space="preserve">
+    <value>plDevice</value>
+  </data>
+  <data name="&gt;&gt;chkWaitOnMediaInteractive.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtUNCPassword.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Label10.Parent" xml:space="preserve">
+    <value>plUNCAuthentication</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUsername.Name" xml:space="preserve">
+    <value>txtFTPUsername</value>
+  </data>
+  <data name="&gt;&gt;TabPage2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="plCompressEncrypt.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdFilter.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label3.TabIndex" type="System.Int32, mscorlib">
+    <value>81</value>
   </data>
   <data name="rbFAB.Text" xml:space="preserve">
     <value>Vollautomatische Sicherung (empfohlen)
@@ -189,7 +1372,1139 @@ Der vollautomatische Sicherungsmodus sichert Ihre Dateien stündlich. Diese Sich
 für 24 Stunden verfügbar. Danach sind tägliche Sicherungen für 30 Tage verfügbar. Anschließend 
 werden wöchentliche Sicherungen verfügbar sein, solange genug Speicherplatz verfügbar ist.</value>
   </data>
+  <data name="lstExcludeCompress.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdFTPCheck.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;chkDeactivateAutoBackupsWhenAkku.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="cmdAddSource.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="chkDoPastBackups.Location" type="System.Drawing.Point, System.Drawing">
+    <value>204, 257</value>
+  </data>
+  <data name="Label14.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;Label4.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="txtFTPPath.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 138</value>
+  </data>
+  <data name="Label5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 28</value>
+  </data>
+  <data name="tbCompressionLevel.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="lvSource.TabIndex" type="System.Int32, mscorlib">
+    <value>73</value>
+  </data>
+  <data name="Label12.Size" type="System.Drawing.Size, System.Drawing">
+    <value>98, 28</value>
+  </data>
+  <data name="chkAbortWhenNotAvailable.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;cmdOK.Name" xml:space="preserve">
+    <value>cmdOK</value>
+  </data>
+  <data name="TabPage4.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label14.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkAbortWhenNotAvailable.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;tbCompressionLevel.Parent" xml:space="preserve">
+    <value>plCompressEncrypt</value>
+  </data>
+  <data name="&gt;&gt;Label11.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cmdDeleteSource.Text" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="&gt;&gt;cmdChangeBackupMedia.Parent" xml:space="preserve">
+    <value>TabPage5</value>
+  </data>
+  <data name="Label1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>213, 348</value>
+  </data>
+  <data name="txtUNCUsername.TabIndex" type="System.Int32, mscorlib">
+    <value>81</value>
+  </data>
+  <data name="Label15.TabIndex" type="System.Int32, mscorlib">
+    <value>80</value>
+  </data>
+  <data name="rdCompress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>582, 32</value>
+  </data>
+  <data name="rbFAB.CheckAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>TopLeft</value>
+  </data>
+  <data name="$this.AutoScroll" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;txtFTPUsername.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>45, 10</value>
+  </data>
+  <data name="&gt;&gt;Label12.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TabPage5.Name" xml:space="preserve">
+    <value>TabPage5</value>
+  </data>
+  <data name="&gt;&gt;TabPage4.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="cmdDeleteExcludeCompress.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;chkShowLocalized.Name" xml:space="preserve">
+    <value>chkShowLocalized</value>
+  </data>
+  <data name="tcOptions.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdOK.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TabPage2.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Label4.TabIndex" type="System.Int32, mscorlib">
+    <value>83</value>
+  </data>
+  <data name="cmdEncrypt.TabIndex" type="System.Int32, mscorlib">
+    <value>97</value>
+  </data>
+  <data name="nudRemind.Size" type="System.Drawing.Size, System.Drawing">
+    <value>130, 33</value>
+  </data>
+  <data name="Label1.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;chkRemind.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;Label1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rdEncrypt.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;txtFTPPassword.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="&gt;&gt;cmdChange.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;plDevice.Parent" xml:space="preserve">
+    <value>TabPage5</value>
+  </data>
+  <data name="Label9.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="rbFAB.TabIndex" type="System.Int32, mscorlib">
+    <value>92</value>
+  </data>
+  <data name="cmdDeactivateEncrypt.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label9.Location" type="System.Drawing.Point, System.Drawing">
+    <value>380, 306</value>
+  </data>
+  <data name="&gt;&gt;cmdDeactivateEncrypt.Name" xml:space="preserve">
+    <value>cmdDeactivateEncrypt</value>
+  </data>
+  <data name="&gt;&gt;Label15.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rdCompress.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;lvSource.Name" xml:space="preserve">
+    <value>lvSource</value>
+  </data>
+  <data name="lvSource.Location" type="System.Drawing.Point, System.Drawing">
+    <value>22, 20</value>
+  </data>
+  <data name="rdCompress.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Label9.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Label4.Name" xml:space="preserve">
+    <value>Label4</value>
+  </data>
+  <data name="&gt;&gt;cmdCloseExcludeCompress.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Label5.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;tcOptions.Name" xml:space="preserve">
+    <value>tcOptions</value>
+  </data>
+  <data name="&gt;&gt;chkWaitOnMediaInteractive.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cmdFilter.Text" xml:space="preserve">
+    <value>Dateien ausschließen</value>
+  </data>
+  <data name="Label5.Location" type="System.Drawing.Point, System.Drawing">
+    <value>45, 99</value>
+  </data>
+  <data name="&gt;&gt;Label7.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="&gt;&gt;ToolTip1.Name" xml:space="preserve">
+    <value>ToolTip1</value>
+  </data>
+  <data name="cmdOK.TabIndex" type="System.Int32, mscorlib">
+    <value>86</value>
+  </data>
+  <data name="chkDeactivateAutoBackupsWhenAkku.Size" type="System.Drawing.Size, System.Drawing">
+    <value>516, 32</value>
+  </data>
+  <data name="&gt;&gt;cmdEncrypt.Parent" xml:space="preserve">
+    <value>TabPage3</value>
+  </data>
+  <data name="&gt;&gt;cmdChangeBackupMedia.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Label7.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdChangeBackupMedia.Text" xml:space="preserve">
+    <value>Wechseln</value>
+  </data>
+  <data name="txtRemindSpace.TabIndex" type="System.Int32, mscorlib">
+    <value>111</value>
+  </data>
+  <data name="&gt;&gt;lblCompressionLevel.Parent" xml:space="preserve">
+    <value>plCompressEncrypt</value>
+  </data>
+  <data name="Label6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>465, 32</value>
+  </data>
+  <data name="chkDeactivateAutoBackupsWhenAkku.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;chkRemindSpace.Name" xml:space="preserve">
+    <value>chkRemindSpace</value>
+  </data>
+  <data name="&gt;&gt;Label8.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.UserControl, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtFTPServer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 6</value>
+  </data>
+  <data name="plDevice.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdDeactivateEncrypt.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdAddSource.TabIndex" type="System.Int32, mscorlib">
+    <value>74</value>
+  </data>
+  <data name="cmdDeleteExcludeCompress.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;Label14.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="Label12.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;cmdDeactivateEncrypt.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TabPage1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;rbFAB.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="Label10.TabIndex" type="System.Int32, mscorlib">
+    <value>82</value>
+  </data>
+  <data name="rbTSB.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 149</value>
+  </data>
+  <data name="Label8.Size" type="System.Drawing.Size, System.Drawing">
+    <value>52, 28</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPath.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="rbMB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>364, 60</value>
+  </data>
+  <data name="Label11.Text" xml:space="preserve">
+    <value>Kennwort:</value>
+  </data>
+  <data name="&gt;&gt;cboMedia.Name" xml:space="preserve">
+    <value>cboMedia</value>
+  </data>
+  <data name="TabPage4.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="plCompressEncrypt.Size" type="System.Drawing.Size, System.Drawing">
+    <value>916, 353</value>
+  </data>
+  <data name="&gt;&gt;plCompressEncrypt.Parent" xml:space="preserve">
+    <value>TabPage3</value>
+  </data>
+  <data name="&gt;&gt;tbCompressionLevel.Name" xml:space="preserve">
+    <value>tbCompressionLevel</value>
+  </data>
+  <data name="txtFTPPath.TabIndex" type="System.Int32, mscorlib">
+    <value>88</value>
+  </data>
+  <data name="Label7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>112, 28</value>
+  </data>
+  <data name="&gt;&gt;Label6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdAddExcludeCompress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>33, 364</value>
+  </data>
+  <data name="rbMB.CheckAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>TopLeft</value>
+  </data>
+  <data name="&gt;&gt;plUNCAuthentication.Name" xml:space="preserve">
+    <value>plUNCAuthentication</value>
+  </data>
+  <data name="Label1.TabIndex" type="System.Int32, mscorlib">
+    <value>96</value>
+  </data>
+  <data name="txtUNCUsername.Size" type="System.Drawing.Size, System.Drawing">
+    <value>548, 33</value>
+  </data>
+  <data name="cmdChangeBackupMedia.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;plCompressEncrypt.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;cmdEditSchedule.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdDeleteExcludeCompress.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Label11.Name" xml:space="preserve">
+    <value>Label11</value>
+  </data>
+  <data name="lstExcludeCompress.ItemHeight" type="System.Int32, mscorlib">
+    <value>28</value>
+  </data>
+  <data name="cboFtpEncoding.Items1" xml:space="preserve">
+    <value>UTF-8</value>
+  </data>
+  <data name="&gt;&gt;Label7.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Label12.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="rdEncrypt.TabIndex" type="System.Int32, mscorlib">
+    <value>102</value>
+  </data>
+  <data name="&gt;&gt;cmdFilter.Parent" xml:space="preserve">
+    <value>TabPage1</value>
+  </data>
+  <data name="&gt;&gt;cmdCloseExcludeCompress.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblCompressionLevel.Name" xml:space="preserve">
+    <value>lblCompressionLevel</value>
+  </data>
+  <data name="plUNCAuthentication.TabIndex" type="System.Int32, mscorlib">
+    <value>85</value>
+  </data>
+  <data name="&gt;&gt;lstExcludeCompress.Name" xml:space="preserve">
+    <value>lstExcludeCompress</value>
+  </data>
+  <data name="Label15.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;cmdChange.Parent" xml:space="preserve">
+    <value>plDevice</value>
+  </data>
+  <data name="&gt;&gt;cmdExcludeCompress.Name" xml:space="preserve">
+    <value>cmdExcludeCompress</value>
+  </data>
+  <data name="plUNCAuthentication.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label1.Text" xml:space="preserve">
+    <value>Ermöglicht das Wechseln des Sicherungsmediums auf ein 
+neues (leeres) Medium ohne die Einstellungen zu verlieren.</value>
+  </data>
+  <data name="chkWaitOnMediaInteractive.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lstExcludeCompress.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdExcludeCompress.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>144, 144</value>
+  </data>
+  <data name="txtFTPUsername.TabIndex" type="System.Int32, mscorlib">
+    <value>84</value>
+  </data>
+  <data name="rbTSB.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Label15.Size" type="System.Drawing.Size, System.Drawing">
+    <value>117, 28</value>
+  </data>
+  <data name="txtFTPPath.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label11.TabIndex" type="System.Int32, mscorlib">
+    <value>84</value>
+  </data>
+  <data name="&gt;&gt;cmdOK.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdAddExcludeCompress.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;chkWaitOnMediaInteractive.Name" xml:space="preserve">
+    <value>chkWaitOnMediaInteractive</value>
+  </data>
+  <data name="TabPage2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="cmdEditSchedule.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="rbMB.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdExcludeCompress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>732, 124</value>
+  </data>
+  <data name="Label2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>183, 28</value>
+  </data>
+  <data name="cmdOK.Text" xml:space="preserve">
+    <value>&amp;Speichern</value>
+  </data>
+  <data name="plExcludeCompress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>98, 27</value>
+  </data>
+  <data name="TabPage5.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="ColumnHeader7.Width" type="System.Int32, mscorlib">
+    <value>521</value>
+  </data>
+  <data name="&gt;&gt;Label9.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="Label14.Size" type="System.Drawing.Size, System.Drawing">
+    <value>41, 28</value>
+  </data>
+  <data name="chkRemind.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;chkRemind.Name" xml:space="preserve">
+    <value>chkRemind</value>
+  </data>
+  <data name="&gt;&gt;rbMB.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rbTSB.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;cmdOK.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;chkFtpEncryption.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="txtFTPPassword.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 94</value>
+  </data>
+  <data name="rdNoCompress.Text" xml:space="preserve">
+    <value>Keine Kompression oder Verschlüsselung</value>
+  </data>
+  <data name="plCompressEncrypt.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="nudRemind.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="chkRemind.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 308</value>
+  </data>
+  <data name="&gt;&gt;cboMedia.Parent" xml:space="preserve">
+    <value>TabPage5</value>
+  </data>
+  <data name="txtRemindSpace.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;nudRemind.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="Label14.Text" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="chkShowLocalized.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>ucConfig</value>
+  </data>
+  <data name="&gt;&gt;rbFAB.Name" xml:space="preserve">
+    <value>rbFAB</value>
+  </data>
+  <data name="chkRemindSpace.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 22</value>
+  </data>
+  <data name="&gt;&gt;nudRemind.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rbTSB.TabIndex" type="System.Int32, mscorlib">
+    <value>93</value>
+  </data>
+  <data name="&gt;&gt;Label7.Name" xml:space="preserve">
+    <value>Label7</value>
+  </data>
+  <data name="txtFTPServer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>338, 33</value>
+  </data>
+  <data name="rdNoCompress.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;rdNoCompress.Parent" xml:space="preserve">
+    <value>plCompressEncrypt</value>
+  </data>
+  <data name="&gt;&gt;ToolTip1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label9.Text" xml:space="preserve">
+    <value>Tage keine Sicherung durchgeführt wurde.</value>
+  </data>
+  <data name="&gt;&gt;cmdChangeBackupMedia.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TabPage1.Parent" xml:space="preserve">
+    <value>tcOptions</value>
+  </data>
+  <data name="plDevice.TabIndex" type="System.Int32, mscorlib">
+    <value>94</value>
+  </data>
+  <data name="&gt;&gt;cmdCloseExcludeCompress.Parent" xml:space="preserve">
+    <value>plExcludeCompress</value>
+  </data>
+  <data name="&gt;&gt;cmdFilter.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtRemindSpace.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="cboFtpEncoding.TabIndex" type="System.Int32, mscorlib">
+    <value>92</value>
+  </data>
+  <data name="&gt;&gt;rbMB.Name" xml:space="preserve">
+    <value>rbMB</value>
+  </data>
+  <data name="chkRemindSpace.Size" type="System.Drawing.Size, System.Drawing">
+    <value>720, 32</value>
+  </data>
+  <data name="&gt;&gt;plCompressEncrypt.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lstExcludeCompress.IntegralHeight" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;cmdEncrypt.Name" xml:space="preserve">
+    <value>cmdEncrypt</value>
+  </data>
+  <data name="&gt;&gt;Label6.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="cmdEditSchedule.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label14.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="&gt;&gt;chkDoPastBackups.Name" xml:space="preserve">
+    <value>chkDoPastBackups</value>
+  </data>
+  <data name="&gt;&gt;lblCompressionLevel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tbCompressionLevel.TabIndex" type="System.Int32, mscorlib">
+    <value>106</value>
+  </data>
+  <data name="&gt;&gt;TabPage1.Name" xml:space="preserve">
+    <value>TabPage1</value>
+  </data>
+  <data name="Label11.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Label4.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;chkAbortWhenNotAvailable.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdAddSource.Name" xml:space="preserve">
+    <value>cmdAddSource</value>
+  </data>
+  <data name="&gt;&gt;cmdDeactivateEncrypt.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Label7.TabIndex" type="System.Int32, mscorlib">
+    <value>87</value>
+  </data>
+  <data name="Label10.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 28</value>
+  </data>
+  <data name="plDevice.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 69</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader1.Name" xml:space="preserve">
+    <value>ColumnHeader1</value>
+  </data>
+  <data name="rdEncrypt.Size" type="System.Drawing.Size, System.Drawing">
+    <value>881, 116</value>
+  </data>
+  <data name="rdCompress.Text" xml:space="preserve">
+    <value>Datensicherung komprimieren (erfordert mehr Rechenleistung)</value>
+  </data>
+  <data name="cmdAddExcludeCompress.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Left</value>
+  </data>
+  <data name="&gt;&gt;plUNCAuthentication.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="chkDeactivateAutoBackupsWhenAkku.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Label6.Location" type="System.Drawing.Point, System.Drawing">
+    <value>27, 27</value>
+  </data>
+  <data name="cmdOK.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 48</value>
+  </data>
+  <data name="chkShowLocalized.Text" xml:space="preserve">
+    <value>Ordnerlokalisierungen anzeigen</value>
+  </data>
+  <data name="cboMedia.Items1" xml:space="preserve">
+    <value>Server (FTP)</value>
+  </data>
+  <data name="&gt;&gt;Label5.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;Label2.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="cmdEditSchedule.Location" type="System.Drawing.Point, System.Drawing">
+    <value>57, 248</value>
+  </data>
+  <data name="nudRemind.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="cmdCloseExcludeCompress.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Right</value>
+  </data>
+  <data name="rbMB.TabIndex" type="System.Int32, mscorlib">
+    <value>94</value>
+  </data>
+  <data name="txtBackupPath.Size" type="System.Drawing.Size, System.Drawing">
+    <value>548, 33</value>
+  </data>
+  <data name="cmdDeleteExcludeCompress.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Left</value>
+  </data>
+  <data name="&gt;&gt;cmdFilter.Name" xml:space="preserve">
+    <value>cmdFilter</value>
+  </data>
+  <data name="Label14.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="txtFTPUsername.Size" type="System.Drawing.Size, System.Drawing">
+    <value>478, 33</value>
+  </data>
+  <data name="cmdCloseExcludeCompress.Text" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="txtUNCUsername.Location" type="System.Drawing.Point, System.Drawing">
+    <value>146, 3</value>
+  </data>
+  <data name="cmdExcludeCompress.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdDeleteSource.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Left</value>
+  </data>
+  <data name="TabPage3.Text" xml:space="preserve">
+    <value>Sicherungsoptionen</value>
+  </data>
+  <data name="Label2.TabIndex" type="System.Int32, mscorlib">
+    <value>92</value>
+  </data>
+  <data name="&gt;&gt;TabPage5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtBackupPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdDeleteExcludeCompress.Parent" xml:space="preserve">
+    <value>plExcludeCompress</value>
+  </data>
+  <data name="chkShowLocalized.TabIndex" type="System.Int32, mscorlib">
+    <value>118</value>
+  </data>
+  <data name="txtFTPPassword.Size" type="System.Drawing.Size, System.Drawing">
+    <value>478, 33</value>
+  </data>
+  <data name="Label1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;Label15.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="Label2.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Label14.TabIndex" type="System.Int32, mscorlib">
+    <value>110</value>
+  </data>
+  <data name="&gt;&gt;cmdChange.Name" xml:space="preserve">
+    <value>cmdChange</value>
+  </data>
+  <data name="chkFtpEncryption.TabIndex" type="System.Int32, mscorlib">
+    <value>94</value>
+  </data>
+  <data name="rdEncrypt.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort.Name" xml:space="preserve">
+    <value>txtFTPPort</value>
+  </data>
+  <data name="&gt;&gt;Label3.Name" xml:space="preserve">
+    <value>Label3</value>
+  </data>
+  <data name="ColumnHeader6.Width" type="System.Int32, mscorlib">
+    <value>521</value>
+  </data>
+  <data name="TabPage2.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label14.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Label6.Text" xml:space="preserve">
+    <value>Dateitypen von Kompression ausschließen</value>
+  </data>
+  <data name="&gt;&gt;cmdDeleteExcludeCompress.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="cmdAddSource.Text" xml:space="preserve">
+    <value>Hinzufügen</value>
+  </data>
+  <data name="plFTP.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;nudRemind.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="cmdDeleteExcludeCompress.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;Label5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lstExcludeCompress.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="cmdDeleteExcludeCompress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>150, 48</value>
+  </data>
+  <data name="chkAbortWhenNotAvailable.TabIndex" type="System.Int32, mscorlib">
+    <value>114</value>
+  </data>
+  <data name="rdCompress.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkInfoBackupDone.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="lblCompressionLevel.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="Label10.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;plExcludeCompress.Name" xml:space="preserve">
+    <value>plExcludeCompress</value>
+  </data>
+  <data name="TabPage3.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="txtFTPPort.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtFTPServer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label3.Text" xml:space="preserve">
+    <value>Server:</value>
+  </data>
+  <data name="&gt;&gt;cmdFTPCheck.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="txtRemindSpace.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;cboFtpEncoding.Name" xml:space="preserve">
+    <value>cboFtpEncoding</value>
+  </data>
+  <data name="chkInfoBackupDone.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdChange.Size" type="System.Drawing.Size, System.Drawing">
+    <value>122, 48</value>
+  </data>
+  <data name="&gt;&gt;tcOptions.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;chkDeactivateAutoBackupsWhenAkku.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;ColumnHeader6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Label4.Text" xml:space="preserve">
+    <value>Benutzername:</value>
+  </data>
+  <data name="lvSource.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;rbTSB.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="Label5.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="lstExcludeCompress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>727, 262</value>
+  </data>
+  <data name="rdEncrypt.CheckAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>TopLeft</value>
+  </data>
+  <data name="&gt;&gt;TabPage4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdOK.Location" type="System.Drawing.Point, System.Drawing">
+    <value>801, 512</value>
+  </data>
+  <data name="&gt;&gt;cmdFTPCheck.Name" xml:space="preserve">
+    <value>cmdFTPCheck</value>
+  </data>
+  <data name="chkWaitOnMediaInteractive.TabIndex" type="System.Int32, mscorlib">
+    <value>124</value>
+  </data>
+  <data name="chkWaitOnMediaInteractive.Size" type="System.Drawing.Size, System.Drawing">
+    <value>540, 32</value>
+  </data>
+  <data name="chkRemind.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cmdAddExcludeCompress.Parent" xml:space="preserve">
+    <value>plExcludeCompress</value>
+  </data>
+  <data name="cmdFilter.Size" type="System.Drawing.Size, System.Drawing">
+    <value>231, 48</value>
+  </data>
+  <data name="&gt;&gt;rdNoCompress.Name" xml:space="preserve">
+    <value>rdNoCompress</value>
+  </data>
+  <data name="cmdChangeBackupMedia.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="rbTSB.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Label11.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 46</value>
+  </data>
+  <data name="cmdChangeBackupMedia.Size" type="System.Drawing.Size, System.Drawing">
+    <value>144, 48</value>
+  </data>
+  <data name="chkRemindSpace.TabIndex" type="System.Int32, mscorlib">
+    <value>108</value>
+  </data>
+  <data name="plCompressEncrypt.TabIndex" type="System.Int32, mscorlib">
+    <value>107</value>
+  </data>
+  <data name="&gt;&gt;chkAbortWhenNotAvailable.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="chkAbortWhenNotAvailable.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="cmdFTPCheck.TabIndex" type="System.Int32, mscorlib">
+    <value>91</value>
+  </data>
+  <data name="&gt;&gt;cmdDeleteSource.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="Label12.Location" type="System.Drawing.Point, System.Drawing">
+    <value>45, 186</value>
+  </data>
+  <data name="&gt;&gt;cmdExcludeCompress.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="lstExcludeCompress.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="cmdExcludeCompress.TabIndex" type="System.Int32, mscorlib">
+    <value>108</value>
+  </data>
+  <data name="rbTSB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>822, 88</value>
+  </data>
+  <data name="chkWaitOnMediaInteractive.Text" xml:space="preserve">
+    <value>Aufforderung bei fehlendem Sicherungsmedium anzeigen</value>
+  </data>
+  <data name="txtFTPServer.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="TabPage3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 34</value>
+  </data>
+  <data name="chkRemind.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="chkDoPastBackups.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;cmdDeleteSource.Name" xml:space="preserve">
+    <value>cmdDeleteSource</value>
+  </data>
+  <data name="rdNoCompress.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="plFTP.TabIndex" type="System.Int32, mscorlib">
+    <value>93</value>
+  </data>
+  <data name="Label12.Text" xml:space="preserve">
+    <value>Encoding:</value>
+  </data>
+  <data name="TabPage1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="Label6.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="nudRemind.Location" type="System.Drawing.Point, System.Drawing">
+    <value>219, 306</value>
+  </data>
+  <data name="Label8.Text" xml:space="preserve">
+    <value>Port:</value>
+  </data>
+  <data name="chkInfoBackupDone.Size" type="System.Drawing.Size, System.Drawing">
+    <value>564, 32</value>
+  </data>
+  <data name="&gt;&gt;Label9.Parent" xml:space="preserve">
+    <value>TabPage4</value>
+  </data>
+  <data name="cboMedia.Size" type="System.Drawing.Size, System.Drawing">
+    <value>478, 36</value>
+  </data>
+  <data name="&gt;&gt;cmdDeleteExcludeCompress.Name" xml:space="preserve">
+    <value>cmdDeleteExcludeCompress</value>
+  </data>
+  <data name="TabPage1.Text" xml:space="preserve">
+    <value>Quellverzeichnisse</value>
+  </data>
+  <data name="plFTP.Size" type="System.Drawing.Size, System.Drawing">
+    <value>872, 228</value>
+  </data>
+  <data name="txtFTPServer.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;rbMB.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;ImageList1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ImageList, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdEncrypt.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="txtUNCUsername.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;Label10.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;chkDoPastBackups.Parent" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="Label1.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="plExcludeCompress.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="Label8.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="plUNCAuthentication.Location" type="System.Drawing.Point, System.Drawing">
+    <value>40, 52</value>
+  </data>
+  <data name="&gt;&gt;TabPage2.Name" xml:space="preserve">
+    <value>TabPage2</value>
+  </data>
+  <data name="&gt;&gt;TabPage4.Parent" xml:space="preserve">
+    <value>tcOptions</value>
+  </data>
+  <data name="&gt;&gt;txtBackupPath.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="Label5.TabIndex" type="System.Int32, mscorlib">
+    <value>85</value>
+  </data>
+  <data name="&gt;&gt;txtUNCPassword.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblCompressionLevel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>0, 28</value>
+  </data>
+  <data name="Label4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 28</value>
+  </data>
+  <data name="TabPage5.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="cmdOK.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="tbCompressionLevel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="$this.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;chkDoPastBackups.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Label6.ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="&gt;&gt;txtBackupPath.Name" xml:space="preserve">
+    <value>txtBackupPath</value>
+  </data>
+  <data name="rdEncrypt.Text" xml:space="preserve">
+    <value>Datensicherung verschlüsseln (erfordert mehr Rechenleistung)
+Um die Datensicherung vor unberechtigtem Zugriff zu schützen, kann diese verschlüsselt werden. 
+Sie werden dann bei jeder Sitzung nach Ihrem Kennwort gefragt. Die Verschlüsselung kann nicht
+rückwirkend angewendet werden.</value>
+  </data>
+  <data name="&gt;&gt;Label11.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lvSource.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;rdEncrypt.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="lblCompressionLevel.TabIndex" type="System.Int32, mscorlib">
+    <value>107</value>
+  </data>
+  <data name="TabPage3.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;cmdExcludeCompress.Parent" xml:space="preserve">
+    <value>plCompressEncrypt</value>
+  </data>
+  <data name="Label9.Size" type="System.Drawing.Size, System.Drawing">
+    <value>377, 28</value>
+  </data>
+  <data name="ColumnHeader1.Text" xml:space="preserve">
+    <value>Verzeichnis</value>
+  </data>
+  <data name="lstExcludeCompress.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Left, Right</value>
+  </data>
+  <data name="cmdDeactivateEncrypt.Location" type="System.Drawing.Point, System.Drawing">
+    <value>206, 369</value>
+  </data>
+  <data name="Label7.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1004, 588</value>
+  </data>
+  <data name="rbFAB.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtFTPPort.Parent" xml:space="preserve">
+    <value>plFTP</value>
+  </data>
+  <data name="cmdFTPCheck.Location" type="System.Drawing.Point, System.Drawing">
+    <value>675, 6</value>
+  </data>
   <metadata name="ToolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>313, 15</value>
+  </metadata>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, System.Private.CoreLib, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
+    <value>en</value>
+  </metadata>
+  <metadata name="ImageList1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>133, 18</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
   </metadata>
 </root>

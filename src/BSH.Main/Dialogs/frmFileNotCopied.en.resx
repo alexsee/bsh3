@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema 
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="Label2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 32</value>
+  </data>
+  <data name="Label2.Text" xml:space="preserve">
+    <value>Files could not be copied</value>
+  </data>
+  <data name="lblText.Text" xml:space="preserve">
+    <value>Some files could not be backed up correctly. Fix the issues and retry the backup. The affected files have been added to the log.</value>
+  </data>
+  <data name="ColumnHeader1.Text" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="llCopyToClipboard.Size" type="System.Drawing.Size, System.Drawing">
+    <value>299, 24</value>
+  </data>
+  <data name="llCopyToClipboard.Text" xml:space="preserve">
+    <value>Copy Problem Report to Clipboard</value>
+  </data>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAIAEBAAAAEACABoBQAAJgAAABAQAAABACAAaAQAAI4FAAAoAAAAEAAAACAAAAABAAgAAAAAAAAA
+        AAAAAAAAAAAAAAABAAAAAAAAAgKaAK6y4gAyPsYAAhrOAAIm6gAuXv4dBjLuHSIyygAWQvYAAg66ADJO
+        5gACCqoAAi72AAIy+h3u8vodPm7+AAIm4gAGLu4AIlL+AAIGogAiPt4ABjLyHRJC/h3O1vYAAh7WAAIq
+        6gA6av4ADjbqABZG9gACFsYdKlr+HQIOsgAKOv4A/v7+AEp2/gACAp4Arr7+ADI+yh0CHtIdMmL+ADI6
+        vgAyUvIAAgquAAIu+gACMv4A7vL+HUJy/h0CJuYAAi7yAAIGpgAySuIAAiruAA427gAWRvodAhrKHQAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAA
+        AB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAA
+        AB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAHQAAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAAAAHQAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAB0AAAAdAAAAAP//////CR8LCxMj//////////8dAwQsLCwsEAAA//////8DBA0w
+        LCwsLCwsGAD///8YEQw2BxgsLAMxMRkYAP//GBYYFw4lGAMoDgExLAD/Lwg1FA4hDiUCDiEOMSwQIwQe
+        EhsyDiEODiEOKAMsLBMVJx4SGzIOISEOAgMsLCwLFRonHjQKLSEhDiUYLCwsCwwuGggpLSEtDiEOJRgs
+        LB8NJy4NLSEtCjIOIQ4HMAQJ/ywiICQtKTQbMg4XNg0d//8sBQ8gDQgeEhsUGAwEHf///yweIi4aJx4S
+        NRYGA///////LCwnLhonHggYGP//////////DQwwMwQv///////4H0Eg4Af4H8AD4AeAAcADgAGAAQAA
+        gAEAAAAAAAAAAAAAAAAAAAAAAAAAAIABAACAAYABwAOAAeAHwAP4H+AHKAAAABAAAAAgAAAAAQAgAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEbtgAA+4vwAMsv8ACqz/AAio/wAF
+        o/8AA5+/AAKcYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWxhAAFcTPABvP/wAo6f8AM///ADP//wAz
+        //8AM///ACTh/wAPt/8AAZrPAACZIAAAAAAAAAAAAAAAAAAd0hAAG83PACfo/wAx+/8ALfL/ADP//wAz
+        //8AM///ADP//wAz//8AM///AB7V/wABmu8AAJkgAAAAAAAAAAAAH9fPBS7s/wEv9f8AGcr/IDHI/wAe
+        1f8AM///ADP//wAazv8AB6b/AAen/wAp7P8AHtX/AAGazwAAAAAAI99gBivk/xBB/f8BH9X/z9T1/+/w
+        +/8wP8v/AB7V/wAc0P8wOL3/7/D6/6+w4f8AB6f/ADP//wAPt/8AApxgACblvxZD9v8VRPn/ID3f/+/x
+        /P//////7/D7/zA/y/8wPcb/7/D6///////v8Pr/AAem/wAz//8AJOH/AAOfvwAo6f8pWf//IVL//ww0
+        6v8wS+L/7/H8///////v8Pv/7/D7///////v8Pr/MDi9/wAazv8AM///ADP//wAFo/8HMvH/MmH//ylZ
+        //8hUv//DDTq/zBL4v/v8fz////////////v8Pv/MD3G/wAc0P8AM///ADP//wAz//8ACKj/BDHz/zpp
+        //8yYf//KVn//ww27/8wTOX/7/H9////////////7/D7/zA/y/8AHtX/ADP//wAz//8AM///AAqs/wAv
+        +P9BcP//Omn//xZE9/8wUvD/7/H9///////v8f3/7/H8///////v8Pv/MD/L/wAe1f8AM///ADP//wAM
+        sv8AMvy/MmD9/0Fw//8DM/n/7/L+///////v8f3/MEzl/zBL4v/v8fz//////+/w+/8gMcj/AC3y/wAo
+        6f8AD7i/ADP/YBNE/v9Jd///CTv//6+//v/v8v7/MFLw/ww27/8MNOr/MEvi/+/x/P/P1PX/ABnK/wAx
+        +/8AG8//ABG7YAAAAAAAM//PL1///z1s//8JO///AzP5/xZE9/8pWf//IVL//ww06v8gPd//AR/V/wEv
+        9f8AJ+j/ABXEzwAAAAAAAAAAADP/IAAz/+8qWv//SXf//0Fw//86af//MmH//ylZ//8hUv//FUT5/xBB
+        /f8GMO7/ABvN7wAazCAAAAAAAAAAAAAAAAAAM/8gADP/zxNE/v8yYP3/QXD//zpp//8yYf//KVn//xZD
+        9v8GK+T/AB/XzwAd0iAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM/9gADL8vwAv+P8ALfL/ACvu/wAo
+        6f8AJuW/ACPfYAAAAAAAAAAAAAAAAAAAAADwD///wAMfC4ABI/+AAf//AAD/HQAALCwAABAAAAD//wAA
+        AwQAACwsAAAsLAAA//+AAREMgAEYLMADMTHwDwRw
+</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Problem Report</value>
+  </data>
+</root>
