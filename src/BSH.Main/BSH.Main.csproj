@@ -46,6 +46,11 @@
 		<Compile Update="Dialogs\frmMainTabs\ucOverview.cs">
 			<SubType>UserControl</SubType>
 		</Compile>
+		<Compile Update="Properties\Resources.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
 		<Compile Update="Properties\Settings.Designer.cs">
 			<DesignTimeSharedInput>True</DesignTimeSharedInput>
 			<AutoGen>True</AutoGen>
@@ -97,6 +102,12 @@
 		<PackageReference Include="System.Data.SQLite.Core">
 			<Version>1.0.118</Version>
 		</PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="Properties\Settings.settings">

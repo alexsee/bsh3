@@ -22,7 +22,7 @@ namespace BSH.Main.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace BSH.Main.Properties {
         ///   Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BSH.Main.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace BSH.Main.Properties {
         ///   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
         /// </summary>
-        internal static System.Drawing.Icon AppIco {
+        public static System.Drawing.Icon AppIco {
             get {
                 object obj = ResourceManager.GetObject("AppIco", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -73,7 +73,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap arrow_back_icon_48 {
+        public static System.Drawing.Bitmap arrow_back_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("arrow_back_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -83,7 +83,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap arrow_upward_gray_icon_48 {
+        public static System.Drawing.Bitmap arrow_upward_gray_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("arrow_upward_gray_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -93,7 +93,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap arrow_upward_icon_48 {
+        public static System.Drawing.Bitmap arrow_upward_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("arrow_upward_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -103,7 +103,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap backup_fill_icon_48 {
+        public static System.Drawing.Bitmap backup_fill_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("backup_fill_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -113,7 +113,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sicherung vom  ähnelt.
         /// </summary>
-        internal static string BACKUP_FROM_DATE {
+        public static string BACKUP_FROM_DATE {
             get {
                 return ResourceManager.GetString("BACKUP_FROM_DATE", resourceCulture);
             }
@@ -122,7 +122,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap backup_icon_48 {
+        public static System.Drawing.Bitmap backup_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("backup_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -132,7 +132,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap backup_service_client_32 {
+        public static System.Drawing.Bitmap backup_service_client_32 {
             get {
                 object obj = ResourceManager.GetObject("backup_service_client_32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -142,7 +142,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Automatisches Backup ähnelt.
         /// </summary>
-        internal static string BACKUP_TITLE_AUTOMATIC {
+        public static string BACKUP_TITLE_AUTOMATIC {
             get {
                 return ResourceManager.GetString("BACKUP_TITLE_AUTOMATIC", resourceCulture);
             }
@@ -151,7 +151,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Erste vollständige Datensicherung ähnelt.
         /// </summary>
-        internal static string BACKUP_TITLE_FIRST {
+        public static string BACKUP_TITLE_FIRST {
             get {
                 return ResourceManager.GetString("BACKUP_TITLE_FIRST", resourceCulture);
             }
@@ -160,7 +160,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Manuelle Sicherung ähnelt.
         /// </summary>
-        internal static string BACKUP_TITLE_MANUAL {
+        public static string BACKUP_TITLE_MANUAL {
             get {
                 return ResourceManager.GetString("BACKUP_TITLE_MANUAL", resourceCulture);
             }
@@ -169,7 +169,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Status ist derzeit unbekannt. ähnelt.
         /// </summary>
-        internal static string BackupStatus_ {
+        public static string BackupStatus_ {
             get {
                 return ResourceManager.GetString("BackupStatus_", resourceCulture);
             }
@@ -178,7 +178,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wird ordnungsgemäß ausgeführt. ähnelt.
         /// </summary>
-        internal static string BackupStatus_0 {
+        public static string BackupStatus_0 {
             get {
                 return ResourceManager.GetString("BackupStatus_0", resourceCulture);
             }
@@ -187,7 +187,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung läuft... ähnelt.
         /// </summary>
-        internal static string BackupStatus_1 {
+        public static string BackupStatus_1 {
             get {
                 return ResourceManager.GetString("BackupStatus_1", resourceCulture);
             }
@@ -196,7 +196,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Letzte Datensicherung wurde nicht korrekt abgeschlossen. ähnelt.
         /// </summary>
-        internal static string BackupStatus_2 {
+        public static string BackupStatus_2 {
             get {
                 return ResourceManager.GetString("BackupStatus_2", resourceCulture);
             }
@@ -205,7 +205,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Batteriebetrieb. Es werden keine Sicherungen durchgeführt. ähnelt.
         /// </summary>
-        internal static string BackupStatus_3 {
+        public static string BackupStatus_3 {
             get {
                 return ResourceManager.GetString("BackupStatus_3", resourceCulture);
             }
@@ -214,7 +214,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Automatische Sicherung ist deaktivert. ähnelt.
         /// </summary>
-        internal static string BackupStatus_4 {
+        public static string BackupStatus_4 {
             get {
                 return ResourceManager.GetString("BackupStatus_4", resourceCulture);
             }
@@ -223,7 +223,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cancel_fill_icon_48 {
+        public static System.Drawing.Bitmap cancel_fill_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("cancel_fill_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -233,7 +233,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cancel_icon_48 {
+        public static System.Drawing.Bitmap cancel_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("cancel_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -243,7 +243,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backupbrowser ähnelt.
         /// </summary>
-        internal static string CONTEXT_MENU_BACKUP_BROWSER_WINDOW {
+        public static string CONTEXT_MENU_BACKUP_BROWSER_WINDOW {
             get {
                 return ResourceManager.GetString("CONTEXT_MENU_BACKUP_BROWSER_WINDOW", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Manuelle Sicherung starten ähnelt.
         /// </summary>
-        internal static string CONTEXT_MENU_BACKUP_START {
+        public static string CONTEXT_MENU_BACKUP_START {
             get {
                 return ResourceManager.GetString("CONTEXT_MENU_BACKUP_START", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Manuelle Sicherung starten (+ Optionen) ähnelt.
         /// </summary>
-        internal static string CONTEXT_MENU_BACKUP_START_OPTIONS {
+        public static string CONTEXT_MENU_BACKUP_START_OPTIONS {
             get {
                 return ResourceManager.GetString("CONTEXT_MENU_BACKUP_START_OPTIONS", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home beenden ähnelt.
         /// </summary>
-        internal static string CONTEXT_MENU_CLOSE_APP {
+        public static string CONTEXT_MENU_CLOSE_APP {
             get {
                 return ResourceManager.GetString("CONTEXT_MENU_CLOSE_APP", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Status und Konfigurieren ähnelt.
         /// </summary>
-        internal static string CONTEXT_MENU_STATUS_WINDOW {
+        public static string CONTEXT_MENU_STATUS_WINDOW {
             get {
                 return ResourceManager.GetString("CONTEXT_MENU_STATUS_WINDOW", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap delete_icon_24 {
+        public static System.Drawing.Bitmap delete_icon_24 {
             get {
                 object obj = ResourceManager.GetObject("delete_icon_24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -298,7 +298,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &apos;Täglich um&apos; HH:mm:ss ähnelt.
         /// </summary>
-        internal static string DLG_ADD_SCHEDULE_FORMAT_DAILY {
+        public static string DLG_ADD_SCHEDULE_FORMAT_DAILY {
             get {
                 return ResourceManager.GetString("DLG_ADD_SCHEDULE.FORMAT.DAILY", resourceCulture);
             }
@@ -307,7 +307,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &apos;Stündlich, immer in Minute&apos; mm ähnelt.
         /// </summary>
-        internal static string DLG_ADD_SCHEDULE_FORMAT_HOURLY {
+        public static string DLG_ADD_SCHEDULE_FORMAT_HOURLY {
             get {
                 return ResourceManager.GetString("DLG_ADD_SCHEDULE.FORMAT.HOURLY", resourceCulture);
             }
@@ -316,7 +316,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &apos;Jeden&apos; dd. &apos;im Monat&apos;, &apos;um&apos; HH:mm:ss ähnelt.
         /// </summary>
-        internal static string DLG_ADD_SCHEDULE_FORMAT_MONTHLY {
+        public static string DLG_ADD_SCHEDULE_FORMAT_MONTHLY {
             get {
                 return ResourceManager.GetString("DLG_ADD_SCHEDULE.FORMAT.MONTHLY", resourceCulture);
             }
@@ -325,7 +325,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &apos;Einmalig am&apos; dd.MM.yyyy &apos;um&apos; HH:mm:ss ähnelt.
         /// </summary>
-        internal static string DLG_ADD_SCHEDULE_FORMAT_ONCE {
+        public static string DLG_ADD_SCHEDULE_FORMAT_ONCE {
             get {
                 return ResourceManager.GetString("DLG_ADD_SCHEDULE.FORMAT.ONCE", resourceCulture);
             }
@@ -334,7 +334,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &apos;Jeden&apos; dddd, &apos;um&apos; HH:mm:ss ähnelt.
         /// </summary>
-        internal static string DLG_ADD_SCHEDULE_FORMAT_WEEKLY {
+        public static string DLG_ADD_SCHEDULE_FORMAT_WEEKLY {
             get {
                 return ResourceManager.GetString("DLG_ADD_SCHEDULE.FORMAT.WEEKLY", resourceCulture);
             }
@@ -343,7 +343,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Fehler beim Laden der Sicherung. Siehe Ereignisprotokoll für weitere Details. ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_MSG_ERROR_ERROR_LOAD {
+        public static string DLG_BACKUPBROWSER_MSG_ERROR_ERROR_LOAD {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_MSG_ERROR_ERROR_LOAD", resourceCulture);
             }
@@ -352,7 +352,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Bereit ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_MSG_INFO_READY {
+        public static string DLG_BACKUPBROWSER_MSG_INFO_READY {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_MSG_INFO_READY", resourceCulture);
             }
@@ -361,7 +361,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sind Sie sich sicher, dass Sie die ausgewählte Sicherung löschen möchten? ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT {
+        public static string DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT", resourceCulture);
             }
@@ -370,7 +370,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sicherung löschen ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE {
+        public static string DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE", resourceCulture);
             }
@@ -379,7 +379,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Suchergebnis ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT {
+        public static string DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT", resourceCulture);
             }
@@ -388,7 +388,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Suchergebnis für &quot;{0}&quot; ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT {
+        public static string DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT", resourceCulture);
             }
@@ -397,7 +397,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Suchen ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_SEARCH_TEXT {
+        public static string DLG_BACKUPBROWSER_SEARCH_TEXT {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_SEARCH_TEXT", resourceCulture);
             }
@@ -406,7 +406,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Ordner wird geladen... ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_STATUS_LOADING_TEXT {
+        public static string DLG_BACKUPBROWSER_STATUS_LOADING_TEXT {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_STATUS_LOADING_TEXT", resourceCulture);
             }
@@ -415,7 +415,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Quellverzeichnis existiert nicht, wählen Sie ein anderes Verzeichnis aus. ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_STATUS_NO_SOURCE_FOLDER_TEXT {
+        public static string DLG_BACKUPBROWSER_STATUS_NO_SOURCE_FOLDER_TEXT {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_STATUS_NO_SOURCE_FOLDER_TEXT", resourceCulture);
             }
@@ -424,7 +424,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backupbrowser [Backupmedium nicht verfügbar] ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_TITLE_NOT_AVAILABLE {
+        public static string DLG_BACKUPBROWSER_TITLE_NOT_AVAILABLE {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_TITLE_NOT_AVAILABLE", resourceCulture);
             }
@@ -434,7 +434,7 @@ namespace BSH.Main.Properties {
         ///   Sucht eine lokalisierte Zeichenfolge, die Originalname: {0}
         ///Zielort: &quot;{1}&quot; ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_TT_FOLDER {
+        public static string DLG_BACKUPBROWSER_TT_FOLDER {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_TT_FOLDER", resourceCulture);
             }
@@ -445,7 +445,7 @@ namespace BSH.Main.Properties {
         ///Datumumfang (unkomprimiert): {1}
         ///{2} ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_TT_VERSION {
+        public static string DLG_BACKUPBROWSER_TT_VERSION {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_TT_VERSION", resourceCulture);
             }
@@ -455,7 +455,7 @@ namespace BSH.Main.Properties {
         ///   Sucht eine lokalisierte Zeichenfolge, die Datum: {0}
         ///{1} ähnelt.
         /// </summary>
-        internal static string DLG_BACKUPBROWSER_TT_VERSION_SIMPLE {
+        public static string DLG_BACKUPBROWSER_TT_VERSION_SIMPLE {
             get {
                 return ResourceManager.GetString("DLG_BACKUPBROWSER_TT_VERSION_SIMPLE", resourceCulture);
             }
@@ -466,7 +466,7 @@ namespace BSH.Main.Properties {
         ///
         ///FTP Server meldete:  ähnelt.
         /// </summary>
-        internal static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT {
+        public static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT", resourceCulture);
             }
@@ -475,7 +475,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Fehlgeschlagen ähnelt.
         /// </summary>
-        internal static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE {
+        public static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE", resourceCulture);
             }
@@ -484,7 +484,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte nicht aufgebaut werden. ähnelt.
         /// </summary>
-        internal static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TEXT {
+        public static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TEXT {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TEXT", resourceCulture);
             }
@@ -493,7 +493,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Fehlgeschlagen ähnelt.
         /// </summary>
-        internal static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE {
+        public static string DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE", resourceCulture);
             }
@@ -502,7 +502,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte erfolgreich aufgebaut werden. ähnelt.
         /// </summary>
-        internal static string DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT {
+        public static string DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT", resourceCulture);
             }
@@ -511,7 +511,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Erfolgreich ähnelt.
         /// </summary>
-        internal static string DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE {
+        public static string DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE", resourceCulture);
             }
@@ -522,7 +522,7 @@ namespace BSH.Main.Properties {
         ///
         ///Sie haben kein Medium ausgewählt, auf das gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie ein Medium der Liste auswählen. ähnelt.
         /// </summary>
-        internal static string DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT {
+        public static string DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT", resourceCulture);
             }
@@ -531,7 +531,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Verzeichnis auswählen ähnelt.
         /// </summary>
-        internal static string DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE {
+        public static string DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE", resourceCulture);
             }
@@ -541,7 +541,7 @@ namespace BSH.Main.Properties {
         ///   Sucht eine lokalisierte Zeichenfolge, die Auf dem Sicherungsmedium befinden sich bereits andere Datensicherungen. Es kann daher nicht für den Wechsel benutzt werden.
         ///Wenn Sie ein altes Datensicherungsmedium betrachten möchten bzw. eine Datensicherung dieses Wiederherstellen möchten, benutzen Sie die Importfunktion im &quot;Extras und Support&quot; Menü im Konfigrationsfenster. ähnelt.
         /// </summary>
-        internal static string DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT {
+        public static string DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT", resourceCulture);
             }
@@ -550,7 +550,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Medium enthält Datensicherungen ähnelt.
         /// </summary>
-        internal static string DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE {
+        public static string DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE", resourceCulture);
             }
@@ -559,7 +559,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Täglich ähnelt.
         /// </summary>
-        internal static string DLG_EDIT_SCHEDULER_INTERVAL_DAILY {
+        public static string DLG_EDIT_SCHEDULER_INTERVAL_DAILY {
             get {
                 return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_DAILY", resourceCulture);
             }
@@ -568,7 +568,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Stündlich ähnelt.
         /// </summary>
-        internal static string DLG_EDIT_SCHEDULER_INTERVAL_HOURLY {
+        public static string DLG_EDIT_SCHEDULER_INTERVAL_HOURLY {
             get {
                 return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_HOURLY", resourceCulture);
             }
@@ -577,7 +577,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die immer zur {0} Minute ähnelt.
         /// </summary>
-        internal static string DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT {
+        public static string DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT {
             get {
                 return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT", resourceCulture);
             }
@@ -586,7 +586,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Monatlich ähnelt.
         /// </summary>
-        internal static string DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY {
+        public static string DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY {
             get {
                 return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY", resourceCulture);
             }
@@ -595,7 +595,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die jeden Monat am {0}. um {1} Uhr ähnelt.
         /// </summary>
-        internal static string DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT {
+        public static string DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT {
             get {
                 return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT", resourceCulture);
             }
@@ -604,7 +604,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Einmalig ähnelt.
         /// </summary>
-        internal static string DLG_EDIT_SCHEDULER_INTERVAL_ONCE {
+        public static string DLG_EDIT_SCHEDULER_INTERVAL_ONCE {
             get {
                 return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_ONCE", resourceCulture);
             }
@@ -613,7 +613,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Wöchentlich ähnelt.
         /// </summary>
-        internal static string DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY {
+        public static string DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY {
             get {
                 return ResourceManager.GetString("DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY", resourceCulture);
             }
@@ -624,7 +624,7 @@ namespace BSH.Main.Properties {
         ///
         ///Dieses Feature ist im Augenblick nicht verfügbar, da die Schnellvorschau nicht gefunden wurde. Installieren Sie Backup Service Home neu, um das Problem zu lösen. ähnelt.
         /// </summary>
-        internal static string DLG_FEATURE_NOT_AVAILABLE_TEXT {
+        public static string DLG_FEATURE_NOT_AVAILABLE_TEXT {
             get {
                 return ResourceManager.GetString("DLG_FEATURE_NOT_AVAILABLE_TEXT", resourceCulture);
             }
@@ -633,7 +633,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Feature nicht verfügbar ähnelt.
         /// </summary>
-        internal static string DLG_FEATURE_NOT_AVAILABLE_TITLE {
+        public static string DLG_FEATURE_NOT_AVAILABLE_TITLE {
             get {
                 return ResourceManager.GetString("DLG_FEATURE_NOT_AVAILABLE_TITLE", resourceCulture);
             }
@@ -644,7 +644,7 @@ namespace BSH.Main.Properties {
         ///
         ///Geben Sie einfach die Dateierweiterung derer Dateien ein, die Sie von der Datensicherung ausschließen möchten. Zum Beispiel: doc ähnelt.
         /// </summary>
-        internal static string DLG_FILTER_INPUT_FILE_TYPE_TEXT {
+        public static string DLG_FILTER_INPUT_FILE_TYPE_TEXT {
             get {
                 return ResourceManager.GetString("DLG_FILTER_INPUT_FILE_TYPE_TEXT", resourceCulture);
             }
@@ -653,7 +653,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Dateierweiterung ausschließen ähnelt.
         /// </summary>
-        internal static string DLG_FILTER_INPUT_FILE_TYPE_TITLE {
+        public static string DLG_FILTER_INPUT_FILE_TYPE_TITLE {
             get {
                 return ResourceManager.GetString("DLG_FILTER_INPUT_FILE_TYPE_TITLE", resourceCulture);
             }
@@ -664,7 +664,7 @@ namespace BSH.Main.Properties {
         ///
         ///Das ausgewählte Verzeichnis kann nicht ausgeschlossen werden, da es nicht zur Datensicherung gehört. ähnelt.
         /// </summary>
-        internal static string DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT {
+        public static string DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT {
             get {
                 return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT", resourceCulture);
             }
@@ -673,7 +673,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Verzeichnis nicht verwendbar ähnelt.
         /// </summary>
-        internal static string DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE {
+        public static string DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE {
             get {
                 return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE", resourceCulture);
             }
@@ -684,7 +684,7 @@ namespace BSH.Main.Properties {
         ///
         ///Die ausgewählte Datei kann nicht ausgeschlossen werden, da es nicht zur Datensicherung gehört. ähnelt.
         /// </summary>
-        internal static string DLG_FILTER_MSG_ERROR_FILE_INVALID_TEXT {
+        public static string DLG_FILTER_MSG_ERROR_FILE_INVALID_TEXT {
             get {
                 return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_FILE_INVALID_TEXT", resourceCulture);
             }
@@ -693,7 +693,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Datei nicht verwendbar ähnelt.
         /// </summary>
-        internal static string DLG_FILTER_MSG_ERROR_FILE_INVALID_TITLE {
+        public static string DLG_FILTER_MSG_ERROR_FILE_INVALID_TITLE {
             get {
                 return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_FILE_INVALID_TITLE", resourceCulture);
             }
@@ -702,7 +702,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Der angegebene reguläre Ausdruck (RegEx) ist ungültig. Bitte prüfen Sie den Ausdruck bevor Sie diesen speichern. ähnelt.
         /// </summary>
-        internal static string DLG_FILTER_MSG_ERROR_INVALID_REGEX_TEXT {
+        public static string DLG_FILTER_MSG_ERROR_INVALID_REGEX_TEXT {
             get {
                 return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_INVALID_REGEX_TEXT", resourceCulture);
             }
@@ -711,7 +711,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Reguläre Ausdruck ungültig ähnelt.
         /// </summary>
-        internal static string DLG_FILTER_MSG_ERROR_INVALID_REGEX_TITLE {
+        public static string DLG_FILTER_MSG_ERROR_INVALID_REGEX_TITLE {
             get {
                 return ResourceManager.GetString("DLG_FILTER_MSG_ERROR_INVALID_REGEX_TITLE", resourceCulture);
             }
@@ -720,7 +720,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die http://de.wikipedia.org/wiki/Regulärer_Ausdruck ähnelt.
         /// </summary>
-        internal static string DLG_FILTER_REGEX_LINK {
+        public static string DLG_FILTER_REGEX_LINK {
             get {
                 return ResourceManager.GetString("DLG_FILTER_REGEX_LINK", resourceCulture);
             }
@@ -731,7 +731,7 @@ namespace BSH.Main.Properties {
         ///
         ///Die nötigen Rechte zum Verändern dieser Einstellung fehlen. ähnelt.
         /// </summary>
-        internal static string DLG_MAIN_MSG_ACCESS_DENIED_TEXT {
+        public static string DLG_MAIN_MSG_ACCESS_DENIED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_MAIN_MSG_ACCESS_DENIED_TEXT", resourceCulture);
             }
@@ -740,7 +740,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Zugriff verweigert ähnelt.
         /// </summary>
-        internal static string DLG_MAIN_MSG_ACCESS_DENIED_TITLE {
+        public static string DLG_MAIN_MSG_ACCESS_DENIED_TITLE {
             get {
                 return ResourceManager.GetString("DLG_MAIN_MSG_ACCESS_DENIED_TITLE", resourceCulture);
             }
@@ -749,7 +749,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sind Sie sicher, dass Sie die komplette Konfiguration von Backup Service Home zurücksetzen möchten? ähnelt.
         /// </summary>
-        internal static string DLG_MAIN_MSG_RESET_TEXT {
+        public static string DLG_MAIN_MSG_RESET_TEXT {
             get {
                 return ResourceManager.GetString("DLG_MAIN_MSG_RESET_TEXT", resourceCulture);
             }
@@ -758,7 +758,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Zurücksetzen ähnelt.
         /// </summary>
-        internal static string DLG_MAIN_MSG_RESET_TITLE {
+        public static string DLG_MAIN_MSG_RESET_TITLE {
             get {
                 return ResourceManager.GetString("DLG_MAIN_MSG_RESET_TITLE", resourceCulture);
             }
@@ -767,7 +767,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sie können das Autostart Verhalten von Backup Service Home 3 im Taskmanager deaktivieren. ähnelt.
         /// </summary>
-        internal static string DLG_MAIN_MSG_UWP_AUTOSTART_TEXT {
+        public static string DLG_MAIN_MSG_UWP_AUTOSTART_TEXT {
             get {
                 return ResourceManager.GetString("DLG_MAIN_MSG_UWP_AUTOSTART_TEXT", resourceCulture);
             }
@@ -776,7 +776,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Autostartverhalten ähnelt.
         /// </summary>
-        internal static string DLG_MAIN_MSG_UWP_AUTOSTART_TITLE {
+        public static string DLG_MAIN_MSG_UWP_AUTOSTART_TITLE {
             get {
                 return ResourceManager.GetString("DLG_MAIN_MSG_UWP_AUTOSTART_TITLE", resourceCulture);
             }
@@ -785,7 +785,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Wartungsaufgabe wird durchgeführt... ähnelt.
         /// </summary>
-        internal static string DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT {
+        public static string DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT {
             get {
                 return ResourceManager.GetString("DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT", resourceCulture);
             }
@@ -794,7 +794,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {0} wird verarbeitet... ähnelt.
         /// </summary>
-        internal static string DLG_SHORT_STATUS_FILES_STATUS_TEXT {
+        public static string DLG_SHORT_STATUS_FILES_STATUS_TEXT {
             get {
                 return ResourceManager.GetString("DLG_SHORT_STATUS_FILES_STATUS_TEXT", resourceCulture);
             }
@@ -803,7 +803,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Verarbeitet: {0:N0} von {1:N0} Dateien ähnelt.
         /// </summary>
-        internal static string DLG_STATUS_FILES_PROCESSED_TEXT {
+        public static string DLG_STATUS_FILES_PROCESSED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_STATUS_FILES_PROCESSED_TEXT", resourceCulture);
             }
@@ -812,7 +812,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Abbrechen... ähnelt.
         /// </summary>
-        internal static string DLG_STATUS_STATUS_CANCELED_TEXT {
+        public static string DLG_STATUS_STATUS_CANCELED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_STATUS_STATUS_CANCELED_TEXT", resourceCulture);
             }
@@ -821,7 +821,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  Stufe  ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_LBL_COMPRESSION_STAGE {
+        public static string DLG_UC_CONFIG_LBL_COMPRESSION_STAGE {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_LBL_COMPRESSION_STAGE", resourceCulture);
             }
@@ -830,7 +830,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Hohe Kompression ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_LBL_HIGH_COMPRESSION {
+        public static string DLG_UC_CONFIG_LBL_HIGH_COMPRESSION {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_LBL_HIGH_COMPRESSION", resourceCulture);
             }
@@ -839,7 +839,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Höchste Kompression ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION {
+        public static string DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION", resourceCulture);
             }
@@ -848,7 +848,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Niedrige Kompression ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_LBL_LOW_COMPRESSION {
+        public static string DLG_UC_CONFIG_LBL_LOW_COMPRESSION {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_LBL_LOW_COMPRESSION", resourceCulture);
             }
@@ -857,7 +857,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Keine Kompression ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_LBL_NO_COMPRESSION {
+        public static string DLG_UC_CONFIG_LBL_NO_COMPRESSION {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_LBL_NO_COMPRESSION", resourceCulture);
             }
@@ -866,7 +866,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung zum FTP-Server konnte nicht aufgebaut werden. ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT {
+        public static string DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT", resourceCulture);
             }
@@ -875,7 +875,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die FTP-Verbindung nicht erfolgreich ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE {
+        public static string DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE", resourceCulture);
             }
@@ -886,7 +886,7 @@ namespace BSH.Main.Properties {
         ///
         /// ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_ERROR_MOVE_TEXT {
+        public static string DLG_UC_CONFIG_MSG_ERROR_MOVE_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_MOVE_TEXT", resourceCulture);
             }
@@ -895,7 +895,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem beim Verschieben ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_ERROR_MOVE_TITLE {
+        public static string DLG_UC_CONFIG_MSG_ERROR_MOVE_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_MOVE_TITLE", resourceCulture);
             }
@@ -906,7 +906,7 @@ namespace BSH.Main.Properties {
         ///
         ///Ein Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern. ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TEXT {
+        public static string DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TEXT", resourceCulture);
             }
@@ -915,7 +915,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Gleicher Verzeichnisname ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TITLE {
+        public static string DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TITLE", resourceCulture);
             }
@@ -924,7 +924,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sie haben ein gesamtes Laufwerk als Quellverzeichnis ausgewählt. Backup Service Home 3 unterstützt nur die Sicherung von Verzeichnissen, weshalb Dateien im Stammverzeichnis des Laufwerkes nicht gesichert werden. Verzeichnisse auf dem Laufwerk werden dagegen gesichert. ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TEXT {
+        public static string DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TEXT", resourceCulture);
             }
@@ -933,7 +933,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Gesamtes Laufwerk ausgewählt ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TITLE {
+        public static string DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TITLE", resourceCulture);
             }
@@ -942,7 +942,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung zum FTP-Server konnte erfolgreich aufgebaut werden. ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TEXT {
+        public static string DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TEXT", resourceCulture);
             }
@@ -951,7 +951,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die FTP-Verbindung erfolgreich ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TITLE {
+        public static string DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TITLE", resourceCulture);
             }
@@ -960,7 +960,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Geben Sie die Dateierweiterung ein, die von der Kompression ausgeschlossen werden soll: ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TEXT {
+        public static string DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TEXT", resourceCulture);
             }
@@ -969,7 +969,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Dateierweitung eingeben ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TITLE {
+        public static string DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TITLE", resourceCulture);
             }
@@ -982,7 +982,7 @@ namespace BSH.Main.Properties {
         ///
         ///Möchten Sie den Vorgang fortsetzen? ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT {
+        public static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT", resourceCulture);
             }
@@ -995,7 +995,7 @@ namespace BSH.Main.Properties {
         ///
         ///Möchten Sie den Vorgang fortsetzen? ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT {
+        public static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT", resourceCulture);
             }
@@ -1004,7 +1004,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungen werden gelöscht ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE {
+        public static string DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE", resourceCulture);
             }
@@ -1013,7 +1013,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherungen werden entschlüsselt... ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT {
+        public static string DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT", resourceCulture);
             }
@@ -1022,7 +1022,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Alte Datensicherungen werden gelöscht... ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT {
+        public static string DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT", resourceCulture);
             }
@@ -1031,7 +1031,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungsmedium wird abgeschlossen... ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_STATUS_FINISHING_BACKUP_TEXT {
+        public static string DLG_UC_CONFIG_STATUS_FINISHING_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_STATUS_FINISHING_BACKUP_TEXT", resourceCulture);
             }
@@ -1040,7 +1040,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Neues Medium einrichten... ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_STATUS_INIT_BACKUP_TEXT {
+        public static string DLG_UC_CONFIG_STATUS_INIT_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_STATUS_INIT_BACKUP_TEXT", resourceCulture);
             }
@@ -1049,7 +1049,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Warten auf Fertigstellung einer anderen Aktion... ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_STATUS_WAIT_FOR_FINISH_TEXT {
+        public static string DLG_UC_CONFIG_STATUS_WAIT_FOR_FINISH_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_STATUS_WAIT_FOR_FINISH_TEXT", resourceCulture);
             }
@@ -1058,7 +1058,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Konfigurieren ähnelt.
         /// </summary>
-        internal static string DLG_UC_CONFIG_TITLE {
+        public static string DLG_UC_CONFIG_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_CONFIG_TITLE", resourceCulture);
             }
@@ -1067,7 +1067,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Computer:  ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_COMPUTER {
+        public static string DLG_UC_DO_CONFIGURE_COMPUTER {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_COMPUTER", resourceCulture);
             }
@@ -1076,7 +1076,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Der Speicherort dieses Verzeichnisses kann nicht verändert werden, da der Ordnername identisch sein muss. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TEXT", resourceCulture);
             }
@@ -1085,7 +1085,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Speicherort nicht veränderbar ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TITLE", resourceCulture);
             }
@@ -1094,7 +1094,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Der angegebene Verzeichnispfad wurde nicht gefunden. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT", resourceCulture);
             }
@@ -1103,7 +1103,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die FTP Verbindung fehlgeschlagen ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE", resourceCulture);
             }
@@ -1114,7 +1114,7 @@ namespace BSH.Main.Properties {
         ///
         ///FTP Server meldete: ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT", resourceCulture);
             }
@@ -1123,7 +1123,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Fehlgeschlagen ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE", resourceCulture);
             }
@@ -1132,7 +1132,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Zum Überprüfen des Pfades muss der Ordner, Netzlaufwerk oder Netzwerkfreigabe nun bereit stehen. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT", resourceCulture);
             }
@@ -1141,7 +1141,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Fehlgeschlagen ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE", resourceCulture);
             }
@@ -1150,7 +1150,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die In dem angegebenen Verzeichnis wurde keine Sicherung gefunden. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT", resourceCulture);
             }
@@ -1159,7 +1159,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Keine Sicherung ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE", resourceCulture);
             }
@@ -1168,7 +1168,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sie müssen ein Laufwerk auswählen. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TEXT", resourceCulture);
             }
@@ -1177,7 +1177,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Laufwerk auswählen ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TITLE", resourceCulture);
             }
@@ -1188,7 +1188,7 @@ namespace BSH.Main.Properties {
         ///
         ///Um den Vorgang fortzsetzen muss mindestens eine Option ausgewählt werden. Falls Sie sich unsicher sind, wählen Sie die vollautomatische Datensicherung. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TEXT", resourceCulture);
             }
@@ -1197,7 +1197,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Option wählen ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TITLE", resourceCulture);
             }
@@ -1206,7 +1206,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte erfolgreich aufgebaut werden. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT", resourceCulture);
             }
@@ -1215,7 +1215,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Erfolgreich ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE", resourceCulture);
             }
@@ -1226,7 +1226,7 @@ namespace BSH.Main.Properties {
         ///
         ///Um den Vorgang fortzsetzen müssen Sie die Datensicherung auswählen, die Sie importieren möchten. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT", resourceCulture);
             }
@@ -1235,7 +1235,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sicherung wählen ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TITLE", resourceCulture);
             }
@@ -1246,7 +1246,7 @@ namespace BSH.Main.Properties {
         ///
         ///Sie haben kein Verzeichnis hinzugefügt, dass gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie mindestens ein Verzeichnis der Liste hinzufügen. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TEXT", resourceCulture);
             }
@@ -1255,7 +1255,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Verzeichnis hinzufügen ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TITLE", resourceCulture);
             }
@@ -1266,7 +1266,7 @@ namespace BSH.Main.Properties {
         ///
         ///Sie haben kein Medium ausgewählt, auf das gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie ein Medium der Liste auswählen. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TEXT", resourceCulture);
             }
@@ -1275,7 +1275,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungsmedium hinzufügen ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TITLE", resourceCulture);
             }
@@ -1286,7 +1286,7 @@ namespace BSH.Main.Properties {
         ///
         ///Ein Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home kann nur ein Verzeichnis mit dem selben Namen sichern. Bennenen Sie den Ordner um, um diesen zu sichern. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TEXT", resourceCulture);
             }
@@ -1295,7 +1295,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Gleicher Verzeichnisname ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TITLE", resourceCulture);
             }
@@ -1304,7 +1304,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Das ausgewählte Sicherungsmedium ist nicht leer und enthält bereits Sicherungen von Backup Service Home, die möglicherweise überschrieben werden könnten. Bitte wählen Sie ein anderes Verzeichnis aus oder löschen Sie zuvor manuell die Sicherungen von dem Sicherungsmedium. ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TEXT", resourceCulture);
             }
@@ -1313,7 +1313,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungsmedium nicht leer ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TITLE", resourceCulture);
             }
@@ -1322,7 +1322,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung wird importiert... ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_STATUS_IMPORT_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_STATUS_IMPORT_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_STATUS_IMPORT_TEXT", resourceCulture);
             }
@@ -1331,7 +1331,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Einen Moment bitte... ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_STATUS_IMPORT_WAIT_TEXT {
+        public static string DLG_UC_DO_CONFIGURE_STATUS_IMPORT_WAIT_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_STATUS_IMPORT_WAIT_TEXT", resourceCulture);
             }
@@ -1340,7 +1340,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Konfigurieren ähnelt.
         /// </summary>
-        internal static string DLG_UC_DO_CONFIGURE_TITLE {
+        public static string DLG_UC_DO_CONFIGURE_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_DO_CONFIGURE_TITLE", resourceCulture);
             }
@@ -1349,7 +1349,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  vollautomatisch stündlich ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT", resourceCulture);
             }
@@ -1358,7 +1358,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die noch nicht vorhersehbar ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT", resourceCulture);
             }
@@ -1367,7 +1367,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Voraussichtl. voll am: ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT", resourceCulture);
             }
@@ -1376,7 +1376,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Vollautomatische Sicherung ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_BACKUP_MODE_AUTO_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_BACKUP_MODE_AUTO_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_BACKUP_MODE_AUTO_TEXT", resourceCulture);
             }
@@ -1385,7 +1385,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Manuelle Sicherung ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_BACKUP_MODE_MANUAL_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_BACKUP_MODE_MANUAL_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_BACKUP_MODE_MANUAL_TEXT", resourceCulture);
             }
@@ -1394,7 +1394,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Zeitplanbasierte Sicherung ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_BACKUP_MODE_SCHEDULED_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_BACKUP_MODE_SCHEDULED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_BACKUP_MODE_SCHEDULED_TEXT", resourceCulture);
             }
@@ -1403,7 +1403,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  Die Sicherung wird komprimiert. ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_COMPRESSED_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_COMPRESSED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_COMPRESSED_TEXT", resourceCulture);
             }
@@ -1412,7 +1412,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  Die Sicherung wird verschlüsselt. ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_ENCRYPTED_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_ENCRYPTED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_ENCRYPTED_TEXT", resourceCulture);
             }
@@ -1421,7 +1421,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die freier Speicherplatz nicht ermittelbar ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_FREE_SPACE_NOT_AVAILABLE_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_FREE_SPACE_NOT_AVAILABLE_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_FREE_SPACE_NOT_AVAILABLE_TEXT", resourceCulture);
             }
@@ -1430,7 +1430,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  wenn Sie die Sicherung manuell anstoßen ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_MANUAL_BACKUP_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_MANUAL_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MANUAL_BACKUP_TEXT", resourceCulture);
             }
@@ -1439,7 +1439,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  externen Laufwerk ({0}). ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_MEDIA_EXTERNAL_HDD_BACKUP_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_MEDIA_EXTERNAL_HDD_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MEDIA_EXTERNAL_HDD_BACKUP_TEXT", resourceCulture);
             }
@@ -1448,7 +1448,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  auf einem FTP Server ({0}). ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT", resourceCulture);
             }
@@ -1457,7 +1457,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  lokalen Datenträger ({0}). ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT", resourceCulture);
             }
@@ -1466,7 +1466,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  Netzlaufwerk ({0}). ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT", resourceCulture);
             }
@@ -1475,7 +1475,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die keines geplant ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT", resourceCulture);
             }
@@ -1484,7 +1484,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Noch nicht durchgeführt ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT", resourceCulture);
             }
@@ -1493,7 +1493,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Noch nicht durchgeführt ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT", resourceCulture);
             }
@@ -1502,7 +1502,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Ältestes Backup: ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT", resourceCulture);
             }
@@ -1511,7 +1511,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  auf dem ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_ON_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_ON_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_ON_TEXT", resourceCulture);
             }
@@ -1520,7 +1520,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  nach eingestelltem Zeitplan ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT", resourceCulture);
             }
@@ -1529,7 +1529,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  ({0} Quellverzeichnis(se)) ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT", resourceCulture);
             }
@@ -1538,7 +1538,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home ist derzeit deaktiviert, da Ihr Notebook sich im Batteriebetrieb befindet. ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_BATTERY_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_BATTERY_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_BATTERY_TEXT", resourceCulture);
             }
@@ -1547,7 +1547,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home ist derzeit deaktiviert. ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_TEXT {
+        public static string DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_TEXT", resourceCulture);
             }
@@ -1556,7 +1556,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Bei der letzten Datensicherung ist ein Problem aufgetreten. Möglicherweise ist Ihre Konfiguration nicht korrekt oder das Sicherungslaufwerk ist nicht bereit. ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_STATUS_FAILED {
+        public static string DLG_UC_OVERVIEW_LBL_STATUS_FAILED {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_STATUS_FAILED", resourceCulture);
             }
@@ -1565,7 +1565,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home sichert Ihre Dateien ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_LBL_STATUS_OK {
+        public static string DLG_UC_OVERVIEW_LBL_STATUS_OK {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_STATUS_OK", resourceCulture);
             }
@@ -1574,7 +1574,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {0} wird gesichert... ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_FILE_TEXT {
+        public static string DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_FILE_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_FILE_TEXT", resourceCulture);
             }
@@ -1583,7 +1583,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung wird durchgeführt... ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_TEXT {
+        public static string DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_TEXT {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_TEXT", resourceCulture);
             }
@@ -1592,7 +1592,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Startseite ähnelt.
         /// </summary>
-        internal static string DLG_UC_OVERVIEW_TITLE {
+        public static string DLG_UC_OVERVIEW_TITLE {
             get {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_TITLE", resourceCulture);
             }
@@ -1601,7 +1601,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Abbrechen... ähnelt.
         /// </summary>
-        internal static string DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT {
+        public static string DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT", resourceCulture);
             }
@@ -1610,7 +1610,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap edit_square_icon_24 {
+        public static System.Drawing.Bitmap edit_square_icon_24 {
             get {
                 object obj = ResourceManager.GetObject("edit_square_icon_24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1620,7 +1620,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap error_icon_48 {
+        public static System.Drawing.Bitmap error_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("error_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1630,7 +1630,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_icon_48 {
+        public static System.Drawing.Bitmap folder_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("folder_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1640,7 +1640,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap grid_view_icon_24 {
+        public static System.Drawing.Bitmap grid_view_icon_24 {
             get {
                 object obj = ResourceManager.GetObject("grid_view_icon_24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1650,7 +1650,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap help_icon_48 {
+        public static System.Drawing.Bitmap help_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("help_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1660,7 +1660,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap home_icon_48 {
+        public static System.Drawing.Bitmap home_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("home_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1670,7 +1670,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sobald die erste Datensicherung durchgelaufen ist, können Sie diese durch einen Doppelklick hierauf mit dem Backupbrowser ansehen. ähnelt.
         /// </summary>
-        internal static string INFO_BACKUP_FIRST_RUN_TEXT {
+        public static string INFO_BACKUP_FIRST_RUN_TEXT {
             get {
                 return ResourceManager.GetString("INFO_BACKUP_FIRST_RUN_TEXT", resourceCulture);
             }
@@ -1679,7 +1679,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Erste Sicherung läuft... ähnelt.
         /// </summary>
-        internal static string INFO_BACKUP_FIRST_RUN_TITLE {
+        public static string INFO_BACKUP_FIRST_RUN_TITLE {
             get {
                 return ResourceManager.GetString("INFO_BACKUP_FIRST_RUN_TITLE", resourceCulture);
             }
@@ -1688,7 +1688,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Ihre letzte Datensicherung liegt bereits {0} Tage zurück. Führen Sie eine Datensicherung aus, damit Ihre aktuellen Dateien gesichert sind. ähnelt.
         /// </summary>
-        internal static string INFO_BACKUP_OLD_TEXT {
+        public static string INFO_BACKUP_OLD_TEXT {
             get {
                 return ResourceManager.GetString("INFO_BACKUP_OLD_TEXT", resourceCulture);
             }
@@ -1697,7 +1697,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung veraltet ähnelt.
         /// </summary>
-        internal static string INFO_BACKUP_OLD_TITLE {
+        public static string INFO_BACKUP_OLD_TITLE {
             get {
                 return ResourceManager.GetString("INFO_BACKUP_OLD_TITLE", resourceCulture);
             }
@@ -1706,7 +1706,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Die geplante Sicherung wurde erfolgreich abgeschlossen. ähnelt.
         /// </summary>
-        internal static string INFO_BACKUP_SUCCESSFUL_TEXT {
+        public static string INFO_BACKUP_SUCCESSFUL_TEXT {
             get {
                 return ResourceManager.GetString("INFO_BACKUP_SUCCESSFUL_TEXT", resourceCulture);
             }
@@ -1715,7 +1715,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung erfolgreich ähnelt.
         /// </summary>
-        internal static string INFO_BACKUP_SUCCESSFUL_TITLE {
+        public static string INFO_BACKUP_SUCCESSFUL_TITLE {
             get {
                 return ResourceManager.GetString("INFO_BACKUP_SUCCESSFUL_TITLE", resourceCulture);
             }
@@ -1724,7 +1724,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Die geplante Datensicherung wurde mit Problemen beendet. Klicken Sie hier für mehr Informationen. ähnelt.
         /// </summary>
-        internal static string INFO_BACKUP_UNSUCCESSFUL_TEXT {
+        public static string INFO_BACKUP_UNSUCCESSFUL_TEXT {
             get {
                 return ResourceManager.GetString("INFO_BACKUP_UNSUCCESSFUL_TEXT", resourceCulture);
             }
@@ -1733,7 +1733,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherung mit Problemen beendet ähnelt.
         /// </summary>
-        internal static string INFO_BACKUP_UNSUCCESSFUL_TITLE {
+        public static string INFO_BACKUP_UNSUCCESSFUL_TITLE {
             get {
                 return ResourceManager.GetString("INFO_BACKUP_UNSUCCESSFUL_TITLE", resourceCulture);
             }
@@ -1744,7 +1744,7 @@ namespace BSH.Main.Properties {
         ///
         ///Doppelklicken Sie hier, um die Konfiguration zu starten. ähnelt.
         /// </summary>
-        internal static string INFO_BSH_NOT_CONFIGURED_TEXT {
+        public static string INFO_BSH_NOT_CONFIGURED_TEXT {
             get {
                 return ResourceManager.GetString("INFO_BSH_NOT_CONFIGURED_TEXT", resourceCulture);
             }
@@ -1753,7 +1753,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Nicht konfiguriert. ähnelt.
         /// </summary>
-        internal static string INFO_BSH_NOT_CONFIGURED_TITLE {
+        public static string INFO_BSH_NOT_CONFIGURED_TITLE {
             get {
                 return ResourceManager.GetString("INFO_BSH_NOT_CONFIGURED_TITLE", resourceCulture);
             }
@@ -1762,7 +1762,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Für Backup Service Home 3 sind Aktualisierungen verfügbar, die nun heruntergeladen und installiert werden können. Es wird empfohlen diese Aktualisierungen zu installieren. ähnelt.
         /// </summary>
-        internal static string INFO_BSH_UPDATE_AVAILABLE_TEXT {
+        public static string INFO_BSH_UPDATE_AVAILABLE_TEXT {
             get {
                 return ResourceManager.GetString("INFO_BSH_UPDATE_AVAILABLE_TEXT", resourceCulture);
             }
@@ -1771,7 +1771,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Es sind Aktualisierungen verfügbar ähnelt.
         /// </summary>
-        internal static string INFO_BSH_UPDATE_AVAILABLE_TITLE {
+        public static string INFO_BSH_UPDATE_AVAILABLE_TITLE {
             get {
                 return ResourceManager.GetString("INFO_BSH_UPDATE_AVAILABLE_TITLE", resourceCulture);
             }
@@ -1780,7 +1780,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Es ist derzeit keine Datensicherung vorhanden, die durchsucht werden kann. ähnelt.
         /// </summary>
-        internal static string INFO_NO_BACKUP_AVAILABLE_TEXT {
+        public static string INFO_NO_BACKUP_AVAILABLE_TEXT {
             get {
                 return ResourceManager.GetString("INFO_NO_BACKUP_AVAILABLE_TEXT", resourceCulture);
             }
@@ -1789,7 +1789,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Keine Datensicherung vorhanden ähnelt.
         /// </summary>
-        internal static string INFO_NO_BACKUP_AVAILABLE_TITLE {
+        public static string INFO_NO_BACKUP_AVAILABLE_TITLE {
             get {
                 return ResourceManager.GetString("INFO_NO_BACKUP_AVAILABLE_TITLE", resourceCulture);
             }
@@ -1798,7 +1798,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Auf dem Backupmedium ist nicht mehr genug Speicherplatz vorhanden. Löschen Sie Datensicherungen oder wechseln Sie das Medium. ähnelt.
         /// </summary>
-        internal static string INFO_NO_DISKSPACE_LEFT_TEXT {
+        public static string INFO_NO_DISKSPACE_LEFT_TEXT {
             get {
                 return ResourceManager.GetString("INFO_NO_DISKSPACE_LEFT_TEXT", resourceCulture);
             }
@@ -1807,7 +1807,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Nicht genug Speicherplatz. ähnelt.
         /// </summary>
-        internal static string INFO_NO_DISKSPACE_LEFT_TITLE {
+        public static string INFO_NO_DISKSPACE_LEFT_TITLE {
             get {
                 return ResourceManager.GetString("INFO_NO_DISKSPACE_LEFT_TITLE", resourceCulture);
             }
@@ -1816,7 +1816,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Änderungsdatum:  ähnelt.
         /// </summary>
-        internal static string LBL_CHANGE_DATE {
+        public static string LBL_CHANGE_DATE {
             get {
                 return ResourceManager.GetString("LBL_CHANGE_DATE", resourceCulture);
             }
@@ -1825,7 +1825,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Größe:  ähnelt.
         /// </summary>
-        internal static string LBL_SIZE {
+        public static string LBL_SIZE {
             get {
                 return ResourceManager.GetString("LBL_SIZE", resourceCulture);
             }
@@ -1834,7 +1834,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap list_icon_24 {
+        public static System.Drawing.Bitmap list_icon_24 {
             get {
                 object obj = ResourceManager.GetObject("list_icon_24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1844,7 +1844,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Sicherung abgebrochen wird. ähnelt.
         /// </summary>
-        internal static string MSG_BACKUP_DEVICE_NOT_READY_TEXT {
+        public static string MSG_BACKUP_DEVICE_NOT_READY_TEXT {
             get {
                 return ResourceManager.GetString("MSG_BACKUP_DEVICE_NOT_READY_TEXT", resourceCulture);
             }
@@ -1853,16 +1853,34 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungsmedium nicht bereit ähnelt.
         /// </summary>
-        internal static string MSG_BACKUP_DEVICE_NOT_READY_TITLE {
+        public static string MSG_BACKUP_DEVICE_NOT_READY_TITLE {
             get {
                 return ResourceManager.GetString("MSG_BACKUP_DEVICE_NOT_READY_TITLE", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sie sind auf der neusten Version von Backup Service Home 3. Es wurden keine Aktualisierungen gefunden. ähnelt.
+        /// </summary>
+        public static string MSG_NO_UPDATE_FOUND_TEXT {
+            get {
+                return ResourceManager.GetString("MSG_NO_UPDATE_FOUND_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Keine Aktualisierungen gefunden ähnelt.
+        /// </summary>
+        public static string MSG_NO_UPDATE_FOUND_TITLE {
+            get {
+                return ResourceManager.GetString("MSG_NO_UPDATE_FOUND_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Das angegebene Kennwort ist falsch. ähnelt.
         /// </summary>
-        internal static string MSG_PASSWORD_WRONG_TEXT {
+        public static string MSG_PASSWORD_WRONG_TEXT {
             get {
                 return ResourceManager.GetString("MSG_PASSWORD_WRONG_TEXT", resourceCulture);
             }
@@ -1871,7 +1889,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Kennwort falsch ähnelt.
         /// </summary>
-        internal static string MSG_PASSWORD_WRONG_TITLE {
+        public static string MSG_PASSWORD_WRONG_TITLE {
             get {
                 return ResourceManager.GetString("MSG_PASSWORD_WRONG_TITLE", resourceCulture);
             }
@@ -1880,7 +1898,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Sicherung abgebrochen wird. ähnelt.
         /// </summary>
-        internal static string MSG_TASK_RUNNING_TEXT {
+        public static string MSG_TASK_RUNNING_TEXT {
             get {
                 return ResourceManager.GetString("MSG_TASK_RUNNING_TEXT", resourceCulture);
             }
@@ -1889,7 +1907,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Andere Sicherungsaufgabe in Bearbeitung ähnelt.
         /// </summary>
-        internal static string MSG_TASK_RUNNING_TITLE {
+        public static string MSG_TASK_RUNNING_TITLE {
             get {
                 return ResourceManager.GetString("MSG_TASK_RUNNING_TITLE", resourceCulture);
             }
@@ -1898,7 +1916,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap password_icon_48 {
+        public static System.Drawing.Bitmap password_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("password_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1908,7 +1926,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap search_icon_24 {
+        public static System.Drawing.Bitmap search_icon_24 {
             get {
                 object obj = ResourceManager.GetObject("search_icon_24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1918,7 +1936,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap search_icon_48 {
+        public static System.Drawing.Bitmap search_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("search_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1928,7 +1946,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap settings_backup_restore_icon_24 {
+        public static System.Drawing.Bitmap settings_backup_restore_icon_24 {
             get {
                 object obj = ResourceManager.GetObject("settings_backup_restore_icon_24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1938,7 +1956,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap settings_backup_restore_icon_48 {
+        public static System.Drawing.Bitmap settings_backup_restore_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("settings_backup_restore_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1948,7 +1966,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap settings_fill_icon_48 {
+        public static System.Drawing.Bitmap settings_fill_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("settings_fill_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1958,7 +1976,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap settings_icon_48 {
+        public static System.Drawing.Bitmap settings_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("settings_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1968,7 +1986,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap status_error {
+        public static System.Drawing.Bitmap status_error {
             get {
                 object obj = ResourceManager.GetObject("status_error", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1978,7 +1996,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap status_ok {
+        public static System.Drawing.Bitmap status_ok {
             get {
                 object obj = ResourceManager.GetObject("status_ok", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1988,7 +2006,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
         /// </summary>
-        internal static System.Drawing.Icon status_red {
+        public static System.Drawing.Icon status_red {
             get {
                 object obj = ResourceManager.GetObject("status_red", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -1998,7 +2016,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
         /// </summary>
-        internal static System.Drawing.Icon status_refresh {
+        public static System.Drawing.Icon status_refresh {
             get {
                 object obj = ResourceManager.GetObject("status_refresh", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -2008,7 +2026,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap status_running {
+        public static System.Drawing.Bitmap status_running {
             get {
                 object obj = ResourceManager.GetObject("status_running", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2018,7 +2036,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap storage_icon_48 {
+        public static System.Drawing.Bitmap storage_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("storage_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2028,7 +2046,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home 3 fährt den Computer nach einer erfolgreichen Aktion herunter... ähnelt.
         /// </summary>
-        internal static string TASK_BSH_SHUTDOWN_PC {
+        public static string TASK_BSH_SHUTDOWN_PC {
             get {
                 return ResourceManager.GetString("TASK_BSH_SHUTDOWN_PC", resourceCulture);
             }
@@ -2037,7 +2055,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap taskdialog_bg {
+        public static System.Drawing.Bitmap taskdialog_bg {
             get {
                 object obj = ResourceManager.GetObject("taskdialog_bg", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2047,7 +2065,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap taskdialog_hover {
+        public static System.Drawing.Bitmap taskdialog_hover {
             get {
                 object obj = ResourceManager.GetObject("taskdialog_hover", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2057,7 +2075,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap toggle_off_icon_48 {
+        public static System.Drawing.Bitmap toggle_off_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("toggle_off_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2067,7 +2085,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap toggle_on_icon_48 {
+        public static System.Drawing.Bitmap toggle_on_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("toggle_on_icon_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2077,7 +2095,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap topPassword {
+        public static System.Drawing.Bitmap topPassword {
             get {
                 object obj = ResourceManager.GetObject("topPassword", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2087,7 +2105,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap view_list_icon_24 {
+        public static System.Drawing.Bitmap view_list_icon_24 {
             get {
                 object obj = ResourceManager.GetObject("view_list_icon_24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2097,7 +2115,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap visibility_icon_24 {
+        public static System.Drawing.Bitmap visibility_icon_24 {
             get {
                 object obj = ResourceManager.GetObject("visibility_icon_24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2107,7 +2125,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wartet auf das Datensicherungsmedium,  ähnelt.
         /// </summary>
-        internal static string WAIT_0 {
+        public static string WAIT_0 {
             get {
                 return ResourceManager.GetString("WAIT_0", resourceCulture);
             }
@@ -2116,7 +2134,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wartet auf das Datensicherungsmedium, ähnelt.
         /// </summary>
-        internal static string WAIT_1 {
+        public static string WAIT_1 {
             get {
                 return ResourceManager.GetString("WAIT_1", resourceCulture);
             }
@@ -2125,7 +2143,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wartet auf das Datensicherungsmedium, ähnelt.
         /// </summary>
-        internal static string WAIT_2 {
+        public static string WAIT_2 {
             get {
                 return ResourceManager.GetString("WAIT_2", resourceCulture);
             }
@@ -2134,7 +2152,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wartet auf das Datensicherungsmedium,  ähnelt.
         /// </summary>
-        internal static string WAIT_3 {
+        public static string WAIT_3 {
             get {
                 return ResourceManager.GetString("WAIT_3", resourceCulture);
             }
@@ -2143,7 +2161,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Fügen Sie nun die Verzeichnisse der Liste hinzu, die gesichert werden sollen. ähnelt.
         /// </summary>
-        internal static string WELCOME_STEP_1 {
+        public static string WELCOME_STEP_1 {
             get {
                 return ResourceManager.GetString("WELCOME_STEP_1", resourceCulture);
             }
@@ -2152,7 +2170,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Wählen Sie nun den Datenträger aus, auf dem die Datensicherung gespeichert werden soll. Alternativ können Sie die Datensicherung auf einem FTP-Server speichern. ähnelt.
         /// </summary>
-        internal static string WELCOME_STEP_2 {
+        public static string WELCOME_STEP_2 {
             get {
                 return ResourceManager.GetString("WELCOME_STEP_2", resourceCulture);
             }
@@ -2161,7 +2179,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Nun können Sie entscheiden, ob Backup Service Home alle Einstellungen automatisch festlegt oder ob Sie die Einstellungen manuell vornehmen möchten. ähnelt.
         /// </summary>
-        internal static string WELCOME_STEP_3 {
+        public static string WELCOME_STEP_3 {
             get {
                 return ResourceManager.GetString("WELCOME_STEP_3", resourceCulture);
             }
@@ -2170,7 +2188,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Einen Moment bitte... ähnelt.
         /// </summary>
-        internal static string WELCOME_STEP_4 {
+        public static string WELCOME_STEP_4 {
             get {
                 return ResourceManager.GetString("WELCOME_STEP_4", resourceCulture);
             }
@@ -2179,7 +2197,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Wählen Sie nun das Backupmedium aus, auf dem die zu importierenden Sicherungen liegen. ähnelt.
         /// </summary>
-        internal static string WELCOME_STEP_5 {
+        public static string WELCOME_STEP_5 {
             get {
                 return ResourceManager.GetString("WELCOME_STEP_5", resourceCulture);
             }
@@ -2188,7 +2206,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Wählen Sie nun die Sicherung aus, die Sie importieren möchten. ähnelt.
         /// </summary>
-        internal static string WELCOME_STEP_6 {
+        public static string WELCOME_STEP_6 {
             get {
                 return ResourceManager.GetString("WELCOME_STEP_6", resourceCulture);
             }
@@ -2197,7 +2215,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Legen Sie nun fest, welches Verzeichnis welcher Sicherung zugeordnet werden soll. ähnelt.
         /// </summary>
-        internal static string WELCOME_STEP_7 {
+        public static string WELCOME_STEP_7 {
             get {
                 return ResourceManager.GetString("WELCOME_STEP_7", resourceCulture);
             }
@@ -2206,7 +2224,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Welche Daten möchten Sie sichern? ähnelt.
         /// </summary>
-        internal static string WELCOMETITLE_STEP_1 {
+        public static string WELCOMETITLE_STEP_1 {
             get {
                 return ResourceManager.GetString("WELCOMETITLE_STEP_1", resourceCulture);
             }
@@ -2215,7 +2233,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Wo möchten Sie Ihre Sicherungen ablegen? ähnelt.
         /// </summary>
-        internal static string WELCOMETITLE_STEP_2 {
+        public static string WELCOMETITLE_STEP_2 {
             get {
                 return ResourceManager.GetString("WELCOMETITLE_STEP_2", resourceCulture);
             }
@@ -2224,7 +2242,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Wählen Sie den Sicherungstyp aus. ähnelt.
         /// </summary>
-        internal static string WELCOMETITLE_STEP_3 {
+        public static string WELCOMETITLE_STEP_3 {
             get {
                 return ResourceManager.GetString("WELCOMETITLE_STEP_3", resourceCulture);
             }
@@ -2233,7 +2251,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wird konfiguriert... ähnelt.
         /// </summary>
-        internal static string WELCOMETITLE_STEP_4 {
+        public static string WELCOMETITLE_STEP_4 {
             get {
                 return ResourceManager.GetString("WELCOMETITLE_STEP_4", resourceCulture);
             }
@@ -2242,7 +2260,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Von welchem Medium möchten Sie Sicherungen importieren? ähnelt.
         /// </summary>
-        internal static string WELCOMETITLE_STEP_5 {
+        public static string WELCOMETITLE_STEP_5 {
             get {
                 return ResourceManager.GetString("WELCOMETITLE_STEP_5", resourceCulture);
             }
@@ -2251,7 +2269,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sicherung auswählen. ähnelt.
         /// </summary>
-        internal static string WELCOMETITLE_STEP_6 {
+        public static string WELCOMETITLE_STEP_6 {
             get {
                 return ResourceManager.GetString("WELCOMETITLE_STEP_6", resourceCulture);
             }
@@ -2260,7 +2278,7 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungen der lokalen Dateistruktur anpassen. ähnelt.
         /// </summary>
-        internal static string WELCOMETITLE_STEP_7 {
+        public static string WELCOMETITLE_STEP_7 {
             get {
                 return ResourceManager.GetString("WELCOMETITLE_STEP_7", resourceCulture);
             }
