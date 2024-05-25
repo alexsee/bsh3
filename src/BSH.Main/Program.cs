@@ -36,7 +36,7 @@ static class Program
     public static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration().ReadFrom.AppSettings().CreateLogger();
-        Log.Information($"{APP_TITLE} {CurrentVersion} started.");
+        Log.Information("{APP_TITLE} {CurrentVersion} started.", APP_TITLE, CurrentVersion);
 
         // set current culture
         Application.EnableVisualStyles();
@@ -95,7 +95,7 @@ static class Program
     {
         if (!args.IsUpdateAvailable)
         {
-            Log.Information("No updates founds; Current version: {}", CurrentVersion);
+            Log.Information("No updates founds; Current version: {CurrentVersion}", CurrentVersion);
 
             MessageBox.Show(Resources.MSG_NO_UPDATE_FOUND_TEXT, Resources.MSG_NO_UPDATE_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
