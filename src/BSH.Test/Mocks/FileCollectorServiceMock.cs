@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services.FileCollector;
@@ -33,6 +34,6 @@ public class FileCollectorServiceMock : IFileCollectorService
 
     public List<FileTableRow> GetLocalFileList(string root, bool subFolders = true)
     {
-        return localFiles;
+        return localFiles.Where(x => !FileExclusionHandlers.Any(handler => handler.IsFileExcluded(x))).ToList();
     }
 }
