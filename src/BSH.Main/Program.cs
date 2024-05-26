@@ -95,7 +95,7 @@ static class Program
     {
         if (!args.IsUpdateAvailable)
         {
-            Log.Information("No updates founds; Current version: {CurrentVersion}", CurrentVersion);
+            Log.Information("No updates found; Current version: {CurrentVersion}", CurrentVersion);
 
             MessageBox.Show(Resources.MSG_NO_UPDATE_FOUND_TEXT, Resources.MSG_NO_UPDATE_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
