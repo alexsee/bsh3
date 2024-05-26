@@ -19,6 +19,7 @@ using CommandLine;
 using Serilog;
 using System;
 using System.Reflection;
+using System.Resources;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main;
@@ -35,7 +36,7 @@ static class Program
     public static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration().ReadFrom.AppSettings().CreateLogger();
-        Log.Information($"{APP_TITLE} {CurrentVersion} started.");
+        Log.Information("{APP_TITLE} {CurrentVersion} started.", APP_TITLE, CurrentVersion);
 
         // set current culture
         Application.EnableVisualStyles();
@@ -68,6 +69,7 @@ static class Program
             AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
             AutoUpdater.HttpUserAgent = $"{APP_TITLE}/{CurrentVersion} {uniqueUserId}";
             AutoUpdater.TopMost = true;
+            AutoUpdater.CheckForUpdateEvent += AutoUpdater_CheckForUpdateEvent;
 
             // start backup engine
             BackupLogic.StartupAsync().Wait();
@@ -87,6 +89,19 @@ static class Program
         {
             ExceptionController.HandleGlobalException(null, new System.Threading.ThreadExceptionEventArgs(ex));
         }
+    }
+
+    private static void AutoUpdater_CheckForUpdateEvent(UpdateInfoEventArgs args)
+    {
+        if (!args.IsUpdateAvailable)
+        {
+            Log.Information("No updates founds; Current version: {CurrentVersion}", CurrentVersion);
+
+            MessageBox.Show(Resources.MSG_NO_UPDATE_FOUND_TEXT, Resources.MSG_NO_UPDATE_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        AutoUpdater.ShowUpdateForm(args);
     }
 
     private static void AutoUpdater_ApplicationExitEvent()
