@@ -111,9 +111,9 @@ public class MaskFileExclusion(IConfigurationManager configurationManager) : IFi
                 return true;
             }
         }
-        catch
+        catch (Exception ex)
         {
-            _logger.Error("{fileName} was not ignored due to error with regular expressions {expr}",
+            _logger.Error(ex, "{fileName} was not ignored due to error with regular expressions {expr}",
                 file.FileNamePath(),
                 configurationManager.ExcludeMask);
             return false;
