@@ -29,6 +29,7 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
 using Serilog;
@@ -189,9 +190,24 @@ public class BackupJob : Job
 
             foreach (var folderEntry in folderList)
             {
-                var fileCollector = fileCollectorServiceFactory.Create(configurationManager);
-                var filesList = fileCollector.GetLocalFileList(folderEntry, true);
+                var fileCollector = fileCollectorServiceFactory.Create();
 
+                // file exclusions
+                fileCollector.FileExclusionHandlers.Add(new DatabaseFileExclusion());
+                fileCollector.FileExclusionHandlers.Add(new PathFileExclusion(configurationManager));
+                fileCollector.FileExclusionHandlers.Add(new TypeFileExclusion(configurationManager));
+                fileCollector.FileExclusionHandlers.Add(new SizeFileExclusion(configurationManager));
+                fileCollector.FileExclusionHandlers.Add(new MaskFileExclusion(configurationManager));
+                fileCollector.FileExclusionHandlers.Add(new NameFileExclusion(configurationManager));
+
+                // folder exclusions
+                fileCollector.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
+                fileCollector.FolderExclusionHandlers.Add(new MaskFolderExclusion(configurationManager));
+                fileCollector.FolderExclusionHandlers.Add(new ReparsePointFolderExclusion());
+                fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion());
+                fileCollector.FolderExclusionHandlers.Add(new TemporaryFolderExclusion());
+
+                var filesList = fileCollector.GetLocalFileList(folderEntry, true);
                 emptyFolder.AddRange(fileCollector.EmptyFolders);
                 files.AddRange(filesList);
             }

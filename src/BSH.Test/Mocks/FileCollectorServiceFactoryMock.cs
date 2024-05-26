@@ -15,5 +15,5 @@ public class FileCollectorServiceFactoryMock : IFileCollectorServiceFactory
         this.localFiles = localFiles;
     }
 
-    public IFileCollectorService Create(IConfigurationManager configurationManager) => new FileCollectorServiceMock(localFolders, localFiles);
+    public IFileCollectorService Create() => new FileCollectorServiceMock(localFolders, localFiles);
 }
