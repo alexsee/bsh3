@@ -22,7 +22,10 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
     private FileOrFolderItem? currentItem;
 
     [ObservableProperty]
-    private string blub;
+    private string? currentFavorite;
+
+    [ObservableProperty]
+    private string searchTerms;
 
     public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; } = new();
 
@@ -45,9 +48,21 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
             .ToList();
 
         this.Favorites.Clear();
-        sources.ForEach(x => this.Favorites.Add(x));
+        sources.ForEach(this.Favorites.Add);
+        CurrentFavorite = sources[0];
 
-        await LoadFolderAsync(CurrentVersion.Id, sources[0]);
+        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite);
+    }
+
+    [RelayCommand]
+    private async Task LoadFavorite()
+    {
+        if (CurrentVersion == null || CurrentFavorite == null)
+        {
+            return;
+        }
+
+        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite);
     }
 
     [RelayCommand]
