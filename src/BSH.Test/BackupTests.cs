@@ -140,7 +140,6 @@ public class BackupTests
     {
         // set compressed state
         this.configurationManager.Compression = 1;
-        this.configurationManager.CompressionLevel = "9";
 
         // generate backup job
         var fs = new StorageMock();

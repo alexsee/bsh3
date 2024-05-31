@@ -41,8 +41,6 @@ public class FileSystemStorage : Storage, IStorage
 
     private readonly string networkPassword;
 
-    private readonly int compressionLevel;
-
     private NetworkConnection networkConnection;
 
     public FileSystemStorage(IConfigurationManager configurationManager)
@@ -55,7 +53,6 @@ public class FileSystemStorage : Storage, IStorage
         this.currentStorageVersion = int.Parse(configurationManager.OldBackupPrevent);
         this.networkUserName = configurationManager.UNCUsername;
         this.networkPassword = configurationManager.UNCPassword;
-        this.compressionLevel = int.Parse(configurationManager.CompressionLevel);
 
         networkStorage = !string.IsNullOrEmpty(this.networkUserName);
     }
@@ -76,7 +73,6 @@ public class FileSystemStorage : Storage, IStorage
         this.currentStorageVersion = currentStorageVersion;
         this.networkUserName = networkUserName;
         this.networkPassword = networkPassword;
-        this.compressionLevel = compressionLevel;
 
         networkStorage = !string.IsNullOrEmpty(networkUserName);
     }

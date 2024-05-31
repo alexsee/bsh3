@@ -47,8 +47,6 @@ public class FtpStorage : Storage, IStorage
 
     private readonly bool encryption;
 
-    public int compressionLevel;
-
     private FtpClient ftpClient;
 
     public FtpStorage(IConfigurationManager configurationManager)

@@ -214,8 +214,6 @@ public partial class ucConfig : IMainTabs
         }
 
         // compression factor
-        configurationManager.CompressionLevel = tbCompressionLevel.Value.ToString();
-
         configurationManager.RemindAfterDays = chkRemind.Checked ? ((int)nudRemind.Value).ToString() : "";
 
         // stop system
@@ -328,7 +326,6 @@ public partial class ucConfig : IMainTabs
 
         chkDeactivateAutoBackupsWhenAkku.Checked = configurationManager.DeativateAutoBackupsWhenAkku == "1";
 
-        tbCompressionLevel.Value = int.Parse(configurationManager.CompressionLevel);
         chkAbortWhenNotAvailable.Checked = configurationManager.Medium == "1";
 
         chkShowLocalized.Checked = configurationManager.ShowLocalizedPath == "1";
@@ -578,31 +575,8 @@ public partial class ucConfig : IMainTabs
         txtRemindSpace.Enabled = chkRemindSpace.Checked;
     }
 
-    private void tbCompressionLevel_ValueChanged(object sender, EventArgs e)
-    {
-        if (tbCompressionLevel.Value == 0)
-        {
-            lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_NO_COMPRESSION;
-        }
-        else if (tbCompressionLevel.Value < 5)
-        {
-            lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_LOW_COMPRESSION;
-        }
-        else if (tbCompressionLevel.Value < 9)
-        {
-            lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_HIGH_COMPRESSION;
-        }
-        else
-        {
-            lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION;
-        }
-
-        lblCompressionLevel.Text += Resources.DLG_UC_CONFIG_LBL_COMPRESSION_STAGE + tbCompressionLevel.Value.ToString();
-    }
-
     private void rdCompress_CheckedChanged(object sender, EventArgs e)
     {
-        tbCompressionLevel.Enabled = rdCompress.Checked;
         cmdExcludeCompress.Enabled = rdCompress.Checked;
     }
 
