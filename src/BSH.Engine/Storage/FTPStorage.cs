@@ -255,8 +255,10 @@ public class FtpStorage : Storage, IStorage
         var remoteFilePath = Combine(folderPath, remoteFile + ".zip").GetFtpPath();
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile)) + ".zip";
 
-        using var zipFile = ZipFile.Open(tmpFile, ZipArchiveMode.Create);
-        zipFile.CreateEntryFromFile(GetLocalFileName(localFile), Path.GetFileName(localFile), CompressionLevel.Optimal);
+        using (var zipFile = ZipFile.Open(tmpFile, ZipArchiveMode.Create))
+        {
+            zipFile.CreateEntryFromFile(GetLocalFileName(localFile), Path.GetFileName(localFile), CompressionLevel.Optimal);
+        }
 
         var result = ftpClient.UploadFile(tmpFile, remoteFilePath, FtpRemoteExists.Overwrite, true);
         File.Delete(tmpFile);
