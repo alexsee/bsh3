@@ -15,10 +15,10 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Compression;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
-using Ionic.Zip;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Storage;
@@ -315,16 +315,8 @@ public class FileSystemStorage : Storage, IStorage
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
         Directory.CreateDirectory(Path.GetDirectoryName(remoteFilePath));
 
-        using var fs = new FileStream(remoteFilePath + ".zip", FileMode.Create, FileAccess.ReadWrite);
-        using var zipFile = new ZipFile();
-
-        zipFile.ParallelDeflateThreshold = -1;
-        zipFile.CompressionLevel = (Ionic.Zlib.CompressionLevel)compressionLevel;
-        zipFile.UseZip64WhenSaving = Zip64Option.AsNecessary;
-        zipFile.AddFile(GetLocalFileName(localFile), "\\");
-
-        zipFile.Save(fs);
-
+        using var zipFile = ZipFile.Open(remoteFilePath + ".zip", ZipArchiveMode.Create);
+        zipFile.CreateEntryFromFile(GetLocalFileName(localFile), Path.GetFileName(localFile), CompressionLevel.Optimal);
         return true;
     }
 
@@ -363,8 +355,8 @@ public class FileSystemStorage : Storage, IStorage
         // create directory if not exists
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
-        using var zipFile = new ZipFile(remoteFilePath);
-        zipFile[0].Extract(GetLocalFileName(Path.GetDirectoryName(localFile)), ExtractExistingFileAction.OverwriteSilently);
+        using var zipFile = ZipFile.OpenRead(remoteFilePath);
+        zipFile.GetEntry(Path.GetFileName(localFile)).ExtractToFile(GetLocalFileName(localFile), true);
 
         return true;
     }

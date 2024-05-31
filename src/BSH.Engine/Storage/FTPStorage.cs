@@ -14,6 +14,7 @@
 
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Text;
 using Brightbits.BSH.Engine.Contracts;
@@ -22,7 +23,6 @@ using Brightbits.BSH.Engine.Security;
 using FluentFTP;
 using FluentFTP.Exceptions;
 using FluentFTP.Helpers;
-using Ionic.Zip;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Storage;
@@ -257,16 +257,8 @@ public class FtpStorage : Storage, IStorage
         var remoteFilePath = Combine(folderPath, remoteFile + ".zip").GetFtpPath();
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile)) + ".zip";
 
-        using (var fs = new FileStream(tmpFile, FileMode.Create, FileAccess.ReadWrite))
-        using (var zipFile = new ZipFile())
-        {
-            zipFile.ParallelDeflateThreshold = -1;
-            zipFile.CompressionLevel = (Ionic.Zlib.CompressionLevel)compressionLevel;
-            zipFile.UseZip64WhenSaving = Zip64Option.AsNecessary;
-            zipFile.AddFile(GetLocalFileName(localFile), "\\");
-
-            zipFile.Save(fs);
-        }
+        using var zipFile = ZipFile.Open(tmpFile, ZipArchiveMode.Create);
+        zipFile.CreateEntryFromFile(GetLocalFileName(localFile), Path.GetFileName(localFile), CompressionLevel.Optimal);
 
         var result = ftpClient.UploadFile(tmpFile, remoteFilePath, FtpRemoteExists.Overwrite, true);
         File.Delete(tmpFile);
@@ -385,9 +377,9 @@ public class FtpStorage : Storage, IStorage
             return false;
         }
 
-        using (var zipFile = new ZipFile(tmpFile))
+        using (var zipFile = ZipFile.OpenRead(tmpFile))
         {
-            zipFile[0].Extract(GetLocalFileName(Path.GetDirectoryName(localFile)), ExtractExistingFileAction.OverwriteSilently);
+            zipFile.GetEntry(Path.GetFileName(localFile)).ExtractToFile(GetLocalFileName(localFile), true);
         }
 
         File.Delete(tmpFile);
