@@ -232,7 +232,14 @@ public partial class frmMain
 
     private void AufAktualisierungenPrüfenToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        AutoUpdater.Start("https://updates.brightbits.de/backup_service_home/v3/auto_updater.xml");
+        if (Settings.Default.DownloadBeta)
+        {
+            AutoUpdater.Start("https://updates.brightbits.de/backup_service_home/v3/auto_updater_beta.xml");
+        }
+        else
+        {
+            AutoUpdater.Start("https://updates.brightbits.de/backup_service_home/v3/auto_updater.xml");
+        }
     }
 
     private async void ZurücksetzenToolStripMenuItem_Click(object sender, EventArgs e)
