@@ -31,10 +31,10 @@
 		<Authors>Alexander Seeliger</Authors>
 		<Company>Alexander Seeliger Software</Company>
 		<Copyright>Alexander Seeliger</Copyright>
-		<Version>3.9.0-beta1</Version>
+		<Version>3.9.0-beta2</Version>
 		<Title>Backup Service Home</Title>
-		<AssemblyVersion>3.9.0.1</AssemblyVersion>
-		<FileVersion>3.9.0.1</FileVersion>
+		<AssemblyVersion>3.9.0.2</AssemblyVersion>
+		<FileVersion>3.9.0.2</FileVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Update="Dialogs\frmMainTabs\ucConfig.cs">

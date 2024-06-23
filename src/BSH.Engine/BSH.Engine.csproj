@@ -12,15 +12,15 @@
 		<Authors>Alexander Seeliger</Authors>
 		<Company>Alexander Seeliger Software</Company>
 		<Copyright>Alexander Seeliger</Copyright>
-		<AssemblyVersion>3.9.0.1</AssemblyVersion>
-		<FileVersion>3.9.0.1</FileVersion>
+		<AssemblyVersion>3.9.0.2</AssemblyVersion>
+		<FileVersion>3.9.0.2</FileVersion>
 		<Title>Backup Service Home</Title>
 		<Platforms>x64</Platforms>
 		<Configurations>Debug;Release</Configurations>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<IsPublishable>False</IsPublishable>
 		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
-		<Version>3.9.0-beta1</Version>
+		<Version>3.9.0-beta2</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Update="System.Data">
