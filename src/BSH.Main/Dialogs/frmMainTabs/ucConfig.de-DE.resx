@@ -122,49 +122,49 @@
         AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
         LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAmU3lzdGVtLldpbmRvd3MuRm9ybXMu
         SW1hZ2VMaXN0U3RyZWFtZXIBAAAABERhdGEHAgIAAAAJAwAAAA8DAAAAkAsAAAJNU0Z0AUkBTAIBAQMB
-        AAEkAQEBJAEBARYBAAEWAQAE/wEhAQAI/wFCAU0BNgcAATYDAAEoAwABWAMAARYDAAEBAQABIAUAAUAB
+        AAEsAQEBLAEBARYBAAEWAQAE/wEhAQAI/wFCAU0BNgcAATYDAAEoAwABWAMAARYDAAEBAQABIAUAAUAB
         Hv8A/wD/AIkAAxsBJQMoATwDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0B
         RgMtAUYDLQFGAy0BRgMtAUYDEwEZbAAEAgMqAUADNQFVAzUBVQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUB
-        VQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUBVQMqAUADAgEDZAADUAGdA0EB6QMAAf8DAAH/AwAB/wMAAf8D
-        AAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wM4AV1sAANPAbADIQH/AyEB
-        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/A1AB
-        rhAABAEDNwFaA04BlQNOAZkDTgGZA04BmQNOAZkDTgGZA04BmQNOAZkDTgGZA04BmQNOAZkDTgGZA04B
-        mQNOAZUDNgFZBAEMAANKAd8DPwHqA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oB
+        VQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUBVQMqAUADAgEDZAADUAGdA0UB6QMAAf8DAAH/AwAB/wMAAf8D
+        AAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wM4AV1sAANTAbADIQH/AyEB
+        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/A1MB
+        rhAABAEDNwFaA04BlQNPAZkDTwGZA08BmQNPAZkDTwGZA08BmQNPAZkDTwGZA08BmQNPAZkDTwGZA08B
+        mQNOAZUDNgFZBAEMAANQAd8DRQHqA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oB
         iwNKAYsDSgGLA0oBiwNKAYsDSgGLAyMBM2gAAxYBHgMhAf8DOQFfAw0BEQMNAREDDQERAw0BEQMNARED
-        DQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDOgFgAyEB/wMWAR0MAANBAXMDSgHfA0YB
-        fwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNGAX8DTAHgA0AB
-        cQ8AAf8DVQHRqAADHgErAyEB/wMkATU4AAMkATUDIQH/Ax4BKwwAA1QBwwM2AVgwAAMHAQkEAAM2AVgD
-        VAHDDwAB/wNVAdEEAAMVAR0DPQFpA04BlgNRAaIDUQGiA1EBogNRAaIDUQGiA1EBogNRAaIDUQGiA1EB
-        ogNRAaIDUQGiA1EBogNJAYUDNgFYAwYBB1wAAx4BKwMhAf8DJAE1OAADJAE1AyEB/wMeASsMAANTAcwD
-        MQFNLAADQwF3A0UB5wQCAzEBTQNTAcwPAAH/A1UB0QQAAyoBPwNXAc0DGAH6AwAB/wMAAf8DAAH/AwAB
-        /wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/Ay8B8gNWAcYDDQERXAADHgErAyEB/wMkATU4
-        AAMkATUDIQH/Ax4BKwwAA1MBywMxAU4sAAMbASUDOAFcBAADMQFOA1MByw8AAf8DVQHRBAADNgFZAxoB
-        +QNLAY0DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DVgHGAxoB
+        DQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDOgFgAyEB/wMWAR0MAANBAXMDUAHfA0YB
+        fwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNGAX8DUgHgA0AB
+        cQ8AAf8DWQHRqAADHgErAyEB/wMkATU4AAMkATUDIQH/Ax4BKwwAA1YBwwM2AVgwAAMHAQkEAAM2AVgD
+        VgHDDwAB/wNZAdEEAAMVAR0DPQFpA04BlgNRAaIDUQGiA1EBogNRAaIDUQGiA1EBogNRAaIDUQGiA1EB
+        ogNRAaIDUQGiA1EBogNJAYUDNgFYAwYBB1wAAx4BKwMhAf8DJAE1OAADJAE1AyEB/wMeASsMAANWAcwD
+        MQFNLAADQwF3A0sB5wQCAzEBTQNWAcwPAAH/A1kB0QQAAyoBPwNZAc0DGwH6AwAB/wMAAf8DAAH/AwAB
+        /wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AzUB8gNZAcYDDQERXAADHgErAyEB/wMkATU4
+        AAMkATUDIQH/Ax4BKwwAA1YBywMxAU4sAAMbASUDOAFcBAADMQFOA1YByw8AAf8DWQHRBAADNgFZAxwB
+        +QNLAY0DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DWQHGAxwB
         +QMRARZcAAMeASsDIQH/AyQBNTgAAyQBNQMhAf8DHgErDAADUgGoA1EBoQMaASMDGQEiAxkBIgMZASID
-        GQEiAxkBIgMZASIDGQEiAxkBIgMZASIDGQEiAxkBIgMZASIDGgEjA1EBogNTAa4PAAH/A1UB0QQAAzgB
+        GQEiAxkBIgMZASIDGQEiAxkBIgMZASIDGQEiAxkBIgMZASIDGgEjA1EBogNVAa4PAAH/A1kB0QQAAzgB
         XQMAAf8DQgF0MAADVwG5AwAB/wMSARdcAAMeASsDIQH/AyQBNTgAAyQBNQMhAf8DHgErDAADNwFaAyEB
-        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DKQH9AyUB
-        /gM9AWkPAAH/A1UB0QQAAzgBXQMAAf8DQgF0CAADKgFAA1YBtQMAAf8DAAH/AwAB/wMaAfkDUgGjAxAB
-        FQgAA1cBuQMAAf8DEgEXXAADHgErAyEB/wMkATU4AAMkATUDIQH/Ax4BKwwAAwQBBQNFAeQDLQFEMAAD
-        GgEkAzQB9AMMARAPAAH/A1UB0QQAAzgBXQMAAf8DQgF0CAADQwF3AyQB9QMAAf8DAAH/AwAB/wMGAf4D
-        SQHiAzsBYwgAA1cBuQMAAf8DEgEXXAADHgErAyEB/wNQAa4DTQGZA00BmQNNAZkDTAGXAzUBVSQAAyQB
-        NQMhAf8DHgErEAADRgGAA1QBsTAAA0sBjwNPAZ0TAAH/A1UB0QQAAzgBXQMAAf8DQgF0CAADNgFXA0oB
-        3wMAAf8DAAH/AwAB/wM+AewDSwGPAxsBJQgAA1cBuQMAAf8DEgEXXAADHgErAyEB/wNOAckDUQG7A1EB
-        uwNRAbsDTgHGAyQB/gNNAZkDBAEFHAADJAE1AyEB/wMeASsQAAMSARgDMAH2AxoBIygAAwkBCwM6Ae8D
-        JQE3EwAB/wNVAdEEAAM4AV0DAAH/A0IBdAgAAxsBJgM7AWUDUgHZAyAB9wM6Ae0DUgGgEAADVwG5AwAB
-        /wMSARdcAAMeASsDIQH/AyQBNRAAAzgBXAMvAfcDUAG+AzUBVQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUB
-        VQNNAZkDIgH7Aw8BExQAA1EBpANLAY0oAAM/AW4DVQHIFwAB/wNVAdEEAAM4AV0DAAH/A0IBdBAAAy8B
-        SQNLAY8DRAF5AygBOxAAA1cBuQMAAf8DEgEXXAADHgErAyEB/wMkATUQAAQBA04BoAMhAf8DIQH/AyEB
-        /wMhAf8DIQH/AyEB/wMhAf8DIQH/Ay8B9AM/AWwYAAMlATYDOQHwAwoBDSAAAwQBBQNMAeADMgFPFwAB
-        /wNVAdEEAAM4AV0DAAH/A0IBdDAAA1cBuQMAAf8DEgEXXAADFgEeAyEB/wM5AV8DDQERAw0BEQMNARED
-        EgEXA08BpAMnAf0DQwF5Aw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMCAQMgAANVAbkDVAHGA0kB
-        iANJAYgDSQGIA0kBiANJAYgDSQGIA0kBiANJAYgDVAG7A1MBywQCFAADQgF0AzkBXwQAAzgBXQMAAf8D
-        QgF0EAADIAEuA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oBiwNKAd8DPgHsAxABFWAAA1EBsgMhAf8D
-        IQH/AyEB/wMhAf8DIQH/AzIB8wMzAVFEAAMKAQ0DRAF4A04BmQNOAZkDTgGZA04BmQNOAZkDTgGZA04B
-        mQNOAZkDRgF/Aw8BFCQAAzgBXQMAAf8DQgF0DAADIgExA1cBwQMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB
-        /wMAAf8DTgHhA1IBqAMLAQ5gAAMCAQMDKwFCAzUBVQM1AVUDNQFVAzMBUQMSARicAAMwAUwDSAHmA1IB
-        2QNXAbkDVwG5A1cBuQNWAc4DAAH/A1ABmgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMmATkDGwEmAwIB
-        A/8AGQADIwEyA1UBsAM0Ae8DAAH/AwAB/wMAAf8DAAH/A04BlgMQARX/AD0AAwMBBAMMAQ8DEAEVAxIB
+        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DKwH9AyYB
+        /gM9AWkPAAH/A1kB0QQAAzgBXQMAAf8DQgF0CAADKgFAA1YBtQMAAf8DAAH/AwAB/wMcAfkDUgGjAxAB
+        FQgAA1cBuQMAAf8DEgEXXAADHgErAyEB/wMkATU4AAMkATUDIQH/Ax4BKwwAAwQBBQNLAeQDLQFEMAAD
+        GgEkAzgB9AMMARAPAAH/A1kB0QQAAzgBXQMAAf8DQgF0CAADQwF3AykB9QMAAf8DAAH/AwAB/wMHAf4D
+        TwHiAzsBYwgAA1cBuQMAAf8DEgEXXAADHgErAyEB/wNTAa4DTgGZA04BmQNOAZkDTQGXAzUBVSQAAyQB
+        NQMhAf8DHgErEAADRgGAA1UBsTAAA0sBjwNQAZ0TAAH/A1kB0QQAAzgBXQMAAf8DQgF0CAADNgFXA1AB
+        3wMAAf8DAAH/AwAB/wNDAewDSwGPAxsBJQgAA1cBuQMAAf8DEgEXXAADHgErAyEB/wNUAckDVAG7A1QB
+        uwNUAbsDVAHGAyUB/gNOAZkDBAEFHAADJAE1AyEB/wMeASsQAAMSARgDMgH2AxoBIygAAwkBCwM+Ae8D
+        JQE3EwAB/wNZAdEEAAM4AV0DAAH/A0IBdAgAAxsBJgM7AWUDVgHZAyUB9wNAAe0DUgGgEAADVwG5AwAB
+        /wMSARdcAAMeASsDIQH/AyQBNRAAAzgBXAMzAfcDVQG+AzUBVQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUB
+        VQNOAZkDIgH7Aw8BExQAA1EBpANLAY0oAAM/AW4DWQHIFwAB/wNZAdEEAAM4AV0DAAH/A0IBdBAAAy8B
+        SQNLAY8DRAF5AygBOxAAA1cBuQMAAf8DEgEXXAADHgErAyEB/wMkATUQAAQBA1ABoAMhAf8DIQH/AyEB
+        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AzQB9AM/AWwYAAMlATYDPgHwAwoBDSAAAwQBBQNSAeADMgFPFwAB
+        /wNZAdEEAAM4AV0DAAH/A0IBdDAAA1cBuQMAAf8DEgEXXAADFgEeAyEB/wM5AV8DDQERAw0BEQMNARED
+        EgEXA1EBpAMpAf0DRAF5Aw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMCAQMgAANXAbkDVgHGA0kB
+        iANJAYgDSQGIA0kBiANJAYgDSQGIA0kBiANJAYgDVwG7A1YBywQCFAADQgF0AzkBXwQAAzgBXQMAAf8D
+        QgF0EAADIAEuA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oBiwNQAd8DQwHsAxABFWAAA1QBsgMhAf8D
+        IQH/AyEB/wMhAf8DIQH/AzcB8wMzAVFEAAMKAQ0DRAF4A08BmQNPAZkDTwGZA08BmQNPAZkDTwGZA08B
+        mQNPAZkDRgF/Aw8BFCQAAzgBXQMAAf8DQgF0DAADIgExA1kBwQMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB
+        /wMAAf8DUwHhA1IBqAMLAQ5gAAMCAQMDKwFCAzUBVQM1AVUDNQFVAzMBUQMSARicAAMwAUwDTgHmA1YB
+        2QNXAbkDVwG5A1cBuQNZAc4DAAH/A1ABmgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMmATkDGwEmAwIB
+        A/8AGQADIwEyA1YBsAM6Ae8DAAH/AwAB/wMAAf8DAAH/A04BlgMQARX/AD0AAwMBBAMMAQ8DEAEVAxIB
         FwMSARcDEgEXAxIBFwMJAQz/AOEAAUIBTQE+BwABPgMAASgDAAFYAwABFgMAAQEBAAEBBQABCAEBFgAD
         /wEACP8BwAMACP8BwAMABf8B+AEAAQEBwAMAAcABAAEPAv8B+AEAAQEBwAMAAcABAAEPAgABOAEAAQEB
         wAMAAYABAAEHAgABOQL/AcADAAGPAf8BxwE/Af0BOQYAAY8B/wHHAT8B+AE5BgABjwH/AccBPwH5ATkG
@@ -181,77 +181,26 @@
   <data name="TabPage4.Size" type="System.Drawing.Size, System.Drawing">
     <value>936, 439</value>
   </data>
-  <data name="TabPage4.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="chkWaitOnMediaInteractive.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="chkRemind.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label9.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="nudRemind.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="chkInfoBackupDone.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="chkShowLocalized.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="chkAbortWhenNotAvailable.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="chkRemindSpace.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="chkDeactivateAutoBackupsWhenAkku.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label14.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="txtRemindSpace.ToolTip" xml:space="preserve">
-    <value />
-  </data>
   <data name="TabPage3.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 37</value>
   </data>
   <data name="TabPage3.Size" type="System.Drawing.Size, System.Drawing">
     <value>936, 439</value>
   </data>
-  <data name="TabPage3.ToolTip" xml:space="preserve">
-    <value />
+  <data name="cmdDeactivateEncrypt.Location" type="System.Drawing.Point, System.Drawing">
+    <value>206, 322</value>
   </data>
-  <data name="cmdDeactivateEncrypt.ToolTip" xml:space="preserve">
-    <value />
+  <data name="plCompressEncrypt.Size" type="System.Drawing.Size, System.Drawing">
+    <value>916, 306</value>
   </data>
-  <data name="plCompressEncrypt.ToolTip" xml:space="preserve">
-    <value />
+  <data name="cmdExcludeCompress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>50, 114</value>
   </data>
-  <data name="cmdExcludeCompress.ToolTip" xml:space="preserve">
-    <value />
+  <data name="rdEncrypt.Location" type="System.Drawing.Point, System.Drawing">
+    <value>26, 190</value>
   </data>
-  <data name="lblCompressionLevel.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="tbCompressionLevel.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="rdEncrypt.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="rdNoCompress.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="rdCompress.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdEncrypt.ToolTip" xml:space="preserve">
-    <value />
+  <data name="cmdEncrypt.Location" type="System.Drawing.Point, System.Drawing">
+    <value>56, 322</value>
   </data>
   <data name="TabPage2.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 37</value>
@@ -259,157 +208,10 @@
   <data name="TabPage2.Size" type="System.Drawing.Size, System.Drawing">
     <value>936, 439</value>
   </data>
-  <data name="TabPage2.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="chkDoPastBackups.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdEditSchedule.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="rbMB.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="rbFAB.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="rbTSB.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="TabPage1.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdFilter.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="lvSource.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdAddSource.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdDeleteSource.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="tcOptions.ToolTip" xml:space="preserve">
-    <value />
-  </data>
   <data name="TabPage5.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 37</value>
   </data>
   <data name="TabPage5.Size" type="System.Drawing.Size, System.Drawing">
     <value>936, 439</value>
-  </data>
-  <data name="TabPage5.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdChangeBackupMedia.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label1.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cboMedia.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label2.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="plDevice.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="plUNCAuthentication.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label11.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="txtUNCPassword.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label10.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="txtUNCUsername.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label15.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdChange.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="txtBackupPath.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="plFTP.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="chkFtpEncryption.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label12.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cboFtpEncoding.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdFTPCheck.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="txtFTPPort.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label8.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="txtFTPPath.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label7.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="txtFTPPassword.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label5.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="txtFTPUsername.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label4.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="txtFTPServer.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label3.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdOK.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="plExcludeCompress.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdCloseExcludeCompress.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdDeleteExcludeCompress.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cmdAddExcludeCompress.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="lstExcludeCompress.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Label6.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="$this.ToolTip" xml:space="preserve">
-    <value />
   </data>
 </root>
