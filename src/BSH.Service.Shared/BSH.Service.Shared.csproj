@@ -12,9 +12,9 @@
 		<Configurations>Debug;Release</Configurations>
 		<IsPublishable>False</IsPublishable>
 		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
-		<Version>3.9.0-beta1</Version>
-		<AssemblyVersion>3.9.0.1</AssemblyVersion>
-		<FileVersion>3.9.0.1</FileVersion>
+		<Version>3.9.0-beta2</Version>
+		<AssemblyVersion>3.9.0.2</AssemblyVersion>
+		<FileVersion>3.9.0.2</FileVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<Folder Include="Properties\" />

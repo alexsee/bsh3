@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Models;
 
@@ -15,5 +14,5 @@ public class FileCollectorServiceFactoryMock : IFileCollectorServiceFactory
         this.localFiles = localFiles;
     }
 
-    public IFileCollectorService Create(IConfigurationManager configurationManager) => new FileCollectorServiceMock(localFolders, localFiles);
+    public IFileCollectorService Create() => new FileCollectorServiceMock(localFolders, localFiles);
 }

@@ -232,7 +232,14 @@ public partial class frmMain
 
     private void AufAktualisierungenPrüfenToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        AutoUpdater.Start("https://updates.brightbits.de/backup_service_home/v3/auto_updater.xml");
+        if (Settings.Default.DownloadBeta)
+        {
+            AutoUpdater.Start("https://updates.brightbits.de/backup_service_home/v3/auto_updater_beta.xml");
+        }
+        else
+        {
+            AutoUpdater.Start("https://updates.brightbits.de/backup_service_home/v3/auto_updater.xml");
+        }
     }
 
     private async void ZurücksetzenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -277,7 +284,8 @@ public partial class frmMain
     {
         try
         {
-            Process.Start("https://www.brightbits.de/?pk_campaign=software_link&pk_kwd=menu_help&pk_source=bsh-3");
+            var url = "https://www.brightbits.de/?pk_campaign=software_link&pk_kwd=menu_help&pk_source=bsh-3";
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
         catch
         {
@@ -315,7 +323,8 @@ public partial class frmMain
         try
         {
             var d = DateTime.Now.ToString("yyyyMMdd");
-            Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\Alexosoft\\Backup Service Home 3\\log" + d + ".txt");
+            var logFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\Alexosoft\\Backup Service Home 3\\log" + d + ".txt";
+            Process.Start(new ProcessStartInfo(logFile) { UseShellExecute = true });
         }
         catch
         {

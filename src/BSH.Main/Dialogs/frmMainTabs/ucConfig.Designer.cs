@@ -51,7 +51,6 @@ namespace Brightbits.BSH.Main
             plCompressEncrypt = new Panel();
             cmdExcludeCompress = new Button();
             lblCompressionLevel = new Label();
-            tbCompressionLevel = new TrackBar();
             rdEncrypt = new RadioButton();
             rdNoCompress = new RadioButton();
             rdCompress = new RadioButton();
@@ -111,7 +110,6 @@ namespace Brightbits.BSH.Main
             ((System.ComponentModel.ISupportInitialize)txtRemindSpace).BeginInit();
             TabPage3.SuspendLayout();
             plCompressEncrypt.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)tbCompressionLevel).BeginInit();
             TabPage2.SuspendLayout();
             TabPage1.SuspendLayout();
             tcOptions.SuspendLayout();
@@ -276,7 +274,6 @@ namespace Brightbits.BSH.Main
             plCompressEncrypt.BackColor = System.Drawing.Color.Transparent;
             plCompressEncrypt.Controls.Add(cmdExcludeCompress);
             plCompressEncrypt.Controls.Add(lblCompressionLevel);
-            plCompressEncrypt.Controls.Add(tbCompressionLevel);
             plCompressEncrypt.Controls.Add(rdEncrypt);
             plCompressEncrypt.Controls.Add(rdNoCompress);
             plCompressEncrypt.Controls.Add(rdCompress);
@@ -296,17 +293,6 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(lblCompressionLevel, "lblCompressionLevel");
             lblCompressionLevel.Name = "lblCompressionLevel";
             ToolTip1.SetToolTip(lblCompressionLevel, resources.GetString("lblCompressionLevel.ToolTip"));
-            // 
-            // tbCompressionLevel
-            // 
-            resources.ApplyResources(tbCompressionLevel, "tbCompressionLevel");
-            tbCompressionLevel.BackColor = System.Drawing.Color.White;
-            tbCompressionLevel.LargeChange = 1;
-            tbCompressionLevel.Maximum = 9;
-            tbCompressionLevel.Name = "tbCompressionLevel";
-            tbCompressionLevel.TickStyle = TickStyle.TopLeft;
-            ToolTip1.SetToolTip(tbCompressionLevel, resources.GetString("tbCompressionLevel.ToolTip"));
-            tbCompressionLevel.ValueChanged += tbCompressionLevel_ValueChanged;
             // 
             // rdEncrypt
             // 
@@ -771,7 +757,6 @@ namespace Brightbits.BSH.Main
             TabPage3.ResumeLayout(false);
             plCompressEncrypt.ResumeLayout(false);
             plCompressEncrypt.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)tbCompressionLevel).EndInit();
             TabPage2.ResumeLayout(false);
             TabPage2.PerformLayout();
             TabPage1.ResumeLayout(false);
@@ -804,7 +789,6 @@ namespace Brightbits.BSH.Main
         internal Button cmdDeactivateEncrypt;
         internal Panel plCompressEncrypt;
         internal Label lblCompressionLevel;
-        internal TrackBar tbCompressionLevel;
         internal RadioButton rdNoCompress;
         internal RadioButton rdCompress;
         internal Button cmdEncrypt;
