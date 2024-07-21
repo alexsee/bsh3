@@ -1,33 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net8.0-windows8.0</TargetFramework>
-		<OutputType>Library</OutputType>
-		<RootNamespace>C4F.DevKit.PreviewHandler.PreviewHandlerFramework</RootNamespace>
-		<AssemblyName>C4F.DevKit.PreviewHandler.PreviewHandlerFramework</AssemblyName>
-		<AssemblyOriginatorKeyFile>
-		</AssemblyOriginatorKeyFile>
-		<UseWindowsForms>true</UseWindowsForms>
-		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-		<PlatformTarget>x64</PlatformTarget>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<Authors>Alexander Seeliger</Authors>
-		<Company>Alexander Seeliger Software</Company>
-		<Copyright>Alexander Seeliger</Copyright>
-		<AssemblyVersion>4.0.0.0</AssemblyVersion>
-		<FileVersion>4.0.0.0</FileVersion>
-		<Title>Backup Service Home</Title>
-		<Platforms>x64</Platforms>
-		<Configurations>Debug;Release</Configurations>
-		<IsPublishable>False</IsPublishable>
-		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
-	</PropertyGroup>
-	<ItemGroup>
-		<Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.7" />
-	</ItemGroup>
-	<ItemGroup>
-		<Folder Include="Properties\" />
-	</ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>C4F.DevKit.PreviewHandler.PreviewHandlerFramework</RootNamespace>
+    <AssemblyName>C4F.DevKit.PreviewHandler.PreviewHandlerFramework</AssemblyName>
+    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Authors>Alexander Seeliger</Authors>
+    <Company>Alexander Seeliger Software</Company>
+    <Copyright>Alexander Seeliger</Copyright>
+    <Title>Backup Service Home</Title>
+    <Platforms>x64</Platforms>
+    <Configurations>Debug;Release</Configurations>
+    <IsPublishable>False</IsPublishable>
+    <SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
+    <Version>3.9.0.3</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.7" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>

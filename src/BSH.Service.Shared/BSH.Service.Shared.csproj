@@ -1,22 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net8.0-windows8.0</TargetFramework>
-		<OutputType>Library</OutputType>
-		<PlatformTarget>x64</PlatformTarget>
-		<Authors>Alexander Seeliger</Authors>
-		<Company>Alexander Seeliger Software</Company>
-		<Copyright>Alexander Seeliger</Copyright>
-		<Product>$(AssemblyName)</Product>
-		<Title>Backup Service Home</Title>
-		<Platforms>x64</Platforms>
-		<Configurations>Debug;Release</Configurations>
-		<IsPublishable>False</IsPublishable>
-		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
-		<Version>3.9.0-beta2</Version>
-		<AssemblyVersion>3.9.0.2</AssemblyVersion>
-		<FileVersion>3.9.0.2</FileVersion>
-	</PropertyGroup>
-	<ItemGroup>
-		<Folder Include="Properties\" />
-	</ItemGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <PlatformTarget>x64</PlatformTarget>
+    <Authors>Alexander Seeliger</Authors>
+    <Company>Alexander Seeliger Software</Company>
+    <Copyright>Alexander Seeliger</Copyright>
+    <Product>$(AssemblyName)</Product>
+    <Title>Backup Service Home</Title>
+    <Platforms>x64</Platforms>
+    <Configurations>Debug;Release</Configurations>
+    <IsPublishable>False</IsPublishable>
+    <SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
+    <Version>3.9.0.3</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>
