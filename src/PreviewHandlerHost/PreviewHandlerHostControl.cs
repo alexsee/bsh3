@@ -1,9 +1,9 @@
-using C4F.DevKit.PreviewHandler.PreviewHandlerFramework;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using C4F.DevKit.PreviewHandler.PreviewHandlerFramework;
 
 namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
 {
@@ -37,18 +37,26 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
         /// </summary>
         public string FilePath
         {
-            get { return _filePath; }
+            get
+            {
+                return _filePath;
+            }
             set
             {
                 _filePath = value;
                 if (value != null && !IsDesignTime())
+                {
                     GeneratePreview();
+                }
             }
         }
 
         public Boolean HasHandler
         {
-            get { return _hasHandler; }
+            get
+            {
+                return _hasHandler;
+            }
         }
 
         private bool IsDesignTime()
@@ -66,7 +74,8 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
                 }
             }
             catch
-            { }
+            {
+            }
         }
 
         /// <summary>
@@ -100,7 +109,9 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
                 {
                     handler = ei.Handler;
                     if (handler != null)
+                    {
                         break;
+                    }
                 }
             }
             if (handler == null)

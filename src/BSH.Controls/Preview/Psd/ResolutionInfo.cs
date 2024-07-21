@@ -5,17 +5,35 @@ namespace SimplePsd
     /// </summary>
     public class ResolutionInfo
     {
-        public short HRes { get; set; }
+        public short HRes
+        {
+            get; set;
+        }
 
-        public int HResUnit { get; set; }
+        public int HResUnit
+        {
+            get; set;
+        }
 
-        public short WidthUnit { get; set; }
+        public short WidthUnit
+        {
+            get; set;
+        }
 
-        public short VRes { get; set; }
+        public short VRes
+        {
+            get; set;
+        }
 
-        public int VResUnit { get; set; }
+        public int VResUnit
+        {
+            get; set;
+        }
 
-        public short HeightUnit { get; set; }
+        public short HeightUnit
+        {
+            get; set;
+        }
 
         public ResolutionInfo()
         {

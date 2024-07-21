@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoUpdaterDotNET;
-using Brightbits.BSH.Engine.Database;
-using BSH.Main.Properties;
-using Serilog;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using AutoUpdaterDotNET;
+using Brightbits.BSH.Engine.Database;
+using BSH.Main.Properties;
+using Serilog;
 
 namespace Brightbits.BSH.Main;
 

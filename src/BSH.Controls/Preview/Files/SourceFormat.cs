@@ -62,28 +62,40 @@ namespace Manoli.Utils.CSharpFormat
         /// <value>The number of space characters to substitute for tab 
         /// characters. The default is <b>4</b>, unless overridden is a 
         /// derived class.</value>
-        public byte TabSpaces { get; set; }
+        public byte TabSpaces
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Enables or disables line numbers in output.
         /// </summary>
         /// <value>When <b>true</b>, line numbers are generated. 
         /// The default is <b>false</b>.</value>
-        public bool LineNumbers { get; set; }
+        public bool LineNumbers
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Enables or disables alternating line background.
         /// </summary>
         /// <value>When <b>true</b>, lines background is alternated. 
         /// The default is <b>false</b>.</value>
-        public bool Alternate { get; set; }
+        public bool Alternate
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Enables or disables the embedded CSS style sheet.
         /// </summary>
         /// <value>When <b>true</b>, the CSS &lt;style&gt; element is included 
         /// in the HTML output. The default is <b>false</b>.</value>
-        public bool EmbedStyleSheet { get; set; }
+        public bool EmbedStyleSheet
+        {
+            get; set;
+        }
 
         /// <overloads>Transform source code to HTML 4.01.</overloads>
         /// 
@@ -141,7 +153,10 @@ namespace Manoli.Utils.CSharpFormat
         /// <summary>
         /// The regular expression used to capture language tokens.
         /// </summary>
-        protected Regex CodeRegex { get; set; }
+        protected Regex CodeRegex
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Called to evaluate the HTML fragment corresponding to each 

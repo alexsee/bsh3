@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Models;
 using System;
 using System.Drawing;
+using Brightbits.BSH.Engine.Models;
 
 namespace Brightbits.BSH.Main
 {
@@ -41,7 +41,10 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        public VersionDetails Version { get; set; }
+        public VersionDetails Version
+        {
+            get; set;
+        }
 
         public string ToolTipTitle
         {

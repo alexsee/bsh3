@@ -16,7 +16,10 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
                 const int COPY_BUFFER_SIZE = 1024;
                 byte[] buffer = new byte[COPY_BUFFER_SIZE];
                 int read;
-                while ((read = stream.Read(buffer, 0, buffer.Length)) != 0) fs.Write(buffer, 0, read);
+                while ((read = stream.Read(buffer, 0, buffer.Length)) != 0)
+                {
+                    fs.Write(buffer, 0, read);
+                }
             }
             Load(new FileInfo(tempPath));
         }
@@ -29,7 +32,10 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
             {
                 byte[] buffer = new byte[4096];
                 int read;
-                while ((read = from.Read(buffer, 0, buffer.Length)) > 0) to.Write(buffer, 0, read);
+                while ((read = from.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    to.Write(buffer, 0, read);
+                }
             }
             return new FileInfo(tempPath);
         }

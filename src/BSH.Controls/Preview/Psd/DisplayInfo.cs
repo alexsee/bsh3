@@ -5,15 +5,27 @@ namespace SimplePsd
     /// </summary>
     public class DisplayInfo
     {
-        public short ColourSpace { get; set; }
+        public short ColourSpace
+        {
+            get; set;
+        }
 
         public short[] Colour { get; set; } = new short[4];
 
-        public short Opacity { get; set; }
+        public short Opacity
+        {
+            get; set;
+        }
 
-        public bool Kind { get; set; }
+        public bool Kind
+        {
+            get; set;
+        }
 
-        public byte Padding { get; set; }
+        public byte Padding
+        {
+            get; set;
+        }
 
         public DisplayInfo()
         {

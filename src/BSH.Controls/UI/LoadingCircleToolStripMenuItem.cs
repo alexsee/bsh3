@@ -42,7 +42,10 @@ namespace MRG.Controls.UI
         DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public LoadingCircle LoadingCircleControl
         {
-            get { return Control as LoadingCircle; }
+            get
+            {
+                return Control as LoadingCircle;
+            }
         }
 
         /// <summary>

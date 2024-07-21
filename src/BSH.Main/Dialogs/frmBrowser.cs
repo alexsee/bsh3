@@ -12,15 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Controls.UI;
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
-using BSH.Main.Properties;
-using BSH.Main.Utils;
-using Humanizer;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,6 +21,15 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Brightbits.BSH.Controls.UI;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
+using BSH.Main.Properties;
+using BSH.Main.Utils;
+using Humanizer;
+using Serilog;
 using static Brightbits.BSH.Engine.Win32Stuff;
 
 namespace Brightbits.BSH.Main;

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using BSH.Main.Dialogs.SubDialogs;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BSH.Main.Dialogs.SubDialogs;
 
 namespace Brightbits.BSH.Main;
 

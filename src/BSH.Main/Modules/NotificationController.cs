@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
-using BSH.Main.Properties;
-using Serilog;
 using System;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Jobs;
+using BSH.Main.Properties;
+using Serilog;
 
 namespace Brightbits.BSH.Main;
 

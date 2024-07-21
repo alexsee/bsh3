@@ -34,7 +34,10 @@ namespace Manoli.Utils.CSharpFormat
         /// <value>Always <b>true</b>, since VB is not case sensitive.</value>
         public override bool CaseSensitive
         {
-            get { return false; }
+            get
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -42,7 +45,10 @@ namespace Manoli.Utils.CSharpFormat
         /// </summary>
         protected override string CommentRegEx
         {
-            get { return @"(?:'|REM\s).*?(?=\r|\n)"; }
+            get
+            {
+                return @"(?:'|REM\s).*?(?=\r|\n)";
+            }
         }
 
         /// <summary>
@@ -50,7 +56,10 @@ namespace Manoli.Utils.CSharpFormat
         /// </summary>
         protected override string StringRegEx
         {
-            get { return @"""""|"".*?"""; }
+            get
+            {
+                return @"""""|"".*?""";
+            }
         }
 
         /// <summary>

@@ -58,7 +58,10 @@ namespace Manoli.Utils.CSharpFormat
         /// </summary>
         public override bool CaseSensitive
         {
-            get { return false; }
+            get
+            {
+                return false;
+            }
         }
 
 

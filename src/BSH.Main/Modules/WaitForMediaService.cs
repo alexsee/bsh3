@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts.Services;
 using System.Threading;
 using System.Threading.Tasks;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Contracts.Services;
 
 namespace Brightbits.BSH.Main;
 

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Reflection;
+using System.Windows.Forms;
 using AutoUpdaterDotNET;
 using BSH.Main.Model.CommandLine;
 using BSH.Main.Properties;
 using CommandLine;
 using Serilog;
-using System;
-using System.Reflection;
-using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main;
 

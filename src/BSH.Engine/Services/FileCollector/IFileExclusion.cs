@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.IO;
 using System.Text.RegularExpressions;
 using Brightbits.BSH.Engine.Contracts;

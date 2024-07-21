@@ -2,7 +2,6 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Utils;
 using Serilog;
 

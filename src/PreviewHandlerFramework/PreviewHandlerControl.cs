@@ -20,7 +20,11 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
 
         public virtual void Unload()
         {
-            foreach (Control c in Controls) c.Dispose();
+            foreach (Control c in Controls)
+            {
+                c.Dispose();
+            }
+
             Controls.Clear();
         }
 

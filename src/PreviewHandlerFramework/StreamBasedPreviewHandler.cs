@@ -27,7 +27,11 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
 
             public ReadOnlyIStreamStream(IStream stream)
             {
-                if (stream == null) throw new ArgumentNullException("stream");
+                if (stream == null)
+                {
+                    throw new ArgumentNullException("stream");
+                }
+
                 _stream = stream;
             }
 
@@ -37,15 +41,32 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
                 base.Dispose(disposing);
             }
 
-            private void ThrowIfDisposed() { if (_stream == null) throw new ObjectDisposedException(GetType().Name); }
+            private void ThrowIfDisposed()
+            {
+                if (_stream == null)
+                {
+                    throw new ObjectDisposedException(GetType().Name);
+                }
+            }
 
             public unsafe override int Read(byte[] buffer, int offset, int count)
             {
                 ThrowIfDisposed();
 
-                if (buffer == null) throw new ArgumentNullException("buffer");
-                if (offset < 0) throw new ArgumentNullException("offset");
-                if (count < 0) throw new ArgumentNullException("count");
+                if (buffer == null)
+                {
+                    throw new ArgumentNullException("buffer");
+                }
+
+                if (offset < 0)
+                {
+                    throw new ArgumentNullException("offset");
+                }
+
+                if (count < 0)
+                {
+                    throw new ArgumentNullException("count");
+                }
 
                 int bytesRead = 0;
                 if (count > 0)
@@ -53,22 +74,47 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
                     IntPtr ptr = new IntPtr(&bytesRead);
                     if (offset == 0)
                     {
-                        if (count > buffer.Length) throw new ArgumentOutOfRangeException("count");
+                        if (count > buffer.Length)
+                        {
+                            throw new ArgumentOutOfRangeException("count");
+                        }
+
                         _stream.Read(buffer, count, ptr);
                     }
                     else
                     {
                         byte[] tempBuffer = new byte[count];
                         _stream.Read(tempBuffer, count, ptr);
-                        if (bytesRead > 0) Array.Copy(tempBuffer, 0, buffer, offset, bytesRead);
+                        if (bytesRead > 0)
+                        {
+                            Array.Copy(tempBuffer, 0, buffer, offset, bytesRead);
+                        }
                     }
                 }
                 return bytesRead;
             }
 
-            public override bool CanRead { get { return _stream != null; } }
-            public override bool CanSeek { get { return _stream != null; } }
-            public override bool CanWrite { get { return false; } }
+            public override bool CanRead
+            {
+                get
+                {
+                    return _stream != null;
+                }
+            }
+            public override bool CanSeek
+            {
+                get
+                {
+                    return _stream != null;
+                }
+            }
+            public override bool CanWrite
+            {
+                get
+                {
+                    return false;
+                }
+            }
 
             public override long Length
             {
@@ -105,7 +151,10 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
                 return pos;
             }
 
-            public override void Flush() { ThrowIfDisposed(); }
+            public override void Flush()
+            {
+                ThrowIfDisposed();
+            }
 
             public override void SetLength(long value)
             {

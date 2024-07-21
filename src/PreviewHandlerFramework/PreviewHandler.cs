@@ -2,12 +2,12 @@
 // Coded and published in January 2007 issue of MSDN Magazine 
 // http://msdn.microsoft.com/msdnmag/issues/07/01/PreviewHandlers/default.aspx
 
-using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
 {
@@ -112,12 +112,19 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
             IntPtr result = IntPtr.Zero;
             InvokeOnPreviewThread(delegate () { result = GetFocus(); });
             phwnd = result;
-            if (phwnd == IntPtr.Zero) throw new Win32Exception();
+            if (phwnd == IntPtr.Zero)
+            {
+                throw new Win32Exception();
+            }
         }
 
         uint IPreviewHandler.TranslateAccelerator(ref MSG pmsg)
         {
-            if (_frame != null) return _frame.TranslateAccelerator(ref pmsg);
+            if (_frame != null)
+            {
+                return _frame.TranslateAccelerator(ref pmsg);
+            }
+
             const uint S_FALSE = 1;
             return S_FALSE;
         }

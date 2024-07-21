@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.Main.Properties;
 using Humanizer;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Brightbits.BSH.Main;
 

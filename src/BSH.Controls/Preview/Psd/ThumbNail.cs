@@ -5,23 +5,50 @@ namespace SimplePsd
     /// </summary>
     public class ThumbNail
     {
-        public int NFormat { get; set; }
+        public int NFormat
+        {
+            get; set;
+        }
 
-        public int NWidth { get; set; }
+        public int NWidth
+        {
+            get; set;
+        }
 
-        public int NHeight { get; set; }
+        public int NHeight
+        {
+            get; set;
+        }
 
-        public int NWidthBytes { get; set; }
+        public int NWidthBytes
+        {
+            get; set;
+        }
 
-        public int NSize { get; set; }
+        public int NSize
+        {
+            get; set;
+        }
 
-        public int NCompressedSize { get; set; }
+        public int NCompressedSize
+        {
+            get; set;
+        }
 
-        public short NBitPerPixel { get; set; }
+        public short NBitPerPixel
+        {
+            get; set;
+        }
 
-        public short NPlanes { get; set; }
+        public short NPlanes
+        {
+            get; set;
+        }
 
-        public byte[] Data { get; set; }
+        public byte[] Data
+        {
+            get; set;
+        }
 
         public ThumbNail()
         {

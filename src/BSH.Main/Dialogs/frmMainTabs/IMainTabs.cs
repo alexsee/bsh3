@@ -21,7 +21,16 @@ public interface IMainTabs
     void OpenTab();
     void CloseTab();
 
-    string Title { get; }
-    UserControl UserControlInstance { get; }
-    frmMain Super { set; }
+    string Title
+    {
+        get;
+    }
+    UserControl UserControlInstance
+    {
+        get;
+    }
+    frmMain Super
+    {
+        set;
+    }
 }

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using BSH.Main.Properties;
-using BSH.Main.Utils;
-using Humanizer;
 using System;
 using System.Data;
 using System.Windows.Forms;
+using BSH.Main.Properties;
+using BSH.Main.Utils;
+using Humanizer;
 
 namespace Brightbits.BSH.Main;
 

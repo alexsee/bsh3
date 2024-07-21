@@ -5,15 +5,27 @@ namespace SimplePsd
     /// </summary>
     public class ImageResource
     {
-        public int NLength { get; set; }
+        public int NLength
+        {
+            get; set;
+        }
 
         public byte[] OSType { get; set; } = new byte[4];
 
-        public short NID { get; set; }
+        public short NID
+        {
+            get; set;
+        }
 
-        public byte[] Name { get; set; }
+        public byte[] Name
+        {
+            get; set;
+        }
 
-        public int NSize { get; set; }
+        public int NSize
+        {
+            get; set;
+        }
 
         public void Reset()
         {

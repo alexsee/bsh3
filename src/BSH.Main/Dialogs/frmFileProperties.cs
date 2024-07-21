@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Models;
-using BSH.Main.Properties;
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Models;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;
 

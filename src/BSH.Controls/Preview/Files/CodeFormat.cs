@@ -53,7 +53,10 @@ namespace Manoli.Utils.CSharpFormat
         /// </remarks>
         protected virtual string Preprocessors
         {
-            get { return ""; }
+            get
+            {
+                return "";
+            }
         }
 
         /// <summary>
@@ -85,7 +88,10 @@ namespace Manoli.Utils.CSharpFormat
         /// </remarks>
         public virtual bool CaseSensitive
         {
-            get { return true; }
+            get
+            {
+                return true;
+            }
         }
 
         /// <summary/>

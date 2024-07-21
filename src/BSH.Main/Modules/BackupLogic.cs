@@ -12,6 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -25,13 +32,6 @@ using BSH.Main.Properties;
 using Humanizer;
 using Microsoft.Win32;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main;
 
@@ -667,22 +667,22 @@ static class BackupLogic
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-            // Vollsicherung durchführen?
-            var FullBackup = false;
-            if (!string.IsNullOrEmpty(ConfigurationManager.ScheduleFullBackup))
+        // Vollsicherung durchführen?
+        var FullBackup = false;
+        if (!string.IsNullOrEmpty(ConfigurationManager.ScheduleFullBackup))
+        {
+            // Letzte Vollsicherung ermitteln
+            var Item = ConfigurationManager.ScheduleFullBackup.Split('|');
+            if (Item[0] == "day")
             {
-                // Letzte Vollsicherung ermitteln
-                var Item = ConfigurationManager.ScheduleFullBackup.Split('|');
-                if (Item[0] == "day")
+                var lastFullBackup = await QueryManager.GetLastFullBackupAsync();
+                if (lastFullBackup != null)
                 {
-                    var lastFullBackup = await QueryManager.GetLastFullBackupAsync();
-                    if (lastFullBackup != null)
-                    {
-                        var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
-                        FullBackup = Diff.Days >= Convert.ToInt32(Item[1]);
-                    }
+                    var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
+                    FullBackup = Diff.Days >= Convert.ToInt32(Item[1]);
                 }
             }
+        }
 
         // Backup durchführen
         var cancellationToken = BackupController.GetNewCancellationToken();

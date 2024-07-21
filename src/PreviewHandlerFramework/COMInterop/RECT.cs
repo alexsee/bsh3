@@ -14,6 +14,9 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
         public int top;
         public int right;
         public int bottom;
-        public Rectangle ToRectangle() { return Rectangle.FromLTRB(left, top, right, bottom); }
+        public Rectangle ToRectangle()
+        {
+            return Rectangle.FromLTRB(left, top, right, bottom);
+        }
     }
 }

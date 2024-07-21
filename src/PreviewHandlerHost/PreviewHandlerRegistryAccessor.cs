@@ -1,5 +1,5 @@
-using Microsoft.Win32;
 using System.Collections.Generic;
+using Microsoft.Win32;
 
 
 namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
@@ -39,9 +39,18 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
             }
             handlers.Sort(delegate (PreviewHandlerInfo first, PreviewHandlerInfo second)
             {
-                if (first.Name == null) return 1;
-                else if (second.Name == null) return -1;
-                else return first.Name.CompareTo(second.Name);
+                if (first.Name == null)
+                {
+                    return 1;
+                }
+                else if (second.Name == null)
+                {
+                    return -1;
+                }
+                else
+                {
+                    return first.Name.CompareTo(second.Name);
+                }
             });
 
             // Create a lookup table of preview handler ID -> PreviewHandlerInfo
@@ -67,11 +76,17 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
                         string.Format(BaseClsIDKey, extension),
                         null, null) as string;
                     if (id == null)
+                    {
                         id = Registry.GetValue(
                         string.Format(BaseClsIdKey2, extension),
                         null, null) as string;
+                    }
+
                     PreviewHandlerInfo mappedHandler;
-                    if (id != null && handlerMapping.TryGetValue(id, out mappedHandler)) info.Handler = mappedHandler;
+                    if (id != null && handlerMapping.TryGetValue(id, out mappedHandler))
+                    {
+                        info.Handler = mappedHandler;
+                    }
 
                     extensionInfos.Add(info);
                 }
@@ -97,8 +112,14 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
 
         public override string ToString()
         {
-            if (string.IsNullOrEmpty(Name)) return ID;
-            else return Name;
+            if (string.IsNullOrEmpty(Name))
+            {
+                return ID;
+            }
+            else
+            {
+                return Name;
+            }
         }
     }
 
@@ -106,6 +127,9 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
     {
         public string Extension;
         public PreviewHandlerInfo Handler;
-        public override string ToString() { return Extension; }
+        public override string ToString()
+        {
+            return Extension;
+        }
     }
 }

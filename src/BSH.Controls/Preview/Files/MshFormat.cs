@@ -10,7 +10,10 @@ namespace Manoli.Utils.CSharpFormat
         /// </summary>
         protected override string CommentRegEx
         {
-            get { return @"#.*?(?=\r|\n)"; }
+            get
+            {
+                return @"#.*?(?=\r|\n)";
+            }
         }
 
         /// <summary>
@@ -18,7 +21,10 @@ namespace Manoli.Utils.CSharpFormat
         /// </summary>
         protected override string StringRegEx
         {
-            get { return @"@?""""|@?"".*?(?!\\).""|''|'.*?(?!\\).'"; }
+            get
+            {
+                return @"@?""""|@?"".*?(?!\\).""|''|'.*?(?!\\).'";
+            }
         }
 
         /// <summary>
