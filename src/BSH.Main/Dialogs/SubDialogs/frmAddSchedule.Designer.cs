@@ -33,7 +33,6 @@ namespace Brightbits.BSH.Main
             dtpStartTime = new DateTimePicker();
             Label3 = new Label();
             cbIntervall = new ComboBox();
-            cbIntervall.SelectedIndexChanged += new EventHandler(cbIntervall_SelectedIndexChanged);
             Label4 = new Label();
             Label2 = new Label();
             cmdOK = new Button();
@@ -45,124 +44,79 @@ namespace Brightbits.BSH.Main
             // 
             // dtpStartTime
             // 
-            dtpStartTime.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            dtpStartTime.CustomFormat = "dd.MM.yyyy HH:mm:ss";
-            dtpStartTime.Enabled = false;
-            dtpStartTime.Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
+            resources.ApplyResources(dtpStartTime, "dtpStartTime");
             dtpStartTime.Format = DateTimePickerFormat.Custom;
-            dtpStartTime.Location = new Point(112, 94);
             dtpStartTime.Name = "dtpStartTime";
-            dtpStartTime.Size = new Size(389, 25);
-            dtpStartTime.TabIndex = 16;
             // 
             // Label3
             // 
-            Label3.AutoSize = true;
-            Label3.Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            Label3.Location = new Point(19, 100);
+            resources.ApplyResources(Label3, "Label3");
             Label3.Name = "Label3";
-            Label3.Size = new Size(58, 17);
-            Label3.TabIndex = 19;
-            Label3.Text = "Startzeit:";
             // 
             // cbIntervall
             // 
-            cbIntervall.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            resources.ApplyResources(cbIntervall, "cbIntervall");
             cbIntervall.DropDownStyle = ComboBoxStyle.DropDownList;
-            cbIntervall.Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
             cbIntervall.FormattingEnabled = true;
-            cbIntervall.Items.AddRange(new object[] { "Einmalig", "Stündlich", "Täglich", "Wöchentlich", "Monatlich" });
-            cbIntervall.Location = new Point(112, 54);
+            cbIntervall.Items.AddRange(new object[] { resources.GetString("cbIntervall.Items"), resources.GetString("cbIntervall.Items1"), resources.GetString("cbIntervall.Items2"), resources.GetString("cbIntervall.Items3"), resources.GetString("cbIntervall.Items4") });
             cbIntervall.Name = "cbIntervall";
-            cbIntervall.Size = new Size(388, 25);
-            cbIntervall.TabIndex = 17;
+            cbIntervall.SelectedIndexChanged += cbIntervall_SelectedIndexChanged;
             // 
             // Label4
             // 
-            Label4.AutoSize = true;
-            Label4.Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            Label4.Location = new Point(19, 57);
+            resources.ApplyResources(Label4, "Label4");
             Label4.Name = "Label4";
-            Label4.Size = new Size(56, 17);
-            Label4.TabIndex = 18;
-            Label4.Text = "Intervall:";
             // 
             // Label2
             // 
-            Label2.AutoSize = true;
-            Label2.Font = new Font("Segoe UI", 12.0f, FontStyle.Regular, GraphicsUnit.Point);
+            resources.ApplyResources(Label2, "Label2");
             Label2.ForeColor = Color.FromArgb(0, 51, 153);
-            Label2.Location = new Point(18, 18);
             Label2.Name = "Label2";
-            Label2.Size = new Size(139, 21);
-            Label2.TabIndex = 0;
-            Label2.Text = "Termin hinzufügen";
             // 
             // cmdOK
             // 
-            cmdOK.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            resources.ApplyResources(cmdOK, "cmdOK");
             cmdOK.DialogResult = DialogResult.OK;
-            cmdOK.Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            cmdOK.Location = new Point(310, 10);
             cmdOK.Name = "cmdOK";
-            cmdOK.Size = new Size(93, 26);
-            cmdOK.TabIndex = 0;
-            cmdOK.Text = "&OK";
             cmdOK.UseVisualStyleBackColor = true;
             // 
             // Panel1
             // 
+            resources.ApplyResources(Panel1, "Panel1");
             Panel1.BackColor = SystemColors.Control;
             Panel1.Controls.Add(cmdOK);
             Panel1.Controls.Add(Label1);
             Panel1.Controls.Add(cmdCancel);
-            Panel1.Dock = DockStyle.Bottom;
-            Panel1.Location = new Point(0, 154);
             Panel1.Name = "Panel1";
-            Panel1.Size = new Size(521, 45);
-            Panel1.TabIndex = 82;
             // 
             // Label1
             // 
+            resources.ApplyResources(Label1, "Label1");
             Label1.BackColor = Color.DarkGray;
-            Label1.Dock = DockStyle.Top;
-            Label1.Location = new Point(0, 0);
             Label1.Name = "Label1";
-            Label1.Size = new Size(521, 1);
-            Label1.TabIndex = 5;
             // 
             // cmdCancel
             // 
-            cmdCancel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            resources.ApplyResources(cmdCancel, "cmdCancel");
             cmdCancel.DialogResult = DialogResult.Cancel;
-            cmdCancel.Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            cmdCancel.Location = new Point(409, 10);
             cmdCancel.Name = "cmdCancel";
-            cmdCancel.Size = new Size(93, 26);
-            cmdCancel.TabIndex = 1;
-            cmdCancel.Text = "&Abbrechen";
             cmdCancel.UseVisualStyleBackColor = true;
             // 
             // frmAddSchedule
             // 
-            AutoScaleDimensions = new SizeF(96.0f, 96.0f);
+            resources.ApplyResources(this, "$this");
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.White;
-            ClientSize = new Size(521, 199);
             Controls.Add(dtpStartTime);
             Controls.Add(Label3);
             Controls.Add(Panel1);
             Controls.Add(cbIntervall);
             Controls.Add(Label2);
             Controls.Add(Label4);
-            Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "frmAddSchedule";
-            StartPosition = FormStartPosition.CenterParent;
-            Text = "Termin hinzufügen";
             Panel1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();

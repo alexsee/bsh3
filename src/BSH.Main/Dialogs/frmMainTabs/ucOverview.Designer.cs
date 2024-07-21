@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main
 {
@@ -29,505 +30,369 @@ namespace Brightbits.BSH.Main
         [DebuggerStepThrough()]
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.lblBdStatus = new System.Windows.Forms.Label();
-            this.Label4 = new System.Windows.Forms.Label();
-            this.lblBdOldestBackup = new System.Windows.Forms.Label();
-            this.Label2 = new System.Windows.Forms.Label();
-            this.lblBdNewestBackup = new System.Windows.Forms.Label();
-            this.lblOldBackup = new System.Windows.Forms.Label();
-            this.lblBdSpaceAvailable = new System.Windows.Forms.Label();
-            this.pbStatus = new System.Windows.Forms.ProgressBar();
-            this.plStatus = new System.Windows.Forms.Panel();
-            this.cmdBackupCancel = new System.Windows.Forms.PictureBox();
-            this.Label7 = new System.Windows.Forms.Label();
-            this.lblNextBackup = new System.Windows.Forms.Label();
-            this.plUpdates = new System.Windows.Forms.Panel();
-            this.btnUpdates = new System.Windows.Forms.Button();
-            this.Label3 = new System.Windows.Forms.Label();
-            this.plBottom = new System.Windows.Forms.Panel();
-            this.Label5 = new System.Windows.Forms.Label();
-            this.lblInfo = new System.Windows.Forms.Label();
-            this.Label1 = new System.Windows.Forms.Label();
-            this.lblBackupMode = new System.Windows.Forms.Label();
-            this.ttMain = new System.Windows.Forms.ToolTip(this.components);
-            this.btnOnOff = new System.Windows.Forms.PictureBox();
-            this.cmdBackupNow = new System.Windows.Forms.PictureBox();
-            this.btnSettings = new System.Windows.Forms.PictureBox();
-            this.FlowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.Label6 = new System.Windows.Forms.Label();
-            this.llOptions = new System.Windows.Forms.LinkLabel();
-            this.llBackup = new System.Windows.Forms.LinkLabel();
-            this.picDataType = new System.Windows.Forms.PictureBox();
-            this.llShowExceptionDialog = new System.Windows.Forms.LinkLabel();
-            this.Panel1 = new System.Windows.Forms.Panel();
-            this.loadingCircle = new MRG.Controls.UI.LoadingCircle();
-            this.plStatus.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cmdBackupCancel)).BeginInit();
-            this.plUpdates.SuspendLayout();
-            this.plBottom.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.btnOnOff)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cmdBackupNow)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnSettings)).BeginInit();
-            this.FlowLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picDataType)).BeginInit();
-            this.Panel1.SuspendLayout();
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(ucOverview));
+            lblBdStatus = new Label();
+            Label4 = new Label();
+            lblBdOldestBackup = new Label();
+            Label2 = new Label();
+            lblBdNewestBackup = new Label();
+            lblOldBackup = new Label();
+            lblBdSpaceAvailable = new Label();
+            pbStatus = new ProgressBar();
+            plStatus = new Panel();
+            cmdBackupCancel = new PictureBox();
+            Label7 = new Label();
+            lblNextBackup = new Label();
+            plUpdates = new Panel();
+            btnUpdates = new Button();
+            Label3 = new Label();
+            plBottom = new Panel();
+            Label5 = new Label();
+            lblInfo = new Label();
+            Label1 = new Label();
+            lblBackupMode = new Label();
+            ttMain = new ToolTip(components);
+            btnOnOff = new PictureBox();
+            cmdBackupNow = new PictureBox();
+            btnSettings = new PictureBox();
+            FlowLayoutPanel1 = new FlowLayoutPanel();
+            Label6 = new Label();
+            llOptions = new LinkLabel();
+            llBackup = new LinkLabel();
+            picDataType = new PictureBox();
+            llShowExceptionDialog = new LinkLabel();
+            Panel1 = new Panel();
+            loadingCircle = new MRG.Controls.UI.LoadingCircle();
+            plStatus.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)cmdBackupCancel).BeginInit();
+            plUpdates.SuspendLayout();
+            plBottom.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)btnOnOff).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)cmdBackupNow).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)btnSettings).BeginInit();
+            FlowLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picDataType).BeginInit();
+            Panel1.SuspendLayout();
+            SuspendLayout();
             // 
             // lblBdStatus
             // 
-            this.lblBdStatus.BackColor = System.Drawing.Color.Transparent;
-            this.lblBdStatus.Font = new System.Drawing.Font("Segoe UI Semilight", 14.25F);
-            this.lblBdStatus.ForeColor = System.Drawing.Color.Black;
-            this.lblBdStatus.Location = new System.Drawing.Point(141, 36);
-            this.lblBdStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblBdStatus.Name = "lblBdStatus";
-            this.lblBdStatus.Size = new System.Drawing.Size(850, 38);
-            this.lblBdStatus.TabIndex = 70;
-            this.lblBdStatus.Text = "Backup Service Home wird ordnungsgemäß ausgeführt.";
+            resources.ApplyResources(lblBdStatus, "lblBdStatus");
+            lblBdStatus.BackColor = Color.Transparent;
+            lblBdStatus.ForeColor = Color.Black;
+            lblBdStatus.Name = "lblBdStatus";
+            ttMain.SetToolTip(lblBdStatus, resources.GetString("lblBdStatus.ToolTip"));
             // 
             // Label4
             // 
-            this.Label4.AutoSize = true;
-            this.Label4.BackColor = System.Drawing.Color.Transparent;
-            this.Label4.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.Label4.ForeColor = System.Drawing.Color.Black;
-            this.Label4.Location = new System.Drawing.Point(144, 183);
-            this.Label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label4.Name = "Label4";
-            this.Label4.Size = new System.Drawing.Size(144, 28);
-            this.Label4.TabIndex = 61;
-            this.Label4.Text = "Letztes Backup:";
+            resources.ApplyResources(Label4, "Label4");
+            Label4.BackColor = Color.Transparent;
+            Label4.ForeColor = Color.Black;
+            Label4.Name = "Label4";
+            ttMain.SetToolTip(Label4, resources.GetString("Label4.ToolTip"));
             // 
             // lblBdOldestBackup
             // 
-            this.lblBdOldestBackup.BackColor = System.Drawing.Color.Transparent;
-            this.lblBdOldestBackup.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.lblBdOldestBackup.ForeColor = System.Drawing.Color.Black;
-            this.lblBdOldestBackup.Location = new System.Drawing.Point(368, 138);
-            this.lblBdOldestBackup.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblBdOldestBackup.Name = "lblBdOldestBackup";
-            this.lblBdOldestBackup.Size = new System.Drawing.Size(624, 27);
-            this.lblBdOldestBackup.TabIndex = 68;
-            this.lblBdOldestBackup.Text = "--";
+            resources.ApplyResources(lblBdOldestBackup, "lblBdOldestBackup");
+            lblBdOldestBackup.BackColor = Color.Transparent;
+            lblBdOldestBackup.ForeColor = Color.Black;
+            lblBdOldestBackup.Name = "lblBdOldestBackup";
+            ttMain.SetToolTip(lblBdOldestBackup, resources.GetString("lblBdOldestBackup.ToolTip"));
             // 
             // Label2
             // 
-            this.Label2.AutoSize = true;
-            this.Label2.BackColor = System.Drawing.Color.Transparent;
-            this.Label2.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.Label2.ForeColor = System.Drawing.Color.Black;
-            this.Label2.Location = new System.Drawing.Point(144, 93);
-            this.Label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label2.Name = "Label2";
-            this.Label2.Size = new System.Drawing.Size(102, 28);
-            this.Label2.TabIndex = 59;
-            this.Label2.Text = "Verfügbar:";
+            resources.ApplyResources(Label2, "Label2");
+            Label2.BackColor = Color.Transparent;
+            Label2.ForeColor = Color.Black;
+            Label2.Name = "Label2";
+            ttMain.SetToolTip(Label2, resources.GetString("Label2.ToolTip"));
             // 
             // lblBdNewestBackup
             // 
-            this.lblBdNewestBackup.AutoSize = true;
-            this.lblBdNewestBackup.BackColor = System.Drawing.Color.Transparent;
-            this.lblBdNewestBackup.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lblBdNewestBackup.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.lblBdNewestBackup.ForeColor = System.Drawing.Color.Black;
-            this.lblBdNewestBackup.Location = new System.Drawing.Point(0, 0);
-            this.lblBdNewestBackup.Margin = new System.Windows.Forms.Padding(0);
-            this.lblBdNewestBackup.Name = "lblBdNewestBackup";
-            this.lblBdNewestBackup.Size = new System.Drawing.Size(28, 28);
-            this.lblBdNewestBackup.TabIndex = 69;
-            this.lblBdNewestBackup.Text = "--";
+            resources.ApplyResources(lblBdNewestBackup, "lblBdNewestBackup");
+            lblBdNewestBackup.BackColor = Color.Transparent;
+            lblBdNewestBackup.ForeColor = Color.Black;
+            lblBdNewestBackup.Name = "lblBdNewestBackup";
+            ttMain.SetToolTip(lblBdNewestBackup, resources.GetString("lblBdNewestBackup.ToolTip"));
             // 
             // lblOldBackup
             // 
-            this.lblOldBackup.AutoSize = true;
-            this.lblOldBackup.BackColor = System.Drawing.Color.Transparent;
-            this.lblOldBackup.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.lblOldBackup.ForeColor = System.Drawing.Color.Black;
-            this.lblOldBackup.Location = new System.Drawing.Point(144, 138);
-            this.lblOldBackup.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblOldBackup.Name = "lblOldBackup";
-            this.lblOldBackup.Size = new System.Drawing.Size(193, 28);
-            this.lblOldBackup.TabIndex = 60;
-            this.lblOldBackup.Text = "Voraussichtl. voll am:";
+            resources.ApplyResources(lblOldBackup, "lblOldBackup");
+            lblOldBackup.BackColor = Color.Transparent;
+            lblOldBackup.ForeColor = Color.Black;
+            lblOldBackup.Name = "lblOldBackup";
+            ttMain.SetToolTip(lblOldBackup, resources.GetString("lblOldBackup.ToolTip"));
             // 
             // lblBdSpaceAvailable
             // 
-            this.lblBdSpaceAvailable.BackColor = System.Drawing.Color.Transparent;
-            this.lblBdSpaceAvailable.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.lblBdSpaceAvailable.ForeColor = System.Drawing.Color.Black;
-            this.lblBdSpaceAvailable.Location = new System.Drawing.Point(368, 93);
-            this.lblBdSpaceAvailable.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblBdSpaceAvailable.Name = "lblBdSpaceAvailable";
-            this.lblBdSpaceAvailable.Size = new System.Drawing.Size(624, 27);
-            this.lblBdSpaceAvailable.TabIndex = 67;
-            this.lblBdSpaceAvailable.Text = "--";
+            resources.ApplyResources(lblBdSpaceAvailable, "lblBdSpaceAvailable");
+            lblBdSpaceAvailable.BackColor = Color.Transparent;
+            lblBdSpaceAvailable.ForeColor = Color.Black;
+            lblBdSpaceAvailable.Name = "lblBdSpaceAvailable";
+            ttMain.SetToolTip(lblBdSpaceAvailable, resources.GetString("lblBdSpaceAvailable.ToolTip"));
             // 
             // pbStatus
             // 
-            this.pbStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbStatus.Location = new System.Drawing.Point(0, 0);
-            this.pbStatus.Margin = new System.Windows.Forms.Padding(4);
-            this.pbStatus.Name = "pbStatus";
-            this.pbStatus.Size = new System.Drawing.Size(810, 30);
-            this.pbStatus.TabIndex = 76;
+            resources.ApplyResources(pbStatus, "pbStatus");
+            pbStatus.Name = "pbStatus";
+            ttMain.SetToolTip(pbStatus, resources.GetString("pbStatus.ToolTip"));
             // 
             // plStatus
             // 
-            this.plStatus.Controls.Add(this.pbStatus);
-            this.plStatus.Controls.Add(this.cmdBackupCancel);
-            this.plStatus.Location = new System.Drawing.Point(148, 93);
-            this.plStatus.Margin = new System.Windows.Forms.Padding(4);
-            this.plStatus.Name = "plStatus";
-            this.plStatus.Size = new System.Drawing.Size(843, 30);
-            this.plStatus.TabIndex = 78;
-            this.plStatus.Visible = false;
+            resources.ApplyResources(plStatus, "plStatus");
+            plStatus.Controls.Add(pbStatus);
+            plStatus.Controls.Add(cmdBackupCancel);
+            plStatus.Name = "plStatus";
+            ttMain.SetToolTip(plStatus, resources.GetString("plStatus.ToolTip"));
             // 
             // cmdBackupCancel
             // 
-            this.cmdBackupCancel.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cmdBackupCancel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.cmdBackupCancel.Image = global::BSH.Main.Properties.Resources.cancel_icon_48;
-            this.cmdBackupCancel.Location = new System.Drawing.Point(819, 0);
-            this.cmdBackupCancel.Margin = new System.Windows.Forms.Padding(4);
-            this.cmdBackupCancel.Name = "cmdBackupCancel";
-            this.cmdBackupCancel.Size = new System.Drawing.Size(24, 30);
-            this.cmdBackupCancel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.cmdBackupCancel.TabIndex = 77;
-            this.cmdBackupCancel.TabStop = false;
-            this.cmdBackupCancel.Tag = "false";
-            this.ttMain.SetToolTip(this.cmdBackupCancel, "Bricht die aktuelle Datensicherung ab. Alle Änderungen auf dem Backupmedium\r\nwerd" +
-        "en rückgängig gemacht.");
-            this.cmdBackupCancel.Click += new System.EventHandler(this.cmdBackupCancel_Click);
+            resources.ApplyResources(cmdBackupCancel, "cmdBackupCancel");
+            cmdBackupCancel.Cursor = Cursors.Hand;
+            cmdBackupCancel.Image = Resources.cancel_icon_48;
+            cmdBackupCancel.Name = "cmdBackupCancel";
+            cmdBackupCancel.TabStop = false;
+            cmdBackupCancel.Tag = "false";
+            ttMain.SetToolTip(cmdBackupCancel, resources.GetString("cmdBackupCancel.ToolTip"));
+            cmdBackupCancel.Click += cmdBackupCancel_Click;
             // 
             // Label7
             // 
-            this.Label7.AutoSize = true;
-            this.Label7.BackColor = System.Drawing.Color.Transparent;
-            this.Label7.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.Label7.ForeColor = System.Drawing.Color.Black;
-            this.Label7.Location = new System.Drawing.Point(144, 228);
-            this.Label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label7.Name = "Label7";
-            this.Label7.Size = new System.Drawing.Size(162, 28);
-            this.Label7.TabIndex = 97;
-            this.Label7.Text = "Nächstes Backup:";
+            resources.ApplyResources(Label7, "Label7");
+            Label7.BackColor = Color.Transparent;
+            Label7.ForeColor = Color.Black;
+            Label7.Name = "Label7";
+            ttMain.SetToolTip(Label7, resources.GetString("Label7.ToolTip"));
             // 
             // lblNextBackup
             // 
-            this.lblNextBackup.BackColor = System.Drawing.Color.Transparent;
-            this.lblNextBackup.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.lblNextBackup.ForeColor = System.Drawing.Color.Black;
-            this.lblNextBackup.Location = new System.Drawing.Point(368, 228);
-            this.lblNextBackup.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblNextBackup.Name = "lblNextBackup";
-            this.lblNextBackup.Size = new System.Drawing.Size(624, 27);
-            this.lblNextBackup.TabIndex = 98;
-            this.lblNextBackup.Text = "--";
+            resources.ApplyResources(lblNextBackup, "lblNextBackup");
+            lblNextBackup.BackColor = Color.Transparent;
+            lblNextBackup.ForeColor = Color.Black;
+            lblNextBackup.Name = "lblNextBackup";
+            ttMain.SetToolTip(lblNextBackup, resources.GetString("lblNextBackup.ToolTip"));
             // 
             // plUpdates
             // 
-            this.plUpdates.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.plUpdates.Controls.Add(this.btnUpdates);
-            this.plUpdates.Controls.Add(this.Label3);
-            this.plUpdates.Location = new System.Drawing.Point(0, 153);
-            this.plUpdates.Margin = new System.Windows.Forms.Padding(0);
-            this.plUpdates.Name = "plUpdates";
-            this.plUpdates.Size = new System.Drawing.Size(1050, 51);
-            this.plUpdates.TabIndex = 96;
-            this.plUpdates.Visible = false;
+            resources.ApplyResources(plUpdates, "plUpdates");
+            plUpdates.BackColor = Color.FromArgb(255, 192, 192);
+            plUpdates.Controls.Add(btnUpdates);
+            plUpdates.Controls.Add(Label3);
+            plUpdates.Name = "plUpdates";
+            ttMain.SetToolTip(plUpdates, resources.GetString("plUpdates.ToolTip"));
             // 
             // btnUpdates
             // 
-            this.btnUpdates.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUpdates.BackColor = System.Drawing.Color.Transparent;
-            this.btnUpdates.Location = new System.Drawing.Point(884, 6);
-            this.btnUpdates.Margin = new System.Windows.Forms.Padding(4);
-            this.btnUpdates.Name = "btnUpdates";
-            this.btnUpdates.Size = new System.Drawing.Size(134, 39);
-            this.btnUpdates.TabIndex = 75;
-            this.btnUpdates.Text = "Installieren";
-            this.ttMain.SetToolTip(this.btnUpdates, "Installiert wichtige Aktualisierungen.");
-            this.btnUpdates.UseVisualStyleBackColor = false;
-            this.btnUpdates.Click += new System.EventHandler(this.btnUpdates_Click);
+            resources.ApplyResources(btnUpdates, "btnUpdates");
+            btnUpdates.BackColor = Color.Transparent;
+            btnUpdates.Name = "btnUpdates";
+            ttMain.SetToolTip(btnUpdates, resources.GetString("btnUpdates.ToolTip"));
+            btnUpdates.UseVisualStyleBackColor = false;
+            btnUpdates.Click += btnUpdates_Click;
             // 
             // Label3
             // 
-            this.Label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.Label3.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.Label3.Location = new System.Drawing.Point(38, 14);
-            this.Label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label3.Name = "Label3";
-            this.Label3.Size = new System.Drawing.Size(792, 26);
-            this.Label3.TabIndex = 0;
-            this.Label3.Text = "Es sind Aktualisierungen verfügbar.";
-            this.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            resources.ApplyResources(Label3, "Label3");
+            Label3.Name = "Label3";
+            ttMain.SetToolTip(Label3, resources.GetString("Label3.ToolTip"));
             // 
             // plBottom
             // 
-            this.plBottom.BackColor = System.Drawing.Color.White;
-            this.plBottom.Controls.Add(this.Label5);
-            this.plBottom.Controls.Add(this.lblInfo);
-            this.plBottom.Location = new System.Drawing.Point(0, 0);
-            this.plBottom.Margin = new System.Windows.Forms.Padding(0);
-            this.plBottom.Name = "plBottom";
-            this.plBottom.Size = new System.Drawing.Size(1050, 153);
-            this.plBottom.TabIndex = 95;
+            resources.ApplyResources(plBottom, "plBottom");
+            plBottom.BackColor = Color.White;
+            plBottom.Controls.Add(Label5);
+            plBottom.Controls.Add(lblInfo);
+            plBottom.Name = "plBottom";
+            ttMain.SetToolTip(plBottom, resources.GetString("plBottom.ToolTip"));
             // 
             // Label5
             // 
-            this.Label5.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.Label5.Location = new System.Drawing.Point(42, 24);
-            this.Label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label5.Name = "Label5";
-            this.Label5.Size = new System.Drawing.Size(327, 38);
-            this.Label5.TabIndex = 1;
-            this.Label5.Text = "Sicherungseinstellungen:";
+            resources.ApplyResources(Label5, "Label5");
+            Label5.Name = "Label5";
+            ttMain.SetToolTip(Label5, resources.GetString("Label5.ToolTip"));
             // 
             // lblInfo
             // 
-            this.lblInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblInfo.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.lblInfo.Location = new System.Drawing.Point(42, 66);
-            this.lblInfo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(950, 62);
-            this.lblInfo.TabIndex = 0;
+            resources.ApplyResources(lblInfo, "lblInfo");
+            lblInfo.Name = "lblInfo";
+            ttMain.SetToolTip(lblInfo, resources.GetString("lblInfo.ToolTip"));
             // 
             // Label1
             // 
-            this.Label1.AutoSize = true;
-            this.Label1.BackColor = System.Drawing.Color.Transparent;
-            this.Label1.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.Label1.ForeColor = System.Drawing.Color.Black;
-            this.Label1.Location = new System.Drawing.Point(144, 273);
-            this.Label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label1.Name = "Label1";
-            this.Label1.Size = new System.Drawing.Size(139, 28);
-            this.Label1.TabIndex = 83;
-            this.Label1.Text = "Backupmodus:";
+            resources.ApplyResources(Label1, "Label1");
+            Label1.BackColor = Color.Transparent;
+            Label1.ForeColor = Color.Black;
+            Label1.Name = "Label1";
+            ttMain.SetToolTip(Label1, resources.GetString("Label1.ToolTip"));
             // 
             // lblBackupMode
             // 
-            this.lblBackupMode.BackColor = System.Drawing.Color.Transparent;
-            this.lblBackupMode.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.lblBackupMode.ForeColor = System.Drawing.Color.Black;
-            this.lblBackupMode.Location = new System.Drawing.Point(368, 273);
-            this.lblBackupMode.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblBackupMode.Name = "lblBackupMode";
-            this.lblBackupMode.Size = new System.Drawing.Size(624, 27);
-            this.lblBackupMode.TabIndex = 84;
-            this.lblBackupMode.Text = "--";
+            resources.ApplyResources(lblBackupMode, "lblBackupMode");
+            lblBackupMode.BackColor = Color.Transparent;
+            lblBackupMode.ForeColor = Color.Black;
+            lblBackupMode.Name = "lblBackupMode";
+            ttMain.SetToolTip(lblBackupMode, resources.GetString("lblBackupMode.ToolTip"));
             // 
             // ttMain
             // 
-            this.ttMain.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-            this.ttMain.ToolTipTitle = "Quickinfo";
+            ttMain.ToolTipIcon = ToolTipIcon.Info;
+            ttMain.ToolTipTitle = "Quickinfo";
             // 
             // btnOnOff
             // 
-            this.btnOnOff.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnOnOff.Image = global::BSH.Main.Properties.Resources.toggle_off_icon_48;
-            this.btnOnOff.Location = new System.Drawing.Point(42, 149);
-            this.btnOnOff.Margin = new System.Windows.Forms.Padding(4);
-            this.btnOnOff.Name = "btnOnOff";
-            this.btnOnOff.Size = new System.Drawing.Size(90, 50);
-            this.btnOnOff.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.btnOnOff.TabIndex = 101;
-            this.btnOnOff.TabStop = false;
-            this.btnOnOff.Tag = "OFF";
-            this.ttMain.SetToolTip(this.btnOnOff, "Datensicherung ein- / ausschalten");
-            this.btnOnOff.Click += new System.EventHandler(this.btnOnOff_Click);
+            resources.ApplyResources(btnOnOff, "btnOnOff");
+            btnOnOff.Cursor = Cursors.Hand;
+            btnOnOff.Image = Resources.toggle_off_icon_48;
+            btnOnOff.Name = "btnOnOff";
+            btnOnOff.TabStop = false;
+            btnOnOff.Tag = "OFF";
+            ttMain.SetToolTip(btnOnOff, resources.GetString("btnOnOff.ToolTip"));
+            btnOnOff.Click += btnOnOff_Click;
             // 
             // cmdBackupNow
             // 
-            this.cmdBackupNow.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cmdBackupNow.Image = global::BSH.Main.Properties.Resources.backup_icon_48;
-            this.cmdBackupNow.Location = new System.Drawing.Point(470, 321);
-            this.cmdBackupNow.Margin = new System.Windows.Forms.Padding(4);
-            this.cmdBackupNow.Name = "cmdBackupNow";
-            this.cmdBackupNow.Size = new System.Drawing.Size(38, 38);
-            this.cmdBackupNow.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.cmdBackupNow.TabIndex = 100;
-            this.cmdBackupNow.TabStop = false;
-            this.ttMain.SetToolTip(this.cmdBackupNow, "Datensicherung starten");
-            this.cmdBackupNow.EnabledChanged += new System.EventHandler(this.cmdBackupNow_EnabledChanged);
-            this.cmdBackupNow.MouseClick += new System.Windows.Forms.MouseEventHandler(this.cmdBackupNow_MouseClick);
-            this.cmdBackupNow.MouseEnter += new System.EventHandler(this.cmdBackupNow_MouseEnter);
-            this.cmdBackupNow.MouseLeave += new System.EventHandler(this.cmdBackupNow_MouseLeave);
+            resources.ApplyResources(cmdBackupNow, "cmdBackupNow");
+            cmdBackupNow.Cursor = Cursors.Hand;
+            cmdBackupNow.Image = Resources.backup_icon_48;
+            cmdBackupNow.Name = "cmdBackupNow";
+            cmdBackupNow.TabStop = false;
+            ttMain.SetToolTip(cmdBackupNow, resources.GetString("cmdBackupNow.ToolTip"));
+            cmdBackupNow.EnabledChanged += cmdBackupNow_EnabledChanged;
+            cmdBackupNow.MouseClick += cmdBackupNow_MouseClick;
+            cmdBackupNow.MouseEnter += cmdBackupNow_MouseEnter;
+            cmdBackupNow.MouseLeave += cmdBackupNow_MouseLeave;
             // 
             // btnSettings
             // 
-            this.btnSettings.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSettings.Image = global::BSH.Main.Properties.Resources.settings_icon_48;
-            this.btnSettings.Location = new System.Drawing.Point(148, 321);
-            this.btnSettings.Margin = new System.Windows.Forms.Padding(4);
-            this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(38, 38);
-            this.btnSettings.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.btnSettings.TabIndex = 99;
-            this.btnSettings.TabStop = false;
-            this.ttMain.SetToolTip(this.btnSettings, "Einstellungen");
-            this.btnSettings.EnabledChanged += new System.EventHandler(this.btnSettings_EnabledChanged);
-            this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
-            this.btnSettings.MouseEnter += new System.EventHandler(this.btnSettings_MouseEnter);
-            this.btnSettings.MouseLeave += new System.EventHandler(this.btnSettings_MouseLeave);
+            resources.ApplyResources(btnSettings, "btnSettings");
+            btnSettings.Cursor = Cursors.Hand;
+            btnSettings.Image = Resources.settings_icon_48;
+            btnSettings.Name = "btnSettings";
+            btnSettings.TabStop = false;
+            ttMain.SetToolTip(btnSettings, resources.GetString("btnSettings.ToolTip"));
+            btnSettings.EnabledChanged += btnSettings_EnabledChanged;
+            btnSettings.Click += btnSettings_Click;
+            btnSettings.MouseEnter += btnSettings_MouseEnter;
+            btnSettings.MouseLeave += btnSettings_MouseLeave;
             // 
             // FlowLayoutPanel1
             // 
-            this.FlowLayoutPanel1.BackColor = System.Drawing.Color.White;
-            this.FlowLayoutPanel1.Controls.Add(this.plUpdates);
-            this.FlowLayoutPanel1.Controls.Add(this.plBottom);
-            this.FlowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.BottomUp;
-            this.FlowLayoutPanel1.Location = new System.Drawing.Point(0, 356);
-            this.FlowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
-            this.FlowLayoutPanel1.Name = "FlowLayoutPanel1";
-            this.FlowLayoutPanel1.Size = new System.Drawing.Size(1050, 204);
-            this.FlowLayoutPanel1.TabIndex = 103;
-            this.FlowLayoutPanel1.WrapContents = false;
+            resources.ApplyResources(FlowLayoutPanel1, "FlowLayoutPanel1");
+            FlowLayoutPanel1.BackColor = Color.White;
+            FlowLayoutPanel1.Controls.Add(plUpdates);
+            FlowLayoutPanel1.Controls.Add(plBottom);
+            FlowLayoutPanel1.Name = "FlowLayoutPanel1";
+            ttMain.SetToolTip(FlowLayoutPanel1, resources.GetString("FlowLayoutPanel1.ToolTip"));
             // 
             // Label6
             // 
-            this.Label6.BackColor = System.Drawing.Color.Transparent;
-            this.Label6.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.Label6.ForeColor = System.Drawing.Color.Black;
-            this.Label6.Location = new System.Drawing.Point(42, 118);
-            this.Label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label6.Name = "Label6";
-            this.Label6.Size = new System.Drawing.Size(90, 27);
-            this.Label6.TabIndex = 104;
-            this.Label6.Text = "Aus / Ein";
-            this.Label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            resources.ApplyResources(Label6, "Label6");
+            Label6.BackColor = Color.Transparent;
+            Label6.ForeColor = Color.Black;
+            Label6.Name = "Label6";
+            ttMain.SetToolTip(Label6, resources.GetString("Label6.ToolTip"));
             // 
             // llOptions
             // 
-            this.llOptions.AutoSize = true;
-            this.llOptions.Location = new System.Drawing.Point(195, 326);
-            this.llOptions.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.llOptions.Name = "llOptions";
-            this.llOptions.Size = new System.Drawing.Size(188, 28);
-            this.llOptions.TabIndex = 105;
-            this.llOptions.TabStop = true;
-            this.llOptions.Text = "Einstellungen ändern";
-            this.llOptions.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llOptions_LinkClicked);
-            this.llOptions.MouseEnter += new System.EventHandler(this.btnSettings_MouseEnter);
-            this.llOptions.MouseLeave += new System.EventHandler(this.btnSettings_MouseLeave);
+            resources.ApplyResources(llOptions, "llOptions");
+            llOptions.Name = "llOptions";
+            llOptions.TabStop = true;
+            ttMain.SetToolTip(llOptions, resources.GetString("llOptions.ToolTip"));
+            llOptions.LinkClicked += llOptions_LinkClicked;
+            llOptions.MouseEnter += btnSettings_MouseEnter;
+            llOptions.MouseLeave += btnSettings_MouseLeave;
             // 
             // llBackup
             // 
-            this.llBackup.AutoSize = true;
-            this.llBackup.Location = new System.Drawing.Point(516, 326);
-            this.llBackup.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.llBackup.Name = "llBackup";
-            this.llBackup.Size = new System.Drawing.Size(242, 28);
-            this.llBackup.TabIndex = 106;
-            this.llBackup.TabStop = true;
-            this.llBackup.Text = "Manuelle Sicherung starten";
-            this.llBackup.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llBackup_LinkClicked);
-            this.llBackup.MouseEnter += new System.EventHandler(this.cmdBackupNow_MouseEnter);
-            this.llBackup.MouseLeave += new System.EventHandler(this.cmdBackupNow_MouseLeave);
+            resources.ApplyResources(llBackup, "llBackup");
+            llBackup.Name = "llBackup";
+            llBackup.TabStop = true;
+            ttMain.SetToolTip(llBackup, resources.GetString("llBackup.ToolTip"));
+            llBackup.LinkClicked += llBackup_LinkClicked;
+            llBackup.MouseEnter += cmdBackupNow_MouseEnter;
+            llBackup.MouseLeave += cmdBackupNow_MouseLeave;
             // 
             // picDataType
             // 
-            this.picDataType.Image = global::BSH.Main.Properties.Resources.status_ok;
-            this.picDataType.Location = new System.Drawing.Point(42, 26);
-            this.picDataType.Margin = new System.Windows.Forms.Padding(4);
-            this.picDataType.Name = "picDataType";
-            this.picDataType.Size = new System.Drawing.Size(90, 68);
-            this.picDataType.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.picDataType.TabIndex = 63;
-            this.picDataType.TabStop = false;
+            resources.ApplyResources(picDataType, "picDataType");
+            picDataType.Image = Resources.status_ok;
+            picDataType.Name = "picDataType";
+            picDataType.TabStop = false;
+            ttMain.SetToolTip(picDataType, resources.GetString("picDataType.ToolTip"));
             // 
             // llShowExceptionDialog
             // 
-            this.llShowExceptionDialog.AutoSize = true;
-            this.llShowExceptionDialog.Dock = System.Windows.Forms.DockStyle.Left;
-            this.llShowExceptionDialog.Location = new System.Drawing.Point(28, 0);
-            this.llShowExceptionDialog.Name = "llShowExceptionDialog";
-            this.llShowExceptionDialog.Size = new System.Drawing.Size(156, 28);
-            this.llShowExceptionDialog.TabIndex = 107;
-            this.llShowExceptionDialog.TabStop = true;
-            this.llShowExceptionDialog.Text = "(Fehler anzeigen)";
-            this.llShowExceptionDialog.Visible = false;
-            this.llShowExceptionDialog.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llShowExceptionDialog_LinkClicked);
+            resources.ApplyResources(llShowExceptionDialog, "llShowExceptionDialog");
+            llShowExceptionDialog.Name = "llShowExceptionDialog";
+            llShowExceptionDialog.TabStop = true;
+            ttMain.SetToolTip(llShowExceptionDialog, resources.GetString("llShowExceptionDialog.ToolTip"));
+            llShowExceptionDialog.LinkClicked += llShowExceptionDialog_LinkClicked;
             // 
             // Panel1
             // 
-            this.Panel1.Controls.Add(this.llShowExceptionDialog);
-            this.Panel1.Controls.Add(this.lblBdNewestBackup);
-            this.Panel1.Location = new System.Drawing.Point(368, 183);
-            this.Panel1.Margin = new System.Windows.Forms.Padding(0);
-            this.Panel1.Name = "Panel1";
-            this.Panel1.Size = new System.Drawing.Size(619, 28);
-            this.Panel1.TabIndex = 108;
+            resources.ApplyResources(Panel1, "Panel1");
+            Panel1.Controls.Add(llShowExceptionDialog);
+            Panel1.Controls.Add(lblBdNewestBackup);
+            Panel1.Name = "Panel1";
+            ttMain.SetToolTip(Panel1, resources.GetString("Panel1.ToolTip"));
             // 
             // loadingCircle
             // 
-            this.loadingCircle.Active = true;
-            this.loadingCircle.Color = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(95)))), ((int)(((byte)(169)))));
-            this.loadingCircle.InnerCircleRadius = 8;
-            this.loadingCircle.Location = new System.Drawing.Point(42, 20);
-            this.loadingCircle.Margin = new System.Windows.Forms.Padding(4);
-            this.loadingCircle.Name = "loadingCircle";
-            this.loadingCircle.NumberSpoke = 24;
-            this.loadingCircle.OuterCircleRadius = 9;
-            this.loadingCircle.RotationSpeed = 20;
-            this.loadingCircle.Size = new System.Drawing.Size(90, 78);
-            this.loadingCircle.SpokeThickness = 4;
-            this.loadingCircle.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.IE7;
-            this.loadingCircle.TabIndex = 102;
-            this.loadingCircle.Visible = false;
+            resources.ApplyResources(loadingCircle, "loadingCircle");
+            loadingCircle.Active = true;
+            loadingCircle.Color = Color.FromArgb(48, 95, 169);
+            loadingCircle.InnerCircleRadius = 8;
+            loadingCircle.Name = "loadingCircle";
+            loadingCircle.NumberSpoke = 24;
+            loadingCircle.OuterCircleRadius = 9;
+            loadingCircle.RotationSpeed = 20;
+            loadingCircle.SpokeThickness = 4;
+            loadingCircle.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.IE7;
+            ttMain.SetToolTip(loadingCircle, resources.GetString("loadingCircle.ToolTip"));
             // 
             // ucOverview
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.White;
-            this.Controls.Add(this.Panel1);
-            this.Controls.Add(this.llBackup);
-            this.Controls.Add(this.llOptions);
-            this.Controls.Add(this.Label6);
-            this.Controls.Add(this.FlowLayoutPanel1);
-            this.Controls.Add(this.plStatus);
-            this.Controls.Add(this.loadingCircle);
-            this.Controls.Add(this.btnOnOff);
-            this.Controls.Add(this.cmdBackupNow);
-            this.Controls.Add(this.btnSettings);
-            this.Controls.Add(this.Label7);
-            this.Controls.Add(this.lblNextBackup);
-            this.Controls.Add(this.picDataType);
-            this.Controls.Add(this.lblBdSpaceAvailable);
-            this.Controls.Add(this.lblOldBackup);
-            this.Controls.Add(this.Label1);
-            this.Controls.Add(this.Label2);
-            this.Controls.Add(this.lblBackupMode);
-            this.Controls.Add(this.lblBdOldestBackup);
-            this.Controls.Add(this.Label4);
-            this.Controls.Add(this.lblBdStatus);
-            this.DoubleBuffered = true;
-            this.Font = new System.Drawing.Font("Segoe UI Light", 9.75F);
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "ucOverview";
-            this.Size = new System.Drawing.Size(1050, 560);
-            this.plStatus.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.cmdBackupCancel)).EndInit();
-            this.plUpdates.ResumeLayout(false);
-            this.plBottom.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.btnOnOff)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cmdBackupNow)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnSettings)).EndInit();
-            this.FlowLayoutPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.picDataType)).EndInit();
-            this.Panel1.ResumeLayout(false);
-            this.Panel1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            resources.ApplyResources(this, "$this");
+            AutoScaleMode = AutoScaleMode.Dpi;
+            BackColor = Color.White;
+            Controls.Add(Panel1);
+            Controls.Add(llBackup);
+            Controls.Add(llOptions);
+            Controls.Add(Label6);
+            Controls.Add(FlowLayoutPanel1);
+            Controls.Add(plStatus);
+            Controls.Add(loadingCircle);
+            Controls.Add(btnOnOff);
+            Controls.Add(cmdBackupNow);
+            Controls.Add(btnSettings);
+            Controls.Add(Label7);
+            Controls.Add(lblNextBackup);
+            Controls.Add(picDataType);
+            Controls.Add(lblBdSpaceAvailable);
+            Controls.Add(lblOldBackup);
+            Controls.Add(Label1);
+            Controls.Add(Label2);
+            Controls.Add(lblBackupMode);
+            Controls.Add(lblBdOldestBackup);
+            Controls.Add(Label4);
+            Controls.Add(lblBdStatus);
+            DoubleBuffered = true;
+            Name = "ucOverview";
+            ttMain.SetToolTip(this, resources.GetString("$this.ToolTip"));
+            plStatus.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)cmdBackupCancel).EndInit();
+            plUpdates.ResumeLayout(false);
+            plBottom.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)btnOnOff).EndInit();
+            ((System.ComponentModel.ISupportInitialize)cmdBackupNow).EndInit();
+            ((System.ComponentModel.ISupportInitialize)btnSettings).EndInit();
+            FlowLayoutPanel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)picDataType).EndInit();
+            Panel1.ResumeLayout(false);
+            Panel1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         internal PictureBox picDataType;

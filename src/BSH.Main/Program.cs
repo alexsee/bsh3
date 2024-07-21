@@ -19,7 +19,6 @@ using CommandLine;
 using Serilog;
 using System;
 using System.Reflection;
-using System.Resources;
 using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main;
