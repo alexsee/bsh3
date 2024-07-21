@@ -684,6 +684,12 @@ Double-click here to start configuring.</value>
   <data name="MSG_BACKUP_DEVICE_NOT_READY_TITLE" xml:space="preserve">
     <value>Backup medium not available.</value>
   </data>
+  <data name="MSG_NO_UPDATE_FOUND_TEXT" xml:space="preserve">
+    <value>You are on the latest version of Backup Service Home 3. No updates were found.</value>
+  </data>
+  <data name="MSG_NO_UPDATE_FOUND_TITLE" xml:space="preserve">
+    <value>No updates found</value>
+  </data>
   <data name="MSG_PASSWORD_WRONG_TEXT" xml:space="preserve">
     <value>The given password is wrong.</value>
   </data>
