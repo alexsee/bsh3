@@ -13,22 +13,10 @@
 // limitations under the License.
 
 using System;
-using System.Runtime.Serialization;
 
 namespace Brightbits.BSH.Engine.Exceptions;
 
-[Serializable]
 public class NoSourceFolderSelectedException : Exception
 {
     public NoSourceFolderSelectedException() : base() { }
-
-    protected NoSourceFolderSelectedException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        // ...
-    }
-
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        base.GetObjectData(info, context);
-    }
 }

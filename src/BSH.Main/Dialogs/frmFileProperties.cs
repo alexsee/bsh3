@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Models;
-using BSH.Main.Properties;
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Models;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;
 
@@ -68,7 +68,7 @@ public partial class frmFileProperties
             procInfo.WindowStyle = ProcessWindowStyle.Normal;
 
             var proc = Process.Start(procInfo);
-            proc.WaitForExit();
+            await proc.WaitForExitAsync();
 
             if (tmpFile.Item1 != null && tmpFile.Item2)
             {
@@ -125,7 +125,7 @@ public partial class frmFileProperties
         // Wurde überhaupt irgendetwas ausgewählt?
         if (lvVersions.SelectedItems.Count > 0)
         {
-            await BackupLogic.BackupController.RestoreBackupAsync(lvVersions.SelectedItems[0].Tag.ToString(), CurrentFileFolder + @"\" + lblFileName.Text, Destination);
+            await BackupLogic.BackupController.RestoreBackupAsync(lvVersions.SelectedItems[0].Tag.ToString(), CurrentFileFolder + '\\' + lblFileName.Text, Destination);
         }
     }
 

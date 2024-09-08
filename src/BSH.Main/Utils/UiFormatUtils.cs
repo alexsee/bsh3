@@ -18,6 +18,9 @@ namespace BSH.Main.Utils;
 
 public static class UiFormatUtils
 {
+    public const string DATE_FORMAT_HOUR_MINUTE = "HH:mm";
+    public const string DATE_FORMAT_LONG = "dd.MM.yyyy HH:mm";
+
     public static string HumanizeDate(this DateTime date)
     {
         string formattedDate;

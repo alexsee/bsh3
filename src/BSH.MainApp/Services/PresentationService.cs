@@ -40,7 +40,7 @@ public class PresentationService : IPresentationService
     {
     }
 
-    public (string password, bool persist) RequestPassword()
+    public (string? password, bool persist) RequestPassword()
     {
         return (null, false);
     }

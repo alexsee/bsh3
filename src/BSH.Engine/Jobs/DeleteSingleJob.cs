@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
 using System.IO;
@@ -37,14 +38,14 @@ public class DeleteSingleJob : Job
 {
     private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
 
-    public List<FileExceptionEntry> FileErrorList
+    public Collection<FileExceptionEntry> FileErrorList
     {
-        get; set;
+        get;
     }
 
     public DeleteSingleJob(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
     {
-        FileErrorList = new List<FileExceptionEntry>();
+        FileErrorList = new Collection<FileExceptionEntry>();
     }
 
     /// <summary>
@@ -114,11 +115,11 @@ public class DeleteSingleJob : Job
             // obtain files
             using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, selectFileSQL, selectFileParameters))
             {
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     fileIds.Add(reader.GetInt32(0));
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
 
             // report progress
@@ -142,7 +143,7 @@ public class DeleteSingleJob : Job
                                                     "WHERE fvt.fileID = @fileId",
                     deleteFileParams);
                 var i = 0;
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     // get file name
                     var fileName = reader.GetString("filePath") + reader.GetString("fileName");
@@ -178,7 +179,7 @@ public class DeleteSingleJob : Job
                     fileVersionIds.Add(reader.GetInt32(reader.GetOrdinal("fileversionid")));
                 }
 
-                reader.Close();
+                await reader.CloseAsync();
             }
 
             // delete metadata from database

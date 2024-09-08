@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Security;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -55,12 +54,12 @@ public class QueryManager : IQueryManager
         using (var dbClient = dbClientFactory.CreateDbClient())
         using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionStatus = 0 ORDER BY versionID DESC LIMIT 1", null))
         {
-            if (reader.Read())
+            if (await reader.ReadAsync())
             {
                 result = VersionDetails.FromReader(reader);
             }
 
-            reader.Close();
+            await reader.CloseAsync();
         }
 
         return result;
@@ -78,12 +77,12 @@ public class QueryManager : IQueryManager
         using (var dbClient = dbClientFactory.CreateDbClient())
         using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionStatus = 0 AND versionType = 2 ORDER BY versionID DESC LIMIT 1", null))
         {
-            if (reader.Read())
+            if (await reader.ReadAsync())
             {
                 result = VersionDetails.FromReader(reader);
             }
 
-            reader.Close();
+            await reader.CloseAsync();
         }
 
         return result;
@@ -138,14 +137,14 @@ public class QueryManager : IQueryManager
 
         // obtain oldest backup
         using (var dbClient = dbClientFactory.CreateDbClient())
-        using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable ORDER BY versionID ASC LIMIT 1", null))
+        using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionStatus = 0 ORDER BY versionID ASC LIMIT 1", null))
         {
-            if (reader.Read())
+            if (await reader.ReadAsync())
             {
                 result = VersionDetails.FromReader(reader);
             }
 
-            reader.Close();
+            await reader.CloseAsync();
         }
 
         return result;
@@ -164,12 +163,12 @@ public class QueryManager : IQueryManager
         using (var dbClient = dbClientFactory.CreateDbClient())
         using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, $"SELECT * FROM versiontable WHERE versionID = {id}", null))
         {
-            if (reader.Read())
+            if (await reader.ReadAsync())
             {
                 result = VersionDetails.FromReader(reader);
             }
 
-            reader.Close();
+            await reader.CloseAsync();
         }
 
         return result;
@@ -210,7 +209,7 @@ public class QueryManager : IQueryManager
                     var folder = GetPathWithoutSlashes(reader.GetString("filePath"));
                     result.Add(folder);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
 
             // get empty folders
@@ -227,7 +226,7 @@ public class QueryManager : IQueryManager
                     var folder = GetPathWithoutSlashes(reader.GetString("folder"));
                     result.Add(folder);
                 }
-                reader.Close();
+                await reader.CloseAsync();
             }
         }
 
@@ -430,7 +429,7 @@ public class QueryManager : IQueryManager
                 result.Add(FileTableRow.FromReaderFileVersion(reader));
             }
 
-            reader.Close();
+            await reader.CloseAsync();
         }
 
         return result;
@@ -480,12 +479,12 @@ public class QueryManager : IQueryManager
                 "WHERE(filelink.versionID = @versionID) " +
                 "And filePath = @filePath",
                 fileSelectParameters);
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
                 result.Add(FileTableRow.FromReaderFile(reader));
             }
 
-            reader.Close();
+            await reader.CloseAsync();
         }
 
         return result;
@@ -533,7 +532,7 @@ public class QueryManager : IQueryManager
     /// <param name="password"></param>
     /// <param name="temp"></param>
     /// <returns></returns>
-    public async Task<ValueTuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, SecureString password)
+    public async Task<ValueTuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password)
     {
         using var dbClient = dbClientFactory.CreateDbClient();
         using var storage = storageFactory.GetCurrentStorageProvider();
@@ -561,7 +560,7 @@ public class QueryManager : IQueryManager
             "LIMIT 1",
             parameters))
         {
-            if (reader.Read())
+            if (await reader.ReadAsync())
             {
                 var fileType = reader.GetInt32("fileType");
 
@@ -602,7 +601,7 @@ public class QueryManager : IQueryManager
                 }
             }
 
-            reader.Close();
+            await reader.CloseAsync();
         }
 
         return (result, temp);
@@ -651,9 +650,9 @@ public class QueryManager : IQueryManager
         {
             var directoryName = destination.Split('\\', StringSplitOptions.RemoveEmptyEntries)[^1];
 
-            if (folder.StartsWith("\\" + directoryName + "\\"))
+            if (folder.StartsWith("\\" + directoryName + "\\", StringComparison.OrdinalIgnoreCase))
             {
-                var idx = folder.IndexOf("\\" + directoryName + "\\");
+                var idx = folder.IndexOf("\\" + directoryName + "\\", StringComparison.OrdinalIgnoreCase);
 
                 // path found
                 var result = GetPathWithoutSlashes(Path.Combine(destination, folder[(idx + directoryName.Length + 2)..]));
@@ -685,20 +684,20 @@ public class QueryManager : IQueryManager
                 };
 
                 using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT junction, folder FROM folderjunctiontable WHERE junction LIKE @junction", parameters);
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     var junction = reader.GetString("junction");
                     var folder = reader.GetString("folder");
 
-                    if (path.Contains(junction))
+                    if (path.Contains(junction, StringComparison.OrdinalIgnoreCase))
                     {
-                        reader.Close();
+                        await reader.CloseAsync();
 
-                        return path.Replace(junction, folder);
+                        return path.Replace(junction, folder, StringComparison.OrdinalIgnoreCase);
                     }
                 }
 
-                reader.Close();
+                await reader.CloseAsync();
             }
 
             return path;

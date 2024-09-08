@@ -180,7 +180,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     public async Task CheckFtpRemote()
     {
         // check FTP
-        var profile = FTPStorage.CheckConnection(FtpRemoteHost, FtpRemotePort, FtpRemoteUser, FtpRemotePassword, FtpRemotePath, FtpRemoteEncoding);
+        var profile = FtpStorage.CheckConnection(FtpRemoteHost, FtpRemotePort, FtpRemoteUser, FtpRemotePassword, FtpRemotePath, FtpRemoteEncoding);
 
         if (profile)
         {

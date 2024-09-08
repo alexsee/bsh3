@@ -43,6 +43,11 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
     [RelayCommand]
     private async Task LoadVersion()
     {
+        if (CurrentVersion == null)
+        {
+            return;
+        }
+
         var sources = CurrentVersion.Sources.Split("|")
             .Select(x => x[(x.LastIndexOf("\\") + 1)..])
             .ToList();
@@ -125,7 +130,7 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
         }
 
         // obtain child folders
-        var folderList = (await queryManager.GetFolderListAsync(version, @"\" + path + @"\%"))
+        var folderList = (await queryManager.GetFolderListAsync(version, '\\' + path + @"\%"))
             .Where(x =>
             {
                 var split = x.Split("\\", StringSplitOptions.RemoveEmptyEntries);
@@ -139,7 +144,7 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
             .ToList();
 
         // obtain files in folder
-        var fileList = (await queryManager.GetFilesByVersionAsync(version, @"\" + path + @"\"))
+        var fileList = (await queryManager.GetFilesByVersionAsync(version, '\\' + path + '\\'))
             .Select(x => new FileOrFolderItem()
             {
                 Name = x.FileName,

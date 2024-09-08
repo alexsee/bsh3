@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Security;
-using Brightbits.BSH.Engine.Storage;
-using BSH.Controls.UI;
-using BSH.Main.Properties;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Storage;
+using BSH.Controls.UI;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;
 
@@ -129,7 +129,7 @@ public partial class ucConfig : IMainTabs
             if (txtBackupPath.Text.StartsWith(@"\\"))
             {
                 BackupLogic.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
-                BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(Crypto.ToSecureString(txtUNCPassword.Text), System.Security.Cryptography.DataProtectionScope.LocalMachine);
+                BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(txtUNCPassword.Text, System.Security.Cryptography.DataProtectionScope.LocalMachine);
                 BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
             }
             else
@@ -152,7 +152,7 @@ public partial class ucConfig : IMainTabs
         configurationManager.FtpPort = txtFTPPort.Text;
         configurationManager.FtpUser = txtFTPUsername.Text;
         configurationManager.FtpPass = txtFTPPassword.Text;
-        configurationManager.FtpFolder = FTPStorage.GetFtpPath(txtFTPPath.Text);
+        configurationManager.FtpFolder = FtpStorage.GetFtpPath(txtFTPPath.Text);
         configurationManager.FtpCoding = cboFtpEncoding.SelectedItem?.ToString();
 
         if (chkFtpEncryption.Checked)
@@ -214,8 +214,6 @@ public partial class ucConfig : IMainTabs
         }
 
         // compression factor
-        configurationManager.CompressionLevel = tbCompressionLevel.Value.ToString();
-
         configurationManager.RemindAfterDays = chkRemind.Checked ? ((int)nudRemind.Value).ToString() : "";
 
         // stop system
@@ -281,7 +279,7 @@ public partial class ucConfig : IMainTabs
         if (txtBackupPath.Text.StartsWith('\\'))
         {
             txtUNCUsername.Text = configurationManager.UNCUsername;
-            txtUNCPassword.Text = Crypto.ToInsecureString(Crypto.DecryptString(configurationManager.UNCPassword, System.Security.Cryptography.DataProtectionScope.LocalMachine));
+            txtUNCPassword.Text = Crypto.DecryptString(configurationManager.UNCPassword, System.Security.Cryptography.DataProtectionScope.LocalMachine);
         }
 
         // backup mode
@@ -328,7 +326,6 @@ public partial class ucConfig : IMainTabs
 
         chkDeactivateAutoBackupsWhenAkku.Checked = configurationManager.DeativateAutoBackupsWhenAkku == "1";
 
-        tbCompressionLevel.Value = int.Parse(configurationManager.CompressionLevel);
         chkAbortWhenNotAvailable.Checked = configurationManager.Medium == "1";
 
         chkShowLocalized.Checked = configurationManager.ShowLocalizedPath == "1";
@@ -486,7 +483,7 @@ public partial class ucConfig : IMainTabs
         try
         {
             // check FTP
-            var profile = FTPStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
 
             if (profile)
             {
@@ -578,31 +575,8 @@ public partial class ucConfig : IMainTabs
         txtRemindSpace.Enabled = chkRemindSpace.Checked;
     }
 
-    private void tbCompressionLevel_ValueChanged(object sender, EventArgs e)
-    {
-        if (tbCompressionLevel.Value == 0)
-        {
-            lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_NO_COMPRESSION;
-        }
-        else if (tbCompressionLevel.Value < 5)
-        {
-            lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_LOW_COMPRESSION;
-        }
-        else if (tbCompressionLevel.Value < 9)
-        {
-            lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_HIGH_COMPRESSION;
-        }
-        else
-        {
-            lblCompressionLevel.Text = Resources.DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION;
-        }
-
-        lblCompressionLevel.Text += Resources.DLG_UC_CONFIG_LBL_COMPRESSION_STAGE + tbCompressionLevel.Value.ToString();
-    }
-
     private void rdCompress_CheckedChanged(object sender, EventArgs e)
     {
-        tbCompressionLevel.Enabled = rdCompress.Checked;
         cmdExcludeCompress.Enabled = rdCompress.Checked;
     }
 
@@ -770,7 +744,7 @@ public partial class ucConfig : IMainTabs
         // check if entry is already present
         foreach (var entry2 in lstExcludeCompress.Items)
         {
-            if ((lstExcludeCompress.GetItemText(entry2) ?? "") == (extension ?? ""))
+            if ((lstExcludeCompress.GetItemText(entry2) ?? "") == extension)
             {
                 return;
             }

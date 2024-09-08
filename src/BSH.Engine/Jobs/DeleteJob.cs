@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Threading;
@@ -41,9 +41,9 @@ public class DeleteJob : Job
         get; set;
     }
 
-    public List<FileExceptionEntry> FileErrorList
+    public Collection<FileExceptionEntry> FileErrorList
     {
-        get; set;
+        get;
     }
 
     public DeleteJob(IStorage storage,
@@ -52,7 +52,7 @@ public class DeleteJob : Job
         IConfigurationManager configurationManager,
         bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
     {
-        FileErrorList = new List<FileExceptionEntry>();
+        FileErrorList = new Collection<FileExceptionEntry>();
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ public class DeleteJob : Job
                 dbClient.CreateParameter("version", DbType.Int32, 0, int.Parse(Version))
             };
 
-            var files = dbClient.ExecuteDataSet(CommandType.Text,
+            using var files = dbClient.ExecuteDataSet(CommandType.Text,
                 "SELECT b.fileName, b.filePath, c.fileversionid, c.fileType, d.versionDate, c.longfilename " +
                 "FROM filelink a, filetable b, fileversiontable c, versiontable d " +
                 "WHERE a.versionID = @version AND a.fileversionid NOT IN " +
@@ -190,7 +190,7 @@ public class DeleteJob : Job
             using var dbClient = dbClientFactory.CreateDbClient();
             using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT versiondate FROM versiontable WHERE versionid NOT IN (SELECT filepackage FROM fileversiontable)", null);
 
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
                 try
                 {
@@ -203,7 +203,7 @@ public class DeleteJob : Job
                 }
             }
 
-            reader.Close();
+            await reader.CloseAsync();
         }
 
         // store database version

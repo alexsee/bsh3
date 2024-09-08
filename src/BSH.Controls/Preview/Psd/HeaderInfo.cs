@@ -5,15 +5,30 @@ namespace SimplePsd
     /// </summary>
     public class HeaderInfo
     {
-        public short NChannels { get; set; }
+        public short NChannels
+        {
+            get; set;
+        }
 
-        public int NHeight { get; set; }
+        public int NHeight
+        {
+            get; set;
+        }
 
-        public int NWidth { get; set; }
+        public int NWidth
+        {
+            get; set;
+        }
 
-        public short NBitsPerPixel { get; set; }
+        public short NBitsPerPixel
+        {
+            get; set;
+        }
 
-        public short NColourMode { get; set; }
+        public short NColourMode
+        {
+            get; set;
+        }
 
         public HeaderInfo()
         {

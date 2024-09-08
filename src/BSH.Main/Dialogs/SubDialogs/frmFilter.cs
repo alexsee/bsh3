@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using BSH.Controls.UI;
-using BSH.Main.Properties;
-using Humanizer;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using BSH.Controls.UI;
+using BSH.Main.Properties;
+using Humanizer;
 
 namespace Brightbits.BSH.Main;
 
@@ -164,16 +164,15 @@ public partial class frmFilter
 
         // Verzeichnis soll gefiltert werden
         // Zunächst prüfen, ob Verzeichnis in einem der Quellverzeichnisse
-        var bAdded = false;
         foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
         {
-            if (!dlgFolderBrowser.SelectedPath.ToLower().Contains(entry.ToLower()))
+            if (!dlgFolderBrowser.SelectedPath.Contains(entry, StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
 
             // Verzeichnis kann sortiert werden
-            var sTemp = dlgFolderBrowser.SelectedPath.Replace(entry[..entry.LastIndexOf(@"\")], "");
+            var sTemp = dlgFolderBrowser.SelectedPath.Replace(entry[..entry.LastIndexOf('\\')], "");
 
             if (!string.IsNullOrEmpty(sTemp))
             {
@@ -189,20 +188,13 @@ public partial class frmFilter
                 }
 
                 lstExcludeFolders.Items.Add(sTemp);
-                bAdded = true;
                 onLoadPath = dlgFolderBrowser.SelectedPath;
                 return;
             }
         }
 
-        if (!bAdded)
-        {
-            // Verzeichnis nicht in Quellverzeichnis
-            MessageBox.Show(Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT, Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            return;
-        }
-
-        onLoadPath = dlgFolderBrowser.SelectedPath;
+        // Verzeichnis nicht in Quellverzeichnis
+        MessageBox.Show(Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT, Resources.DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private void cmdDeleteFolders_Click(object sender, EventArgs e)
@@ -334,19 +326,19 @@ public partial class frmFilter
                 var bAdded = false;
                 foreach (var entry in BackupLogic.ConfigurationManager.SourceFolder.Split('|'))
                 {
-                    if (!System.IO.Path.GetFullPath(File).ToLower().Contains(entry.ToLower()))
+                    if (!System.IO.Path.GetFullPath(File).Contains(entry, StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
 
                     // Datei kann sortiert werden
-                    var sTemp = File.Replace(entry.Substring(0, entry.LastIndexOf(@"\")), "");
+                    var sTemp = File.Replace(entry.Substring(0, entry.LastIndexOf('\\')), "");
                     if (!string.IsNullOrEmpty(sTemp))
                     {
                         // Nachschauen, ob schon drin
                         foreach (var entry2 in lstExcludeSingleFile.Items)
                         {
-                            if ((lstExcludeSingleFile.GetItemText(entry2) ?? "") == (sTemp ?? ""))
+                            if ((lstExcludeSingleFile.GetItemText(entry2) ?? "") == sTemp)
                             {
                                 // Eintrag gibts schon
                                 return;

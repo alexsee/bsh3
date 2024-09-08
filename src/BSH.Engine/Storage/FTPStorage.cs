@@ -14,8 +14,8 @@
 
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
-using System.Security;
 using System.Text;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
@@ -23,14 +23,13 @@ using Brightbits.BSH.Engine.Security;
 using FluentFTP;
 using FluentFTP.Exceptions;
 using FluentFTP.Helpers;
-using Ionic.Zip;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Storage;
 
-public class FTPStorage : Storage, IStorage
+public class FtpStorage : Storage, IStorage
 {
-    private static readonly ILogger _logger = Log.ForContext<FTPStorage>();
+    private static readonly ILogger _logger = Log.ForContext<FtpStorage>();
 
     private readonly int currentStorageVersion;
 
@@ -48,12 +47,12 @@ public class FTPStorage : Storage, IStorage
 
     private readonly bool encryption;
 
-    public int compressionLevel;
-
     private FtpClient ftpClient;
 
-    public FTPStorage(IConfigurationManager configurationManager)
+    public FtpStorage(IConfigurationManager configurationManager)
     {
+        ArgumentNullException.ThrowIfNull(configurationManager);
+
         this.serverAddress = configurationManager.FtpHost;
         this.serverPort = int.Parse(configurationManager.FtpPort);
         this.userName = configurationManager.FtpUser;
@@ -64,7 +63,7 @@ public class FTPStorage : Storage, IStorage
         this.currentStorageVersion = int.Parse(configurationManager.OldBackupPrevent);
     }
 
-    public FTPStorage(
+    public FtpStorage(
         string serverAddress, int serverPort, string userName, string password, string folderPath, string encoding,
         bool encryption, int currentStorageVersion)
     {
@@ -85,16 +84,16 @@ public class FTPStorage : Storage, IStorage
 
     private FtpProfile GetFtpProfile(bool quickCheck = false)
     {
-        Encoding encoding;
+        Encoding finalEncoding;
 
         // set encoding
         if (this.encoding == "UTF-8")
         {
-            encoding = new UTF8Encoding(false);
+            finalEncoding = new UTF8Encoding(false);
         }
         else
         {
-            encoding = Encoding.GetEncoding(this.encoding);
+            finalEncoding = Encoding.GetEncoding(this.encoding);
         }
 
         // determine profile
@@ -102,7 +101,7 @@ public class FTPStorage : Storage, IStorage
         {
             Host = this.serverAddress,
             Credentials = new NetworkCredential(this.userName, this.password),
-            Encoding = encoding,
+            Encoding = finalEncoding,
             Timeout = quickCheck ? 15000 : 60000,
             RetryAttempts = 1,
         };
@@ -256,15 +255,9 @@ public class FTPStorage : Storage, IStorage
         var remoteFilePath = Combine(folderPath, remoteFile + ".zip").GetFtpPath();
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile)) + ".zip";
 
-        using (var fs = new FileStream(tmpFile, FileMode.Create, FileAccess.ReadWrite))
-        using (var zipFile = new ZipFile())
+        using (var zipFile = ZipFile.Open(tmpFile, ZipArchiveMode.Create))
         {
-            zipFile.ParallelDeflateThreshold = -1;
-            zipFile.CompressionLevel = (Ionic.Zlib.CompressionLevel)compressionLevel;
-            zipFile.UseZip64WhenSaving = Zip64Option.AsNecessary;
-            zipFile.AddFile(GetLocalFileName(localFile), "\\");
-
-            zipFile.Save(fs);
+            zipFile.CreateEntryFromFile(GetLocalFileName(localFile), Path.GetFileName(localFile), CompressionLevel.Optimal);
         }
 
         var result = ftpClient.UploadFile(tmpFile, remoteFilePath, FtpRemoteExists.Overwrite, true);
@@ -273,16 +266,14 @@ public class FTPStorage : Storage, IStorage
         return result == FtpStatus.Success;
     }
 
-    public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, SecureString password)
+    public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password)
     {
         // create directory if not exists
         var remoteFilePath = Combine(folderPath, remoteFile + ".enc").GetFtpPath();
 
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile)) + ".enc";
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
+
+        var crypto = new Encryption();
         if (!crypto.Encode(GetLocalFileName(localFile), tmpFile, password))
         {
             return false;
@@ -386,16 +377,16 @@ public class FTPStorage : Storage, IStorage
             return false;
         }
 
-        using (var zipFile = new ZipFile(tmpFile))
+        using (var zipFile = ZipFile.OpenRead(tmpFile))
         {
-            zipFile[0].Extract(GetLocalFileName(Path.GetDirectoryName(localFile)), ExtractExistingFileAction.OverwriteSilently);
+            zipFile.GetEntry(Path.GetFileName(localFile)).ExtractToFile(GetLocalFileName(localFile), true);
         }
 
         File.Delete(tmpFile);
         return true;
     }
 
-    public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, SecureString password)
+    public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
     {
         var remoteFilePath = Combine(folderPath, remoteFile + ".enc").GetFtpPath();
 
@@ -410,10 +401,7 @@ public class FTPStorage : Storage, IStorage
             return false;
         }
 
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
+        var crypto = new Encryption();
         crypto.Decode(tmpFile, GetLocalFileName(localFile), password);
 
         File.Delete(tmpFile);
@@ -456,7 +444,7 @@ public class FTPStorage : Storage, IStorage
         return true;
     }
 
-    public bool DecryptOnStorage(string remoteFile, SecureString password)
+    public bool DecryptOnStorage(string remoteFile, string password)
     {
         var remoteFilePath = Combine(folderPath, remoteFile + ".enc").GetFtpPath();
         var remoteFilePathDecrypted = Combine(folderPath, remoteFile).GetFtpPath();
@@ -469,10 +457,7 @@ public class FTPStorage : Storage, IStorage
             return false;
         }
 
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
+        var crypto = new Encryption();
         crypto.Decode(tmpFile + ".enc", tmpFile, password);
         File.Delete(tmpFile + ".enc");
 

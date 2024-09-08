@@ -12,15 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Controls.UI;
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
-using BSH.Main.Properties;
-using BSH.Main.Utils;
-using Humanizer;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,6 +21,15 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Brightbits.BSH.Controls.UI;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
+using BSH.Main.Properties;
+using BSH.Main.Utils;
+using Humanizer;
+using Serilog;
 using static Brightbits.BSH.Engine.Win32Stuff;
 
 namespace Brightbits.BSH.Main;
@@ -147,7 +147,7 @@ public partial class frmBrowser : IStatusReport
         if (lvFiles.SelectedItems.Count <= 0)
         {
             lblFileName.Text = path.Split('\\')[currentFolderIdx];
-            lblFileType.Text = @"\" + path + @"\";
+            lblFileType.Text = '\\' + path + '\\';
             flpColumn2.Visible = false;
             flpColumn3.Visible = false;
             lblIntegrityCheck.Text = "";
@@ -222,7 +222,7 @@ public partial class frmBrowser : IStatusReport
             fileListItem.SubItems.Add(CreateStringListViewSubItem(""));
             fileListItem.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
             fileListItem.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
-            fileListItem.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")"));
+            fileListItem.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")"));
             fileListItem.ForeColor = (file.FileStatus == "1" ? Color.Black : Color.Red);
             fileListItem.Tag = file.FilePath;
 
@@ -256,7 +256,7 @@ public partial class frmBrowser : IStatusReport
     {
         return new ListViewItem.ListViewSubItem()
         {
-            Text = dateTime.ToString("dd.MM.yyyy HH:mm"),
+            Text = dateTime.ToString(UiFormatUtils.DATE_FORMAT_LONG),
             Tag = dateTime
         };
     }
@@ -366,7 +366,7 @@ public partial class frmBrowser : IStatusReport
                 var fileInfo = new System.IO.FileInfo(fileName);
                 var fiIcon = Icon.ExtractAssociatedIcon(fileInfo.FullName);
 
-                if (fileInfo.Extension.ToUpper() == ".EXE")
+                if (fileInfo.Extension.Equals(".EXE", StringComparison.OrdinalIgnoreCase))
                 {
                     ilBigIcons.Images.Add(fileInfo.Name, fiIcon);
                     ilSmallIcons.Images.Add(fileInfo.Name, fiIcon);
@@ -383,7 +383,7 @@ public partial class frmBrowser : IStatusReport
                 listViewItem.SubItems[2].Text = shFi.szTypeName;
 
                 // set icon to ListViewItem
-                listViewItem.ImageKey = fileInfo.Extension.ToUpper() == ".EXE" ? fileInfo.Name : fileInfo.Extension.ToUpper();
+                listViewItem.ImageKey = fileInfo.Extension.Equals(".EXE", StringComparison.OrdinalIgnoreCase) ? fileInfo.Name : fileInfo.Extension.ToUpper();
                 return;
             }
         }
@@ -570,7 +570,7 @@ public partial class frmBrowser : IStatusReport
             {
                 var entry = e;
 
-                if (entry.EndsWith(@"\"))
+                if (entry.EndsWith('\\'))
                 {
                     entry = entry[..^1];
                 }
@@ -578,9 +578,9 @@ public partial class frmBrowser : IStatusReport
                 // Ordnername ermitteln
                 var newEntry = new ListViewItem
                 {
-                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf(@"\") + 1)..]),
+                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
                     ImageIndex = 2,
-                    Tag = @"\" + entry[(entry.LastIndexOf(@"\") + 1)..] + @"\"
+                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
                 };
 
                 lvFavorite.Items.Add(newEntry);
@@ -594,7 +594,7 @@ public partial class frmBrowser : IStatusReport
                     var entry = e;
 
                     // store favorite name
-                    if (entry.EndsWith(@"\"))
+                    if (entry.EndsWith('\\'))
                     {
                         entry = entry[..^1];
                     }
@@ -615,7 +615,7 @@ public partial class frmBrowser : IStatusReport
                     continue;
                 }
 
-                if (entry.EndsWith(@"\"))
+                if (entry.EndsWith('\\'))
                 {
                     entry = entry[..^1];
                 }
@@ -625,8 +625,8 @@ public partial class frmBrowser : IStatusReport
                 {
                     Text = Settings.Default.BrowserFavoritsName.Split('|')[i],
                     ImageIndex = 1,
-                    Tag = @"\" + entry[(entry.IndexOf(@"\") + 1)..] + @"\",
-                    ToolTipText = Resources.DLG_BACKUPBROWSER_TT_FOLDER.FormatWith(BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf(@"\") + 1)..]), entry[(entry.IndexOf(@"\") + 1)..])
+                    Tag = '\\' + entry[(entry.IndexOf('\\') + 1)..] + '\\',
+                    ToolTipText = Resources.DLG_BACKUPBROWSER_TT_FOLDER.FormatWith(BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]), entry[(entry.IndexOf('\\') + 1)..])
                 };
 
                 lvFavorite.Items.Add(newEntry);
@@ -676,7 +676,7 @@ public partial class frmBrowser : IStatusReport
             // filder source folders
             foreach (var folder in sourceFolders)
             {
-                if (!entry.Path.ToLower().Contains(folder.ToLower()))
+                if (!entry.Path.Contains(folder, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -684,9 +684,9 @@ public partial class frmBrowser : IStatusReport
                 try
                 {
                     var parent = System.IO.Directory.GetParent(folder).FullName;
-                    if (!entry.Path.EndsWith(@"\"))
+                    if (!entry.Path.EndsWith('\\'))
                     {
-                        entry.Path += @"\";
+                        entry.Path += '\\';
                     }
 
                     result.Add(new ExplorerWindow(entry.Path.Replace(parent, ""), entry.WindowTitle));
@@ -722,8 +722,8 @@ public partial class frmBrowser : IStatusReport
         else if (result.Count == 1)
         {
             // navigate to folder
-            lvFavorite.Items[lvFavorite.Items.Count - 1].Selected = true;
-            await OpenFolderAsync(lvFavorite.Items[lvFavorite.Items.Count - 1].Tag.ToString());
+            lvFavorite.Items[^1].Selected = true;
+            await OpenFolderAsync(lvFavorite.Items[^1].Tag.ToString());
         }
         else
         {
@@ -797,7 +797,7 @@ public partial class frmBrowser : IStatusReport
                 // show folder name
                 var sSelFolderSplit = selectedFolder.Split('\\');
                 lblFileName.Text = sSelFolderSplit[sSelFolderSplit.Length - 1];
-                lblFileType.Text = @"\" + selectedFolder + @"\";
+                lblFileType.Text = '\\' + selectedFolder + '\\';
                 imgFileType.Image = ilBigFolder.Images[1];
                 flpDetails.Visible = true;
                 return;
@@ -962,15 +962,13 @@ public partial class frmBrowser : IStatusReport
         // STRG is hold
         if ((ModifierKeys & Keys.Control) == Keys.Control)
         {
-            using (var dlgFolderBrowser = new FolderBrowserDialog())
+            using var dlgFolderBrowser = new FolderBrowserDialog();
+            if (dlgFolderBrowser.ShowDialog() != DialogResult.OK)
             {
-                if (dlgFolderBrowser.ShowDialog() != DialogResult.OK)
-                {
-                    return;
-                }
-
-                destinationFolder = dlgFolderBrowser.SelectedPath;
+                return;
             }
+
+            destinationFolder = dlgFolderBrowser.SelectedPath;
         }
 
         // selected folders/files restore
@@ -996,7 +994,7 @@ public partial class frmBrowser : IStatusReport
         else
         {
             // restore entire folder
-            await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, @"\" + selectedFolder + @"\", destinationFolder);
+            await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, '\\' + selectedFolder + '\\', destinationFolder);
         }
     }
 
@@ -1018,8 +1016,8 @@ public partial class frmBrowser : IStatusReport
         else
         {
             // add
-            Settings.Default.BrowserFavorits += "|" + @"\" + selectedFolder + @"\";
-            Settings.Default.BrowserFavoritsName += "|" + System.IO.Path.GetFileName(await BackupLogic.QueryManager.GetLocalizedPathAsync(@"\" + selectedFolder + @"\"));
+            Settings.Default.BrowserFavorits += "|" + '\\' + selectedFolder + '\\';
+            Settings.Default.BrowserFavoritsName += "|" + System.IO.Path.GetFileName(await BackupLogic.QueryManager.GetLocalizedPathAsync('\\' + selectedFolder + '\\'));
 
             // store
             Settings.Default.Save();
@@ -1093,31 +1091,29 @@ public partial class frmBrowser : IStatusReport
     private async void VersionBearbeitenToolStripMenuItem_Click(object sender, EventArgs e)
     {
         // edit version
-        using (var dlgEditVersion = new frmEditVersion())
-        using (var dbClient = BackupLogic.DbClientFactory.CreateDbClient())
+        using var dlgEditVersion = new frmEditVersion();
+        using var dbClient = BackupLogic.DbClientFactory.CreateDbClient();
+        using (var dbRead = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionID = " + selectedVersion.Id, null))
         {
-            using (var dbRead = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionID = " + selectedVersion.Id, null))
+            if (await dbRead.ReadAsync())
             {
-                if (dbRead.Read())
-                {
-                    dlgEditVersion.txtTitle.Text = dbRead.GetString("versionTitle");
-                    dlgEditVersion.txtDescription.Text = dbRead.GetString("versionDescription");
-                }
-
-                dbRead.Close();
+                dlgEditVersion.txtTitle.Text = dbRead.GetString("versionTitle");
+                dlgEditVersion.txtDescription.Text = dbRead.GetString("versionDescription");
             }
 
-            if (dlgEditVersion.ShowDialog(this) == DialogResult.OK)
+            await dbRead.CloseAsync();
+        }
+
+        if (dlgEditVersion.ShowDialog(this) == DialogResult.OK)
+        {
+            await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE versiontable SET versionTitle = '" + dlgEditVersion.txtTitle.Text + "', versionDescription = '" + dlgEditVersion.txtDescription.Text + "' WHERE versionID = " + selectedVersion.Id);
+            foreach (var entry in AVersionList1.Items)
             {
-                await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE versiontable SET versionTitle = '" + dlgEditVersion.txtTitle.Text + "', versionDescription = '" + dlgEditVersion.txtDescription.Text + "' WHERE versionID = " + selectedVersion.Id);
-                foreach (var entry in AVersionList1.Items)
+                if ((entry.VersionID ?? "") == (selectedVersion.Id ?? ""))
                 {
-                    if ((entry.VersionID ?? "") == (selectedVersion.Id ?? ""))
-                    {
-                        entry.ToolTipTitle = dlgEditVersion.txtTitle.Text;
-                        entry.ToolTip = Resources.DLG_BACKUPBROWSER_TT_VERSION_SIMPLE.FormatWith(entry.VersionDate, dlgEditVersion.txtDescription.Text).Trim();
-                        break;
-                    }
+                    entry.ToolTipTitle = dlgEditVersion.txtTitle.Text;
+                    entry.ToolTip = Resources.DLG_BACKUPBROWSER_TT_VERSION_SIMPLE.FormatWith(entry.VersionDate, dlgEditVersion.txtDescription.Text).Trim();
+                    break;
                 }
             }
         }
@@ -1148,7 +1144,7 @@ public partial class frmBrowser : IStatusReport
                 procInfo.WindowStyle = ProcessWindowStyle.Normal;
 
                 var proc = Process.Start(procInfo);
-                proc.WaitForExit();
+                await proc.WaitForExitAsync();
 
                 if (tmpFile.Item1 != null && tmpFile.Item2)
                 {
@@ -1322,47 +1318,43 @@ public partial class frmBrowser : IStatusReport
         Invoke(new ThreadSafe_UcNav_Callback(ThreadSafe_UcNav));
 
         // retrieve folder list from database
-        using (var dbClient = BackupLogic.DbClientFactory.CreateDbClient())
-        {
-            var searchParameters = new[] {
+        using var dbClient = BackupLogic.DbClientFactory.CreateDbClient();
+        var searchParameters = new[] {
                 dbClient.CreateParameter("filePath", DbType.String, default, "%" + txtSearch.Text + "%"),
                 dbClient.CreateParameter("fileName", DbType.String, default, "%" + txtSearch.Text + "%"),
                 dbClient.CreateParameter("versionID", DbType.String, default, long.Parse(selectedVersion.Id))
             };
 
-            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT filelink.versionID, filetable.fileID, filetable.fileName, filetable.filePath, fileversiontable.fileSize, fileversiontable.fileDateCreated, fileversiontable.fileDateModified, " + "fileversiontable.filePackage, fileversiontable.fileType, fileversiontable.fileStatus, versionDate FROM filetable, fileversiontable, filelink, versiontable WHERE (filetable.filePath LIKE @filePath OR filetable.fileName LIKE @fileName) AND filelink.versionID = @versionID AND filelink.fileversionID = fileversiontable.fileversionID AND filetable.fileID = fileversiontable.fileID AND versiontable.versionID = fileversiontable.filePackage LIMIT 300", searchParameters))
-            {
-                var resultList = new List<ListViewItem>();
+        using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT filelink.versionID, filetable.fileID, filetable.fileName, filetable.filePath, fileversiontable.fileSize, fileversiontable.fileDateCreated, fileversiontable.fileDateModified, " + "fileversiontable.filePackage, fileversiontable.fileType, fileversiontable.fileStatus, versionDate FROM filetable, fileversiontable, filelink, versiontable WHERE (filetable.filePath LIKE @filePath OR filetable.fileName LIKE @fileName) AND filelink.versionID = @versionID AND filelink.fileversionID = fileversiontable.fileversionID AND filetable.fileID = fileversiontable.fileID AND versiontable.versionID = fileversiontable.filePackage LIMIT 300", searchParameters);
+        var resultList = new List<ListViewItem>();
 
-                // fill folder list
-                while (reader.Read() && !bgrWorkSearch.CancellationPending)
-                {
-                    var file = FileTableRow.FromReaderFile(reader);
+        // fill folder list
+        while (await reader.ReadAsync() && !bgrWorkSearch.CancellationPending)
+        {
+            var file = FileTableRow.FromReaderFile(reader);
 
-                    // add file
-                    var newEntry = new ListViewItem();
-                    newEntry.Text = file.FileName;
+            // add file
+            var newEntry = new ListViewItem();
+            newEntry.Text = file.FileName;
 
-                    // populate file attributes
-                    newEntry.SubItems.Add(CreateFileSizeListViewSubItem(file.FileSize));
-                    newEntry.SubItems.Add(CreateStringListViewSubItem(""));
-                    newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
-                    newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
-                    newEntry.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString("dd.MM.yyyy HH:mm") + ")"));
-                    newEntry.Tag = file.FilePath;
+            // populate file attributes
+            newEntry.SubItems.Add(CreateFileSizeListViewSubItem(file.FileSize));
+            newEntry.SubItems.Add(CreateStringListViewSubItem(""));
+            newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
+            newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
+            newEntry.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")"));
+            newEntry.Tag = file.FilePath;
 
-                    // retrieve file icon
-                    GetImageKey(file, newEntry);
+            // retrieve file icon
+            GetImageKey(file, newEntry);
 
-                    newEntry.Group = lvFiles.Groups["Dateien"];
-                    resultList.Add(newEntry);
-                }
-
-                e.Result = resultList;
-
-                reader.Close();
-            }
+            newEntry.Group = lvFiles.Groups["Dateien"];
+            resultList.Add(newEntry);
         }
+
+        e.Result = resultList;
+
+        await reader.CloseAsync();
     }
 
     private void bgrWorkSearch_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
@@ -1560,31 +1552,29 @@ public partial class frmBrowser : IStatusReport
         }
 
         // Eigenschaften anzeigen
-        using (var dlgFileProperties = new frmFileProperties())
+        using var dlgFileProperties = new frmFileProperties();
+        dlgFileProperties.BrowserWindow = this;
+        dlgFileProperties.lblFileName.Text = lvFiles.SelectedItems[0].Text;
+        dlgFileProperties.lblFilePath.Text = await BackupLogic.QueryManager.GetFullRestoreFolderAsync(lvFiles.SelectedItems[0].Tag.ToString(), selectedVersion.Id);
+        dlgFileProperties.toolTipCtl.SetToolTip(dlgFileProperties.lblFilePath, dlgFileProperties.lblFilePath.Text);
+        dlgFileProperties.lblFileType.Text = lvFiles.SelectedItems[0].SubItems[2].Text;
+        dlgFileProperties.lblFileSize.Text = lvFiles.SelectedItems[0].SubItems[1].Text;
+        dlgFileProperties.lblFileCreated.Text = lvFiles.SelectedItems[0].SubItems[4].Text;
+        dlgFileProperties.lblFileModified.Text = lvFiles.SelectedItems[0].SubItems[3].Text;
+        dlgFileProperties.CurrentFileFolder = lvFiles.SelectedItems[0].Tag.ToString();
+        dlgFileProperties.PictureBox1.Image = imgFileType.Image;
+
+        var versions = await BackupLogic.QueryManager.GetVersionsByFileAsync(lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString());
+        foreach (var item in versions)
         {
-            dlgFileProperties.BrowserWindow = this;
-            dlgFileProperties.lblFileName.Text = lvFiles.SelectedItems[0].Text;
-            dlgFileProperties.lblFilePath.Text = await BackupLogic.QueryManager.GetFullRestoreFolderAsync(lvFiles.SelectedItems[0].Tag.ToString(), selectedVersion.Id);
-            dlgFileProperties.toolTipCtl.SetToolTip(dlgFileProperties.lblFilePath, dlgFileProperties.lblFilePath.Text);
-            dlgFileProperties.lblFileType.Text = lvFiles.SelectedItems[0].SubItems[2].Text;
-            dlgFileProperties.lblFileSize.Text = lvFiles.SelectedItems[0].SubItems[1].Text;
-            dlgFileProperties.lblFileCreated.Text = lvFiles.SelectedItems[0].SubItems[4].Text;
-            dlgFileProperties.lblFileModified.Text = lvFiles.SelectedItems[0].SubItems[3].Text;
-            dlgFileProperties.CurrentFileFolder = lvFiles.SelectedItems[0].Tag.ToString();
-            dlgFileProperties.PictureBox1.Image = imgFileType.Image;
-
-            var versions = await BackupLogic.QueryManager.GetVersionsByFileAsync(lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString());
-            foreach (var item in versions)
-            {
-                var newItem = new ListViewItem();
-                newItem.Text = item.FilePackage + " (" + item.FileVersionDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm") + ")";
-                newItem.Tag = item;
-                newItem.SubItems.Add(item.FileDateModified.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));
-                dlgFileProperties.lvVersions.Items.Add(newItem);
-            }
-
-            dlgFileProperties.ShowDialog(this);
+            var newItem = new ListViewItem();
+            newItem.Text = item.FilePackage + " (" + item.FileVersionDate.ToLocalTime().ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")";
+            newItem.Tag = item;
+            newItem.SubItems.Add(item.FileDateModified.ToLocalTime().ToString(UiFormatUtils.DATE_FORMAT_LONG));
+            dlgFileProperties.lvVersions.Items.Add(newItem);
         }
+
+        dlgFileProperties.ShowDialog(this);
     }
 
     private void UmbenennenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1623,11 +1613,11 @@ public partial class frmBrowser : IStatusReport
 
         using (var dlgMultiVersionDelete = new frmMultiVersionDeletion())
         {
-            foreach (var Version in BackupLogic.QueryManager.GetVersions())
+            foreach (var version in BackupLogic.QueryManager.GetVersions())
             {
                 var newItem = new ListViewItem();
-                newItem.Text = Version.CreationDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
-                newItem.Tag = Version.Id;
+                newItem.Text = version.CreationDate.ToLocalTime().ToString(UiFormatUtils.DATE_FORMAT_LONG);
+                newItem.Tag = version.Id;
                 dlgMultiVersionDelete.lstVersions.Items.Add(newItem);
             }
 
@@ -1647,41 +1637,19 @@ public partial class frmBrowser : IStatusReport
                     }
                 }
 
+                // disable automatic browser refresh by unregistering observer
+                StatusController.Current.RemoveObserver(this);
+
+                // delete all selected backups
                 await BackupLogic.BackupController.DeleteBackupsAsync(toDeleteItems, true);
+
+                // enable automatic browser refresh by registering observer
+                StatusController.Current.AddObserver(this);
             }
         }
 
         // load versions
-        var lstVersions = BackupLogic.QueryManager.GetVersions(true);
-        if (lstVersions.Count <= 0)
-        {
-            Close();
-            NotificationController.Current.ShowIconBalloon(1000, Resources.INFO_NO_BACKUP_AVAILABLE_TITLE, Resources.INFO_NO_BACKUP_AVAILABLE_TEXT, ToolTipIcon.Info);
-
-            return;
-        }
-
-        AVersionList1.Items.Clear();
-        AVersionList1.DrawItems();
-
-        foreach (var entry in lstVersions)
-        {
-            var newEntry = new aVersionListItem
-            {
-                VersionDate = entry.CreationDate.HumanizeDate(),
-                VersionID = entry.Id,
-                Version = entry,
-                ToolTipTitle = entry.Title
-            };
-            newEntry.ToolTip = Resources.DLG_BACKUPBROWSER_TT_VERSION.FormatWith(entry.CreationDate, entry.Size.Bytes().Humanize(), entry.Description).Trim();
-            newEntry.VersionStable = entry.Stable;
-            AVersionList1.Items.Add(newEntry);
-        }
-
-        // change to current version
-        AVersionList1.DrawItems();
-        AVersionList1.SelectItem(lstVersions[0].Id);
-        Enabled = true;
+        ReloadBrowser();
     }
 
     private void lvFavorite_SizeChanged(object sender, EventArgs e)
@@ -1700,7 +1668,7 @@ public partial class frmBrowser : IStatusReport
 
         for (int i = 0, loopTo = splitF.Length - 2; i <= loopTo; i++)
         {
-            temp += splitF[i] + @"\";
+            temp += splitF[i] + '\\';
         }
 
         temp = temp[..^1];
@@ -1770,7 +1738,7 @@ public partial class frmBrowser : IStatusReport
 
     private async void AllesWiederherstellenToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, @"\", "");
+        await BackupLogic.BackupController.RestoreBackupAsync(selectedVersion.Id, "\\", "");
     }
 
     public void ReportAction(ActionType action, bool silent)

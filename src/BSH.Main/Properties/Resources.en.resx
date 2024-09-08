@@ -1,0 +1,762 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BackupStatus_" xml:space="preserve">
+    <value>Status is currently unknown.</value>
+  </data>
+  <data name="BackupStatus_0" xml:space="preserve">
+    <value>Backup Service Home is running normally.</value>
+  </data>
+  <data name="BackupStatus_1" xml:space="preserve">
+    <value>Backup is in progress...</value>
+  </data>
+  <data name="BackupStatus_2" xml:space="preserve">
+    <value>Last backup was not completed correctly.</value>
+  </data>
+  <data name="BackupStatus_3" xml:space="preserve">
+    <value>Battery operation. No backups are being performed.</value>
+  </data>
+  <data name="BackupStatus_4" xml:space="preserve">
+    <value>Automatic backup is deactivated.</value>
+  </data>
+  <data name="BACKUP_FROM_DATE" xml:space="preserve">
+    <value>Backup from </value>
+  </data>
+  <data name="BACKUP_TITLE_AUTOMATIC" xml:space="preserve">
+    <value>Automatic Backup</value>
+  </data>
+  <data name="BACKUP_TITLE_FIRST" xml:space="preserve">
+    <value>First complete data backup</value>
+  </data>
+  <data name="BACKUP_TITLE_MANUAL" xml:space="preserve">
+    <value>Manual backup</value>
+  </data>
+  <data name="CONTEXT_MENU_BACKUP_BROWSER_WINDOW" xml:space="preserve">
+    <value>Backupbrowser</value>
+  </data>
+  <data name="CONTEXT_MENU_BACKUP_START" xml:space="preserve">
+    <value>Start manual backup</value>
+  </data>
+  <data name="CONTEXT_MENU_BACKUP_START_OPTIONS" xml:space="preserve">
+    <value>Start manual backup (+ options)</value>
+  </data>
+  <data name="CONTEXT_MENU_CLOSE_APP" xml:space="preserve">
+    <value>Exit Backup Service Home</value>
+  </data>
+  <data name="CONTEXT_MENU_STATUS_WINDOW" xml:space="preserve">
+    <value>Status and Configuration</value>
+  </data>
+  <data name="DLG_ADD_SCHEDULE.FORMAT.DAILY" xml:space="preserve">
+    <value>'Daily at' HH:mm:ss</value>
+  </data>
+  <data name="DLG_ADD_SCHEDULE.FORMAT.HOURLY" xml:space="preserve">
+    <value>'Hourly, alway at minute' mm</value>
+  </data>
+  <data name="DLG_ADD_SCHEDULE.FORMAT.MONTHLY" xml:space="preserve">
+    <value>'Every' dd. 'in month', 'at' HH:mm:ss</value>
+  </data>
+  <data name="DLG_ADD_SCHEDULE.FORMAT.ONCE" xml:space="preserve">
+    <value>'Once at' dd.MM.yyyy 'at' HH:mm:ss</value>
+  </data>
+  <data name="DLG_ADD_SCHEDULE.FORMAT.WEEKLY" xml:space="preserve">
+    <value>'Every' dddd, 'at' HH:mm:ss</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_MSG_ERROR_ERROR_LOAD" xml:space="preserve">
+    <value>Error loading the backup. See event log for further details.</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_MSG_INFO_READY" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT" xml:space="preserve">
+    <value>Are you sure you want to delete the selected backup?</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE" xml:space="preserve">
+    <value>Delete Backup</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT" xml:space="preserve">
+    <value>Search result for "{0}"</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT" xml:space="preserve">
+    <value>Search results</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_SEARCH_TEXT" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_STATUS_LOADING_TEXT" xml:space="preserve">
+    <value>Directories are loaded...</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_STATUS_NO_SOURCE_FOLDER_TEXT" xml:space="preserve">
+    <value>Source directory does not exist, please select a different directory.</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_TITLE_NOT_AVAILABLE" xml:space="preserve">
+    <value>Backupbrowser [Backup medium not available]</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_TT_FOLDER" xml:space="preserve">
+    <value>Original name: {0}
+Target directory: "{1}"</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_TT_VERSION" xml:space="preserve">
+    <value>Date: {0}
+Backup size (uncompressed): {1}
+{2}</value>
+  </data>
+  <data name="DLG_BACKUPBROWSER_TT_VERSION_SIMPLE" xml:space="preserve">
+    <value>Date: {0}
+{1}</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>The connection could not be established.
+
+FTP Server reported:</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TEXT" xml:space="preserve">
+    <value>Connection could not be established.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Connection established successfully.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT" xml:space="preserve">
+    <value>No backup medium selected</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE" xml:space="preserve">
+    <value>Select directory</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT" xml:space="preserve">
+    <value>There are already other data backups on this backup medium. It cannot be used for switching.
+If you want to view an old backup medium or restore a backup from it, use the import function in the 'Extras and Support' menu in the configuration window.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE" xml:space="preserve">
+    <value>Medium contains backups</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_DAILY" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_HOURLY" xml:space="preserve">
+    <value>Hourly</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT" xml:space="preserve">
+    <value>always at minute {0}</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT" xml:space="preserve">
+    <value>every Month on {0}. at {1}</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_ONCE" xml:space="preserve">
+    <value>Once</value>
+  </data>
+  <data name="DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="DLG_FEATURE_NOT_AVAILABLE_TEXT" xml:space="preserve">
+    <value>Feature is currently not available</value>
+  </data>
+  <data name="DLG_FEATURE_NOT_AVAILABLE_TITLE" xml:space="preserve">
+    <value>Feature not available</value>
+  </data>
+  <data name="DLG_FILTER_INPUT_FILE_TYPE_TEXT" xml:space="preserve">
+    <value>Exclude file type</value>
+  </data>
+  <data name="DLG_FILTER_INPUT_FILE_TYPE_TITLE" xml:space="preserve">
+    <value>Exclude file type</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TEXT" xml:space="preserve">
+    <value>Selected directory cannot be used.
+
+The selected directory cannot be excluded because it does not belong to the backup.</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_DIRECTORY_INVALID_TITLE" xml:space="preserve">
+    <value>Directory not selectable</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_FILE_INVALID_TEXT" xml:space="preserve">
+    <value>Selected file "{0}" cannot be used.
+
+The selected file cannot be excluded because it does not belong to the backup.</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_FILE_INVALID_TITLE" xml:space="preserve">
+    <value>File not selectable</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_INVALID_REGEX_TEXT" xml:space="preserve">
+    <value>Der angegebene reguläre Ausdruck (RegEx) ist ungültig. Bitte prüfen Sie den Ausdruck bevor Sie diesen speichern.</value>
+  </data>
+  <data name="DLG_FILTER_MSG_ERROR_INVALID_REGEX_TITLE" xml:space="preserve">
+    <value>Regular expression invalid</value>
+  </data>
+  <data name="DLG_FILTER_REGEX_LINK" xml:space="preserve">
+    <value>http://de.wikipedia.org/wiki/Regulärer_Ausdruck</value>
+  </data>
+  <data name="DLG_MAIN_MSG_ACCESS_DENIED_TEXT" xml:space="preserve">
+    <value>Access denied.
+
+The necessary rights to change this setting are missing.</value>
+  </data>
+  <data name="DLG_MAIN_MSG_ACCESS_DENIED_TITLE" xml:space="preserve">
+    <value>Access denied</value>
+  </data>
+  <data name="DLG_MAIN_MSG_RESET_TEXT" xml:space="preserve">
+    <value>Are you sure you want to reset the complete configuration of Backup Service Home?</value>
+  </data>
+  <data name="DLG_MAIN_MSG_RESET_TITLE" xml:space="preserve">
+    <value>Reset Backup Service Home</value>
+  </data>
+  <data name="DLG_MAIN_MSG_UWP_AUTOSTART_TEXT" xml:space="preserve">
+    <value>You can disable the auto-start behavior of Backup Service Home 3 in the Task Manager.</value>
+  </data>
+  <data name="DLG_MAIN_MSG_UWP_AUTOSTART_TITLE" xml:space="preserve">
+    <value>Autostart behavior</value>
+  </data>
+  <data name="DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT" xml:space="preserve">
+    <value>Maintainance work is progressing...</value>
+  </data>
+  <data name="DLG_SHORT_STATUS_FILES_STATUS_TEXT" xml:space="preserve">
+    <value>{0} is processed...</value>
+  </data>
+  <data name="DLG_STATUS_FILES_PROCESSED_TEXT" xml:space="preserve">
+    <value>Processed: {0:N0} of {1:N0} files</value>
+  </data>
+  <data name="DLG_STATUS_STATUS_CANCELED_TEXT" xml:space="preserve">
+    <value>Cancelling...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_LBL_COMPRESSION_STAGE" xml:space="preserve">
+    <value> Mode </value>
+  </data>
+  <data name="DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION" xml:space="preserve">
+    <value>Highest compression</value>
+  </data>
+  <data name="DLG_UC_CONFIG_LBL_HIGH_COMPRESSION" xml:space="preserve">
+    <value>High compression</value>
+  </data>
+  <data name="DLG_UC_CONFIG_LBL_LOW_COMPRESSION" xml:space="preserve">
+    <value>Low compression</value>
+  </data>
+  <data name="DLG_UC_CONFIG_LBL_NO_COMPRESSION" xml:space="preserve">
+    <value>No compression</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>The connection to the FTP server could not be established.</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>FTP connection unsuccessful</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_MOVE_TEXT" xml:space="preserve">
+    <value>Issue with moving files.
+
+</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_MOVE_TITLE" xml:space="preserve">
+    <value>Issue with moving files</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TEXT" xml:space="preserve">
+    <value>Same directory name.
+
+A directory with the same name is already being backed up. Backup Service Home can only back up one directory with the same name. Rename the folder to back it up.</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_ERROR_SAME_DIRECTORY_NAME_TITLE" xml:space="preserve">
+    <value>Same directory name</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TEXT" xml:space="preserve">
+    <value>You have selected an entire drive as the source directory. Backup Service Home 3 only supports backing up directories, which means that files in the root directory of the drive will not be backed up. However, directories on the drive will be backed up.</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INFO_DRIVE_SELECTED_TITLE" xml:space="preserve">
+    <value>Entire hard disk selected</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TEXT" xml:space="preserve">
+    <value>The connection to the FTP server was successfully established.</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INFO_FTP_SUCCESSFUL_TITLE" xml:space="preserve">
+    <value>FTP server connection successful</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TEXT" xml:space="preserve">
+    <value>Enter the file extension that should be excluded from compression:</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_INPUT_FILE_EXTENSION_EXCLUDE_TITLE" xml:space="preserve">
+    <value>Select file extension</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT" xml:space="preserve">
+    <value>Existing backups will be deleted.
+
+If you want to switch this backup medium to an FTP server, all existing backups will now be deleted. Moving these backups is not possible.
+
+Do you want to continue with the process?</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT" xml:space="preserve">
+    <value>Existing backups will be deleted.
+
+If you want to switch this backup medium to a local storage device or network drive, all existing backups will now be deleted. Moving these backups is not possible.
+
+Do you want to continue with the process?</value>
+  </data>
+  <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE" xml:space="preserve">
+    <value>Backups will be deleted...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT" xml:space="preserve">
+    <value>Backups will be decrypted...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT" xml:space="preserve">
+    <value>Old backups will be deleted...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_STATUS_FINISHING_BACKUP_TEXT" xml:space="preserve">
+    <value>Backup will be completed...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_STATUS_INIT_BACKUP_TEXT" xml:space="preserve">
+    <value>New backup medium initializing...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_STATUS_WAIT_FOR_FINISH_TEXT" xml:space="preserve">
+    <value>Waiting for completion of another action...</value>
+  </data>
+  <data name="DLG_UC_CONFIG_TITLE" xml:space="preserve">
+    <value>Configure</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_COMPUTER" xml:space="preserve">
+    <value>Computer: </value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TEXT" xml:space="preserve">
+    <value>The storage location of this directory cannot be changed, as the folder name must be identical.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_CANNOT_CHANGE_DIRECTORY_TITLE" xml:space="preserve">
+    <value>Storage location not changeable</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT" xml:space="preserve">
+    <value>The specified directory path was not found.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE" xml:space="preserve">
+    <value>FTP connection unsuccessful</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>The connection to the FTP server could not be established.
+
+FTP server reported:</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>To verify the path, the directory, network drive, or FTP server needs to be available.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT" xml:space="preserve">
+    <value>In dem angegebenen Verzeichnis wurde keine Sicherung gefunden.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE" xml:space="preserve">
+    <value>No backup</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TEXT" xml:space="preserve">
+    <value>Select a hard drive</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_DEVICE_SELECTED_TITLE" xml:space="preserve">
+    <value>Select hard drive</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TEXT" xml:space="preserve">
+    <value>No option selected.
+
+To continue with the process, at least one option must be chosen. If you're unsure, select the automatic data backup.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_OPTION_SELECTED_TITLE" xml:space="preserve">
+    <value>Select option</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT" xml:space="preserve">
+    <value>Connection successfully established</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TEXT" xml:space="preserve">
+    <value>No backup selected.
+
+To continue with the process, you must select the data backup that you want to import.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_BACKUP_SELECTED_TITLE" xml:space="preserve">
+    <value>Select backup</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TEXT" xml:space="preserve">
+    <value>No directory added.
+
+You have not added a directory to be backed up. To continue with the process, you must add at least one directory to the list.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_SOURCE_SELECTED_TITLE" xml:space="preserve">
+    <value>Add directory</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TEXT" xml:space="preserve">
+    <value>No backup medium selected.
+
+You have not selected a medium to back up to. To continue with the process, you must select a medium from the list</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_NO_TARGET_SELECTED_TITLE" xml:space="preserve">
+    <value>Add backup medium</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TEXT" xml:space="preserve">
+    <value>Same directory name.
+
+A directory with the same name is already being backed up. Backup Service Home can only back up one directory with the same name. Rename the folder to back it up.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_SAME_SOURCE_SELECTED_TITLE" xml:space="preserve">
+    <value>Same directory name</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TEXT" xml:space="preserve">
+    <value>The selected backup medium is not empty and already contains backups from Backup Service Home, which may be overwritten. Please select a different directory or manually delete the backups on the backup medium before proceeding.</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_MSG_TARGET_NOT_EMPTY_TITLE" xml:space="preserve">
+    <value>Backup medium not empty</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_STATUS_IMPORT_TEXT" xml:space="preserve">
+    <value>Import backups...</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_STATUS_IMPORT_WAIT_TEXT" xml:space="preserve">
+    <value>One moment please...</value>
+  </data>
+  <data name="DLG_UC_DO_CONFIGURE_TITLE" xml:space="preserve">
+    <value>Configure</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_AUTO_BACKUP_TEXT" xml:space="preserve">
+    <value> fully automatically hourly</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_BACKUP_FULL_NOT_DETERMINED_TEXT" xml:space="preserve">
+    <value>not available yet</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_BACKUP_MEDIUM_FULL_TEXT" xml:space="preserve">
+    <value>Expected full at:</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_BACKUP_MODE_AUTO_TEXT" xml:space="preserve">
+    <value>Full automatic backup</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_BACKUP_MODE_MANUAL_TEXT" xml:space="preserve">
+    <value>Manual backup</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_BACKUP_MODE_SCHEDULED_TEXT" xml:space="preserve">
+    <value>Scheduled backup</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_COMPRESSED_TEXT" xml:space="preserve">
+    <value> Backup will be compressed.</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_ENCRYPTED_TEXT" xml:space="preserve">
+    <value> Backup will be encrypted.</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_FREE_SPACE_NOT_AVAILABLE_TEXT" xml:space="preserve">
+    <value>free space not calculatable</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MANUAL_BACKUP_TEXT" xml:space="preserve">
+    <value> if you manually run a backup</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MEDIA_EXTERNAL_HDD_BACKUP_TEXT" xml:space="preserve">
+    <value> on external hard drive ({0}).</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT" xml:space="preserve">
+    <value> on FTP server ({0}).</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT" xml:space="preserve">
+    <value> local hard drive ({0}).</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT" xml:space="preserve">
+    <value> network drive ({0}).</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_NEXT_BACKUP_NOT_PLANED_TEXT" xml:space="preserve">
+    <value>no planned</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_NOT_PERFORMED_TEXT" xml:space="preserve">
+    <value>Not yet available</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_NO_BACKUP_TEXT" xml:space="preserve">
+    <value>Not yet available</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_OLD_BACKUP_TEXT" xml:space="preserve">
+    <value>Oldest backup:</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_ON_TEXT" xml:space="preserve">
+    <value> on</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT" xml:space="preserve">
+    <value> with predefined schedule</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT" xml:space="preserve">
+    <value> ({0} source directories)</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_BATTERY_TEXT" xml:space="preserve">
+    <value>Backup Service Home is currently disabled because your notebook is running on battery power.</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_TEXT" xml:space="preserve">
+    <value>Backup Service Home is currently disabled.</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_STATUS_FAILED" xml:space="preserve">
+    <value>At the last data backup, a problem occurred. It is possible that your configuration is not correct or the backup drive is not ready.</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_LBL_STATUS_OK" xml:space="preserve">
+    <value>Backup Service Home backs up your files</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_FILE_TEXT" xml:space="preserve">
+    <value>{0} is backed up...</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_TEXT" xml:space="preserve">
+    <value>Backup is in progress...</value>
+  </data>
+  <data name="DLG_UC_OVERVIEW_TITLE" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="DLG_WAIT_MEDIA_STATUS_CANCELED_TEXT" xml:space="preserve">
+    <value>Cancelling...</value>
+  </data>
+  <data name="INFO_BACKUP_FIRST_RUN_TEXT" xml:space="preserve">
+    <value>As soon as the first backup has completed, you can view it with the Backup Browser by double-clicking here</value>
+  </data>
+  <data name="INFO_BACKUP_FIRST_RUN_TITLE" xml:space="preserve">
+    <value>First backup is running...</value>
+  </data>
+  <data name="INFO_BACKUP_OLD_TEXT" xml:space="preserve">
+    <value>Your last data backup is already {0} days old. Perform a data backup to ensure your current files are backed up.</value>
+  </data>
+  <data name="INFO_BACKUP_OLD_TITLE" xml:space="preserve">
+    <value>Backup outdated</value>
+  </data>
+  <data name="INFO_BACKUP_SUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Planned backup was performed successfully.</value>
+  </data>
+  <data name="INFO_BACKUP_SUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Backup successful</value>
+  </data>
+  <data name="INFO_BACKUP_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>The planned backup was ended with problems. Click here for more information.</value>
+  </data>
+  <data name="INFO_BACKUP_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Backup with errors finished</value>
+  </data>
+  <data name="INFO_BSH_NOT_CONFIGURED_TEXT" xml:space="preserve">
+    <value>Backup Service Home 3 is not yet configured and therefore does not back up any data.
+
+Double-click here to start configuring.</value>
+  </data>
+  <data name="INFO_BSH_NOT_CONFIGURED_TITLE" xml:space="preserve">
+    <value>Not configured.</value>
+  </data>
+  <data name="INFO_BSH_UPDATE_AVAILABLE_TEXT" xml:space="preserve">
+    <value>For Backup Service Home 3, updates are available that can now be downloaded and installed. It is recommended to install these updates.</value>
+  </data>
+  <data name="INFO_BSH_UPDATE_AVAILABLE_TITLE" xml:space="preserve">
+    <value>Updates are available.</value>
+  </data>
+  <data name="INFO_NO_BACKUP_AVAILABLE_TEXT" xml:space="preserve">
+    <value>There is currently no backup available that can be searched.</value>
+  </data>
+  <data name="INFO_NO_BACKUP_AVAILABLE_TITLE" xml:space="preserve">
+    <value>No backups available.</value>
+  </data>
+  <data name="INFO_NO_DISKSPACE_LEFT_TEXT" xml:space="preserve">
+    <value>There is not enough storage space left on the backup medium. Delete backups or switch to a new medium.</value>
+  </data>
+  <data name="INFO_NO_DISKSPACE_LEFT_TITLE" xml:space="preserve">
+    <value>Not enough disk space.</value>
+  </data>
+  <data name="LBL_CHANGE_DATE" xml:space="preserve">
+    <value>Last modified: </value>
+  </data>
+  <data name="LBL_SIZE" xml:space="preserve">
+    <value>Size: </value>
+  </data>
+  <data name="MSG_BACKUP_DEVICE_NOT_READY_TEXT" xml:space="preserve">
+    <value>The backup medium is currently unavailable, which is why the backup is being interrupted.</value>
+  </data>
+  <data name="MSG_BACKUP_DEVICE_NOT_READY_TITLE" xml:space="preserve">
+    <value>Backup medium not available.</value>
+  </data>
+  <data name="MSG_NO_UPDATE_FOUND_TEXT" xml:space="preserve">
+    <value>You are on the latest version of Backup Service Home 3. No updates were found.</value>
+  </data>
+  <data name="MSG_NO_UPDATE_FOUND_TITLE" xml:space="preserve">
+    <value>No updates found</value>
+  </data>
+  <data name="MSG_PASSWORD_WRONG_TEXT" xml:space="preserve">
+    <value>The given password is wrong.</value>
+  </data>
+  <data name="MSG_PASSWORD_WRONG_TITLE" xml:space="preserve">
+    <value>Password wrong</value>
+  </data>
+  <data name="MSG_TASK_RUNNING_TEXT" xml:space="preserve">
+    <value>A different backup task is currently running, which is why this backup will be interrupted.</value>
+  </data>
+  <data name="MSG_TASK_RUNNING_TITLE" xml:space="preserve">
+    <value>Other task in progress</value>
+  </data>
+  <data name="TASK_BSH_SHUTDOWN_PC" xml:space="preserve">
+    <value>Backup Service Home 3 will shut down the computer after a successful action...</value>
+  </data>
+  <data name="WAIT_0" xml:space="preserve">
+    <value>Backup Service Home is waiting for the data backup medium,</value>
+  </data>
+  <data name="WAIT_1" xml:space="preserve">
+    <value>Backup Service Home is waiting for the data backup medium,</value>
+  </data>
+  <data name="WAIT_2" xml:space="preserve">
+    <value>Backup Service Home is waiting for the data backup medium,</value>
+  </data>
+  <data name="WAIT_3" xml:space="preserve">
+    <value>Backup Service Home is waiting for the data backup medium,</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_1" xml:space="preserve">
+    <value>What data would you like to back up?</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_2" xml:space="preserve">
+    <value>Where would you like to store your backups?</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_3" xml:space="preserve">
+    <value>Select the backup type.</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_4" xml:space="preserve">
+    <value>Service Home is being configured...</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_5" xml:space="preserve">
+    <value>From what medium would you like to import backups?</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_6" xml:space="preserve">
+    <value>Select backup.</value>
+  </data>
+  <data name="WELCOMETITLE_STEP_7" xml:space="preserve">
+    <value>Adjust backup to local directory structure.</value>
+  </data>
+  <data name="WELCOME_STEP_1" xml:space="preserve">
+    <value>Now add the folders to be backed up to the list.</value>
+  </data>
+  <data name="WELCOME_STEP_2" xml:space="preserve">
+    <value>Select now the storage device where the data backup will be saved. Alternatively, you can save the data backup on an FTP server.</value>
+  </data>
+  <data name="WELCOME_STEP_3" xml:space="preserve">
+    <value>Now you can decide whether Backup Service Home will automatically set all settings or if you would like to make the settings manually.</value>
+  </data>
+  <data name="WELCOME_STEP_4" xml:space="preserve">
+    <value>One moment please...</value>
+  </data>
+  <data name="WELCOME_STEP_5" xml:space="preserve">
+    <value>Select now the backup medium where the backup files to be imported are located.</value>
+  </data>
+  <data name="WELCOME_STEP_6" xml:space="preserve">
+    <value>Select now the backup that you want to import.</value>
+  </data>
+  <data name="WELCOME_STEP_7" xml:space="preserve">
+    <value>Settle now on which directory belongs to which backup.</value>
+  </data>
+</root>

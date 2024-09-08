@@ -44,7 +44,9 @@ public static class DateUtils
 
     public static DateTime ReformatVersionDate(string date)
     {
-        date = date.Replace("-", "").Replace(" ", "");
+        ArgumentNullException.ThrowIfNull(date);
+
+        date = date.Replace("-", "", StringComparison.OrdinalIgnoreCase).Replace(" ", "", StringComparison.OrdinalIgnoreCase);
         date = date.Insert(2, ".");
         date = date.Insert(5, ".");
         date = date.Insert(10, " ");

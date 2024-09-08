@@ -15,11 +15,10 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Security;
+using System.IO.Compression;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
-using Ionic.Zip;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Storage;
@@ -36,25 +35,24 @@ public class FileSystemStorage : Storage, IStorage
 
     private readonly int currentStorageVersion;
 
-    private readonly bool networkStorage = false;
+    private readonly bool networkStorage;
 
     private readonly string networkUserName;
 
     private readonly string networkPassword;
 
-    private readonly int compressionLevel;
-
     private NetworkConnection networkConnection;
 
     public FileSystemStorage(IConfigurationManager configurationManager)
     {
+        ArgumentNullException.ThrowIfNull(configurationManager);
+
         this.configurationManager = configurationManager;
         this.backupFolder = configurationManager.BackupFolder;
         this.volumeSerialNumber = configurationManager.MediaVolumeSerial;
         this.currentStorageVersion = int.Parse(configurationManager.OldBackupPrevent);
         this.networkUserName = configurationManager.UNCUsername;
         this.networkPassword = configurationManager.UNCPassword;
-        this.compressionLevel = int.Parse(configurationManager.CompressionLevel);
 
         networkStorage = !string.IsNullOrEmpty(this.networkUserName);
     }
@@ -67,13 +65,14 @@ public class FileSystemStorage : Storage, IStorage
         string networkPassword,
         int compressionLevel)
     {
+        ArgumentNullException.ThrowIfNull(configurationManager);
+
         this.configurationManager = configurationManager;
         this.backupFolder = backupFolder;
         this.volumeSerialNumber = volumeSerialNumber;
         this.currentStorageVersion = currentStorageVersion;
         this.networkUserName = networkUserName;
         this.networkPassword = networkPassword;
-        this.compressionLevel = compressionLevel;
 
         networkStorage = !string.IsNullOrEmpty(networkUserName);
     }
@@ -196,7 +195,7 @@ public class FileSystemStorage : Storage, IStorage
         try
         {
             var testFile = Path.Combine(folder, "bsh.writetest");
-            File.WriteAllText(testFile, DateTime.Now.ToString());
+            File.WriteAllText(testFile, DateTime.UtcNow.ToString());
             File.Delete(testFile);
 
             return true;
@@ -312,30 +311,18 @@ public class FileSystemStorage : Storage, IStorage
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
         Directory.CreateDirectory(Path.GetDirectoryName(remoteFilePath));
 
-        using var fs = new FileStream(remoteFilePath + ".zip", FileMode.Create, FileAccess.ReadWrite);
-        using var zipFile = new ZipFile();
-
-        zipFile.ParallelDeflateThreshold = -1;
-        zipFile.CompressionLevel = (Ionic.Zlib.CompressionLevel)compressionLevel;
-        zipFile.UseZip64WhenSaving = Zip64Option.AsNecessary;
-        zipFile.AddFile(GetLocalFileName(localFile), "\\");
-
-        zipFile.Save(fs);
-
+        using var zipFile = ZipFile.Open(remoteFilePath + ".zip", ZipArchiveMode.Create);
+        zipFile.CreateEntryFromFile(GetLocalFileName(localFile), Path.GetFileName(localFile), CompressionLevel.Optimal);
         return true;
     }
 
-    public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, SecureString password)
+    public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password)
     {
         // create directory if not exists
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".enc");
         Directory.CreateDirectory(Path.GetDirectoryName(remoteFilePath));
 
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
-
+        var crypto = new Encryption();
         if (!crypto.Encode(GetLocalFileName(localFile), remoteFilePath, password))
         {
             return false;
@@ -364,23 +351,20 @@ public class FileSystemStorage : Storage, IStorage
         // create directory if not exists
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
-        using var zipFile = new ZipFile(remoteFilePath);
-        zipFile[0].Extract(GetLocalFileName(Path.GetDirectoryName(localFile)), ExtractExistingFileAction.OverwriteSilently);
+        using var zipFile = ZipFile.OpenRead(remoteFilePath);
+        zipFile.GetEntry(Path.GetFileName(localFile)).ExtractToFile(GetLocalFileName(localFile), true);
 
         return true;
     }
 
-    public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, SecureString password)
+    public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
     {
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".enc");
 
         // create directory if not exists
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
+        var crypto = new Encryption();
         crypto.Decode(remoteFilePath, GetLocalFileName(localFile), password);
 
         return true;
@@ -430,15 +414,12 @@ public class FileSystemStorage : Storage, IStorage
         return true;
     }
 
-    public bool DecryptOnStorage(string remoteFile, SecureString password)
+    public bool DecryptOnStorage(string remoteFile, string password)
     {
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".enc");
         var remoteFilePathDecrypted = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
 
-        var crypto = new Encryption
-        {
-            BitLen = 256
-        };
+        var crypto = new Encryption();
         var result = crypto.Decode(remoteFilePath, remoteFilePathDecrypted, password);
         File.Delete(remoteFilePath);
 

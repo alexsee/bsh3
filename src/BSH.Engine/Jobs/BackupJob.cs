@@ -14,10 +14,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -28,6 +29,7 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
 using Serilog;
@@ -70,14 +72,14 @@ public class BackupJob : Job
         get; set;
     }
 
-    public SecureString Password
+    public string Password
     {
         get; set;
     }
 
-    public List<FileExceptionEntry> FileErrorList
+    public Collection<FileExceptionEntry> FileErrorList
     {
-        get; set;
+        get;
     }
 
     public BackupJob(IStorage storage,
@@ -87,7 +89,7 @@ public class BackupJob : Job
         IFileCollectorServiceFactory fileCollectorServiceFactory,
         bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
     {
-        FileErrorList = new List<FileExceptionEntry>();
+        FileErrorList = new Collection<FileExceptionEntry>();
         this.fileCollectorServiceFactory = fileCollectorServiceFactory;
     }
 
@@ -188,9 +190,24 @@ public class BackupJob : Job
 
             foreach (var folderEntry in folderList)
             {
-                var fileCollector = fileCollectorServiceFactory.Create(configurationManager);
-                var filesList = fileCollector.GetLocalFileList(folderEntry, true);
+                var fileCollector = fileCollectorServiceFactory.Create();
 
+                // file exclusions
+                fileCollector.FileExclusionHandlers.Add(new DatabaseFileExclusion());
+                fileCollector.FileExclusionHandlers.Add(new PathFileExclusion(configurationManager));
+                fileCollector.FileExclusionHandlers.Add(new TypeFileExclusion(configurationManager));
+                fileCollector.FileExclusionHandlers.Add(new SizeFileExclusion(configurationManager));
+                fileCollector.FileExclusionHandlers.Add(new MaskFileExclusion(configurationManager));
+                fileCollector.FileExclusionHandlers.Add(new NameFileExclusion(configurationManager));
+
+                // folder exclusions
+                fileCollector.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
+                fileCollector.FolderExclusionHandlers.Add(new MaskFolderExclusion(configurationManager));
+                fileCollector.FolderExclusionHandlers.Add(new ReparsePointFolderExclusion());
+                fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion());
+                fileCollector.FolderExclusionHandlers.Add(new TemporaryFolderExclusion());
+
+                var filesList = fileCollector.GetLocalFileList(folderEntry, true);
                 emptyFolder.AddRange(fileCollector.EmptyFolders);
                 files.AddRange(filesList);
             }
@@ -205,24 +222,7 @@ public class BackupJob : Job
             Win32Stuff.KeepSystemAwake();
 
             // process empty folders
-            foreach (var folder in emptyFolder)
-            {
-                // backup folder
-                var folderParameters = new IDataParameter[]
-                {
-                    dbClient.CreateParameter("folder", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\")
-                };
-
-                var folderId = await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT OR IGNORE INTO foldertable ( folder ) VALUES ( @folder ); SELECT id FROM foldertable WHERE folder = @folder", folderParameters);
-
-                // add folder link
-                var folderLinkParameters = new IDataParameter[] {
-                    dbClient.CreateParameter("folderid", DbType.Int32, 0, folderId),
-                    dbClient.CreateParameter("versionID", DbType.Int32, 0, newVersionId)
-                };
-
-                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO folderlink ( folderid, versionid ) VALUES ( @folderid, @versionID )", folderLinkParameters);
-            }
+            await ProcessEmptyFolders(dbClient, newVersionId, emptyFolder);
 
             // process all files
             var cancel = false;
@@ -433,6 +433,28 @@ public class BackupJob : Job
         _logger.Information("Backup job finished.");
     }
 
+    private static async Task ProcessEmptyFolders(DbClient dbClient, long newVersionId, List<FolderTableRow> emptyFolder)
+    {
+        foreach (var folder in emptyFolder)
+        {
+            // backup folder
+            var folderParameters = new IDataParameter[]
+            {
+                dbClient.CreateParameter("folder", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\")
+            };
+
+            var folderId = await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT OR IGNORE INTO foldertable ( folder ) VALUES ( @folder ); SELECT id FROM foldertable WHERE folder = @folder", folderParameters);
+
+            // add folder link
+            var folderLinkParameters = new IDataParameter[] {
+                dbClient.CreateParameter("folderid", DbType.Int32, 0, folderId),
+                dbClient.CreateParameter("versionID", DbType.Int32, 0, newVersionId)
+            };
+
+            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO folderlink ( folderid, versionid ) VALUES ( @folderid, @versionID )", folderLinkParameters);
+        }
+    }
+
     /// <summary>
     /// Adds the given exception to the file exception list.
     /// </summary>
@@ -460,7 +482,7 @@ public class BackupJob : Job
     /// </summary>
     /// <param name="selectedFolders">List of source folders.</param>
     /// <returns></returns>
-    private List<string> GetSourceFolders(string[] selectedFolders)
+    private static List<string> GetSourceFolders(string[] selectedFolders)
     {
         var folderList = new List<string>();
 
@@ -519,7 +541,7 @@ public class BackupJob : Job
 
         if (!string.IsNullOrEmpty(displayName) && Path.GetFileName(path) != displayName)
         {
-            path = Path.GetFileName(file.FileRoot) + path.Replace(file.FileRoot, "");
+            path = Path.GetFileName(file.FileRoot) + path.Replace(file.FileRoot, "", StringComparison.OrdinalIgnoreCase);
 
             var junctionInsertParameters = new IDataParameter[] {
                 dbClient.CreateParameter("path", DbType.String, 0, path),
@@ -599,9 +621,9 @@ public class BackupJob : Job
 
         if (configurationManager.Compression == 1)
         {
-            var fileExt = Path.GetExtension(file.FileNamePath()).ToLower();
+            var fileExt = Path.GetExtension(file.FileNamePath()).ToLower(CultureInfo.InvariantCulture);
 
-            if (fileExt != "")
+            if (!string.IsNullOrEmpty(fileExt))
             {
                 var exts = configurationManager.ExcludeCompression.Split('|');
 
@@ -619,7 +641,7 @@ public class BackupJob : Job
 
         // compress or encrypt?
         var compress = configurationManager.Compression == 1 && !normalCopy && !doNotCompress;
-        var encrypt = configurationManager.Encrypt == 1 && !normalCopy && file.FileSize != 0;
+        var encrypt = configurationManager.Encrypt == 1 && !normalCopy && file.FileSize > 0;
 
         // check if path is too long
         if (storage.IsPathTooLong(remoteFileName, compress, encrypt))
@@ -649,7 +671,7 @@ public class BackupJob : Job
                 result = storage.CopyFileToStorage(localFileName, remoteFileName);
             }
 
-            if (useVss && localFileName.StartsWith(Path.GetTempPath()))
+            if (useVss && localFileName.StartsWith(Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
             {
                 try
                 {
@@ -722,7 +744,7 @@ public class BackupJob : Job
     private async Task AddFileVersionDatabaseEntryAsync(DbClient dbClient, FileTableRow file, double newVersionId, string longFileName, bool compress, bool encrypt)
     {
         // correct path
-        if (!file.FilePath.EndsWith("\\"))
+        if (!file.FilePath.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
         {
             file.FilePath += "\\";
         }

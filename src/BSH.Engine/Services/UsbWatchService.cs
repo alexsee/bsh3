@@ -22,8 +22,7 @@ public class UsbWatchService
 {
     private ManagementEventWatcher watcher;
 
-    public delegate void DeviceAddedHandler(object sender, string driveLetter);
-    public event DeviceAddedHandler DeviceAdded;
+    public event EventHandler<string> DeviceAdded;
 
     public UsbWatchService()
     {
@@ -57,6 +56,11 @@ public class UsbWatchService
 
     public void WatcherDeviceChange(object sender, EventArrivedEventArgs e)
     {
+        if (e == null)
+        {
+            return;
+        }
+
         try
         {
             var driveLetter = e.NewEvent.Properties["DriveName"]?.Value?.ToString();

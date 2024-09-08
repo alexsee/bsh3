@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Jobs;
@@ -54,7 +55,7 @@ public class StatusService : IJobReport, IStatusService
         get; set;
     }
 
-    public List<FileExceptionEntry> LastFilesException
+    public Collection<FileExceptionEntry> LastFilesException
     {
         get; set;
     }
@@ -134,7 +135,7 @@ public class StatusService : IJobReport, IStatusService
         observers.ForEach(x => x.ReportFileProgress(file));
     }
 
-    public void ReportExceptions(List<FileExceptionEntry> files, bool silent)
+    public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)
     {
         LastFilesException = files;
         if (files.Count == 0 || silent)

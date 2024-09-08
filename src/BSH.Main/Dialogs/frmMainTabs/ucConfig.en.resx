@@ -1,0 +1,429 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema 
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ImageList1.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
+        LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAmU3lzdGVtLldpbmRvd3MuRm9ybXMu
+        SW1hZ2VMaXN0U3RyZWFtZXIBAAAABERhdGEHAgIAAAAJAwAAAA8DAAAAkAsAAAJNU0Z0AUkBTAIBAQMB
+        AAE4AQEBOAEBARYBAAEWAQAE/wEhAQAI/wFCAU0BNgcAATYDAAEoAwABWAMAARYDAAEBAQABIAUAAUAB
+        Hv8A/wD/AIkAAxsBJQMoATwDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0B
+        RgMtAUYDLQFGAy0BRgMtAUYDEwEZbAAEAgMqAUADNQFVAzUBVQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUB
+        VQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUBVQMqAUADAgEDZAADUAGdA0kB6QMAAf8DAAH/AwAB/wMAAf8D
+        AAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wM4AV1sAANUAbADIQH/AyEB
+        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/A1UB
+        rhAABAEDNwFaA04BlQNPAZkDTwGZA08BmQNPAZkDTwGZA08BmQNPAZkDTwGZA08BmQNPAZkDTwGZA08B
+        mQNOAZUDNgFZBAEMAANUAd8DSAHqA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oB
+        iwNKAYsDSgGLA0oBiwNKAYsDSgGLAyMBM2gAAxYBHgMhAf8DOQFfAw0BEQMNAREDDQERAw0BEQMNARED
+        DQERAw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMNAREDOgFgAyEB/wMWAR0MAANBAXMDVAHfA0YB
+        fwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNDAXcDQwF3A0MBdwNGAX8DVQHgA0AB
+        cQ8AAf8DWwHRqAADHgErAyEB/wMkATU4AAMkATUDIQH/Ax4BKwwAA1kBwwM2AVgwAAMHAQkEAAM2AVgD
+        WQHDDwAB/wNbAdEEAAMVAR0DPQFpA04BlgNRAaIDUQGiA1EBogNRAaIDUQGiA1EBogNRAaIDUQGiA1EB
+        ogNRAaIDUQGiA1EBogNJAYUDNgFYAwYBB1wAAx4BKwMhAf8DJAE1OAADJAE1AyEB/wMeASsMAANZAcwD
+        MQFNLAADQwF3A1AB5wQCAzEBTQNZAcwPAAH/A1sB0QQAAyoBPwNbAc0DHAH6AwAB/wMAAf8DAAH/AwAB
+        /wMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB/wMAAf8DAAH/AzkB8gNZAcYDDQERXAADHgErAyEB/wMkATU4
+        AAMkATUDIQH/Ax4BKwwAA1gBywMxAU4sAAMbASUDOAFcBAADMQFOA1gByw8AAf8DWwHRBAADNgFZAx4B
+        +QNLAY0DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DIAEuAyABLgMgAS4DWQHGAx4B
+        +QMRARZcAAMeASsDIQH/AyQBNTgAAyQBNQMhAf8DHgErDAADUgGoA1EBoQMaASMDGQEiAxkBIgMZASID
+        GQEiAxkBIgMZASIDGQEiAxkBIgMZASIDGQEiAxkBIgMZASIDGgEjA1EBogNVAa4PAAH/A1sB0QQAAzgB
+        XQMAAf8DQgF0MAADVwG5AwAB/wMSARdcAAMeASsDIQH/AyQBNTgAAyQBNQMhAf8DHgErDAADNwFaAyEB
+        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DIQH/AyEB/wMhAf8DLQH9AycB
+        /gM9AWkPAAH/A1sB0QQAAzgBXQMAAf8DQgF0CAADKgFAA1YBtQMAAf8DAAH/AwAB/wMeAfkDUgGjAxAB
+        FQgAA1cBuQMAAf8DEgEXXAADHgErAyEB/wMkATU4AAMkATUDIQH/Ax4BKwwAAwQBBQNPAeQDLQFEMAAD
+        GgEkAzwB9AMMARAPAAH/A1sB0QQAAzgBXQMAAf8DQgF0CAADQwF3AywB9QMAAf8DAAH/AwAB/wMIAf4D
+        UgHiAzsBYwgAA1cBuQMAAf8DEgEXXAADHgErAyEB/wNVAa4DTwGZA08BmQNPAZkDTgGXAzUBVSQAAyQB
+        NQMhAf8DHgErEAADRgGAA1UBsTAAA0sBjwNQAZ0TAAH/A1sB0QQAAzgBXQMAAf8DQgF0CAADNgFXA1QB
+        3wMAAf8DAAH/AwAB/wNHAewDSwGPAxsBJQgAA1cBuQMAAf8DEgEXXAADHgErAyEB/wNXAckDVwG7A1cB
+        uwNXAbsDVgHGAyYB/gNPAZkDBAEFHAADJAE1AyEB/wMeASsQAAMSARgDNAH2AxoBIygAAwkBCwNCAe8D
+        JQE3EwAB/wNbAdEEAAM4AV0DAAH/A0IBdAgAAxsBJgM7AWUDWAHZAyoB9wNFAe0DUgGgEAADVwG5AwAB
+        /wMSARdcAAMeASsDIQH/AyQBNRAAAzgBXAM1AfcDVwG+AzUBVQM1AVUDNQFVAzUBVQM1AVUDNQFVAzUB
+        VQNPAZkDIgH7Aw8BExQAA1EBpANLAY0oAAM/AW4DWwHIFwAB/wNbAdEEAAM4AV0DAAH/A0IBdBAAAy8B
+        SQNLAY8DRAF5AygBOxAAA1cBuQMAAf8DEgEXXAADHgErAyEB/wMkATUQAAQBA1EBoAMhAf8DIQH/AyEB
+        /wMhAf8DIQH/AyEB/wMhAf8DIQH/AzgB9AM/AWwYAAMlATYDQQHwAwoBDSAAAwQBBQNVAeADMgFPFwAB
+        /wNbAdEEAAM4AV0DAAH/A0IBdDAAA1cBuQMAAf8DEgEXXAADFgEeAyEB/wM5AV8DDQERAw0BEQMNARED
+        EgEXA1EBpAMrAf0DRAF5Aw0BEQMNAREDDQERAw0BEQMNAREDDQERAw0BEQMCAQMgAANXAbkDWQHGA0kB
+        iANJAYgDSQGIA0kBiANJAYgDSQGIA0kBiANJAYgDWAG7A1gBywQCFAADQgF0AzkBXwQAAzgBXQMAAf8D
+        QgF0EAADIAEuA0oBiwNKAYsDSgGLA0oBiwNKAYsDSgGLA0oBiwNUAd8DRwHsAxABFWAAA1YBsgMhAf8D
+        IQH/AyEB/wMhAf8DIQH/AzoB8wMzAVFEAAMKAQ0DRAF4A08BmQNPAZkDTwGZA08BmQNPAZkDTwGZA08B
+        mQNPAZkDRgF/Aw8BFCQAAzgBXQMAAf8DQgF0DAADIgExA1kBwQMAAf8DAAH/AwAB/wMAAf8DAAH/AwAB
+        /wMAAf8DVgHhA1IBqAMLAQ5gAAMCAQMDKwFCAzUBVQM1AVUDNQFVAzMBUQMSARicAAMwAUwDUQHmA1gB
+        2QNXAbkDVwG5A1cBuQNbAc4DAAH/A1ABmgMtAUYDLQFGAy0BRgMtAUYDLQFGAy0BRgMmATkDGwEmAwIB
+        A/8AGQADIwEyA1YBsAM+Ae8DAAH/AwAB/wMAAf8DAAH/A04BlgMQARX/AD0AAwMBBAMMAQ8DEAEVAxIB
+        FwMSARcDEgEXAxIBFwMJAQz/AOEAAUIBTQE+BwABPgMAASgDAAFYAwABFgMAAQEBAAEBBQABCAEBFgAD
+        /wEACP8BwAMACP8BwAMABf8B+AEAAQEBwAMAAcABAAEPAv8B+AEAAQEBwAMAAcABAAEPAgABOAEAAQEB
+        wAMAAYABAAEHAgABOQL/AcADAAGPAf8BxwE/Af0BOQYAAY8B/wHHAT8B+AE5BgABjwH/AccBPwH5ATkG
+        AAGPAf8BxwIAATkBHwH+BAABjwH/AccCAAE5ARgBBgQAAY8B/wHHAR8B/gE5ARgBBgQAAYABfwHHAZ8B
+        /gF5ARgBBgQAAYABHwHHAY8B/AF5ARgBHgQAAY8BAAEHAc8B/AH5Ah4EAAGPAQABDwHHAfgB+QEfAf4E
+        AAGAAQABHwHgAQAB+QEeBQABwAE/Af8B4AEBAf8BHAUAAcABfwT/BgAG/wEAAX8BwAMABv8BAAH/AcAD
+        AAj/AcADAAs=
+</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="TabPage4.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 37</value>
+  </data>
+  <data name="TabPage4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>936, 439</value>
+  </data>
+  <data name="TabPage4.Text" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="chkWaitOnMediaInteractive.Size" type="System.Drawing.Size, System.Drawing">
+    <value>481, 32</value>
+  </data>
+  <data name="chkWaitOnMediaInteractive.Text" xml:space="preserve">
+    <value>Prompt to display when backup medium is missing</value>
+  </data>
+  <data name="chkRemind.Size" type="System.Drawing.Size, System.Drawing">
+    <value>156, 32</value>
+  </data>
+  <data name="chkRemind.Text" xml:space="preserve">
+    <value>Remind me, if</value>
+  </data>
+  <data name="Label9.Size" type="System.Drawing.Size, System.Drawing">
+    <value>277, 28</value>
+  </data>
+  <data name="Label9.Text" xml:space="preserve">
+    <value>days no backups were created.</value>
+  </data>
+  <data name="chkInfoBackupDone.Size" type="System.Drawing.Size, System.Drawing">
+    <value>500, 32</value>
+  </data>
+  <data name="chkInfoBackupDone.Text" xml:space="preserve">
+    <value>Show notification that a backup has been completed.</value>
+  </data>
+  <data name="chkShowLocalized.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 32</value>
+  </data>
+  <data name="chkShowLocalized.Text" xml:space="preserve">
+    <value>Show directory localizations</value>
+  </data>
+  <data name="chkAbortWhenNotAvailable.Size" type="System.Drawing.Size, System.Drawing">
+    <value>490, 32</value>
+  </data>
+  <data name="chkAbortWhenNotAvailable.Text" xml:space="preserve">
+    <value>Wait for medium, if backup medium is not available.</value>
+  </data>
+  <data name="chkRemindSpace.Size" type="System.Drawing.Size, System.Drawing">
+    <value>683, 32</value>
+  </data>
+  <data name="chkRemindSpace.Text" xml:space="preserve">
+    <value>Warning, when less storage space is available on the backup medium than:</value>
+  </data>
+  <data name="chkDeactivateAutoBackupsWhenAkku.Size" type="System.Drawing.Size, System.Drawing">
+    <value>481, 32</value>
+  </data>
+  <data name="chkDeactivateAutoBackupsWhenAkku.Text" xml:space="preserve">
+    <value>Turn off automatic backups in power-saving mode.</value>
+  </data>
+  <data name="TabPage3.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 37</value>
+  </data>
+  <data name="TabPage3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>936, 439</value>
+  </data>
+  <data name="TabPage3.Text" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="cmdDeactivateEncrypt.Location" type="System.Drawing.Point, System.Drawing">
+    <value>206, 289</value>
+  </data>
+  <data name="cmdDeactivateEncrypt.Text" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="plCompressEncrypt.Size" type="System.Drawing.Size, System.Drawing">
+    <value>916, 273</value>
+  </data>
+  <data name="cmdExcludeCompress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>50, 114</value>
+  </data>
+  <data name="cmdExcludeCompress.Text" xml:space="preserve">
+    <value>Exclude Files</value>
+  </data>
+  <data name="rdEncrypt.Location" type="System.Drawing.Point, System.Drawing">
+    <value>26, 180</value>
+  </data>
+  <data name="rdEncrypt.Size" type="System.Drawing.Size, System.Drawing">
+    <value>879, 88</value>
+  </data>
+  <data name="rdEncrypt.Text" xml:space="preserve">
+    <value>Encrypt Backup (requires more processing power)
+To protect your backup from unauthorized access, it can be encrypted. You will then be asked for 
+your password every time you log in. Encryption cannot be applied retrospectively.</value>
+  </data>
+  <data name="rdNoCompress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>306, 32</value>
+  </data>
+  <data name="rdNoCompress.Text" xml:space="preserve">
+    <value>No Compression or Encryption</value>
+  </data>
+  <data name="rdCompress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>496, 32</value>
+  </data>
+  <data name="rdCompress.Text" xml:space="preserve">
+    <value>Compress Backups (requires more processing power)</value>
+  </data>
+  <data name="cmdEncrypt.Location" type="System.Drawing.Point, System.Drawing">
+    <value>56, 289</value>
+  </data>
+  <data name="cmdEncrypt.Text" xml:space="preserve">
+    <value>Set Up</value>
+  </data>
+  <data name="TabPage2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 37</value>
+  </data>
+  <data name="TabPage2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>936, 439</value>
+  </data>
+  <data name="TabPage2.Text" xml:space="preserve">
+    <value>Mode</value>
+  </data>
+  <data name="chkDoPastBackups.Size" type="System.Drawing.Size, System.Drawing">
+    <value>286, 32</value>
+  </data>
+  <data name="chkDoPastBackups.Text" xml:space="preserve">
+    <value>Make up for missed backups</value>
+  </data>
+  <data name="cmdEditSchedule.Text" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="rbMB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>325, 60</value>
+  </data>
+  <data name="rbMB.Text" xml:space="preserve">
+    <value>Manual Backup
+You create the backups manually.</value>
+  </data>
+  <data name="rbFAB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 116</value>
+  </data>
+  <data name="rbFAB.Text" xml:space="preserve">
+    <value>Automatic Backup (recommended)
+The automatic backup mode backs up your files hourly. These backups are available for 24 hours. 
+Afterwards, daily backups will be available for 30 days. Then, weekly backups will become available 
+as long as enough storage space is available.</value>
+  </data>
+  <data name="rbTSB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>783, 88</value>
+  </data>
+  <data name="rbTSB.Text" xml:space="preserve">
+    <value>Schedule-based Backup
+You set the schedule for when a backup will be performed and how long it will remain 
+available.</value>
+  </data>
+  <data name="TabPage1.Text" xml:space="preserve">
+    <value>Sources</value>
+  </data>
+  <data name="cmdFilter.Text" xml:space="preserve">
+    <value>Exclude Files</value>
+  </data>
+  <data name="ColumnHeader1.Text" xml:space="preserve">
+    <value>Directory</value>
+  </data>
+  <data name="cmdAddSource.Text" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="cmdDeleteSource.Text" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="TabPage5.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 37</value>
+  </data>
+  <data name="TabPage5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>936, 439</value>
+  </data>
+  <data name="TabPage5.Text" xml:space="preserve">
+    <value>Backup Medium</value>
+  </data>
+  <data name="cmdChangeBackupMedia.Text" xml:space="preserve">
+    <value>Switch</value>
+  </data>
+  <data name="Label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>601, 28</value>
+  </data>
+  <data name="Label1.Text" xml:space="preserve">
+    <value>Enables switching to a new (empty) medium without losing settings.</value>
+  </data>
+  <data name="Label2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>157, 28</value>
+  </data>
+  <data name="Label2.Text" xml:space="preserve">
+    <value>Backup Medium:</value>
+  </data>
+  <data name="Label11.Size" type="System.Drawing.Size, System.Drawing">
+    <value>97, 28</value>
+  </data>
+  <data name="Label11.Text" xml:space="preserve">
+    <value>Password:</value>
+  </data>
+  <data name="Label10.Size" type="System.Drawing.Size, System.Drawing">
+    <value>108, 28</value>
+  </data>
+  <data name="Label10.Text" xml:space="preserve">
+    <value>User name:</value>
+  </data>
+  <data name="Label15.Size" type="System.Drawing.Size, System.Drawing">
+    <value>127, 28</value>
+  </data>
+  <data name="Label15.Text" xml:space="preserve">
+    <value>Storage Path:</value>
+  </data>
+  <data name="cmdChange.Text" xml:space="preserve">
+    <value>&amp;Change</value>
+  </data>
+  <data name="chkFtpEncryption.Text" xml:space="preserve">
+    <value>Enforce unencrypted connections</value>
+  </data>
+  <data name="cmdFTPCheck.Text" xml:space="preserve">
+    <value>&amp;Test</value>
+  </data>
+  <data name="Label7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>97, 28</value>
+  </data>
+  <data name="Label7.Text" xml:space="preserve">
+    <value>Directory:</value>
+  </data>
+  <data name="Label5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>97, 28</value>
+  </data>
+  <data name="Label5.Text" xml:space="preserve">
+    <value>Password:</value>
+  </data>
+  <data name="Label4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>108, 28</value>
+  </data>
+  <data name="Label4.Text" xml:space="preserve">
+    <value>User name:</value>
+  </data>
+  <data name="cmdOK.Text" xml:space="preserve">
+    <value>&amp;Save</value>
+  </data>
+  <data name="cmdDeleteExcludeCompress.Text" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="cmdAddExcludeCompress.Text" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Label6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>411, 32</value>
+  </data>
+  <data name="Label6.Text" xml:space="preserve">
+    <value>Exclude File Types from Compression</value>
+  </data>
+</root>

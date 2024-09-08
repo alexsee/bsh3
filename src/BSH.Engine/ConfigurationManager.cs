@@ -145,18 +145,6 @@ public class ConfigurationManager : IConfigurationManager
         }
     }
 
-    private string compressionLevel = "9";
-
-    public string CompressionLevel
-    {
-        get => compressionLevel;
-        set
-        {
-            compressionLevel = value; SaveProperty(nameof(CompressionLevel), value.ToString());
-        }
-    }
-
-
     private string excludeCompression = ".zip|.rar|.7zip";
 
     public string ExcludeCompression

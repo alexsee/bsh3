@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using BSH.Main.Properties;
 using System;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;
 

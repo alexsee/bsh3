@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Security;
-using Brightbits.BSH.Engine.Storage;
-using BSH.Main.Properties;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Storage;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;
 
@@ -148,7 +148,7 @@ public partial class ucDoConfigure : IMainTabs
                     }
 
                     // directory is not empty?
-                    var BackupFolder = new DirectoryInfo(Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName);
+                    var BackupFolder = new DirectoryInfo(Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + '\\' + Environment.UserName);
 
                     if (BackupFolder.Exists)
                     {
@@ -165,9 +165,9 @@ public partial class ucDoConfigure : IMainTabs
                     // check ftp credentials
                     try
                     {
-                        txtFTPPath.Text = FTPStorage.GetFtpPath(txtFTPPath.Text);
+                        txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-                        var profile = FTPStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+                        var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
                         if (!profile)
                         {
                             // directory not found
@@ -280,7 +280,7 @@ public partial class ucDoConfigure : IMainTabs
                         if (txtUNCPath.Text.StartsWith(@"\\"))
                         {
                             BackupLogic.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
-                            BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(Crypto.ToSecureString(txtUNCPassword.Text), System.Security.Cryptography.DataProtectionScope.LocalMachine);
+                            BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(txtUNCPassword.Text, System.Security.Cryptography.DataProtectionScope.LocalMachine);
                         }
                         else
                         {
@@ -363,7 +363,7 @@ public partial class ucDoConfigure : IMainTabs
                                 }
 
                                 // add directory to list
-                                var computerName = computerDirectory.Substring(computerDirectory.LastIndexOf(@"\") + 1);
+                                var computerName = computerDirectory.Substring(computerDirectory.LastIndexOf('\\') + 1);
                                 try
                                 {
                                     lvBackups.Groups.Add(new ListViewGroup(computerName, Resources.DLG_UC_DO_CONFIGURE_COMPUTER + computerName));
@@ -374,7 +374,7 @@ public partial class ucDoConfigure : IMainTabs
                                 }
 
                                 // add to list
-                                var newSicherung = lvBackups.Items.Add(userDirectory.Replace(computerDirectory + @"\", ""), 4);
+                                var newSicherung = lvBackups.Items.Add(userDirectory.Replace(computerDirectory + '\\', ""), 4);
                                 newSicherung.Tag = userDirectory;
                                 newSicherung.Group = lvBackups.Groups[computerName];
                             }
@@ -417,9 +417,9 @@ public partial class ucDoConfigure : IMainTabs
                     // check ftp server credentials
                     try
                     {
-                        txtFTPPath2.Text = FTPStorage.GetFtpPath(txtFTPPath2.Text);
+                        txtFTPPath2.Text = FtpStorage.GetFtpPath(txtFTPPath2.Text);
 
-                        using (var storage = new FTPStorage(
+                        using (var storage = new FtpStorage(
                             txtFTPServer2.Text,
                             Convert.ToInt32(txtFTPPort2.Text),
                             txtFTPUser2.Text,
@@ -489,7 +489,7 @@ public partial class ucDoConfigure : IMainTabs
                         File.Delete(BackupLogic.DatabaseFile);
 
                         // download backup database
-                        using IStorage storage = new FTPStorage(
+                        using IStorage storage = new FtpStorage(
                             txtFTPServer2.Text,
                             int.Parse(txtFTPPort2.Text),
                             txtFTPUser2.Text,
@@ -695,7 +695,7 @@ public partial class ucDoConfigure : IMainTabs
         // check ftp credentials
         try
         {
-            var profile = FTPStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
 
             if (!profile)
             {

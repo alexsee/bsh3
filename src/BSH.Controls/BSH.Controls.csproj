@@ -1,49 +1,47 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
-		<OutputType>Library</OutputType>
-		<UseWindowsForms>true</UseWindowsForms>
-		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-		<PlatformTarget>x64</PlatformTarget>
-		<Authors>Alexander Seeliger</Authors>
-		<Company>Alexander Seeliger Software</Company>
-		<Copyright>Alexander Seeliger</Copyright>
-		<AssemblyVersion>3.9.0.1</AssemblyVersion>
-		<FileVersion>3.9.0.1</FileVersion>
-		<Title>Backup Service Home</Title>
-		<Configurations>Debug;Release</Configurations>
-		<Platforms>x64</Platforms>
-		<IsPublishable>False</IsPublishable>
-		<SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
-		<Version>3.9.0-beta1</Version>
-	</PropertyGroup>
-	<ItemGroup>
-		<Compile Update="UI\aVersionList.cs">
-			<SubType>UserControl</SubType>
-		</Compile>
-		<Compile Update="UI\aVersionListItem.cs">
-			<SubType>UserControl</SubType>
-		</Compile>
-		<Compile Update="UI\LoadingCircle.cs">
-			<SubType>Component</SubType>
-		</Compile>
-		<Compile Update="UI\LoadingCircleToolStripMenuItem.cs">
-			<SubType>Component</SubType>
-		</Compile>
-		<Compile Update="UI\ucNavigation.cs">
-			<SubType>UserControl</SubType>
-		</Compile>
-		<Compile Update="UI\ucNavigationItem.cs">
-			<SubType>UserControl</SubType>
-		</Compile>
-	</ItemGroup>
-	<ItemGroup>
-		<EmbeddedResource Include="Preview\Files\csharp.css" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.4" />
-	</ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <PlatformTarget>x64</PlatformTarget>
+    <Authors>Alexander Seeliger</Authors>
+    <Company>Alexander Seeliger Software</Company>
+    <Copyright>Alexander Seeliger</Copyright>
+    <Title>Backup Service Home</Title>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>x64</Platforms>
+    <IsPublishable>False</IsPublishable>
+    <SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
+    <Version>3.9.0.3</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="UI\aVersionList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UI\aVersionListItem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UI\LoadingCircle.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="UI\LoadingCircleToolStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="UI\ucNavigation.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UI\ucNavigationItem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Preview\Files\csharp.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.8" />
+  </ItemGroup>
 </Project>

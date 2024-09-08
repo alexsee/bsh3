@@ -42,7 +42,7 @@ public class NetworkConnection : IDisposable
 
         // expected format is '\\machine\share'
         this.RemoteShare = String.Format(@"\\{0}\{1}", auth, segments[1].Trim('\\', '/'));
-        this.Connect(remoteUser, Crypto.ToInsecureString(pw));
+        this.Connect(remoteUser, pw);
     }
 
     ~NetworkConnection()

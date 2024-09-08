@@ -37,11 +37,6 @@ public interface IConfigurationManager
         get;
         set;
     }
-    string CompressionLevel
-    {
-        get;
-        set;
-    }
     string DbStatus
     {
         get;

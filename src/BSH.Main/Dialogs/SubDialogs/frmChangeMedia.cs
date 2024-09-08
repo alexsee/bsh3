@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Storage;
-using BSH.Main.Properties;
 using System;
 using System.Windows.Forms;
+using Brightbits.BSH.Engine.Storage;
+using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;
 
@@ -102,7 +102,7 @@ public partial class frmChangeMedia
                 MessageBox.Show(Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT, Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            else if (System.IO.File.Exists(lvBackupDrive.SelectedItems[0].Tag.ToString() + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName + @"\backup.bshdb"))
+            else if (System.IO.File.Exists(lvBackupDrive.SelectedItems[0].Tag.ToString() + @"Backups\" + Environment.MachineName + '\\' + Environment.UserName + @"\backup.bshdb"))
             {
                 MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -113,9 +113,9 @@ public partial class frmChangeMedia
             // FTP testen
             try
             {
-                txtFTPPath.Text = FTPStorage.GetFtpPath(txtFTPPath.Text);
+                txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-                using (var storage = new FTPStorage(
+                using (var storage = new FtpStorage(
                     txtFTPServer.Text,
                     int.Parse(txtFTPPort.Text),
                     txtFTPUsername.Text,
@@ -156,9 +156,9 @@ public partial class frmChangeMedia
         // FTP testen
         try
         {
-            txtFTPPath.Text = FTPStorage.GetFtpPath(txtFTPPath.Text);
+            txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-            var profile = FTPStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, cboFtpEncoding.SelectedItem.ToString());
+            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, cboFtpEncoding.SelectedItem.ToString());
 
             if (!profile)
             {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine.Models;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -29,7 +29,7 @@ public interface IJobReport
 
     void ReportFileProgress(string file);
 
-    void ReportExceptions(List<FileExceptionEntry> files, bool silent);
+    void ReportExceptions(Collection<FileExceptionEntry> files, bool silent);
 
     RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
 

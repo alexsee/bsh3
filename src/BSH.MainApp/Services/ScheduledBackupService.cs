@@ -220,10 +220,10 @@ public class ScheduledBackupService : IScheduledBackupService
         using var dbClient = dbClientFactory.CreateDbClient();
         using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
 
-        while (reader.Read())
+        while (await reader.ReadAsync())
         {
             var scheduleDate = reader.GetDateTimeParsed("timDate");
-            int scheduleType = reader.GetInt32("timType");
+            var scheduleType = reader.GetInt32("timType");
 
             if (scheduleType == 1)
             {
@@ -334,7 +334,7 @@ public class ScheduledBackupService : IScheduledBackupService
             }
         }
 
-        reader.Close();
+        await reader.CloseAsync();
     }
 
     private bool DoPastBackup(DateTime date, bool orOlder = false)

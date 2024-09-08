@@ -19,17 +19,32 @@ namespace BSH.Main.Model.CommandLine;
 public class Options
 {
     [Option("delayedstart", Default = false)]
-    public bool DelayedStart { get; set; }
+    public bool DelayedStart
+    {
+        get; set;
+    }
 
     [Option("databasefile")]
-    public string DatabaseFile { get; set; }
+    public string DatabaseFile
+    {
+        get; set;
+    }
 
     [Option("deleteprotocol", Default = false)]
-    public bool DeleteProtocol { get; set; }
+    public bool DeleteProtocol
+    {
+        get; set;
+    }
 
     [Option("config")]
-    public bool ShowConfig { get; set; }
+    public bool ShowConfig
+    {
+        get; set;
+    }
 
     [Option("browser")]
-    public bool ShowBrowser { get; set; }
+    public bool ShowBrowser
+    {
+        get; set;
+    }
 }

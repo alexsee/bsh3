@@ -12,17 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Brightbits.BSH.Engine.Database;
-using BSH.Main.Properties;
-using Serilog;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
-
-#if WIN_UWP
-using Windows.ApplicationModel;
-#endif
+using AutoUpdaterDotNET;
+using Brightbits.BSH.Engine.Database;
+using BSH.Main.Properties;
+using Serilog;
 
 namespace Brightbits.BSH.Main;
 
@@ -152,7 +149,7 @@ public partial class frmMain
         Dispose();
     }
 
-    private async void frmMain_Load(object sender, EventArgs e)
+    private void frmMain_Load(object sender, EventArgs e)
     {
         // Tabs laden und entsprechendes Tab öffnen
         switch (StatusController.Current.SystemStatus)
@@ -179,26 +176,6 @@ public partial class frmMain
         // Mit Windows starten
         try
         {
-#if WIN_UWP
-            AufAktualisierungenPrüfenToolStripMenuItem.Visible = false;
-            AutomatischNachAktualisierungenSuchenToolStripMenuItem.Visible = false;
-
-            var startupTask = await StartupTask.GetAsync("BackupServiceHomeStartupTask");
-
-            if (startupTask.State == StartupTaskState.Disabled)
-            {
-                MitWindowsStartenToolStripMenuItem.Checked = false;
-            }
-            else if (startupTask.State == StartupTaskState.DisabledByUser)
-            {
-                MitWindowsStartenToolStripMenuItem.Checked = false;
-                MitWindowsStartenToolStripMenuItem.Enabled = false;
-            }
-            else if (startupTask.State == StartupTaskState.Enabled)
-            {
-                MitWindowsStartenToolStripMenuItem.Checked = true;
-            }
-#else
             var keyValue = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run").GetValue("BackupServiceHome3Run");
             if (keyValue is object && !string.IsNullOrEmpty(keyValue.ToString()))
             {
@@ -208,7 +185,6 @@ public partial class frmMain
             // Betaversionen herunterladen?
             BetaversionenÜberAktualiserungenHerunterladenToolStripMenuItem.Checked = Settings.Default.DownloadBeta;
             AutomatischNachAktualisierungenSuchenToolStripMenuItem.Checked = Settings.Default.AutoSearchUpdates;
-#endif
         }
         catch
         {
@@ -231,27 +207,10 @@ public partial class frmMain
         cmsHelp.Show(picHelp, new Point((int)Math.Round(-cmsHelp.Width / 2d + picHelp.Width / 2d), picHelp.Height));
     }
 
-    private async void MitWindowsStartenToolStripMenuItem_Click(object sender, EventArgs e)
+    private void MitWindowsStartenToolStripMenuItem_Click(object sender, EventArgs e)
     {
         try
         {
-#if WIN_UWP
-            var startupTask = await StartupTask.GetAsync("BackupServiceHomeStartupTask");
-
-            if (startupTask.State == StartupTaskState.Disabled)
-            {
-                var newState = await startupTask.RequestEnableAsync();
-
-                if (newState == StartupTaskState.Enabled)
-                {
-                    MitWindowsStartenToolStripMenuItem.Checked = true;
-                }
-            }
-            else if (startupTask.State == StartupTaskState.Enabled)
-            {
-                MessageBox.Show(Resources.DLG_MAIN_MSG_UWP_AUTOSTART_TEXT, Resources.DLG_MAIN_MSG_UWP_AUTOSTART_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-#else
             if (MitWindowsStartenToolStripMenuItem.Checked)
             {
                 // Ausschalten
@@ -264,7 +223,6 @@ public partial class frmMain
                 Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true).SetValue("BackupServiceHome3Run", "\"" + Application.ExecutablePath + "\" -delayedstart");
                 MitWindowsStartenToolStripMenuItem.Checked = true;
             }
-#endif
         }
         catch
         {
@@ -274,10 +232,14 @@ public partial class frmMain
 
     private void AufAktualisierungenPrüfenToolStripMenuItem_Click(object sender, EventArgs e)
     {
-#if !WIN_UWP
-        Program.mainUpdateController.releaseFilter.checkForBeta = Settings.Default.DownloadBeta;
-        Program.mainUpdateController.updateInteractive(this);
-#endif
+        if (Settings.Default.DownloadBeta)
+        {
+            AutoUpdater.Start("https://updates.brightbits.de/backup_service_home/v3/auto_updater_beta.xml");
+        }
+        else
+        {
+            AutoUpdater.Start("https://updates.brightbits.de/backup_service_home/v3/auto_updater.xml");
+        }
     }
 
     private async void ZurücksetzenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -322,7 +284,8 @@ public partial class frmMain
     {
         try
         {
-            Process.Start("https://www.brightbits.de/?pk_campaign=software_link&pk_kwd=menu_help&pk_source=bsh-3");
+            var url = "https://www.brightbits.de/?pk_campaign=software_link&pk_kwd=menu_help&pk_source=bsh-3";
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
         catch
         {
@@ -360,11 +323,18 @@ public partial class frmMain
         try
         {
             var d = DateTime.Now.ToString("yyyyMMdd");
-            Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\Alexosoft\\Backup Service Home 3\\log" + d + ".txt");
+            var logFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\Alexosoft\\Backup Service Home 3\\log" + d + ".txt";
+            Process.Start(new ProcessStartInfo(logFile) { UseShellExecute = true });
         }
         catch
         {
             // ignore error
         }
+    }
+
+    private void btnResetUserId_Click(object sender, EventArgs e)
+    {
+        Settings.Default.UniqueUserId = Guid.NewGuid().ToString();
+        Settings.Default.Save();
     }
 }

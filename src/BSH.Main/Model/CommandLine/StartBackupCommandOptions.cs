@@ -20,17 +20,32 @@ namespace BSH.Main.Model.CommandLine;
 public class StartBackupCommandOptions
 {
     [Option("title", Default = "Manuelle Sicherung", HelpText = "Specifies the title of the backup.")]
-    public string Title { get; set; }
+    public string Title
+    {
+        get; set;
+    }
 
     [Option("description", Default = "", HelpText = "Specifies the description of the backup.")]
-    public string Description { get; set; }
+    public string Description
+    {
+        get; set;
+    }
 
     [Option("shutdownapp", Default = false)]
-    public bool ShutdownApp { get; set; }
+    public bool ShutdownApp
+    {
+        get; set;
+    }
 
     [Option("shutdownpc", Default = false)]
-    public bool ShutdownPC { get; set; }
+    public bool ShutdownPC
+    {
+        get; set;
+    }
 
     [Option("autodelete", Default = false)]
-    public bool AutoDeletion { get; set; }
+    public bool AutoDeletion
+    {
+        get; set;
+    }
 }

@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace Brightbits.BSH.Engine.Storage;
 
 public abstract class Storage
 {
     protected static string CleanRemoteFileName(string remoteFile)
     {
+        ArgumentNullException.ThrowIfNull(remoteFile);
+
         var result = remoteFile;
 
         if (remoteFile.StartsWith('\\'))
@@ -37,7 +41,9 @@ public abstract class Storage
 
     protected static string GetLocalFileName(string localFile)
     {
-        if (localFile.StartsWith("\\\\"))
+        ArgumentNullException.ThrowIfNull(localFile);
+
+        if (localFile.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase))
         {
             return localFile;
         }

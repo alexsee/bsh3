@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
@@ -23,7 +24,7 @@ public interface IStatusService
         get;
         set;
     }
-    List<FileExceptionEntry> LastFilesException
+    Collection<FileExceptionEntry> LastFilesException
     {
         get;
         set;
@@ -58,7 +59,7 @@ public interface IStatusService
     bool IsTaskRunning();
     void RemoveObserver(IStatusReport jobReport);
     void ReportAction(ActionType action, bool silent);
-    void ReportExceptions(List<FileExceptionEntry> files, bool silent);
+    void ReportExceptions(Collection<FileExceptionEntry> files, bool silent);
     void ReportFileProgress(string file);
     void ReportProgress(int total, int current);
     void ReportState(JobState jobState);

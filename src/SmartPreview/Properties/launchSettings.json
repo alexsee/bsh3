@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SmartPreview": {
+      "commandName": "Project",
+      "commandLineArgs": "-file:\"D:\\Meine Dokumente\\Notizen vom 24. Juni 2022.txt\""
+    }
+  }
+}

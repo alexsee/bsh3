@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Brightbits.BSH.Engine.Storage;
-using System.Security;
 
 namespace BSH.Test.Mocks
 {
@@ -48,7 +47,7 @@ namespace BSH.Test.Mocks
             return !failAllCopies;
         }
 
-        public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, SecureString password)
+        public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
         {
             return !failAllCopies;
         }
@@ -63,12 +62,12 @@ namespace BSH.Test.Mocks
             return !failAllCopies;
         }
 
-        public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, SecureString password)
+        public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password)
         {
             return !failAllCopies;
         }
 
-        public bool DecryptOnStorage(string remoteFile, SecureString password)
+        public bool DecryptOnStorage(string remoteFile, string password)
         {
             return !failAllCopies;
         }

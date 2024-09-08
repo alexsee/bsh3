@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.Main.Properties;
 using Humanizer;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main;
 
@@ -47,27 +48,57 @@ public class StatusController : IJobReport
 
     private ActionType lastActionType = ActionType.Check;
 
-    public JobState JobState { get; set; }
+    public JobState JobState
+    {
+        get; set;
+    }
 
-    public SystemStatus SystemStatus { get; set; }
+    public SystemStatus SystemStatus
+    {
+        get; set;
+    }
 
-    public string LastStatusTitle { get; set; }
+    public string LastStatusTitle
+    {
+        get; set;
+    }
 
-    public string LastStatusText { get; set; }
+    public string LastStatusText
+    {
+        get; set;
+    }
 
-    public int LastProgressTotal { get; set; }
+    public int LastProgressTotal
+    {
+        get; set;
+    }
 
-    public int LastProgressCurrent { get; set; }
+    public int LastProgressCurrent
+    {
+        get; set;
+    }
 
-    public string LastFileProgress { get; set; }
+    public string LastFileProgress
+    {
+        get; set;
+    }
 
-    public List<FileExceptionEntry> LastFilesException { get; set; }
+    public Collection<FileExceptionEntry> LastFilesException
+    {
+        get; set;
+    }
 
     private StatusController()
     {
     }
 
-    public RequestOverwriteResult LastFileOverwriteChoice { get { return lastFileOverwriteChoice; } }
+    public RequestOverwriteResult LastFileOverwriteChoice
+    {
+        get
+        {
+            return lastFileOverwriteChoice;
+        }
+    }
 
     public bool IsTaskRunning()
     {
@@ -127,7 +158,7 @@ public class StatusController : IJobReport
         observers.ForEach(x => x.ReportFileProgress(file));
     }
 
-    public void ReportExceptions(List<FileExceptionEntry> files, bool silent)
+    public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)
     {
         LastFilesException = files;
         if (files.Count == 0 || silent)
