@@ -26,10 +26,10 @@
                             ItemInvoked="navSettings_ItemInvoked">
                 <NavigationView.MenuItems>
                     <NavigationViewItem x:Name="nviSources" IsSelected="True" Content="Sources" />
-                    <NavigationViewItem x:Name="nviTarget" Content="Backup Disk" />
-                    <NavigationViewItem x:Name="nviMode" Content="Mode" />
-                    <NavigationViewItem x:Name="nviOptions" Content="Options" />
-                    <NavigationViewItem x:Name="nviEnhanced" Content="Enhanced" />
+                    <NavigationViewItem x:Name="nviTarget" Content="Backup Target" />
+                    <NavigationViewItem x:Name="nviMode" Content="Automation" />
+                    <NavigationViewItem x:Name="nviOptions" Content="Backup Options" />
+                    <NavigationViewItem x:Name="nviEnhanced" Content="Behavior" />
                 </NavigationView.MenuItems>
                 <Frame Margin="0,20,0,0" x:Name="contentFrame" />
             </NavigationView>

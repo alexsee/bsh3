@@ -806,7 +806,7 @@ static class BackupLogic
         }
 
         // only start, if local device
-        if (ConfigurationManager.MediumType != 3)
+        if (ConfigurationManager.MediumType != MediaType.FileTransferServer)
         {
             dCWatcher = new UsbWatchService();
             dCWatcher.StartWatching();
