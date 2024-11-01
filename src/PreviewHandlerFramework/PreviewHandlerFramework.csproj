@@ -23,7 +23,7 @@
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.8" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.10" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

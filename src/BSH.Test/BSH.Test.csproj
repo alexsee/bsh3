@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.8" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj" />
