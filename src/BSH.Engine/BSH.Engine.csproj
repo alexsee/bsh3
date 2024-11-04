@@ -52,7 +52,7 @@
       <Version>8.0.2</Version>
     </PackageReference>
     <PackageReference Include="Quartz">
-      <Version>3.13.0</Version>
+      <Version>3.13.1</Version>
     </PackageReference>
     <PackageReference Include="Serilog">
       <Version>4.1.0</Version>
