@@ -577,6 +577,8 @@ public class BackupJob : Job
         {
             try
             {
+                _logger.Information("File {fileName} will be attempted to backup via Volume Shadow Copy Service.", localFileName);
+
                 // temporary file path
                 var vssTempFile = Path.Combine(Path.GetTempPath(), file.FileName);
 
