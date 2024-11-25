@@ -36,6 +36,8 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="WinUIEx" Version="2.3.3" />
+	<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.230828-rc" />
+	<PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj">
