@@ -19,7 +19,7 @@ jobs:
     steps:
     - name: Set env
       run: |
-        $version = "${REF_NAME}".substring(1)
+        $version = "${env:REF_NAME}".substring(1)
         $info_version = $version.replace('-beta', '.')
         echo "BUILD_VERSION=$version" >> $env:GITHUB_ENV
         echo "INFO_VERSION=$info_version" >> $env:GITHUB_ENV
