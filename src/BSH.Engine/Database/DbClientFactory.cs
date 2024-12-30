@@ -14,10 +14,10 @@
 
 using System;
 using System.Data.Common;
+using System.Data.SQLite;
 using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts.Database;
-using Microsoft.Data.Sqlite;
 
 namespace Brightbits.BSH.Engine.Database;
 
@@ -32,7 +32,7 @@ public class DbClientFactory : IDbClientFactory
 
     public DbClientFactory()
     {
-        DbProviderFactories.RegisterFactory("Microsoft.Data.Sqlite", SqliteFactory.Instance);
+        DbProviderFactories.RegisterFactory("System.Data.SQLite", SQLiteFactory.Instance);
     }
 
     public async Task InitializeAsync(string databaseFile)
@@ -52,7 +52,7 @@ public class DbClientFactory : IDbClientFactory
     /// <returns>A new DbClient instance.</returns>
     public DbClient CreateDbClient()
     {
-        return new DbClient($"Data Source={databaseFile};Mode=ReadWriteCreate;");
+        return new DbClient($"Data Source={databaseFile};Mode=ReadWriteCreate;PRAGMA journal_mode=WAL;");
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public class DbClientFactory : IDbClientFactory
     /// </summary>
     public static void ClosePool()
     {
-        SqliteConnection.ClearAllPools();
+        SQLiteConnection.ClearAllPools();
         GC.Collect();
         GC.WaitForPendingFinalizers();
     }
@@ -69,6 +69,7 @@ public class DbClientFactory : IDbClientFactory
     {
         // generate database file
         Directory.CreateDirectory(Path.GetDirectoryName(databaseFile));
+        SQLiteConnection.CreateFile(databaseFile);
 
         // create tables
         using var dbClient = CreateDbClient();

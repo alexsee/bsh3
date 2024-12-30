@@ -16,8 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.SQLite;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
 
 namespace Brightbits.BSH.Engine.Database;
 
@@ -28,10 +28,10 @@ public class DbClient : IDisposable
 {
     #region Fields
 
-    SqliteConnection _connection;
-    SqliteTransaction _transaction;
+    SQLiteConnection _connection;
+    SQLiteTransaction _transaction;
     DbProviderFactory _factory;
-    readonly Dictionary<string, SqliteCommand> _commands = new();
+    readonly Dictionary<string, SQLiteCommand> _commands = new();
 
     #endregion
 
@@ -64,7 +64,7 @@ public class DbClient : IDisposable
     /// <param name="connectionStringName">the name of the connection string defined in application configuration</param>
     public DbClient(string connectionString)
     {
-        InitializeConnection("Microsoft.Data.Sqlite", connectionString);
+        InitializeConnection("System.Data.SQLite", connectionString);
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public class DbClient : IDisposable
             throw new InvalidOperationException(string.Format("The factory for data provider {0} could not be found!", providerName));
         }
 
-        _connection = new SqliteConnection();
+        _connection = new SQLiteConnection();
         _connection.ConnectionString = connectionString;
     }
 
@@ -448,19 +448,6 @@ public class DbClient : IDisposable
         parameter.Size = size;
 
         return parameter;
-    }
-
-    public async Task BackupDatabaseAsync(string backupFile)
-    {
-        var destination = new SqliteConnectionStringBuilder(_connection.ConnectionString)
-        {
-            DataSource = backupFile
-        };
-        using var backupConnection = new SqliteConnection(destination.ToString());
-
-        await _connection.OpenAsync();
-        _connection.BackupDatabase(backupConnection);
-        await _connection.CloseAsync();
     }
 
     #endregion

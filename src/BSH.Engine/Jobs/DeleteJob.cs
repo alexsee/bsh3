@@ -219,7 +219,7 @@ public class DeleteJob : Job
         DbClientFactory.ClosePool();
 
         // store database
-        await UpdateDatabaseOnStorageAsync();
+        UpdateDatabaseOnStorage();
 
         // close storage provider
         storage.Dispose();

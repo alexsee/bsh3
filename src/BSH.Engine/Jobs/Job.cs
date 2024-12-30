@@ -19,6 +19,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Storage;
@@ -182,20 +183,12 @@ public abstract class Job
     /// Updates the database on the storage device. Storage must still be open.
     /// </summary>
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-    protected async Task UpdateDatabaseOnStorageAsync()
+    protected void UpdateDatabaseOnStorage()
     {
         try
         {
             storage.UpdateStorageVersion(int.Parse(configurationManager.OldBackupPrevent));
-
-            var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            using (var client = dbClientFactory.CreateDbClient())
-            {
-                await client.BackupDatabaseAsync(tmpFile);
-            }
-
-            storage.UploadDatabaseFile(tmpFile);
-            File.Delete(tmpFile);
+            storage.UploadDatabaseFile(dbClientFactory.DatabaseFile);
         }
         catch (Exception ex)
         {
