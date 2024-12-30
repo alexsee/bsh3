@@ -195,6 +195,7 @@ public abstract class Job
             }
 
             storage.UploadDatabaseFile(tmpFile);
+            File.Delete(tmpFile);
         }
         catch (Exception ex)
         {
