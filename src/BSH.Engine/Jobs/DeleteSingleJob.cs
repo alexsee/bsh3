@@ -89,27 +89,27 @@ public class DeleteSingleJob : Job
             var fileVersionIds = new List<int>();
 
             string selectFileSQL;
-            IDataParameter[] selectFileParameters;
+            (string, object)[] selectFileParameters;
 
             if (!string.IsNullOrEmpty(fileFilter) && !string.IsNullOrEmpty(pathFilter))
             {
                 selectFileSQL = "SELECT ft.fileID " +
                                 "FROM fileTable AS ft " +
                                 "WHERE fileName = @fileName AND filePath = @filePath";
-                selectFileParameters = new IDataParameter[]
-                {
-                    dbClient.CreateParameter("fileName", DbType.String, 0, fileFilter),
-                    dbClient.CreateParameter("filePath", DbType.String, 0, pathFilter)
-                };
+                selectFileParameters =
+                [
+                    ("fileName", fileFilter),
+                    ("filePath", pathFilter)
+                ];
             }
             else
             {
                 selectFileSQL = "SELECT ft.fileID " +
                                 "FROM fileTable AS ft " +
                                 "WHERE filePath LIKE @filePath";
-                selectFileParameters = new IDataParameter[] {
-                    dbClient.CreateParameter("filePath", DbType.String, 0, pathFilter)
-                };
+                selectFileParameters = [
+                    ("filePath", pathFilter)
+                ];
             }
 
             // obtain files
@@ -129,9 +129,9 @@ public class DeleteSingleJob : Job
             foreach (var fileId in fileIds)
             {
                 // obtain all file versions
-                var deleteFileParams = new IDataParameter[]
+                var deleteFileParams = new (string, object)[]
                 {
-                    dbClient.CreateParameter("fileId", DbType.Int32, 0, fileId)
+                    ("fileId", fileId)
                 };
 
                 using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text,
@@ -184,20 +184,20 @@ public class DeleteSingleJob : Job
 
             // delete metadata from database
             string subQuerySQL;
-            var deleteParams = new List<IDataParameter>();
+            var deleteParams = new List<(string, object)>();
 
             if (!string.IsNullOrEmpty(fileFilter) && !string.IsNullOrEmpty(pathFilter))
             {
                 subQuerySQL = "SELECT ft.fileID FROM fileTable AS ft WHERE fileName = @fileName AND filePath = @filePath";
 
-                deleteParams.Add(dbClient.CreateParameter("fileName", DbType.String, 0, fileFilter));
-                deleteParams.Add(dbClient.CreateParameter("filePath", DbType.String, 0, pathFilter));
+                deleteParams.Add(("fileName", fileFilter));
+                deleteParams.Add(("filePath", pathFilter));
             }
             else
             {
                 subQuerySQL = "SELECT ft.fileID FROM fileTable AS ft WHERE filePath LIKE @filePath";
 
-                deleteParams.Add(dbClient.CreateParameter("filePath", DbType.String, 0, pathFilter));
+                deleteParams.Add(("filePath", pathFilter));
             }
 
             // delete metadata

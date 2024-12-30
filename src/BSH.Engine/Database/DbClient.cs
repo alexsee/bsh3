@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.SQLite;
 using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine.Database;
@@ -27,10 +28,10 @@ public class DbClient : IDisposable
 {
     #region Fields
 
-    DbConnection _connection;
-    DbTransaction _transaction;
+    SQLiteConnection _connection;
+    SQLiteTransaction _transaction;
     DbProviderFactory _factory;
-    readonly Dictionary<string, DbCommand> _commands = new();
+    readonly Dictionary<string, SQLiteCommand> _commands = new();
 
     #endregion
 
@@ -95,7 +96,7 @@ public class DbClient : IDisposable
             throw new InvalidOperationException(string.Format("The factory for data provider {0} could not be found!", providerName));
         }
 
-        _connection = _factory.CreateConnection();
+        _connection = new SQLiteConnection();
         _connection.ConnectionString = connectionString;
     }
 
@@ -206,7 +207,7 @@ public class DbClient : IDisposable
     /// <param name="procedureName">the command to execute</param>
     /// <param name="parameters">parameters for calling the stored procedure</param>
     /// <returns>the dataset with the execution results</returns>
-    public DataSet ExecuteDataSet(CommandType commandType, string commandText, IDataParameter[] parameters)
+    public DataSet ExecuteDataSet(CommandType commandType, string commandText, (string, object)[] parameters)
     {
         return ExecuteDataSet(commandType, commandText, parameters, 60000);
     }
@@ -218,7 +219,7 @@ public class DbClient : IDisposable
     /// <param name="procedureName">the command to execute</param>
     /// <param name="parameters">parameters for calling the stored procedure</param>
     /// <returns>the dataset with the execution results</returns>
-    public DataSet ExecuteDataSet(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
+    public DataSet ExecuteDataSet(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         var dsResult = new DataSet();
         // open the connection
@@ -242,7 +243,7 @@ public class DbClient : IDisposable
     /// <param name="procedureName">the procedurename</param>
     /// <param name="parameters">the parameters</param>
     /// <returns>the data reader</returns>
-    public IDataReader ExecuteDataReader(CommandType commandType, string commandText, IDataParameter[] parameters)
+    public IDataReader ExecuteDataReader(CommandType commandType, string commandText, (string, object)[] parameters)
     {
         return ExecuteDataReader(commandType, commandText, parameters, 60000);
     }
@@ -255,7 +256,7 @@ public class DbClient : IDisposable
     /// <param name="parameters">the parameters</param>
     /// <param name="commandTimeout">the command timeout</param>
     /// <returns>the data reader</returns>
-    public IDataReader ExecuteDataReader(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
+    public IDataReader ExecuteDataReader(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         OpenConnection();
 
@@ -270,7 +271,7 @@ public class DbClient : IDisposable
     /// <param name="procedureName">the procedurename</param>
     /// <param name="parameters">the parameters</param>
     /// <returns>the data reader</returns>
-    public async Task<DbDataReader> ExecuteDataReaderAsync(CommandType commandType, string commandText, IDataParameter[] parameters)
+    public async Task<DbDataReader> ExecuteDataReaderAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
         return await ExecuteDataReaderAsync(commandType, commandText, parameters, 60000);
     }
@@ -283,7 +284,7 @@ public class DbClient : IDisposable
     /// <param name="parameters">the parameters</param>
     /// <param name="commandTimeout">the command timeout</param>
     /// <returns>the data reader</returns>
-    public async Task<DbDataReader> ExecuteDataReaderAsync(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
+    public async Task<DbDataReader> ExecuteDataReaderAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         await OpenConnectionAsync();
 
@@ -296,12 +297,12 @@ public class DbClient : IDisposable
         return await ExecuteScalarAsync(CommandType.Text, commandText, null);
     }
 
-    public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, IDataParameter[] parameters)
+    public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
         return await ExecuteScalarAsync(commandType, commandText, parameters, 60000);
     }
 
-    public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
+    public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         await OpenConnectionAsync();
 
@@ -313,12 +314,12 @@ public class DbClient : IDisposable
         return result;
     }
 
-    public int ExecuteNonQuery(CommandType commandType, string commandText, IDataParameter[] parameters)
+    public int ExecuteNonQuery(CommandType commandType, string commandText, (string, object)[] parameters)
     {
         return ExecuteNonQuery(commandType, commandText, parameters, 60000);
     }
 
-    public int ExecuteNonQuery(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
+    public int ExecuteNonQuery(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         OpenConnection();
 
@@ -335,12 +336,12 @@ public class DbClient : IDisposable
         return await ExecuteNonQueryAsync(CommandType.Text, commandText, null, 60000);
     }
 
-    public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, IDataParameter[] parameters)
+    public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
         return await ExecuteNonQueryAsync(commandType, commandText, parameters, 60000);
     }
 
-    public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
+    public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         await OpenConnectionAsync();
 
@@ -360,7 +361,7 @@ public class DbClient : IDisposable
     /// <param name="parameters">the parameters</param>
     /// <param name="commandTimeout">the command timeout</param>
     /// <returns>the command</returns>
-    private DbCommand CreateCommand(CommandType commandType, string commandText, IDataParameter[] parameters, int commandTimeout)
+    private DbCommand CreateCommand(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         if (_commands.TryGetValue(commandText, out var command))
         {
@@ -373,7 +374,7 @@ public class DbClient : IDisposable
             {
                 foreach (var parameter in parameters)
                 {
-                    (command.Parameters[parameter.ParameterName] as IDataParameter).Value = parameter.Value;
+                    command.Parameters[parameter.Item1].Value = parameter.Item2;
                 }
             }
 
@@ -394,7 +395,7 @@ public class DbClient : IDisposable
         {
             foreach (var parameter in parameters)
             {
-                command.Parameters.Add(parameter);
+                command.Parameters.AddWithValue(parameter.Item1, parameter.Item2);
             }
         }
 
