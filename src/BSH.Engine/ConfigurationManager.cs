@@ -90,9 +90,9 @@ public class ConfigurationManager : IConfigurationManager
         }
     }
 
-    private int mediumType = 1;
+    private MediaType mediumType = MediaType.LocalDevice;
 
-    public int MediumType
+    public MediaType MediumType
     {
         get => mediumType;
         set
