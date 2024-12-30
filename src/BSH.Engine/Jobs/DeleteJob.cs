@@ -93,9 +93,9 @@ public class DeleteJob : Job
             Win32Stuff.KeepSystemAwake();
 
             // obtain files to delete
-            var parameters = new IDataParameter[]
+            var parameters = new (string, object)[]
             {
-                dbClient.CreateParameter("version", DbType.Int32, 0, int.Parse(Version))
+                ("version", int.Parse(Version))
             };
 
             using var files = dbClient.ExecuteDataSet(CommandType.Text,
@@ -146,9 +146,9 @@ public class DeleteJob : Job
                 }
 
                 // update database
-                var deleteFileParams = new IDataParameter[]
+                var deleteFileParams = new (string, object)[]
                 {
-                    dbClient.CreateParameter("id", DbType.VarNumeric, 0, file["fileversionid"])
+                    ("id", file["fileversionid"])
                 };
                 await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileversiontable WHERE fileversionid = @id", deleteFileParams);
             }
@@ -219,7 +219,7 @@ public class DeleteJob : Job
         DbClientFactory.ClosePool();
 
         // store database
-        UpdateDatabaseOnStorage();
+        await UpdateDatabaseOnStorageAsync();
 
         // close storage provider
         storage.Dispose();

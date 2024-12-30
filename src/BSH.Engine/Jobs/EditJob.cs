@@ -155,7 +155,7 @@ public class EditJob : Job
         DbClientFactory.ClosePool();
 
         // store database
-        UpdateDatabaseOnStorage();
+        await UpdateDatabaseOnStorageAsync();
 
         // close storage provider
         storage.Dispose();

@@ -166,13 +166,13 @@ public class BackupJob : Job
             var folderListString = string.Join("|", folderList);
 
             // create new backup
-            var backupParameters = new IDataParameter[]
+            var backupParameters = new (string, object)[]
             {
-                dbClient.CreateParameter("newVersionDate", DbType.String, 0, newVersionDate),
-                dbClient.CreateParameter("title", DbType.String, 0, Title),
-                dbClient.CreateParameter("description", DbType.String, 0, Description),
-                dbClient.CreateParameter("type", DbType.String, 0, fullBackup ? "2" : "1"),
-                dbClient.CreateParameter("sources", DbType.String, 0, folderListString)
+                ("newVersionDate", newVersionDate),
+                ("title", Title),
+                ("description", Description),
+                ("type", fullBackup ? "2" : "1"),
+                ("sources", folderListString)
             };
 
             var newVersionId = (long)await dbClient.ExecuteScalarAsync(CommandType.Text,
@@ -239,10 +239,10 @@ public class BackupJob : Job
                     ReportFileProgress(file.FileNamePath());
 
                     // search for database entry
-                    var fileSelectParameters = new IDataParameter[]
+                    var fileSelectParameters = new (string, object)[]
                     {
-                        dbClient.CreateParameter("fileName", DbType.String, 0, file.FileName),
-                        dbClient.CreateParameter("filePath", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\")
+                        ("fileName", file.FileName),
+                        ("filePath", "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\")
                     };
 
                     file.FileId = (await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT fileID FROM filetable WHERE fileName = @fileName AND filePath = @filePath LIMIT 1", fileSelectParameters))?.ToString();
@@ -250,9 +250,9 @@ public class BackupJob : Job
                     if (!long.TryParse(file.FileId, out var fileId))
                     {
                         // file does not have an entry
-                        var fileInsertParameters = new IDataParameter[] {
-                            dbClient.CreateParameter("fileName", DbType.String, 0, file.FileName),
-                            dbClient.CreateParameter("filePath", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\")
+                        var fileInsertParameters = new (string, object)[] {
+                            ("fileName", file.FileName),
+                            ("filePath", "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\")
                         };
 
                         file.FileId = (await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT INTO filetable ( fileName, filePath ) VALUES ( @fileName, @filePath ); SELECT MAX(fileID) FROM filetable", fileInsertParameters))?.ToString();
@@ -262,10 +262,10 @@ public class BackupJob : Job
                         // file was found, so we already have a version of the file
                         if (!FullBackup)
                         {
-                            var fileSelectParameters2 = new IDataParameter[] {
-                                dbClient.CreateParameter("fileID", DbType.Int32, 0, fileId),
-                                dbClient.CreateParameter("fileSize", DbType.Double, 0, file.FileSize),
-                                dbClient.CreateParameter("fileDateModified", DbType.Date, 0, file.FileDateModified)
+                            var fileSelectParameters2 = new (string, object)[] {
+                                ("fileID", fileId),
+                                ("fileSize", file.FileSize),
+                                ("fileDateModified", file.FileDateModified)
                             };
 
                             file.FilePackage = (await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT fileversionID FROM fileversiontable WHERE" +
@@ -274,9 +274,9 @@ public class BackupJob : Job
                             if (long.TryParse(file.FilePackage, out var filePackage))
                             {
                                 // file is the same, so only create a link
-                                var fileInsertParameters2 = new IDataParameter[] {
-                                    dbClient.CreateParameter("fileversionID", DbType.Int32, 0, filePackage),
-                                    dbClient.CreateParameter("versionID", DbType.Int32, 0, newVersionId)
+                                var fileInsertParameters2 = new (string, object)[] {
+                                    ("fileversionID", filePackage),
+                                    ("versionID", newVersionId)
                                 };
 
                                 await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO filelink ( fileversionID, versionID ) VALUES ( @fileversionID, @versionID )", fileInsertParameters2);
@@ -413,7 +413,7 @@ public class BackupJob : Job
         DbClientFactory.ClosePool();
 
         // store database
-        UpdateDatabaseOnStorage();
+        await UpdateDatabaseOnStorageAsync();
 
         // close storage provider
         storage.Dispose();
@@ -438,17 +438,17 @@ public class BackupJob : Job
         foreach (var folder in emptyFolder)
         {
             // backup folder
-            var folderParameters = new IDataParameter[]
+            var folderParameters = new (string, object)[]
             {
-                dbClient.CreateParameter("folder", DbType.String, 0, "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\")
+                ("folder", "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\")
             };
 
             var folderId = await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT OR IGNORE INTO foldertable ( folder ) VALUES ( @folder ); SELECT id FROM foldertable WHERE folder = @folder", folderParameters);
 
             // add folder link
-            var folderLinkParameters = new IDataParameter[] {
-                dbClient.CreateParameter("folderid", DbType.Int32, 0, folderId),
-                dbClient.CreateParameter("versionID", DbType.Int32, 0, newVersionId)
+            var folderLinkParameters = new (string, object)[] {
+                ("folderid", folderId),
+                ("versionID", newVersionId)
             };
 
             await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO folderlink ( folderid, versionid ) VALUES ( @folderid, @versionID )", folderLinkParameters);
@@ -543,9 +543,9 @@ public class BackupJob : Job
         {
             path = Path.GetFileName(file.FileRoot) + path.Replace(file.FileRoot, "", StringComparison.OrdinalIgnoreCase);
 
-            var junctionInsertParameters = new IDataParameter[] {
-                dbClient.CreateParameter("path", DbType.String, 0, path),
-                dbClient.CreateParameter("displayName", DbType.String, 0, displayName)
+            var junctionInsertParameters = new (string, object)[] {
+                ("path", path),
+                ("displayName", displayName)
             };
 
             await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT OR IGNORE INTO folderjunctiontable VALUES (@path, @displayName)", junctionInsertParameters);
@@ -779,16 +779,16 @@ public class BackupJob : Job
         }
 
         // update database
-        var fileInsertParameters = new IDataParameter[] {
-                dbClient.CreateParameter("fileID", DbType.Int32, 0, file.FileId),
-                dbClient.CreateParameter("filePackage", DbType.Int32, 0, newVersionId),
-                dbClient.CreateParameter("fileSize", DbType.Double, 0, file.FileSize),
-                dbClient.CreateParameter("fileDateCreated", DbType.Date, 0, file.FileDateCreated),
-                dbClient.CreateParameter("fileDateModified", DbType.Date, 0, file.FileDateModified),
-                dbClient.CreateParameter("fileHash", DbType.String, 0, ""),
-                dbClient.CreateParameter("fileType", DbType.Double, 0, fileType),
-                dbClient.CreateParameter("fileStatus", DbType.Double, 0, 1),
-                dbClient.CreateParameter("longfilename", DbType.String, 0, longFileName)
+        var fileInsertParameters = new (string, object)[] {
+                ("fileID", file.FileId),
+                ("filePackage", newVersionId),
+                ("fileSize", file.FileSize),
+                ("fileDateCreated", file.FileDateCreated),
+                ("fileDateModified", file.FileDateModified),
+                ("fileHash", ""),
+                ("fileType", fileType),
+                ("fileStatus", 1),
+                ("longfilename", longFileName)
             };
 
         await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO fileversiontable " +
@@ -796,8 +796,8 @@ public class BackupJob : Job
             "( @fileID, @filePackage, @fileSize, @fileDateCreated, @fileDateModified, @fileHash, @fileType, @fileStatus, @longfilename )", fileInsertParameters);
 
         // add file link
-        var fileLinkInsertParameters = new IDataParameter[] {
-                dbClient.CreateParameter("versionID", DbType.Int32, 0, newVersionId)
+        var fileLinkInsertParameters = new (string, object)[] {
+                ("versionID", newVersionId)
             };
         await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO filelink ( fileversionID, versionID ) VALUES ( last_insert_rowid(), @versionID )", fileLinkInsertParameters);
 

@@ -14,10 +14,10 @@
 
 using System;
 using System.Data.Common;
-using System.Data.SQLite;
 using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Microsoft.Data.Sqlite;
 
 namespace Brightbits.BSH.Engine.Database;
 
@@ -32,7 +32,7 @@ public class DbClientFactory : IDbClientFactory
 
     public DbClientFactory()
     {
-        DbProviderFactories.RegisterFactory("System.Data.SQLite", SQLiteFactory.Instance);
+        DbProviderFactories.RegisterFactory("Microsoft.Data.Sqlite", SqliteFactory.Instance);
     }
 
     public async Task InitializeAsync(string databaseFile)
@@ -52,7 +52,7 @@ public class DbClientFactory : IDbClientFactory
     /// <returns>A new DbClient instance.</returns>
     public DbClient CreateDbClient()
     {
-        return new DbClient($"Data Source={databaseFile};Pooling=True;Max Pool Size=100;DateTimeKind=Utc");
+        return new DbClient($"Data Source={databaseFile};Mode=ReadWriteCreate;");
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public class DbClientFactory : IDbClientFactory
     /// </summary>
     public static void ClosePool()
     {
-        SQLiteConnection.ClearAllPools();
+        SqliteConnection.ClearAllPools();
         GC.Collect();
         GC.WaitForPendingFinalizers();
     }
@@ -69,11 +69,12 @@ public class DbClientFactory : IDbClientFactory
     {
         // generate database file
         Directory.CreateDirectory(Path.GetDirectoryName(databaseFile));
-        SQLiteConnection.CreateFile(databaseFile);
 
         // create tables
         using var dbClient = CreateDbClient();
-        await dbClient.ExecuteNonQueryAsync("PRAGMA page_size=4096; CREATE TABLE configuration (confProperty NVARCHAR(20) PRIMARY KEY,confValue NVARCHAR(255));");
+        await dbClient.ExecuteNonQueryAsync("PRAGMA journal_mode=WAL;");
+        await dbClient.ExecuteNonQueryAsync("PRAGMA page_size=4096;");
+        await dbClient.ExecuteNonQueryAsync("CREATE TABLE configuration (confProperty NVARCHAR(20) PRIMARY KEY,confValue NVARCHAR(255));");
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE filelink (fileversionID INTEGER, versionID INTEGER);");
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE filetable (fileID INTEGER PRIMARY KEY, fileName TEXT, filePath TEXT);");
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE fileversiontable (fileversionID INTEGER PRIMARY KEY, fileStatus INTEGER, fileType INTEGER, fileHash VARCHAR(255), fileDateModified DATE, fileDateCreated DATE, fileSize DOUBLE, filePackage INTEGER, fileID INTEGER, longfilename TEXT);");
@@ -91,7 +92,7 @@ public class DbClientFactory : IDbClientFactory
 
         await dbClient.ExecuteNonQueryAsync("CREATE INDEX filePackageIndex ON fileversiontable (filePackage)");
 
-        await dbClient.ExecuteNonQueryAsync("INSERT INTO configuration VALUES (\"dbversion\", \"8\")");
+        await dbClient.ExecuteNonQueryAsync("INSERT INTO configuration VALUES (\"dbversion\", \"9\")");
     }
 
     public async Task ExecuteNonQueryAsync(string query)

@@ -186,10 +186,10 @@ public class QueryManager : IQueryManager
         using (var dbClient = dbClientFactory.CreateDbClient())
         {
             // get folders from stored files
-            var parameters = new IDataParameter[]
+            var parameters = new (string, object)[]
             {
-                dbClient.CreateParameter("path", DbType.String, 0, path),
-                dbClient.CreateParameter("version", DbType.Int32, 0, version)
+                ("path", path),
+                ("version", version)
             };
 
             using (var reader = await dbClient.ExecuteDataReaderAsync(
@@ -244,10 +244,10 @@ public class QueryManager : IQueryManager
         try
         {
             using var dbClient = dbClientFactory.CreateDbClient();
-            var parameters = new IDataParameter[]
+            var parameters = new (string, object)[]
             {
-                    dbClient.CreateParameter("startVersion", DbType.Int32, 0, int.Parse(startVersion)),
-                    dbClient.CreateParameter("searchString", DbType.String, 0, "%" + searchString + "%")
+                ("startVersion", int.Parse(startVersion)),
+                ("searchString", "%" + searchString + "%")
             };
 
             var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
@@ -286,10 +286,10 @@ public class QueryManager : IQueryManager
             path = GetPathWithSlashes(path);
 
             using var dbClient = dbClientFactory.CreateDbClient();
-            var parameters = new IDataParameter[]
+            var parameters = new (string, object)[]
             {
-                    dbClient.CreateParameter("startVersion", DbType.Int32, 0, int.Parse(startVersion)),
-                    dbClient.CreateParameter("path", DbType.String, 0, path)
+                ("startVersion", int.Parse(startVersion)),
+                ("path", path)
             };
 
             var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
@@ -326,10 +326,10 @@ public class QueryManager : IQueryManager
         try
         {
             using var dbClient = dbClientFactory.CreateDbClient();
-            var parameters = new IDataParameter[]
+            var parameters = new (string, object)[]
             {
-                    dbClient.CreateParameter("startVersion", DbType.Int32, 0, int.Parse(startVersion)),
-                    dbClient.CreateParameter("searchString", DbType.String, 0,  "%" + searchString + "%")
+                ("startVersion", int.Parse(startVersion)),
+                ("searchString", "%" + searchString + "%")
             };
 
             var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
@@ -368,10 +368,10 @@ public class QueryManager : IQueryManager
             path = GetPathWithSlashes(path);
 
             using var dbClient = dbClientFactory.CreateDbClient();
-            var parameters = new IDataParameter[]
+            var parameters = new (string, object)[]
             {
-                    dbClient.CreateParameter("startVersion", DbType.Int32, 0, int.Parse(startVersion)),
-                    dbClient.CreateParameter("path", DbType.String, 0, path)
+                ("startVersion", int.Parse(startVersion)),
+                ("path", path)
             };
 
             var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT a.versionID FROM versiontable a " +
@@ -409,9 +409,9 @@ public class QueryManager : IQueryManager
 
         using (var dbClient = dbClientFactory.CreateDbClient())
         {
-            var fileSelectParameters = new IDataParameter[] {
-                dbClient.CreateParameter("fileName", DbType.String, 0, fileName),
-                dbClient.CreateParameter("filePath", DbType.String, 0, filePath)
+            var fileSelectParameters = new (string, object)[] {
+                ("fileName", fileName),
+                ("filePath", filePath)
             };
 
             // get folders from stored files
@@ -450,9 +450,9 @@ public class QueryManager : IQueryManager
 
         using (var dbClient = dbClientFactory.CreateDbClient())
         {
-            var fileSelectParameters = new IDataParameter[] {
-                dbClient.CreateParameter("filePath", DbType.String, 0, path),
-                dbClient.CreateParameter("versionID", DbType.Int32, 0, version)
+            var fileSelectParameters = new (string, object)[] {
+                ("filePath", path),
+                ("versionID", version)
             };
 
             // get folders from stored files
@@ -471,12 +471,12 @@ public class QueryManager : IQueryManager
                 "versiontable.versionDate, " +
                 "filelink.versionID, " +
                 "filetable.fileID " +
-                "FROM  " +
+                "FROM " +
                 "filelink " +
-                "INNER JOIN fileversiontable On (filelink.fileversionID = fileversiontable.fileversionID)  " +
-                "INNER JOIN filetable On (fileversiontable.fileID = filetable.fileID)  " +
-                "INNER JOIN versiontable On (versiontable.versionID = fileversiontable.filePackage)  " +
-                "WHERE(filelink.versionID = @versionID) " +
+                "INNER JOIN fileversiontable On (filelink.fileversionID = fileversiontable.fileversionID) " +
+                "INNER JOIN filetable On (fileversiontable.fileID = filetable.fileID) " +
+                "INNER JOIN versiontable On (versiontable.versionID = fileversiontable.filePackage) " +
+                "WHERE filelink.versionID = @versionID " +
                 "And filePath = @filePath",
                 fileSelectParameters);
             while (await reader.ReadAsync())
@@ -541,11 +541,11 @@ public class QueryManager : IQueryManager
         var temp = false;
         string result = null;
 
-        var parameters = new IDataParameter[]
+        var parameters = new (string, object)[]
         {
-                dbClient.CreateParameter("versionId", DbType.Int32, 0, versionId),
-                dbClient.CreateParameter("fileName", DbType.String, 0, fileName),
-                dbClient.CreateParameter("filePath", DbType.String, 0, filePath)
+            ("versionId", versionId),
+            ("fileName", fileName),
+            ("filePath", filePath)
         };
 
         using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text,
@@ -678,9 +678,9 @@ public class QueryManager : IQueryManager
             // search path in database
             using (var dbClient = dbClientFactory.CreateDbClient())
             {
-                var parameters = new IDataParameter[]
+                var parameters = new (string, object)[]
                 {
-                    dbClient.CreateParameter("junction", DbType.String, 0, "%" + path + "%")
+                    ("junction", "%" + path + "%")
                 };
 
                 using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT junction, folder FROM folderjunctiontable WHERE junction LIKE @junction", parameters);
