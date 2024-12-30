@@ -52,7 +52,7 @@ public class DbClientFactory : IDbClientFactory
     /// <returns>A new DbClient instance.</returns>
     public DbClient CreateDbClient()
     {
-        return new DbClient($"Data Source={databaseFile};Pooling=True;Max Pool Size=100;DateTimeKind=Utc");
+        return new DbClient($"Data Source={databaseFile};Mode=ReadWriteCreate;PRAGMA journal_mode=WAL;");
     }
 
     /// <summary>
@@ -73,7 +73,9 @@ public class DbClientFactory : IDbClientFactory
 
         // create tables
         using var dbClient = CreateDbClient();
-        await dbClient.ExecuteNonQueryAsync("PRAGMA page_size=4096; CREATE TABLE configuration (confProperty NVARCHAR(20) PRIMARY KEY,confValue NVARCHAR(255));");
+        await dbClient.ExecuteNonQueryAsync("PRAGMA journal_mode=WAL;");
+        await dbClient.ExecuteNonQueryAsync("PRAGMA page_size=4096;");
+        await dbClient.ExecuteNonQueryAsync("CREATE TABLE configuration (confProperty NVARCHAR(20) PRIMARY KEY,confValue NVARCHAR(255));");
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE filelink (fileversionID INTEGER, versionID INTEGER);");
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE filetable (fileID INTEGER PRIMARY KEY, fileName TEXT, filePath TEXT);");
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE fileversiontable (fileversionID INTEGER PRIMARY KEY, fileStatus INTEGER, fileType INTEGER, fileHash VARCHAR(255), fileDateModified DATE, fileDateCreated DATE, fileSize DOUBLE, filePackage INTEGER, fileID INTEGER, longfilename TEXT);");
@@ -91,7 +93,7 @@ public class DbClientFactory : IDbClientFactory
 
         await dbClient.ExecuteNonQueryAsync("CREATE INDEX filePackageIndex ON fileversiontable (filePackage)");
 
-        await dbClient.ExecuteNonQueryAsync("INSERT INTO configuration VALUES (\"dbversion\", \"8\")");
+        await dbClient.ExecuteNonQueryAsync("INSERT INTO configuration VALUES (\"dbversion\", \"9\")");
     }
 
     public async Task ExecuteNonQueryAsync(string query)

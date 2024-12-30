@@ -44,7 +44,7 @@ public class DbMigrationService : IDbMigrationService
         // check if we have a higher db version than supported
         var dbVersion = int.Parse(configurationManager.DBVersion);
 
-        if (dbVersion > 8)
+        if (dbVersion > 9)
         {
             throw new DatabaseIncompatibleException();
         }
@@ -89,11 +89,11 @@ public class DbMigrationService : IDbMigrationService
                 {
                     while (await sqlRead.ReadAsync())
                     {
-                        var parameters = new IDataParameter[] {
-                                dbClient2.CreateParameter("fileversionid", DbType.Int32, 32, sqlRead.GetInt32(sqlRead.GetOrdinal("fileversionid"))),
-                                dbClient2.CreateParameter("filedatecreated", DbType.DateTime, 0,sqlRead.GetDateTime (sqlRead.GetOrdinal("filedatecreated"))),
-                                dbClient2.CreateParameter("filedatemodified", DbType.DateTime, 0, sqlRead.GetDateTime(sqlRead.GetOrdinal("filedatemodified")))
-                            };
+                        var parameters = new (string, object)[] {
+                            ("fileversionid", sqlRead.GetInt32(sqlRead.GetOrdinal("fileversionid"))),
+                            ("filedatecreated", sqlRead.GetDateTime(sqlRead.GetOrdinal("filedatecreated"))),
+                            ("filedatemodified", sqlRead.GetDateTime(sqlRead.GetOrdinal("filedatemodified")))
+                        };
 
                         await dbClient2.ExecuteNonQueryAsync(CommandType.Text, "UPDATE fileversiontable SET filedatecreated = @filedatecreated, filedatemodified = @filedatemodified WHERE fileversionid = @fileversionid", parameters);
                     }
@@ -127,6 +127,13 @@ public class DbMigrationService : IDbMigrationService
             // set timezone
             await dbClient.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileDateModified = fileDateModified || \"Z\", fileDateCreated = fileDateCreated || \"Z\" WHERE fileDateModified NOT LIKE \"%Z\"");
             configurationManager.DBVersion = "8";
+        }
+
+        // Version 8 auf 9 aktualisieren
+        if (configurationManager.DBVersion == "8")
+        {
+            await dbClient.ExecuteNonQueryAsync("PRAGMA journal_mode=WAL;");
+            configurationManager.DBVersion = "9";
         }
     }
 }

@@ -45,8 +45,9 @@ public static class VolumeShadowCopyService
 
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            Log.Error(ex, "Could not communicate with Backup Service Home Service");
             return false;
         }
     }

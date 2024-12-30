@@ -525,8 +525,8 @@ public class ConfigurationManager : IConfigurationManager
                 continue;
             }
 
-            var parameters = new IDataParameter[] {
-                   dbClient.CreateParameter("value", DbType.String, 1024, configEntry.Name.Replace("_", ""))
+            var parameters = new (string, object)[] {
+                   ("value", configEntry.Name.Replace("_", ""))
                 };
 
             var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT confValue FROM configuration WHERE confProperty LIKE @value LIMIT 1", parameters);
@@ -554,10 +554,10 @@ public class ConfigurationManager : IConfigurationManager
     {
         using var dbClient = dbClientFactory.CreateDbClient();
 
-        var parameters = new IDataParameter[]
+        var parameters = new (string, object)[]
         {
-                dbClient.CreateParameter("value", DbType.String, 255, value),
-                dbClient.CreateParameter("prop", DbType.String, 255, property.ToLower())
+            ("value", value),
+            ("prop", property.ToLower())
         };
 
         var result = dbClient.ExecuteNonQuery(CommandType.Text, "UPDATE configuration SET confValue = @value WHERE confProperty = @prop", parameters);
