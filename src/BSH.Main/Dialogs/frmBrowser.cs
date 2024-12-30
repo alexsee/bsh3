@@ -1319,13 +1319,13 @@ public partial class frmBrowser : IStatusReport
 
         // retrieve folder list from database
         using var dbClient = BackupLogic.DbClientFactory.CreateDbClient();
-        var searchParameters = new[] {
-                dbClient.CreateParameter("filePath", DbType.String, default, "%" + txtSearch.Text + "%"),
-                dbClient.CreateParameter("fileName", DbType.String, default, "%" + txtSearch.Text + "%"),
-                dbClient.CreateParameter("versionID", DbType.String, default, long.Parse(selectedVersion.Id))
-            };
+        var searchParameters = new (string, object)[] {
+            ("filePath", "%" + txtSearch.Text + "%"),
+            ("fileName", "%" + txtSearch.Text + "%"),
+            ("versionID", long.Parse(selectedVersion.Id))
+        };
 
-        using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT filelink.versionID, filetable.fileID, filetable.fileName, filetable.filePath, fileversiontable.fileSize, fileversiontable.fileDateCreated, fileversiontable.fileDateModified, " + "fileversiontable.filePackage, fileversiontable.fileType, fileversiontable.fileStatus, versionDate FROM filetable, fileversiontable, filelink, versiontable WHERE (filetable.filePath LIKE @filePath OR filetable.fileName LIKE @fileName) AND filelink.versionID = @versionID AND filelink.fileversionID = fileversiontable.fileversionID AND filetable.fileID = fileversiontable.fileID AND versiontable.versionID = fileversiontable.filePackage LIMIT 300", searchParameters);
+        using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT filelink.versionID, filetable.fileID, filetable.fileName, filetable.filePath, fileversiontable.fileSize, fileversiontable.fileDateCreated, fileversiontable.fileDateModified, fileversiontable.filePackage, fileversiontable.fileType, fileversiontable.fileStatus, fileversiontable.longfilename, versionDate FROM filetable, fileversiontable, filelink, versiontable WHERE (filetable.filePath LIKE @filePath OR filetable.fileName LIKE @fileName) AND filelink.versionID = @versionID AND filelink.fileversionID = fileversiontable.fileversionID AND filetable.fileID = fileversiontable.fileID AND versiontable.versionID = fileversiontable.filePackage LIMIT 300", searchParameters);
         var resultList = new List<ListViewItem>();
 
         // fill folder list
@@ -1359,6 +1359,9 @@ public partial class frmBrowser : IStatusReport
 
     private void bgrWorkSearch_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
     {
+        if (e.Result == null)
+            return;
+
         // update UI
         lvFiles.BeginUpdate();
 
