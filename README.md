@@ -1,23 +1,38 @@
-<h1 align="center">Backup Service Home (BSH)</h1>
-<p align="center">
-<strong>Follow BSH to encourage the development of this project</strong>
+<p>
+  <h1 align="center">
+    <img width="520" alt="Screenshot_20221022_104343" src="https://user-images.githubusercontent.com/519157/202853502-1b681971-b899-4446-95c7-70e88b49a3d3.png">
+    <br>Backup Service Home
+  </h1>
+  <p align="center">
+    Backup Service Home 3 is a free, simple to use, and open source file backup software.
+    <br />
+    <a href="#about">About</a>
+    ·
+    <a href="https://www.brightbits.de/en/products/backup-service-home/download/">Download</a>
+    ·
+    <a href="https://docs.brightbits.de/bsh/">Documentation</a>
+    ·
+    <a href="#contribute">Developing</a>
+  </p>
 </p>
 
-<p align="center">
-<img width="520" alt="Screenshot_20221022_104343" src="https://user-images.githubusercontent.com/519157/202853502-1b681971-b899-4446-95c7-70e88b49a3d3.png">
-</p>
+## About
 
 Backup Service Home 3 is a free, simple to use, and open source file backup software for Windows based on the Microsoft .NET Framework and written in C#.
 It will let you back up your important files on your computer without having to know technical jargon.
 Whether it's pictures, documents, music or videos.
 With the built-in backup browser, restoring your files is a breeze.
 File preview, search and scheduler.
-It's all there.
 
-Check out the full details on https://www.brightbits.de/ (german)
+For more details, see [About Backup Service Home](https://www.brightbits.de/en/products/backup-service-home/overview/).
 
-**Note**: Currently, the entire application is only localized in german.
-But we are actively looking into translating it to english.
+## Download
+
+See the [download page](https://www.brightbits.de/en/products/backup-service-home/download/) on the Backup Service Home website.
+
+## Documentation
+
+See the [documentation](https://docs.brightbits.de/bsh/) on the Backup Service Home website.
 
 ## Contribute
 
