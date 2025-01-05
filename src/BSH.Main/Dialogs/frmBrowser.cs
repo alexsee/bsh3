@@ -1360,7 +1360,9 @@ public partial class frmBrowser : IStatusReport
     private void bgrWorkSearch_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
     {
         if (e.Result == null)
+        {
             return;
+        }
 
         // update UI
         lvFiles.BeginUpdate();
