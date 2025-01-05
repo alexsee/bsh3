@@ -59,7 +59,7 @@ public class ForwardJobReport : IJobReport
 
     public void ReportStatus(string title, string text)
     {
-        // not used
+        this.report.ReportStatus(title, text);
     }
 
     public void ReportProgress(int total, int current)
@@ -69,7 +69,7 @@ public class ForwardJobReport : IJobReport
 
     public void ReportFileProgress(string file)
     {
-        // not used
+        this.report.ReportFileProgress(file);
     }
 
     public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)

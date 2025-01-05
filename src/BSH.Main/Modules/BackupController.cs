@@ -356,7 +356,6 @@ public class BackupController
         {
             try
             {
-                jobReportCallback.ReportFileProgress(file);
                 jobReportCallback.ReportProgress(files.Count, files.IndexOf(file) + 1);
 
                 // restore file
