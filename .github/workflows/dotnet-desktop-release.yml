@@ -48,7 +48,7 @@ jobs:
         iscc.exe tools\setup\Setup.iss /DApplicationVersion=$env:BUILD_VERSION /DApplicationInfoVersion=$env:INFO_VERSION
 
     - name: Release to Github
-      uses: softprops/action-gh-release@v2.2.0
+      uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
