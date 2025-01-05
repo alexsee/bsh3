@@ -347,11 +347,20 @@ public class BackupController
         // run restore job
         var fileOverwrite = FileOverwrite.Ask;
 
+        jobReportCallback.ReportAction(ActionType.Restore, !statusDialog);
+        jobReportCallback.ReportState(JobState.RUNNING);
+
+        IJobReport forwardJobReport = new ForwardJobReport(jobReportCallback);
+
         foreach (var file in files)
         {
             try
             {
-                var task = backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, fileOverwrite, !statusDialog);
+                jobReportCallback.ReportFileProgress(file);
+                jobReportCallback.ReportProgress(files.Count, files.IndexOf(file) + 1);
+
+                // restore file
+                var task = backupService.StartRestore(version, file, destination, ref forwardJobReport, cancellationToken, fileOverwrite, !statusDialog);
                 await task.ConfigureAwait(true);
             }
             catch
@@ -372,6 +381,9 @@ public class BackupController
                 break;
             }
         }
+
+        ((ForwardJobReport)forwardJobReport).ForwardExceptions(!statusDialog);
+        jobReportCallback.ReportState(JobState.FINISHED);
 
         // finish
         HandleFinishedStatusDialog(statusDialog);
@@ -394,6 +406,7 @@ public class BackupController
         }
 
         // run delete job
+
         try
         {
             var task = backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
@@ -425,11 +438,16 @@ public class BackupController
         }
 
         // run delete job
+        jobReportCallback.ReportAction(ActionType.Delete, !statusDialog);
+        jobReportCallback.ReportState(JobState.RUNNING);
+
+        IJobReport forwardJobReport = new ForwardJobReport(jobReportCallback);
+
         foreach (var version in versions)
         {
             try
             {
-                var task = backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
+                var task = backupService.StartDelete(version, ref forwardJobReport, cancellationToken, !statusDialog);
                 await task.ConfigureAwait(true);
             }
             catch
@@ -442,6 +460,9 @@ public class BackupController
                 break;
             }
         }
+
+        ((ForwardJobReport)forwardJobReport).ForwardExceptions(!statusDialog);
+        jobReportCallback.ReportState(JobState.FINISHED);
 
         // finish
         HandleFinishedStatusDialog(statusDialog);
