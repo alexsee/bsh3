@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -45,6 +46,7 @@ public partial class frmMain
     private IMainTabs _iMTCurrentTab;
     private AvailableTabs _aCurrentTab;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public AvailableTabs CurrentTab
     {
         get

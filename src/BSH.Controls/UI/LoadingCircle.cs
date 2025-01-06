@@ -85,7 +85,8 @@ namespace MRG.Controls.UI
         /// <value>The lightest color of the circle.</value>
         [TypeConverter("System.Drawing.ColorConverter"),
          Category("LoadingCircle"),
-         Description("Sets the color of spoke.")]
+         Description("Sets the color of spoke."),
+        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Color Color
         {
             get
@@ -106,7 +107,8 @@ namespace MRG.Controls.UI
         /// </summary>
         /// <value>The outer circle radius.</value>
         [System.ComponentModel.Description("Gets or sets the radius of outer circle."),
-         System.ComponentModel.Category("LoadingCircle")]
+         System.ComponentModel.Category("LoadingCircle"),
+        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int OuterCircleRadius
         {
             get
@@ -130,7 +132,8 @@ namespace MRG.Controls.UI
         /// </summary>
         /// <value>The inner circle radius.</value>
         [System.ComponentModel.Description("Gets or sets the radius of inner circle."),
-         System.ComponentModel.Category("LoadingCircle")]
+         System.ComponentModel.Category("LoadingCircle"),
+        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int InnerCircleRadius
         {
             get
@@ -154,7 +157,8 @@ namespace MRG.Controls.UI
         /// </summary>
         /// <value>The number of spoke.</value>
         [System.ComponentModel.Description("Gets or sets the number of spoke."),
-        System.ComponentModel.Category("LoadingCircle")]
+        System.ComponentModel.Category("LoadingCircle"),
+        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int NumberSpoke
         {
             get
@@ -184,7 +188,8 @@ namespace MRG.Controls.UI
         /// </summary>
         /// <value><c>true</c> if active; otherwise, <c>false</c>.</value>
         [System.ComponentModel.Description("Gets or sets the number of spoke."),
-        System.ComponentModel.Category("LoadingCircle")]
+        System.ComponentModel.Category("LoadingCircle"),
+        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool Active
         {
             get
@@ -203,7 +208,8 @@ namespace MRG.Controls.UI
         /// </summary>
         /// <value>The spoke thickness.</value>
         [System.ComponentModel.Description("Gets or sets the thickness of a spoke."),
-        System.ComponentModel.Category("LoadingCircle")]
+        System.ComponentModel.Category("LoadingCircle"),
+        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int SpokeThickness
         {
             get
@@ -227,7 +233,8 @@ namespace MRG.Controls.UI
         /// </summary>
         /// <value>The rotation speed.</value>
         [System.ComponentModel.Description("Gets or sets the rotation speed. Higher the slower."),
-        System.ComponentModel.Category("LoadingCircle")]
+        System.ComponentModel.Category("LoadingCircle"),
+        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int RotationSpeed
         {
             get

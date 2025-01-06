@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -22,6 +23,7 @@ namespace Brightbits.BSH.Main
     [Serializable()]
     public partial class aVersionList
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public List<aVersionListItem> Items { get; set; } = new List<aVersionListItem>();
 
         public event ItemClickEventHandler ItemClick;

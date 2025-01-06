@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine.Models;
 
@@ -34,4 +35,60 @@ public interface IJobReport
     RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
 
     void RequestShowErrorInsufficientDiskSpace();
+}
+
+public class ForwardJobReport : IJobReport
+{
+    private readonly IJobReport report;
+    private List<FileExceptionEntry> files = new();
+
+    public ForwardJobReport(IJobReport report)
+    {
+        this.report = report;
+    }
+
+    public void ReportAction(ActionType action, bool silent)
+    {
+        // not used
+    }
+
+    public void ReportState(JobState jobState)
+    {
+        // not used
+    }
+
+    public void ReportStatus(string title, string text)
+    {
+        this.report.ReportStatus(title, text);
+    }
+
+    public void ReportProgress(int total, int current)
+    {
+        // not used
+    }
+
+    public void ReportFileProgress(string file)
+    {
+        this.report.ReportFileProgress(file);
+    }
+
+    public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)
+    {
+        this.files.AddRange(files);
+    }
+
+    public RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
+    {
+        return this.report.RequestOverwrite(localFile, remoteFile);
+    }
+
+    public void RequestShowErrorInsufficientDiskSpace()
+    {
+        this.report.RequestShowErrorInsufficientDiskSpace();
+    }
+
+    public void ForwardExceptions(bool silent)
+    {
+        this.report.ReportExceptions(new Collection<FileExceptionEntry>(this.files), silent);
+    }
 }
