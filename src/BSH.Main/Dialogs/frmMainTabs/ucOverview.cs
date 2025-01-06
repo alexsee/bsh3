@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -64,6 +65,7 @@ public partial class ucOverview : IMainTabs, IStatusReport
 
     private frmMain SuperBase;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public frmMain Super
     {
         set
