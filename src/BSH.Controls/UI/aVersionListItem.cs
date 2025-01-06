@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using Brightbits.BSH.Engine.Models;
 
@@ -29,6 +30,7 @@ namespace Brightbits.BSH.Main
 
         public delegate void ItemClickEventHandler(aVersionListItem sender);
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool VersionStable
         {
             get
@@ -41,11 +43,13 @@ namespace Brightbits.BSH.Main
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public VersionDetails Version
         {
             get; set;
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string ToolTipTitle
         {
             get
@@ -58,6 +62,7 @@ namespace Brightbits.BSH.Main
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string ToolTip
         {
             get
@@ -79,6 +84,7 @@ namespace Brightbits.BSH.Main
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string VersionID
         {
             get
@@ -91,6 +97,7 @@ namespace Brightbits.BSH.Main
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string VersionDate
         {
             get

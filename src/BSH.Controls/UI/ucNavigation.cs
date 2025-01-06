@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -86,6 +87,7 @@ namespace Brightbits.BSH.Main
             ItemClick?.Invoke(sPath);
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Path
         {
             get
@@ -99,6 +101,7 @@ namespace Brightbits.BSH.Main
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string PathLocalized
         {
             get; set;

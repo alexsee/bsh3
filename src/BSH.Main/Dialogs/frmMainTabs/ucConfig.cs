@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -78,6 +79,7 @@ public partial class ucConfig : IMainTabs
 
     private frmMain SuperBase;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public frmMain Super
     {
         set

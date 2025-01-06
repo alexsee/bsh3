@@ -35,6 +35,7 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
         /// 
         /// Whenever a new path is set, the preview is generated
         /// </summary>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string FilePath
         {
             get

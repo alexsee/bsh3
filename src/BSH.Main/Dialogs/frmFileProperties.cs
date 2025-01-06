@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
@@ -28,11 +29,14 @@ public partial class frmFileProperties
         InitializeComponent();
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public frmBrowser BrowserWindow
     {
         get;
         set;
     }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string CurrentFileFolder
     {
         get;
