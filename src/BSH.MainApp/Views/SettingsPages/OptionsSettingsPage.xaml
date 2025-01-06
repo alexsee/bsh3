@@ -63,9 +63,6 @@
                                     </TextBlock>
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
-                            <ContentControl IsEnabled="{Binding ModeType, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Compression}}">
-                                <Slider Width="400" Margin="0,10,0,0" TickFrequency="1" Maximum="9" TickPlacement="Outside" />
-                            </ContentControl>
                         </toolkit:SettingsCard>
 
                         <toolkit:SettingsCard>

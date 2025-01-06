@@ -4,7 +4,9 @@
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
+using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -26,6 +28,7 @@ public enum ModeType
 public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 {
     private readonly IConfigurationManager configurationManager;
+    private readonly IPresentationService presentationController;
 
     #region Sources Settings
 
@@ -234,7 +237,10 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
             this.configurationManager.BackupFolder = folder.Path;
 
             // update media serial (if local path)
-            if (folder.Path.StartsWith(@"\\")) return;
+            if (folder.Path.StartsWith(@"\\"))
+            {
+                return;
+            }
 
             this.LocalUNCUser = "";
             this.LocalUNCPassword = "";
@@ -354,6 +360,33 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.configurationManager.DeativateAutoBackupsWhenAkku = value ? "1" : "0";
     }
 
+    async partial void OnModeTypeChanged(ModeType oldValue, ModeType newValue)
+    {
+        if (newValue == ModeType.Compression)
+        {
+            this.configurationManager.Compression = 1;
+            this.configurationManager.Encrypt = 0;
+        }
+        else if (newValue == ModeType.Encryption)
+        {
+            // setup encryption
+            var (password, _) = await presentationController.RequestPassword();
+            if (password == null)
+            {
+                ModeType = oldValue;
+                return;
+            }
+
+            this.configurationManager.EncryptPassMD5 = Hash.GetMD5Hash(password);
+            this.configurationManager.Encrypt = 1;
+        }
+        else
+        {
+            this.configurationManager.Compression = 0;
+            this.configurationManager.Encrypt = 0;
+        }
+    }
+
     #endregion
 
     #region Enhanced Settings
@@ -445,9 +478,10 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     #endregion
 
-    public SettingsViewModel(IConfigurationManager configurationManager)
+    public SettingsViewModel(IConfigurationManager configurationManager, IPresentationService presentationService)
     {
         this.configurationManager = configurationManager;
+        this.presentationController = presentationService;
     }
 
     public void OnNavigatedFrom()

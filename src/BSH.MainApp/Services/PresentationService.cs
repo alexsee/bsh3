@@ -3,6 +3,7 @@
 
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
+using BSH.MainApp.Windows;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Popups;
 
@@ -40,8 +41,17 @@ public class PresentationService : IPresentationService
     {
     }
 
-    public (string? password, bool persist) RequestPassword()
+    public async Task<(string? password, bool persist)> RequestPassword()
     {
+        var requestPasswordWindow = new RequestPasswordWindow();
+        requestPasswordWindow.XamlRoot = App.MainWindow.Content.XamlRoot;
+
+        var result = await requestPasswordWindow.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            return (requestPasswordWindow.ViewModel.Password, requestPasswordWindow.ViewModel.Persist ?? false);
+        }
+
         return (null, false);
     }
 
@@ -51,6 +61,8 @@ public class PresentationService : IPresentationService
 
     public async Task ShowCreateBackupWindow()
     {
+        var newBackupWindow = new NewBackupWindow();
+        newBackupWindow.AppWindow.Show();
     }
 
     public async Task<IUICommand> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)

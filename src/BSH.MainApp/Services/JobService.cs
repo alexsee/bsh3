@@ -480,7 +480,7 @@ public class JobService : IJobService
         }
 
         // request password from user
-        var request = presentationService.RequestPassword();
+        var request = await presentationService.RequestPassword();
         while (!string.IsNullOrEmpty(request.password))
         {
             if ((Hash.GetMD5Hash(request.password) ?? "") == (configurationManager.EncryptPassMD5 ?? ""))
@@ -498,8 +498,12 @@ public class JobService : IJobService
             // report back to user
             _logger.Debug("Password given by user is not correct. Request retry.");
 
-            //MessageBox.Show(Resources.MSG_PASSWORD_WRONG_TEXT, Resources.MSG_PASSWORD_WRONG_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            request = presentationService.RequestPassword();
+            await this.presentationService.ShowMessageBoxAsync(
+                "MSG_PASSWORD_WRONG_TITLE".GetLocalized(),
+                "MSG_PASSWORD_WRONG_TEXT".GetLocalized(),
+                null
+            );
+            request = await presentationService.RequestPassword();
         }
 
         return false;

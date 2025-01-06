@@ -11,7 +11,7 @@ public interface IPresentationService
     void CloseBackupBrowserWindow();
     void CloseMainWindow();
     TaskCompleteAction CloseStatusWindow();
-    (string? password, bool persist) RequestPassword();
+    Task<(string? password, bool persist)> RequestPassword();
     void ShowAboutWindow();
     void ShowBackupBrowserWindow();
     Task ShowCreateBackupWindow();

@@ -20,6 +20,7 @@ namespace BSH.MainApp.ViewModels;
 
 public partial class MainViewModel : ObservableRecipient, INavigationAware, IStatusReport
 {
+    private readonly IPresentationService presentationService;
     private readonly IStatusService statusService;
     private readonly IQueryManager queryManager;
     private readonly IJobService jobService;
@@ -72,6 +73,7 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
     }
 
     public MainViewModel(
+        IPresentationService presentationService,
         IStatusService statusService,
         IQueryManager queryManager,
         IJobService jobService,
@@ -79,6 +81,7 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         IConfigurationManager configurationManager,
         DispatcherQueue dispatcherQueue)
     {
+        this.presentationService = presentationService;
         this.statusService = statusService;
         this.queryManager = queryManager;
         this.jobService = jobService;
@@ -127,7 +130,8 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
 
     private async Task StartManualBackupCommandAsync()
     {
-        await jobService.CreateBackupAsync("MainView_BtnCreateBackup_Title".GetLocalized(), "", true);
+        //await jobService.CreateBackupAsync("MainView_BtnCreateBackup_Title".GetLocalized(), "", true);
+        await this.presentationService.ShowCreateBackupWindow();
     }
 
     public void ReportAction(ActionType action, bool silent)
