@@ -12,6 +12,7 @@ using BSH.MainApp.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Windows.Storage.Pickers;
 using Windows.UI.Popups;
 using WinUIEx;
@@ -29,6 +30,8 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 {
     private readonly IConfigurationManager configurationManager;
     private readonly IPresentationService presentationController;
+    private readonly IJobService jobService;
+    private readonly IQueryManager queryManager;
 
     #region Sources Settings
 
@@ -187,23 +190,11 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
         if (profile)
         {
-            var messageBoxDlg = new MessageDialog("MsgBox_Ftp_Successful_Text".GetLocalized(), "MsgBox_Ftp_Successful_Title".GetLocalized());
-            messageBoxDlg.Commands.Add(new UICommand("OK"));
-
-            var hwnd = App.MainWindow.GetWindowHandle();
-            WinRT.Interop.InitializeWithWindow.Initialize(messageBoxDlg, hwnd);
-
-            await messageBoxDlg.ShowAsync();
+            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Successful_Title".GetLocalized(), "MsgBox_Ftp_Successful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
         }
         else
         {
-            var messageBoxDlg = new MessageDialog("MsgBox_Ftp_Unuccessful_Text".GetLocalized(), "MsgBox_Ftp_Unuccessful_Title".GetLocalized());
-            messageBoxDlg.Commands.Add(new UICommand("OK"));
-
-            var hwnd = App.MainWindow.GetWindowHandle();
-            WinRT.Interop.InitializeWithWindow.Initialize(messageBoxDlg, hwnd);
-
-            await messageBoxDlg.ShowAsync();
+            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Unuccessful_Title".GetLocalized(), "MsgBox_Ftp_Unuccessful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
         }
     }
 
@@ -221,57 +212,67 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary
         };
 
-        var hwnd = App.MainWindow.GetWindowHandle();
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
-
         var folder = await folderPicker.PickSingleFolderAsync();
         if (folder == null)
         {
             return;
         }
 
-        var messageBoxDlg = new MessageDialog("MsgBox_LocalPath_Change_Text".GetLocalized(), "MsgBox_LocalPath_Change_Title".GetLocalized());
-        messageBoxDlg.Commands.Add(new UICommand("MsgBox_LocalPath_Change_Use".GetLocalized(), (x) =>
-        {
-            this.LocalDevicePath = folder.Path;
-            this.configurationManager.BackupFolder = folder.Path;
+        await this.presentationController.ShowMessageBoxAsync(
+            "MsgBox_LocalPath_Change_Text".GetLocalized(),
+            "MsgBox_LocalPath_Change_Title".GetLocalized(),
+            [
+                new UICommand("MsgBox_LocalPath_Change_Use".GetLocalized(), (x) =>
+                {
+                    this.LocalDevicePath = folder.Path;
+                    this.configurationManager.BackupFolder = folder.Path;
 
-            // update media serial (if local path)
-            if (folder.Path.StartsWith(@"\\"))
-            {
-                return;
-            }
+                    // update media serial (if local path)
+                    if (folder.Path.StartsWith(@"\\"))
+                    {
+                        return;
+                    }
 
-            this.LocalUNCUser = "";
-            this.LocalUNCPassword = "";
+                    this.LocalUNCUser = "";
+                    this.LocalUNCPassword = "";
 
-            this.configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(folder.Path.Substring(0, 3));
-            if (this.configurationManager.MediaVolumeSerial == null || this.configurationManager.MediaVolumeSerial == "0")
-            {
-                this.configurationManager.MediaVolumeSerial = "";
-            }
-        }));
-        messageBoxDlg.Commands.Add(new UICommand("MsgBox_LocalPath_Change_Move".GetLocalized(), (x) =>
-        {
-            this.LocalDevicePath = folder.Path;
+                    this.configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(folder.Path.Substring(0, 3));
+                    if (this.configurationManager.MediaVolumeSerial == null || this.configurationManager.MediaVolumeSerial == "0")
+                    {
+                        this.configurationManager.MediaVolumeSerial = "";
+                    }
+                }),
+                new UICommand("MsgBox_LocalPath_Change_Move".GetLocalized(), (x) =>
+                {
+                    this.LocalDevicePath = folder.Path;
 
-            // TODO: add move logic
-        }));
-        messageBoxDlg.Commands.Add(new UICommand("MsgBox_Cancel".GetLocalized()));
-
-        WinRT.Interop.InitializeWithWindow.Initialize(messageBoxDlg, hwnd);
-        await messageBoxDlg.ShowAsync();
+                    // TODO: add move logic
+                }),
+                new UICommand("MsgBox_Cancel".GetLocalized())
+            ]
+        );
     }
 
-    async partial void OnSelectedMediaTypeChanged(MediaType oldValue, MediaType newValue)
+    async partial void OnSelectedMediaTypeChanging(MediaType oldValue, MediaType newValue)
     {
         if (oldValue == MediaType.Unset) return;
+        if (oldValue == newValue) return;
 
-        var messageBoxDlg = new MessageDialog("MsgBox_MediaType_Change_Text".GetLocalized(), "MsgBox_MediaType_Change_Title".GetLocalized());
-        messageBoxDlg.Options = MessageDialogOptions.AcceptUserInputAfterDelay;
-        messageBoxDlg.Commands.Add(new UICommand("MsgBox_Yes".GetLocalized(), (x) =>
+        var result = await this.presentationController.ShowMessageBoxAsync(
+            "MsgBox_MediaType_Change_Title".GetLocalized(),
+            "MsgBox_MediaType_Change_Text".GetLocalized(),
+            [
+                new UICommand("MsgBox_Yes".GetLocalized()),
+                new UICommand("MsgBox_No".GetLocalized())
+            ]
+        );
+
+        // run the task
+        if (result == ContentDialogResult.Primary)
         {
-            // TODO: add remove all backups logic
+            // add remove all backups logic
+            var versions = this.queryManager.GetVersions().Select(x => x.Id).ToList();
+            await this.jobService.DeleteBackupsAsync(versions);
 
             // update UI
             if (newValue == MediaType.LocalDevice)
@@ -284,16 +285,12 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
                 this.FtpRemoteVisibility = Visibility.Visible;
                 this.LocalDeviceVisibility = Visibility.Collapsed;
             }
-        }));
-        messageBoxDlg.Commands.Add(new UICommand("MsgBox_No".GetLocalized(), (x) =>
+        }
+        else
         {
-            this.SetProperty(ref selectedMediaType, oldValue, nameof(this.SelectedMediaType));
-        }));
+            SelectedMediaType = oldValue;
+        }
 
-        var hwnd = App.MainWindow.GetWindowHandle();
-        WinRT.Interop.InitializeWithWindow.Initialize(messageBoxDlg, hwnd);
-
-        await messageBoxDlg.ShowAsync();
     }
 
     partial void OnLocalUNCUserChanged(string value)
@@ -311,6 +308,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     #region Options Settings
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(DisableEncryptionCommand))]
     private ModeType modeType;
 
     [ObservableProperty]
@@ -339,27 +337,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.configurationManager.ShowWaitOnMediaAutoBackups = value ? "1" : "0";
     }
 
-    #endregion
-
-    #region Mode Settings
-
-    [ObservableProperty]
-    private TaskType taskType;
-
-    [ObservableProperty]
-    private bool stopBackupWhenBatteryMode;
-
-    private void InitModeSettings()
-    {
-        this.TaskType = this.configurationManager.TaskType;
-        this.StopBackupWhenBatteryMode = this.configurationManager.DeativateAutoBackupsWhenAkku == "1";
-    }
-
-    partial void OnStopBackupWhenBatteryModeChanged(bool value)
-    {
-        this.configurationManager.DeativateAutoBackupsWhenAkku = value ? "1" : "0";
-    }
-
     async partial void OnModeTypeChanged(ModeType oldValue, ModeType newValue)
     {
         if (newValue == ModeType.Compression)
@@ -385,6 +362,49 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
             this.configurationManager.Compression = 0;
             this.configurationManager.Encrypt = 0;
         }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanDisableEncryption))]
+    private async Task DisableEncryption()
+    {
+        if (!await this.jobService.CheckMediaAsync(ActionType.Delete))
+        {
+            return;
+        }
+
+        if (!await this.jobService.RequestPassword())
+        {
+            return;
+        }
+
+        // disable encryption (need to decrypt everything)
+        var task = this.jobService.ModifyBackupAsync();
+        await task.ConfigureAwait(true);
+
+        InitOptionsSettings();
+    }
+
+    private bool CanDisableEncryption() => ModeType == ModeType.Encryption;
+
+    #endregion
+
+    #region Mode Settings
+
+    [ObservableProperty]
+    private TaskType taskType;
+
+    [ObservableProperty]
+    private bool stopBackupWhenBatteryMode;
+
+    private void InitModeSettings()
+    {
+        this.TaskType = this.configurationManager.TaskType;
+        this.StopBackupWhenBatteryMode = this.configurationManager.DeativateAutoBackupsWhenAkku == "1";
+    }
+
+    partial void OnStopBackupWhenBatteryModeChanged(bool value)
+    {
+        this.configurationManager.DeativateAutoBackupsWhenAkku = value ? "1" : "0";
     }
 
     #endregion
@@ -478,10 +498,12 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     #endregion
 
-    public SettingsViewModel(IConfigurationManager configurationManager, IPresentationService presentationService)
+    public SettingsViewModel(IConfigurationManager configurationManager, IPresentationService presentationService, IJobService jobService, IQueryManager queryManager)
     {
         this.configurationManager = configurationManager;
         this.presentationController = presentationService;
+        this.jobService = jobService;
+        this.queryManager = queryManager;
     }
 
     public void OnNavigatedFrom()

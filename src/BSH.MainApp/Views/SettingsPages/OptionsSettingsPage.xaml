@@ -78,7 +78,7 @@
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
                             <ContentControl IsEnabled="{Binding ModeType, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}">
-                                <Button Content="Turn off" />
+                                <Button Content="Turn off" Command="{x:Bind ViewModel.DisableEncryptionCommand}" />
                             </ContentControl>
                         </toolkit:SettingsCard>
                     </toolkit:SettingsExpander.Items>

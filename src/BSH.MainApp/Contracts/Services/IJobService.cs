@@ -21,4 +21,5 @@ public interface IJobService
     Task<bool> RequestPassword();
     Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true);
     Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true);
+    Task ModifyBackupAsync(bool statusDialog = true);
 }

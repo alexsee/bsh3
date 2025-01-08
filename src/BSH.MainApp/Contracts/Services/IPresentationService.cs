@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using BSH.MainApp.Models;
+using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Popups;
 
 namespace BSH.MainApp.Contracts.Services;
@@ -18,6 +19,5 @@ public interface IPresentationService
     void ShowErrorInsufficientDiskSpace();
     void ShowMainWindow();
     void ShowStatusWindow();
-
-    Task<IUICommand> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1);
+    Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1);
 }

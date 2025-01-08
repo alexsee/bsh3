@@ -16,6 +16,9 @@ public sealed partial class SettingsPage : Page
     {
         DataContext = App.GetService<SettingsViewModel>();
         InitializeComponent();
+
+        this.contentFrame.DataContext = this.ViewModel;
+        this.contentFrame.NavigateToType(typeof(SourcesSettingsPage), null, new FrameNavigationOptions());
     }
 
     private void navSettings_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)

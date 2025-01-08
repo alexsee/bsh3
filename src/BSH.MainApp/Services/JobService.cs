@@ -449,6 +449,36 @@ public class JobService : IJobService
     }
 
     /// <summary>
+    /// Runs a modify backup task to edit the backup.
+    /// </summary>
+    /// <param name="statusDialog">Specifies if the user should be shown a status user interface.</param>
+    /// <returns></returns>
+    public async Task ModifyBackupAsync(bool statusDialog = true)
+    {
+        _logger.Debug("Modify task started.");
+
+        // check job requirements
+        if (!await PrepareJobAndHandleExceptions(ActionType.Modify, statusDialog))
+        {
+            return;
+        }
+
+        // run modify job
+        try
+        {
+            var task = backupService.StartEdit(ref jobReportCallback, cancellationToken, statusDialog);
+            await task.ConfigureAwait(true);
+        }
+        catch
+        {
+            // exception already handled
+        }
+
+        // finish
+        HandleFinishedStatusDialog(statusDialog);
+    }
+
+    /// <summary>
     /// Requests the password from the user by either showing a corresponding password window
     /// or returning the last used password if stored temporarily.
     /// </summary>
