@@ -21,6 +21,7 @@ namespace BSH.MainApp.ViewModels;
 
 public enum ModeType
 {
+    Unset = -1,
     RegularCopy = 0,
     Compression = 1,
     Encryption = 2,
@@ -154,7 +155,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
         // ftp remote
         this.FtpRemoteHost = this.configurationManager.FtpHost;
-        this.FtpRemotePort = int.Parse(this.configurationManager.FtpPort);
+        this.FtpRemotePort = string.IsNullOrEmpty(this.configurationManager.FtpPort) ? 21 : int.Parse(this.configurationManager.FtpPort);
         this.FtpRemoteUser = this.configurationManager.FtpUser;
         this.FtpRemotePassword = this.configurationManager.FtpPass;
         this.FtpRemotePath = this.configurationManager.FtpFolder;
@@ -293,14 +294,20 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     }
 
-    partial void OnLocalUNCUserChanged(string value)
+    partial void OnLocalUNCUserChanged(string? oldValue, string newValue)
     {
-        this.configurationManager.UNCUsername = value;
+        if (oldValue == null) return;
+        if (oldValue == newValue) return;
+
+        this.configurationManager.UNCUsername = newValue;
     }
 
-    partial void OnLocalUNCPasswordChanged(string value)
+    partial void OnLocalUNCPasswordChanged(string? oldValue, string newValue)
     {
-        this.configurationManager.UNCPassword = value;
+        if (oldValue == null) return;
+        if (oldValue == newValue) return;
+
+        this.configurationManager.UNCPassword = newValue;
     }
 
     #endregion
@@ -309,7 +316,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(DisableEncryptionCommand))]
-    private ModeType modeType;
+    private ModeType modeType = ModeType.Unset;
 
     [ObservableProperty]
     private bool waitForDevice;
@@ -332,13 +339,18 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.WaitForDevice = this.configurationManager.ShowWaitOnMediaAutoBackups == "1";
     }
 
-    partial void OnWaitForDeviceChanged(bool value)
+    partial void OnWaitForDeviceChanged(bool oldValue, bool newValue)
     {
-        this.configurationManager.ShowWaitOnMediaAutoBackups = value ? "1" : "0";
+        if (oldValue == newValue) return;
+
+        this.configurationManager.ShowWaitOnMediaAutoBackups = newValue ? "1" : "0";
     }
 
     async partial void OnModeTypeChanging(ModeType oldValue, ModeType newValue)
     {
+        if (oldValue == ModeType.Unset) return;
+        if (oldValue == newValue) return;
+
         if (newValue == ModeType.Compression)
         {
             this.configurationManager.Compression = 1;
@@ -391,7 +403,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     #region Mode Settings
 
     [ObservableProperty]
-    private TaskType taskType;
+    private TaskType taskType = TaskType.Unset;
 
     [ObservableProperty]
     private bool stopBackupWhenBatteryMode;
@@ -402,13 +414,18 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.StopBackupWhenBatteryMode = this.configurationManager.DeativateAutoBackupsWhenAkku == "1";
     }
 
-    partial void OnStopBackupWhenBatteryModeChanged(bool value)
+    partial void OnStopBackupWhenBatteryModeChanged(bool oldValue, bool newValue)
     {
-        this.configurationManager.DeativateAutoBackupsWhenAkku = value ? "1" : "0";
+        if (oldValue == newValue) return;
+
+        this.configurationManager.DeativateAutoBackupsWhenAkku = newValue ? "1" : "0";
     }
 
     partial void OnTaskTypeChanged(TaskType oldValue, TaskType newValue)
     {
+        if (oldValue == TaskType.Unset) return;
+        if (oldValue == newValue) return;
+
         this.configurationManager.TaskType = newValue;
     }
 
@@ -450,9 +467,11 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.NotificationWhenBackupOutdated = int.Parse(this.configurationManager.RemindAfterDays);
     }
 
-    partial void OnEnableNotificationWhenDiskspaceLowChanged(bool value)
+    partial void OnEnableNotificationWhenDiskspaceLowChanged(bool oldValue, bool newValue)
     {
-        if (value)
+        if (oldValue == newValue) return;
+
+        if (newValue)
         {
             this.configurationManager.RemindSpace = this.NotificationWhenDiskspaceLow.ToString();
         }
@@ -462,30 +481,35 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         }
     }
 
-    partial void OnNotificationWhenDiskspaceLowChanged(int value)
+    partial void OnNotificationWhenDiskspaceLowChanged(int oldValue, int newValue)
     {
-        if (value == 0) return;
-        this.configurationManager.RemindSpace = value.ToString();
+        if (oldValue == newValue) return;
+        if (newValue == 0) return;
+        this.configurationManager.RemindSpace = newValue.ToString();
     }
 
-    partial void OnEnableDirectoryLocalizationChanged(bool value)
+    partial void OnEnableDirectoryLocalizationChanged(bool oldValue, bool newValue)
     {
-        this.configurationManager.ShowLocalizedPath = value ? "1" : "0";
+        if (oldValue == newValue) return;
+        this.configurationManager.ShowLocalizedPath = newValue ? "1" : "0";
     }
 
-    partial void OnEnableNotificationWhenBackupFinishedChanged(bool value)
+    partial void OnEnableNotificationWhenBackupFinishedChanged(bool oldValue, bool newValue)
     {
-        this.configurationManager.InfoBackupDone = value ? "1" : "0";
+        if (oldValue == newValue) return;
+        this.configurationManager.InfoBackupDone = newValue ? "1" : "0";
     }
 
-    partial void OnEnableNotificationWhenBackupDeviceNotReadyChanged(bool value)
+    partial void OnEnableNotificationWhenBackupDeviceNotReadyChanged(bool oldValue, bool newValue)
     {
-        this.configurationManager.Medium = value ? "1" : "0";
+        if (oldValue == newValue) return;
+        this.configurationManager.Medium = newValue ? "1" : "0";
     }
 
-    partial void OnEnableNotificationWhenBackupOutdatedChanged(bool value)
+    partial void OnEnableNotificationWhenBackupOutdatedChanged(bool oldValue, bool newValue)
     {
-        if (value)
+        if (oldValue == newValue) return;
+        if (newValue)
         {
             this.configurationManager.RemindAfterDays = this.NotificationWhenBackupOutdated.ToString();
         }
@@ -495,10 +519,11 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         }
     }
 
-    partial void OnNotificationWhenBackupOutdatedChanged(int value)
+    partial void OnNotificationWhenBackupOutdatedChanged(int oldValue, int newValue)
     {
-        if (value == 0) return;
-        this.configurationManager.RemindAfterDays = value.ToString();
+        if (oldValue == newValue) return;
+        if (newValue == 0) return;
+        this.configurationManager.RemindAfterDays = newValue.ToString();
     }
 
     #endregion
