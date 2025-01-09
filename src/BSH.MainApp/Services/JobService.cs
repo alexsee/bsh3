@@ -449,6 +449,36 @@ public class JobService : IJobService
     }
 
     /// <summary>
+    /// Runs a modify backup task to edit the backup.
+    /// </summary>
+    /// <param name="statusDialog">Specifies if the user should be shown a status user interface.</param>
+    /// <returns></returns>
+    public async Task ModifyBackupAsync(bool statusDialog = true)
+    {
+        _logger.Debug("Modify task started.");
+
+        // check job requirements
+        if (!await PrepareJobAndHandleExceptions(ActionType.Modify, statusDialog))
+        {
+            return;
+        }
+
+        // run modify job
+        try
+        {
+            var task = backupService.StartEdit(ref jobReportCallback, cancellationToken, statusDialog);
+            await task.ConfigureAwait(true);
+        }
+        catch
+        {
+            // exception already handled
+        }
+
+        // finish
+        HandleFinishedStatusDialog(statusDialog);
+    }
+
+    /// <summary>
     /// Requests the password from the user by either showing a corresponding password window
     /// or returning the last used password if stored temporarily.
     /// </summary>
@@ -480,7 +510,7 @@ public class JobService : IJobService
         }
 
         // request password from user
-        var request = presentationService.RequestPassword();
+        var request = await presentationService.RequestPassword();
         while (!string.IsNullOrEmpty(request.password))
         {
             if ((Hash.GetMD5Hash(request.password) ?? "") == (configurationManager.EncryptPassMD5 ?? ""))
@@ -498,8 +528,12 @@ public class JobService : IJobService
             // report back to user
             _logger.Debug("Password given by user is not correct. Request retry.");
 
-            //MessageBox.Show(Resources.MSG_PASSWORD_WRONG_TEXT, Resources.MSG_PASSWORD_WRONG_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            request = presentationService.RequestPassword();
+            await this.presentationService.ShowMessageBoxAsync(
+                "MSG_PASSWORD_WRONG_TITLE".GetLocalized(),
+                "MSG_PASSWORD_WRONG_TEXT".GetLocalized(),
+                null
+            );
+            request = await presentationService.RequestPassword();
         }
 
         return false;

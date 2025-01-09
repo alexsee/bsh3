@@ -3,12 +3,11 @@
 
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Helpers;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 
 namespace BSH.MainApp;
 
-public sealed partial class MainWindow : Window
+public sealed partial class MainWindow : WinUIEx.WindowEx
 {
     public MainWindow()
     {

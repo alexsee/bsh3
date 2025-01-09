@@ -3,6 +3,7 @@
 
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
+using BSH.MainApp.Windows;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Popups;
 
@@ -40,8 +41,17 @@ public class PresentationService : IPresentationService
     {
     }
 
-    public (string? password, bool persist) RequestPassword()
+    public async Task<(string? password, bool persist)> RequestPassword()
     {
+        var requestPasswordWindow = new RequestPasswordWindow();
+        requestPasswordWindow.XamlRoot = App.MainWindow.Content.XamlRoot;
+
+        var result = await requestPasswordWindow.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            return (requestPasswordWindow.ViewModel.Password, requestPasswordWindow.ViewModel.Persist ?? false);
+        }
+
         return (null, false);
     }
 
@@ -51,9 +61,11 @@ public class PresentationService : IPresentationService
 
     public async Task ShowCreateBackupWindow()
     {
+        var newBackupWindow = new NewBackupWindow();
+        newBackupWindow.AppWindow.Show();
     }
 
-    public async Task<IUICommand> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
+    public async Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
     {
         if (commands != null && commands.Count > 3)
         {
@@ -70,6 +82,7 @@ public class PresentationService : IPresentationService
             secondaryCommand = commands.FirstOrDefault(c => c != defaultCommand && c != cancelCommand);
         }
         var dialog = new ContentDialog();
+        dialog.XamlRoot = App.MainWindow.Content.XamlRoot;
         dialog.Content = new TextBlock() { Text = content };
         dialog.Title = title;
         dialog.PrimaryButtonText = defaultCommand.Label;
@@ -81,16 +94,6 @@ public class PresentationService : IPresentationService
         {
             dialog.CloseButtonText = cancelCommand.Label;
         }
-        var result = await dialog.ShowAsync();
-        switch (result)
-        {
-            case ContentDialogResult.Primary:
-                return defaultCommand;
-            case ContentDialogResult.Secondary:
-                return secondaryCommand!;
-            case ContentDialogResult.None:
-            default:
-                return cancelCommand ?? new UICommand();
-        }
+        return await dialog.ShowAsync();
     }
 }

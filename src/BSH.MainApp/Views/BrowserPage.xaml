@@ -55,7 +55,7 @@
                 </BreadcrumbBar.ItemTemplate>
             </BreadcrumbBar>
 
-            <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" Text="{Binding Blub}" />
+            <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" Text="{Binding SearchTerms}" />
         </Grid>
 
         <Grid Grid.Row="1">
@@ -109,8 +109,12 @@
 
                     <!-- favorites -->
                     <TextBlock Grid.Row="0" Text="Favorites" Margin="20,10,0,0" Style="{StaticResource BaseTextBlockStyle}" />
-                    <ListView x:Name="lvFavorites" Grid.Row="1" MaxHeight="300" ItemsSource="{Binding Favorites}">
-
+                    <ListView SelectedItem="{Binding CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{Binding Favorites}">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="SelectionChanged">
+                                <core:InvokeCommandAction Command="{x:Bind ViewModel.LoadFavoriteCommand}" />
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
                     </ListView>
 
                     <!-- backup list -->

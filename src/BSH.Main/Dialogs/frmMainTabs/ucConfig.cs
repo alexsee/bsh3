@@ -120,12 +120,12 @@ public partial class ucConfig : IMainTabs
         if (cboMedia.SelectedIndex == 1)
         {
             // FTP
-            BackupLogic.ConfigurationManager.MediumType = 3;
+            BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
         }
         else
         {
             // directory
-            BackupLogic.ConfigurationManager.MediumType = 1;
+            BackupLogic.ConfigurationManager.MediumType = MediaType.LocalDevice;
 
             // UNC authentication
             if (txtBackupPath.Text.StartsWith(@"\\"))
@@ -241,7 +241,7 @@ public partial class ucConfig : IMainTabs
         cboMedia.Tag = "";
 
         // load backup storage
-        if (BackupLogic.ConfigurationManager.MediumType == 3)
+        if (BackupLogic.ConfigurationManager.MediumType == MediaType.FileTransferServer)
         {
             // FTP
             cboMedia.SelectedIndex = 1;
@@ -686,8 +686,8 @@ public partial class ucConfig : IMainTabs
             if (dlgChangeMedia.cboMedia.SelectedIndex == 0)
             {
                 // directory
-                BackupLogic.ConfigurationManager.MediumType = 1;
-                BackupLogic.ConfigurationManager.BackupFolder = Convert.ToString(dlgChangeMedia.lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + '\\' + Environment.UserName;
+                BackupLogic.ConfigurationManager.MediumType = MediaType.LocalDevice;
+                BackupLogic.ConfigurationManager.BackupFolder = Convert.ToString(dlgChangeMedia.lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName;
                 BackupLogic.ConfigurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(BackupLogic.ConfigurationManager.BackupFolder[..1] + @":\");
                 if (BackupLogic.ConfigurationManager.MediaVolumeSerial == "0")
                 {
@@ -697,7 +697,7 @@ public partial class ucConfig : IMainTabs
             else
             {
                 // FTP server
-                BackupLogic.ConfigurationManager.MediumType = 3;
+                BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
                 BackupLogic.ConfigurationManager.FtpHost = dlgChangeMedia.txtFTPServer.Text;
                 BackupLogic.ConfigurationManager.FtpPort = dlgChangeMedia.txtFTPPort.Text;
                 BackupLogic.ConfigurationManager.FtpUser = dlgChangeMedia.txtFTPUsername.Text;

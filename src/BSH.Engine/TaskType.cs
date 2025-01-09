@@ -16,6 +16,7 @@ namespace Brightbits.BSH.Engine;
 
 public enum TaskType
 {
+    Unset = -1,
     Manual = 0,
     Schedule = 1,
     Auto = 2

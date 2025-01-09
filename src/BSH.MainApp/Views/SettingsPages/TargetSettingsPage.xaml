@@ -2,84 +2,143 @@
     x:Class="BSH.MainApp.Views.SettingsPages.TargetSettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Brightbits.BSH.Main.Views.SettingsPages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:BSH.MainApp.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls" xmlns:engine="using:Brightbits.BSH.Engine"
     Background="White">
 
-    <Grid ColumnSpacing="20" RowSpacing="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-            <RowDefinition Height="50" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+    <Page.Resources>
+        <x:Double x:Key="SettingsCardSpacing">3</x:Double>
 
-        <!-- target type selection -->
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Backup storage:" />
-        <ComboBox Grid.Row="0" Grid.Column="1" Width="300">
-            <x:String>Directory or disk</x:String>
-            <x:String>Server (FTP)</x:String>
-        </ComboBox>
-        
-        <!-- local file system options -->
-        <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnSpacing="20" Visibility="Collapsed">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" />
-                <ColumnDefinition />
-                <ColumnDefinition Width="200" />
-            </Grid.ColumnDefinitions>
+        <Style
+        x:Key="SettingsSectionHeaderTextBlockStyle"
+        BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+        TargetType="TextBlock">
+            <Style.Setters>
+                <Setter Property="Margin" Value="1,29,0,5" />
+            </Style.Setters>
+        </Style>
+    </Page.Resources>
 
-            <TextBlock Grid.Column="0" Text="Storage path:" />
-            <TextBox Grid.Column="1" />
-            <Button Grid.Column="2" Content="Change" />
-        </Grid>
+    <Grid>
+        <ScrollViewer
+        Padding="20,0,20,0"
+        IsTabStop="False"
+        VerticalScrollBarVisibility="Auto"
+        VerticalScrollMode="Auto">
+            <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                <toolkit:SettingsExpander Header="Storage device" Description="Select the device to store the backup on." IsExpanded="True">
+                    <toolkit:SettingsExpander.HeaderIcon>
+                        <FontIcon Glyph="&#xE8CE;" />
+                    </toolkit:SettingsExpander.HeaderIcon>
 
-        <!-- ftp server options -->
-        <Grid Grid.Row="1" Grid.ColumnSpan="2" RowSpacing="10" ColumnSpacing="20">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition />
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+                    <!-- target type selection -->
+                    <StackPanel Orientation="Horizontal" Spacing="20">
+                        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Text="Backup storage:" />
+                        <ComboBox VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="300"
+                            ItemsSource="{Binding MediaTypes}"
+                            SelectedItem="{Binding SelectedMediaType, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="engine:MediaType">
+                                    <TextBlock Text="{x:Bind viewmodels:SettingsViewModel.GetMediaTypeDisplayName((engine:MediaType))}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
 
-            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Text="Server:" />
-            <TextBox Grid.Column="1" />
-            <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0" Text="Port:" />
-            <NumberBox Grid.Column="3" Grid.Row="0" />
+                    <toolkit:SettingsExpander.Items>
+                        <toolkit:SettingsCard
+                            ContentAlignment="Vertical"
+                            HorizontalContentAlignment="Stretch">
+                            <Grid ColumnSpacing="20" RowSpacing="20">
+                                <!-- local file system options -->
+                                <StackPanel Visibility="{Binding LocalDeviceVisibility}">
+                                    <Grid ColumnSpacing="20">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
-            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Text="Username:" />
-            <TextBox Grid.Column="1" Grid.Row="1" />
-            <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Text="Password:" />
-            <PasswordBox Grid.Column="3" Grid.Row="1" />
+                                        <TextBlock Grid.Column="0" Text="Storage path:" />
+                                        <TextBox Grid.Column="1" Text="{Binding LocalDevicePath}" IsReadOnly="True" />
+                                        <Button Grid.Column="2" Content="Change" Command="{x:Bind ViewModel.ChangeLocalPathCommand}" />
+                                    </Grid>
 
-            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="Path:" />
-            <TextBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" />
+                                    <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Network authentication</TextBlock>
+                                    <Grid ColumnSpacing="20">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="200" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">Username:</TextBlock>
+                                        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding LocalUNCUser, Mode=TwoWay}"></TextBox>
 
-            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="Encoding:" />
-            <ComboBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch">
-                <x:String>ISO-8859-1</x:String>
-                <x:String>UTF8</x:String>
-            </ComboBox>
+                                        <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0">Password:</TextBlock>
+                                        <PasswordBox Grid.Column="3" Grid.Row="0" Password="{Binding LocalUNCPassword, Mode=TwoWay}"></PasswordBox>
+                                    </Grid>
+                                </StackPanel>
 
-            <Button Grid.Column="1" Grid.Row="4" Content="Test connection" />
-        </Grid>
+                                <!-- ftp server options -->
+                                <Grid RowSpacing="10" ColumnSpacing="20" Visibility="{Binding FtpRemoteVisibility}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
 
-        <!-- switch backup target -->
-        <Button Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Content="Switch storage" />
-        <TextBlock VerticalAlignment="Center" TextWrapping="WrapWholeWords" Grid.Row="3" Grid.Column="1" Text="Allows changing the backup medium to a new (empty) medium without losing the settings." />
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Text="Server:" />
+                                    <TextBox Grid.Column="1" Text="{Binding FtpRemoteHost}" />
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0" Text="Port:" />
+                                    <NumberBox Grid.Column="3" Grid.Row="0" Value="{Binding FtpRemotePort}" />
+
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Text="Username:" />
+                                    <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding FtpRemoteUser}" />
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Text="Password:" />
+                                    <PasswordBox Grid.Column="3" Grid.Row="1" Password="{Binding FtpRemotePassword}" />
+
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="Path:" />
+                                    <TextBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2"  Text="{Binding FtpRemotePath}" />
+
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="Encoding:" />
+                                    <ComboBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch" SelectedValue="{Binding FtpRemoteEncoding, Mode=TwoWay}">
+                                        <x:String>ISO-8859-1</x:String>
+                                        <x:String>UTF8</x:String>
+                                    </ComboBox>
+
+                                    <CheckBox Grid.Column="1" Grid.Row="4" Content="Enforce unencrypted connection" IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
+
+                                    <Button Grid.Column="1" Grid.Row="5" Content="Test connection" Command="{Binding CheckFtpRemoteCommand}" />
+                                </Grid>
+                            </Grid>
+                        </toolkit:SettingsCard>
+                    </toolkit:SettingsExpander.Items>
+                </toolkit:SettingsExpander>
+
+                <toolkit:SettingsCard
+                    Header="Switch storage"
+                    Description="Allows changing the backup medium to a new (empty) medium without losing the settings."
+                    IsClickEnabled="True"
+                    IsEnabled="False">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE8CD;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                </toolkit:SettingsCard>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>
