@@ -337,7 +337,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         this.configurationManager.ShowWaitOnMediaAutoBackups = value ? "1" : "0";
     }
 
-    async partial void OnModeTypeChanged(ModeType oldValue, ModeType newValue)
+    async partial void OnModeTypeChanging(ModeType oldValue, ModeType newValue)
     {
         if (newValue == ModeType.Compression)
         {
@@ -405,6 +405,11 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     partial void OnStopBackupWhenBatteryModeChanged(bool value)
     {
         this.configurationManager.DeativateAutoBackupsWhenAkku = value ? "1" : "0";
+    }
+
+    partial void OnTaskTypeChanged(TaskType oldValue, TaskType newValue)
+    {
+        this.configurationManager.TaskType = newValue;
     }
 
     #endregion

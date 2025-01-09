@@ -132,7 +132,8 @@
                 <toolkit:SettingsCard
                     Header="Switch storage"
                     Description="Allows changing the backup medium to a new (empty) medium without losing the settings."
-                    IsClickEnabled="True">
+                    IsClickEnabled="True"
+                    IsEnabled="False">
                     <toolkit:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE8CD;" />
                     </toolkit:SettingsCard.HeaderIcon>

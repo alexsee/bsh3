@@ -77,7 +77,7 @@
                                         Manual backups
                                     </RadioButton>
                                     <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords">
-        Backups are not executed automatically, but you manually start the backup.
+                                        Backups are not executed automatically, but you manually start the backup.
                                     </TextBlock>
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
