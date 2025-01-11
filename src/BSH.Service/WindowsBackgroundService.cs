@@ -16,6 +16,8 @@ using System.IO.Pipes;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using BSH.Service.Shared;
+using ricaun.NamedPipeWrapper;
+using Serilog;
 using ServiceWire.NamedPipes;
 
 namespace BSH.Service
@@ -52,6 +54,8 @@ namespace BSH.Service
 
         private readonly IVSSRemoteObject remoteObject;
 
+        private readonly NamedPipeServer<MessageExchange> server;
+
         public WindowsBackgroundService()
         {
             // init remote object
@@ -60,17 +64,48 @@ namespace BSH.Service
             // create remote rpc server
             host = new NpHost("backupservicehome", streamFactory: new CustomNamedPipeServerStreamFactory());
             host.AddService(remoteObject);
+
+            // create named pipe server
+            server = new NamedPipeServer<MessageExchange>("backupservicehome_new");
+            server.ClientMessage += Server_ClientMessage;
+            server.ClientConnected += Server_ClientConnected;
+        }
+
+        private void Server_ClientMessage(NamedPipeConnection<MessageExchange, MessageExchange> connection, MessageExchange message)
+        {
+            Log.Information("Received message: {message}", message.Text);
+            connection.PushMessage(new MessageExchange
+            {
+                Text = "Hello from server"
+            });
+        }
+
+        private void Server_ClientConnected(NamedPipeConnection<MessageExchange, MessageExchange> connection)
+        {
+            Log.Information("Client connected");
+            connection.PushMessage(new MessageExchange
+            {
+                Text = "Hello from server"
+            });
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            Log.Information("Starting background service for backup service home");
+
             host.Open();
+            server.Start();
+
             return _completedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            Log.Information("Stopping background service for backup service home");
+
             host.Close();
+            server.Stop();
+
             return _completedTask;
         }
     }

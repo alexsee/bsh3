@@ -13,18 +13,20 @@
 // limitations under the License.
 
 using BSH.Service;
-using Microsoft.Extensions.Logging.Configuration;
-using Microsoft.Extensions.Logging.EventLog;
+
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddSerilog();
 builder.Services.AddWindowsService(options =>
 {
     options.ServiceName = "Backup Service Home 3 Service";
 });
-
-LoggerProviderOptions.RegisterProviderOptions<
-    EventLogSettings, EventLogLoggerProvider>(builder.Services);
-
 builder.Services.AddHostedService<WindowsBackgroundService>();
 
 IHost host = builder.Build();

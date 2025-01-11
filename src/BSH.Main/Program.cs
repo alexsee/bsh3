@@ -16,9 +16,12 @@ using System;
 using System.Reflection;
 using System.Windows.Forms;
 using AutoUpdaterDotNET;
+using Brightbits.BSH.Engine.Services;
 using BSH.Main.Model.CommandLine;
 using BSH.Main.Properties;
+using BSH.Service.Shared;
 using CommandLine;
+using ricaun.NamedPipeWrapper;
 using Serilog;
 
 namespace Brightbits.BSH.Main;
@@ -30,6 +33,8 @@ static class Program
     private static System.Threading.Mutex mutex;
 
     public static string CurrentVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+    private static NamedPipeClient<MessageExchange> _namedPipeClient;
 
     [STAThread()]
     public static void Main(string[] args)
@@ -43,6 +48,16 @@ static class Program
         Application.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
 
         CheckSingleInstance();
+
+        _namedPipeClient = new NamedPipeClient<MessageExchange>("backupservicehome_new");
+        _namedPipeClient.ServerMessage += (sender, message) =>
+        {
+            Log.Information("Received message from server: {Message}", message.Text);
+        };
+        _namedPipeClient.Start();
+        _namedPipeClient.WaitForConnection(500);
+
+        _namedPipeClient.PushMessage(new MessageExchange { Text = "Hello from client" });
 
         try
         {
