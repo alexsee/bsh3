@@ -383,9 +383,8 @@ public class BackupJob : Job
                 {
                     var lastVersion = await queryManager.GetLastBackupAsync();
 
-                    if (lastVersion != null)
+                    if (lastVersion != null && storage.RenameDirectory(lastVersion.CreationDate.ToString("dd-MM-yyyy HH-mm-ss"), newVersionDate))
                     {
-                        storage.RenameDirectory(lastVersion.CreationDate.ToString("dd-MM-yyyy HH-mm-ss"), newVersionDate);
                         await dbClient.ExecuteNonQueryAsync("UPDATE versiontable SET versionDate = '" + newVersionDate + "' WHERE versionID = " + lastVersion.Id);
                     }
                 }
