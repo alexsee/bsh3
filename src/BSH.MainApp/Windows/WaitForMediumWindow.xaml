@@ -9,7 +9,7 @@
     mc:Ignorable="d"
     Title="Backup Service Home is waiting for medium"
     Width="600"
-    Height="350"
+    Height="300"
     IsMaximizable="False"
     IsMinimizable="False"
     IsResizable="False"
