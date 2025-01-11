@@ -67,11 +67,6 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
     [ObservableProperty]
     private int? currentProgressMax;
 
-    public ICommand StartManualBackupCommand
-    {
-        get;
-    }
-
     public MainViewModel(
         IPresentationService presentationService,
         IStatusService statusService,
@@ -89,9 +84,6 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         this.dispatcherQueue = dispatcherQueue;
         this.statusService.AddObserver(this, true);
         this.configurationManager = configurationManager;
-
-        // init commands
-        StartManualBackupCommand = new AsyncRelayCommand(StartManualBackupCommandAsync);
     }
 
     public async void OnNavigatedTo(object parameter)
@@ -133,7 +125,8 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         TotalBackups = (await queryManager.GetNumberOfVersionsAsync()).ToString("g");
     }
 
-    private async Task StartManualBackupCommandAsync()
+    [RelayCommand]
+    private async Task StartManualBackup()
     {
         var (result, backup) = await this.presentationService.ShowCreateBackupWindow();
         if (result)
