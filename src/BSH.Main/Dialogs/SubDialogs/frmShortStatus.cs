@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
@@ -96,7 +97,7 @@ public partial class frmShortStatus : IJobReport
         // not used
     }
 
-    public RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
+    public async Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
     {
         return RequestOverwriteResult.NoOverwriteAll;
     }
