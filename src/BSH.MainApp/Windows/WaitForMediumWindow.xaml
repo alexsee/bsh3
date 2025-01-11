@@ -8,12 +8,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Title="Backup Service Home is waiting for medium"
-    Width="500"
-    Height="400"
+    Width="600"
+    Height="350"
     IsMaximizable="False"
     IsMinimizable="False"
     IsResizable="False"
-    IsAlwaysOnTop="True">
+    IsAlwaysOnTop="True"
+    Closed="WindowEx_Closed">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -39,7 +40,7 @@ The medium will be automatically detected."
         <!-- Cancel Button -->
         <Grid Grid.Row="2" Background="#fafafa" Padding="30,15" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button>Cancel</Button>
+                <Button Command="{x:Bind ViewModel.CancelCommand}">Cancel</Button>
             </StackPanel>
         </Grid>
     </Grid>

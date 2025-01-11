@@ -13,4 +13,9 @@ public sealed partial class WaitForMediumWindow : WinUIEx.WindowEx
     {
         this.InitializeComponent();
     }
+
+    private void WindowEx_Closed(object sender, Microsoft.UI.Xaml.WindowEventArgs args)
+    {
+        ViewModel.CancelCommand.Execute(null);
+    }
 }

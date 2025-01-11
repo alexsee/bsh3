@@ -7,11 +7,13 @@ namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class WaitForMediumViewModel
 {
-    public event EventHandler? OnCancelRequested;
+    public event OnCancelRequestedEventHandler OnCancelRequested;
+
+    public delegate void OnCancelRequestedEventHandler();
 
     [RelayCommand]
     private void Cancel()
     {
-        OnCancelRequested?.Invoke(this, EventArgs.Empty);
+        OnCancelRequested?.Invoke();
     }
 }

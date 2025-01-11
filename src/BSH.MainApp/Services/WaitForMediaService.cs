@@ -3,6 +3,8 @@
 
 using Brightbits.BSH.Engine.Contracts.Services;
 using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Windows;
+using WinUIEx;
 
 namespace BSH.MainApp.Services;
 
@@ -16,6 +18,8 @@ public class WaitForMediaService : IWaitForMediaService
 
     private long currentWaitingTime = 0L;
 
+    private WaitForMediumWindow? window;
+
     public WaitForMediaService(IBackupService backupService)
     {
         this.backupService = backupService;
@@ -23,16 +27,17 @@ public class WaitForMediaService : IWaitForMediaService
 
     public async Task<bool> ExecuteAsync(bool silent, CancellationTokenSource cancellationTokenSource)
     {
-        //// show window?
-        //if (!silent)
-        //{
-        //    window = new frmWaitForMedia();
-        //    window.OnAbort_Click += cancellationTokenSource.Cancel;
-        //    window.Show();
-        //}
+        // show window?
+        if (!silent)
+        {
+            window = new WaitForMediumWindow();
+            window.ViewModel.OnCancelRequested += cancellationTokenSource.Cancel;
+            window.CenterOnScreen();
+            window.Activate();
+        }
 
         // wait for media
-        bool result = await Task.Run(() =>
+        var result = await Task.Run(() =>
         {
             while (true)
             {
@@ -65,12 +70,12 @@ public class WaitForMediaService : IWaitForMediaService
             return false;
         });
 
-        //// close window
-        //if (!silent)
-        //{
-        //    window.Hide();
-        //    window.Dispose();
-        //}
+        // close window
+        if (!silent)
+        {
+            window?.Close();
+            window = null;
+        }
 
         return result;
     }
