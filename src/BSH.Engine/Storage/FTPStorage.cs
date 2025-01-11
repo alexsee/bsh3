@@ -434,14 +434,8 @@ public class FtpStorage : Storage, IStorage
 
     public bool RenameDirectory(string remoteDirectorySource, string remoteDirectoryTarget)
     {
-        if (ftpClient.DirectoryExists(Combine(folderPath, remoteDirectoryTarget).GetFtpPath()))
-        {
-            ftpClient.DeleteDirectory(Combine(folderPath, remoteDirectoryTarget).GetFtpPath(), FtpListOption.AllFiles);
-        }
-
-        ftpClient.Rename(Combine(folderPath, remoteDirectorySource).GetFtpPath(),
+        return ftpClient.MoveDirectory(Combine(folderPath, remoteDirectorySource).GetFtpPath(),
             Combine(folderPath, remoteDirectoryTarget).GetFtpPath());
-        return true;
     }
 
     public bool DecryptOnStorage(string remoteFile, string password)
