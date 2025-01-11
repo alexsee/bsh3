@@ -4,6 +4,7 @@
 using Brightbits.BSH.Engine.Contracts.Services;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Windows;
+using CommunityToolkit.WinUI;
 using WinUIEx;
 
 namespace BSH.MainApp.Services;
@@ -30,10 +31,13 @@ public class WaitForMediaService : IWaitForMediaService
         // show window?
         if (!silent)
         {
-            window = new WaitForMediumWindow();
-            window.ViewModel.OnCancelRequested += cancellationTokenSource.Cancel;
-            window.CenterOnScreen();
-            window.Activate();
+            await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+            {
+                window = new WaitForMediumWindow();
+                window.ViewModel.OnCancelRequested += cancellationTokenSource.Cancel;
+                window.CenterOnScreen();
+                window.Activate();
+            });
         }
 
         // wait for media
@@ -73,9 +77,12 @@ public class WaitForMediaService : IWaitForMediaService
         // close window
         if (!silent && window != null)
         {
-            window.ViewModel.OnCancelRequested -= cancellationTokenSource.Cancel;
-            window.Close();
-            window = null;
+            await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+            {
+                window.ViewModel.OnCancelRequested -= cancellationTokenSource.Cancel;
+                window.Close();
+                window = null;
+            });
         }
 
         return result;

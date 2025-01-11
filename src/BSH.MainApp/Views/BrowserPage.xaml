@@ -67,25 +67,25 @@
                 <AppBarButton Icon="Edit" Label="Organize">
                     <AppBarButton.Flyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem Icon="Copy" Text="Restore" />
-                            <MenuFlyoutItem Text="Restore all"/>
-                            <MenuFlyoutItem Text="Properties" />
+                            <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreFileCommand}" Icon="Copy" Text="Restore" />
+                            <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllCommand}" Text="Restore all"/>
+                            <MenuFlyoutItem Command="{x:Bind ViewModel.ShowFilePropertiesCommand}" Text="Properties" />
                             <MenuFlyoutSeparator />
-                            <MenuFlyoutItem Icon="View" Text="Quick preview" />
-                            <MenuFlyoutItem Text="Add to folder favorites"/>
+                            <MenuFlyoutItem Command="{x:Bind ViewModel.ShowFilePreviewCommand}" Icon="View" Text="Quick preview" />
+                            <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Text="Add to folder favorites"/>
                             <MenuFlyoutSeparator />
-                            <MenuFlyoutItem Icon="Edit" Text="Edit backup" />
-                            <MenuFlyoutItem Icon="Delete" Text="Delete backup"/>
-                            <MenuFlyoutItem Text="Lock backup" />
+                            <MenuFlyoutItem Command="{x:Bind ViewModel.EditBackupCommand}" Icon="Edit" Text="Edit backup" />
+                            <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupCommand}" Icon="Delete" Text="Delete backup"/>
+                            <MenuFlyoutItem Command="{x:Bind ViewModel.LockBackupCommand}" Text="Lock backup" />
                             <MenuFlyoutSeparator />
-                            <MenuFlyoutItem Text="Delete multiple backups"/>
+                            <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupsCommand}" Text="Delete multiple backups"/>
                         </MenuFlyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
-                <AppBarButton Icon="View" Label="Quick preview" />
+                <AppBarButton Command="{x:Bind ViewModel.ShowFilePreviewCommand}" Icon="View" Label="Quick preview" />
                 <AppBarSeparator />
-                <AppBarButton Icon="Copy" Label="Restore" />
-                <AppBarButton Label="View">
+                <AppBarButton Command="{x:Bind ViewModel.RestoreFileCommand}" Icon="Copy" Label="Restore" />
+                <AppBarButton Label="View" IsEnabled="False">
                     <AppBarButton.Flyout>
                         <MenuFlyout>
                             <MenuFlyoutItem Text="Large symbols" />
@@ -140,9 +140,10 @@
                 </Grid.RowDefinitions>
 
                 <ScrollViewer Grid.Row="0" VerticalScrollMode="Auto">
+                    <!-- file and folder list -->
                     <ListView 
-                    ItemsSource="{Binding Items}" 
-                    SelectedItem="{x:Bind ViewModel.CurrentItem, Mode=TwoWay}">
+                        ItemsSource="{Binding Items}" 
+                        SelectedItem="{x:Bind ViewModel.CurrentItem, Mode=TwoWay}">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="DoubleTapped">
                                 <core:InvokeCommandAction Command="{x:Bind ViewModel.LoadFolderCommand}" />

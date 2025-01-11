@@ -4,6 +4,7 @@
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Models;
+using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,11 +15,16 @@ namespace BSH.MainApp.ViewModels;
 public partial class BrowserViewModel : ObservableRecipient, INavigationAware
 {
     private readonly IQueryManager queryManager;
+    private readonly IJobService jobService;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RestoreAllCommand))]
     private VersionDetails? currentVersion;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RestoreAllCommand))]
     private FileOrFolderItem? currentItem;
 
     [ObservableProperty]
@@ -35,9 +41,10 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
 
     public ObservableCollection<VersionDetails> Versions { get; } = new();
 
-    public BrowserViewModel(IQueryManager queryManager)
+    public BrowserViewModel(IQueryManager queryManager, IJobService jobService)
     {
         this.queryManager = queryManager;
+        this.jobService = jobService;
     }
 
     [RelayCommand]
@@ -105,6 +112,79 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
         }
 
         await LoadFolderAsync(CurrentVersion.Id, selectedItem.FullPath);
+    }
+
+    [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
+    private async Task RestoreFile()
+    {
+        // restore file
+        if (CurrentItem.IsFile)
+        {
+            await jobService.RestoreBackupAsync(CurrentVersion.Id, CurrentItem.FullPath + CurrentItem.Name, "");
+        }
+        else
+        {
+            await jobService.RestoreBackupAsync(CurrentVersion.Id, CurrentItem.FullPath, "");
+        }
+    }
+
+    private bool HasFileOrFolderSelected() => CurrentItem != null && CurrentVersion != null;
+
+    [RelayCommand(CanExecute = nameof(CanRestoreAll))]
+    private async Task RestoreAll()
+    {
+        if (CurrentFolderPath[^1] == null)
+        {
+            return;
+        }
+
+        // restore all
+        await jobService.RestoreBackupAsync(CurrentVersion.Id, CurrentFolderPath[^1].FullPath, "");
+    }
+
+    private bool CanRestoreAll() => CurrentVersion != null && CurrentFolderPath.Count > 0;
+
+    [RelayCommand(CanExecute = nameof(HasFileSelected))]
+    private async Task ShowFileProperties()
+    {
+
+    }
+
+    private bool HasFileSelected() => CurrentItem != null && CurrentItem.IsFile;
+
+    [RelayCommand(CanExecute = nameof(HasFileSelected))]
+    private async Task ShowFilePreview()
+    {
+
+    }
+
+    [RelayCommand]
+    private async Task AddFolderToFavorites()
+    {
+
+    }
+
+    [RelayCommand]
+    private async Task EditBackup()
+    {
+
+    }
+
+    [RelayCommand]
+    private async Task DeleteBackup()
+    {
+
+    }
+
+    [RelayCommand]
+    private async Task DeleteBackups()
+    {
+
+    }
+
+    [RelayCommand]
+    private async Task LockBackup()
+    {
     }
 
     private void LoadVersions()

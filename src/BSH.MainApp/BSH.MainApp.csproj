@@ -37,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240916" />
     <PackageReference Include="H.NotifyIcon.WinUI" Version="2.2.0" />
     <PackageReference Include="Humanizer.Core" Version="2.14.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
@@ -44,8 +45,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="WinUIEx" Version="2.5.0" />
-	<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.230828-rc" />
-	<PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
+	<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240916" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj">
