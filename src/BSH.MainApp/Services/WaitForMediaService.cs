@@ -71,9 +71,10 @@ public class WaitForMediaService : IWaitForMediaService
         });
 
         // close window
-        if (!silent)
+        if (!silent && window != null)
         {
-            window?.Close();
+            window.ViewModel.OnCancelRequested -= cancellationTokenSource.Cancel;
+            window.Close();
             window = null;
         }
 
