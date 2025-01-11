@@ -27,6 +27,7 @@
     <None Remove="Windows\NewBackupWindow.xaml" />
     <None Remove="Windows\RequestFileOverwriteWindow.xaml" />
     <None Remove="Windows\RequestPasswordWindow.xaml" />
+    <None Remove="Windows\WaitForMediumWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
@@ -55,6 +56,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Windows\WaitForMediumWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Windows\RequestFileOverwriteWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
