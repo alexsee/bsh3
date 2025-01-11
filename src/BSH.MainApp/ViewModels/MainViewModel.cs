@@ -112,12 +112,12 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         // set configuration
         if (configurationManager.TaskType == TaskType.Auto)
         {
-            NextBackupDate = scheduledBackupService.GetNextBackupDate().ToString("DATETIME_FORMAT".GetLocalized());
+            NextBackupDate = scheduledBackupService.GetNextBackupDate().HumanizeDate();
             BackupMode = "MainView_BackupMode_Automatic".GetLocalized();
         }
         else if (configurationManager.TaskType == TaskType.Schedule)
         {
-            NextBackupDate = scheduledBackupService.GetNextBackupDate().ToString("DATETIME_FORMAT".GetLocalized());
+            NextBackupDate = scheduledBackupService.GetNextBackupDate().HumanizeDate();
             BackupMode = "MainView_BackupMode_Scheduled".GetLocalized();
         }
         else
