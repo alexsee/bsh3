@@ -181,7 +181,7 @@ public class StatusController : IJobReport
         dlgFilesOverwrite.picIco2.Image = dlgFilesOverwrite.picIco1.Image;
 
         // cancel
-        if (await dlgFilesOverwrite.ShowDialogAsync() == DialogResult.Cancel)
+        if (dlgFilesOverwrite.ShowDialog() == DialogResult.Cancel)
         {
             BackupLogic.BackupController.Cancel();
             return RequestOverwriteResult.NoOverwrite;
