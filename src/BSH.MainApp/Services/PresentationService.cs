@@ -5,6 +5,7 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
+using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Windows;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Popups;
@@ -67,10 +68,10 @@ public class PresentationService : IPresentationService
     {
     }
 
-    public async Task ShowCreateBackupWindow()
+    public async Task<(bool, NewBackupViewModel)> ShowCreateBackupWindow()
     {
-        var newBackupWindow = new NewBackupWindow();
-        newBackupWindow.AppWindow.Show();
+        var dialog = new NewBackupWindow();
+        return (await dialog.ShowDialogAsync(), dialog.ViewModel);
     }
 
     public async Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)

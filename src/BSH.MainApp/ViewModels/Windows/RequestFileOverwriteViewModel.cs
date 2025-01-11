@@ -8,10 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 namespace BSH.MainApp.ViewModels.Windows;
 public partial class RequestFileOverwriteViewModel : ObservableRecipient
 {
-    public TaskCompletionSource<RequestOverwriteResult> TaskCompletionSource
-    {
-        get; set;
-    }
+    public TaskCompletionSource<RequestOverwriteResult> TaskCompletionSource { get; } = new TaskCompletionSource<RequestOverwriteResult>();
 
     [ObservableProperty]
     private string fileName;

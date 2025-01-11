@@ -96,8 +96,18 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
 
     public async void OnNavigatedTo(object parameter)
     {
+        await UpdateBackupStatsAsync();
+    }
+
+    public void OnNavigatedFrom()
+    {
+        this.statusService.RemoveObserver(this);
+    }
+
+    private async Task UpdateBackupStatsAsync()
+    {
         // set backup dates
-        LastBackupDate = (await queryManager.GetLastBackupAsync()).CreationDate.ToLongDateString();
+        LastBackupDate = (await queryManager.GetLastBackupAsync()).CreationDate.HumanizeDate();
 
         // set configuration
         if (configurationManager.TaskType == TaskType.Auto)
@@ -123,15 +133,13 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         TotalBackups = (await queryManager.GetNumberOfVersionsAsync()).ToString("g");
     }
 
-    public void OnNavigatedFrom()
-    {
-        this.statusService.RemoveObserver(this);
-    }
-
     private async Task StartManualBackupCommandAsync()
     {
-        //await jobService.CreateBackupAsync("MainView_BtnCreateBackup_Title".GetLocalized(), "", true);
-        await this.presentationService.ShowCreateBackupWindow();
+        var (result, backup) = await this.presentationService.ShowCreateBackupWindow();
+        if (result)
+        {
+            await jobService.CreateBackupAsync(backup.Title ?? "Manual backup", backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);
+        }
     }
 
     public void ReportAction(ActionType action, bool silent)
@@ -140,13 +148,18 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
 
     public void ReportState(JobState jobState)
     {
-        dispatcherQueue.TryEnqueue(() =>
+        dispatcherQueue.TryEnqueue(async () =>
         {
             if (jobState == JobState.RUNNING)
             {
                 NextBackupGridVisibility = Visibility.Collapsed;
                 ProgressGridVisibility = Visibility.Visible;
                 return;
+            }
+
+            if (jobState == JobState.FINISHED)
+            {
+                await UpdateBackupStatsAsync();
             }
 
             NextBackupGridVisibility = Visibility.Visible;

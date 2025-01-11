@@ -13,4 +13,13 @@ public sealed partial class NewBackupWindow : WinUIEx.WindowEx
     {
         this.InitializeComponent();
     }
+
+    public async Task<bool> ShowDialogAsync()
+    {
+        this.Activate();
+        var result = await ViewModel.TaskCompletionSource.Task;
+
+        this.Close();
+        return result;
+    }
 }

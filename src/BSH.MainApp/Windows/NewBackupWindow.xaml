@@ -41,8 +41,8 @@
 
         <Grid Grid.Row="1" Background="#fafafa" Padding="30,20" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button>Cancel</Button>
-                <Button Style="{StaticResource AccentButtonStyle}">Create Backup</Button>
+                <Button Command="{x:Bind ViewModel.CancelCommand}">Cancel</Button>
+                <Button Command="{x:Bind ViewModel.StartBackupCommand}" Style="{StaticResource AccentButtonStyle}">Create Backup</Button>
             </StackPanel>
         </Grid>
     </Grid>
