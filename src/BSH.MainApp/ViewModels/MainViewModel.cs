@@ -67,11 +67,6 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
     [ObservableProperty]
     private int? currentProgressMax;
 
-    public ICommand StartManualBackupCommand
-    {
-        get;
-    }
-
     public MainViewModel(
         IPresentationService presentationService,
         IStatusService statusService,
@@ -89,25 +84,32 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         this.dispatcherQueue = dispatcherQueue;
         this.statusService.AddObserver(this, true);
         this.configurationManager = configurationManager;
-
-        // init commands
-        StartManualBackupCommand = new AsyncRelayCommand(StartManualBackupCommandAsync);
     }
 
     public async void OnNavigatedTo(object parameter)
     {
+        await UpdateBackupStatsAsync();
+    }
+
+    public void OnNavigatedFrom()
+    {
+        this.statusService.RemoveObserver(this);
+    }
+
+    private async Task UpdateBackupStatsAsync()
+    {
         // set backup dates
-        LastBackupDate = (await queryManager.GetLastBackupAsync()).CreationDate.ToLongDateString();
+        LastBackupDate = (await queryManager.GetLastBackupAsync()).CreationDate.HumanizeDate();
 
         // set configuration
         if (configurationManager.TaskType == TaskType.Auto)
         {
-            NextBackupDate = scheduledBackupService.GetNextBackupDate().ToString("DATETIME_FORMAT".GetLocalized());
+            NextBackupDate = scheduledBackupService.GetNextBackupDate().HumanizeDate();
             BackupMode = "MainView_BackupMode_Automatic".GetLocalized();
         }
         else if (configurationManager.TaskType == TaskType.Schedule)
         {
-            NextBackupDate = scheduledBackupService.GetNextBackupDate().ToString("DATETIME_FORMAT".GetLocalized());
+            NextBackupDate = scheduledBackupService.GetNextBackupDate().HumanizeDate();
             BackupMode = "MainView_BackupMode_Scheduled".GetLocalized();
         }
         else
@@ -123,15 +125,14 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         TotalBackups = (await queryManager.GetNumberOfVersionsAsync()).ToString("g");
     }
 
-    public void OnNavigatedFrom()
+    [RelayCommand]
+    private async Task StartManualBackup()
     {
-        this.statusService.RemoveObserver(this);
-    }
-
-    private async Task StartManualBackupCommandAsync()
-    {
-        //await jobService.CreateBackupAsync("MainView_BtnCreateBackup_Title".GetLocalized(), "", true);
-        await this.presentationService.ShowCreateBackupWindow();
+        var (result, backup) = await this.presentationService.ShowCreateBackupWindow();
+        if (result)
+        {
+            await jobService.CreateBackupAsync(backup.Title ?? "Manual backup", backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);
+        }
     }
 
     public void ReportAction(ActionType action, bool silent)
@@ -140,13 +141,18 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
 
     public void ReportState(JobState jobState)
     {
-        dispatcherQueue.TryEnqueue(() =>
+        dispatcherQueue.TryEnqueue(async () =>
         {
             if (jobState == JobState.RUNNING)
             {
                 NextBackupGridVisibility = Visibility.Collapsed;
                 ProgressGridVisibility = Visibility.Visible;
                 return;
+            }
+
+            if (jobState == JobState.FINISHED)
+            {
+                await UpdateBackupStatsAsync();
             }
 
             NextBackupGridVisibility = Visibility.Visible;

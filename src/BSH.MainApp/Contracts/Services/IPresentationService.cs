@@ -4,6 +4,7 @@
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Models;
+using BSH.MainApp.ViewModels.Windows;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Popups;
 
@@ -18,7 +19,7 @@ public interface IPresentationService
     Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
     void ShowAboutWindow();
     void ShowBackupBrowserWindow();
-    Task ShowCreateBackupWindow();
+    Task<(bool, NewBackupViewModel)> ShowCreateBackupWindow();
     void ShowErrorInsufficientDiskSpace();
     void ShowMainWindow();
     void ShowStatusWindow();
