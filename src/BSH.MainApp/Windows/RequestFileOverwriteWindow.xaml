@@ -73,7 +73,7 @@
                 </toolkit:SettingsCard.HeaderIcon>
             </toolkit:SettingsCard>
         </StackPanel>
-        <Grid Grid.Row="1" Background="#fafafa" Padding="30,20" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+        <Grid Grid.Row="1" Background="#fafafa" Padding="30,10" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
