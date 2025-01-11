@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<winuiex:WindowEx xmlns:winuiex="using:WinUIEx"
+    x:Class="BSH.MainApp.Windows.RequestFileOverwriteWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BSH.MainApp.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
+    mc:Ignorable="d"
+    Title="Overwrite or Skip Files"
+    IsMaximizable="False"
+    IsMinimizable="False"
+    IsAlwaysOnTop="True"
+    IsResizable="False"
+    Width="700"
+    Height="450">
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Margin="30" Spacing="10" Grid.Row="0" Orientation="Vertical">
+            <TextBlock Text="{x:Bind ViewModel.FileName}" />
+            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}">There is already a file with the same name at this location.</TextBlock>
+            <toolkit:SettingsCard IsClickEnabled="True" Header="Replace the file in the destination" Command="{x:Bind ViewModel.OverwriteFileCommand}">
+                <toolkit:SettingsCard.HeaderIcon>
+                    <FontIcon Foreground="Green" Glyph="&#xE8FB;" />
+                </toolkit:SettingsCard.HeaderIcon>
+                <toolkit:SettingsCard.Description>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock>Replace file in the destination folder with the file from backup:</TextBlock>
+                        <Grid Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Column="0" Grid.Row="0">Size:</TextBlock>
+                                <TextBlock Grid.Column="1" Grid.Row="0" Text="{x:Bind ViewModel.DestinationFileSize}" />
+                                <TextBlock Grid.Column="0" Grid.Row="1">Last modified:</TextBlock>
+                                <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind ViewModel.DestinationLastModified}" />
+                            </Grid>
+                            <Grid Grid.Column="1" ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="0">Size:</TextBlock>
+                                <TextBlock FontWeight="Bold" Grid.Column="1" Grid.Row="0" Text="{x:Bind ViewModel.SourceFileSize}" />
+                                <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="1">Last modified:</TextBlock>
+                                <TextBlock FontWeight="Bold" Grid.Column="1" Grid.Row="1" Text="{x:Bind ViewModel.SourceLastModified}" />
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                </toolkit:SettingsCard.Description>
+            </toolkit:SettingsCard>
+            <toolkit:SettingsCard IsClickEnabled="True" Header="Skip the file" Command="{x:Bind ViewModel.SkipFileCommand}">
+                <toolkit:SettingsCard.HeaderIcon>
+                    <FontIcon Foreground="DarkBlue" Glyph="&#xE7A7;" />
+                </toolkit:SettingsCard.HeaderIcon>
+            </toolkit:SettingsCard>
+        </StackPanel>
+        <Grid Grid.Row="1" Background="#fafafa" Padding="30,20" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <CheckBox IsChecked="{x:Bind ViewModel.ApplyToAll, Mode=TwoWay}">Apply for all conflicts</CheckBox>
+            <Button Grid.Column="1" Command="{x:Bind ViewModel.CancelCommand}">Cancel</Button>
+        </Grid>
+    </Grid>
+</winuiex:WindowEx>

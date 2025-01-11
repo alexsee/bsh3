@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Windows\NewBackupWindow.xaml" />
+    <None Remove="Windows\RequestFileOverwriteWindow.xaml" />
     <None Remove="Windows\RequestPasswordWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +55,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Windows\RequestFileOverwriteWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Windows\RequestPasswordWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

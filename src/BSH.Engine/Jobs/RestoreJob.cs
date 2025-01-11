@@ -1,16 +1,5 @@
-﻿// Copyright 2022 Alexander Seeliger
-//
-// Licensed under the Apache License, Version 2.0 (the "License")
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System;
 using System.Collections.Generic;
@@ -226,7 +215,7 @@ public class RestoreJob : Job
                     // copy path
                     try
                     {
-                        CopyFileFromDevice(storage, reader, fileDest);
+                        await CopyFileFromDevice(storage, reader, fileDest);
                         _logger.Information("File {fileName} restored successfully.", filePath + fileName);
                     }
                     catch (Exception ex)
@@ -325,7 +314,7 @@ public class RestoreJob : Job
     /// <param name="destination"></param>
     /// <param name="warning"></param>
     /// <exception cref="FileNotProcessedException"></exception>
-    public void CopyFileFromDevice(IStorage storage, IDataReader reader, string destination, bool warning = true)
+    public async Task CopyFileFromDevice(IStorage storage, IDataReader reader, string destination, bool warning = true)
     {
         ArgumentNullException.ThrowIfNull(storage);
 
@@ -355,7 +344,7 @@ public class RestoreJob : Job
                 };
 
                 // request user input for overwrite
-                var overwriteRequest = this.overwriteRequestPersistent != RequestOverwriteResult.None ? this.overwriteRequestPersistent : RequestOverwrite(localFile, remoteFile);
+                var overwriteRequest = this.overwriteRequestPersistent != RequestOverwriteResult.None ? this.overwriteRequestPersistent : await RequestOverwrite(localFile, remoteFile);
 
                 if (overwriteRequest == RequestOverwriteResult.NoOverwriteAll || overwriteRequest == RequestOverwriteResult.OverwriteAll)
                 {

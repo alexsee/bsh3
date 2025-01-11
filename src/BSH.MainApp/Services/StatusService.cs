@@ -146,59 +146,19 @@ public class StatusService : IJobReport, IStatusService
         ShowExceptionDialog();
     }
 
-    public RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
+    public async Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
     {
         if (lastFileOverwriteChoice != RequestOverwriteResult.None)
         {
             return lastFileOverwriteChoice;
         }
 
-        //using var dlgFilesOverwrite = new frmFileOverrides();
-        //dlgFilesOverwrite.lblFileName1.Text = remoteFile.FileName;
-        //dlgFilesOverwrite.lblFileName2.Text = localFile.FileName;
-        //dlgFilesOverwrite.lblFileDateChanged1.Text = Resources.LBL_CHANGE_DATE + remoteFile.FileDateModified.ToString();
-        //dlgFilesOverwrite.lblFileDateChanged2.Text = Resources.LBL_CHANGE_DATE + localFile.FileDateModified.ToString();
-        //dlgFilesOverwrite.lblFileSize1.Text = Resources.LBL_SIZE + remoteFile.FileSize.Bytes().Humanize();
-        //dlgFilesOverwrite.lblFileSize2.Text = Resources.LBL_SIZE + localFile.FileSize.Bytes().Humanize();
-        //if (!localFile.FilePath.StartsWith(@"\\"))
-        //{
-        //    dlgFilesOverwrite.picIco1.Image = Icon.ExtractAssociatedIcon(localFile.FilePath + localFile.FileName).ToBitmap();
-        //}
-
-        //dlgFilesOverwrite.picIco2.Image = dlgFilesOverwrite.picIco1.Image;
-
-        //// cancel
-        //if (dlgFilesOverwrite.ShowDialog() == DialogResult.Cancel)
-        //{
-        //    BackupLogic.BackupController.Cancel();
-        //    return RequestOverwriteResult.NoOverwrite;
-        //}
-
-        //// overwrite
-        //if (dlgFilesOverwrite.DialogResult == DialogResult.OK)
-        //{
-        //    if (dlgFilesOverwrite.chkAllConflicts.Checked)
-        //    {
-        //        lastFileOverwriteChoice = RequestOverwriteResult.OverwriteAll;
-        //        return RequestOverwriteResult.OverwriteAll;
-        //    }
-
-        //    return RequestOverwriteResult.Overwrite;
-        //}
-
-        //// ignore
-        //if (dlgFilesOverwrite.DialogResult == DialogResult.Ignore)
-        //{
-        //    if (dlgFilesOverwrite.chkAllConflicts.Checked)
-        //    {
-        //        lastFileOverwriteChoice = RequestOverwriteResult.NoOverwriteAll;
-        //        return RequestOverwriteResult.NoOverwriteAll;
-        //    }
-
-        //    return RequestOverwriteResult.NoOverwrite;
-        //}
-
-        return RequestOverwriteResult.NoOverwrite;
+        var result = await this.presentationService.RequestOverwrite(localFile, remoteFile);
+        if (result == RequestOverwriteResult.OverwriteAll || result == RequestOverwriteResult.NoOverwriteAll)
+        {
+            lastFileOverwriteChoice = result;
+        }
+        return result;
     }
 
     public void AddObserver(IStatusReport jobReport, bool triggerLastState = false)

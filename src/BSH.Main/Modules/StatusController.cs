@@ -1,20 +1,10 @@
-﻿// Copyright 2022 Alexander Seeliger
-//
-// Licensed under the Apache License, Version 2.0 (the "License")
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Exceptions;
@@ -169,61 +159,59 @@ public class StatusController : IJobReport
         ShowExceptionDialog();
     }
 
-    public RequestOverwriteResult RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
+    public async Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
     {
         if (lastFileOverwriteChoice != RequestOverwriteResult.None)
         {
             return lastFileOverwriteChoice;
         }
 
-        using (var dlgFilesOverwrite = new frmFileOverrides())
+        using var dlgFilesOverwrite = new frmFileOverrides();
+        dlgFilesOverwrite.lblFileName1.Text = remoteFile.FileName;
+        dlgFilesOverwrite.lblFileName2.Text = localFile.FileName;
+        dlgFilesOverwrite.lblFileDateChanged1.Text = Resources.LBL_CHANGE_DATE + remoteFile.FileDateModified.ToString();
+        dlgFilesOverwrite.lblFileDateChanged2.Text = Resources.LBL_CHANGE_DATE + localFile.FileDateModified.ToString();
+        dlgFilesOverwrite.lblFileSize1.Text = Resources.LBL_SIZE + remoteFile.FileSize.Bytes().Humanize();
+        dlgFilesOverwrite.lblFileSize2.Text = Resources.LBL_SIZE + localFile.FileSize.Bytes().Humanize();
+        if (!localFile.FilePath.StartsWith(@"\\"))
         {
-            dlgFilesOverwrite.lblFileName1.Text = remoteFile.FileName;
-            dlgFilesOverwrite.lblFileName2.Text = localFile.FileName;
-            dlgFilesOverwrite.lblFileDateChanged1.Text = Resources.LBL_CHANGE_DATE + remoteFile.FileDateModified.ToString();
-            dlgFilesOverwrite.lblFileDateChanged2.Text = Resources.LBL_CHANGE_DATE + localFile.FileDateModified.ToString();
-            dlgFilesOverwrite.lblFileSize1.Text = Resources.LBL_SIZE + remoteFile.FileSize.Bytes().Humanize();
-            dlgFilesOverwrite.lblFileSize2.Text = Resources.LBL_SIZE + localFile.FileSize.Bytes().Humanize();
-            if (!localFile.FilePath.StartsWith(@"\\"))
+            dlgFilesOverwrite.picIco1.Image = Icon.ExtractAssociatedIcon(localFile.FilePath + localFile.FileName).ToBitmap();
+        }
+
+        dlgFilesOverwrite.picIco2.Image = dlgFilesOverwrite.picIco1.Image;
+
+        // cancel
+        if (await dlgFilesOverwrite.ShowDialogAsync() == DialogResult.Cancel)
+        {
+            BackupLogic.BackupController.Cancel();
+            return RequestOverwriteResult.NoOverwrite;
+        }
+
+        // overwrite
+        if (dlgFilesOverwrite.DialogResult == DialogResult.OK)
+        {
+            if (dlgFilesOverwrite.chkAllConflicts.Checked)
             {
-                dlgFilesOverwrite.picIco1.Image = Icon.ExtractAssociatedIcon(localFile.FilePath + localFile.FileName).ToBitmap();
+                lastFileOverwriteChoice = RequestOverwriteResult.OverwriteAll;
+                return RequestOverwriteResult.OverwriteAll;
             }
 
-            dlgFilesOverwrite.picIco2.Image = dlgFilesOverwrite.picIco1.Image;
+            return RequestOverwriteResult.Overwrite;
+        }
 
-            // cancel
-            if (dlgFilesOverwrite.ShowDialog() == DialogResult.Cancel)
+        // ignore
+        if (dlgFilesOverwrite.DialogResult == DialogResult.Ignore)
+        {
+            if (dlgFilesOverwrite.chkAllConflicts.Checked)
             {
-                BackupLogic.BackupController.Cancel();
-                return RequestOverwriteResult.NoOverwrite;
-            }
-
-            // overwrite
-            if (dlgFilesOverwrite.DialogResult == DialogResult.OK)
-            {
-                if (dlgFilesOverwrite.chkAllConflicts.Checked)
-                {
-                    lastFileOverwriteChoice = RequestOverwriteResult.OverwriteAll;
-                    return RequestOverwriteResult.OverwriteAll;
-                }
-
-                return RequestOverwriteResult.Overwrite;
-            }
-
-            // ignore
-            if (dlgFilesOverwrite.DialogResult == DialogResult.Ignore)
-            {
-                if (dlgFilesOverwrite.chkAllConflicts.Checked)
-                {
-                    lastFileOverwriteChoice = RequestOverwriteResult.NoOverwriteAll;
-                    return RequestOverwriteResult.NoOverwriteAll;
-                }
-
-                return RequestOverwriteResult.NoOverwrite;
+                lastFileOverwriteChoice = RequestOverwriteResult.NoOverwriteAll;
+                return RequestOverwriteResult.NoOverwriteAll;
             }
 
             return RequestOverwriteResult.NoOverwrite;
         }
+
+        return RequestOverwriteResult.NoOverwrite;
     }
 
     public void AddObserver(IStatusReport jobReport, bool triggerLastState = false)
@@ -244,28 +232,26 @@ public class StatusController : IJobReport
         }
 
         // files with exceptions
-        using (var dlgFileNotCopied = new frmFileNotCopied())
+        using var dlgFileNotCopied = new frmFileNotCopied();
+        foreach (var entry in LastFilesException)
         {
-            foreach (var entry in LastFilesException)
+            var innerException = entry.Exception.Message.ToString();
+
+            // show inner exception if file not processed exception
+            if (entry.Exception.GetType() == typeof(FileNotProcessedException) &&
+                entry.Exception.InnerException != null)
             {
-                var innerException = entry.Exception.Message.ToString();
-
-                // show inner exception if file not processed exception
-                if (entry.Exception.GetType() == typeof(FileNotProcessedException) &&
-                    entry.Exception.InnerException != null)
-                {
-                    innerException = entry.Exception.InnerException.Message.ToString();
-                }
-
-                var newEntry = new ListViewItem();
-                newEntry.Text = entry.File.FileNamePath();
-                newEntry.SubItems.Add(innerException);
-                newEntry.Tag = entry;
-                dlgFileNotCopied.lvFiles.Items.Add(newEntry);
+                innerException = entry.Exception.InnerException.Message.ToString();
             }
 
-            dlgFileNotCopied.ShowDialog();
+            var newEntry = new ListViewItem();
+            newEntry.Text = entry.File.FileNamePath();
+            newEntry.SubItems.Add(innerException);
+            newEntry.Tag = entry;
+            dlgFileNotCopied.lvFiles.Items.Add(newEntry);
         }
+
+        dlgFileNotCopied.ShowDialog();
     }
 
     public void RequestShowErrorInsufficientDiskSpace()

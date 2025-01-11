@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.Windows;
@@ -53,6 +55,12 @@ public class PresentationService : IPresentationService
         }
 
         return (null, false);
+    }
+
+    public async Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
+    {
+        var dialog = new RequestFileOverwriteWindow();
+        return await dialog.ShowDialogAsync(localFile, remoteFile);
     }
 
     public void ShowErrorInsufficientDiskSpace()
