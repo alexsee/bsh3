@@ -109,6 +109,21 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
     private bool CanUpFolder() => CurrentFolderPath.Count > 1;
 
     [RelayCommand]
+    private async Task Refresh()
+    {
+        if (CurrentVersion == null)
+        {
+            return;
+        }
+
+        var version = CurrentVersion;
+        LoadVersions();
+
+        CurrentVersion = version;
+        await LoadFolderAsync(version.Id, CurrentFolderPath[^1].FullPath);
+    }
+
+    [RelayCommand]
     private async Task LoadFolderWithParam(FileOrFolderItem selectedItem)
     {
         if (selectedItem == null || CurrentVersion == null)

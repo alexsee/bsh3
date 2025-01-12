@@ -86,9 +86,12 @@
                 <ColumnDefinition Width="250" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
                 <Button VerticalAlignment="Center" Command="{x:Bind ViewModel.UpFolderCommand}" Style="{StaticResource AddressToolbarButtonStyle}">
-                    <FontIcon FontSize="16" Glyph="&#xe72b;" />
+                    <FontIcon FontSize="16" Glyph="&#xe74a;" />
+                </Button>
+                <Button VerticalAlignment="Center" Command="{x:Bind ViewModel.RefreshCommand}" Style="{StaticResource AddressToolbarButtonStyle}">
+                    <FontIcon FontSize="16" Glyph="&#xe72c;" />
                 </Button>
             </StackPanel>
 
@@ -291,7 +294,7 @@
                     BorderBrush="#f0f0f0" 
                     BorderThickness="1,0,0,0" 
                     Visibility="{Binding ToggleInfoPane, Converter={StaticResource VisibilityConverter}}"
-                    MinWidth="300">
+                    Width="300">
 
                     <StackPanel
                         Orientation="Vertical"
@@ -299,7 +302,7 @@
                         <TextBlock HorizontalAlignment="Center" FontWeight="Bold" Text="{Binding CurrentItem.Name}" />
 
                         <TextBlock Style="{StaticResource InfoPaneTitleStyle}">Path</TextBlock>
-                        <TextBlock Text="{Binding CurrentItem.FullPath}" />
+                        <TextBlock Text="{Binding CurrentItem.FullPath}" TextWrapping="Wrap" />
 
                         <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Date created</TextBlock>
                         <TextBlock Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}" Text="{Binding CurrentItem.FileDateCreated}" />
