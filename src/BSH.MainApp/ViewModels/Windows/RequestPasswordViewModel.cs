@@ -4,7 +4,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BSH.MainApp.ViewModels.Windows;
-public partial class RequestPasswordViewModel : ObservableRecipient
+public partial class RequestPasswordViewModel : ObservableObject
 {
     [ObservableProperty]
     private string? password;

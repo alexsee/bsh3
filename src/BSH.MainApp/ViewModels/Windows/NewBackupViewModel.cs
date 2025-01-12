@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
-public partial class NewBackupViewModel : ObservableRecipient
+public partial class NewBackupViewModel : ObservableObject
 {
     public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
 

@@ -15,7 +15,7 @@
         <DataTemplate x:Name="VersionTemplate" x:DataType="engine:VersionDetails">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <FontIcon VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" Margin="0,0,10,0"/>
-                <TextBlock VerticalAlignment="Center" Text="{Binding Path=CreationDate}" />
+                <TextBlock VerticalAlignment="Center" Text="{x:Bind CreationDate, Mode=OneWay}" />
             </StackPanel>
         </DataTemplate>
 
@@ -32,13 +32,12 @@
                         <core:ChangePropertyAction PropertyName="Opacity" Value="1.0" />
                     </core:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
-                <TextBlock Text="{Binding FileName}" VerticalAlignment="Center" FontSize="12" FontWeight="Medium" />
+                <TextBlock Text="{x:Bind FileName, Mode=OneWay}" VerticalAlignment="Center" FontSize="12" FontWeight="Medium" />
             </StackPanel>
         </DataTemplate>
 
-        <converters:BooleanInverterConverter x:Key="BooleanInverter" />
+        <converters:VisibilityInvertConverter x:Key="VisibilityInvertConverter" />
         <converters:FileSizeConverter x:Key="FileSizeConverter" />
-        <converters:VisibilityConverter x:Key="VisibilityConverter" />
 
         <Style
 			x:Key="AddressToolbarButtonStyle"
@@ -108,19 +107,19 @@
 				CornerRadius="{StaticResource ControlCornerRadius}">
                 <BreadcrumbBar
                     Background="White"
-                    ItemsSource="{Binding CurrentFolderPath}"
+                    ItemsSource="{x:Bind ViewModel.CurrentFolderPath, Mode=OneWay}"
                     ItemClicked="BreadcrumbBar_ItemClicked"
                     VerticalAlignment="Center">
                     <BreadcrumbBar.ItemTemplate>
                         <DataTemplate x:DataType="models:FileOrFolderItem">
-                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="{x:Bind Name, Mode=OneWay}" />
                         </DataTemplate>
                     </BreadcrumbBar.ItemTemplate>
                 </BreadcrumbBar>
             </Grid>
 
             <!-- search box -->
-            <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" Text="{Binding SearchTerms}" />
+            <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" Text="{x:Bind ViewModel.SearchTerms, Mode=TwoWay}" />
         </Grid>
 
 
@@ -136,7 +135,7 @@
 
                     <!-- favorites -->
                     <TextBlock Grid.Row="0" Text="Favourites" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
-                    <ListView Margin="8,0,12,0" SelectedItem="{Binding CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{Binding Favorites}">
+                    <ListView Margin="8,0,12,0" SelectedItem="{x:Bind ViewModel.CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{x:Bind ViewModel.Favorites, Mode=TwoWay}">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="SelectionChanged">
                                 <core:InvokeCommandAction Command="{x:Bind ViewModel.LoadFavoriteCommand}" />
@@ -150,8 +149,8 @@
                         Grid.Row="3" 
                         Margin="8,0,12,0"
                         ItemTemplate="{StaticResource VersionTemplate}" 
-                        ItemsSource="{Binding Versions}" 
-                        SelectedItem="{Binding CurrentVersion, Mode=TwoWay}">
+                        ItemsSource="{x:Bind ViewModel.Versions, Mode=TwoWay}" 
+                        SelectedItem="{x:Bind ViewModel.CurrentVersion, Mode=TwoWay}">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="SelectionChanged">
                                 <core:InvokeCommandAction Command="{x:Bind ViewModel.LoadVersionCommand}"/>
@@ -247,7 +246,7 @@
                 <!-- file and folder list -->
                 <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
                     <ListView 
-                        ItemsSource="{Binding Items}" 
+                        ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" 
                         SelectedItem="{x:Bind ViewModel.CurrentItem, Mode=TwoWay}">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="DoubleTapped">
@@ -277,12 +276,12 @@
                                         <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Orientation="Horizontal">
-                                        <FontIcon Visibility="{Binding Path=IsFile, Converter={StaticResource BooleanInverter}}" VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B7;" Margin="0,0,10,0" />
-                                        <Image Visibility="{Binding Path=IsFile}" Source="{Binding Icon}" Height="16" Width="16" Margin="0,0,10,0" />
-                                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding Name}" />
+                                        <FontIcon Visibility="{x:Bind IsFile, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}" VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B7;" Margin="0,0,10,0" />
+                                        <Image Visibility="{x:Bind IsFile, Mode=OneWay}" Source="{x:Bind Icon, Mode=OneWay}" Height="16" Width="16" Margin="0,0,10,0" />
+                                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{x:Bind Name, Mode=OneWay}" />
                                     </StackPanel>
-                                    <TextBlock Visibility="{Binding IsFile}" Grid.Column="1" VerticalAlignment="Center" Text="{Binding FileDateModified}"/>
-                                    <TextBlock Visibility="{Binding IsFile}" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}}"/>
+                                    <TextBlock Visibility="{x:Bind IsFile, Mode=OneWay}" Grid.Column="1" VerticalAlignment="Center" Text="{x:Bind FileDateModified, Mode=OneWay}"/>
+                                    <TextBlock Visibility="{x:Bind IsFile, Mode=OneWay}" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Text="{x:Bind FileSize, Mode=OneWay, Converter={StaticResource FileSizeConverter}}"/>
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -298,21 +297,21 @@
                     Padding="20" 
                     BorderBrush="#f0f0f0" 
                     BorderThickness="1,0,0,0" 
-                    Visibility="{Binding ToggleInfoPane, Converter={StaticResource VisibilityConverter}}"
+                    Visibility="{x:Bind ViewModel.ToggleInfoPane, Mode=OneWay}"
                     Width="300">
                     <StackPanel
                         Orientation="Vertical"
                         Spacing="8">
-                        <TextBlock HorizontalAlignment="Center" FontWeight="Bold" Text="{Binding CurrentItem.Name}" />
+                        <TextBlock HorizontalAlignment="Center" FontWeight="Bold" Text="{x:Bind ViewModel.CurrentItem.Name, Mode=OneWay}" />
 
                         <TextBlock Style="{StaticResource InfoPaneTitleStyle}">Path</TextBlock>
-                        <TextBlock Text="{Binding CurrentItem.FullPath}" TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Bind ViewModel.CurrentItem.FullPath, Mode=OneWay}" TextWrapping="Wrap" />
 
-                        <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Date created</TextBlock>
-                        <TextBlock Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}" Text="{Binding CurrentItem.FileDateCreated}" />
+                        <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}">Date created</TextBlock>
+                        <TextBlock Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Text="{x:Bind ViewModel.CurrentItem.FileDateCreated, Mode=OneWay}" />
 
-                        <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Last modified</TextBlock>
-                        <TextBlock Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}" Text="{Binding CurrentItem.FileDateModified}" />
+                        <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}">Last modified</TextBlock>
+                        <TextBlock Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Text="{x:Bind ViewModel.CurrentItem.FileDateModified, Mode=OneWay}" />
                     </StackPanel>
                 </Grid>
             </Grid>

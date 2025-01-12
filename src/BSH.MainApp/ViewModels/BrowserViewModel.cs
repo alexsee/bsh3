@@ -12,7 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BSH.MainApp.ViewModels;
 
-public partial class BrowserViewModel : ObservableRecipient, INavigationAware
+public partial class BrowserViewModel : ObservableObject, INavigationAware
 {
     private readonly IQueryManager queryManager;
     private readonly IJobService jobService;
@@ -38,13 +38,17 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
     [ObservableProperty]
     private bool toggleInfoPane = false;
 
-    public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<FileOrFolderItem> currentFolderPath = new();
 
-    public ObservableCollection<string> Favorites { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<string> favorites = new();
 
-    public ObservableCollection<FileOrFolderItem> Items { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<FileOrFolderItem> items = new();
 
-    public ObservableCollection<VersionDetails> Versions { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<VersionDetails> versions = new();
 
     public BrowserViewModel(IQueryManager queryManager, IJobService jobService)
     {
@@ -111,7 +115,7 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
     [RelayCommand]
     private async Task Refresh()
     {
-        if (CurrentVersion == null)
+        if (CurrentVersion == null && CurrentFolderPath.Count > 0)
         {
             return;
         }
@@ -268,10 +272,11 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
         UpFolderCommand.NotifyCanExecuteChanged();
     }
 
-    public void OnNavigatedTo(object parameter)
+    public async void OnNavigatedTo(object parameter)
     {
         LoadVersions();
         CurrentVersion = Versions[0];
+        await LoadVersion();
     }
 
     public void OnNavigatedFrom()
