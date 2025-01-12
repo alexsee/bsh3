@@ -25,6 +25,8 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
     [NotifyCanExecuteChangedFor(nameof(RestoreAllCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowFilePreviewCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowFilePropertiesCommand))]
     private FileOrFolderItem? currentItem;
 
     [ObservableProperty]
@@ -32,6 +34,9 @@ public partial class BrowserViewModel : ObservableRecipient, INavigationAware
 
     [ObservableProperty]
     private string searchTerms;
+
+    [ObservableProperty]
+    private bool toggleInfoPane = false;
 
     public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; } = new();
 

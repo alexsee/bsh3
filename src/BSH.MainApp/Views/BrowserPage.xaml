@@ -5,9 +5,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:BSH.MainApp.Helpers"
+    xmlns:converters="using:BSH.MainApp.Converters"
     xmlns:models="using:BSH.MainApp.Models"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:engine="using:Brightbits.BSH.Engine.Models" xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-    Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -19,11 +20,55 @@
         </DataTemplate>
 
         <DataTemplate x:Name="FileOrFolderTemplate" x:DataType="engine:FileTableRow">
-            <TextBlock Text="{Binding FileName}" />
+            <StackPanel
+                Orientation="Horizontal"
+                Spacing="4"
+                Background="Transparent">
+                <i:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="PointerEntered">
+                        <core:ChangePropertyAction PropertyName="Opacity" Value="0.7" />
+                    </core:EventTriggerBehavior>
+                    <core:EventTriggerBehavior EventName="PointerExited">
+                        <core:ChangePropertyAction PropertyName="Opacity" Value="1.0" />
+                    </core:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+                <TextBlock Text="{Binding FileName}" VerticalAlignment="Center" FontSize="12" FontWeight="Medium" />
+            </StackPanel>
         </DataTemplate>
 
-        <helpers:BooleanInverterConverter x:Key="BooleanInverter" />
-        <helpers:FileSizeConverter x:Key="FileSizeConverter" />
+        <converters:BooleanInverterConverter x:Key="BooleanInverter" />
+        <converters:FileSizeConverter x:Key="FileSizeConverter" />
+        <converters:VisibilityConverter x:Key="VisibilityConverter" />
+
+        <Style
+			x:Key="AddressToolbarButtonStyle"
+			BasedOn="{StaticResource DefaultButtonStyle}"
+			TargetType="Button">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Foreground" Value="{StaticResource App.Theme.IconBaseColor}"/>
+        </Style>
+
+        <Style
+            x:Key="SideBarTitleStyle"
+            TargetType="TextBlock">
+            <Setter Target="Margin" Value="8,0,12,0" />
+            <Setter Target="FontSize" Value="12" />
+            <Setter Target="FontWeight" Value="SemiBold" />
+            <Setter Target="Foreground" Value="{ThemeResource TextFillColorTertiaryBrush}" />
+        </Style>
+
+        <Style
+            x:Key="InfoPaneTitleStyle"
+            TargetType="TextBlock">
+            <Setter Target="Margin" Value="0,10,0,0" />
+            <Setter Target="FontSize" Value="12" />
+            <Setter Target="FontWeight" Value="SemiBold" />
+            <Setter Target="Foreground" Value="{ThemeResource TextFillColorTertiaryBrush}" />
+        </Style>
     </Page.Resources>
 
     <Grid Background="White">
@@ -34,7 +79,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" ColumnSpacing="10" Padding="10">
+        <Grid Grid.Row="0" ColumnSpacing="4" Padding="10" Background="{StaticResource App.Theme.AddressBar.BackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -42,64 +87,40 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <Button VerticalAlignment="Center" Command="{x:Bind ViewModel.UpFolderCommand}">
+                <Button VerticalAlignment="Center" Command="{x:Bind ViewModel.UpFolderCommand}" Style="{StaticResource AddressToolbarButtonStyle}">
                     <FontIcon FontSize="16" Glyph="&#xe72b;" />
                 </Button>
             </StackPanel>
 
-            <BreadcrumbBar Grid.Column="1" ItemsSource="{Binding CurrentFolderPath}" ItemClicked="BreadcrumbBar_ItemClicked">
-                <BreadcrumbBar.ItemTemplate>
-                    <DataTemplate x:DataType="models:FileOrFolderItem">
-                        <TextBlock Text="{Binding Name}" />
-                    </DataTemplate>
-                </BreadcrumbBar.ItemTemplate>
-            </BreadcrumbBar>
+            <Grid
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch"
+                Background="{ThemeResource TextControlBackground}"
+				BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+				BorderThickness="1"
+                Padding="6,0,12,0"
+				CornerRadius="{StaticResource ControlCornerRadius}">
+                <BreadcrumbBar
+                    Background="White"
+                    ItemsSource="{Binding CurrentFolderPath}"
+                    ItemClicked="BreadcrumbBar_ItemClicked"
+                    VerticalAlignment="Center">
+                    <BreadcrumbBar.ItemTemplate>
+                        <DataTemplate x:DataType="models:FileOrFolderItem">
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </BreadcrumbBar.ItemTemplate>
+                </BreadcrumbBar>
+            </Grid>
 
             <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" Text="{Binding SearchTerms}" />
         </Grid>
 
-        <Grid Grid.Row="1">
-            <Grid.Resources>
-                <GridLength x:Key="CommandAreaGridLength">Auto</GridLength>
-            </Grid.Resources>
 
-            <CommandBar IsOpen="False" DefaultLabelPosition="Right" ClosedDisplayMode="Compact">
-                <AppBarButton Icon="Edit" Label="Organize">
-                    <AppBarButton.Flyout>
-                        <MenuFlyout>
-                            <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreFileCommand}" Icon="Copy" Text="Restore" />
-                            <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllCommand}" Text="Restore all"/>
-                            <MenuFlyoutItem Command="{x:Bind ViewModel.ShowFilePropertiesCommand}" Text="Properties" />
-                            <MenuFlyoutSeparator />
-                            <MenuFlyoutItem Command="{x:Bind ViewModel.ShowFilePreviewCommand}" Icon="View" Text="Quick preview" />
-                            <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Text="Add to folder favorites"/>
-                            <MenuFlyoutSeparator />
-                            <MenuFlyoutItem Command="{x:Bind ViewModel.EditBackupCommand}" Icon="Edit" Text="Edit backup" />
-                            <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupCommand}" Icon="Delete" Text="Delete backup"/>
-                            <MenuFlyoutItem Command="{x:Bind ViewModel.LockBackupCommand}" Text="Lock backup" />
-                            <MenuFlyoutSeparator />
-                            <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupsCommand}" Text="Delete multiple backups"/>
-                        </MenuFlyout>
-                    </AppBarButton.Flyout>
-                </AppBarButton>
-                <AppBarButton Command="{x:Bind ViewModel.ShowFilePreviewCommand}" Icon="View" Label="Quick preview" />
-                <AppBarSeparator />
-                <AppBarButton Command="{x:Bind ViewModel.RestoreFileCommand}" Icon="Copy" Label="Restore" />
-                <AppBarButton Label="View" IsEnabled="False">
-                    <AppBarButton.Flyout>
-                        <MenuFlyout>
-                            <MenuFlyoutItem Text="Large symbols" />
-                            <MenuFlyoutItem Icon="List" Text="List"/>
-                            <MenuFlyoutItem Text="Details" />
-                        </MenuFlyout>
-                    </AppBarButton.Flyout>
-                </AppBarButton>
-            </CommandBar>
-        </Grid>
-
-        <SplitView Grid.Row="2" IsPaneOpen="True" DisplayMode="Inline">
+        <SplitView Grid.Row="2" IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="250">
             <SplitView.Pane>
-                <Grid RowSpacing="10">
+                <Grid RowSpacing="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -108,8 +129,8 @@
                     </Grid.RowDefinitions>
 
                     <!-- favorites -->
-                    <TextBlock Grid.Row="0" Text="Favorites" Margin="20,10,0,0" Style="{StaticResource BaseTextBlockStyle}" />
-                    <ListView SelectedItem="{Binding CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{Binding Favorites}">
+                    <TextBlock Grid.Row="0" Text="Favourites" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
+                    <ListView Margin="8,0,12,0" SelectedItem="{Binding CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{Binding Favorites}">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="SelectionChanged">
                                 <core:InvokeCommandAction Command="{x:Bind ViewModel.LoadFavoriteCommand}" />
@@ -118,9 +139,10 @@
                     </ListView>
 
                     <!-- backup list -->
-                    <TextBlock Grid.Row="2" Text="Backups" Margin="20,0,0,0" Style="{StaticResource BaseTextBlockStyle}" />
+                    <TextBlock Grid.Row="2" Text="Backups" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
                     <ListView 
                         Grid.Row="3" 
+                        Margin="8,0,12,0"
                         ItemTemplate="{StaticResource VersionTemplate}" 
                         ItemsSource="{Binding Versions}" 
                         SelectedItem="{Binding CurrentVersion, Mode=TwoWay}">
@@ -133,13 +155,89 @@
                 </Grid>
             </SplitView.Pane>
 
-            <Grid>
+            <Grid BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                <ScrollViewer Grid.Row="0" VerticalScrollMode="Auto">
+                <Grid
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2"
+		            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+		            BorderThickness="0,0,0,1">
+                    <Grid.Resources>
+                        <GridLength x:Key="CommandAreaGridLength">Auto</GridLength>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <CommandBar IsOpen="False" DefaultLabelPosition="Right" ClosedDisplayMode="Compact" HorizontalAlignment="Left">
+                        <AppBarButton 
+                            Command="{x:Bind ViewModel.RestoreFileCommand}" 
+                            Icon="Copy" 
+                            Label="Restore" />
+                        <AppBarSeparator />
+                        <AppBarButton 
+                            Command="{x:Bind ViewModel.ShowFilePreviewCommand}" 
+                            Icon="Preview"
+                            Label="Quick preview"
+                            LabelPosition="Collapsed"
+                            Width="Auto"
+                            MinWidth="40" />
+                        <AppBarButton 
+                            Command="{x:Bind ViewModel.ShowFilePropertiesCommand}" 
+                            Label="Properties"
+                            LabelPosition="Collapsed"
+                            Width="Auto"
+                            MinWidth="40"
+                        >
+                            <AppBarButton.Icon>
+                                <FontIcon FontSize="16" Glyph="&#xe946;" />
+                            </AppBarButton.Icon>
+                        </AppBarButton>
+                    </CommandBar>
+
+                    <CommandBar
+			            Grid.Column="1"
+			            DefaultLabelPosition="Right">
+                        <AppBarToggleButton
+                            Label="Preview pane"
+                            LabelPosition="Collapsed"
+                            Icon="OpenPane"
+                            Width="Auto"
+                            MinWidth="40"
+                            IsChecked="{x:Bind ViewModel.ToggleInfoPane, Mode=TwoWay}" />
+                        <AppBarButton 
+                            Icon="More" 
+                            Label="Organize"
+                            LabelPosition="Collapsed"
+                            Width="Auto"
+                            MinWidth="40">
+                            <AppBarButton.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllCommand}" Text="Restore all"/>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Text="Add to folder favorites"/>
+                                    <MenuFlyoutSeparator />
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.EditBackupCommand}" Icon="Edit" Text="Edit backup" />
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupCommand}" Icon="Delete" Text="Delete backup"/>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.LockBackupCommand}" Text="Lock backup" />
+                                    <MenuFlyoutSeparator />
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupsCommand}" Text="Delete multiple backups"/>
+                                </MenuFlyout>
+                            </AppBarButton.Flyout>
+                        </AppBarButton>
+                    </CommandBar>
+                </Grid>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
                     <!-- file and folder list -->
                     <ListView 
                         ItemsSource="{Binding Items}" 
@@ -184,25 +282,32 @@
                     </ListView>
                 </ScrollViewer>
 
-                <Grid Grid.Row="1" ColumnSpacing="15" RowSpacing="10" Padding="20">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <Grid 
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    ColumnSpacing="15" 
+                    RowSpacing="10" 
+                    Padding="20" 
+                    BorderBrush="#f0f0f0" 
+                    BorderThickness="1,0,0,0" 
+                    Visibility="{Binding ToggleInfoPane, Converter={StaticResource VisibilityConverter}}"
+                    MinWidth="300">
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{Binding CurrentItem.Name}" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding CurrentItem.FullPath}" />
+                    <StackPanel
+                        Orientation="Vertical"
+                        Spacing="8">
+                        <TextBlock HorizontalAlignment="Center" FontWeight="Bold" Text="{Binding CurrentItem.Name}" />
 
-                    <TextBlock Grid.Row="0" Grid.Column="1" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Date created:</TextBlock>
-                    <TextBlock Grid.Row="0" Grid.Column="2" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}" Text="{Binding CurrentItem.FileDateCreated}" />
+                        <TextBlock Style="{StaticResource InfoPaneTitleStyle}">Path</TextBlock>
+                        <TextBlock Text="{Binding CurrentItem.FullPath}" />
 
-                    <TextBlock Grid.Row="1" Grid.Column="1" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Last modified:</TextBlock>
-                    <TextBlock Grid.Row="1" Grid.Column="2" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}" Text="{Binding CurrentItem.FileDateModified}" />
+                        <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Date created</TextBlock>
+                        <TextBlock Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}" Text="{Binding CurrentItem.FileDateCreated}" />
+
+                        <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Last modified</TextBlock>
+                        <TextBlock Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}" Text="{Binding CurrentItem.FileDateModified}" />
+                    </StackPanel>
+
                 </Grid>
             </Grid>
         </SplitView>

@@ -4,7 +4,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 
-namespace BSH.MainApp.Helpers;
+namespace BSH.MainApp.Converters;
 
 public class EnumComparisonConverter : IValueConverter
 {

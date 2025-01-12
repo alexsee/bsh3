@@ -3,7 +3,7 @@
 
 using Microsoft.UI.Xaml.Data;
 
-namespace BSH.MainApp.Helpers;
+namespace BSH.MainApp.Converters;
 
 public class BooleanInverterConverter : IValueConverter
 {

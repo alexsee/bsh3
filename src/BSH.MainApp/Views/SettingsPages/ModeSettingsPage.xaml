@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="using:BSH.MainApp.Helpers"
+    xmlns:converters="using:BSH.MainApp.Converters"
     xmlns:engine="using:Brightbits.BSH.Engine"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
@@ -24,7 +24,7 @@
             </Style.Setters>
         </Style>
 
-        <local:EnumComparisonConverter x:Key="EnumComparisonConverter" />
+        <converters:EnumComparisonConverter x:Key="EnumComparisonConverter" />
 
         <engine:TaskType x:Key="TaskType_Auto">Auto</engine:TaskType>
         <engine:TaskType x:Key="TaskType_Schedule">Schedule</engine:TaskType>
