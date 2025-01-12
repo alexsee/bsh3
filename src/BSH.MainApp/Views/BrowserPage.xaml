@@ -79,7 +79,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" ColumnSpacing="4" Padding="10" Background="{StaticResource App.Theme.AddressBar.BackgroundBrush}">
+        <Grid Grid.Row="0" ColumnSpacing="4" Padding="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />

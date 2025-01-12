@@ -16,7 +16,6 @@
             <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled">Transparent</SolidColorBrush>
 
             <Color x:Key="App.Theme.IconBaseColor">#DB202020</Color>
-            <SolidColorBrush x:Key="App.Theme.AddressBar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
