@@ -86,6 +86,7 @@
                 <ColumnDefinition Width="250" />
             </Grid.ColumnDefinitions>
 
+            <!-- toolbar -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
                 <Button VerticalAlignment="Center" Command="{x:Bind ViewModel.UpFolderCommand}" Style="{StaticResource AddressToolbarButtonStyle}">
                     <FontIcon FontSize="16" Glyph="&#xe74a;" />
@@ -95,6 +96,7 @@
                 </Button>
             </StackPanel>
 
+            <!-- breadcrumb bar -->
             <Grid
                 Grid.Column="1"
                 HorizontalAlignment="Stretch"
@@ -117,6 +119,7 @@
                 </BreadcrumbBar>
             </Grid>
 
+            <!-- search box -->
             <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" Text="{Binding SearchTerms}" />
         </Grid>
 
@@ -169,6 +172,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
+                <!-- command bar -->
                 <Grid
                     Grid.Row="0"
                     Grid.ColumnSpan="2"
@@ -240,8 +244,8 @@
                     </CommandBar>
                 </Grid>
 
+                <!-- file and folder list -->
                 <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
-                    <!-- file and folder list -->
                     <ListView 
                         ItemsSource="{Binding Items}" 
                         SelectedItem="{x:Bind ViewModel.CurrentItem, Mode=TwoWay}">
@@ -285,6 +289,7 @@
                     </ListView>
                 </ScrollViewer>
 
+                <!-- info pane -->
                 <Grid 
                     Grid.Row="1"
                     Grid.Column="1"
@@ -295,7 +300,6 @@
                     BorderThickness="1,0,0,0" 
                     Visibility="{Binding ToggleInfoPane, Converter={StaticResource VisibilityConverter}}"
                     Width="300">
-
                     <StackPanel
                         Orientation="Vertical"
                         Spacing="8">
@@ -310,7 +314,6 @@
                         <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}">Last modified</TextBlock>
                         <TextBlock Visibility="{Binding CurrentItem.IsFile, FallbackValue='Collapsed'}" Text="{Binding CurrentItem.FileDateModified}" />
                     </StackPanel>
-
                 </Grid>
             </Grid>
         </SplitView>
