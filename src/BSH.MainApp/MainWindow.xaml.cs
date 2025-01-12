@@ -4,6 +4,7 @@
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Helpers;
 using Microsoft.UI.Xaml.Media;
+using WinUIEx;
 
 namespace BSH.MainApp;
 
@@ -35,5 +36,11 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
         {
             App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.SettingsViewModel");
         }
+    }
+
+    private void WindowEx_Closed(object sender, Microsoft.UI.Xaml.WindowEventArgs args)
+    {
+        args.Handled = true;
+        this.Hide();
     }
 }

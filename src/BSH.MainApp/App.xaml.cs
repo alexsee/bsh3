@@ -144,7 +144,6 @@ public partial class App : Application
         App.GetService<IStatusService>().Initialize();
 
         await App.GetService<IOrchestrationService>().InitializeAsync();
-        // await App.GetService<IActivationService>().ActivateAsync(args);
 
         InitializeTrayIcon();
     }
@@ -160,8 +159,28 @@ public partial class App : Application
         var showMainWindowCommand = (XamlUICommand)Resources["ShowMainWindowCommand"];
         showMainWindowCommand.ExecuteRequested += ShowMainWindowCommand_ExecuteRequested;
 
+        var startManualBackupCommand = (XamlUICommand)Resources["StartManualBackupCommand"];
+        startManualBackupCommand.ExecuteRequested += StartManualBackupCommand_ExecuteRequested;
+
+        var startManualBackupExtendedCommand = (XamlUICommand)Resources["StartManualBackupExtendedCommand"];
+        startManualBackupExtendedCommand.ExecuteRequested += startManualBackupExtendedCommand_ExecuteRequested;
+
         TrayIcon = (TaskbarIcon)Resources["TrayIcon"];
         TrayIcon.ForceCreate();
+    }
+
+    private async void StartManualBackupCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
+    {
+        await App.GetService<IJobService>().CreateBackupAsync("Manual backup", "", true);
+    }
+
+    private async void startManualBackupExtendedCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
+    {
+        var (result, backup) = await App.GetService<IPresentationService>().ShowCreateBackupWindow();
+        if (result)
+        {
+            await App.GetService<IJobService>().CreateBackupAsync(backup.Title ?? "Manual backup", backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);
+        }
     }
 
     private async void ShowBrowserWindowCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)

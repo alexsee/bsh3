@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using BSH.MainApp.ViewModels.Windows;
+using WinUIEx;
 
 namespace BSH.MainApp.Windows;
 
@@ -17,6 +18,7 @@ public sealed partial class NewBackupWindow : WinUIEx.WindowEx
     public async Task<bool> ShowDialogAsync()
     {
         this.Activate();
+        this.CenterOnScreen();
         var result = await ViewModel.TaskCompletionSource.Task;
 
         this.Close();
