@@ -166,7 +166,6 @@ public class JobService : IJobService
             if (statusDialog)
             {
                 await presentationService.ShowMessageBoxAsync("MSG_TASK_RUNNING_TITLE".GetLocalized(), "MSG_TASK_RUNNING_TEXT".GetLocalized(), null);
-                //MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             HandleFinishedStatusDialog(statusDialog);
@@ -178,7 +177,7 @@ public class JobService : IJobService
 
             if (statusDialog)
             {
-                //MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                await presentationService.ShowMessageBoxAsync("MSG_BACKUP_DEVICE_NOT_READY_TITLE".GetLocalized(), "MSG_BACKUP_DEVICE_NOT_READY_TEXT".GetLocalized(), null);
             }
 
             HandleFinishedStatusDialog(statusDialog);
@@ -315,7 +314,7 @@ public class JobService : IJobService
         // run restore job
         var fileOverwrite = FileOverwrite.Ask;
 
-        foreach (string file in files)
+        foreach (var file in files)
         {
             try
             {

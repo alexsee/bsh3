@@ -7,15 +7,15 @@ using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Windows;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Popups;
-using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 
 public class PresentationService : IPresentationService
 {
-    public void ShowStatusWindow()
+    public async Task ShowStatusWindow()
     {
     }
 
@@ -24,23 +24,27 @@ public class PresentationService : IPresentationService
         return TaskCompleteAction.NoAction;
     }
 
-    public void ShowMainWindow()
+    public async Task ShowMainWindow()
+    {
+        App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.MainViewModel");
+        await App.GetService<IActivationService>().ActivateAsync(null);
+    }
+
+    public async Task CloseMainWindow()
     {
     }
 
-    public void CloseMainWindow()
+    public async Task ShowBackupBrowserWindow()
+    {
+        await App.GetService<IActivationService>().ActivateAsync(null);
+        App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
+    }
+
+    public async Task CloseBackupBrowserWindow()
     {
     }
 
-    public void ShowBackupBrowserWindow()
-    {
-    }
-
-    public void CloseBackupBrowserWindow()
-    {
-    }
-
-    public void ShowAboutWindow()
+    public async Task ShowAboutWindow()
     {
     }
 
@@ -70,7 +74,7 @@ public class PresentationService : IPresentationService
         });
     }
 
-    public void ShowErrorInsufficientDiskSpace()
+    public async Task ShowErrorInsufficientDiskSpace()
     {
     }
 

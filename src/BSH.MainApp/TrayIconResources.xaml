@@ -51,7 +51,7 @@
         NoLeftClickDelay="True"
         IconSource="ms-appx:///Assets/app_ico.ico"
         >
-        <!--<tb:TaskbarIcon.ContextFlyout>
+        <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout>
                 <MenuFlyoutItem Command="{StaticResource ShowMainWindowCommand}" />
                 <MenuFlyoutItem Command="{StaticResource ShowBrowserWindowCommand}" />
@@ -61,6 +61,6 @@
                 <MenuFlyoutSeparator />
                 <MenuFlyoutItem Command="{StaticResource ExitApplicationCommand}" />
             </MenuFlyout>
-        </tb:TaskbarIcon.ContextFlyout>-->
+        </tb:TaskbarIcon.ContextFlyout>
     </tb:TaskbarIcon>
 </ResourceDictionary>

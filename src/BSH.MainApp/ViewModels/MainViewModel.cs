@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Windows.Input;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Jobs;
@@ -14,7 +13,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
 
 namespace BSH.MainApp.ViewModels;
 

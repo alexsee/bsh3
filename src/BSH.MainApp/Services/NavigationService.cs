@@ -53,17 +53,17 @@ public class NavigationService : INavigationService
 
     private void RegisterFrameEvents()
     {
-        if (_frame != null)
+        if (Frame != null)
         {
-            _frame.Navigated += OnNavigated;
+            Frame.Navigated += OnNavigated;
         }
     }
 
     private void UnregisterFrameEvents()
     {
-        if (_frame != null)
+        if (Frame != null)
         {
-            _frame.Navigated -= OnNavigated;
+            Frame.Navigated -= OnNavigated;
         }
     }
 
@@ -71,8 +71,8 @@ public class NavigationService : INavigationService
     {
         if (CanGoBack)
         {
-            var vmBeforeNavigation = _frame.GetPageViewModel();
-            _frame.GoBack();
+            var vmBeforeNavigation = Frame.GetPageViewModel();
+            Frame.GoBack();
             if (vmBeforeNavigation is INavigationAware navigationAware)
             {
                 navigationAware.OnNavigatedFrom();
@@ -88,11 +88,11 @@ public class NavigationService : INavigationService
     {
         var pageType = _pageService.GetPageType(pageKey);
 
-        if (_frame != null && (_frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameterUsed))))
+        if (Frame != null && (Frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameterUsed))))
         {
-            _frame.Tag = clearNavigation;
-            var vmBeforeNavigation = _frame.GetPageViewModel();
-            var navigated = _frame.Navigate(pageType, parameter);
+            Frame.Tag = clearNavigation;
+            var vmBeforeNavigation = Frame.GetPageViewModel();
+            var navigated = Frame.Navigate(pageType, parameter);
             if (navigated)
             {
                 _lastParameterUsed = parameter;

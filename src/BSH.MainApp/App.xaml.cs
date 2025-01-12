@@ -58,7 +58,7 @@ public partial class App : Application
 
     public static MainWindow MainWindow { get; } = new MainWindow();
 
-    public static string DatabaseFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
+    public static string DatabaseFile { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
 
     public App()
     {
@@ -144,7 +144,7 @@ public partial class App : Application
         App.GetService<IStatusService>().Initialize();
 
         await App.GetService<IOrchestrationService>().InitializeAsync();
-        await App.GetService<IActivationService>().ActivateAsync(args);
+        // await App.GetService<IActivationService>().ActivateAsync(args);
 
         InitializeTrayIcon();
     }
@@ -154,8 +154,24 @@ public partial class App : Application
         var exitApplicationCommand = (XamlUICommand)Resources["ExitApplicationCommand"];
         exitApplicationCommand.ExecuteRequested += ExitApplicationCommand_ExecuteRequested;
 
+        var showBrowserWindowCommand = (XamlUICommand)Resources["ShowBrowserWindowCommand"];
+        showBrowserWindowCommand.ExecuteRequested += ShowBrowserWindowCommand_ExecuteRequested;
+
+        var showMainWindowCommand = (XamlUICommand)Resources["ShowMainWindowCommand"];
+        showMainWindowCommand.ExecuteRequested += ShowMainWindowCommand_ExecuteRequested;
+
         TrayIcon = (TaskbarIcon)Resources["TrayIcon"];
         TrayIcon.ForceCreate();
+    }
+
+    private async void ShowBrowserWindowCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
+    {
+        await App.GetService<IPresentationService>().ShowBackupBrowserWindow();
+    }
+
+    private async void ShowMainWindowCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
+    {
+        await App.GetService<IPresentationService>().ShowMainWindow();
     }
 
     private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)

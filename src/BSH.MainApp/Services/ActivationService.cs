@@ -19,7 +19,7 @@ public class ActivationService : IActivationService
         _activationHandlers = activationHandlers;
     }
 
-    public async Task ActivateAsync(object activationArgs)
+    public async Task ActivateAsync(object? activationArgs)
     {
         // Execute tasks before activation.
         await InitializeAsync();
@@ -34,7 +34,7 @@ public class ActivationService : IActivationService
         await StartupAsync();
     }
 
-    private async Task HandleActivationAsync(object activationArgs)
+    private async Task HandleActivationAsync(object? activationArgs)
     {
         var activationHandler = _activationHandlers.FirstOrDefault(h => h.CanHandle(activationArgs));
 

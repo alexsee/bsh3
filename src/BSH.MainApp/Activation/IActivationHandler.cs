@@ -5,7 +5,7 @@ namespace BSH.MainApp.Activation;
 
 public interface IActivationHandler
 {
-    bool CanHandle(object args);
+    bool CanHandle(object? args);
 
-    Task HandleAsync(object args);
+    Task HandleAsync(object? args);
 }

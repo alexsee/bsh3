@@ -12,16 +12,16 @@ namespace BSH.MainApp.Contracts.Services;
 
 public interface IPresentationService
 {
-    void CloseBackupBrowserWindow();
-    void CloseMainWindow();
+    Task CloseBackupBrowserWindow();
+    Task CloseMainWindow();
     TaskCompleteAction CloseStatusWindow();
     Task<(string? password, bool persist)> RequestPassword();
     Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
-    void ShowAboutWindow();
-    void ShowBackupBrowserWindow();
+    Task ShowAboutWindow();
+    Task ShowBackupBrowserWindow();
     Task<(bool, NewBackupViewModel)> ShowCreateBackupWindow();
-    void ShowErrorInsufficientDiskSpace();
-    void ShowMainWindow();
-    void ShowStatusWindow();
+    Task ShowErrorInsufficientDiskSpace();
+    Task ShowMainWindow();
+    Task ShowStatusWindow();
     Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1);
 }
