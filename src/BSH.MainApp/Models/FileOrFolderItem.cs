@@ -9,6 +9,11 @@ namespace BSH.MainApp.Models;
 
 public class FileOrFolderItem : INotifyPropertyChanged
 {
+    public string FileNameOnDrive
+    {
+        get; set;
+    }
+
     public string Name
     {
         get; set;
@@ -40,7 +45,7 @@ public class FileOrFolderItem : INotifyPropertyChanged
     }
 
     private BitmapSource _icon;
-    public BitmapSource Icon
+    public BitmapSource Icon16
     {
         get => _icon;
         set
@@ -48,6 +53,12 @@ public class FileOrFolderItem : INotifyPropertyChanged
             _icon = value;
             this.OnPropertyChanged();
         }
+    }
+
+    public BitmapSource Icon64
+    {
+        get;
+        set;
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

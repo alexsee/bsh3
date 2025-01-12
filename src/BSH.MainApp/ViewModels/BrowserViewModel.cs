@@ -9,6 +9,9 @@ using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Storage;
+using Windows.Storage.FileProperties;
 
 namespace BSH.MainApp.ViewModels;
 
@@ -38,17 +41,13 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool toggleInfoPane = false;
 
-    [ObservableProperty]
-    private ObservableCollection<FileOrFolderItem> currentFolderPath = new();
+    public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; set; } = new();
 
-    [ObservableProperty]
-    private ObservableCollection<string> favorites = new();
+    public ObservableCollection<string> Favorites { get; set; } = new();
 
-    [ObservableProperty]
-    private ObservableCollection<FileOrFolderItem> items = new();
+    public ObservableCollection<FileOrFolderItem> Items { get; set; } = new();
 
-    [ObservableProperty]
-    private ObservableCollection<VersionDetails> versions = new();
+    public ObservableCollection<VersionDetails> Versions { get; set; } = new();
 
     public BrowserViewModel(IQueryManager queryManager, IJobService jobService)
     {
@@ -219,6 +218,22 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         backupVersions.ForEach(Versions.Add);
     }
 
+    private async Task<BitmapSource> GetFileIconAsync(string fileName, uint size = 16)
+    {
+        try
+        {
+            var storageFile = await StorageFile.GetFileFromPathAsync(fileName);
+            var icon = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, size);
+            var bitmap = new BitmapImage();
+            await bitmap.SetSourceAsync(icon);
+            return bitmap;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private async Task LoadFolderAsync(string version, string path)
     {
         var rootSplit = path.Split("\\", StringSplitOptions.RemoveEmptyEntries);
@@ -254,12 +269,19 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
                 Name = x.FileName,
                 FullPath = x.FilePath,
                 IsFile = true,
+                FileNameOnDrive = queryManager.GetFileNameFromDrive(x),
 
                 FileDateModified = x.FileDateModified,
                 FileDateCreated = x.FileDateCreated,
                 FileSize = x.FileSize
             })
             .ToList();
+
+        foreach (var file in fileList)
+        {
+            file.Icon16 = await GetFileIconAsync(file.FileNameOnDrive);
+            file.Icon64 = await GetFileIconAsync(file.FileNameOnDrive, 64);
+        }
 
         // merge lists
         Items.Clear();
