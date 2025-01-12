@@ -277,6 +277,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             })
             .ToList();
 
+        // TODO: load icons when backup medium not available
+        // TODO: load icons when file is remote
         foreach (var file in fileList)
         {
             file.Icon16 = await GetFileIconAsync(file.FileNameOnDrive);
