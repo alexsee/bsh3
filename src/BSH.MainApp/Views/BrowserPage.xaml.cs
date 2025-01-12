@@ -9,11 +9,10 @@ namespace BSH.MainApp.Views;
 
 public sealed partial class BrowserPage : Page
 {
-    public BrowserViewModel ViewModel => (BrowserViewModel)DataContext;
+    public BrowserViewModel ViewModel { get; } = App.GetService<BrowserViewModel>();
 
     public BrowserPage()
     {
-        DataContext = App.GetService<BrowserViewModel>();
         InitializeComponent();
     }
 

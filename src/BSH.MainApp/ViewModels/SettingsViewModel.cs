@@ -27,7 +27,7 @@ public enum ModeType
     Encryption = 2,
 }
 
-public partial class SettingsViewModel : ObservableRecipient, INavigationAware
+public partial class SettingsViewModel : ObservableObject, INavigationAware
 {
     private readonly IConfigurationManager configurationManager;
     private readonly IPresentationService presentationController;

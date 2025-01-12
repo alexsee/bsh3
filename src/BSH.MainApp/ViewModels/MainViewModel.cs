@@ -18,7 +18,7 @@ using Microsoft.UI.Xaml;
 
 namespace BSH.MainApp.ViewModels;
 
-public partial class MainViewModel : ObservableRecipient, INavigationAware, IStatusReport
+public partial class MainViewModel : ObservableObject, INavigationAware, IStatusReport
 {
     private readonly IPresentationService presentationService;
     private readonly IStatusService statusService;
@@ -50,10 +50,10 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
     private string? totalFileSize;
 
     [ObservableProperty]
-    private Visibility nextBackupGridVisibility = Visibility.Visible;
+    private bool nextBackupGridVisibility = true;
 
     [ObservableProperty]
-    private Visibility progressGridVisibility = Visibility.Collapsed;
+    private bool progressGridVisibility = false;
 
     [ObservableProperty]
     private string? currentProgressStatusTitle;
@@ -62,10 +62,10 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
     private string? currentProgressStatusText;
 
     [ObservableProperty]
-    private int? currentProgressValue;
+    private double currentProgressValue = 0;
 
     [ObservableProperty]
-    private int? currentProgressMax;
+    private double currentProgressMax = 100;
 
     public MainViewModel(
         IPresentationService presentationService,
@@ -145,8 +145,8 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
         {
             if (jobState == JobState.RUNNING)
             {
-                NextBackupGridVisibility = Visibility.Collapsed;
-                ProgressGridVisibility = Visibility.Visible;
+                NextBackupGridVisibility = false;
+                ProgressGridVisibility = true;
                 return;
             }
 
@@ -155,8 +155,8 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware, ISta
                 await UpdateBackupStatsAsync();
             }
 
-            NextBackupGridVisibility = Visibility.Visible;
-            ProgressGridVisibility = Visibility.Collapsed;
+            NextBackupGridVisibility = true;
+            ProgressGridVisibility = false;
         });
     }
 

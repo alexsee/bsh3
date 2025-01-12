@@ -4,12 +4,12 @@
 using Humanizer;
 using Microsoft.UI.Xaml.Data;
 
-namespace BSH.MainApp.Helpers;
+namespace BSH.MainApp.Converters;
 public class FileSizeConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return value is double ? ((double)value).Bytes() : value;
+        return value is double ? ((double)value).Bytes().ToString() : value;
     }
     public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotImplementedException();
 }
