@@ -4,6 +4,7 @@
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.ViewModels.Windows;
+using WinUIEx;
 
 namespace BSH.MainApp.Windows;
 public sealed partial class RequestFileOverwriteWindow : WinUIEx.WindowEx
@@ -12,20 +13,21 @@ public sealed partial class RequestFileOverwriteWindow : WinUIEx.WindowEx
 
     public RequestFileOverwriteWindow()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 
     public async Task<RequestOverwriteResult> ShowDialogAsync(FileTableRow localFile, FileTableRow remoteFile)
     {
-        this.ViewModel.FileName = localFile.FileName;
-        this.ViewModel.SourceFileSize = localFile.FileSize;
-        this.ViewModel.SourceLastModified = localFile.FileDateModified;
-        this.ViewModel.DestinationFileSize = remoteFile.FileSize;
-        this.ViewModel.DestinationLastModified = remoteFile.FileDateModified;
+        ViewModel.FileName = localFile.FileName;
+        ViewModel.SourceFileSize = localFile.FileSize;
+        ViewModel.SourceLastModified = localFile.FileDateModified;
+        ViewModel.DestinationFileSize = remoteFile.FileSize;
+        ViewModel.DestinationLastModified = remoteFile.FileDateModified;
 
         Activate();
+        this.CenterOnScreen();
 
-        var result = await this.ViewModel.TaskCompletionSource.Task;
+        var result = await ViewModel.TaskCompletionSource.Task;
         Close();
         return result;
     }
