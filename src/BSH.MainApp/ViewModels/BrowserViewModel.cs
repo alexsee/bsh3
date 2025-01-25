@@ -4,17 +4,12 @@
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Models;
-using BSH.Main;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Models;
 using BSH.MainApp.Utils;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.Windows.Management.Deployment;
-using Windows.Storage;
-using Windows.Storage.FileProperties;
 
 namespace BSH.MainApp.ViewModels;
 

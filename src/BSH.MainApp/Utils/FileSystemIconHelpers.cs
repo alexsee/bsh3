@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.Storage.FileProperties;
-using Windows.Storage;
 using BSH.Main;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Storage;
+using Windows.Storage.FileProperties;
 
 namespace BSH.MainApp.Utils;
 public static class FileSystemIconHelpers
