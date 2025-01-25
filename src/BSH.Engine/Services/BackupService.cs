@@ -402,7 +402,20 @@ public class BackupService : IBackupService
     /// <param name="versionDetails"></param>
     public async Task EditVersionAsync(string version, VersionDetails versionDetails)
     {
+        ArgumentNullException.ThrowIfNull(versionDetails);
+        if (!int.TryParse(version, out var versionId))
+        {
+            throw new ArgumentException("Invalid version ID", nameof(version));
+        }
+
         using var dbClient = dbClientFactory.CreateDbClient();
-        await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionTitle = '{versionDetails.Title}', versionDescription = '{versionDetails.Description}' WHERE versionID = {version}");
+        var sql = "UPDATE versiontable SET versionTitle = @Title, versionDescription = @Description WHERE versionID = @VersionID";
+        var parameters = new Dictionary<string, object>
+        {
+            { "@Title", versionDetails.Title ?? string.Empty },
+            { "@Description", versionDetails.Description ?? string.Empty },
+            { "@VersionID", versionId }
+        };
+        await dbClient.ExecuteNonQueryAsync(sql, parameters);
     }
 }
