@@ -7,6 +7,7 @@ using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Models;
+using BSH.MainApp.Utils;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -38,17 +39,13 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool toggleInfoPane = false;
 
-    [ObservableProperty]
-    private ObservableCollection<FileOrFolderItem> currentFolderPath = new();
+    public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; set; } = new();
 
-    [ObservableProperty]
-    private ObservableCollection<string> favorites = new();
+    public ObservableCollection<string> Favorites { get; set; } = new();
 
-    [ObservableProperty]
-    private ObservableCollection<FileOrFolderItem> items = new();
+    public ObservableCollection<FileOrFolderItem> Items { get; set; } = new();
 
-    [ObservableProperty]
-    private ObservableCollection<VersionDetails> versions = new();
+    public ObservableCollection<VersionDetails> Versions { get; set; } = new();
 
     public BrowserViewModel(IQueryManager queryManager, IJobService jobService)
     {
@@ -141,6 +138,11 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
     private async Task RestoreFile()
     {
+        if (CurrentItem == null || CurrentVersion == null)
+        {
+            return;
+        }
+
         // restore file
         if (CurrentItem.IsFile)
         {
@@ -157,7 +159,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(CanRestoreAll))]
     private async Task RestoreAll()
     {
-        if (CurrentFolderPath[^1] == null)
+        if (CurrentVersion == null || CurrentFolderPath[^1] == null)
         {
             return;
         }
@@ -254,12 +256,19 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
                 Name = x.FileName,
                 FullPath = x.FilePath,
                 IsFile = true,
+                FileNameOnDrive = queryManager.GetFileNameFromDrive(x),
 
                 FileDateModified = x.FileDateModified,
                 FileDateCreated = x.FileDateCreated,
                 FileSize = x.FileSize
             })
             .ToList();
+
+        foreach (var file in fileList)
+        {
+            file.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive);
+            file.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive, 64);
+        }
 
         // merge lists
         Items.Clear();
@@ -281,5 +290,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     public void OnNavigatedFrom()
     {
+        FileSystemIconHelpers.ClearIconCache();
     }
 }
