@@ -729,7 +729,11 @@ public class QueryManager : IQueryManager
             return 0;
         }
 
-        return double.Parse(result.ToString());
+        if (double.TryParse(result.ToString(), out var returnValue))
+        {
+            return returnValue;
+        }
+        return 0;
     }
 
     private static string GetPathWithoutSlashes(string folder)

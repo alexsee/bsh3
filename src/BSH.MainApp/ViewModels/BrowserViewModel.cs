@@ -43,13 +43,16 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool toggleInfoPane = false;
 
-    public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; set; } = new();
+    [ObservableProperty]
+    private bool hasVersions = false;
 
-    public ObservableCollection<string> Favorites { get; set; } = new();
+    public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; set; } = [];
 
-    public ObservableCollection<FileOrFolderItem> Items { get; set; } = new();
+    public ObservableCollection<string> Favorites { get; set; } = [];
 
-    public ObservableCollection<VersionDetails> Versions { get; set; } = new();
+    public ObservableCollection<FileOrFolderItem> Items { get; set; } = [];
+
+    public ObservableCollection<VersionDetails> Versions { get; set; } = [];
 
     public BrowserViewModel(IQueryManager queryManager, IJobService jobService, IBackupService backupService, IPresentationService presentationService)
     {
@@ -122,7 +125,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private async Task Refresh()
     {
-        if (CurrentVersion == null && CurrentFolderPath.Count > 0)
+        if (CurrentVersion == null || CurrentFolderPath.Count == 0)
         {
             return;
         }
@@ -184,19 +187,19 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
     private async Task ShowFileProperties()
     {
-
+        throw new NotImplementedException();
     }
 
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
     private async Task ShowFilePreview()
     {
-
+        throw new NotImplementedException();
     }
 
     [RelayCommand]
     private async Task AddFolderToFavorites()
     {
-
+        throw new NotImplementedException();
     }
 
     [RelayCommand(CanExecute = nameof(HasVersionSelected))]
@@ -235,8 +238,12 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             await jobService.DeleteBackupAsync(CurrentVersion.Id);
 
             LoadVersions();
-            CurrentVersion = Versions[0];
-            await LoadVersion();
+
+            if (Versions.Count > 0)
+            {
+                CurrentVersion = Versions[0];
+                await LoadVersion();
+            }
         }
     }
 
@@ -252,11 +259,18 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         await Refresh();
     }
 
+    [RelayCommand]
+    private async Task GoHome()
+    {
+        await presentationService.ShowMainWindowAsync();
+    }
+
     private void LoadVersions()
     {
         var backupVersions = queryManager.GetVersions(true);
 
         Versions.Clear();
+        HasVersions = backupVersions.Count > 0;
         backupVersions.ForEach(Versions.Add);
     }
 
@@ -323,8 +337,12 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     public async void OnNavigatedTo(object parameter)
     {
         LoadVersions();
-        CurrentVersion = Versions[0];
-        await LoadVersion();
+
+        if (Versions.Count > 0)
+        {
+            CurrentVersion = Versions[0];
+            await LoadVersion();
+        }
     }
 
     public void OnNavigatedFrom()

@@ -97,7 +97,11 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     private async Task UpdateBackupStatsAsync()
     {
         // set backup dates
-        LastBackupDate = (await queryManager.GetLastBackupAsync()).CreationDate.HumanizeDate();
+        var lastBackup = await queryManager.GetLastBackupAsync();
+        if (lastBackup != null)
+        {
+            LastBackupDate = lastBackup.CreationDate.HumanizeDate();
+        }
 
         // set configuration
         if (configurationManager.TaskType == TaskType.Auto)
@@ -116,7 +120,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
             BackupMode = "MainView_BackupMode_Manual".GetLocalized();
         }
 
-        AvailableDiskSpace = double.Parse(configurationManager.FreeSpace).Bytes().Humanize();
+        AvailableDiskSpace = string.IsNullOrEmpty(configurationManager.FreeSpace) ? "" : double.Parse(configurationManager.FreeSpace).Bytes().Humanize();
 
         TotalFilesBackuped = (await queryManager.GetNumberOfFilesAsync()).ToString("g");
         TotalFileSize = (await queryManager.GetTotalFileSizeAsync()).Bytes().Humanize();
