@@ -22,9 +22,13 @@ public static class FileSystemIconHelpers
         try
         {
             var fileExtension = Path.GetExtension(fileName);
+            if (string.IsNullOrEmpty(fileExtension))
+            {
+                return null;
+            }
 
             // cache?
-            if (!string.IsNullOrEmpty(fileExtension) && cachedIcons.TryGetValue($"{fileExtension}_{requestedSize}", out var cachedIcon))
+            if (cachedIcons.TryGetValue($"{fileExtension}_{requestedSize}", out var cachedIcon))
             {
                 return cachedIcon;
             }
@@ -32,32 +36,15 @@ public static class FileSystemIconHelpers
             var applicationData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var localFolder = await StorageFolder.GetFolderFromPathAsync(applicationData);
 
-            StorageItemThumbnail icon;
-
-            if (string.IsNullOrEmpty(fileExtension))
-            {
-                icon = await localFolder.GetThumbnailAsync(ThumbnailMode.ListView, requestedSize, ThumbnailOptions.UseCurrentScale);
-            }
-            else
-            {
-                var emptyFile = await localFolder.CreateFileAsync(string.Join(Constants.Filesystem.CachedEmptyItemName, fileExtension), CreationCollisionOption.OpenIfExists);
-                icon = await emptyFile.GetThumbnailAsync(ThumbnailMode.SingleItem, requestedSize, ThumbnailOptions.UseCurrentScale);
-                await emptyFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
-            }
-
-            if (icon == null)
-            {
-                return null;
-            }
+            var emptyFile = await localFolder.CreateFileAsync(string.Join(Constants.Filesystem.CachedEmptyItemName, fileExtension), CreationCollisionOption.OpenIfExists);
+            var icon = await emptyFile.GetThumbnailAsync(ThumbnailMode.SingleItem, requestedSize, ThumbnailOptions.UseCurrentScale);
+            await emptyFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
 
             var bitmap = new BitmapImage();
             await bitmap.SetSourceAsync(icon);
 
             // cache!
-            if (!string.IsNullOrEmpty(fileExtension))
-            {
-                cachedIcons.Add($"{fileExtension}_{requestedSize}", bitmap);
-            }
+            cachedIcons.Add($"{fileExtension}_{requestedSize}", bitmap);
 
             return bitmap;
         }
