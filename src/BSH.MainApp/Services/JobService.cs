@@ -129,7 +129,7 @@ public class JobService : IJobService
         // show dialog?
         if (statusDialog)
         {
-            presentationService.ShowStatusWindowAsync();
+            await presentationService.ShowStatusWindowAsync();
         }
 
         // check media
