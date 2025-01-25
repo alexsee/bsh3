@@ -120,7 +120,11 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
             BackupMode = "MainView_BackupMode_Manual".GetLocalized();
         }
 
-        AvailableDiskSpace = string.IsNullOrEmpty(configurationManager.FreeSpace) ? "" : double.Parse(configurationManager.FreeSpace).Bytes().Humanize();
+        AvailableDiskSpace = string.IsNullOrEmpty(configurationManager.FreeSpace) 
+            ? "" 
+            : double.Parse(configurationManager.FreeSpace, System.Globalization.CultureInfo.InvariantCulture)
+                .Bytes()
+                .Humanize(culture: System.Globalization.CultureInfo.CurrentCulture);
 
         TotalFilesBackuped = (await queryManager.GetNumberOfFilesAsync()).ToString("g");
         TotalFileSize = (await queryManager.GetTotalFileSizeAsync()).Bytes().Humanize();
