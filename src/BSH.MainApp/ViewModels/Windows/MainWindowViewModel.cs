@@ -17,9 +17,15 @@ public partial class MainWindowViewModel : ObservableObject
 
     public MainWindowViewModel()
     {
+        private static class ViewModelKeys
+        {
+            public const string Main = nameof(BSH.MainApp.ViewModels.MainViewModel);
+            public const string Browser = nameof(BSH.MainApp.ViewModels.BrowserViewModel);
+        }
+
         NavigationItems = [
-            new NavigationViewItem { Tag = "BSH.MainApp.ViewModels.MainViewModel", Icon = new SymbolIcon(Symbol.Home), Content = "Overview" },
-            new NavigationViewItem { Tag = "BSH.MainApp.ViewModels.BrowserViewModel", Icon = new SymbolIcon(Symbol.BrowsePhotos), Content = "Backup browser" },
+            new NavigationViewItem { Tag = ViewModelKeys.Main, Icon = new SymbolIcon(Symbol.Home), Content = "Overview" },
+            new NavigationViewItem { Tag = ViewModelKeys.Browser, Icon = new SymbolIcon(Symbol.BrowsePhotos), Content = "Backup browser" },
         ];
         CurrentPage = NavigationItems[0];
     }
