@@ -56,6 +56,9 @@
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<Page Update="Windows\EditBackupWindow.xaml">
+		  <SubType>Designer</SubType>
+		</Page>
 		<Page Update="Windows\WaitForMediumWindow.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>

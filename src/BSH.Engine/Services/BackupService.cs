@@ -22,6 +22,7 @@ using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
@@ -392,5 +393,16 @@ public class BackupService : IBackupService
     {
         using var dbClient = dbClientFactory.CreateDbClient();
         await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStable = {(stable ? 1 : 0)} WHERE versionID = {version}");
+    }
+
+    /// <summary>
+    /// Edits the details of a version.
+    /// </summary>
+    /// <param name="version"></param>
+    /// <param name="versionDetails"></param>
+    public async Task EditVersionAsync(string version, VersionDetails versionDetails)
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+        await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionTitle = '{versionDetails.Title}', versionDescription = '{versionDetails.Description}' WHERE versionID = {version}");
     }
 }

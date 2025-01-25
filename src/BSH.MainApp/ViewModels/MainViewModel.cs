@@ -126,7 +126,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     [RelayCommand]
     private async Task StartManualBackup()
     {
-        var (result, backup) = await this.presentationService.ShowCreateBackupWindow();
+        var (result, backup) = await this.presentationService.ShowCreateBackupWindowAsync();
         if (result)
         {
             await jobService.CreateBackupAsync(backup.Title ?? "Manual backup", backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);

@@ -176,7 +176,7 @@ public partial class App : Application
 
     private async void startManualBackupExtendedCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
-        var (result, backup) = await App.GetService<IPresentationService>().ShowCreateBackupWindow();
+        var (result, backup) = await App.GetService<IPresentationService>().ShowCreateBackupWindowAsync();
         if (result)
         {
             await App.GetService<IJobService>().CreateBackupAsync(backup.Title ?? "Manual backup", backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);
@@ -185,12 +185,12 @@ public partial class App : Application
 
     private async void ShowBrowserWindowCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
-        await App.GetService<IPresentationService>().ShowBackupBrowserWindow();
+        await App.GetService<IPresentationService>().ShowBackupBrowserWindowAsync();
     }
 
     private async void ShowMainWindowCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
-        await App.GetService<IPresentationService>().ShowMainWindow();
+        await App.GetService<IPresentationService>().ShowMainWindowAsync();
     }
 
     private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)

@@ -129,7 +129,7 @@ public class JobService : IJobService
         // show dialog?
         if (statusDialog)
         {
-            presentationService.ShowStatusWindow();
+            presentationService.ShowStatusWindowAsync();
         }
 
         // check media
@@ -206,7 +206,7 @@ public class JobService : IJobService
         // finish job
         if (statusDialog)
         {
-            var action = presentationService.CloseStatusWindow();
+            var action = presentationService.CloseStatusWindowAsync();
             if (triggerAction && action == TaskCompleteAction.ShutdownPC)
             {
                 _logger.Debug("Computer will be shutdown after task has finished.");
@@ -509,7 +509,7 @@ public class JobService : IJobService
         }
 
         // request password from user
-        var request = await presentationService.RequestPassword();
+        var request = await presentationService.RequestPasswordAsync();
         while (!string.IsNullOrEmpty(request.password))
         {
             if ((Hash.GetMD5Hash(request.password) ?? "") == (configurationManager.EncryptPassMD5 ?? ""))
@@ -532,7 +532,7 @@ public class JobService : IJobService
                 "MSG_PASSWORD_WRONG_TEXT".GetLocalized(),
                 null
             );
-            request = await presentationService.RequestPassword();
+            request = await presentationService.RequestPasswordAsync();
         }
 
         return false;

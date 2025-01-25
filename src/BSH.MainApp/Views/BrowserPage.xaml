@@ -13,10 +13,17 @@
 
     <Page.Resources>
         <DataTemplate x:Name="VersionTemplate" x:DataType="engine:VersionDetails">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <FontIcon VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" Margin="0,0,10,0"/>
-                <TextBlock VerticalAlignment="Center" Text="{x:Bind CreationDate, Mode=OneWay}" />
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <FontIcon VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" Margin="0,0,10,0"/>
+                    <TextBlock VerticalAlignment="Center" Text="{x:Bind CreationDate, Mode=OneWay}" />
+                </StackPanel>
+                <FontIcon Grid.Column="1" VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE72E;" Visibility="{x:Bind Stable, Mode=OneWay}" />
+            </Grid>
         </DataTemplate>
 
         <DataTemplate x:Name="FileOrFolderTemplate" x:DataType="engine:FileTableRow">
@@ -149,7 +156,7 @@
                         Grid.Row="3" 
                         Margin="8,0,12,0"
                         ItemTemplate="{StaticResource VersionTemplate}" 
-                        ItemsSource="{x:Bind ViewModel.Versions, Mode=TwoWay}" 
+                        ItemsSource="{x:Bind ViewModel.Versions, Mode=OneWay}" 
                         SelectedItem="{x:Bind ViewModel.CurrentVersion, Mode=TwoWay}">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="SelectionChanged">
@@ -234,9 +241,7 @@
                                     <MenuFlyoutSeparator />
                                     <MenuFlyoutItem Command="{x:Bind ViewModel.EditBackupCommand}" Icon="Edit" Text="Edit backup" />
                                     <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupCommand}" Icon="Delete" Text="Delete backup"/>
-                                    <MenuFlyoutItem Command="{x:Bind ViewModel.LockBackupCommand}" Text="Lock backup" />
-                                    <MenuFlyoutSeparator />
-                                    <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupsCommand}" Text="Delete multiple backups"/>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.LockBackupCommand}" Text="Lock/unlock backup" />
                                 </MenuFlyout>
                             </AppBarButton.Flyout>
                         </AppBarButton>
