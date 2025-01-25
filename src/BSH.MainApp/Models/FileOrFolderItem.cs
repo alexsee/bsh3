@@ -44,18 +44,13 @@ public class FileOrFolderItem : INotifyPropertyChanged
         get; set;
     }
 
-    private BitmapSource _icon;
-    public BitmapSource Icon16
+    public BitmapSource? Icon16
     {
-        get => _icon;
-        set
-        {
-            _icon = value;
-            this.OnPropertyChanged();
-        }
+        get;
+        set;
     }
 
-    public BitmapSource Icon64
+    public BitmapSource? Icon64
     {
         get;
         set;

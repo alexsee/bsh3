@@ -4,12 +4,15 @@
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Models;
+using BSH.Main;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Models;
+using BSH.MainApp.Utils;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Windows.Management.Deployment;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 
@@ -140,6 +143,11 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
     private async Task RestoreFile()
     {
+        if (CurrentItem == null || CurrentVersion == null)
+        {
+            return;
+        }
+
         // restore file
         if (CurrentItem.IsFile)
         {
@@ -156,7 +164,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(CanRestoreAll))]
     private async Task RestoreAll()
     {
-        if (CurrentFolderPath[^1] == null)
+        if (CurrentVersion == null || CurrentFolderPath[^1] == null)
         {
             return;
         }
@@ -218,22 +226,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         backupVersions.ForEach(Versions.Add);
     }
 
-    private async Task<BitmapSource> GetFileIconAsync(string fileName, uint size = 16)
-    {
-        try
-        {
-            var storageFile = await StorageFile.GetFileFromPathAsync(fileName);
-            var icon = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, size);
-            var bitmap = new BitmapImage();
-            await bitmap.SetSourceAsync(icon);
-            return bitmap;
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
     private async Task LoadFolderAsync(string version, string path)
     {
         var rootSplit = path.Split("\\", StringSplitOptions.RemoveEmptyEntries);
@@ -277,12 +269,10 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             })
             .ToList();
 
-        // TODO: load icons when backup medium not available
-        // TODO: load icons when file is remote
         foreach (var file in fileList)
         {
-            file.Icon16 = await GetFileIconAsync(file.FileNameOnDrive);
-            file.Icon64 = await GetFileIconAsync(file.FileNameOnDrive, 64);
+            file.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive);
+            file.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive, 64);
         }
 
         // merge lists
@@ -305,5 +295,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     public void OnNavigatedFrom()
     {
+        FileSystemIconHelpers.ClearIconCache();
     }
 }
