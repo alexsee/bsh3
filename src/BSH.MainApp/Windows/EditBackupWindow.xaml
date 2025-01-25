@@ -29,10 +29,21 @@
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Column="0" Grid.Row="0">Title:</TextBlock>
-                    <TextBox Grid.Column="1" Grid.Row="0" Text="{x:Bind ViewModel.Title, Mode=TwoWay}"></TextBox>
-                    <TextBlock Grid.Column="0" Grid.Row="1">Description</TextBlock>
-                    <TextBox Grid.Column="1" Grid.Row="1" Height="60" Text="{x:Bind ViewModel.Description, Mode=TwoWay}"></TextBox>
+                    <TextBlock Grid.Column="0" Grid.Row="0" AutomationProperties.Name="Backup Title Label">Title:</TextBlock>
+                    <TextBox Grid.Column="1" Grid.Row="0" 
+                             Text="{x:Bind ViewModel.Title, Mode=TwoWay}" 
+                             MaxLength="100"
+                             AutomationProperties.Name="Backup Title Input"
+                             AutomationProperties.HelpText="Enter the title for your backup"></TextBox>
+                    <TextBlock Grid.Column="0" Grid.Row="1" AutomationProperties.Name="Backup Description Label">Description:</TextBlock>
+                    <TextBox Grid.Column="1" Grid.Row="1" 
+                             Height="60" 
+                             Text="{x:Bind ViewModel.Description, Mode=TwoWay}"
+                             MaxLength="500"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             AutomationProperties.Name="Backup Description Input"
+                             AutomationProperties.HelpText="Enter a description for your backup"></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>
