@@ -168,7 +168,7 @@ public class JobService : IJobService
                 await presentationService.ShowMessageBoxAsync("MSG_TASK_RUNNING_TITLE".GetLocalized(), "MSG_TASK_RUNNING_TEXT".GetLocalized(), null);
             }
 
-            HandleFinishedStatusDialog(statusDialog);
+            await HandleFinishedStatusDialog(statusDialog);
             return false;
         }
         catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
@@ -180,13 +180,13 @@ public class JobService : IJobService
                 await presentationService.ShowMessageBoxAsync("MSG_BACKUP_DEVICE_NOT_READY_TITLE".GetLocalized(), "MSG_BACKUP_DEVICE_NOT_READY_TEXT".GetLocalized(), null);
             }
 
-            HandleFinishedStatusDialog(statusDialog);
+            await HandleFinishedStatusDialog(statusDialog);
             return false;
         }
         catch (PasswordRequiredException ex)
         {
             _logger.Error(ex, "Password request was cancelled, so the backup task will not be started.");
-            HandleFinishedStatusDialog(statusDialog);
+            await HandleFinishedStatusDialog(statusDialog);
             return false;
         }
 
@@ -201,12 +201,12 @@ public class JobService : IJobService
     /// </summary>
     /// <param name="statusDialog"></param>
     /// <param name="triggerAction"></param>
-    private void HandleFinishedStatusDialog(bool statusDialog, bool triggerAction = false)
+    private async Task HandleFinishedStatusDialog(bool statusDialog, bool triggerAction = false)
     {
         // finish job
         if (statusDialog)
         {
-            var action = presentationService.CloseStatusWindow();
+            var action = await presentationService.CloseStatusWindowAsync();
             if (triggerAction && action == TaskCompleteAction.ShutdownPC)
             {
                 _logger.Debug("Computer will be shutdown after task has finished.");
@@ -255,7 +255,7 @@ public class JobService : IJobService
             // exception already handled
         }
 
-        HandleFinishedStatusDialog(statusDialog);
+        await HandleFinishedStatusDialog(statusDialog);
     }
 
     /// <summary>
@@ -289,7 +289,7 @@ public class JobService : IJobService
         }
 
         // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await HandleFinishedStatusDialog(statusDialog);
     }
 
     /// <summary>
@@ -341,7 +341,7 @@ public class JobService : IJobService
         }
 
         // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await HandleFinishedStatusDialog(statusDialog);
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public class JobService : IJobService
         }
 
         // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await HandleFinishedStatusDialog(statusDialog);
     }
 
     /// <summary>
@@ -411,7 +411,7 @@ public class JobService : IJobService
         }
 
         // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await HandleFinishedStatusDialog(statusDialog);
     }
 
     /// <summary>
@@ -444,7 +444,7 @@ public class JobService : IJobService
         }
 
         // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await HandleFinishedStatusDialog(statusDialog);
     }
 
     /// <summary>
@@ -474,7 +474,7 @@ public class JobService : IJobService
         }
 
         // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await HandleFinishedStatusDialog(statusDialog);
     }
 
     /// <summary>

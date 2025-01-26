@@ -10,17 +10,36 @@ using BSH.MainApp.Windows;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Popups;
+using WinUIEx;
 
 namespace BSH.MainApp.Services;
 
 public class PresentationService : IPresentationService
 {
+    private StatusWindow? statusWindow;
+
     public async Task ShowStatusWindowAsync()
     {
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+        {
+            statusWindow = new StatusWindow();
+            statusWindow.Activate();
+            statusWindow.CenterOnScreen();
+        });
     }
 
-    public TaskCompleteAction CloseStatusWindow()
+    public async Task<TaskCompleteAction> CloseStatusWindowAsync()
     {
+        if (statusWindow != null)
+        {
+            await statusWindow.DispatcherQueue.EnqueueAsync(() =>
+            {
+                statusWindow.Close();
+            });
+
+            App.GetService<IStatusService>().RemoveObserver(statusWindow.ViewModel);
+            statusWindow = null;
+        }
         return TaskCompleteAction.NoAction;
     }
 

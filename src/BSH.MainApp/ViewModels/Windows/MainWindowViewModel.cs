@@ -13,8 +13,8 @@ public partial class MainWindowViewModel : ObservableObject
 {
     private static class ViewModelKeys
     {
-        public const string Main = nameof(MainViewModel);
-        public const string Browser = nameof(BrowserViewModel);
+        public const string Main = "BSH.MainApp.ViewModels.MainViewModel";
+        public const string Browser = "BSH.MainApp.ViewModels.BrowserViewModel";
     }
 
     [ObservableProperty]
@@ -38,7 +38,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         if (args.IsSettingsInvoked)
         {
-            App.GetService<INavigationService>().NavigateTo(nameof(SettingsViewModel));
+            App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.SettingsViewModel");
             return;
         }
 
