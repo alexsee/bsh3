@@ -65,7 +65,7 @@ public interface IStatusService
     void ReportState(JobState jobState);
     void ReportStatus(string title, string text);
     Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
-    void RequestShowErrorInsufficientDiskSpace();
+    Task RequestShowErrorInsufficientDiskSpaceAsync();
     void SetSystemStatus(SystemStatus status);
     void ShowExceptionDialog();
 

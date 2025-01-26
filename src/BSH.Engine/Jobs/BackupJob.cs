@@ -312,7 +312,7 @@ public class BackupJob : Job
                         _logger.Error("Backup job is being cancelled due to permanent storage exception.");
                         cancel = true;
 
-                        RequestShowErrorInsufficientDiskSpace();
+                        await RequestShowErrorInsufficientDiskSpaceAsync();
                     }
                 }
                 catch (Exception ex)

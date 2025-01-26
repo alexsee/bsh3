@@ -102,7 +102,7 @@ public partial class frmShortStatus : IJobReport
         return RequestOverwriteResult.NoOverwriteAll;
     }
 
-    public void RequestShowErrorInsufficientDiskSpace()
+    public async Task RequestShowErrorInsufficientDiskSpaceAsync()
     {
         // not used
     }
