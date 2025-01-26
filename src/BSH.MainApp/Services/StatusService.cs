@@ -201,8 +201,8 @@ public class StatusService : IJobReport, IStatusService
         //dlgFileNotCopied.ShowDialog();
     }
 
-    public void RequestShowErrorInsufficientDiskSpace()
+    public async Task RequestShowErrorInsufficientDiskSpaceAsync()
     {
-        this.presentationService.ShowErrorInsufficientDiskSpaceAsync();
+        await this.presentationService.ShowErrorInsufficientDiskSpaceAsync();
     }
 }
