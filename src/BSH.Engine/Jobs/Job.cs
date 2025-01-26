@@ -127,13 +127,13 @@ public abstract class Job
         return RequestOverwriteResult.Overwrite;
     }
 
-    protected void RequestShowErrorInsufficientDiskSpace()
+    protected async Task RequestShowErrorInsufficientDiskSpaceAsync()
     {
         foreach (var observer in observers)
         {
             try
             {
-                observer.RequestShowErrorInsufficientDiskSpace();
+                await observer.RequestShowErrorInsufficientDiskSpaceAsync();
             }
             catch
             {

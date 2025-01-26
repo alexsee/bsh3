@@ -254,7 +254,7 @@ public class StatusController : IJobReport
         dlgFileNotCopied.ShowDialog();
     }
 
-    public void RequestShowErrorInsufficientDiskSpace()
+    public async Task RequestShowErrorInsufficientDiskSpaceAsync()
     {
         PresentationController.ShowErrorInsufficientDiskSpace();
     }

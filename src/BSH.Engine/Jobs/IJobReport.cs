@@ -24,7 +24,7 @@ public interface IJobReport
 
     Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
 
-    void RequestShowErrorInsufficientDiskSpaceAsync();
+    Task RequestShowErrorInsufficientDiskSpaceAsync();
 }
 
 public class ForwardJobReport : IJobReport
@@ -72,9 +72,9 @@ public class ForwardJobReport : IJobReport
         return await this.report.RequestOverwrite(localFile, remoteFile);
     }
 
-    public void RequestShowErrorInsufficientDiskSpaceAsync()
+    public async Task RequestShowErrorInsufficientDiskSpaceAsync()
     {
-        this.report.RequestShowErrorInsufficientDiskSpace();
+        await this.report.RequestShowErrorInsufficientDiskSpaceAsync();
     }
 
     public void ForwardExceptions(bool silent)
