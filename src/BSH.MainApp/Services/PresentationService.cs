@@ -28,11 +28,14 @@ public class PresentationService : IPresentationService
         });
     }
 
-    public TaskCompleteAction CloseStatusWindow()
+    public async Task<TaskCompleteAction> CloseStatusWindowAsync()
     {
         if (statusWindow != null)
         {
-            statusWindow.Close();
+            await statusWindow.DispatcherQueue.EnqueueAsync(() =>
+            {
+                statusWindow.Close();
+            });
 
             App.GetService<IStatusService>().RemoveObserver(statusWindow.ViewModel);
             statusWindow = null;
