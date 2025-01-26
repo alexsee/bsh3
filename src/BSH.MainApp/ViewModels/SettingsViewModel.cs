@@ -359,7 +359,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         else if (newValue == ModeType.Encryption)
         {
             // setup encryption
-            var (password, _) = await presentationController.RequestPassword();
+            var (password, _) = await presentationController.RequestPasswordAsync();
             if (password == null)
             {
                 ModeType = oldValue;

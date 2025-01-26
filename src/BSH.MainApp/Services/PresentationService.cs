@@ -15,7 +15,7 @@ namespace BSH.MainApp.Services;
 
 public class PresentationService : IPresentationService
 {
-    public async Task ShowStatusWindow()
+    public async Task ShowStatusWindowAsync()
     {
     }
 
@@ -24,31 +24,31 @@ public class PresentationService : IPresentationService
         return TaskCompleteAction.NoAction;
     }
 
-    public async Task ShowMainWindow()
+    public async Task ShowMainWindowAsync()
     {
         App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.MainViewModel");
         await App.GetService<IActivationService>().ActivateAsync(null);
     }
 
-    public async Task CloseMainWindow()
+    public async Task CloseMainWindowAsync()
     {
     }
 
-    public async Task ShowBackupBrowserWindow()
+    public async Task ShowBackupBrowserWindowAsync()
     {
         await App.GetService<IActivationService>().ActivateAsync(null);
         App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
     }
 
-    public async Task CloseBackupBrowserWindow()
+    public async Task CloseBackupBrowserWindowAsync()
     {
     }
 
-    public async Task ShowAboutWindow()
+    public async Task ShowAboutWindowAsync()
     {
     }
 
-    public async Task<(string? password, bool persist)> RequestPassword()
+    public async Task<(string? password, bool persist)> RequestPasswordAsync()
     {
         return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
@@ -65,7 +65,7 @@ public class PresentationService : IPresentationService
         });
     }
 
-    public async Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
+    public async Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile)
     {
         return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
@@ -74,17 +74,33 @@ public class PresentationService : IPresentationService
         });
     }
 
-    public async Task ShowErrorInsufficientDiskSpace()
+    public async Task ShowErrorInsufficientDiskSpaceAsync()
     {
     }
 
-    public async Task<(bool, NewBackupViewModel)> ShowCreateBackupWindow()
+    public async Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync()
     {
         return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var dialog = new NewBackupWindow();
             return (await dialog.ShowDialogAsync(), dialog.ViewModel);
         });
+    }
+
+    public async Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel)
+    {
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            var dialog = new EditBackupWindow();
+            dialog.ViewModel = backupViewModel;
+            return (await dialog.ShowDialogAsync(), dialog.ViewModel);
+        });
+    }
+
+    public async Task<bool> ShowDeleteBackupWindowAsync()
+    {
+        var messageBoxResult = await ShowMessageBoxAsync("Delete Backup", "Are you sure you want to delete this backup?", new List<IUICommand> { new UICommand("Yes"), new UICommand("No") });
+        return messageBoxResult == ContentDialogResult.Primary;
     }
 
     public async Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)

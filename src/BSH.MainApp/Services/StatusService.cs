@@ -153,7 +153,7 @@ public class StatusService : IJobReport, IStatusService
             return lastFileOverwriteChoice;
         }
 
-        var result = await this.presentationService.RequestOverwrite(localFile, remoteFile);
+        var result = await this.presentationService.RequestOverwriteAsync(localFile, remoteFile);
         if (result == RequestOverwriteResult.OverwriteAll || result == RequestOverwriteResult.NoOverwriteAll)
         {
             lastFileOverwriteChoice = result;
@@ -203,6 +203,6 @@ public class StatusService : IJobReport, IStatusService
 
     public void RequestShowErrorInsufficientDiskSpace()
     {
-        this.presentationService.ShowErrorInsufficientDiskSpace();
+        this.presentationService.ShowErrorInsufficientDiskSpaceAsync();
     }
 }

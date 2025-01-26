@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -22,6 +23,7 @@ using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
@@ -278,7 +280,7 @@ public class BackupService : IBackupService
         // run delete
         jobReport.ReportAction(ActionType.Delete, silent);
 
-        currentTask = Task.Factory.StartNew(async () => await deleteJob.DeleteAsync());
+        currentTask = Task.Factory.StartNew(deleteJob.DeleteAsync);
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -371,7 +373,7 @@ public class BackupService : IBackupService
         // run edit
         jobReport.ReportAction(ActionType.Modify, silent);
 
-        currentTask = Task.Factory.StartNew(() => editJob.EditAsync());
+        currentTask = Task.Factory.StartNew(editJob.EditAsync);
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -392,5 +394,31 @@ public class BackupService : IBackupService
     {
         using var dbClient = dbClientFactory.CreateDbClient();
         await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStable = {(stable ? 1 : 0)} WHERE versionID = {version}");
+    }
+
+    /// <summary>
+    /// Edits the details of a version.
+    /// </summary>
+    /// <param name="version">The ID of the version to edit</param>
+    /// <param name="versionDetails">The new details for the version</param>
+    /// <exception cref="ArgumentNullException">Thrown when versionDetails is null</exception>
+    /// <exception cref="ArgumentException">Thrown when version is not a valid integer</exception>
+    public async Task UpdateVersionAsync(string version, VersionDetails versionDetails)
+    {
+        ArgumentNullException.ThrowIfNull(versionDetails);
+        if (!int.TryParse(version, out var versionId))
+        {
+            throw new ArgumentException("Invalid version ID", nameof(version));
+        }
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        var sql = "UPDATE versiontable SET versionTitle = @title, versionDescription = @description WHERE versionID = @versionID";
+        var parameters = new (string, object)[]
+        {
+            ( "@title", versionDetails.Title ?? string.Empty ),
+            ( "@description", versionDetails.Description ?? string.Empty ),
+            ( "@versionID", versionId )
+        };
+        await dbClient.ExecuteNonQueryAsync(System.Data.CommandType.Text, sql, parameters);
     }
 }

@@ -129,7 +129,7 @@ public class JobService : IJobService
         // show dialog?
         if (statusDialog)
         {
-            presentationService.ShowStatusWindow();
+            await presentationService.ShowStatusWindowAsync();
         }
 
         // check media
@@ -509,7 +509,7 @@ public class JobService : IJobService
         }
 
         // request password from user
-        var request = await presentationService.RequestPassword();
+        var request = await presentationService.RequestPasswordAsync();
         while (!string.IsNullOrEmpty(request.password))
         {
             if ((Hash.GetMD5Hash(request.password) ?? "") == (configurationManager.EncryptPassMD5 ?? ""))
@@ -532,7 +532,7 @@ public class JobService : IJobService
                 "MSG_PASSWORD_WRONG_TEXT".GetLocalized(),
                 null
             );
-            request = await presentationService.RequestPassword();
+            request = await presentationService.RequestPasswordAsync();
         }
 
         return false;

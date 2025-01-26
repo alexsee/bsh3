@@ -3,11 +3,13 @@
 
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Models;
 using BSH.MainApp.Utils;
+using BSH.MainApp.ViewModels.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -17,6 +19,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 {
     private readonly IQueryManager queryManager;
     private readonly IJobService jobService;
+    private readonly IBackupService backupService;
+    private readonly IPresentationService presentationService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
@@ -39,21 +43,32 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool toggleInfoPane = false;
 
-    public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; set; } = new();
+    [ObservableProperty]
+    private bool hasVersions = false;
 
-    public ObservableCollection<string> Favorites { get; set; } = new();
+    public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; set; } = [];
 
-    public ObservableCollection<FileOrFolderItem> Items { get; set; } = new();
+    public ObservableCollection<string> Favorites { get; set; } = [];
 
-    public ObservableCollection<VersionDetails> Versions { get; set; } = new();
+    public ObservableCollection<FileOrFolderItem> Items { get; set; } = [];
 
-    public BrowserViewModel(IQueryManager queryManager, IJobService jobService)
+    public ObservableCollection<VersionDetails> Versions { get; set; } = [];
+
+    public BrowserViewModel(IQueryManager queryManager, IJobService jobService, IBackupService backupService, IPresentationService presentationService)
     {
         this.queryManager = queryManager;
         this.jobService = jobService;
+        this.backupService = backupService;
+        this.presentationService = presentationService;
     }
 
-    [RelayCommand]
+    private bool CanUpFolder() => CurrentFolderPath.Count > 1;
+    private bool HasFileOrFolderSelected() => CurrentItem != null && CurrentVersion != null;
+    private bool CanRestoreAll() => CurrentVersion != null && CurrentFolderPath.Count > 0;
+    private bool HasVersionSelected() => CurrentVersion != null;
+    private bool HasFileSelected() => CurrentItem != null && CurrentItem.IsFile;
+
+    [RelayCommand(CanExecute = nameof(HasVersionSelected))]
     private async Task LoadVersion()
     {
         if (CurrentVersion == null)
@@ -65,8 +80,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             .Select(x => x[(x.LastIndexOf("\\") + 1)..])
             .ToList();
 
-        this.Favorites.Clear();
-        sources.ForEach(this.Favorites.Add);
+        Favorites.Clear();
+        sources.ForEach(Favorites.Add);
         CurrentFavorite = sources[0];
 
         await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite);
@@ -83,7 +98,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite);
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(HasVersionSelected))]
     private async Task LoadFolder()
     {
         if (CurrentItem == null || CurrentItem.IsFile || CurrentVersion == null)
@@ -107,21 +122,24 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         await LoadFolderAsync(CurrentVersion.Id, CurrentFolderPath[^2].FullPath);
     }
 
-    private bool CanUpFolder() => CurrentFolderPath.Count > 1;
-
     [RelayCommand]
     private async Task Refresh()
     {
-        if (CurrentVersion == null && CurrentFolderPath.Count > 0)
+        if (CurrentVersion == null || CurrentFolderPath.Count == 0)
         {
             return;
         }
 
-        var version = CurrentVersion;
+        var favorite = CurrentFavorite;
+        var versionId = CurrentVersion.Id;
+        var currentFolder = CurrentFolderPath[^1].FullPath;
+
         LoadVersions();
 
-        CurrentVersion = version;
-        await LoadFolderAsync(version.Id, CurrentFolderPath[^1].FullPath);
+        CurrentVersion = Versions.First(x => x.Id == versionId);
+        CurrentFavorite = favorite;
+
+        await LoadFolderAsync(CurrentVersion.Id, currentFolder);
     }
 
     [RelayCommand]
@@ -154,8 +172,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
     }
 
-    private bool HasFileOrFolderSelected() => CurrentItem != null && CurrentVersion != null;
-
     [RelayCommand(CanExecute = nameof(CanRestoreAll))]
     private async Task RestoreAll()
     {
@@ -168,49 +184,85 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         await jobService.RestoreBackupAsync(CurrentVersion.Id, CurrentFolderPath[^1].FullPath, "");
     }
 
-    private bool CanRestoreAll() => CurrentVersion != null && CurrentFolderPath.Count > 0;
-
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
     private async Task ShowFileProperties()
     {
-
+        throw new NotImplementedException();
     }
-
-    private bool HasFileSelected() => CurrentItem != null && CurrentItem.IsFile;
 
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
     private async Task ShowFilePreview()
     {
-
+        throw new NotImplementedException();
     }
 
     [RelayCommand]
     private async Task AddFolderToFavorites()
     {
-
+        throw new NotImplementedException();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(HasVersionSelected))]
     private async Task EditBackup()
     {
+        if (CurrentVersion == null)
+        {
+            return;
+        }
 
+        var existingBackupViewModel = new EditBackupViewModel
+        {
+            Title = CurrentVersion?.Title,
+            Description = CurrentVersion?.Description,
+        };
+
+        var (result, viewModel) = await presentationService.ShowEditBackupWindowAsync(existingBackupViewModel);
+        if (result)
+        {
+            await backupService.UpdateVersionAsync(CurrentVersion.Id, new VersionDetails { Title = viewModel.Title, Description = viewModel.Description });
+            await Refresh();
+        }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(HasVersionSelected))]
     private async Task DeleteBackup()
     {
+        if (CurrentVersion == null)
+        {
+            return;
+        }
 
+        var result = await presentationService.ShowDeleteBackupWindowAsync();
+        if (result)
+        {
+            await jobService.DeleteBackupAsync(CurrentVersion.Id);
+
+            LoadVersions();
+
+            if (Versions.Count > 0)
+            {
+                CurrentVersion = Versions[0];
+                await LoadVersion();
+            }
+        }
     }
 
-    [RelayCommand]
-    private async Task DeleteBackups()
-    {
-
-    }
-
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(HasVersionSelected))]
     private async Task LockBackup()
     {
+        if (CurrentVersion == null)
+        {
+            return;
+        }
+
+        await backupService.SetStableAsync(CurrentVersion.Id, !CurrentVersion.Stable);
+        await Refresh();
+    }
+
+    [RelayCommand]
+    private async Task GoHome()
+    {
+        await presentationService.ShowMainWindowAsync();
     }
 
     private void LoadVersions()
@@ -218,6 +270,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         var backupVersions = queryManager.GetVersions(true);
 
         Versions.Clear();
+        HasVersions = backupVersions.Count > 0;
         backupVersions.ForEach(Versions.Add);
     }
 
@@ -284,8 +337,12 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     public async void OnNavigatedTo(object parameter)
     {
         LoadVersions();
-        CurrentVersion = Versions[0];
-        await LoadVersion();
+
+        if (Versions.Count > 0)
+        {
+            CurrentVersion = Versions[0];
+            await LoadVersion();
+        }
     }
 
     public void OnNavigatedFrom()
