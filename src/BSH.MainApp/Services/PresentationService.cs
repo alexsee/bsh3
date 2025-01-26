@@ -19,7 +19,7 @@ public class PresentationService : IPresentationService
     {
     }
 
-    public TaskCompleteAction CloseStatusWindowAsync()
+    public TaskCompleteAction CloseStatusWindow()
     {
         return TaskCompleteAction.NoAction;
     }

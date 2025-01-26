@@ -14,7 +14,7 @@ public interface IPresentationService
 {
     Task CloseBackupBrowserWindowAsync();
     Task CloseMainWindowAsync();
-    TaskCompleteAction CloseStatusWindowAsync();
+    TaskCompleteAction CloseStatusWindow();
     Task<(string? password, bool persist)> RequestPasswordAsync();
     Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile);
     Task ShowAboutWindowAsync();

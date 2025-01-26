@@ -206,7 +206,7 @@ public class JobService : IJobService
         // finish job
         if (statusDialog)
         {
-            var action = presentationService.CloseStatusWindowAsync();
+            var action = presentationService.CloseStatusWindow();
             if (triggerAction && action == TaskCompleteAction.ShutdownPC)
             {
                 _logger.Debug("Computer will be shutdown after task has finished.");

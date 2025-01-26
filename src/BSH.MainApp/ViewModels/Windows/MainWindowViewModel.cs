@@ -8,8 +8,15 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 
 namespace BSH.MainApp.ViewModels.Windows;
+
 public partial class MainWindowViewModel : ObservableObject
 {
+    private static class ViewModelKeys
+    {
+        public const string Main = nameof(MainViewModel);
+        public const string Browser = nameof(BrowserViewModel);
+    }
+
     [ObservableProperty]
     private NavigationViewItem? currentPage;
 
@@ -17,12 +24,6 @@ public partial class MainWindowViewModel : ObservableObject
 
     public MainWindowViewModel()
     {
-        private static class ViewModelKeys
-        {
-            public const string Main = nameof(BSH.MainApp.ViewModels.MainViewModel);
-            public const string Browser = nameof(BSH.MainApp.ViewModels.BrowserViewModel);
-        }
-
         NavigationItems = [
             new NavigationViewItem { Tag = ViewModelKeys.Main, Icon = new SymbolIcon(Symbol.Home), Content = "Overview" },
             new NavigationViewItem { Tag = ViewModelKeys.Browser, Icon = new SymbolIcon(Symbol.BrowsePhotos), Content = "Backup browser" },
@@ -33,9 +34,11 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private void NavigateToMainPage(NavigationViewItemInvokedEventArgs args)
     {
+        ArgumentNullException.ThrowIfNull(args);
+
         if (args.IsSettingsInvoked)
         {
-            App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.SettingsViewModel");
+            App.GetService<INavigationService>().NavigateTo(nameof(SettingsViewModel));
             return;
         }
 

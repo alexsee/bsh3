@@ -124,7 +124,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
             ? "" 
             : double.Parse(configurationManager.FreeSpace, System.Globalization.CultureInfo.InvariantCulture)
                 .Bytes()
-                .Humanize(culture: System.Globalization.CultureInfo.CurrentCulture);
+                .Humanize();
 
         TotalFilesBackuped = (await queryManager.GetNumberOfFilesAsync()).ToString("g");
         TotalFileSize = (await queryManager.GetTotalFileSizeAsync()).Bytes().Humanize();

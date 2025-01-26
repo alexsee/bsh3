@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -279,7 +280,7 @@ public class BackupService : IBackupService
         // run delete
         jobReport.ReportAction(ActionType.Delete, silent);
 
-        currentTask = Task.Factory.StartNew(async () => await deleteJob.DeleteAsync());
+        currentTask = Task.Factory.StartNew(deleteJob.DeleteAsync);
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -372,7 +373,7 @@ public class BackupService : IBackupService
         // run edit
         jobReport.ReportAction(ActionType.Modify, silent);
 
-        currentTask = Task.Factory.StartNew(() => editJob.EditAsync());
+        currentTask = Task.Factory.StartNew(editJob.EditAsync);
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -398,9 +399,11 @@ public class BackupService : IBackupService
     /// <summary>
     /// Edits the details of a version.
     /// </summary>
-    /// <param name="version"></param>
-    /// <param name="versionDetails"></param>
-    public async Task EditVersionAsync(string version, VersionDetails versionDetails)
+    /// <param name="version">The ID of the version to edit</param>
+    /// <param name="versionDetails">The new details for the version</param>
+    /// <exception cref="ArgumentNullException">Thrown when versionDetails is null</exception>
+    /// <exception cref="ArgumentException">Thrown when version is not a valid integer</exception>
+    public async Task UpdateVersionAsync(string version, VersionDetails versionDetails)
     {
         ArgumentNullException.ThrowIfNull(versionDetails);
         if (!int.TryParse(version, out var versionId))
@@ -409,13 +412,13 @@ public class BackupService : IBackupService
         }
 
         using var dbClient = dbClientFactory.CreateDbClient();
-        var sql = "UPDATE versiontable SET versionTitle = @Title, versionDescription = @Description WHERE versionID = @VersionID";
-        var parameters = new Dictionary<string, object>
+        var sql = "UPDATE versiontable SET versionTitle = @title, versionDescription = @description WHERE versionID = @versionID";
+        var parameters = new (string, object)[]
         {
-            { "@Title", versionDetails.Title ?? string.Empty },
-            { "@Description", versionDetails.Description ?? string.Empty },
-            { "@VersionID", versionId }
+            ( "@title", versionDetails.Title ?? string.Empty ),
+            ( "@description", versionDetails.Description ?? string.Empty ),
+            ( "@versionID", versionId )
         };
-        await dbClient.ExecuteNonQueryAsync(sql, parameters);
+        await dbClient.ExecuteNonQueryAsync(System.Data.CommandType.Text, sql, parameters);
     }
 }

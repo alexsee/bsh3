@@ -25,7 +25,7 @@ public interface IBackupService
     bool HasPassword();
     void SetPassword(string password);
     Task SetStableAsync(string version, bool stable);
-    Task EditVersionAsync(string version, VersionDetails versionDetails);
+    Task UpdateVersionAsync(string version, VersionDetails versionDetails);
     Task StartBackup(string title, string description, ref IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false);
     Task StartDelete(string version, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false);
     Task StartDeleteSingle(string fileFilter, string pathFilter, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false);
