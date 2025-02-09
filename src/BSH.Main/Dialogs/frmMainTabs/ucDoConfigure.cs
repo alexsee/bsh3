@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Main.Properties;
@@ -480,6 +481,7 @@ public partial class ucDoConfigure : IMainTabs
                     }
 
                     // copy database from backup device
+                    DeleteCurrentDatabaseFile();
                     File.Copy(lvBackups.SelectedItems[0].Tag.ToString() + @"\backup.bshdb", BackupLogic.DatabaseFile, true);
                 }
                 else if (tcStep5.SelectedIndex == 1)
@@ -487,10 +489,8 @@ public partial class ucDoConfigure : IMainTabs
                     // ftp server
                     try
                     {
-                        // delete old database file
-                        File.Delete(BackupLogic.DatabaseFile);
-
                         // download backup database
+                        DeleteCurrentDatabaseFile();
                         using IStorage storage = new FtpStorage(
                             txtFTPServer2.Text,
                             int.Parse(txtFTPPort2.Text),
@@ -524,6 +524,7 @@ public partial class ucDoConfigure : IMainTabs
                     }
 
                     // copy database from backup device
+                    DeleteCurrentDatabaseFile();
                     File.Copy(txtPath.Text + @"\backup.bshdb", BackupLogic.DatabaseFile, true);
                 }
 
@@ -630,6 +631,30 @@ public partial class ucDoConfigure : IMainTabs
                 // start backup system
                 await BackupLogic.StartSystemAsync(true);
                 break;
+        }
+    }
+
+    private static void DeleteCurrentDatabaseFile()
+    {
+        DbClientFactory.ClosePool();
+
+        // delete old database file
+        File.Delete(BackupLogic.DatabaseFile);
+        try
+        {
+            File.Delete(BackupLogic.DatabaseFile + "-wal");
+        }
+        catch
+        {
+            // ignore error
+        }
+        try
+        {
+            File.Delete(BackupLogic.DatabaseFile + "-shm");
+        }
+        catch (Exception)
+        {
+            // ignore error
         }
     }
 
