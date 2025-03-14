@@ -1,16 +1,5 @@
-﻿// Copyright 2022 Alexander Seeliger
-//
-// Licensed under the Apache License, Version 2.0 (the "License")
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System;
 using System.IO;
@@ -255,6 +244,13 @@ public class FtpStorage : Storage, IStorage
         var remoteFilePath = Combine(folderPath, remoteFile + ".zip").GetFtpPath();
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile)) + ".zip";
 
+        // check if tmp file is still there
+        if (File.Exists(tmpFile))
+        {
+            File.Delete(tmpFile);
+        }
+
+        // create zip file
         using (var zipFile = ZipFile.Open(tmpFile, ZipArchiveMode.Create))
         {
             zipFile.CreateEntryFromFile(GetLocalFileName(localFile), Path.GetFileName(localFile), CompressionLevel.Optimal);
@@ -273,6 +269,13 @@ public class FtpStorage : Storage, IStorage
 
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile)) + ".enc";
 
+        // check if tmp file is still there
+        if (File.Exists(tmpFile))
+        {
+            File.Delete(tmpFile);
+        }
+
+        // encrypt file
         var crypto = new Encryption();
         if (!crypto.Encode(GetLocalFileName(localFile), tmpFile, password))
         {
@@ -370,6 +373,14 @@ public class FtpStorage : Storage, IStorage
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile) + ".zip");
+
+        // check if tmp file is still there
+        if (File.Exists(tmpFile))
+        {
+            File.Delete(tmpFile);
+        }
+
+        // download zip file
         var result = ftpClient.DownloadFile(tmpFile, remoteFilePath, FtpLocalExists.Overwrite);
 
         if (result != FtpStatus.Success)
@@ -394,6 +405,14 @@ public class FtpStorage : Storage, IStorage
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(localFile) + ".enc");
+
+        // check if tmp file is still there
+        if (File.Exists(tmpFile))
+        {
+            File.Delete(tmpFile);
+        }
+
+        // download encrypted file
         var result = ftpClient.DownloadFile(tmpFile, remoteFilePath, FtpLocalExists.Overwrite);
 
         if (result != FtpStatus.Success)
@@ -444,6 +463,14 @@ public class FtpStorage : Storage, IStorage
         var remoteFilePathDecrypted = Combine(folderPath, remoteFile).GetFtpPath();
 
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(remoteFile));
+
+        // check if tmp file is still there
+        if (File.Exists(tmpFile))
+        {
+            File.Delete(tmpFile);
+        }
+
+        // download encrypted file
         var result = ftpClient.DownloadFile(tmpFile + ".enc", remoteFilePath, FtpLocalExists.Overwrite);
 
         if (result != FtpStatus.Success)
