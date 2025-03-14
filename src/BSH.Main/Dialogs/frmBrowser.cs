@@ -573,46 +573,6 @@ public partial class frmBrowser : IStatusReport
                 };
 
                 lvFavorite.Items.Add(newEntry);
-                newEntry = new ListViewItem
-                {
-                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
-                    ImageIndex = 2,
-                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
-                };
-
-                lvFavorite.Items.Add(newEntry);
-                newEntry = new ListViewItem
-                {
-                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
-                    ImageIndex = 2,
-                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
-                };
-
-                lvFavorite.Items.Add(newEntry);
-                newEntry = new ListViewItem
-                {
-                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
-                    ImageIndex = 2,
-                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
-                };
-
-                lvFavorite.Items.Add(newEntry);
-                newEntry = new ListViewItem
-                {
-                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
-                    ImageIndex = 2,
-                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
-                };
-
-                lvFavorite.Items.Add(newEntry);
-                newEntry = new ListViewItem
-                {
-                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
-                    ImageIndex = 2,
-                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
-                };
-
-                lvFavorite.Items.Add(newEntry);
             }
 
             // refresh favorites
