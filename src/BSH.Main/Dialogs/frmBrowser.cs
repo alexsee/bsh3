@@ -1,16 +1,5 @@
-﻿// Copyright 2022 Alexander Seeliger
-//
-// Licensed under the Apache License, Version 2.0 (the "License")
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System;
 using System.Collections.Generic;
@@ -584,6 +573,46 @@ public partial class frmBrowser : IStatusReport
                 };
 
                 lvFavorite.Items.Add(newEntry);
+                newEntry = new ListViewItem
+                {
+                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
+                    ImageIndex = 2,
+                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
+                };
+
+                lvFavorite.Items.Add(newEntry);
+                newEntry = new ListViewItem
+                {
+                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
+                    ImageIndex = 2,
+                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
+                };
+
+                lvFavorite.Items.Add(newEntry);
+                newEntry = new ListViewItem
+                {
+                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
+                    ImageIndex = 2,
+                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
+                };
+
+                lvFavorite.Items.Add(newEntry);
+                newEntry = new ListViewItem
+                {
+                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
+                    ImageIndex = 2,
+                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
+                };
+
+                lvFavorite.Items.Add(newEntry);
+                newEntry = new ListViewItem
+                {
+                    Text = await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]),
+                    ImageIndex = 2,
+                    Tag = '\\' + entry[(entry.LastIndexOf('\\') + 1)..] + '\\'
+                };
+
+                lvFavorite.Items.Add(newEntry);
             }
 
             // refresh favorites
@@ -643,16 +672,14 @@ public partial class frmBrowser : IStatusReport
         // set favorites list height
         try
         {
-            if (lvFavorite.Items.Count > 10)
+            if (lvFavorite.Items.Count > 5)
             {
-                plFavorites.Height = lvFavorite.Top + lvFavorite.Items[0].Bounds.Height * 11;
-                lvFavorite.Height = lvFavorite.Items[0].Bounds.Height * 11;
+                plFavorites.Height = lvFavorite.Top + lvFavorite.Items[0].Bounds.Height * 6;
                 lvFavorite.Scrollable = true;
             }
             else
             {
                 plFavorites.Height = lvFavorite.Top + lvFavorite.Items[0].Bounds.Height * lvFavorite.Items.Count + 5;
-                lvFavorite.Height = lvFavorite.Items[0].Bounds.Height * lvFavorite.Items.Count;
             }
         }
         catch
