@@ -501,6 +501,9 @@ static class BackupLogic
                 if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                 {
                     schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+
+                    // start backup when device is connected
+                    DoBackupWhenDriveIsAvailable(RunBackupMethod.Schedule);
                 }
 
                 schedulerService.ScheduleDaily(async () => await thScheduleSysRunBackup(), scheduleDate);
@@ -516,6 +519,9 @@ static class BackupLogic
                     if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                     {
                         schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+
+                        // start backup when device is connected
+                        DoBackupWhenDriveIsAvailable(RunBackupMethod.Schedule);
                     }
                 }
                 else
@@ -532,6 +538,9 @@ static class BackupLogic
                             if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                             {
                                 schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+
+                                // start backup when device is connected
+                                DoBackupWhenDriveIsAvailable(RunBackupMethod.Schedule);
                             }
 
                             break;
@@ -557,6 +566,9 @@ static class BackupLogic
                     if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                     {
                         schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+
+                        // start backup when device is connected
+                        DoBackupWhenDriveIsAvailable(RunBackupMethod.Schedule);
                     }
                 }
                 else
@@ -573,6 +585,9 @@ static class BackupLogic
                             if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                             {
                                 schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+
+                                // start backup when device is connected
+                                DoBackupWhenDriveIsAvailable(RunBackupMethod.Schedule);
                             }
 
                             break;
