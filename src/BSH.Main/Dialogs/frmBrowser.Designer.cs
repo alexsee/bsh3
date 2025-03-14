@@ -164,26 +164,32 @@ namespace Brightbits.BSH.Main
             LCFiles.LoadingCircleControl.RotationSpeed = 100;
             LCFiles.LoadingCircleControl.SpokeThickness = 4;
             LCFiles.LoadingCircleControl.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.IE7;
+            ttMain.SetToolTip(LCFiles.LoadingCircleControl, resources.GetString("LCFiles.ToolTip"));
             LCFiles.Name = "LCFiles";
             LCFiles.Overflow = ToolStripItemOverflow.Never;
             // 
             // SplitContainer1
             // 
-            SplitContainer1.BackColor = System.Drawing.Color.FromArgb(209, 209, 211);
             resources.ApplyResources(SplitContainer1, "SplitContainer1");
+            SplitContainer1.BackColor = System.Drawing.Color.FromArgb(209, 209, 211);
             SplitContainer1.FixedPanel = FixedPanel.Panel1;
             SplitContainer1.Name = "SplitContainer1";
             // 
             // SplitContainer1.Panel1
             // 
+            resources.ApplyResources(SplitContainer1.Panel1, "SplitContainer1.Panel1");
             SplitContainer1.Panel1.BackColor = System.Drawing.Color.White;
             SplitContainer1.Panel1.Controls.Add(plVersions);
             SplitContainer1.Panel1.Controls.Add(plFavorites);
+            ttMain.SetToolTip(SplitContainer1.Panel1, resources.GetString("SplitContainer1.Panel1.ToolTip"));
             // 
             // SplitContainer1.Panel2
             // 
+            resources.ApplyResources(SplitContainer1.Panel2, "SplitContainer1.Panel2");
             SplitContainer1.Panel2.Controls.Add(lvFiles);
             SplitContainer1.Panel2.Controls.Add(Panel3);
+            ttMain.SetToolTip(SplitContainer1.Panel2, resources.GetString("SplitContainer1.Panel2.ToolTip"));
+            ttMain.SetToolTip(SplitContainer1, resources.GetString("SplitContainer1.ToolTip"));
             // 
             // plVersions
             // 
@@ -194,6 +200,7 @@ namespace Brightbits.BSH.Main
             plVersions.Controls.Add(AVersionList1);
             plVersions.Controls.Add(lblExpand2);
             plVersions.Name = "plVersions";
+            ttMain.SetToolTip(plVersions, resources.GetString("plVersions.ToolTip"));
             // 
             // cmdTakeMeLater
             // 
@@ -221,6 +228,7 @@ namespace Brightbits.BSH.Main
             AVersionList1.BackColor = System.Drawing.Color.White;
             AVersionList1.Name = "AVersionList1";
             AVersionList1.TabStop = false;
+            ttMain.SetToolTip(AVersionList1, resources.GetString("AVersionList1.ToolTip"));
             AVersionList1.ItemClick += AVersionList1_ItemClick;
             // 
             // lblExpand2
@@ -228,6 +236,7 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(lblExpand2, "lblExpand2");
             lblExpand2.ForeColor = System.Drawing.Color.Black;
             lblExpand2.Name = "lblExpand2";
+            ttMain.SetToolTip(lblExpand2, resources.GetString("lblExpand2.ToolTip"));
             // 
             // plFavorites
             // 
@@ -236,6 +245,7 @@ namespace Brightbits.BSH.Main
             plFavorites.Controls.Add(lvFavorite);
             plFavorites.Controls.Add(lblExpand1);
             plFavorites.Name = "plFavorites";
+            ttMain.SetToolTip(plFavorites, resources.GetString("plFavorites.ToolTip"));
             // 
             // lvFavorite
             // 
@@ -276,19 +286,20 @@ namespace Brightbits.BSH.Main
             cmnuFavorits.Items.AddRange(new ToolStripItem[] { LöschenToolStripMenuItem, UmbenennenToolStripMenuItem });
             cmnuFavorits.Name = "cmnuFavorits";
             cmnuFavorits.RenderMode = ToolStripRenderMode.System;
+            ttMain.SetToolTip(cmnuFavorits, resources.GetString("cmnuFavorits.ToolTip"));
             cmnuFavorits.Opening += cmnuFavorits_Opening;
             // 
             // LöschenToolStripMenuItem
             // 
-            LöschenToolStripMenuItem.Image = Resources.delete_icon_24;
             resources.ApplyResources(LöschenToolStripMenuItem, "LöschenToolStripMenuItem");
+            LöschenToolStripMenuItem.Image = Resources.delete_icon_24;
             LöschenToolStripMenuItem.Name = "LöschenToolStripMenuItem";
             LöschenToolStripMenuItem.Click += LöschenToolStripMenuItem_Click;
             // 
             // UmbenennenToolStripMenuItem
             // 
-            UmbenennenToolStripMenuItem.Name = "UmbenennenToolStripMenuItem";
             resources.ApplyResources(UmbenennenToolStripMenuItem, "UmbenennenToolStripMenuItem");
+            UmbenennenToolStripMenuItem.Name = "UmbenennenToolStripMenuItem";
             UmbenennenToolStripMenuItem.Click += UmbenennenToolStripMenuItem_Click;
             // 
             // ilFolder
@@ -306,19 +317,21 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(lblExpand1, "lblExpand1");
             lblExpand1.ForeColor = System.Drawing.Color.Black;
             lblExpand1.Name = "lblExpand1";
+            ttMain.SetToolTip(lblExpand1, resources.GetString("lblExpand1.ToolTip"));
             // 
             // lvFiles
             // 
+            resources.ApplyResources(lvFiles, "lvFiles");
             lvFiles.BorderStyle = BorderStyle.None;
             lvFiles.Columns.AddRange(new ColumnHeader[] { ColumnHeader1, ColumnHeader2, ColumnHeader3, ColumnHeader4, ColumnHeader6, ColumnHeader5 });
             lvFiles.ContextMenuStrip = cmnuListRight;
-            resources.ApplyResources(lvFiles, "lvFiles");
             lvFiles.FullRowSelect = true;
             lvFiles.Groups.AddRange(new ListViewGroup[] { (ListViewGroup)resources.GetObject("lvFiles.Groups"), (ListViewGroup)resources.GetObject("lvFiles.Groups1") });
             lvFiles.LargeImageList = ilBigIcons;
             lvFiles.Name = "lvFiles";
             lvFiles.SmallImageList = ilSmallIcons;
             lvFiles.Sorting = SortOrder.Ascending;
+            ttMain.SetToolTip(lvFiles, resources.GetString("lvFiles.ToolTip"));
             lvFiles.UseCompatibleStateImageBehavior = false;
             lvFiles.View = View.Details;
             lvFiles.ColumnClick += lvFiles_ColumnClick;
@@ -357,42 +370,43 @@ namespace Brightbits.BSH.Main
             cmnuListRight.Items.AddRange(new ToolStripItem[] { WiederherstellenToolStripMenuItem1, EigenschaftenToolStripMenuItem1, ToolStripMenuItem5, DateiOrdnerAusSicherungenLöschenToolStripMenuItem, ToolStripMenuItem3, SchnellansichtToolStripMenuItem1 });
             cmnuListRight.Name = "cmnuListRight";
             cmnuListRight.RenderMode = ToolStripRenderMode.System;
+            ttMain.SetToolTip(cmnuListRight, resources.GetString("cmnuListRight.ToolTip"));
             cmnuListRight.Opening += cmnuListRight_Opening;
             // 
             // WiederherstellenToolStripMenuItem1
             // 
+            resources.ApplyResources(WiederherstellenToolStripMenuItem1, "WiederherstellenToolStripMenuItem1");
             WiederherstellenToolStripMenuItem1.Image = Resources.settings_backup_restore_icon_24;
             WiederherstellenToolStripMenuItem1.Name = "WiederherstellenToolStripMenuItem1";
-            resources.ApplyResources(WiederherstellenToolStripMenuItem1, "WiederherstellenToolStripMenuItem1");
             WiederherstellenToolStripMenuItem1.Click += WiederherstellenToolStripMenuItem1_Click;
             // 
             // EigenschaftenToolStripMenuItem1
             // 
-            EigenschaftenToolStripMenuItem1.Name = "EigenschaftenToolStripMenuItem1";
             resources.ApplyResources(EigenschaftenToolStripMenuItem1, "EigenschaftenToolStripMenuItem1");
+            EigenschaftenToolStripMenuItem1.Name = "EigenschaftenToolStripMenuItem1";
             EigenschaftenToolStripMenuItem1.Click += EigenschaftenToolStripMenuItem1_Click;
             // 
             // ToolStripMenuItem5
             // 
-            ToolStripMenuItem5.Name = "ToolStripMenuItem5";
             resources.ApplyResources(ToolStripMenuItem5, "ToolStripMenuItem5");
+            ToolStripMenuItem5.Name = "ToolStripMenuItem5";
             // 
             // DateiOrdnerAusSicherungenLöschenToolStripMenuItem
             // 
-            DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Name = "DateiOrdnerAusSicherungenLöschenToolStripMenuItem";
             resources.ApplyResources(DateiOrdnerAusSicherungenLöschenToolStripMenuItem, "DateiOrdnerAusSicherungenLöschenToolStripMenuItem");
+            DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Name = "DateiOrdnerAusSicherungenLöschenToolStripMenuItem";
             DateiOrdnerAusSicherungenLöschenToolStripMenuItem.Click += DateiOrdnerAusSicherungenLöschenToolStripMenuItem_Click;
             // 
             // ToolStripMenuItem3
             // 
-            ToolStripMenuItem3.Name = "ToolStripMenuItem3";
             resources.ApplyResources(ToolStripMenuItem3, "ToolStripMenuItem3");
+            ToolStripMenuItem3.Name = "ToolStripMenuItem3";
             // 
             // SchnellansichtToolStripMenuItem1
             // 
+            resources.ApplyResources(SchnellansichtToolStripMenuItem1, "SchnellansichtToolStripMenuItem1");
             SchnellansichtToolStripMenuItem1.Image = Resources.visibility_icon_24;
             SchnellansichtToolStripMenuItem1.Name = "SchnellansichtToolStripMenuItem1";
-            resources.ApplyResources(SchnellansichtToolStripMenuItem1, "SchnellansichtToolStripMenuItem1");
             SchnellansichtToolStripMenuItem1.Click += SchnellansichtToolStripMenuItem1_Click;
             // 
             // ilBigIcons
@@ -411,11 +425,12 @@ namespace Brightbits.BSH.Main
             // 
             // Panel3
             // 
+            resources.ApplyResources(Panel3, "Panel3");
             Panel3.BackColor = System.Drawing.Color.White;
             Panel3.Controls.Add(chkFilesOfThisVersion);
             Panel3.Controls.Add(lblBackupdate);
-            resources.ApplyResources(Panel3, "Panel3");
             Panel3.Name = "Panel3";
+            ttMain.SetToolTip(Panel3, resources.GetString("Panel3.ToolTip"));
             // 
             // chkFilesOfThisVersion
             // 
@@ -432,6 +447,7 @@ namespace Brightbits.BSH.Main
             lblBackupdate.AutoEllipsis = true;
             lblBackupdate.ForeColor = System.Drawing.Color.Black;
             lblBackupdate.Name = "lblBackupdate";
+            ttMain.SetToolTip(lblBackupdate, resources.GetString("lblBackupdate.ToolTip"));
             // 
             // ilBigFolder
             // 
@@ -443,15 +459,16 @@ namespace Brightbits.BSH.Main
             // 
             // StatusStrip1
             // 
+            resources.ApplyResources(StatusStrip1, "StatusStrip1");
             StatusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             StatusStrip1.Items.AddRange(new ToolStripItem[] { LCFiles, tsslblStatus });
-            resources.ApplyResources(StatusStrip1, "StatusStrip1");
             StatusStrip1.Name = "StatusStrip1";
+            ttMain.SetToolTip(StatusStrip1, resources.GetString("StatusStrip1.ToolTip"));
             // 
             // tsslblStatus
             // 
-            tsslblStatus.Name = "tsslblStatus";
             resources.ApplyResources(tsslblStatus, "tsslblStatus");
+            tsslblStatus.Name = "tsslblStatus";
             // 
             // ttMain
             // 
@@ -460,20 +477,21 @@ namespace Brightbits.BSH.Main
             // 
             // tMain
             // 
+            resources.ApplyResources(tMain, "tMain");
             tMain.AllowMerge = false;
             tMain.BackColor = System.Drawing.Color.FromArgb(243, 243, 245);
             tMain.CanOverflow = false;
-            resources.ApplyResources(tMain, "tMain");
             tMain.GripStyle = ToolStripGripStyle.Hidden;
             tMain.ImageScalingSize = new System.Drawing.Size(24, 24);
             tMain.Items.AddRange(new ToolStripItem[] { ToolStripDropDownButton1, ToolStripSchnellansicht, ToolStripDropDownButton2, cmdRestore });
             tMain.Name = "tMain";
             tMain.RenderMode = ToolStripRenderMode.System;
+            ttMain.SetToolTip(tMain, resources.GetString("tMain.ToolTip"));
             // 
             // ToolStripDropDownButton1
             // 
-            ToolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { WiederherstellenToolStripMenuItem, AllesWiederherstellenToolStripMenuItem1, EigenschaftenToolStripMenuItem, ToolStripMenuItem1, SchnellansichtToolStripMenuItem, ZuOrdnerfavoritenHinzufügenToolStripMenuItem, ToolStripMenuItem2, VersionBearbeitenToolStripMenuItem, VersionLöschenToolStripMenuItem, VersionAlsStabilMarkierenToolStripMenuItem, ToolStripMenuItem4, MehrereVersionenLöschenToolStripMenuItem });
             resources.ApplyResources(ToolStripDropDownButton1, "ToolStripDropDownButton1");
+            ToolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { WiederherstellenToolStripMenuItem, AllesWiederherstellenToolStripMenuItem1, EigenschaftenToolStripMenuItem, ToolStripMenuItem1, SchnellansichtToolStripMenuItem, ZuOrdnerfavoritenHinzufügenToolStripMenuItem, ToolStripMenuItem2, VersionBearbeitenToolStripMenuItem, VersionLöschenToolStripMenuItem, VersionAlsStabilMarkierenToolStripMenuItem, ToolStripMenuItem4, MehrereVersionenLöschenToolStripMenuItem });
             ToolStripDropDownButton1.ForeColor = System.Drawing.Color.Black;
             ToolStripDropDownButton1.Image = Resources.edit_square_icon_24;
             ToolStripDropDownButton1.Margin = new Padding(3, 5, 3, 5);
@@ -482,15 +500,15 @@ namespace Brightbits.BSH.Main
             // 
             // WiederherstellenToolStripMenuItem
             // 
+            resources.ApplyResources(WiederherstellenToolStripMenuItem, "WiederherstellenToolStripMenuItem");
             WiederherstellenToolStripMenuItem.Image = Resources.settings_backup_restore_icon_24;
             WiederherstellenToolStripMenuItem.Name = "WiederherstellenToolStripMenuItem";
-            resources.ApplyResources(WiederherstellenToolStripMenuItem, "WiederherstellenToolStripMenuItem");
             WiederherstellenToolStripMenuItem.Click += WiederherstellenToolStripMenuItem_MouseClick;
             // 
             // AllesWiederherstellenToolStripMenuItem1
             // 
-            AllesWiederherstellenToolStripMenuItem1.Name = "AllesWiederherstellenToolStripMenuItem1";
             resources.ApplyResources(AllesWiederherstellenToolStripMenuItem1, "AllesWiederherstellenToolStripMenuItem1");
+            AllesWiederherstellenToolStripMenuItem1.Name = "AllesWiederherstellenToolStripMenuItem1";
             AllesWiederherstellenToolStripMenuItem1.Click += AllesWiederherstellenToolStripMenuItem_Click;
             // 
             // EigenschaftenToolStripMenuItem
@@ -501,8 +519,8 @@ namespace Brightbits.BSH.Main
             // 
             // ToolStripMenuItem1
             // 
-            ToolStripMenuItem1.Name = "ToolStripMenuItem1";
             resources.ApplyResources(ToolStripMenuItem1, "ToolStripMenuItem1");
+            ToolStripMenuItem1.Name = "ToolStripMenuItem1";
             // 
             // SchnellansichtToolStripMenuItem
             // 
@@ -513,43 +531,43 @@ namespace Brightbits.BSH.Main
             // 
             // ZuOrdnerfavoritenHinzufügenToolStripMenuItem
             // 
-            ZuOrdnerfavoritenHinzufügenToolStripMenuItem.Name = "ZuOrdnerfavoritenHinzufügenToolStripMenuItem";
             resources.ApplyResources(ZuOrdnerfavoritenHinzufügenToolStripMenuItem, "ZuOrdnerfavoritenHinzufügenToolStripMenuItem");
+            ZuOrdnerfavoritenHinzufügenToolStripMenuItem.Name = "ZuOrdnerfavoritenHinzufügenToolStripMenuItem";
             ZuOrdnerfavoritenHinzufügenToolStripMenuItem.Click += ZuOrdnerfavoritenHinzufügenToolStripMenuItem_Click;
             // 
             // ToolStripMenuItem2
             // 
-            ToolStripMenuItem2.Name = "ToolStripMenuItem2";
             resources.ApplyResources(ToolStripMenuItem2, "ToolStripMenuItem2");
+            ToolStripMenuItem2.Name = "ToolStripMenuItem2";
             // 
             // VersionBearbeitenToolStripMenuItem
             // 
-            VersionBearbeitenToolStripMenuItem.Name = "VersionBearbeitenToolStripMenuItem";
             resources.ApplyResources(VersionBearbeitenToolStripMenuItem, "VersionBearbeitenToolStripMenuItem");
+            VersionBearbeitenToolStripMenuItem.Name = "VersionBearbeitenToolStripMenuItem";
             VersionBearbeitenToolStripMenuItem.Click += VersionBearbeitenToolStripMenuItem_Click;
             // 
             // VersionLöschenToolStripMenuItem
             // 
+            resources.ApplyResources(VersionLöschenToolStripMenuItem, "VersionLöschenToolStripMenuItem");
             VersionLöschenToolStripMenuItem.Image = Resources.delete_icon_24;
             VersionLöschenToolStripMenuItem.Name = "VersionLöschenToolStripMenuItem";
-            resources.ApplyResources(VersionLöschenToolStripMenuItem, "VersionLöschenToolStripMenuItem");
             VersionLöschenToolStripMenuItem.Click += VersionLöschenToolStripMenuItem_Click;
             // 
             // VersionAlsStabilMarkierenToolStripMenuItem
             // 
-            VersionAlsStabilMarkierenToolStripMenuItem.Name = "VersionAlsStabilMarkierenToolStripMenuItem";
             resources.ApplyResources(VersionAlsStabilMarkierenToolStripMenuItem, "VersionAlsStabilMarkierenToolStripMenuItem");
+            VersionAlsStabilMarkierenToolStripMenuItem.Name = "VersionAlsStabilMarkierenToolStripMenuItem";
             VersionAlsStabilMarkierenToolStripMenuItem.Click += VersionAlsStabilMarkierenToolStripMenuItem_Click;
             // 
             // ToolStripMenuItem4
             // 
-            ToolStripMenuItem4.Name = "ToolStripMenuItem4";
             resources.ApplyResources(ToolStripMenuItem4, "ToolStripMenuItem4");
+            ToolStripMenuItem4.Name = "ToolStripMenuItem4";
             // 
             // MehrereVersionenLöschenToolStripMenuItem
             // 
-            MehrereVersionenLöschenToolStripMenuItem.Name = "MehrereVersionenLöschenToolStripMenuItem";
             resources.ApplyResources(MehrereVersionenLöschenToolStripMenuItem, "MehrereVersionenLöschenToolStripMenuItem");
+            MehrereVersionenLöschenToolStripMenuItem.Name = "MehrereVersionenLöschenToolStripMenuItem";
             MehrereVersionenLöschenToolStripMenuItem.Click += MehrereVersionenLöschenToolStripMenuItem_Click;
             // 
             // ToolStripSchnellansicht
@@ -564,41 +582,41 @@ namespace Brightbits.BSH.Main
             // 
             // ToolStripDropDownButton2
             // 
+            resources.ApplyResources(ToolStripDropDownButton2, "ToolStripDropDownButton2");
             ToolStripDropDownButton2.Alignment = ToolStripItemAlignment.Right;
             ToolStripDropDownButton2.DropDownItems.AddRange(new ToolStripItem[] { GroßeSymboleToolStripMenuItem, ListenansichtToolStripMenuItem, DetailsansichtToolStripMenuItem });
             ToolStripDropDownButton2.ForeColor = System.Drawing.Color.Black;
-            resources.ApplyResources(ToolStripDropDownButton2, "ToolStripDropDownButton2");
             ToolStripDropDownButton2.Margin = new Padding(3, 5, 3, 5);
             ToolStripDropDownButton2.Name = "ToolStripDropDownButton2";
             ToolStripDropDownButton2.Padding = new Padding(2);
             // 
             // GroßeSymboleToolStripMenuItem
             // 
-            GroßeSymboleToolStripMenuItem.Image = Resources.grid_view_icon_24;
             resources.ApplyResources(GroßeSymboleToolStripMenuItem, "GroßeSymboleToolStripMenuItem");
+            GroßeSymboleToolStripMenuItem.Image = Resources.grid_view_icon_24;
             GroßeSymboleToolStripMenuItem.Name = "GroßeSymboleToolStripMenuItem";
             GroßeSymboleToolStripMenuItem.Click += GroßeSymboleToolStripMenuItem_Click;
             // 
             // ListenansichtToolStripMenuItem
             // 
-            ListenansichtToolStripMenuItem.Image = Resources.list_icon_24;
             resources.ApplyResources(ListenansichtToolStripMenuItem, "ListenansichtToolStripMenuItem");
+            ListenansichtToolStripMenuItem.Image = Resources.list_icon_24;
             ListenansichtToolStripMenuItem.Name = "ListenansichtToolStripMenuItem";
             ListenansichtToolStripMenuItem.Click += ListenansichtToolStripMenuItem_Click;
             // 
             // DetailsansichtToolStripMenuItem
             // 
-            DetailsansichtToolStripMenuItem.Image = Resources.view_list_icon_24;
             resources.ApplyResources(DetailsansichtToolStripMenuItem, "DetailsansichtToolStripMenuItem");
+            DetailsansichtToolStripMenuItem.Image = Resources.view_list_icon_24;
             DetailsansichtToolStripMenuItem.Name = "DetailsansichtToolStripMenuItem";
             DetailsansichtToolStripMenuItem.Click += DetailansichtToolStripMenuItem_Click;
             // 
             // cmdRestore
             // 
+            resources.ApplyResources(cmdRestore, "cmdRestore");
             cmdRestore.Alignment = ToolStripItemAlignment.Right;
             cmdRestore.ForeColor = System.Drawing.Color.Black;
             cmdRestore.Image = Resources.settings_backup_restore_icon_24;
-            resources.ApplyResources(cmdRestore, "cmdRestore");
             cmdRestore.Margin = new Padding(3, 5, 3, 5);
             cmdRestore.Name = "cmdRestore";
             cmdRestore.Padding = new Padding(2);
@@ -606,12 +624,13 @@ namespace Brightbits.BSH.Main
             // 
             // plGlass
             // 
+            resources.ApplyResources(plGlass, "plGlass");
             plGlass.BackColor = System.Drawing.Color.White;
             plGlass.Controls.Add(UcNav);
             plGlass.Controls.Add(Panel2);
             plGlass.Controls.Add(btnBack);
-            resources.ApplyResources(plGlass, "plGlass");
             plGlass.Name = "plGlass";
+            ttMain.SetToolTip(plGlass, resources.GetString("plGlass.ToolTip"));
             // 
             // UcNav
             // 
@@ -623,6 +642,7 @@ namespace Brightbits.BSH.Main
             UcNav.Path = "";
             UcNav.PathLocalized = null;
             UcNav.TabStop = false;
+            ttMain.SetToolTip(UcNav, resources.GetString("UcNav.ToolTip"));
             UcNav.ItemClick += UcNav_ItemClick;
             // 
             // Panel2
@@ -631,6 +651,7 @@ namespace Brightbits.BSH.Main
             Panel2.BackColor = System.Drawing.Color.White;
             Panel2.Controls.Add(panel4);
             Panel2.Name = "Panel2";
+            ttMain.SetToolTip(Panel2, resources.GetString("Panel2.ToolTip"));
             // 
             // panel4
             // 
@@ -640,13 +661,15 @@ namespace Brightbits.BSH.Main
             panel4.Controls.Add(PictureBox3);
             panel4.Controls.Add(txtSearch);
             panel4.Name = "panel4";
+            ttMain.SetToolTip(panel4, resources.GetString("panel4.ToolTip"));
             // 
             // PictureBox3
             // 
-            PictureBox3.Image = Resources.search_icon_48;
             resources.ApplyResources(PictureBox3, "PictureBox3");
+            PictureBox3.Image = Resources.search_icon_48;
             PictureBox3.Name = "PictureBox3";
             PictureBox3.TabStop = false;
+            ttMain.SetToolTip(PictureBox3, resources.GetString("PictureBox3.ToolTip"));
             // 
             // txtSearch
             // 
@@ -656,6 +679,7 @@ namespace Brightbits.BSH.Main
             txtSearch.ForeColor = System.Drawing.Color.Black;
             txtSearch.Name = "txtSearch";
             txtSearch.Tag = "search";
+            ttMain.SetToolTip(txtSearch, resources.GetString("txtSearch.ToolTip"));
             txtSearch.TextChanged += txtSearch_TextChanged;
             txtSearch.Enter += txtSearch_Enter;
             txtSearch.KeyDown += txtSearch_KeyDown;
@@ -663,21 +687,23 @@ namespace Brightbits.BSH.Main
             // 
             // btnBack
             // 
+            resources.ApplyResources(btnBack, "btnBack");
             btnBack.Cursor = Cursors.Hand;
             btnBack.Image = Resources.arrow_upward_icon_48;
-            resources.ApplyResources(btnBack, "btnBack");
             btnBack.Name = "btnBack";
             btnBack.TabStop = false;
+            ttMain.SetToolTip(btnBack, resources.GetString("btnBack.ToolTip"));
             btnBack.Click += btnBack_Click;
             // 
             // Panel1
             // 
-            Panel1.BackColor = System.Drawing.Color.FromArgb(243, 243, 245);
             resources.ApplyResources(Panel1, "Panel1");
+            Panel1.BackColor = System.Drawing.Color.FromArgb(243, 243, 245);
             Panel1.Controls.Add(flpDetails);
             Panel1.Controls.Add(Label4);
             Panel1.Controls.Add(imgFileType);
             Panel1.Name = "Panel1";
+            ttMain.SetToolTip(Panel1, resources.GetString("Panel1.ToolTip"));
             // 
             // flpDetails
             // 
@@ -688,6 +714,7 @@ namespace Brightbits.BSH.Main
             flpDetails.Controls.Add(flpColumn3);
             flpDetails.Controls.Add(lblIntegrityCheck);
             flpDetails.Name = "flpDetails";
+            ttMain.SetToolTip(flpDetails, resources.GetString("flpDetails.ToolTip"));
             // 
             // flpColumn1
             // 
@@ -695,12 +722,14 @@ namespace Brightbits.BSH.Main
             flpColumn1.Controls.Add(lblFileName);
             flpColumn1.Controls.Add(lblFileType);
             flpColumn1.Name = "flpColumn1";
+            ttMain.SetToolTip(flpColumn1, resources.GetString("flpColumn1.ToolTip"));
             // 
             // lblFileName
             // 
             resources.ApplyResources(lblFileName, "lblFileName");
             lblFileName.BackColor = System.Drawing.Color.Transparent;
             lblFileName.Name = "lblFileName";
+            ttMain.SetToolTip(lblFileName, resources.GetString("lblFileName.ToolTip"));
             // 
             // lblFileType
             // 
@@ -708,6 +737,7 @@ namespace Brightbits.BSH.Main
             lblFileType.BackColor = System.Drawing.Color.Transparent;
             lblFileType.ForeColor = System.Drawing.Color.Black;
             lblFileType.Name = "lblFileType";
+            ttMain.SetToolTip(lblFileType, resources.GetString("lblFileType.ToolTip"));
             // 
             // flpColumn2
             // 
@@ -715,6 +745,7 @@ namespace Brightbits.BSH.Main
             flpColumn2.Controls.Add(flpDateLastWrite);
             flpColumn2.Controls.Add(flpDateCreated);
             flpColumn2.Name = "flpColumn2";
+            ttMain.SetToolTip(flpColumn2, resources.GetString("flpColumn2.ToolTip"));
             // 
             // flpDateLastWrite
             // 
@@ -723,6 +754,7 @@ namespace Brightbits.BSH.Main
             flpDateLastWrite.Controls.Add(lFileLastEdited);
             flpDateLastWrite.Controls.Add(lblFileLastEdited);
             flpDateLastWrite.Name = "flpDateLastWrite";
+            ttMain.SetToolTip(flpDateLastWrite, resources.GetString("flpDateLastWrite.ToolTip"));
             // 
             // lFileLastEdited
             // 
@@ -730,6 +762,7 @@ namespace Brightbits.BSH.Main
             lFileLastEdited.BackColor = System.Drawing.Color.Transparent;
             lFileLastEdited.ForeColor = System.Drawing.Color.Gray;
             lFileLastEdited.Name = "lFileLastEdited";
+            ttMain.SetToolTip(lFileLastEdited, resources.GetString("lFileLastEdited.ToolTip"));
             // 
             // lblFileLastEdited
             // 
@@ -737,6 +770,7 @@ namespace Brightbits.BSH.Main
             lblFileLastEdited.BackColor = System.Drawing.Color.Transparent;
             lblFileLastEdited.ForeColor = System.Drawing.Color.Black;
             lblFileLastEdited.Name = "lblFileLastEdited";
+            ttMain.SetToolTip(lblFileLastEdited, resources.GetString("lblFileLastEdited.ToolTip"));
             // 
             // flpDateCreated
             // 
@@ -745,6 +779,7 @@ namespace Brightbits.BSH.Main
             flpDateCreated.Controls.Add(lFileCreated);
             flpDateCreated.Controls.Add(lblFileCreated);
             flpDateCreated.Name = "flpDateCreated";
+            ttMain.SetToolTip(flpDateCreated, resources.GetString("flpDateCreated.ToolTip"));
             // 
             // lFileCreated
             // 
@@ -752,6 +787,7 @@ namespace Brightbits.BSH.Main
             lFileCreated.BackColor = System.Drawing.Color.Transparent;
             lFileCreated.ForeColor = System.Drawing.Color.Gray;
             lFileCreated.Name = "lFileCreated";
+            ttMain.SetToolTip(lFileCreated, resources.GetString("lFileCreated.ToolTip"));
             // 
             // lblFileCreated
             // 
@@ -759,6 +795,7 @@ namespace Brightbits.BSH.Main
             lblFileCreated.BackColor = System.Drawing.Color.Transparent;
             lblFileCreated.ForeColor = System.Drawing.Color.Black;
             lblFileCreated.Name = "lblFileCreated";
+            ttMain.SetToolTip(lblFileCreated, resources.GetString("lblFileCreated.ToolTip"));
             // 
             // flpColumn3
             // 
@@ -766,6 +803,7 @@ namespace Brightbits.BSH.Main
             flpColumn3.Controls.Add(flpSize);
             flpColumn3.Controls.Add(flpVersion);
             flpColumn3.Name = "flpColumn3";
+            ttMain.SetToolTip(flpColumn3, resources.GetString("flpColumn3.ToolTip"));
             // 
             // flpSize
             // 
@@ -774,6 +812,7 @@ namespace Brightbits.BSH.Main
             flpSize.Controls.Add(lFileSize);
             flpSize.Controls.Add(lblFileSize);
             flpSize.Name = "flpSize";
+            ttMain.SetToolTip(flpSize, resources.GetString("flpSize.ToolTip"));
             // 
             // lFileSize
             // 
@@ -781,6 +820,7 @@ namespace Brightbits.BSH.Main
             lFileSize.BackColor = System.Drawing.Color.Transparent;
             lFileSize.ForeColor = System.Drawing.Color.Gray;
             lFileSize.Name = "lFileSize";
+            ttMain.SetToolTip(lFileSize, resources.GetString("lFileSize.ToolTip"));
             // 
             // lblFileSize
             // 
@@ -788,6 +828,7 @@ namespace Brightbits.BSH.Main
             lblFileSize.BackColor = System.Drawing.Color.Transparent;
             lblFileSize.ForeColor = System.Drawing.Color.Black;
             lblFileSize.Name = "lblFileSize";
+            ttMain.SetToolTip(lblFileSize, resources.GetString("lblFileSize.ToolTip"));
             // 
             // flpVersion
             // 
@@ -796,6 +837,7 @@ namespace Brightbits.BSH.Main
             flpVersion.Controls.Add(lFileVersion);
             flpVersion.Controls.Add(lblFileVersion);
             flpVersion.Name = "flpVersion";
+            ttMain.SetToolTip(flpVersion, resources.GetString("flpVersion.ToolTip"));
             // 
             // lFileVersion
             // 
@@ -803,6 +845,7 @@ namespace Brightbits.BSH.Main
             lFileVersion.BackColor = System.Drawing.Color.Transparent;
             lFileVersion.ForeColor = System.Drawing.Color.Gray;
             lFileVersion.Name = "lFileVersion";
+            ttMain.SetToolTip(lFileVersion, resources.GetString("lFileVersion.ToolTip"));
             // 
             // lblFileVersion
             // 
@@ -810,25 +853,29 @@ namespace Brightbits.BSH.Main
             lblFileVersion.BackColor = System.Drawing.Color.Transparent;
             lblFileVersion.ForeColor = System.Drawing.Color.Black;
             lblFileVersion.Name = "lblFileVersion";
+            ttMain.SetToolTip(lblFileVersion, resources.GetString("lblFileVersion.ToolTip"));
             // 
             // lblIntegrityCheck
             // 
             resources.ApplyResources(lblIntegrityCheck, "lblIntegrityCheck");
             lblIntegrityCheck.ForeColor = System.Drawing.Color.Red;
             lblIntegrityCheck.Name = "lblIntegrityCheck";
+            ttMain.SetToolTip(lblIntegrityCheck, resources.GetString("lblIntegrityCheck.ToolTip"));
             // 
             // Label4
             // 
-            Label4.BackColor = System.Drawing.Color.FromArgb(224, 224, 224);
             resources.ApplyResources(Label4, "Label4");
+            Label4.BackColor = System.Drawing.Color.FromArgb(224, 224, 224);
             Label4.Name = "Label4";
+            ttMain.SetToolTip(Label4, resources.GetString("Label4.ToolTip"));
             // 
             // imgFileType
             // 
-            imgFileType.BackColor = System.Drawing.Color.Transparent;
             resources.ApplyResources(imgFileType, "imgFileType");
+            imgFileType.BackColor = System.Drawing.Color.Transparent;
             imgFileType.Name = "imgFileType";
             imgFileType.TabStop = false;
+            ttMain.SetToolTip(imgFileType, resources.GetString("imgFileType.ToolTip"));
             // 
             // bgrWorkSearch
             // 
@@ -839,8 +886,8 @@ namespace Brightbits.BSH.Main
             // 
             // AllesWiederherstellenToolStripMenuItem
             // 
-            AllesWiederherstellenToolStripMenuItem.Name = "AllesWiederherstellenToolStripMenuItem";
             resources.ApplyResources(AllesWiederherstellenToolStripMenuItem, "AllesWiederherstellenToolStripMenuItem");
+            AllesWiederherstellenToolStripMenuItem.Name = "AllesWiederherstellenToolStripMenuItem";
             // 
             // frmBrowser
             // 
@@ -853,6 +900,7 @@ namespace Brightbits.BSH.Main
             Controls.Add(StatusStrip1);
             DoubleBuffered = true;
             Name = "frmBrowser";
+            ttMain.SetToolTip(this, resources.GetString("$this.ToolTip"));
             FormClosing += frmBrowser_FormClosing;
             Load += frmBrowser_Load;
             SplitContainer1.Panel1.ResumeLayout(false);
