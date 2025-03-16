@@ -4,7 +4,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Brightbits.BSH.Engine.Models;
 using BSH.Main.Dialogs.SubDialogs;
 
 namespace Brightbits.BSH.Main;

@@ -120,8 +120,8 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
             BackupMode = "MainView_BackupMode_Manual".GetLocalized();
         }
 
-        AvailableDiskSpace = string.IsNullOrEmpty(configurationManager.FreeSpace) 
-            ? "" 
+        AvailableDiskSpace = string.IsNullOrEmpty(configurationManager.FreeSpace)
+            ? ""
             : double.Parse(configurationManager.FreeSpace, System.Globalization.CultureInfo.InvariantCulture)
                 .Bytes()
                 .Humanize();
