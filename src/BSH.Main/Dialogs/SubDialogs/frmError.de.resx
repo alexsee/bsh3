@@ -119,33 +119,16 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="Label1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>668, 121</value>
-  </data>
-  <data name="Label1.Text" xml:space="preserve">
-    <value>It has unexpectedly occurred an unforeseen problem that cannot be resolved. The application will now be terminated.
-
-Click 'Retry' to restart the application.</value>
+    <value>668, 108</value>
   </data>
   <data name="Button1.Location" type="System.Drawing.Point, System.Drawing">
     <value>616, 14</value>
   </data>
-  <data name="Button1.Text" xml:space="preserve">
-    <value>&amp;Close</value>
-  </data>
-  <data name="Panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>778, 70</value>
-  </data>
   <data name="Button2.Location" type="System.Drawing.Point, System.Drawing">
     <value>467, 14</value>
   </data>
-  <data name="Button2.Text" xml:space="preserve">
-    <value>Retry</value>
-  </data>
-  <data name="Label2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>352, 32</value>
-  </data>
-  <data name="Label2.Text" xml:space="preserve">
-    <value>Unexpected exception occurred</value>
+  <data name="Panel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>778, 70</value>
   </data>
   <data name="txtError.Size" type="System.Drawing.Size, System.Drawing">
     <value>660, 224</value>
@@ -1682,8 +1665,5 @@ Click 'Retry' to restart the application.</value>
         cnFy8HJxcsdycXKNcnFyRgAAAAAAAAAAAAAAAAAAAADwDwAAwAMAAIABAACAAQAAAAAAAAAAAAAAAAAA
         AAAAAAAAAAAAAAAAAAAAAAAAAACAAQAAgAEAAMADAADwDwAA
 </value>
-  </data>
-  <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>800, 580</value>
   </data>
 </root>

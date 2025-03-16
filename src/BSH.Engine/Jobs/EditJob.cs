@@ -1,19 +1,7 @@
-﻿// Copyright 2022 Alexander Seeliger
-//
-// Licensed under the Apache License, Version 2.0 (the "License")
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
 using System.Threading;
@@ -41,14 +29,8 @@ public class EditJob : Job
         get; set;
     }
 
-    public Collection<FileExceptionEntry> FileErrorList
-    {
-        get;
-    }
-
     public EditJob(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
     {
-        FileErrorList = new Collection<FileExceptionEntry>();
     }
 
     /// <summary>
@@ -125,19 +107,13 @@ public class EditJob : Job
                     }
                     catch (Exception ex)
                     {
-                        var fileExceptionEntry = new FileExceptionEntry()
+                        var fileExceptionEntry = AddFileErrorToList(new FileTableRow()
                         {
-                            Exception = ex,
-                            File = new FileTableRow()
-                            {
-                                FilePath = reader.GetString("filePath"),
-                                FileName = reader.GetString("fileName")
-                            }
-                        };
+                            FilePath = reader.GetString("filePath"),
+                            FileName = reader.GetString("fileName")
+                        }, ex);
 
-                        FileErrorList.Add(fileExceptionEntry);
-
-                        _logger.Error(ex.InnerException, "File {fileName} could not be edited.", remoteFilePath, new { fileExceptionEntry });
+                        _logger.Error(ex.InnerException, "File {fileName} could not be edited. {exception}", remoteFilePath, fileExceptionEntry);
                     }
                 }
 
