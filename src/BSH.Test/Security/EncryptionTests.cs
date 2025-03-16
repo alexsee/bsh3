@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using System.IO;
 using Brightbits.BSH.Engine.Security;
 using NUnit.Framework;
 

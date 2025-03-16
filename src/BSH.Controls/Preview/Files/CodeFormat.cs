@@ -1,3 +1,6 @@
+// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
 #region Copyright © 2001-2003 Jean-Claude Manoli [jc@manoli.net]
 /*
  * This software is provided 'as-is', without any express or implied warranty.

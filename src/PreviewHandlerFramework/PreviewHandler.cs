@@ -1,6 +1,5 @@
-// Stephen Toub
-// Coded and published in January 2007 issue of MSDN Magazine 
-// http://msdn.microsoft.com/msdnmag/issues/07/01/PreviewHandlers/default.aspx
+// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System;
 using System.ComponentModel;
