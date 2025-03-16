@@ -1,6 +1,9 @@
-﻿namespace Brightbits.BSH.Engine;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
-public enum MediaType 
+namespace Brightbits.BSH.Engine;
+
+public enum MediaType
 {
     Unset = 0,
     LocalDevice = 1,
