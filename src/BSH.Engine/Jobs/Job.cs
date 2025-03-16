@@ -33,6 +33,11 @@ public abstract class Job
 
     private readonly List<IJobReport> observers = new();
 
+    public Collection<FileExceptionEntry> FileErrorList
+    {
+        get;
+    }
+
     protected Job(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager, bool silent = false)
     {
         this.storage = storage;
@@ -40,6 +45,67 @@ public abstract class Job
         this.queryManager = queryManager;
         this.configurationManager = configurationManager;
         this.silent = silent;
+        this.FileErrorList = new Collection<FileExceptionEntry>();
+    }
+
+    /// <summary>
+    /// Adds the given exception to the file exception list.
+    /// </summary>
+    /// <param name="versionDate">The version date of the backup.</param>
+    /// <param name="file">The file that could not be copied.</param>
+    /// <param name="ex">The exception that occured.</param>
+    /// <returns></returns>
+    protected FileExceptionEntry AddFileErrorToList(string versionDate, FileTableRow file, Exception ex)
+    {
+        var fileExceptionEntry = new FileExceptionEntry()
+        {
+            Exception = ex,
+            File = file,
+            NewVersionDate = versionDate,
+        };
+
+        FileErrorList.Add(fileExceptionEntry);
+        return fileExceptionEntry;
+    }
+
+    /// <summary>
+    /// Adds the given exception to the file exception list.
+    /// </summary>
+    /// <param name="versionDate">The version date of the backup.</param>
+    /// <param name="versionId">The version id of the backup.</param>
+    /// <param name="file">The file that could not be copied.</param>
+    /// <param name="ex">The exception that occured.</param>
+    /// <returns></returns>
+    protected FileExceptionEntry AddFileErrorToList(string versionDate, long versionId, FileTableRow file, Exception ex)
+    {
+        var fileExceptionEntry = new FileExceptionEntry()
+        {
+            Exception = ex,
+            File = file,
+            NewVersionDate = versionDate,
+            NewVersionId = versionId
+        };
+
+        FileErrorList.Add(fileExceptionEntry);
+        return fileExceptionEntry;
+    }
+
+    /// <summary>
+    /// Adds the given exception to the file exception list.
+    /// </summary>
+    /// <param name="file">The file that could not be copied.</param>
+    /// <param name="ex">The exception that occured.</param>
+    /// <returns></returns>
+    protected FileExceptionEntry AddFileErrorToList(FileTableRow file, Exception ex)
+    {
+        var fileExceptionEntry = new FileExceptionEntry()
+        {
+            Exception = ex,
+            File = file,
+        };
+
+        FileErrorList.Add(fileExceptionEntry);
+        return fileExceptionEntry;
     }
 
     public void ReportState(JobState jobState)

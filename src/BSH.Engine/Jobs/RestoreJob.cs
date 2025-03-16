@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Threading;
@@ -51,10 +50,6 @@ public class RestoreJob : Job
         get; set;
     }
 
-    public Collection<FileExceptionEntry> FileErrorList
-    {
-        get;
-    }
 
     private RequestOverwriteResult overwriteRequestPersistent = RequestOverwriteResult.None;
 
@@ -63,7 +58,6 @@ public class RestoreJob : Job
         IQueryManager queryManager,
         IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
     {
-        FileErrorList = new Collection<FileExceptionEntry>();
     }
 
     /// <summary>
@@ -220,14 +214,10 @@ public class RestoreJob : Job
                     }
                     catch (Exception ex)
                     {
-                        // file could not be not restored
-                        _logger.Error(ex.InnerException, "File {fileName} could not be restored due to exception.", filePath + fileName);
+                        var fileExceptionEntry = AddFileErrorToList(new FileTableRow() { FilePath = filePath, FileName = fileName }, ex);
 
-                        FileErrorList.Add(new FileExceptionEntry()
-                        {
-                            File = new FileTableRow() { FilePath = filePath, FileName = fileName },
-                            Exception = ex
-                        });
+                        // file could not be not restored
+                        _logger.Error(ex.InnerException, "File {fileName} could not be restored due to exception. {exception}", filePath + fileName, fileExceptionEntry);
                     }
 
                     // cancellation token requested?

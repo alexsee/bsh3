@@ -1,19 +1,7 @@
-﻿// Copyright 2022 Alexander Seeliger
-//
-// Licensed under the Apache License, Version 2.0 (the "License")
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Threading;
@@ -41,18 +29,12 @@ public class DeleteJob : Job
         get; set;
     }
 
-    public Collection<FileExceptionEntry> FileErrorList
-    {
-        get;
-    }
-
     public DeleteJob(IStorage storage,
         IDbClientFactory dbClientFactory,
         IQueryManager queryManager,
         IConfigurationManager configurationManager,
         bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
     {
-        FileErrorList = new Collection<FileExceptionEntry>();
     }
 
     /// <summary>
@@ -135,14 +117,9 @@ public class DeleteJob : Job
                 catch (Exception ex)
                 {
                     // file not deleted
-                    FileErrorList.Add(new FileExceptionEntry()
-                    {
-                        File = new FileTableRow() { FileName = file["fileName"].ToString(), FilePath = file["filePath"].ToString() },
-                        Exception = ex,
-                        NewVersionDate = file["versionDate"].ToString()
-                    });
+                    var fileExceptionEntry = AddFileErrorToList(file["versionDate"].ToString(), new FileTableRow() { FileName = file["fileName"].ToString(), FilePath = file["filePath"].ToString() }, ex);
 
-                    _logger.Error(ex.InnerException, "File {fileName} could not be deleted.", file["fileName"].ToString());
+                    _logger.Error(ex.InnerException, "File {fileName} could not be deleted. {exception}", file["fileName"].ToString(), fileExceptionEntry);
                 }
 
                 // update database
