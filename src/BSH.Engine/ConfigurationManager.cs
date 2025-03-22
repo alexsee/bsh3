@@ -79,14 +79,14 @@ public class ConfigurationManager : IConfigurationManager
         }
     }
 
-    private MediaType mediumType = MediaType.LocalDevice;
+    private string mediumType = "1";
 
     public MediaType MediumType
     {
-        get => mediumType;
+        get => (MediaType)int.Parse(mediumType);
         set
         {
-            mediumType = value; SaveProperty(nameof(MediumType), value.ToString());
+            mediumType = ((int)value).ToString(); SaveProperty(nameof(MediumType), ((int)value).ToString());
         }
     }
 
@@ -530,6 +530,12 @@ public class ConfigurationManager : IConfigurationManager
                 if (int.TryParse(result.ToString(), out var val))
                 {
                     configEntry.SetValue(this, val);
+                    continue;
+                }
+                if (configEntry.Name == "MediumType")
+                {
+                    Enum.TryParse(result.ToString(), out MediaType outValue);
+                    configEntry.SetValue(this, outValue);
                 }
             }
             else
