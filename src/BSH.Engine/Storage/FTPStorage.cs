@@ -12,7 +12,9 @@ using Brightbits.BSH.Engine.Security;
 using FluentFTP;
 using FluentFTP.Exceptions;
 using FluentFTP.Helpers;
+using FluentFTP.Logging;
 using Serilog;
+using Serilog.Extensions.Logging;
 
 namespace Brightbits.BSH.Engine.Storage;
 
@@ -113,6 +115,9 @@ public class FtpStorage : Storage, IStorage
 
         using var client = new FtpClient(host, credentials, port, config);
 
+        var logger = new SerilogLoggerFactory(_logger).CreateLogger("FtpClient");
+        client.Logger = new FtpLogAdapter(logger);
+
         // set encoding
         if (encoding == "UTF-8")
         {
@@ -161,6 +166,10 @@ public class FtpStorage : Storage, IStorage
             };
 
             using var client = new FtpClient(serverAddress, credentials, serverPort, config);
+
+            var logger = new SerilogLoggerFactory(_logger).CreateLogger("FtpClient");
+            client.Logger = new FtpLogAdapter(logger);
+
             client.LoadProfile(GetFtpProfile());
 
             if (this.encryption)
@@ -326,6 +335,10 @@ public class FtpStorage : Storage, IStorage
             };
 
             ftpClient = new FtpClient(serverAddress, credentials, serverPort, config);
+            
+            var logger = new SerilogLoggerFactory(_logger).CreateLogger("FtpClient");
+            ftpClient.Logger = new FtpLogAdapter(logger);
+
             ftpClient.LoadProfile(GetFtpProfile());
         }
 
