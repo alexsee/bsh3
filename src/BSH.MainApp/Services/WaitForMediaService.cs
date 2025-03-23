@@ -41,7 +41,7 @@ public class WaitForMediaService : IWaitForMediaService
         }
 
         // wait for media
-        var result = await Task.Run(() =>
+        var result = await Task.Run(async () =>
         {
             while (true)
             {
@@ -52,7 +52,7 @@ public class WaitForMediaService : IWaitForMediaService
 
                 try
                 {
-                    Thread.Sleep(THREAD_SLEEP_SECONDS);
+                    await Task.Delay(THREAD_SLEEP_SECONDS);
                     currentWaitingTime += THREAD_SLEEP_SECONDS;
 
                     if (silent && currentWaitingTime > MAX_WAITING_SECONDS)
@@ -60,7 +60,7 @@ public class WaitForMediaService : IWaitForMediaService
                         break;
                     }
 
-                    if (backupService.CheckMedia())
+                    if (await backupService.CheckMedia())
                     {
                         return true;
                     }

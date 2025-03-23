@@ -6,10 +6,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
 using FluentFTP;
+using FluentFTP.Client.BaseClient;
 using FluentFTP.Exceptions;
 using FluentFTP.Helpers;
 using FluentFTP.Logging;
@@ -100,10 +102,12 @@ public class FtpStorage : Storage, IStorage
         return profile;
     }
 
-    private static void ConfigureClientLogger(FtpClient client, ILogger logger)
+    private static void ConfigureClientLogger(BaseFtpClient client, ILogger logger)
     {
         var ftpLogger = new SerilogLoggerFactory(logger).CreateLogger("FtpClient");
         client.Logger = new FtpLogAdapter(ftpLogger);
+        client.Config.LogHost = false;
+        client.Config.LogDurations = false;
     }
 
     public static bool CheckConnection(string host, int port, string userName, string password, string folderPath, string encoding)
@@ -158,7 +162,7 @@ public class FtpStorage : Storage, IStorage
         return true;
     }
 
-    public bool CheckMedium(bool quickCheck = false)
+    public async Task<bool> CheckMedium(bool quickCheck = false)
     {
         try
         {
@@ -169,17 +173,17 @@ public class FtpStorage : Storage, IStorage
                 ValidateAnyCertificate = true,
             };
 
-            using var client = new FtpClient(serverAddress, credentials, serverPort, config);
-            client.LoadProfile(GetFtpProfile());
+            using var client = new AsyncFtpClient(serverAddress, credentials, serverPort, config);
+            client.LoadProfile(GetFtpProfile(quickCheck));
             ConfigureClientLogger(client, _logger);
 
             if (this.encryption)
             {
-                client.AutoConnect();
+                await client.AutoConnect();
             }
             else
             {
-                client.Connect();
+                await client.Connect();
             }
 
             if (!client.IsConnected)
@@ -188,7 +192,7 @@ public class FtpStorage : Storage, IStorage
             }
 
             // check if folder exists
-            if (!client.DirectoryExists(folderPath.GetFtpPath()))
+            if (!await client.DirectoryExists(folderPath.GetFtpPath()))
             {
                 _logger.Warning("FTP server does not have the specified folder.");
                 return false;
@@ -198,11 +202,11 @@ public class FtpStorage : Storage, IStorage
             var remoteBackupVersionFile = Combine(folderPath, "backup.bshv").GetFtpPath();
             var localBackupVersionFile = Path.Combine(Path.GetTempPath(), "backup.bshv");
 
-            if (client.FileExists(remoteBackupVersionFile))
+            if (await client.FileExists(remoteBackupVersionFile))
             {
-                client.DownloadFile(localBackupVersionFile, remoteBackupVersionFile, FtpLocalExists.Overwrite);
+                await client.DownloadFile(localBackupVersionFile, remoteBackupVersionFile, FtpLocalExists.Overwrite);
 
-                var versionId = File.ReadAllText(localBackupVersionFile);
+                var versionId = await File.ReadAllTextAsync(localBackupVersionFile);
                 File.Delete(localBackupVersionFile);
 
                 if (!string.IsNullOrEmpty(versionId) && int.Parse(versionId) != currentStorageVersion)

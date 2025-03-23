@@ -91,7 +91,7 @@ public class BackupController
         _logger.Debug("Media check requested by task {action}.", action);
 
         // check if media is available
-        if (backupService.CheckMedia())
+        if (await backupService.CheckMedia())
         {
             return true;
         }

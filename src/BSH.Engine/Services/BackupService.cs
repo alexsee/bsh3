@@ -50,7 +50,7 @@ public class BackupService : IBackupService
     /// Checks if the current storage device/system is available.
     /// </summary>
     /// <returns></returns>
-    public bool CheckMedia(bool quickCheck = false)
+    public async Task<bool> CheckMedia(bool quickCheck = false)
     {
         using (var storage = storageFactory.GetCurrentStorageProvider())
         {
@@ -63,7 +63,7 @@ public class BackupService : IBackupService
 
             // check
             lastMediaCheckDate = DateTime.Now;
-            lastMediaCheckResult = storage.CheckMedium(quickCheck);
+            lastMediaCheckResult = await storage.CheckMedium(quickCheck);
         }
 
         return lastMediaCheckResult;

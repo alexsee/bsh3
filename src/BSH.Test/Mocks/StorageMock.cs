@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Storage;
 
 namespace BSH.Test.Mocks
@@ -32,7 +33,7 @@ namespace BSH.Test.Mocks
             return true;
         }
 
-        public bool CheckMedium(bool quickCheck = false)
+        public async Task<bool> CheckMedium(bool quickCheck = false)
         {
             return !failCheckMedium;
         }

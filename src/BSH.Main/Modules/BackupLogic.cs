@@ -295,7 +295,7 @@ static class BackupLogic
         // start scheduler
         schedulerService = new SchedulerService();
         schedulerService.Start();
-        schedulerService.ScheduleAutoBackup(() => RunAutoBackup());
+        schedulerService.ScheduleAutoBackup(async () => await RunAutoBackup());
 
         // start backup when device is connected
         DoBackupWhenDriveIsAvailable(RunBackupMethod.Auto);
@@ -313,7 +313,7 @@ static class BackupLogic
         Log.Information("Service for \"Full automatic backup\" is stopped.");
     }
 
-    private static void RunAutoBackup()
+    private static async Task RunAutoBackup()
     {
         Log.Information("Automatic backup is scheduled and will be performed now.");
 
@@ -325,7 +325,7 @@ static class BackupLogic
         }
 
         // check if device is ready
-        if (!BackupService.CheckMedia())
+        if (!await BackupService.CheckMedia())
         {
             Log.Warning("Automatic backup cancelled due to not reachable storage device.");
             return;
@@ -355,7 +355,7 @@ static class BackupLogic
             return;
         }
 
-        task.ContinueWith((x) =>
+        await task.ContinueWith((x) =>
         {
             if (!cancellationToken.IsCancellationRequested)
             {
@@ -653,7 +653,7 @@ static class BackupLogic
             return;
         }
 
-        if (!BackupService.CheckMedia())
+        if (!await BackupService.CheckMedia())
         {
             Log.Warning("Scheduled backup cancelled due to not reachable storage device.");
             return;
@@ -862,7 +862,7 @@ static class BackupLogic
             // start backup
             if (_RunBackupDelegate == RunBackupMethod.Auto)
             {
-                RunAutoBackup();
+                await RunAutoBackup();
             }
             else if (_RunBackupDelegate == RunBackupMethod.Schedule)
             {
@@ -874,7 +874,7 @@ static class BackupLogic
     public static void CommandAutoDelete()
     {
         // check device
-        if (!BackupService.CheckMedia())
+        if (!BackupService.CheckMedia().Result)
         {
             return;
         }

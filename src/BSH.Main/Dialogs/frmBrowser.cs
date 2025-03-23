@@ -63,6 +63,15 @@ public partial class frmBrowser : IStatusReport
     /// <returns></returns>
     public async Task ChangeVersionAsync(VersionDetails version)
     {
+        // set version
+        selectedVersion = version;
+        VersionAlsStabilMarkierenToolStripMenuItem.Checked = version.Stable;
+
+        await ReadFavoritsAsync(true);
+    }
+
+    private async Task CheckMediumAvailability()
+    {
         try
         {
             // check if medium is readable
@@ -77,12 +86,6 @@ public partial class frmBrowser : IStatusReport
         {
             Text = Resources.DLG_BACKUPBROWSER_TITLE_NOT_AVAILABLE;
         }
-
-        // set version
-        selectedVersion = version;
-        VersionAlsStabilMarkierenToolStripMenuItem.Checked = version.Stable;
-
-        await ReadFavoritsAsync(true);
     }
 
     /// <summary>
@@ -529,6 +532,7 @@ public partial class frmBrowser : IStatusReport
 
         // retrieve favorites
         await ReadFavoritsAsync();
+        await CheckMediumAvailability();
     }
 
     private async Task ReadFavoritsAsync(bool versionChanged = false)

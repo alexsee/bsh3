@@ -55,7 +55,7 @@ public class DeleteJob : Job
         ReportProgress(0, 0);
 
         // check medium
-        if (!storage.CheckMedium())
+        if (!await storage.CheckMedium())
         {
             _logger.Error("Backup storage is not ready. Backup will be cancelled.");
 
