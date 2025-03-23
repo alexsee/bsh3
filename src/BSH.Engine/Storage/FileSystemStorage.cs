@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
+using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
@@ -66,7 +67,7 @@ public class FileSystemStorage : Storage, IStorage
         networkStorage = !string.IsNullOrEmpty(networkUserName);
     }
 
-    public bool CheckMedium(bool quickCheck = false)
+    public async Task<bool> CheckMedium(bool quickCheck = false)
     {
         try
         {
@@ -95,7 +96,7 @@ public class FileSystemStorage : Storage, IStorage
                 {
                     if (volumeSerial == volumeSerialNumber)
                     {
-                        return IsValidStorage();
+                        return await IsValidStorage();
                     }
                     else
                     {
@@ -140,7 +141,7 @@ public class FileSystemStorage : Storage, IStorage
                                 configurationManager.BackupFolder = newBackupFolder;
                                 backupFolder = newBackupFolder;
 
-                                return IsValidStorage();
+                                return await IsValidStorage();
                             }
                         }
                     }
@@ -158,7 +159,7 @@ public class FileSystemStorage : Storage, IStorage
             }
 
             // check storage version
-            return IsValidStorage();
+            return await IsValidStorage();
         }
         catch (Win32Exception)
         {
@@ -196,7 +197,7 @@ public class FileSystemStorage : Storage, IStorage
         }
     }
 
-    private bool IsValidStorage()
+    private async Task<bool> IsValidStorage()
     {
         // check version file
         var file = Path.Combine(backupFolder, "backup.bshv");
@@ -207,7 +208,7 @@ public class FileSystemStorage : Storage, IStorage
         }
 
         // read version file
-        var versionId = File.ReadAllText(file);
+        var versionId = await File.ReadAllTextAsync(file);
         if (string.IsNullOrEmpty(versionId))
         {
             return true;

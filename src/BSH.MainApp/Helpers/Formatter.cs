@@ -6,6 +6,11 @@ public static class Formatter
 {
     public static string HumanizeDate(this DateTime date)
     {
+        if (date == DateTime.MaxValue)
+        {
+            return "Nie";
+        }
+
         string formattedDate;
         if (date.Date == DateTime.Today)
         {

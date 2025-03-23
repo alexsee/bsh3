@@ -9,7 +9,7 @@ using Brightbits.BSH.Engine.Models;
 namespace Brightbits.BSH.Engine.Contracts.Services;
 public interface IBackupService
 {
-    bool CheckMedia(bool quickCheck = false);
+    Task<bool> CheckMedia(bool quickCheck = false);
     string GetPassword();
     bool HasPassword();
     void SetPassword(string password);

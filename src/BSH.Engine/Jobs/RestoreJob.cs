@@ -80,7 +80,7 @@ public class RestoreJob : Job
         ReportProgress(0, 0);
 
         // check medium
-        if (!storage.CheckMedium())
+        if (!await storage.CheckMedium())
         {
             _logger.Error("Storage device is not ready. Restore will be cancelled.");
 
