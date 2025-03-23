@@ -17,20 +17,20 @@ public class ConfigurationManagerTests
     [SetUp]
     public async Task Setup()
     {
-        if (dbClientFactory != null)
-        {
-            DbClientFactory.ClosePool();
-            this.dbClientFactory = null;
-        }
+        DbClientFactory.ClosePool();
 
-        // start with clean database
+        dbClientFactory = new DbClientFactory();
+        await dbClientFactory.InitializeAsync(Path.Combine(Environment.CurrentDirectory, "testdb_configurationmanager.db"));
+    }
+
+    [TearDown]
+    public void Cleanup()
+    {
+        DbClientFactory.ClosePool();
         if (File.Exists("testdb_configurationmanager.db"))
         {
             File.Delete("testdb_configurationmanager.db");
         }
-
-        dbClientFactory = new DbClientFactory();
-        await dbClientFactory.InitializeAsync(Environment.CurrentDirectory + "\\testdb_configurationmanager.db");
     }
 
     [Test]
@@ -58,7 +58,7 @@ public class ConfigurationManagerTests
     }
 
     [Test]
-    public async Task LoadWrongMediaTypeConfigurationTest()
+    public async Task LoadConfigurationFromDirectDatabaseInsertTest()
     {
         await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO configuration (confValue, confProperty) VALUES ('FileTransferServer', 'mediumtype');");
 
