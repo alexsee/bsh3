@@ -33,9 +33,9 @@ namespace BSH.Test.Mocks
             return true;
         }
 
-        public async Task<bool> CheckMedium(bool quickCheck = false)
+        public Task<bool> CheckMedium(bool quickCheck = false)
         {
-            return !failCheckMedium;
+            return Task.FromResult(!failCheckMedium);
         }
 
         public bool CopyFileFromStorage(string localFile, string remoteFile)
