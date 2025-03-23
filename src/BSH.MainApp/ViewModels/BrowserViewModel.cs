@@ -309,7 +309,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
                 Name = x.FileName,
                 FullPath = x.FilePath,
                 IsFile = true,
-                FileNameOnDrive = queryManager.GetFileNameFromDrive(x),
+                FileNameOnDrive = x.FileName,
 
                 FileDateModified = x.FileDateModified,
                 FileDateCreated = x.FileDateCreated,
