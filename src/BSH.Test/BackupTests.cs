@@ -1,16 +1,5 @@
-// Copyright 2022 Alexander Seeliger
-//
-// Licensed under the Apache License, Version 2.0 (the "License")
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System;
 using System.IO;
@@ -124,14 +113,14 @@ public class BackupTests
 
         // check version
         var version = await this.queryManager.GetLastBackupAsync();
-        Assert.AreEqual("1", version.Id);
+        Assert.That(version.Id, Is.EqualTo("1"));
 
         // start second backup
         await backupJob.BackupAsync(token);
 
         // check version
         version = await this.queryManager.GetLastBackupAsync();
-        Assert.AreEqual("2", version.Id);
+        Assert.That(version.Id, Is.EqualTo("2"));
     }
 
     [Test]
@@ -153,7 +142,7 @@ public class BackupTests
 
         // check version
         var version = await this.queryManager.GetLastBackupAsync();
-        Assert.AreEqual("1", version.Id);
+        Assert.That(version.Id, Is.EqualTo("1"));
     }
 
     [Test]
@@ -177,7 +166,7 @@ public class BackupTests
 
         // check version
         var version = await this.queryManager.GetLastBackupAsync();
-        Assert.AreEqual("1", version.Id);
+        Assert.That(version.Id, Is.EqualTo("1"));
     }
 
     [Test]
@@ -195,11 +184,11 @@ public class BackupTests
         var token = new CancellationTokenSource().Token;
         await backupJob.BackupAsync(token);
 
-        Assert.NotZero(backupJob.FileErrorList.Count);
+        Assert.That(backupJob.FileErrorList.Count, Is.Not.Zero);
 
         // check version
         var version = await this.queryManager.GetLastBackupAsync();
-        Assert.Null(version);
+        Assert.That(version, Is.Null);
     }
 
     [Test]
@@ -219,7 +208,7 @@ public class BackupTests
 
         // check version
         var version = await this.queryManager.GetLastBackupAsync();
-        Assert.AreEqual("1", version.Id);
+        Assert.That(version.Id, Is.EqualTo("1"));
     }
 
     [Test]
@@ -240,6 +229,6 @@ public class BackupTests
 
         // check version
         var version = await this.queryManager.GetLastBackupAsync();
-        Assert.Null(version);
+        Assert.That(version, Is.Null);
     }
 }

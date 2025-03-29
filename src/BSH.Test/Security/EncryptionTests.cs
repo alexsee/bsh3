@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using System.IO;
 using Brightbits.BSH.Engine.Security;
 using NUnit.Framework;
 
@@ -31,15 +34,15 @@ public class EncryptionTests
         var encryption = new Encryption();
 
         var result = encryption.Encode(tempFile, targetFile, password);
-        Assert.IsTrue(result);
+        Assert.That(result, Is.True);
 
         // Act
         result = encryption.Decode(targetFile, sourceFile, password);
-        Assert.IsTrue(result);
+        Assert.That(result, Is.True);
 
         // Assert
         var sourceContent = File.ReadAllText(sourceFile);
-        Assert.AreEqual(secureContent, sourceContent);
+        Assert.That(sourceContent, Is.EqualTo(secureContent));
 
         // Clean up
         File.Delete(sourceFile);

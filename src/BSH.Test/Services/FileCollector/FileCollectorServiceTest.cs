@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
@@ -74,12 +77,12 @@ public class FileCollectorServiceTest
 
         // check files - non excluded
         var result = fileCollectorService.GetLocalFileList("D:\\Meine Dokumente");
-        Assert.AreEqual(2, result.Count);
+        Assert.That(result.Count, Is.EqualTo(2));
 
         // check files - excluded
         configurationManager.ExcludeFolder = "\\Meine Dokumente\\Sub directory";
         result = fileCollectorService.GetLocalFileList("D:\\Meine Dokumente");
-        Assert.AreEqual(1, result.Count);
+        Assert.That(result.Count, Is.EqualTo(1));
     }
 
     [Test]
@@ -89,12 +92,12 @@ public class FileCollectorServiceTest
 
         // check files - non excluded
         var result = fileCollectorService.GetLocalFileList(root);
-        Assert.AreEqual(2, result.Count);
+        Assert.That(result.Count, Is.EqualTo(2));
 
         // check files - excluded
         configurationManager.ExcludeFileTypes = "docx";
         result = fileCollectorService.GetLocalFileList(root);
-        Assert.AreEqual(1, result.Count);
+        Assert.That(result.Count, Is.EqualTo(1));
     }
 
     [Test]
@@ -104,12 +107,12 @@ public class FileCollectorServiceTest
 
         // check files - non excluded
         var result = fileCollectorService.GetLocalFileList(root);
-        Assert.AreEqual(2, result.Count);
+        Assert.That(result.Count, Is.EqualTo(2));
 
         // check files - excluded
         configurationManager.ExcludeFileBigger = (1024 * 10).ToString();
         result = fileCollectorService.GetLocalFileList(root);
-        Assert.AreEqual(1, result.Count);
+        Assert.That(result.Count, Is.EqualTo(1));
     }
 
     [Test]
@@ -119,12 +122,12 @@ public class FileCollectorServiceTest
 
         // check files - non excluded
         var result = fileCollectorService.GetLocalFileList(root);
-        Assert.AreEqual(2, result.Count);
+        Assert.That(result.Count, Is.EqualTo(2));
 
         // check files - excluded
         configurationManager.ExcludeFile = "\\Meine Dokumente\\Sub directory\\test_2.docx";
         result = fileCollectorService.GetLocalFileList(root);
-        Assert.AreEqual(1, result.Count);
+        Assert.That(result.Count, Is.EqualTo(1));
     }
 
     [Test]
@@ -134,11 +137,11 @@ public class FileCollectorServiceTest
 
         // check files - non excluded
         var result = fileCollectorService.GetLocalFileList(root);
-        Assert.AreEqual(2, result.Count);
+        Assert.That(result.Count, Is.EqualTo(2));
 
         // check files - excluded
         configurationManager.ExcludeMask = ".*\\.docx";
         result = fileCollectorService.GetLocalFileList(root);
-        Assert.AreEqual(1, result.Count);
+        Assert.That(result.Count, Is.EqualTo(1));
     }
 }
