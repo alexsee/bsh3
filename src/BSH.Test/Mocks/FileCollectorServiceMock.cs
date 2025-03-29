@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using System.Collections.Generic;
 using System.Linq;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Models;
