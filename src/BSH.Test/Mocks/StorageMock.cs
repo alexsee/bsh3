@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Storage;
 
 namespace BSH.Test.Mocks
@@ -21,7 +22,7 @@ namespace BSH.Test.Mocks
             return true;
         }
 
-        public bool CheckMedium(bool quickCheck = false)
+        public async Task<bool> CheckMedium(bool quickCheck = false)
         {
             return !failCheckMedium;
         }
