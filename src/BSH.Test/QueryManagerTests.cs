@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
@@ -86,138 +89,138 @@ public class QueryManagerTests
     public async Task GetLastBackupAsyncTest()
     {
         var result = await queryManager.GetLastBackupAsync();
-        Assert.AreEqual("2", result.Id);
+        Assert.That(result.Id, Is.EqualTo("2"));
     }
 
     [Test]
     public async Task GetLastFullBackupAsyncTest()
     {
         var result = await queryManager.GetLastFullBackupAsync();
-        Assert.AreEqual("1", result.Id);
+        Assert.That(result.Id, Is.EqualTo("1"));
     }
 
     [Test]
     public void GetVersionsTest()
     {
         var result = queryManager.GetVersions();
-        Assert.AreEqual(2, result.Count);
-        Assert.AreEqual("2", result[0].Id);
+        Assert.That(result.Count, Is.EqualTo(2));
+        Assert.That(result[0].Id, Is.EqualTo("2"));
 
         result = queryManager.GetVersions(false);
-        Assert.AreEqual(2, result.Count);
-        Assert.AreEqual("1", result[0].Id);
+        Assert.That(result.Count, Is.EqualTo(2));
+        Assert.That(result[0].Id, Is.EqualTo("1"));
     }
 
     [Test]
     public async Task GetNumberOfVersionsAsyncTest()
     {
         var result = await queryManager.GetNumberOfVersionsAsync();
-        Assert.AreEqual(2, result);
+        Assert.That(result, Is.EqualTo(2));
     }
 
     [Test]
     public async Task GetOldestBackupAsyncTest()
     {
         var result = await queryManager.GetOldestBackupAsync();
-        Assert.AreEqual("1", result.Id);
+        Assert.That(result.Id, Is.EqualTo("1"));
     }
 
     [Test]
     public async Task GetVersionByIdAsyncTest()
     {
         var result = await queryManager.GetVersionByIdAsync("1");
-        Assert.AreEqual("1", result.Id);
+        Assert.That(result.Id, Is.EqualTo("1"));
 
         result = await queryManager.GetVersionByIdAsync("2");
-        Assert.AreEqual("2", result.Id);
+        Assert.That(result.Id, Is.EqualTo("2"));
     }
 
     [Test]
     public async Task GetFolderListAsyncTest()
     {
         var result = await queryManager.GetFolderListAsync("1", "%");
-        Assert.AreEqual(6, result.Count);
-        Assert.AreEqual("source_1", result[0]);
-        Assert.AreEqual("source_1\\subfolder", result[1]);
-        Assert.AreEqual("source_2\\subfolder", result[2]);
-        Assert.AreEqual("source_3", result[3]);
-        Assert.AreEqual("source_3\\subfolder", result[4]);
-        Assert.AreEqual("source_4\\subfolder", result[5]);
+        Assert.That(result.Count, Is.EqualTo(6));
+        Assert.That(result[0], Is.EqualTo("source_1"));
+        Assert.That(result[1], Is.EqualTo("source_1\\subfolder"));
+        Assert.That(result[2], Is.EqualTo("source_2\\subfolder"));
+        Assert.That(result[3], Is.EqualTo("source_3"));
+        Assert.That(result[4], Is.EqualTo("source_3\\subfolder"));
+        Assert.That(result[5], Is.EqualTo("source_4\\subfolder"));
     }
 
     [Test]
     public async Task GetBackVersionWhereFileAsyncTest()
     {
         var result = await queryManager.GetBackVersionWhereFileAsync("2", "file1.txt");
-        Assert.AreEqual("1", result);
+        Assert.That(result, Is.EqualTo("1"));
 
         result = await queryManager.GetBackVersionWhereFileAsync("1", "file1.txt");
-        Assert.IsNull(result);
+        Assert.That(result, Is.Null);
     }
 
     [Test]
     public async Task GetBackVersionWhereFilesInFolderAsyncTest()
     {
         var result = await queryManager.GetBackVersionWhereFilesInFolderAsync("2", "source_1");
-        Assert.AreEqual("1", result);
+        Assert.That(result, Is.EqualTo("1"));
 
         result = await queryManager.GetBackVersionWhereFilesInFolderAsync("2", "\\source_1");
-        Assert.AreEqual("1", result);
+        Assert.That(result, Is.EqualTo("1"));
 
         result = await queryManager.GetBackVersionWhereFilesInFolderAsync("2", "source_1\\");
-        Assert.AreEqual("1", result);
+        Assert.That(result, Is.EqualTo("1"));
 
         result = await queryManager.GetBackVersionWhereFilesInFolderAsync("1", "source_1");
-        Assert.IsNull(result);
+        Assert.That(result, Is.Null);
     }
 
     [Test]
     public async Task GetNextVersionWhereFileAsyncTest()
     {
         var result = await queryManager.GetNextVersionWhereFileAsync("2", "file1.txt");
-        Assert.IsNull(result);
+        Assert.That(result, Is.Null);
 
         result = await queryManager.GetNextVersionWhereFileAsync("1", "file1.txt");
-        Assert.AreEqual("2", result);
+        Assert.That(result, Is.EqualTo("2"));
     }
 
     [Test]
     public async Task GetNextVersionWhereFilesInFolderAsyncTest()
     {
         var result = await queryManager.GetNextVersionWhereFilesInFolderAsync("1", "source_1");
-        Assert.AreEqual("2", result);
+        Assert.That(result, Is.EqualTo("2"));
 
         result = await queryManager.GetNextVersionWhereFilesInFolderAsync("1", "\\source_1");
-        Assert.AreEqual("2", result);
+        Assert.That(result, Is.EqualTo("2"));
 
         result = await queryManager.GetNextVersionWhereFilesInFolderAsync("1", "source_1\\");
-        Assert.AreEqual("2", result);
+        Assert.That(result, Is.EqualTo("2"));
 
         result = await queryManager.GetNextVersionWhereFilesInFolderAsync("2", "source_1");
-        Assert.IsNull(result);
+        Assert.That(result, Is.Null);
     }
 
     [Test]
     public async Task GetVersionsByFileAsyncTest()
     {
         var result = await queryManager.GetVersionsByFileAsync("file1.txt", "\\source_1\\");
-        Assert.AreEqual(1, result.Count);
+        Assert.That(result.Count, Is.EqualTo(1));
     }
 
     [Test]
     public async Task GetFilesByVersionAsyncTest()
     {
         var result = await queryManager.GetFilesByVersionAsync("1", "\\source_1\\");
-        Assert.AreEqual(1, result.Count);
-        Assert.AreEqual("file1.txt", result[0].FileName);
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result[0].FileName, Is.EqualTo("file1.txt"));
 
         result = await queryManager.GetFilesByVersionAsync("1", "source_1");
-        Assert.AreEqual(1, result.Count);
-        Assert.AreEqual("file1.txt", result[0].FileName);
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result[0].FileName, Is.EqualTo("file1.txt"));
 
         result = await queryManager.GetFilesByVersionAsync("2", "\\source_1\\");
-        Assert.AreEqual(1, result.Count);
-        Assert.AreEqual("file1.txt", result[0].FileName);
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result[0].FileName, Is.EqualTo("file1.txt"));
     }
 
     [Test]
@@ -232,84 +235,84 @@ public class QueryManagerTests
         };
 
         var result = queryManager.GetFileNameFromDrive(file);
-        Assert.AreEqual("X:\\Backups\\" + file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss") + "\\source_1\\file1.txt", result);
+        Assert.That(result, Is.EqualTo("X:\\Backups\\" + file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss") + "\\source_1\\file1.txt"));
 
         file.FilePath = "source_1";
         result = queryManager.GetFileNameFromDrive(file);
-        Assert.AreEqual("X:\\Backups\\" + file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss") + "\\source_1\\file1.txt", result);
+        Assert.That(result, Is.EqualTo("X:\\Backups\\" + file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss") + "\\source_1\\file1.txt"));
 
         file.FileLongFileName = "XYZ";
         result = queryManager.GetFileNameFromDrive(file);
-        Assert.AreEqual("X:\\Backups\\" + file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss") + "\\_LONGFILES_\\XYZ", result);
+        Assert.That(result, Is.EqualTo("X:\\Backups\\" + file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss") + "\\_LONGFILES_\\XYZ"));
 
         file.FileType = "2";
         result = queryManager.GetFileNameFromDrive(file);
-        Assert.IsNull(result);
+        Assert.That(result, Is.Null);
     }
 
     [Test]
     public async Task GetFileNameFromDriveAsyncTest()
     {
         var result = await queryManager.GetFileNameFromDriveAsync(1, "file1.txt", "\\source_1\\", null);
-        Assert.AreEqual(("X:\\Backups\\01-01-2021 00-00-00\\source_1\\file1.txt", false), result);
+        Assert.That(result, Is.EqualTo(("X:\\Backups\\01-01-2021 00-00-00\\source_1\\file1.txt", false)));
     }
 
     [Test]
     public async Task HasChangesOrNewAsyncTest()
     {
         var result = await queryManager.HasChangesOrNewAsync("\\source_1\\", "1");
-        Assert.IsTrue(result);
+        Assert.That(result, Is.True);
     }
 
     [Test]
     public async Task GetFullRestoreFolderAsyncTest()
     {
         var result = await queryManager.GetFullRestoreFolderAsync("\\source_1\\", "1");
-        Assert.AreEqual("Y:\\MyFiles\\source_1", result);
+        Assert.That(result, Is.EqualTo("Y:\\MyFiles\\source_1"));
 
         result = await queryManager.GetFullRestoreFolderAsync("source_1", "1");
-        Assert.AreEqual("Y:\\MyFiles\\source_1", result);
+        Assert.That(result, Is.EqualTo("Y:\\MyFiles\\source_1"));
 
         result = await queryManager.GetFullRestoreFolderAsync("source_1", "2");
-        Assert.AreEqual("Y:\\MyFiles\\source_1", result);
+        Assert.That(result, Is.EqualTo("Y:\\MyFiles\\source_1"));
 
         result = await queryManager.GetFullRestoreFolderAsync("source_2", "1");
-        Assert.AreEqual("Y:\\MyFiles\\source_2", result);
+        Assert.That(result, Is.EqualTo("Y:\\MyFiles\\source_2"));
 
         result = await queryManager.GetFullRestoreFolderAsync("source_3", "1");
-        Assert.IsNull(result);
+        Assert.That(result, Is.Null);
     }
 
     [Test]
     public async Task GetLocalizedPathAsyncTest()
     {
         var result = await queryManager.GetLocalizedPathAsync("\\source_1\\");
-        Assert.AreEqual("source_1", result);
+        Assert.That(result, Is.EqualTo("source_1"));
 
         // activate configuration
         configurationManager.ShowLocalizedPath = "1";
 
         result = await queryManager.GetLocalizedPathAsync("\\source_1\\");
-        Assert.AreEqual("source_1", result);
+        Assert.That(result, Is.EqualTo("source_1"));
 
         // add junction
         await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO folderjunctiontable VALUES ('source_1', 'source_1_localized')");
 
         result = await queryManager.GetLocalizedPathAsync("\\source_1\\");
-        Assert.AreEqual("source_1_localized", result);
+        Assert.That(result, Is.EqualTo("source_1_localized"));
     }
 
     [Test]
     public async Task GetNumberOfFilesAsyncTest()
     {
         var result = await queryManager.GetNumberOfFilesAsync();
-        Assert.AreEqual(3, result);
+        Assert.That(result, Is.EqualTo(3));
     }
 
     [Test]
     public async Task GetTotalFileSizeAsyncTest()
     {
         var result = await queryManager.GetTotalFileSizeAsync();
-        Assert.AreEqual(300d, result);
+        Assert.That(result, Is.EqualTo(300d));
     }
 }

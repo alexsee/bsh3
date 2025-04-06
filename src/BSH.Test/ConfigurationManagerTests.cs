@@ -2,12 +2,12 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using NUnit.Framework;
-using System.IO;
-using Brightbits.BSH.Engine;
 
 namespace BSH.Test;
 public class ConfigurationManagerTests
@@ -39,7 +39,7 @@ public class ConfigurationManagerTests
         var configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
 
-        Assert.AreEqual("", configurationManager.AutoBackup);
+        Assert.That(configurationManager.AutoBackup, Is.Empty);
     }
 
     [Test]
@@ -53,8 +53,8 @@ public class ConfigurationManagerTests
         configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
 
-        Assert.AreEqual(MediaType.FileTransferServer, configurationManager.MediumType);
-        Assert.AreEqual(TaskType.Manual, configurationManager.TaskType);
+        Assert.That(configurationManager.MediumType, Is.EqualTo(MediaType.FileTransferServer));
+        Assert.That(configurationManager.TaskType, Is.EqualTo(TaskType.Manual));
     }
 
     [Test]
@@ -64,6 +64,6 @@ public class ConfigurationManagerTests
 
         var configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
-        Assert.AreEqual(MediaType.FileTransferServer, configurationManager.MediumType);
+        Assert.That(configurationManager.MediumType, Is.EqualTo(MediaType.FileTransferServer));
     }
 }
