@@ -176,7 +176,7 @@ public class Win32Stuff
 
     static void tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
-        SetThreadExecutionState(EXECUTION_STATE.ES_SYSTEM_REQUIRED);
+        SetThreadExecutionState(EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS);
     }
 
     public static void AllowSystemSleep()
