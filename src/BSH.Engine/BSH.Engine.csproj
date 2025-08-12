@@ -60,7 +60,7 @@
     </PackageReference>
     <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
-    <PackageReference Include="System.Management" Version="9.0.7" />
+    <PackageReference Include="System.Management" Version="9.0.8" />
     <PackageReference Include="System.Net.Primitives">
       <Version>4.3.1</Version>
     </PackageReference>
