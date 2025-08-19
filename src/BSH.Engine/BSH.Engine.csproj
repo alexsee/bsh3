@@ -50,7 +50,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions">
-      <Version>9.0.7</Version>
+      <Version>9.0.8</Version>
     </PackageReference>
     <PackageReference Include="Quartz">
       <Version>3.14.0</Version>
