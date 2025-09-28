@@ -1,4 +1,4 @@
-﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
 using System;
@@ -119,8 +119,8 @@ public class FtpStorage : Storage, IStorage
             DataConnectionConnectTimeout = 60000,
             DataConnectionReadTimeout = 60000,
 
-            // ignore all certificates
-            ValidateAnyCertificate = true
+            // validate certificates for security
+            ValidateAnyCertificate = false
         };
 
         using var client = new FtpClient(host, credentials, port, config);
@@ -169,8 +169,8 @@ public class FtpStorage : Storage, IStorage
             var credentials = new NetworkCredential(userName, password);
             var config = new FtpConfig()
             {
-                // ignore all certificates
-                ValidateAnyCertificate = true,
+                // validate certificates for security
+                ValidateAnyCertificate = false,
             };
 
             using var client = new AsyncFtpClient(serverAddress, credentials, serverPort, config);
@@ -335,8 +335,8 @@ public class FtpStorage : Storage, IStorage
             var credentials = new NetworkCredential(userName, password);
             var config = new FtpConfig()
             {
-                // ignore all certificates
-                ValidateAnyCertificate = true
+                // validate certificates for security
+                ValidateAnyCertificate = false
             };
 
             ftpClient = new FtpClient(serverAddress, credentials, serverPort, config);
