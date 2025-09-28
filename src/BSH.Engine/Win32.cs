@@ -25,7 +25,11 @@ public class Win32Stuff
         StringBuilder FileSystemNameBuffer,
         UInt32 FileSystemNameSize);
 
-    static System.Timers.Timer tmr;
+    // Single timer used to periodically refresh system required state
+    // Using legacy non-nullable context; avoid nullable annotation for compatibility.
+    private static System.Timers.Timer _awakeTimer;
+    private static readonly object _awakeLock = new();
+    private static int _awakeRefCount = 0; // number of active requests to keep system awake
 
     [FlagsAttribute]
     public enum EXECUTION_STATE : uint
@@ -134,7 +138,7 @@ public class Win32Stuff
 
     public static string GetDisplayName(string path)
     {
-        var shfi = new SHFILEINFO();
+        SHFILEINFO shfi;
         if (0 != SHGetFileInfo(path, FILE_ATTRIBUTE_NORMAL, out shfi,
             (uint)Marshal.SizeOf(typeof(SHFILEINFO)), SHGFI_DISPLAYNAME))
         {
@@ -165,26 +169,79 @@ public class Win32Stuff
         }
     }
 
-    public static void KeepSystemAwake()
+    public static void KeepSystemAwake(bool keepDisplayOn = false, bool awayMode = false)
     {
-        tmr = new System.Timers.Timer(60000);
-        tmr.Elapsed += new System.Timers.ElapsedEventHandler(tmr_Elapsed);
+        // Reference counting ensures multiple jobs can request wake without interfering.
+        lock (_awakeLock)
+        {
+            _awakeRefCount++;
 
-        SetThreadExecutionState(EXECUTION_STATE.ES_SYSTEM_REQUIRED);
-        tmr.Start();
-    }
+            // Always perform a refresh immediately to reset idle timer for each caller.
+            var flags = EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS;
+            if (keepDisplayOn)
+            {
+                flags |= EXECUTION_STATE.ES_DISPLAY_REQUIRED;
+            }
+            if (awayMode)
+            {
+                flags |= EXECUTION_STATE.ES_AWAYMODE_REQUIRED;
+            }
 
-    static void tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-    {
-        SetThreadExecutionState(EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS);
+            SetThreadExecutionState(flags);
+
+            // Start timer only once when first caller arrives
+            if (_awakeRefCount == 1)
+            {
+                // Refresh more frequently than the shortest conceivable sleep idle (use 30s)
+                _awakeTimer = new System.Timers.Timer(30000);
+                _awakeTimer.AutoReset = true;
+                _awakeTimer.Elapsed += (_, _) =>
+                {
+                    lock (_awakeLock)
+                    {
+                        if (_awakeRefCount > 0)
+                        {
+                            // Refresh just system required; ES_CONTINUOUS keeps previous state.
+                            SetThreadExecutionState(flags);
+                        }
+                    }
+                };
+                _awakeTimer.Start();
+            }
+        }
     }
 
     public static void AllowSystemSleep()
     {
-        tmr.Stop();
-        tmr = null;
+        lock (_awakeLock)
+        {
+            if (_awakeRefCount == 0)
+            {
+                return; // nothing to release
+            }
 
-        SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
+            _awakeRefCount--;
+
+            if (_awakeRefCount == 0)
+            {
+                try
+                {
+                    _awakeTimer?.Stop();
+                    _awakeTimer?.Dispose();
+                }
+                catch
+                {
+                    // ignore
+                }
+                finally
+                {
+                    _awakeTimer = null;
+                }
+
+                // Clear continuous requirement so system can sleep again.
+                SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
+            }
+        }
     }
 
     public static List<ExplorerWindow> GetWindowsExplorerPaths()
