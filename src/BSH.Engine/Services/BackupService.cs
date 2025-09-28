@@ -1,4 +1,4 @@
-﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
 using System;
@@ -161,7 +161,7 @@ public class BackupService : IBackupService
         // start backup
         jobReport.ReportAction(ActionType.Backup, silent);
 
-        currentTask = Task.Factory.StartNew(async () => await backupJob.BackupAsync(cancellationToken));
+        currentTask = Task.Run(async () => await backupJob.BackupAsync(cancellationToken));
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -222,7 +222,7 @@ public class BackupService : IBackupService
         // run restore
         jobReport.ReportAction(ActionType.Restore, silent);
 
-        currentTask = Task.Factory.StartNew(() => restoreJob.RestoreAsync(cancellationToken));
+        currentTask = Task.Run(() => restoreJob.RestoreAsync(cancellationToken));
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -268,7 +268,7 @@ public class BackupService : IBackupService
         // run delete
         jobReport.ReportAction(ActionType.Delete, silent);
 
-        currentTask = Task.Factory.StartNew(deleteJob.DeleteAsync);
+        currentTask = Task.Run(deleteJob.DeleteAsync);
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -312,7 +312,7 @@ public class BackupService : IBackupService
         // run delete
         jobReport.ReportAction(ActionType.Delete, silent);
 
-        currentTask = Task.Factory.StartNew(async () => await deleteJob.DeleteSingleAsync(fileFilter, pathFilter));
+        currentTask = Task.Run(async () => await deleteJob.DeleteSingleAsync(fileFilter, pathFilter));
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -361,7 +361,7 @@ public class BackupService : IBackupService
         // run edit
         jobReport.ReportAction(ActionType.Modify, silent);
 
-        currentTask = Task.Factory.StartNew(editJob.EditAsync);
+        currentTask = Task.Run(editJob.EditAsync);
 
         // error handling
         currentTask.ContinueWith(t =>
