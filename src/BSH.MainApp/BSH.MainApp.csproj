@@ -24,12 +24,6 @@
 		<Content Include="Assets\*.*" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Remove="Windows\NewBackupWindow.xaml" />
-		<None Remove="Windows\RequestFileOverwriteWindow.xaml" />
-		<None Remove="Windows\RequestPasswordWindow.xaml" />
-		<None Remove="Windows\WaitForMediumWindow.xaml" />
-	</ItemGroup>
-	<ItemGroup>
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
@@ -56,28 +50,6 @@
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<Page Update="Windows\StatusWindow.xaml">
-		  <SubType>Designer</SubType>
-		</Page>
-		<Page Update="Windows\EditBackupWindow.xaml">
-		  <SubType>Designer</SubType>
-		</Page>
-		<Page Update="Windows\WaitForMediumWindow.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</Page>
-		<Page Update="Windows\RequestFileOverwriteWindow.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</Page>
-		<Page Update="Windows\RequestPasswordWindow.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</Page>
-		<Page Update="Windows\NewBackupWindow.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</Page>
-	</ItemGroup>
-	<ItemGroup>
-		<Folder Include="UserControls\" />
-		<Folder Include="ViewModels\UserControls\" />
 	</ItemGroup>
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
 		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
