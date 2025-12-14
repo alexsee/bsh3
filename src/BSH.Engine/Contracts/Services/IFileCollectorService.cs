@@ -6,6 +6,7 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services.FileCollector;
 
 namespace Brightbits.BSH.Engine.Contracts.Services;
+
 public interface IFileCollectorService
 {
     List<FolderTableRow> EmptyFolders

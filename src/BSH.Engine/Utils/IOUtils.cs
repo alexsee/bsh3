@@ -4,6 +4,7 @@
 using System;
 
 namespace Brightbits.BSH.Engine.Utils;
+
 public static class IOUtils
 {
     public static string GetRelativeFolder(string path, string rootPath)

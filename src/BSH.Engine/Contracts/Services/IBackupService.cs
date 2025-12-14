@@ -7,6 +7,7 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 
 namespace Brightbits.BSH.Engine.Contracts.Services;
+
 public interface IBackupService
 {
     Task<bool> CheckMedia(bool quickCheck = false);

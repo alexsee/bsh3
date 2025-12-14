@@ -7,8 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using BSH.Controls.UI;
-using BSH.Main.Properties;
-using Humanizer;
+using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 
@@ -343,7 +342,7 @@ public partial class frmFilter
                 if (!bAdded)
                 {
                     // Verzeichnis nicht in Quellverzeichnis
-                    MessageBox.Show(Resources.DLG_FILTER_MSG_ERROR_FILE_INVALID_TEXT.FormatWith(File), Resources.DLG_FILTER_MSG_ERROR_FILE_INVALID_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(string.Format(Resources.DLG_FILTER_MSG_ERROR_FILE_INVALID_TEXT, File), Resources.DLG_FILTER_MSG_ERROR_FILE_INVALID_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
             }

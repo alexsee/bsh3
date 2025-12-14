@@ -4,6 +4,7 @@
 using Brightbits.BSH.Engine;
 
 namespace BSH.MainApp.Contracts.Services;
+
 public interface IJobService
 {
     bool IsCancellationRequested

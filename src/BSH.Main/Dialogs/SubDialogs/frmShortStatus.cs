@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
-using BSH.Main.Properties;
-using Humanizer;
+using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 
@@ -76,7 +75,7 @@ public partial class frmShortStatus : IJobReport
             }
             else
             {
-                lblStatus.Text = Resources.DLG_SHORT_STATUS_FILES_STATUS_TEXT.FormatWith(System.IO.Path.GetFileName(file));
+                lblStatus.Text = string.Format(Resources.DLG_SHORT_STATUS_FILES_STATUS_TEXT, System.IO.Path.GetFileName(file));
             }
         }));
     }

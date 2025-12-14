@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine.Contracts;
+
 public interface IConfigurationManager
 {
     string AutoBackup

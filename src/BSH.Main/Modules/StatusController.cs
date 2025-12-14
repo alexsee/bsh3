@@ -10,8 +10,8 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
-using BSH.Main.Properties;
 using Humanizer;
+using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 

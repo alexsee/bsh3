@@ -7,6 +7,7 @@ using BSH.MainApp.ViewModels.Windows;
 using WinUIEx;
 
 namespace BSH.MainApp.Windows;
+
 public sealed partial class RequestFileOverwriteWindow : WinUIEx.WindowEx
 {
     private RequestFileOverwriteViewModel ViewModel { get; } = new RequestFileOverwriteViewModel();

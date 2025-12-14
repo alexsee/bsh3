@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
-using BSH.Main.Properties;
 using Humanizer;
+using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 
@@ -252,7 +252,7 @@ public partial class ucOverview : IMainTabs, IStatusReport
                 }
 
                 // source folder
-                infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT.FormatWith(BackupLogic.ConfigurationManager.SourceFolder.Split('|').Length));
+                infoText.Append(string.Format(Resources.DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT, BackupLogic.ConfigurationManager.SourceFolder.Split('|').Length));
 
                 // backup type
                 if (BackupLogic.ConfigurationManager.TaskType == TaskType.Auto)
@@ -274,7 +274,7 @@ public partial class ucOverview : IMainTabs, IStatusReport
                     infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_ON_TEXT);
                     if (BackupLogic.ConfigurationManager.BackupFolder.Substring(0, 1) == "\\")
                     {
-                        infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT.FormatWith(BackupLogic.ConfigurationManager.BackupFolder));
+                        infoText.Append(string.Format(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT, BackupLogic.ConfigurationManager.BackupFolder));
                     }
                     else
                     {
@@ -282,22 +282,22 @@ public partial class ucOverview : IMainTabs, IStatusReport
                         switch (drive.DriveType)
                         {
                             case System.IO.DriveType.Fixed:
-                                infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT.FormatWith(drive.Name));
+                                infoText.Append(string.Format(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT, drive.Name));
                                 break;
 
                             case System.IO.DriveType.Network:
-                                infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT.FormatWith(drive.Name));
+                                infoText.Append(string.Format(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_NETWORK_BACKUP_TEXT, drive.Name));
                                 break;
 
                             case System.IO.DriveType.Removable:
-                                infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_EXTERNAL_HDD_BACKUP_TEXT.FormatWith(drive.Name));
+                                infoText.Append(string.Format(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_EXTERNAL_HDD_BACKUP_TEXT, drive.Name));
                                 break;
                         }
                     }
                 }
                 else
                 {
-                    infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT.FormatWith(BackupLogic.ConfigurationManager.FtpHost));
+                    infoText.Append(string.Format(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT, BackupLogic.ConfigurationManager.FtpHost));
                 }
 
                 // compressed or encrypted
@@ -486,7 +486,7 @@ public partial class ucOverview : IMainTabs, IStatusReport
         }
 
         lastTimeRefreshed = DateTime.Now;
-        Invoke(new Action(() => { if (string.IsNullOrEmpty(file)) { lblBdStatus.Text = Resources.DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_TEXT; } else { lblBdStatus.Text = Resources.DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_FILE_TEXT.FormatWith(System.IO.Path.GetFileName(file)); } }));
+        Invoke(new Action(() => { if (string.IsNullOrEmpty(file)) { lblBdStatus.Text = Resources.DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_TEXT; } else { lblBdStatus.Text = string.Format(Resources.DLG_UC_OVERVIEW_STATUS_BACKUP_RUNNING_FILE_TEXT, System.IO.Path.GetFileName(file)); } }));
     }
 
     public void ReportSystemStatus(SystemStatus systemStatus)

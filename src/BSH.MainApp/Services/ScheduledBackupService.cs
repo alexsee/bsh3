@@ -14,6 +14,7 @@ using BSH.MainApp.Contracts.Services;
 using Serilog;
 
 namespace BSH.MainApp.Services;
+
 public class ScheduledBackupService : IScheduledBackupService
 {
     private readonly IConfigurationManager configurationManager;

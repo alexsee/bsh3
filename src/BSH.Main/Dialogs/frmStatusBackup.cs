@@ -4,8 +4,7 @@
 using System;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
-using BSH.Main.Properties;
-using Humanizer;
+using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 
@@ -55,7 +54,7 @@ public partial class frmStatusBackup : IStatusReport
         {
             pbarTotal.Maximum = total;
             pbarTotal.Value = current;
-            lblFiles.Text = Resources.DLG_STATUS_FILES_PROCESSED_TEXT.FormatWith(current, total);
+            lblFiles.Text = string.Format(Resources.DLG_STATUS_FILES_PROCESSED_TEXT, current, total);
         }));
     }
 

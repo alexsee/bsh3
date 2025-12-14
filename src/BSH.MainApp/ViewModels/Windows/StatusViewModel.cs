@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
 
 namespace BSH.MainApp.ViewModels.Windows;
+
 public partial class StatusViewModel : ObservableObject, IStatusReport
 {
     private readonly DispatcherQueue dispatcherQueue;

@@ -9,6 +9,7 @@ using Brightbits.BSH.Engine.Utils;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Services.FileCollector;
+
 public interface IFolderExclusion
 {
     bool IsFolderFiltered(string root, DirectoryInfo directory);
