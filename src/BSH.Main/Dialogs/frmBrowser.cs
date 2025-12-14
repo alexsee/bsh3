@@ -20,6 +20,7 @@ using BSH.Main.Utils;
 using Humanizer;
 using Serilog;
 using static Brightbits.BSH.Engine.Win32Stuff;
+using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 
@@ -619,7 +620,7 @@ public partial class frmBrowser : IStatusReport
                     Text = Settings.Default.BrowserFavoritsName.Split('|')[i],
                     ImageIndex = 1,
                     Tag = '\\' + entry[(entry.IndexOf('\\') + 1)..] + '\\',
-                    ToolTipText = Resources.DLG_BACKUPBROWSER_TT_FOLDER.FormatWith(BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]), entry[(entry.IndexOf('\\') + 1)..])
+                    ToolTipText = string.Format(Resources.DLG_BACKUPBROWSER_TT_FOLDER, await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]), entry[(entry.IndexOf('\\') + 1)..])
                 };
 
                 lvFavorite.Items.Add(newEntry);
@@ -1103,7 +1104,7 @@ public partial class frmBrowser : IStatusReport
                 if ((entry.VersionID ?? "") == (selectedVersion.Id ?? ""))
                 {
                     entry.ToolTipTitle = dlgEditVersion.txtTitle.Text;
-                    entry.ToolTip = Resources.DLG_BACKUPBROWSER_TT_VERSION_SIMPLE.FormatWith(entry.VersionDate, dlgEditVersion.txtDescription.Text).Trim();
+                    entry.ToolTip = string.Format(Resources.DLG_BACKUPBROWSER_TT_VERSION_SIMPLE, entry.VersionDate, dlgEditVersion.txtDescription.Text).Trim();
                     break;
                 }
             }
@@ -1281,8 +1282,8 @@ public partial class frmBrowser : IStatusReport
     private void ThreadSafe_UcNav()
     {
         AVersionList1.SelectItem(selectedVersion.Id, false);
-        UcNav.Path = Resources.DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT.FormatWith(txtSearch.Text);
-        UcNav.PathLocalized = Resources.DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT.FormatWith(txtSearch.Text);
+        UcNav.Path = string.Format(Resources.DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT, txtSearch.Text);
+        UcNav.PathLocalized = string.Format(Resources.DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT, txtSearch.Text);
         UcNav.CreateNavi("", true);
         lblFileName.Text = Resources.DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT;
         lblFileType.Text = "";
@@ -1412,7 +1413,7 @@ public partial class frmBrowser : IStatusReport
                 Version = entry,
                 ToolTipTitle = entry.Title
             };
-            newEntry.ToolTip = Resources.DLG_BACKUPBROWSER_TT_VERSION.FormatWith(entry.CreationDate, entry.Size.Bytes().Humanize(), entry.Description).Trim();
+            newEntry.ToolTip = string.Format(Resources.DLG_BACKUPBROWSER_TT_VERSION, entry.CreationDate, entry.Size.Bytes().Humanize(), entry.Description).Trim();
             newEntry.VersionStable = entry.Stable;
             AVersionList1.Items.Add(newEntry);
         }

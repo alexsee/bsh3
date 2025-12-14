@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 
 namespace Brightbits.BSH.Engine.Contracts.Database;
+
 public interface IDbMigrationService
 {
     Task InitializeAsync();

@@ -8,6 +8,7 @@ using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Models;
 
 namespace BSH.MainApp.Contracts.Services;
+
 public interface IStatusService
 {
     JobState JobState

@@ -11,6 +11,7 @@ using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 
 namespace BSH.MainApp.Services;
+
 public class StatusService : IJobReport, IStatusService
 {
     private readonly List<IStatusReport> observers = new();

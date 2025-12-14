@@ -4,9 +4,8 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
-using BSH.Main.Properties;
 using BSH.Main.Utils;
-using Humanizer;
+using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 
@@ -42,7 +41,7 @@ public partial class frmEditScheduler
 
                             case "2":
                                 newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY;
-                                newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT.FormatWith(parsedDate.Minute));
+                                newEntry.SubItems.Add(string.Format(Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT, parsedDate.Minute));
                                 newEntry.SubItems[0].Tag = 1;
                                 break;
 
@@ -60,7 +59,7 @@ public partial class frmEditScheduler
 
                             case "5":
                                 newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY;
-                                newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(parsedDate.Day, parsedDate.ToString(UiFormatUtils.DATE_FORMAT_HOUR_MINUTE)));
+                                newEntry.SubItems.Add(string.Format(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT, parsedDate.Day, parsedDate.ToString(UiFormatUtils.DATE_FORMAT_HOUR_MINUTE)));
                                 newEntry.SubItems[0].Tag = 4;
                                 break;
                         }
@@ -166,7 +165,7 @@ public partial class frmEditScheduler
                     break;
 
                 case 1:
-                    newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT.FormatWith(dlgAddSchedule.dtpStartTime.Value.Minute));
+                    newEntry.SubItems.Add(string.Format(Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT, dlgAddSchedule.dtpStartTime.Value.Minute));
                     break;
 
                 case 2:
@@ -178,7 +177,7 @@ public partial class frmEditScheduler
                     break;
 
                 case 4:
-                    newEntry.SubItems.Add(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT.FormatWith(dlgAddSchedule.dtpStartTime.Value.Day, dlgAddSchedule.dtpStartTime.Value.ToString(UiFormatUtils.DATE_FORMAT_HOUR_MINUTE)));
+                    newEntry.SubItems.Add(string.Format(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT, dlgAddSchedule.dtpStartTime.Value.Day, dlgAddSchedule.dtpStartTime.Value.ToString(UiFormatUtils.DATE_FORMAT_HOUR_MINUTE)));
                     break;
             }
 

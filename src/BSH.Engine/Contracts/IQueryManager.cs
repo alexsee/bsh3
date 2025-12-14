@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Models;
 
 namespace Brightbits.BSH.Engine.Contracts;
+
 public interface IQueryManager
 {
     Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString);

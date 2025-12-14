@@ -5,6 +5,7 @@ using Humanizer;
 using Microsoft.UI.Xaml.Data;
 
 namespace BSH.MainApp.Converters;
+
 public class FileSizeConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)

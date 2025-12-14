@@ -4,6 +4,7 @@
 using System;
 
 namespace Brightbits.BSH.Engine.Contracts.Services;
+
 public interface ISchedulerService
 {
     DateTime GetNextRun();

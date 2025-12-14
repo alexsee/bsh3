@@ -7,6 +7,7 @@ using Windows.Storage;
 using Windows.Storage.FileProperties;
 
 namespace BSH.MainApp.Utils;
+
 public static class FileSystemIconHelpers
 {
     private static readonly Dictionary<string, BitmapImage> cachedIcons = [];

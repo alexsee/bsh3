@@ -17,10 +17,9 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
-using BSH.Main.Properties;
-using Humanizer;
 using Microsoft.Win32;
 using Serilog;
+using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 
@@ -211,7 +210,7 @@ static class BackupLogic
 
         if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > 0)
         {
-            NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_OLD_TITLE, Resources.INFO_BACKUP_OLD_TEXT.FormatWith(DateTime.Now.Subtract(lastBackup.CreationDate).Days), ToolTipIcon.Info);
+            NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_OLD_TITLE, string.Format(Resources.INFO_BACKUP_OLD_TEXT, DateTime.Now.Subtract(lastBackup.CreationDate).Days), ToolTipIcon.Info);
         }
     }
 

@@ -13,6 +13,7 @@ using BSH.MainApp.Models;
 using Serilog;
 
 namespace BSH.MainApp.Services;
+
 public class JobService : IJobService
 {
     private readonly ILogger _logger = Log.ForContext<JobService>();
