@@ -1,15 +1,11 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Threading.Tasks;
-using System;
-using System.IO;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text.RegularExpressions;
+using Brightbits.BSH.Engine.Contracts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Brightbits.BSH.Engine.Contracts;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
@@ -50,31 +46,70 @@ public partial class FilterViewModel : ObservableObject
         set => SetProperty(ref regexInputText, value);
     }
 
-    public IRelayCommand AddFolderCommand { get; }
+    public IRelayCommand AddFolderCommand
+    {
+        get;
+    }
 
-    public IRelayCommand RemoveFolderCommand { get; }
+    public IRelayCommand RemoveFolderCommand
+    {
+        get;
+    }
 
-    public IRelayCommand AddFileCommand { get; }
+    public IRelayCommand AddFileCommand
+    {
+        get;
+    }
 
-    public IRelayCommand RemoveFileCommand { get; }
+    public IRelayCommand RemoveFileCommand
+    {
+        get;
+    }
 
-    public IRelayCommand AddFileTypeCommand { get; }
+    public IRelayCommand AddFileTypeCommand
+    {
+        get;
+    }
 
-    public IRelayCommand RemoveFileTypeCommand { get; }
+    public IRelayCommand RemoveFileTypeCommand
+    {
+        get;
+    }
 
-    public IRelayCommand AddRegexCommand { get; }
+    public IRelayCommand AddRegexCommand
+    {
+        get;
+    }
 
-    public IRelayCommand RemoveRegexCommand { get; }
+    public IRelayCommand RemoveRegexCommand
+    {
+        get;
+    }
 
-    public IRelayCommand SaveCommand { get; }
+    public IRelayCommand SaveCommand
+    {
+        get;
+    }
 
-    public IRelayCommand CancelCommand { get; }
+    public IRelayCommand CancelCommand
+    {
+        get;
+    }
 
-    public IAsyncRelayCommand BrowseFolderCommand { get; }
+    public IAsyncRelayCommand BrowseFolderCommand
+    {
+        get;
+    }
 
-    public IAsyncRelayCommand BrowseFileCommand { get; }
+    public IAsyncRelayCommand BrowseFileCommand
+    {
+        get;
+    }
 
-    public nint WindowHandle { get; set; }
+    public nint WindowHandle
+    {
+        get; set;
+    }
 
     public FilterViewModel(IConfigurationManager configurationManager)
     {
