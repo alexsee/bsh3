@@ -17,7 +17,7 @@ public sealed partial class FilterWindow : WindowEx
         InitializeComponent();
         ViewModel.WindowHandle = this.GetWindowHandle();
 
-        FilterSelectorBar.SelectedItem = FoldersItem;
+        FilterSelectorBar.SelectedItem = FilesItem;
         NavigateToSelectedItem();
     }
 
