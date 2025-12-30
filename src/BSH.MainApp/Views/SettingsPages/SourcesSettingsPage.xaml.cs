@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using BSH.MainApp.Windows;
+using Microsoft.UI.Xaml;
 using BSH.MainApp.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
@@ -13,5 +15,11 @@ public sealed partial class SourcesSettingsPage : Page
     public SourcesSettingsPage()
     {
         this.InitializeComponent();
+    }
+
+    private async void ExcludeSettingsCard_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new FilterWindow();
+        await dialog.ShowDialogAsync();
     }
 }
