@@ -27,10 +27,11 @@
                         TextWrapping="Wrap"
                         AcceptsReturn="True"
                         Height="80"
-                        Margin="0,0,10,0" />
+                        Margin="0,0,10,0"
+                        Text="{Binding RegexInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
 			<StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="10" VerticalAlignment="Top">
-				<Button Content="Add" Command="{Binding AddRegexCommand}" CommandParameter="{Binding Text, ElementName=RegexInput}" />
+				<Button Content="Add" Command="{Binding AddRegexCommand}" CommandParameter="{Binding RegexInputText}" />
 				<Button Content="Remove" Command="{Binding RemoveRegexCommand}" />
 			</StackPanel>
 		</Grid>

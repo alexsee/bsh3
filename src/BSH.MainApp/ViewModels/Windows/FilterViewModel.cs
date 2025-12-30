@@ -24,6 +24,20 @@ public partial class FilterViewModel : ObservableObject
 
     public ObservableCollection<string> RegexPatterns { get; } = [];
 
+    private string? fileTypeInputText;
+    public string? FileTypeInputText
+    {
+        get => fileTypeInputText;
+        set => SetProperty(ref fileTypeInputText, value);
+    }
+
+    private string? regexInputText;
+    public string? RegexInputText
+    {
+        get => regexInputText;
+        set => SetProperty(ref regexInputText, value);
+    }
+
     public IRelayCommand AddFolderCommand { get; }
 
     public IRelayCommand RemoveFolderCommand { get; }
@@ -195,6 +209,8 @@ public partial class FilterViewModel : ObservableObject
         }
 
         ExcludeFileTypes.Add(trimmed);
+
+        FileTypeInputText = null;
     }
 
     private void RemoveFileType()
@@ -236,6 +252,8 @@ public partial class FilterViewModel : ObservableObject
 
             RegexPatterns.Add(line);
         }
+
+        RegexInputText = null;
     }
 
     private void RemoveRegex()
