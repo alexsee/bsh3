@@ -24,6 +24,7 @@
 		<Content Include="Assets\*.*" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Remove="Views\FilterPages\ExcludeFilesPage.xaml" />
 	  <None Remove="Windows\FilterWindow.xaml" />
 	</ItemGroup>
 	<ItemGroup>
@@ -53,6 +54,18 @@
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<Page Update="Views\FilterPages\ExcludeFilesPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\FilterPages\ExcludeFoldersPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\FilterPages\ExcludeFileTypesPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\FilterPages\ExcludeRegexPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
 		<Page Update="Windows\FilterWindow.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</Page>
