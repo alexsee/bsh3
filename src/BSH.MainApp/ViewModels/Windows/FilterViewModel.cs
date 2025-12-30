@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Brightbits.BSH.Engine.Contracts;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
@@ -14,6 +15,8 @@ namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class FilterViewModel : ObservableObject
 {
+    private readonly IConfigurationManager configurationManager;
+
     public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
 
     public ObservableCollection<string> ExcludeFolders { get; } = [];
@@ -64,8 +67,10 @@ public partial class FilterViewModel : ObservableObject
 
     public nint WindowHandle { get; set; }
 
-    public FilterViewModel()
+    public FilterViewModel(IConfigurationManager configurationManager)
     {
+        this.configurationManager = configurationManager;
+
         AddFolderCommand = new RelayCommand<string?>(AddFolder);
         RemoveFolderCommand = new RelayCommand(RemoveFolder, CanRemoveFolder);
         AddFileCommand = new RelayCommand<string?>(AddFile);
@@ -78,6 +83,59 @@ public partial class FilterViewModel : ObservableObject
         CancelCommand = new RelayCommand(Cancel);
         BrowseFolderCommand = new AsyncRelayCommand(BrowseFolderAsync);
         BrowseFileCommand = new AsyncRelayCommand(BrowseFileAsync);
+
+        LoadFromConfiguration();
+    }
+
+    public void LoadFromConfiguration()
+    {
+        ExcludeFolders.Clear();
+        foreach (var entry in (configurationManager.ExcludeFolder ?? string.Empty)
+            .Split('|', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrEmpty(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            ExcludeFolders.Add(entry);
+        }
+
+        ExcludeFiles.Clear();
+        foreach (var entry in (configurationManager.ExcludeFile ?? string.Empty)
+            .Split('|', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrEmpty(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            ExcludeFiles.Add(entry);
+        }
+
+        ExcludeFileTypes.Clear();
+        foreach (var entry in (configurationManager.ExcludeFileTypes ?? string.Empty)
+            .Split('|', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim().TrimStart('*').TrimStart('.'))
+            .Where(x => !string.IsNullOrEmpty(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            ExcludeFileTypes.Add(entry);
+        }
+
+        RegexPatterns.Clear();
+        foreach (var entry in (configurationManager.ExcludeMask ?? string.Empty)
+            .Split('|', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrEmpty(x))
+            .Distinct(StringComparer.Ordinal))
+        {
+            RegexPatterns.Add(entry);
+        }
+    }
+
+    public void SaveToConfiguration()
+    {
+        configurationManager.ExcludeFolder = string.Join("|", ExcludeFolders.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
+        configurationManager.ExcludeFile = string.Join("|", ExcludeFiles.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
+        configurationManager.ExcludeFileTypes = string.Join("|", ExcludeFileTypes.Select(x => x.Trim().TrimStart('*').TrimStart('.')).Where(x => !string.IsNullOrEmpty(x)));
+        configurationManager.ExcludeMask = string.Join("|", RegexPatterns.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
     }
 
     private string? selectedFolder;
@@ -271,6 +329,7 @@ public partial class FilterViewModel : ObservableObject
 
     private void Save()
     {
+        SaveToConfiguration();
         TaskCompletionSource.SetResult(true);
     }
 

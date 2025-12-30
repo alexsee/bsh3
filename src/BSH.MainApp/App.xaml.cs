@@ -17,6 +17,7 @@ using BSH.MainApp.Models;
 using BSH.MainApp.Notifications;
 using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
+using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Views;
 using H.NotifyIcon;
 using Microsoft.Extensions.DependencyInjection;
@@ -111,6 +112,8 @@ public partial class App : Application
             services.AddTransient<MainPage>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
+
+            services.AddTransient<FilterViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

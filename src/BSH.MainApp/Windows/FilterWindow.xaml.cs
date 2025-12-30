@@ -12,7 +12,7 @@ namespace BSH.MainApp.Windows;
 
 public sealed partial class FilterWindow : WindowEx
 {
-    public FilterViewModel ViewModel { get; } = new FilterViewModel();
+    public FilterViewModel ViewModel { get; } = App.GetService<FilterViewModel>();
 
     public FilterWindow()
     {
