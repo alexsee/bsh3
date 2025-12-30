@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Threading.Tasks;
+using System;
+using System.IO;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -18,6 +20,13 @@ public partial class FilterViewModel : ObservableObject
     private readonly IConfigurationManager configurationManager;
 
     public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
+
+    private string? validationErrorMessage;
+    public string? ValidationErrorMessage
+    {
+        get => validationErrorMessage;
+        set => SetProperty(ref validationErrorMessage, value);
+    }
 
     public ObservableCollection<string> ExcludeFolders { get; } = [];
 
@@ -190,11 +199,73 @@ public partial class FilterViewModel : ObservableObject
         }
     }
 
+    private IReadOnlyList<string> GetSourceFolders()
+    {
+        return (configurationManager.SourceFolder ?? string.Empty)
+            .Split('|', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrEmpty(x))
+            .ToArray();
+    }
+
+    private static string NormalizeDirectoryPath(string path)
+    {
+        var full = Path.GetFullPath(path);
+        full = full.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        return full + Path.DirectorySeparatorChar;
+    }
+
+    private bool IsPathUnderSources(string fullPath)
+    {
+        if (string.IsNullOrWhiteSpace(fullPath))
+        {
+            return false;
+        }
+
+        var sources = GetSourceFolders();
+        if (sources.Count == 0)
+        {
+            return true;
+        }
+
+        try
+        {
+            var candidate = NormalizeDirectoryPath(fullPath);
+            foreach (var source in sources)
+            {
+                if (string.IsNullOrWhiteSpace(source))
+                {
+                    continue;
+                }
+
+                var normalizedSource = NormalizeDirectoryPath(source);
+                if (candidate.StartsWith(normalizedSource, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+        }
+        catch
+        {
+            return false;
+        }
+
+        return false;
+    }
+
     private void AddFolder(string? folder)
     {
+        ValidationErrorMessage = null;
+
         var trimmed = folder?.Trim();
         if (string.IsNullOrEmpty(trimmed))
         {
+            return;
+        }
+
+        if (!IsPathUnderSources(trimmed))
+        {
+            ValidationErrorMessage = "Selected folder is not within the configured source folders.";
             return;
         }
 
@@ -221,9 +292,17 @@ public partial class FilterViewModel : ObservableObject
 
     private void AddFile(string? file)
     {
+        ValidationErrorMessage = null;
+
         var trimmed = file?.Trim();
         if (string.IsNullOrEmpty(trimmed))
         {
+            return;
+        }
+
+        if (!IsPathUnderSources(trimmed))
+        {
+            ValidationErrorMessage = "Selected file is not within the configured source folders.";
             return;
         }
 

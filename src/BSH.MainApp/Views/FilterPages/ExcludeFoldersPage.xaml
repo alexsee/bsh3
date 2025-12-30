@@ -7,6 +7,7 @@
 		<Grid.RowDefinitions>
 			<RowDefinition />
 			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
 		<ListView Grid.Row="0"
@@ -16,7 +17,12 @@
 				<TextBlock FontWeight="Bold">Folder</TextBlock>
 			</ListView.Header>
 		</ListView>
-		<Grid Grid.Row="1">
+
+		<TextBlock Grid.Row="1"
+				   Text="{Binding ValidationErrorMessage}"
+				   Foreground="Red"
+				   TextWrapping="Wrap" />
+		<Grid Grid.Row="2">
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
 				<Button Content="Add Folder" Command="{Binding BrowseFolderCommand}" />
 				<Button Content="Remove" Command="{Binding RemoveFolderCommand}" />
