@@ -304,7 +304,7 @@ public partial class FilterViewModel : ObservableObject
             return;
         }
 
-        if (ExcludeFolders.Contains(trimmed))
+        if (ExcludeFolders.Contains(trimmed, StringComparer.OrdinalIgnoreCase))
         {
             return;
         }
@@ -341,7 +341,7 @@ public partial class FilterViewModel : ObservableObject
             return;
         }
 
-        if (ExcludeFiles.Contains(trimmed))
+        if (ExcludeFiles.Contains(trimmed, StringComparer.OrdinalIgnoreCase))
         {
             return;
         }
@@ -370,12 +370,12 @@ public partial class FilterViewModel : ObservableObject
             return;
         }
 
-        if (!Regex.IsMatch(trimmed, "^[A-Za-z0-9]+$"))
+        if (!Regex.IsMatch(trimmed, "^[A-Za-z0-9]+$", RegexOptions.None, TimeSpan.FromSeconds(10)))
         {
             return;
         }
 
-        if (ExcludeFileTypes.Contains(trimmed))
+        if (ExcludeFileTypes.Contains(trimmed, StringComparer.OrdinalIgnoreCase))
         {
             return;
         }
@@ -415,7 +415,7 @@ public partial class FilterViewModel : ObservableObject
 
             try
             {
-                _ = new Regex(line);
+                _ = new Regex(line, RegexOptions.None, TimeSpan.FromSeconds(10));
             }
             catch (ArgumentException)
             {
@@ -444,12 +444,12 @@ public partial class FilterViewModel : ObservableObject
     private void Save()
     {
         SaveToConfiguration();
-        TaskCompletionSource.SetResult(true);
+        TaskCompletionSource.TrySetResult(true);
     }
 
     private void Cancel()
     {
-        TaskCompletionSource.SetResult(false);
+        TaskCompletionSource.TrySetResult(false);
     }
 
     private async Task BrowseFolderAsync()
