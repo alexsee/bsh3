@@ -17,7 +17,7 @@
         </Grid.RowDefinitions>
         <Grid Margin="30" Grid.Row="0">
             <StackPanel Orientation="Vertical" Spacing="30">
-                <TextBlock FontSize="24" FontWeight="SemiBold">Create Backup</TextBlock>
+                <TextBlock FontSize="24" FontWeight="SemiBold">Edit Backup</TextBlock>
                 <Grid RowSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"></ColumnDefinition>

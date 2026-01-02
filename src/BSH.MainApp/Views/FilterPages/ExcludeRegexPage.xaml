@@ -1,0 +1,39 @@
+<Page
+    x:Class="BSH.MainApp.Views.FilterPages.ExcludeRegexPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Grid RowSpacing="12" Padding="8">
+		<Grid.RowDefinitions>
+			<RowDefinition />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+
+		<ListView Grid.Row="0"
+                    ItemsSource="{Binding RegexPatterns}"
+                    SelectedItem="{Binding SelectedRegexPattern, Mode=TwoWay}">
+			<ListView.Header>
+				<TextBlock FontWeight="Bold">Pattern</TextBlock>
+			</ListView.Header>
+		</ListView>
+		<Grid Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+
+			<TextBox x:Name="RegexInput"
+                        PlaceholderText="Enter regular expression"
+                        TextWrapping="Wrap"
+                        AcceptsReturn="True"
+                        Height="80"
+                        Margin="0,0,10,0"
+                        Text="{Binding RegexInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+			<StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="10" VerticalAlignment="Top">
+				<Button Content="Add" Command="{Binding AddRegexCommand}" CommandParameter="{Binding RegexInputText}" />
+				<Button Content="Remove" Command="{Binding RemoveRegexCommand}" />
+			</StackPanel>
+		</Grid>
+	</Grid>
+</Page>

@@ -49,6 +49,5 @@ public sealed partial class SettingsPage : Page
         }
         contentFrame.DataContext = this.ViewModel;
         contentFrame.NavigateToType(pageType, null, navOptions);
-
     }
 }

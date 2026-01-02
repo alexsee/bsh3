@@ -50,6 +50,27 @@
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="Views\FilterPages\ExcludeFilesPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</None>
+		<None Update="Windows\FilterWindow.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</None>
+		<Page Update="Views\FilterPages\ExcludeFilesPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\FilterPages\ExcludeFoldersPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\FilterPages\ExcludeFileTypesPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\FilterPages\ExcludeRegexPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Windows\FilterWindow.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
 	</ItemGroup>
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
 		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
