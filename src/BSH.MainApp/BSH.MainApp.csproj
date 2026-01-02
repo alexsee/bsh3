@@ -24,10 +24,6 @@
 		<Content Include="Assets\*.*" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Remove="Views\FilterPages\ExcludeFilesPage.xaml" />
-	  <None Remove="Windows\FilterWindow.xaml" />
-	</ItemGroup>
-	<ItemGroup>
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
@@ -53,6 +49,12 @@
 	<ItemGroup>
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Views\FilterPages\ExcludeFilesPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</None>
+		<None Update="Windows\FilterWindow.xaml">
+		  <Generator>MSBuild:Compile</Generator>
 		</None>
 		<Page Update="Views\FilterPages\ExcludeFilesPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>

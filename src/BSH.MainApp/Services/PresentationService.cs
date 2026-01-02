@@ -156,4 +156,13 @@ public class PresentationService : IPresentationService
             return await dialog.ShowAsync();
         });
     }
+
+    public async Task ShowExcludeFileFolderWindowAsync()
+    {
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            var dialog = new FilterWindow();
+            await dialog.ShowDialogAsync();
+        });
+    }
 }

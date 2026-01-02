@@ -82,7 +82,7 @@
                     Header="Exclude files and folders"
                     Description="Exclude single files and folder, or define custom rules for exclusion."
                     IsClickEnabled="True"
-                    Click="ExcludeSettingsCard_Click">
+                    Command="{x:Bind ViewModel.ShowExcludeFileFolderWindowCommand}">
                     <toolkit:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xECC9;" />
                     </toolkit:SettingsCard.HeaderIcon>

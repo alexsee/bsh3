@@ -16,6 +16,7 @@ public sealed partial class FilterWindow : WindowEx
     {
         InitializeComponent();
         ViewModel.WindowHandle = this.GetWindowHandle();
+        ContentFrame.DataContext = ViewModel;
 
         FilterSelectorBar.SelectedItem = FilesItem;
         NavigateToSelectedItem();
@@ -58,7 +59,6 @@ public sealed partial class FilterWindow : WindowEx
             pageType = typeof(Views.FilterPages.ExcludeRegexPage);
         }
 
-        ContentFrame.DataContext = ViewModel;
         ContentFrame.NavigateToType(pageType, null, new FrameNavigationOptions());
     }
 }
