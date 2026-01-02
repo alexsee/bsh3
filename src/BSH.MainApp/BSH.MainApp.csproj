@@ -3,7 +3,6 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net10.0-windows10.0.22621.0</TargetFramework>
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-		<WindowsSdkPackageVersion>10.0.22621.38</WindowsSdkPackageVersion>
 		<RootNamespace>BSH.MainApp</RootNamespace>
 		<ApplicationIcon>Assets\app_ico.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -31,15 +30,15 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.1.240916" />
-		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.2.0" />
+		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.251219" />
+		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.4.1" />
 		<PackageReference Include="Humanizer.Core" Version="3.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="WinUIEx" Version="2.5.1" />
-		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240916" />
+		<PackageReference Include="WinUIEx" Version="2.9.0" />
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.251219" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj">
