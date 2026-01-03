@@ -1011,6 +1011,17 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Achtung, es findet keine zeitplangesteuerte Sicherung statt, da noch kein Sicherungsintervall eingestellt wurde.
+        ///
+        ///Bitte fügen Sie ein Sicherungsintervall hinzu, da ansonsten die Sicherung nicht ausgeführt wird. ähnelt.
+        /// </summary>
+        public static string DLG_UC_CONFIG_MSG_WARN_NO_SCHEDULE_INTERVAL_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_CONFIG_MSG_WARN_NO_SCHEDULE_INTERVAL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Datensicherungen werden entschlüsselt... ähnelt.
         /// </summary>
         public static string DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT {

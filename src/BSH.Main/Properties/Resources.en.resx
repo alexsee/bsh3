@@ -415,6 +415,11 @@ Do you want to continue with the process?</value>
   <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE" xml:space="preserve">
     <value>Backups will be deleted...</value>
   </data>
+    <data name="DLG_UC_CONFIG_MSG_WARN_NO_SCHEDULE_INTERVAL_TEXT" xml:space="preserve">
+      <value>Warning: No schedule-based backup will run because no schedule interval has been configured yet.
+
+  Please add a schedule interval, otherwise the backup cannot be executed.</value>
+    </data>
   <data name="DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT" xml:space="preserve">
     <value>Backups will be decrypted...</value>
   </data>

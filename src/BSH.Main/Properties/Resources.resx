@@ -452,6 +452,11 @@ Möchten Sie den Vorgang fortsetzen?</value>
   <data name="DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE" xml:space="preserve">
     <value>Sicherungen werden gelöscht</value>
   </data>
+  <data name="DLG_UC_CONFIG_MSG_WARN_NO_SCHEDULE_INTERVAL_TEXT" xml:space="preserve">
+    <value>Achtung, es findet keine zeitplangesteuerte Sicherung statt, da noch kein Sicherungsintervall eingestellt wurde.
+
+Bitte fügen Sie ein Sicherungsintervall hinzu, da ansonsten die Sicherung nicht ausgeführt wird.</value>
+  </data>
   <data name="DLG_UC_CONFIG_STATUS_DECRYPT_BACKUP_TEXT" xml:space="preserve">
     <value>Datensicherungen werden entschlüsselt...</value>
   </data>

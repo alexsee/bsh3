@@ -56,6 +56,7 @@ namespace Brightbits.BSH.Main
             rdCompress = new RadioButton();
             cmdEncrypt = new Button();
             TabPage2 = new TabPage();
+            lblScheduleWarning = new Label();
             chkDoPastBackups = new CheckBox();
             cmdEditSchedule = new Button();
             rbMB = new RadioButton();
@@ -332,6 +333,7 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(TabPage2, "TabPage2");
             TabPage2.BackColor = System.Drawing.Color.White;
+            TabPage2.Controls.Add(lblScheduleWarning);
             TabPage2.Controls.Add(chkDoPastBackups);
             TabPage2.Controls.Add(cmdEditSchedule);
             TabPage2.Controls.Add(rbMB);
@@ -339,6 +341,18 @@ namespace Brightbits.BSH.Main
             TabPage2.Controls.Add(rbTSB);
             TabPage2.Name = "TabPage2";
             ToolTip1.SetToolTip(TabPage2, resources.GetString("TabPage2.ToolTip"));
+            // 
+            // lblScheduleWarning
+            // 
+            lblScheduleWarning.AutoSize = true;
+            lblScheduleWarning.BackColor = System.Drawing.Color.Transparent;
+            lblScheduleWarning.ForeColor = System.Drawing.Color.FromArgb(192, 0, 0);
+            lblScheduleWarning.Location = new System.Drawing.Point(57, 308);
+            lblScheduleWarning.MaximumSize = new System.Drawing.Size(820, 0);
+            lblScheduleWarning.Name = "lblScheduleWarning";
+            lblScheduleWarning.Size = new System.Drawing.Size(0, 25);
+            lblScheduleWarning.TabIndex = 99;
+            lblScheduleWarning.Visible = false;
             // 
             // chkDoPastBackups
             // 
@@ -850,5 +864,6 @@ namespace Brightbits.BSH.Main
         internal Label Label12;
         internal ComboBox cboFtpEncoding;
         private CheckBox chkFtpEncryption;
+        internal Label lblScheduleWarning;
     }
 }

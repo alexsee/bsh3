@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -26,6 +27,7 @@ public partial class ucConfig : IMainTabs
     public ucConfig()
     {
         InitializeComponent();
+        lblScheduleWarning.Text = Resources.DLG_UC_CONFIG_MSG_WARN_NO_SCHEDULE_INTERVAL_TEXT;
     }
 
     #region  Implementation of IMainTabs 
@@ -347,6 +349,8 @@ public partial class ucConfig : IMainTabs
         {
             chkRemind.Checked = false;
         }
+
+        UpdateScheduleWarning();
     }
 
     private void cmdChange_Click(object sender, EventArgs e)
@@ -553,12 +557,14 @@ public partial class ucConfig : IMainTabs
     {
         cmdEditSchedule.Enabled = rbTSB.Checked;
         chkDoPastBackups.Enabled = rbTSB.Checked;
+        UpdateScheduleWarning();
     }
 
     private void cmdEditSchedule_Click(object sender, EventArgs e)
     {
         using var dlgEditScheduler = new frmEditScheduler();
         dlgEditScheduler.ShowDialog(this);
+        UpdateScheduleWarning();
     }
 
     private void chkRemindSpace_CheckedChanged(object sender, EventArgs e)
@@ -802,6 +808,42 @@ public partial class ucConfig : IMainTabs
         }
 
         e.Effect = effects;
+    }
+
+    private void UpdateScheduleWarning()
+    {
+        if (lblScheduleWarning == null)
+        {
+            return;
+        }
+
+        if (!rbTSB.Checked)
+        {
+            lblScheduleWarning.Visible = false;
+            return;
+        }
+
+        lblScheduleWarning.Visible = !HasScheduledIntervalsConfigured();
+    }
+
+    private bool HasScheduledIntervalsConfigured()
+    {
+        try
+        {
+            using var dbClient = BackupLogic.DbClientFactory.CreateDbClient();
+            using var reader = dbClient.ExecuteDataReader(CommandType.Text, "SELECT COUNT(*) FROM schedule", null);
+            if (reader.Read())
+            {
+                var count = Convert.ToInt32(reader.GetValue(0));
+                return count > 0;
+            }
+        }
+        catch
+        {
+            return true;
+        }
+
+        return true;
     }
 
     private void lvSource_SelectedIndexChanged(object sender, EventArgs e)
