@@ -114,6 +114,7 @@ public partial class App : Application
             services.AddTransient<SettingsPage>();
 
             services.AddTransient<FilterViewModel>();
+            services.AddTransient<EditScheduleViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

@@ -27,4 +27,5 @@ public interface IPresentationService
     Task ShowStatusWindowAsync();
     Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1);
     Task ShowExcludeFileFolderWindowAsync();
+    Task ShowEditScheduleWindowAsync();
 }

@@ -67,7 +67,7 @@
                                     </TextBlock>
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
-                            <Button Content="Set schedule" />
+                            <Button Content="Set schedule" Command="{x:Bind ViewModel.OpenEditScheduleWindowCommand}" />
                         </toolkit:SettingsCard>
 
                         <toolkit:SettingsCard>

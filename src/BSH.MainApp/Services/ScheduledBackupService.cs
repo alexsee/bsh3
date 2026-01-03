@@ -416,8 +416,16 @@ public class ScheduledBackupService : IScheduledBackupService
             if (Item[0] == "day")
             {
                 var lastFullBackup = await queryManager.GetLastFullBackupAsync();
-                var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
-                fullBackupOption = Diff.Days >= Convert.ToInt32(Item[1]);
+
+                if (lastFullBackup != null)
+                {
+                    var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
+                    fullBackupOption = Diff.Days >= Convert.ToInt32(Item[1]);
+                }
+                else
+                {
+                    fullBackupOption = true;
+                }
             }
         }
 

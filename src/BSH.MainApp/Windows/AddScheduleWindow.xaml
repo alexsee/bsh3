@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<winex:WindowEx xmlns:winex="using:WinUIEx"
+    x:Class="BSH.MainApp.Windows.AddScheduleWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BSH.MainApp.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Add Schedule"
+    Height="400" Width="600" IsResizable="False" IsMaximizable="False" IsMinimizable="False" IsAlwaysOnTop="True">
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Margin="30" Grid.Row="0">
+            <StackPanel Orientation="Vertical" Spacing="30">
+                <TextBlock FontSize="24" FontWeight="SemiBold">Add Schedule</TextBlock>
+                <Grid RowSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" AutomationProperties.Name="Interval Label">Interval:</TextBlock>
+                    <ComboBox Grid.Column="1" Grid.Row="0"
+                             SelectedIndex="{x:Bind ViewModel.SelectedInterval, Mode=TwoWay}"
+                             AutomationProperties.Name="Interval Selection"
+                             AutomationProperties.HelpText="Select the backup schedule interval">
+                        <ComboBoxItem>Once</ComboBoxItem>
+                        <ComboBoxItem>Hourly</ComboBoxItem>
+                        <ComboBoxItem>Daily</ComboBoxItem>
+                        <ComboBoxItem>Weekly</ComboBoxItem>
+                        <ComboBoxItem>Monthly</ComboBoxItem>
+                    </ComboBox>
+                    <TextBlock Grid.Column="0" Grid.Row="1" AutomationProperties.Name="Start Time Label">Start Time:</TextBlock>
+                    <TimePicker Grid.Column="1" Grid.Row="1"
+                               Visibility="{x:Bind ViewModel.ShowTimeSpinner}"
+                               AutomationProperties.Name="Start Time Input"
+                               AutomationProperties.HelpText="Select the time to start the schedule"></TimePicker>
+                </Grid>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" Background="#fafafa" Padding="30,10" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                <Button Command="{x:Bind ViewModel.CancelCommand}">Cancel</Button>
+                <Button Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}">Save</Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</winex:WindowEx>
