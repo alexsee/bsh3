@@ -9,18 +9,10 @@
     mc:Ignorable="d"
     Title="Edit Schedules"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
-    xmlns:converters="using:BSH.MainApp.Converters"
     xmlns:vm="using:BSH.MainApp.ViewModels.Windows"
     Height="600" Width="900" IsResizable="True" IsMaximizable="False" IsMinimizable="False" IsAlwaysOnTop="True">
 
     <Grid Background="White">
-        <Grid.Resources>
-            <converters:EnumComparisonConverter x:Key="EnumComparisonConverter" />
-
-            <vm:DeleteInterval x:Key="DeleteIntervalEnum_DontDelete">DontDelete</vm:DeleteInterval>
-            <vm:DeleteInterval x:Key="DeleteIntervalEnum_Manual">Manual</vm:DeleteInterval>
-            <vm:DeleteInterval x:Key="DeleteIntervalEnum_Auto">Auto</vm:DeleteInterval>
-        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>

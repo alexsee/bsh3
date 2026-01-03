@@ -50,6 +50,7 @@ public enum DeleteInterval
     Auto = 2
 }
 
+[Microsoft.UI.Xaml.Data.Bindable]
 public partial class EditScheduleViewModel : ObservableObject
 {
     private readonly IConfigurationManager configurationManager;
