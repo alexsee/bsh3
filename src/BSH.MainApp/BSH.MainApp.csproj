@@ -25,6 +25,7 @@
 	<ItemGroup>
 	  <None Remove="Windows\AddScheduleWindow.xaml" />
 	  <None Remove="Windows\EditScheduleWindow.xaml" />
+	  <None Remove="Windows\ModalWindow.xaml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Manifest Include="$(ApplicationManifest)" />
@@ -56,6 +57,9 @@
 		<None Update="Views\FilterPages\ExcludeFilesPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</None>
+		<Page Update="Windows\ModalWindow.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
 		<Page Update="Windows\EditScheduleWindow.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</Page>

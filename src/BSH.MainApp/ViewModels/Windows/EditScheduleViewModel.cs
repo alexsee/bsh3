@@ -50,8 +50,7 @@ public enum DeleteInterval
     Auto = 2
 }
 
-[Microsoft.UI.Xaml.Data.Bindable]
-public partial class EditScheduleViewModel : ObservableObject
+public partial class EditScheduleViewModel : ModalViewModel
 {
     private readonly IConfigurationManager configurationManager;
     private readonly IDbClientFactory dbClientFactory;
@@ -94,7 +93,7 @@ public partial class EditScheduleViewModel : ObservableObject
         this.dbClientFactory = dbClientFactory;
     }
 
-    public async Task InitializeAsync()
+    public async override Task InitializeAsync()
     {
         await LoadSchedulesAsync();
         LoadConfiguration();
@@ -124,20 +123,6 @@ public partial class EditScheduleViewModel : ObservableObject
             ScheduleList.Remove(SelectedSchedule);
             SelectedSchedule = null;
         }
-    }
-
-    [RelayCommand]
-    private async Task Save()
-    {
-        await SaveSchedulesAsync();
-        SaveConfiguration();
-        TaskCompletionSource.SetResult(true);
-    }
-
-    [RelayCommand]
-    private void Cancel()
-    {
-        TaskCompletionSource.SetResult(false);
     }
 
     public void AddScheduleEntry(int intervalType, DateTime startTime)

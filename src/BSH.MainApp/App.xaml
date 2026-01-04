@@ -1,9 +1,9 @@
 ﻿<Application
     x:Class="BSH.MainApp.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:converters="using:BSH.MainApp.Converters"
-    xmlns:vm="using:BSH.MainApp.ViewModels.Windows"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewmodels="using:BSH.MainApp.ViewModels.Windows"
+    >
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,12 +18,6 @@
             <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled">Transparent</SolidColorBrush>
 
             <Color x:Key="App.Theme.IconBaseColor">#DB202020</Color>
-
-            <converters:EnumComparisonConverter x:Key="EnumComparisonConverter" />
-
-            <vm:DeleteInterval x:Key="DeleteIntervalEnum_DontDelete">DontDelete</vm:DeleteInterval>
-            <vm:DeleteInterval x:Key="DeleteIntervalEnum_Manual">Manual</vm:DeleteInterval>
-            <vm:DeleteInterval x:Key="DeleteIntervalEnum_Auto">Auto</vm:DeleteInterval>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
