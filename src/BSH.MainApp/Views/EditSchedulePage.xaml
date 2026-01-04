@@ -62,8 +62,8 @@
                             <toolkit:SettingsCard.Header>
                                 <StackPanel Orientation="Horizontal" Spacing="10">
                                     <RadioButton IsChecked="{Binding DeleteMode, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource DeleteInterval_Manual}}" Content="Delete backups that are older than"/>
-                                    <NumberBox Minimum="1" Maximum="999" SpinButtonPlacementMode="Inline" Width="150"/>
-                                    <ComboBox Width="100">
+                                    <NumberBox Value="{x:Bind ViewModel.DeleteInterval, Mode=TwoWay}" Minimum="1" Maximum="999" SpinButtonPlacementMode="Inline" Width="150"/>
+                                    <ComboBox SelectedValue="{x:Bind ViewModel.DeleteIntervalType, Mode=TwoWay}" Width="100">
                                         <ComboBoxItem>Hours</ComboBoxItem>
                                         <ComboBoxItem>Days</ComboBoxItem>
                                         <ComboBoxItem>Weeks</ComboBoxItem>

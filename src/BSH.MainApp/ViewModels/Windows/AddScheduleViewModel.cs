@@ -2,13 +2,22 @@
 // Licensed under the Apache License, Version 2.0.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
-public partial class AddScheduleViewModel : ObservableObject
+public partial class AddScheduleViewModel : ModalViewModel
 {
-    public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
+    public override string Title => "Add Backup Schedule";
+
+    public async override Task InitializeAsync()
+    {
+        UpdateTimeFormat();
+    }
+
+    public async override Task SaveConfigurationAsync()
+    {
+        await Task.CompletedTask;
+    }
 
     [ObservableProperty]
     private int selectedInterval = 0;
@@ -18,11 +27,6 @@ public partial class AddScheduleViewModel : ObservableObject
 
     [ObservableProperty]
     private bool showTimeSpinner = false;
-
-    public AddScheduleViewModel()
-    {
-        UpdateTimeFormat();
-    }
 
     partial void OnSelectedIntervalChanged(int value)
     {
@@ -34,17 +38,5 @@ public partial class AddScheduleViewModel : ObservableObject
         // Update UI based on selected interval
         // Show time spinner for: Hourly (1), Daily (2), Monthly (4)
         ShowTimeSpinner = SelectedInterval is 1 or 2 or 4;
-    }
-
-    [RelayCommand]
-    private void Save()
-    {
-        TaskCompletionSource.SetResult(true);
-    }
-
-    [RelayCommand]
-    private void Cancel()
-    {
-        TaskCompletionSource.SetResult(false);
     }
 }

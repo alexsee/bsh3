@@ -17,15 +17,18 @@ public abstract partial class ModalViewModel : ObservableObject
 
     public abstract Task InitializeAsync();
 
+    public abstract Task SaveConfigurationAsync();
+
     [RelayCommand]
-    private void Save()
+    private async Task Save()
     {
-        TaskCompletionSource.SetResult(true);
+        await SaveConfigurationAsync();
+        TaskCompletionSource.TrySetResult(true);
     }
 
     [RelayCommand]
     private void Cancel()
     {
-        TaskCompletionSource.SetResult(false);
+        TaskCompletionSource.TrySetResult(false);
     }
 }

@@ -55,8 +55,6 @@ public partial class EditScheduleViewModel : ModalViewModel
     private readonly IConfigurationManager configurationManager;
     private readonly IDbClientFactory dbClientFactory;
 
-    public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
-
     public override string Title => "Edit Backup Schedule";
 
     [ObservableProperty]
@@ -183,8 +181,10 @@ public partial class EditScheduleViewModel : ModalViewModel
         }
     }
 
-    private async Task SaveSchedulesAsync()
+    public async override Task SaveConfigurationAsync()
     {
+        SaveConfiguration();
+
         try
         {
             using var dbClient = dbClientFactory.CreateDbClient();
@@ -197,10 +197,10 @@ public partial class EditScheduleViewModel : ModalViewModel
             {
                 // Convert ViewModel intervalType (0-4) to database timType (1-5)
                 var dbIntervalType = entry.IntervalType + 1;
-                var dateString = entry.StartTime.ToString("dd.MM.yyyy HH:mm:ss");
+                var dateString = entry.StartTime.ToString("dd.MM.yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
 
-                var query = $"INSERT INTO schedule (timType, timDate) VALUES ({dbIntervalType}, '{dateString}')";
-                await dbClient.ExecuteNonQueryAsync(CommandType.Text, query, null);
+                var query = $"INSERT INTO schedule (timType, timDate) VALUES (@type, @date)";
+                await dbClient.ExecuteNonQueryAsync(CommandType.Text, query, [("type", dbIntervalType), ("type", dateString)]);
             }
         }
         catch
