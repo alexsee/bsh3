@@ -57,6 +57,8 @@ public partial class EditScheduleViewModel : ModalViewModel
 
     public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
 
+    public override string Title => "Edit Backup Schedule";
+
     [ObservableProperty]
     private ObservableCollection<ScheduleEntry> scheduleList = new();
 

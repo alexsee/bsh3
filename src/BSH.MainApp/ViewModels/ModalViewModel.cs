@@ -10,6 +10,11 @@ public abstract partial class ModalViewModel : ObservableObject
 {
     public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
 
+    public abstract string Title
+    {
+        get;
+    }
+
     public abstract Task InitializeAsync();
 
     [RelayCommand]

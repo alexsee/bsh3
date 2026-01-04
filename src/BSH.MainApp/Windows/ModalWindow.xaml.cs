@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using BSH.MainApp.ViewModels;
-using Microsoft.UI.Xaml;
 using WinUIEx;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -13,7 +12,7 @@ namespace BSH.MainApp.Windows;
 /// <summary>
 /// An empty window that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class ModalWindow : Window
+public sealed partial class ModalWindow : WindowEx
 {
     public ModalViewModel ViewModel
     {
@@ -34,6 +33,8 @@ public sealed partial class ModalWindow : Window
         var window = new ModalWindow(viewModel);
         window.ModalFramePage.DataContext = viewModel;
         window.ModalFramePage.Navigate(pageType, viewModel);
+
+        window.Title = viewModel.Title;
 
         window.Activate();
         window.CenterOnScreen();
