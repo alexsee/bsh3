@@ -9,24 +9,65 @@ public partial class AddScheduleViewModel : ModalViewModel
 {
     public override string Title => "Add Backup Schedule";
 
+    public override int Width => 800;
+
+    public override int Height => 450;
+
     public async override Task InitializeAsync()
     {
         UpdateTimeFormat();
-    }
-
-    public async override Task SaveConfigurationAsync()
-    {
-        await Task.CompletedTask;
     }
 
     [ObservableProperty]
     private int selectedInterval = 0;
 
     [ObservableProperty]
-    private DateTime startTime = DateTime.Now;
+    private TimeSpan startTime = TimeSpan.FromDays(1);
+
+    [ObservableProperty]
+    private DateTimeOffset startDate = DateTimeOffset.Now;
 
     [ObservableProperty]
     private bool showTimeSpinner = false;
+
+    [ObservableProperty]
+    private bool showOnceOptions = false;
+
+    [ObservableProperty]
+    private bool showHourlyOptions = false;
+
+    [ObservableProperty]
+    private bool showDailyOptions = false;
+
+    [ObservableProperty]
+    private bool showWeeklyOptions = false;
+
+    [ObservableProperty]
+    private bool showMonthlyOptions = false;
+
+    [ObservableProperty]
+    private bool sunday = false;
+
+    [ObservableProperty]
+    private bool monday = true;
+
+    [ObservableProperty]
+    private bool tuesday = false;
+
+    [ObservableProperty]
+    private bool wednesday = false;
+
+    [ObservableProperty]
+    private bool thursday = false;
+
+    [ObservableProperty]
+    private bool friday = false;
+
+    [ObservableProperty]
+    private bool saturday = false;
+
+    [ObservableProperty]
+    private int dayOfMonth = 1;
 
     partial void OnSelectedIntervalChanged(int value)
     {
@@ -36,7 +77,11 @@ public partial class AddScheduleViewModel : ModalViewModel
     private void UpdateTimeFormat()
     {
         // Update UI based on selected interval
-        // Show time spinner for: Hourly (1), Daily (2), Monthly (4)
-        ShowTimeSpinner = SelectedInterval is 1 or 2 or 4;
+        // 0: Once, 1: Hourly, 2: Daily, 3: Weekly, 4: Monthly
+        ShowOnceOptions = SelectedInterval == 0;
+        ShowHourlyOptions = SelectedInterval == 1;
+        ShowDailyOptions = SelectedInterval == 2;
+        ShowWeeklyOptions = SelectedInterval == 3;
+        ShowMonthlyOptions = SelectedInterval == 4;
     }
 }

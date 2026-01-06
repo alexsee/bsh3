@@ -174,4 +174,12 @@ public class PresentationService : IPresentationService
             await ModalWindow.ShowDialogAsync<EditScheduleViewModel>(typeof(EditSchedulePage));
         });
     }
+
+    public async Task<(AddScheduleViewModel, bool)> ShowAddScheduleWindowAsync()
+    {
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            return await ModalWindow.ShowDialogAsync<AddScheduleViewModel>(typeof(AddSchedulePage));
+        });
+    }
 }

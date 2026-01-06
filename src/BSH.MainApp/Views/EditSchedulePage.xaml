@@ -8,8 +8,7 @@
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:BSH.MainApp.Converters"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels.Windows"
-    d:DataContext="{d:DesignInstance Type=viewmodels:EditScheduleViewModel}"
-    Height="600" Width="900">
+    d:DataContext="{d:DesignInstance Type=viewmodels:EditScheduleViewModel}">
 
     <Page.Resources>
         <converters:EnumComparisonConverter x:Key="EnumComparisonConverter" />

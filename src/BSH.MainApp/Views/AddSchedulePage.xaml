@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="BSH.MainApp.Views.AddSchedulePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BSH.MainApp.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:viewmodels="using:BSH.MainApp.ViewModels.Windows"
+    d:DataContext="{d:DesignInstance Type=viewmodels:AddScheduleViewModel}">
+
+    <Grid Margin="30">
+        <StackPanel Orientation="Vertical" Spacing="20">
+            <TextBlock FontSize="24" FontWeight="SemiBold">Add Schedule</TextBlock>
+
+            <Grid RowSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" AutomationProperties.Name="Interval Label">Interval:</TextBlock>
+                <ComboBox Grid.Column="1" Grid.Row="0"
+                            SelectedIndex="{x:Bind ViewModel.SelectedInterval, Mode=TwoWay}"
+                            AutomationProperties.Name="Interval Selection"
+                            AutomationProperties.HelpText="Select the backup schedule interval">
+                    <ComboBoxItem>Once</ComboBoxItem>
+                    <ComboBoxItem>Hourly</ComboBoxItem>
+                    <ComboBoxItem>Daily</ComboBoxItem>
+                    <ComboBoxItem>Weekly</ComboBoxItem>
+                    <ComboBoxItem>Monthly</ComboBoxItem>
+                </ComboBox>
+            </Grid>
+
+            <Grid RowSpacing="10" Visibility="{x:Bind ViewModel.ShowOnceOptions, Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="120"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" AutomationProperties.Name="Date Label">Date:</TextBlock>
+                <CalendarDatePicker Grid.Column="1" Grid.Row="0"
+                                    Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
+                                    AutomationProperties.Name="Date Input"
+                                    AutomationProperties.HelpText="Select the date to run the backup"
+                                    HorizontalContentAlignment="Stretch"/>
+                <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0" AutomationProperties.Name="Time Label">Time:</TextBlock>
+                <TimePicker Grid.Column="3" Grid.Row="0"
+                            Time="{x:Bind ViewModel.StartTime, Mode=TwoWay}"
+                            AutomationProperties.Name="Time Input"
+                            AutomationProperties.HelpText="Select the time to run the backup"/>
+            </Grid>
+
+            <Grid RowSpacing="10" Visibility="{x:Bind ViewModel.ShowHourlyOptions, Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" AutomationProperties.Name="Time Label">Hour:</TextBlock>
+                <TimePicker Grid.Column="1" Grid.Row="0"
+                    Time="{x:Bind ViewModel.StartTime, Mode=TwoWay}"
+                    AutomationProperties.Name="Time Input"
+                    AutomationProperties.HelpText="Select the time to run the backup daily"/>
+            </Grid>
+
+            <Grid RowSpacing="10" Visibility="{x:Bind ViewModel.ShowDailyOptions, Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" AutomationProperties.Name="Time Label">Time:</TextBlock>
+                <TimePicker Grid.Column="1" Grid.Row="0"
+                            Time="{x:Bind ViewModel.StartTime, Mode=TwoWay}"
+                            AutomationProperties.Name="Time Input"
+                            AutomationProperties.HelpText="Select the time to run the backup daily"/>
+            </Grid>
+
+            <Grid RowSpacing="10" Visibility="{x:Bind ViewModel.ShowWeeklyOptions, Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" AutomationProperties.Name="Time Label">Time:</TextBlock>
+                <TimePicker Grid.Column="1" Grid.Row="0"
+                            Time="{x:Bind ViewModel.StartTime, Mode=TwoWay}"
+                            AutomationProperties.Name="Time Input"
+                            AutomationProperties.HelpText="Select the time to run the backup weekly"/>
+                <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" AutomationProperties.Name="Days Label">Days:</TextBlock>
+                <GridView Grid.Column="1" Grid.Row="1" SelectionMode="None" CharacterSpacing="10">
+                    <RadioButton Content="Mon" GroupName="Day" IsChecked="{x:Bind ViewModel.Monday, Mode=TwoWay}"/>
+                    <RadioButton Content="Tue" GroupName="Day" IsChecked="{x:Bind ViewModel.Tuesday, Mode=TwoWay}"/>
+                    <RadioButton Content="Wed" GroupName="Day" IsChecked="{x:Bind ViewModel.Wednesday, Mode=TwoWay}"/>
+                    <RadioButton Content="Thu" GroupName="Day" IsChecked="{x:Bind ViewModel.Thursday, Mode=TwoWay}"/>
+                    <RadioButton Content="Fri" GroupName="Day" IsChecked="{x:Bind ViewModel.Friday, Mode=TwoWay}"/>
+                    <RadioButton Content="Sat" GroupName="Day" IsChecked="{x:Bind ViewModel.Saturday, Mode=TwoWay}"/>
+                    <RadioButton Content="Sun" GroupName="Day" IsChecked="{x:Bind ViewModel.Sunday, Mode=TwoWay}"/>
+                </GridView>
+            </Grid>
+
+            <Grid RowSpacing="10" Visibility="{x:Bind ViewModel.ShowMonthlyOptions, Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" AutomationProperties.Name="Time Label">Time:</TextBlock>
+                <TimePicker Grid.Column="1" Grid.Row="0"
+                            Time="{x:Bind ViewModel.StartTime, Mode=TwoWay}"
+                            AutomationProperties.Name="Time Input"
+                            AutomationProperties.HelpText="Select the time to run the backup monthly"/>
+                <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" AutomationProperties.Name="Day Label">Day of Month:</TextBlock>
+                <NumberBox Grid.Column="1" Grid.Row="1"
+                            Value="{x:Bind ViewModel.DayOfMonth, Mode=TwoWay}"
+                            Minimum="1" Maximum="31" SpinButtonPlacementMode="Inline"
+                            AutomationProperties.Name="Day of Month Input"
+                            AutomationProperties.HelpText="Enter the day of the month to run the backup"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Page>

@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
-using BSH.MainApp.Windows;
+using BSH.MainApp.Contracts.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -54,8 +54,14 @@ public partial class EditScheduleViewModel : ModalViewModel
 {
     private readonly IConfigurationManager configurationManager;
     private readonly IDbClientFactory dbClientFactory;
+    private readonly IPresentationService presentationService;
 
     public override string Title => "Edit Backup Schedule";
+
+    public override int Width => 900;
+
+    public override int Height => 600;
+
 
     [ObservableProperty]
     private ObservableCollection<ScheduleEntry> scheduleList = new();
@@ -87,10 +93,11 @@ public partial class EditScheduleViewModel : ModalViewModel
     [ObservableProperty]
     private int fullBackupDay = 1;
 
-    public EditScheduleViewModel(IConfigurationManager configurationManager, IDbClientFactory dbClientFactory)
+    public EditScheduleViewModel(IConfigurationManager configurationManager, IDbClientFactory dbClientFactory, IPresentationService presentationService)
     {
         this.configurationManager = configurationManager;
         this.dbClientFactory = dbClientFactory;
+        this.presentationService = presentationService;
     }
 
     public async override Task InitializeAsync()
@@ -107,11 +114,11 @@ public partial class EditScheduleViewModel : ModalViewModel
     [RelayCommand]
     private async Task AddSchedule()
     {
-        var scheduleDialog = new AddScheduleWindow();
-        if (await scheduleDialog.ShowDialogAsync())
+        var (viewModel, result) = await this.presentationService.ShowAddScheduleWindowAsync();
+        if (result)
         {
-            var viewModel = scheduleDialog.ViewModel;
-            AddScheduleEntry(viewModel.SelectedInterval, viewModel.StartTime);
+            var finalDateTime = ConvertAddScheduleViewModelToDateTime(viewModel);
+            AddScheduleEntry(viewModel.SelectedInterval, finalDateTime);
         }
     }
 
@@ -133,6 +140,95 @@ public partial class EditScheduleViewModel : ModalViewModel
             StartTime = startTime
         };
         ScheduleList.Add(entry);
+    }
+
+    private DateTime ConvertAddScheduleViewModelToDateTime(AddScheduleViewModel viewModel)
+    {
+        var baseDate = viewModel.StartDate.Date;
+        var baseTime = viewModel.StartTime;
+
+        return viewModel.SelectedInterval switch
+        {
+            0 => baseDate.Add(baseTime), // Once: use StartDate + StartTime as-is
+            1 => baseDate.Add(baseTime), // Daily: use StartDate + StartTime (time is what matters)
+            2 => baseDate.Add(baseTime), // Hourly: use StartDate + StartTime (minute is what matters)
+            3 => GetNextWeeklyDate(baseDate, baseTime, viewModel), // Weekly: find next occurrence based on day flags
+            4 => GetMonthlyDate(DateTime.Now.Date, baseTime, viewModel.DayOfMonth), // Monthly: use DayOfMonth
+            _ => baseDate.Add(baseTime)
+        };
+    }
+
+    private DateTime GetNextWeeklyDate(DateTime baseDate, TimeSpan time, AddScheduleViewModel viewModel)
+    {
+        // Get selected days of week (0=Sunday, 1=Monday, etc.)
+        var selectedDays = new List<DayOfWeek>();
+
+        if (viewModel.Sunday)
+        {
+            selectedDays.Add(DayOfWeek.Sunday);
+        }
+
+        if (viewModel.Monday)
+        {
+            selectedDays.Add(DayOfWeek.Monday);
+        }
+
+        if (viewModel.Tuesday)
+        {
+            selectedDays.Add(DayOfWeek.Tuesday);
+        }
+
+        if (viewModel.Wednesday)
+        {
+            selectedDays.Add(DayOfWeek.Wednesday);
+        }
+
+        if (viewModel.Thursday)
+        {
+            selectedDays.Add(DayOfWeek.Thursday);
+        }
+
+        if (viewModel.Friday)
+        {
+            selectedDays.Add(DayOfWeek.Friday);
+        }
+
+        if (viewModel.Saturday)
+        {
+            selectedDays.Add(DayOfWeek.Saturday);
+        }
+
+        // If no days selected, default to current day
+        if (selectedDays.Count == 0)
+        {
+            selectedDays.Add(baseDate.DayOfWeek);
+        }
+
+        // Find the next occurrence of one of the selected days
+        var currentDate = baseDate;
+        for (int i = 0; i < 7; i++)
+        {
+            if (selectedDays.Contains(currentDate.DayOfWeek))
+            {
+                return currentDate.Add(time);
+            }
+            currentDate = currentDate.AddDays(1);
+        }
+
+        // Fallback to first selected day
+        return baseDate.Add(time);
+    }
+
+    private DateTime GetMonthlyDate(DateTime baseDate, TimeSpan time, int dayOfMonth)
+    {
+        // Clamp dayOfMonth to valid range for the month
+        var daysInMonth = DateTime.DaysInMonth(baseDate.Year, baseDate.Month);
+        var validDay = Math.Min(dayOfMonth, daysInMonth);
+
+        var monthlyDate = new DateTime(baseDate.Year, baseDate.Month, validDay);
+
+        // If the calculated date is in the past, move to next month
+        return monthlyDate.Add(time);
     }
 
     private async Task LoadSchedulesAsync()

@@ -25,7 +25,7 @@ public sealed partial class ModalWindow : WindowEx
         InitializeComponent();
     }
 
-    public static async Task<bool> ShowDialogAsync<T>(Type pageType) where T : ModalViewModel
+    public static async Task<(T, bool)> ShowDialogAsync<T>(Type pageType) where T : ModalViewModel
     {
         var viewModel = App.GetService<T>();
         await viewModel.InitializeAsync();
@@ -35,12 +35,14 @@ public sealed partial class ModalWindow : WindowEx
         window.ModalFramePage.Navigate(pageType, viewModel);
 
         window.Title = viewModel.Title;
+        window.Width = viewModel.Width;
+        window.Height = viewModel.Height;
 
         window.Activate();
         window.CenterOnScreen();
         var result = await viewModel.TaskCompletionSource.Task;
 
         window.Close();
-        return result;
+        return ((T, bool))result;
     }
 }

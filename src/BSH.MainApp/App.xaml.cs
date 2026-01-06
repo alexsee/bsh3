@@ -114,6 +114,7 @@ public partial class App : Application
             services.AddTransient<SettingsPage>();
 
             services.AddTransient<FilterViewModel>();
+            services.AddTransient<AddScheduleViewModel>();
             services.AddTransient<EditScheduleViewModel>();
 
             // Configuration
