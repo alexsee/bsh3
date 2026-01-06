@@ -10,7 +10,7 @@
     Title="ModalWindow"
     IsResizable="False" IsMaximizable="False">
 
-    <Grid Background="White">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>

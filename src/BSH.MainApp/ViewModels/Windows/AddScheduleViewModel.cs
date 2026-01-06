@@ -22,7 +22,7 @@ public partial class AddScheduleViewModel : ModalViewModel
     private int selectedInterval = 0;
 
     [ObservableProperty]
-    private TimeSpan startTime = TimeSpan.FromDays(1);
+    private TimeSpan startTime = TimeSpan.FromHours(12);
 
     [ObservableProperty]
     private DateTimeOffset startDate = DateTimeOffset.Now;

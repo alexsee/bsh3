@@ -150,8 +150,8 @@ public partial class EditScheduleViewModel : ModalViewModel
         return viewModel.SelectedInterval switch
         {
             0 => baseDate.Add(baseTime), // Once: use StartDate + StartTime as-is
-            1 => baseDate.Add(baseTime), // Daily: use StartDate + StartTime (time is what matters)
-            2 => baseDate.Add(baseTime), // Hourly: use StartDate + StartTime (minute is what matters)
+            1 => baseDate.Add(baseTime), // Hourly: use StartDate + StartTime (minute is what matters
+            2 => baseDate.Add(baseTime), // Daily: use StartDate + StartTime (time is what matters)
             3 => GetNextWeeklyDate(baseDate, baseTime, viewModel), // Weekly: find next occurrence based on day flags
             4 => GetMonthlyDate(DateTime.Now.Date, baseTime, viewModel.DayOfMonth), // Monthly: use DayOfMonth
             _ => baseDate.Add(baseTime)
@@ -296,7 +296,7 @@ public partial class EditScheduleViewModel : ModalViewModel
                 var dateString = entry.StartTime.ToString("dd.MM.yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
 
                 var query = $"INSERT INTO schedule (timType, timDate) VALUES (@type, @date)";
-                await dbClient.ExecuteNonQueryAsync(CommandType.Text, query, [("type", dbIntervalType), ("type", dateString)]);
+                await dbClient.ExecuteNonQueryAsync(CommandType.Text, query, [("type", dbIntervalType), ("date", dateString)]);
             }
         }
         catch
