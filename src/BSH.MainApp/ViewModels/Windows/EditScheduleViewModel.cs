@@ -3,6 +3,7 @@
 
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Globalization;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using BSH.MainApp.Contracts.Services;
@@ -226,8 +227,6 @@ public partial class EditScheduleViewModel : ModalViewModel
         var validDay = Math.Min(dayOfMonth, daysInMonth);
 
         var monthlyDate = new DateTime(baseDate.Year, baseDate.Month, validDay);
-
-        // If the calculated date is in the past, move to next month
         return monthlyDate.Add(time);
     }
 
@@ -247,7 +246,7 @@ public partial class EditScheduleViewModel : ModalViewModel
                     var intervalType = reader.GetInt32("timType");
                     var dateString = reader["timDate"].ToString();
 
-                    if (string.IsNullOrEmpty(dateString) || !DateTime.TryParse(dateString, out var parsedDate))
+                    if (string.IsNullOrEmpty(dateString) || !DateTime.TryParse(dateString, CultureInfo.InvariantCulture, out var parsedDate))
                     {
                         continue;
                     }
