@@ -50,7 +50,7 @@ public class SchedulerService : ISchedulerService
             else if (this.scheduler.InStandbyMode)
             {
                 // Resume from standby
-                await this.scheduler.Resume();
+                await this.scheduler.ResumeAll();
             }
         }).Wait();
     }
