@@ -43,15 +43,7 @@ public class SchedulerService : ISchedulerService
             }
 
             // Start the scheduler if it's not running
-            if (!this.scheduler.IsStarted)
-            {
-                await this.scheduler.Start();
-            }
-            else if (this.scheduler.InStandbyMode)
-            {
-                // Resume from standby
-                await this.scheduler.ResumeAll();
-            }
+            await this.scheduler.Start();
         }).Wait();
     }
 
@@ -150,13 +142,8 @@ public class SchedulerService : ISchedulerService
             return;
         }
 
-        Task.Run(async () =>
-        {
-            if (scheduler.IsStarted && !scheduler.IsShutdown)
-            {
-                await scheduler.Standby();
-            }
-        }).Wait();
+        scheduler.Shutdown();
+        scheduler = null;
     }
 
     private sealed class RunActionJob : IJob
