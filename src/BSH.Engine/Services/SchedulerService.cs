@@ -142,7 +142,7 @@ public class SchedulerService : ISchedulerService
             return;
         }
 
-        scheduler.Shutdown();
+        await scheduler.Shutdown();
         scheduler = null;
     }
 
