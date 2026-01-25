@@ -142,8 +142,11 @@ public class SchedulerService : ISchedulerService
             return;
         }
 
-        await scheduler.Shutdown();
-        scheduler = null;
+        Task.Run(async () =>
+        {
+            await scheduler.Shutdown();
+            scheduler = null;
+        }).Wait();
     }
 
     private sealed class RunActionJob : IJob
