@@ -68,6 +68,28 @@ public class ScheduledBackupService : IScheduledBackupService
         return schedulerService.GetNextRun();
     }
 
+    public async Task<bool> HasScheduleEntriesAsync()
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+        var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT COUNT(*) FROM schedule", null);
+        if (result == null)
+        {
+            return false;
+        }
+
+        if (result is long longCount)
+        {
+            return longCount > 0;
+        }
+
+        if (result is int intCount)
+        {
+            return intCount > 0;
+        }
+
+        return int.TryParse(result.ToString(), out var count) && count > 0;
+    }
+
 
     #region  Full Automated System 
 

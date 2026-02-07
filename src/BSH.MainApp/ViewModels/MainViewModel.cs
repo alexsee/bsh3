@@ -48,6 +48,12 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     private string? totalFileSize;
 
     [ObservableProperty]
+    private string? scheduleWarningText;
+
+    [ObservableProperty]
+    private bool scheduleWarningVisible;
+
+    [ObservableProperty]
     private bool nextBackupGridVisibility = true;
 
     [ObservableProperty]
@@ -104,6 +110,8 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         }
 
         // set configuration
+        var hasScheduleWarning = false;
+
         if (configurationManager.TaskType == TaskType.Auto)
         {
             NextBackupDate = scheduledBackupService.GetNextBackupDate().HumanizeDate();
@@ -113,11 +121,23 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         {
             NextBackupDate = scheduledBackupService.GetNextBackupDate().HumanizeDate();
             BackupMode = "MainView_BackupMode_Scheduled".GetLocalized();
+            hasScheduleWarning = !await scheduledBackupService.HasScheduleEntriesAsync();
         }
         else
         {
             NextBackupDate = "None planned";
             BackupMode = "MainView_BackupMode_Manual".GetLocalized();
+        }
+
+        if (hasScheduleWarning)
+        {
+            ScheduleWarningText = "MainView_ScheduleWarning_NoEntries".GetLocalized();
+            ScheduleWarningVisible = true;
+        }
+        else
+        {
+            ScheduleWarningText = "";
+            ScheduleWarningVisible = false;
         }
 
         AvailableDiskSpace = string.IsNullOrEmpty(configurationManager.FreeSpace)
