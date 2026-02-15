@@ -11,6 +11,7 @@ using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
@@ -29,7 +30,7 @@ public class DeleteJob : Job
         get; set;
     }
 
-    public DeleteJob(IStorage storage,
+    public DeleteJob(IStorageProvider storage,
         IDbClientFactory dbClientFactory,
         IQueryManager queryManager,
         IConfigurationManager configurationManager,

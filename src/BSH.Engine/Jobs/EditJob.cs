@@ -11,8 +11,8 @@ using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
-using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -29,7 +29,7 @@ public class EditJob : Job
         get; set;
     }
 
-    public EditJob(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
+    public EditJob(IStorageProvider storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
     {
     }
 

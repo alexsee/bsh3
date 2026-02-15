@@ -12,6 +12,7 @@ using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
@@ -29,6 +30,7 @@ public class BackupService : IBackupService
     private readonly IStorageFactory storageFactory;
 
     private readonly IDbClientFactory dbClientFactory;
+    private readonly IVssClient vssClient;
 
     private Task currentTask;
 
@@ -38,12 +40,15 @@ public class BackupService : IBackupService
 
     private bool lastMediaCheckResult;
 
-    public BackupService(IConfigurationManager configurationManager, IQueryManager queryManager, IDbClientFactory dbClientFactory, IStorageFactory storageFactory)
+    public BackupService(IConfigurationManager configurationManager, IQueryManager queryManager, IDbClientFactory dbClientFactory, IStorageFactory storageFactory, IVssClient vssClient)
     {
+        ArgumentNullException.ThrowIfNull(vssClient);
+
         this.configurationManager = configurationManager;
         this.queryManager = queryManager;
         this.dbClientFactory = dbClientFactory;
         this.storageFactory = storageFactory;
+        this.vssClient = vssClient;
     }
 
     /// <summary>
@@ -146,6 +151,7 @@ public class BackupService : IBackupService
             queryManager,
             configurationManager,
             new FileCollectorServiceFactory(),
+            this.vssClient,
             silent)
         {
             Title = title,

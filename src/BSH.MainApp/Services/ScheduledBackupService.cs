@@ -8,6 +8,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Utils;
 using BSH.MainApp.Contracts.Services;
@@ -23,7 +24,7 @@ public class ScheduledBackupService : IScheduledBackupService
     private readonly IDbClientFactory dbClientFactory;
     private readonly IStatusService statusService;
 
-    private SchedulerService schedulerService;
+    private ISchedulerAdapter schedulerService;
 
     public ScheduledBackupService(IConfigurationManager configurationManager, IJobService jobService, IQueryManager queryManager, IDbClientFactory dbClientFactory, IStatusService statusService)
     {

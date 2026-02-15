@@ -51,7 +51,7 @@ public class BackupTests
 
         var storageFactory = new StorageFactory(configurationManager);
         queryManager = new QueryManager(dbClientFactory, configurationManager, storageFactory);
-        backupService = new BackupService(configurationManager, queryManager, dbClientFactory, storageFactory);
+        backupService = new BackupService(configurationManager, queryManager, dbClientFactory, storageFactory, new VolumeShadowCopyClient());
 
         fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
             new System.Collections.Generic.List<Brightbits.BSH.Engine.Models.FolderTableRow>(),

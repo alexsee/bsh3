@@ -12,8 +12,8 @@ using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
-using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -53,7 +53,7 @@ public class RestoreJob : Job
 
     private RequestOverwriteResult overwriteRequestPersistent = RequestOverwriteResult.None;
 
-    public RestoreJob(IStorage storage,
+    public RestoreJob(IStorageProvider storage,
         IDbClientFactory dbClientFactory,
         IQueryManager queryManager,
         IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
@@ -304,7 +304,7 @@ public class RestoreJob : Job
     /// <param name="destination"></param>
     /// <param name="warning"></param>
     /// <exception cref="FileNotProcessedException"></exception>
-    public async Task CopyFileFromDevice(IStorage storage, IDataReader reader, string destination, bool warning = true)
+    public async Task CopyFileFromDevice(IStorageProvider storage, IDataReader reader, string destination, bool warning = true)
     {
         ArgumentNullException.ThrowIfNull(storage);
 

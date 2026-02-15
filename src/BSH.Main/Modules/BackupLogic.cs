@@ -14,6 +14,7 @@ using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
@@ -52,9 +53,9 @@ static class BackupLogic
 
     public static string DatabaseFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
 
-    private static UsbWatchService dCWatcher;
+    private static IMediaWatcher dCWatcher;
 
-    private static SchedulerService schedulerService;
+    private static ISchedulerAdapter schedulerService;
 
     private static Timer tmrUserReminder;
 
@@ -92,7 +93,7 @@ static class BackupLogic
         var storageFactory = new StorageFactory(ConfigurationManager);
         QueryManager = new QueryManager(DbClientFactory, ConfigurationManager, storageFactory);
 
-        BackupService = new BackupService(ConfigurationManager, QueryManager, DbClientFactory, storageFactory);
+        BackupService = new BackupService(ConfigurationManager, QueryManager, DbClientFactory, storageFactory, new VolumeShadowCopyClient());
         BackupController = new BackupController(BackupService, ConfigurationManager);
 
         // first time start?

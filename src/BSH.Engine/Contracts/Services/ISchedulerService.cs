@@ -1,19 +1,10 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
+using Brightbits.BSH.Engine.Providers.Ports;
 
 namespace Brightbits.BSH.Engine.Contracts.Services;
 
-public interface ISchedulerService
+public interface ISchedulerService : ISchedulerAdapter
 {
-    DateTime GetNextRun();
-    void ScheduleAutoBackup(Action action);
-    void ScheduleDaily(Action action, DateTime time);
-    void ScheduleHourly(Action action, DateTime time);
-    void ScheduleMonthly(Action action, DateTime time);
-    void ScheduleOnce(Action action, DateTime time);
-    void ScheduleWeekly(Action action, DateTime time);
-    void Start();
-    void Stop();
 }

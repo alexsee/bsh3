@@ -9,7 +9,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
-using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -21,7 +21,7 @@ public abstract class Job
 {
     private static readonly ILogger _logger = Log.ForContext<Job>();
 
-    protected readonly IStorage storage;
+    protected readonly IStorageProvider storage;
 
     protected readonly IDbClientFactory dbClientFactory;
 
@@ -38,7 +38,7 @@ public abstract class Job
         get;
     }
 
-    protected Job(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager, bool silent = false)
+    protected Job(IStorageProvider storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager, bool silent = false)
     {
         this.storage = storage;
         this.dbClientFactory = dbClientFactory;

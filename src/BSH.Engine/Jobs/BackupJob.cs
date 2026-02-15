@@ -15,6 +15,7 @@ using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Services.FileCollector;
@@ -34,6 +35,7 @@ public class BackupJob : Job
     private readonly HashSet<string> junctionFolders = new();
 
     private readonly IFileCollectorServiceFactory fileCollectorServiceFactory;
+    private readonly IVssClient vssClient;
 
     public string Title
     {
@@ -65,14 +67,16 @@ public class BackupJob : Job
         get; set;
     }
 
-    public BackupJob(IStorage storage,
+    public BackupJob(IStorageProvider storage,
         IDbClientFactory dbClientFactory,
         IQueryManager queryManager,
         IConfigurationManager configurationManager,
         IFileCollectorServiceFactory fileCollectorServiceFactory,
+        IVssClient vssClient = null,
         bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
     {
         this.fileCollectorServiceFactory = fileCollectorServiceFactory;
+        this.vssClient = vssClient ?? new VolumeShadowCopyClient();
     }
 
     /// <summary>
@@ -524,7 +528,7 @@ public class BackupJob : Job
     /// <param name="useVss"></param>
     /// <returns></returns>
     /// <exception cref="FileNotProcessedException"></exception>
-    private async Task<bool> CopyFileToDeviceAsync(IStorage storage, FileTableRow file, double newVersionId, string newVersionDate, DbClient dbClient, bool normalCopy = false, bool useVss = false)
+    private async Task<bool> CopyFileToDeviceAsync(IStorageProvider storage, FileTableRow file, double newVersionId, string newVersionDate, DbClient dbClient, bool normalCopy = false, bool useVss = false)
     {
         // file variables
         var localFileName = file.FileNamePath();
@@ -541,7 +545,7 @@ public class BackupJob : Job
                 // temporary file path
                 var vssTempFile = Path.Combine(Path.GetTempPath(), file.FileName);
 
-                if (VolumeShadowCopyService.CopyFile(localFileName, vssTempFile))
+                if (vssClient.CopyFile(localFileName, vssTempFile))
                 {
                     if (!File.Exists(vssTempFile))
                     {
