@@ -34,7 +34,7 @@ public interface IStorageProvider : IDisposable
 
     bool DeleteFileFromStorageCompressed(string remoteFile);
 
-    bool DeleteFileFromStorageEncryped(string remoteFile);
+    bool DeleteFileFromStorageEncrypted(string remoteFile);
 
     bool DeleteDirectory(string remoteDirectory);
 

@@ -80,7 +80,7 @@ namespace BSH.Test.Mocks
             return !failAllCopies;
         }
 
-        public bool DeleteFileFromStorageEncryped(string remoteFile)
+        public bool DeleteFileFromStorageEncrypted(string remoteFile)
         {
             return !failAllCopies;
         }

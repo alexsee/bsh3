@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
@@ -25,7 +24,7 @@ namespace Brightbits.BSH.Engine.Jobs;
 /// </summary>
 public class DeleteSingleJob : Job
 {
-    private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+    private static readonly ILogger _logger = Log.ForContext<DeleteSingleJob>();
     private readonly IBackupMutationRepository backupMutationRepository;
 
     public DeleteSingleJob(
@@ -201,7 +200,7 @@ public class DeleteSingleJob : Job
             }
             else if (fileType == "5" || fileType == "6")
             {
-                storage.DeleteFileFromStorageEncryped(remoteFile);
+                storage.DeleteFileFromStorageEncrypted(remoteFile);
             }
         }
         catch (Exception ex)

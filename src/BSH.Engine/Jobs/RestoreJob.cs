@@ -24,7 +24,7 @@ namespace Brightbits.BSH.Engine.Jobs;
 /// </summary>
 public class RestoreJob : Job
 {
-    private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+    private static readonly ILogger _logger = Log.ForContext<RestoreJob>();
 
     public int Version
     {

@@ -235,7 +235,7 @@ public class DeleteJob : Job
             }
             else if (fileType == "5" || fileType == "6")
             {
-                storage.DeleteFileFromStorageEncryped(remoteFile);
+                storage.DeleteFileFromStorageEncrypted(remoteFile);
             }
         }
         catch (Exception ex)

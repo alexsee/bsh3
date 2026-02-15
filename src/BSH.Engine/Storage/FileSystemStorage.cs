@@ -383,7 +383,7 @@ public class FileSystemStorage : Storage, IStorage
         return DeleteFileFromStorage(remoteFile + ".zip");
     }
 
-    public bool DeleteFileFromStorageEncryped(string remoteFile)
+    public bool DeleteFileFromStorageEncrypted(string remoteFile)
     {
         return DeleteFileFromStorage(remoteFile + ".enc");
     }

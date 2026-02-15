@@ -23,7 +23,7 @@ namespace Brightbits.BSH.Engine.Jobs;
 /// </summary>
 public class EditJob : Job
 {
-    private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+    private static readonly ILogger _logger = Log.ForContext<EditJob>();
     private readonly IBackupMutationRepository backupMutationRepository;
 
     public string Password
