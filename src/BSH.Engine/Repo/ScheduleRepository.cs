@@ -45,22 +45,30 @@ public class ScheduleRepository : IScheduleRepository
         using var dbClient = dbClientFactory.CreateDbClient();
         dbClient.BeginTransaction();
 
-        await dbClient.ExecuteNonQueryAsync("DELETE FROM schedule");
-
-        foreach (var schedule in schedules)
+        try
         {
-            var parameters = new (string, object)[]
+            await dbClient.ExecuteNonQueryAsync("DELETE FROM schedule");
+
+            foreach (var schedule in schedules)
             {
-                ("timType", schedule.Type),
-                ("timDate", schedule.Date.ToString("dd.MM.yyyy HH:mm:ss"))
-            };
+                var parameters = new (string, object)[]
+                {
+                    ("timType", schedule.Type),
+                    ("timDate", schedule.Date.ToString("dd.MM.yyyy HH:mm:ss"))
+                };
 
-            await dbClient.ExecuteNonQueryAsync(
-                CommandType.Text,
-                "INSERT INTO schedule ( timType, timDate) VALUES ( @timType, @timDate )",
-                parameters);
+                await dbClient.ExecuteNonQueryAsync(
+                    CommandType.Text,
+                    "INSERT INTO schedule ( timType, timDate) VALUES ( @timType, @timDate )",
+                    parameters);
+            }
+
+            dbClient.CommitTransaction();
         }
-
-        dbClient.CommitTransaction();
+        catch
+        {
+            dbClient.RollbackTransaction();
+            throw;
+        }
     }
 }

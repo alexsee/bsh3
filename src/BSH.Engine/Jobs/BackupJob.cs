@@ -487,7 +487,7 @@ public class BackupJob : Job
     /// <param name="useVss"></param>
     /// <returns></returns>
     /// <exception cref="FileNotProcessedException"></exception>
-    private async Task<bool> CopyFileToDeviceAsync(IStorageProvider storage, FileTableRow file, double newVersionId, string newVersionDate, DbClient dbClient, bool normalCopy = false, bool useVss = false)
+    private async Task<bool> CopyFileToDeviceAsync(IStorageProvider storage, FileTableRow file, long newVersionId, string newVersionDate, DbClient dbClient, bool normalCopy = false, bool useVss = false)
     {
         // file variables
         var localFileName = file.FileNamePath();
@@ -665,7 +665,7 @@ public class BackupJob : Job
     /// <param name="longFileName"></param>
     /// <param name="compress"></param>
     /// <param name="encrypt"></param>
-    private async Task AddFileVersionDatabaseEntryAsync(DbClient dbClient, FileTableRow file, double newVersionId, string longFileName, bool compress, bool encrypt)
+    private async Task AddFileVersionDatabaseEntryAsync(DbClient dbClient, FileTableRow file, long newVersionId, string longFileName, bool compress, bool encrypt)
     {
         // correct path
         if (!file.FilePath.EndsWith("\\", StringComparison.OrdinalIgnoreCase))

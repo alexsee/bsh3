@@ -17,7 +17,7 @@ public interface IBackupMutationRepository
     Task<long> AddOrGetFolderIdAsync(DbClient dbClient, string folder);
     Task AddFolderLinkAsync(DbClient dbClient, long folderId, long versionId);
     Task AddFolderJunctionAsync(DbClient dbClient, string junctionPath, string displayName);
-    Task AddFileVersionWithLinkAsync(DbClient dbClient, long fileId, double newVersionId, double fileSize, DateTime fileDateCreated, DateTime fileDateModified, int fileType, string longFileName);
+    Task AddFileVersionWithLinkAsync(DbClient dbClient, long fileId, long newVersionId, double fileSize, DateTime fileDateCreated, DateTime fileDateModified, int fileType, string longFileName);
     Task RenameVersionDateAsync(DbClient dbClient, long versionId, string newVersionDate);
     Task DeleteFileVersionAsync(DbClient dbClient, long fileVersionId);
     Task DeleteVersionMetadataAsync(DbClient dbClient, int versionId);

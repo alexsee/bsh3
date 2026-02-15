@@ -14,7 +14,7 @@ public class VersionQueryRepository : IVersionQueryRepository
 {
     public async Task<string> GetLastVersionDateAsync(DbClient dbClient)
     {
-        var result = await dbClient.ExecuteScalarAsync("SELECT versionDate FROM versiontable ORDER BY versionID LIMIT 1");
+        var result = await dbClient.ExecuteScalarAsync("SELECT versionDate FROM versiontable ORDER BY versionID DESC LIMIT 1");
         return result?.ToString();
     }
 

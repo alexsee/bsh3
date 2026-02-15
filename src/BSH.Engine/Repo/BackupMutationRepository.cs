@@ -68,7 +68,7 @@ public class BackupMutationRepository : IBackupMutationRepository
 
         var result = await dbClient.ExecuteScalarAsync(
             CommandType.Text,
-            "INSERT INTO filetable ( fileName, filePath ) VALUES ( @fileName, @filePath ); SELECT MAX(fileID) FROM filetable",
+            "INSERT INTO filetable ( fileName, filePath ) VALUES ( @fileName, @filePath ); SELECT last_insert_rowid()",
             parameters);
 
         return long.Parse(result?.ToString() ?? "0");
@@ -154,7 +154,7 @@ public class BackupMutationRepository : IBackupMutationRepository
             parameters);
     }
 
-    public async Task AddFileVersionWithLinkAsync(DbClient dbClient, long fileId, double newVersionId, double fileSize, DateTime fileDateCreated, DateTime fileDateModified, int fileType, string longFileName)
+    public async Task AddFileVersionWithLinkAsync(DbClient dbClient, long fileId, long newVersionId, double fileSize, DateTime fileDateCreated, DateTime fileDateModified, int fileType, string longFileName)
     {
         var fileVersionParameters = new (string, object)[]
         {
@@ -228,20 +228,22 @@ public class BackupMutationRepository : IBackupMutationRepository
 
     public async Task DeleteSingleFileMetadataAsync(DbClient dbClient, string fileFilter, string pathFilter)
     {
-        string subQuerySql;
+        string whereClause;
         var parameters = new System.Collections.Generic.List<(string, object)>();
 
         if (!string.IsNullOrEmpty(fileFilter) && !string.IsNullOrEmpty(pathFilter))
         {
-            subQuerySql = "SELECT ft.fileID FROM fileTable AS ft WHERE fileName = @fileName AND filePath = @filePath";
+            whereClause = "fileName = @fileName AND filePath = @filePath";
             parameters.Add(("fileName", fileFilter));
             parameters.Add(("filePath", pathFilter));
         }
         else
         {
-            subQuerySql = "SELECT ft.fileID FROM fileTable AS ft WHERE filePath LIKE @filePath";
+            whereClause = "filePath LIKE @filePath";
             parameters.Add(("filePath", pathFilter));
         }
+
+        var subQuerySql = "SELECT ft.fileID FROM fileTable AS ft WHERE " + whereClause;
 
         await dbClient.ExecuteNonQueryAsync(
             CommandType.Text,
@@ -253,7 +255,7 @@ public class BackupMutationRepository : IBackupMutationRepository
             parameters.ToArray());
         await dbClient.ExecuteNonQueryAsync(
             CommandType.Text,
-            "DELETE FROM fileTable AS ft WHERE " + subQuerySql[(subQuerySql.IndexOf("WHERE ", StringComparison.OrdinalIgnoreCase) + 6)..],
+            "DELETE FROM fileTable AS ft WHERE " + whereClause,
             parameters.ToArray());
     }
 
