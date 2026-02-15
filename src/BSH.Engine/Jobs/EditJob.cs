@@ -8,11 +8,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
+using Brightbits.BSH.Engine.Repo;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -23,14 +25,24 @@ namespace Brightbits.BSH.Engine.Jobs;
 public class EditJob : Job
 {
     private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+    private readonly IVersionQueryRepository versionQueryRepository;
+    private readonly IBackupMutationRepository backupMutationRepository;
 
     public string Password
     {
         get; set;
     }
 
-    public EditJob(IStorageProvider storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
+    public EditJob(
+        IStorageProvider storage,
+        IDbClientFactory dbClientFactory,
+        IQueryManager queryManager,
+        IConfigurationManager configurationManager,
+        IVersionQueryRepository versionQueryRepository = null,
+        IBackupMutationRepository backupMutationRepository = null) : base(storage, dbClientFactory, queryManager, configurationManager)
     {
+        this.versionQueryRepository = versionQueryRepository ?? new VersionQueryRepository();
+        this.backupMutationRepository = backupMutationRepository ?? new BackupMutationRepository(dbClientFactory);
     }
 
     /// <summary>
@@ -67,15 +79,11 @@ public class EditJob : Job
             // open storage
             storage.Open();
 
-            var commandSQL = "FROM filetable a, fileversiontable b, filelink c, versiontable d " +
-                "WHERE(c.fileversionid = b.fileversionid And a.fileid = b.fileid) " +
-                "and d.versionid = b.filepackage";
-
-            var numFiles = int.Parse((await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT COUNT(1) " + commandSQL, null)).ToString());
+            var numFiles = await versionQueryRepository.CountEditableFilesAsync(dbClient);
             ReportProgress(numFiles, 0);
 
             // determine files of backup to edit
-            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * " + commandSQL, null))
+            using (var reader = await versionQueryRepository.GetEditableFilesAsync(dbClient))
             {
                 var i = 0;
                 while (await reader.ReadAsync())
@@ -159,7 +167,7 @@ public class EditJob : Job
             storage.DecryptOnStorage(remoteFile, Password);
 
             // modify entry
-            await dbClient.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = 3 WHERE fileversionid = {fileVersionId}");
+            await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, 3);
         }
         else if (fileType == 6)
         {
@@ -167,7 +175,7 @@ public class EditJob : Job
             storage.DecryptOnStorage(remoteFile, Password);
 
             // modify entry
-            await dbClient.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = 1 WHERE fileversionid = {fileVersionId}");
+            await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, 1);
         }
     }
 }

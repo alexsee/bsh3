@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Data;
 using System.Diagnostics;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
@@ -21,16 +21,16 @@ public class ScheduledBackupService : IScheduledBackupService
     private readonly IConfigurationManager configurationManager;
     private readonly IJobService jobService;
     private readonly IQueryManager queryManager;
-    private readonly IDbClientFactory dbClientFactory;
+    private readonly IScheduleRepository scheduleRepository;
 
     private ISchedulerAdapter schedulerService;
 
-    public ScheduledBackupService(IConfigurationManager configurationManager, IJobService jobService, IQueryManager queryManager, IDbClientFactory dbClientFactory)
+    public ScheduledBackupService(IConfigurationManager configurationManager, IJobService jobService, IQueryManager queryManager, IScheduleRepository scheduleRepository)
     {
         this.configurationManager = configurationManager;
         this.jobService = jobService;
         this.queryManager = queryManager;
-        this.dbClientFactory = dbClientFactory;
+        this.scheduleRepository = scheduleRepository;
     }
 
     public async Task InitializeAsync()
@@ -191,13 +191,11 @@ public class ScheduledBackupService : IScheduledBackupService
         schedulerService.Start();
 
         // read scheduler entries in database
-        using var dbClient = dbClientFactory.CreateDbClient();
-        using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
-
-        while (await reader.ReadAsync())
+        var schedules = await scheduleRepository.GetSchedulesAsync();
+        foreach (var schedule in schedules)
         {
-            var scheduleDate = reader.GetDateTimeParsed("timDate");
-            var scheduleType = reader.GetInt32("timType");
+            var scheduleDate = schedule.Date;
+            var scheduleType = schedule.Type;
 
             if (scheduleType == 1)
             {
@@ -308,7 +306,6 @@ public class ScheduledBackupService : IScheduledBackupService
             }
         }
 
-        await reader.CloseAsync();
     }
 
     private bool DoPastBackup(DateTime date, bool orOlder = false)

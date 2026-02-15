@@ -11,11 +11,13 @@ using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
@@ -48,6 +50,21 @@ static class BackupLogic
     }
 
     public static IQueryManager QueryManager
+    {
+        get; private set;
+    }
+
+    public static IScheduleRepository ScheduleRepository
+    {
+        get; private set;
+    }
+
+    public static IVersionQueryRepository VersionQueryRepository
+    {
+        get; private set;
+    }
+
+    public static IBackupMutationRepository BackupMutationRepository
     {
         get; private set;
     }
@@ -93,8 +110,11 @@ static class BackupLogic
         // start main system
         var storageFactory = new StorageFactory(ConfigurationManager);
         QueryManager = new QueryManager(DbClientFactory, ConfigurationManager, storageFactory);
+        ScheduleRepository = new ScheduleRepository(DbClientFactory);
+        VersionQueryRepository = new VersionQueryRepository();
+        BackupMutationRepository = new BackupMutationRepository(DbClientFactory);
 
-        BackupService = new BackupService(ConfigurationManager, QueryManager, DbClientFactory, storageFactory, new VolumeShadowCopyClient());
+        BackupService = new BackupService(ConfigurationManager, QueryManager, DbClientFactory, storageFactory, new VolumeShadowCopyClient(), VersionQueryRepository, BackupMutationRepository);
         BackupController = new BackupController(BackupService, ConfigurationManager);
 
         // first time start?
@@ -429,13 +449,11 @@ static class BackupLogic
         SystemEvents.PowerModeChanged += PowerModeChanged;
 
         // read scheduler entries in database
-        using var dbClient = DbClientFactory.CreateDbClient();
-        using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
-
-        while (await reader.ReadAsync())
+        var schedules = await ScheduleRepository.GetSchedulesAsync();
+        foreach (var schedule in schedules)
         {
-            var scheduleDate = reader.GetDateTimeParsed("timDate");
-            var scheduleType = reader.GetInt32("timType");
+            var scheduleDate = schedule.Date;
+            var scheduleType = schedule.Type;
 
             if (scheduleType == 1)
             {
@@ -561,7 +579,6 @@ static class BackupLogic
             }
         }
 
-        await reader.CloseAsync();
     }
 
     public static bool DoPastBackup(DateTime date, bool orOlder = false)

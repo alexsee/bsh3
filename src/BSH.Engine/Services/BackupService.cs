@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
@@ -13,6 +14,7 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
@@ -31,6 +33,8 @@ public class BackupService : IBackupService
 
     private readonly IDbClientFactory dbClientFactory;
     private readonly IVssClient vssClient;
+    private readonly IVersionQueryRepository versionQueryRepository;
+    private readonly IBackupMutationRepository backupMutationRepository;
 
     private Task currentTask;
 
@@ -40,7 +44,14 @@ public class BackupService : IBackupService
 
     private bool lastMediaCheckResult;
 
-    public BackupService(IConfigurationManager configurationManager, IQueryManager queryManager, IDbClientFactory dbClientFactory, IStorageFactory storageFactory, IVssClient vssClient)
+    public BackupService(
+        IConfigurationManager configurationManager,
+        IQueryManager queryManager,
+        IDbClientFactory dbClientFactory,
+        IStorageFactory storageFactory,
+        IVssClient vssClient,
+        IVersionQueryRepository versionQueryRepository = null,
+        IBackupMutationRepository backupMutationRepository = null)
     {
         ArgumentNullException.ThrowIfNull(vssClient);
 
@@ -49,6 +60,8 @@ public class BackupService : IBackupService
         this.dbClientFactory = dbClientFactory;
         this.storageFactory = storageFactory;
         this.vssClient = vssClient;
+        this.versionQueryRepository = versionQueryRepository ?? new VersionQueryRepository();
+        this.backupMutationRepository = backupMutationRepository ?? new BackupMutationRepository(dbClientFactory);
     }
 
     /// <summary>
@@ -151,6 +164,8 @@ public class BackupService : IBackupService
             queryManager,
             configurationManager,
             new FileCollectorServiceFactory(),
+            versionQueryRepository,
+            backupMutationRepository,
             this.vssClient,
             silent)
         {
@@ -214,7 +229,8 @@ public class BackupService : IBackupService
         var restoreJob = new RestoreJob(storageFactory.GetCurrentStorageProvider(),
             dbClientFactory,
             queryManager,
-            configurationManager)
+            configurationManager,
+            versionQueryRepository)
         {
             Version = int.Parse(version),
             File = file,
@@ -264,6 +280,8 @@ public class BackupService : IBackupService
             dbClientFactory,
             queryManager,
             configurationManager,
+            versionQueryRepository,
+            backupMutationRepository,
             silent)
         {
             Version = version
@@ -311,7 +329,9 @@ public class BackupService : IBackupService
         var deleteJob = new DeleteSingleJob(storageFactory.GetCurrentStorageProvider(),
             dbClientFactory,
             queryManager,
-            configurationManager);
+            configurationManager,
+            versionQueryRepository,
+            backupMutationRepository);
 
         deleteJob.AddObserver(jobReport);
 
@@ -357,7 +377,9 @@ public class BackupService : IBackupService
         var editJob = new EditJob(storageFactory.GetCurrentStorageProvider(),
             dbClientFactory,
             queryManager,
-            configurationManager)
+            configurationManager,
+            versionQueryRepository,
+            backupMutationRepository)
         {
             Password = password
         };
@@ -386,8 +408,7 @@ public class BackupService : IBackupService
     /// <param name="stable"></param>
     public async Task SetStableAsync(string version, bool stable)
     {
-        using var dbClient = dbClientFactory.CreateDbClient();
-        await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStable = {(stable ? 1 : 0)} WHERE versionID = {version}");
+        await backupMutationRepository.SetVersionStableAsync(version, stable);
     }
 
     /// <summary>
@@ -405,14 +426,6 @@ public class BackupService : IBackupService
             throw new ArgumentException("Invalid version ID", nameof(version));
         }
 
-        using var dbClient = dbClientFactory.CreateDbClient();
-        var sql = "UPDATE versiontable SET versionTitle = @title, versionDescription = @description WHERE versionID = @versionID";
-        var parameters = new (string, object)[]
-        {
-            ( "@title", versionDetails.Title ?? string.Empty ),
-            ( "@description", versionDetails.Description ?? string.Empty ),
-            ( "@versionID", versionId )
-        };
-        await dbClient.ExecuteNonQueryAsync(System.Data.CommandType.Text, sql, parameters);
+        await backupMutationRepository.UpdateVersionDetailsAsync(versionId, versionDetails.Title, versionDetails.Description);
     }
 }

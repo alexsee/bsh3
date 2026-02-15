@@ -7,9 +7,11 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Repo;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -267,7 +269,8 @@ public abstract class Job
             configurationManager.FreeSpace = storage.GetFreeSpace().ToString();
 
             using var dbClient = dbClientFactory.CreateDbClient();
-            configurationManager.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
+            IVersionQueryRepository versionQueryRepository = new VersionQueryRepository();
+            configurationManager.BackupSize = (await versionQueryRepository.GetTotalBackupFileSizeAsync(dbClient)).ToString();
         }
         catch (Exception ex)
         {

@@ -4,10 +4,12 @@
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Activation;
@@ -98,6 +100,9 @@ public partial class App : Application
 
             services.AddSingleton<IDbClientFactory, DbClientFactory>();
             services.AddSingleton<IDbMigrationService, DbMigrationService>();
+            services.AddSingleton<IVersionQueryRepository, VersionQueryRepository>();
+            services.AddSingleton<IBackupMutationRepository, BackupMutationRepository>();
+            services.AddSingleton<IScheduleRepository, ScheduleRepository>();
 
             services.AddSingleton<IVssClient, VolumeShadowCopyClient>();
             services.AddSingleton<IBackupService, BackupService>();

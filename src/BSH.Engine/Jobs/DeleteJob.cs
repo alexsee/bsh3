@@ -8,11 +8,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
+using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
@@ -24,6 +26,8 @@ namespace Brightbits.BSH.Engine.Jobs;
 public class DeleteJob : Job
 {
     private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+    private readonly IVersionQueryRepository versionQueryRepository;
+    private readonly IBackupMutationRepository backupMutationRepository;
 
     public string Version
     {
@@ -34,8 +38,12 @@ public class DeleteJob : Job
         IDbClientFactory dbClientFactory,
         IQueryManager queryManager,
         IConfigurationManager configurationManager,
+        IVersionQueryRepository versionQueryRepository = null,
+        IBackupMutationRepository backupMutationRepository = null,
         bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
     {
+        this.versionQueryRepository = versionQueryRepository ?? new VersionQueryRepository();
+        this.backupMutationRepository = backupMutationRepository ?? new BackupMutationRepository(dbClientFactory);
     }
 
     /// <summary>
@@ -75,21 +83,10 @@ public class DeleteJob : Job
 
             Win32Stuff.KeepSystemAwake();
 
-            // obtain files to delete
-            var parameters = new (string, object)[]
-            {
-                ("version", int.Parse(Version))
-            };
+            var version = int.Parse(Version);
 
-            using var files = dbClient.ExecuteDataSet(CommandType.Text,
-                "SELECT b.fileName, b.filePath, c.fileversionid, c.fileType, d.versionDate, c.longfilename " +
-                "FROM filelink a, filetable b, fileversiontable c, versiontable d " +
-                "WHERE a.versionID = @version AND a.fileversionid NOT IN " +
-                "   (SELECT fileversionid FROM filelink WHERE (versionID <> @version)) " +
-                "AND a.fileversionid = c.fileversionid " +
-                "AND c.fileid = b.fileid " +
-                "AND d.versionid = c.filepackage",
-                parameters);
+            // obtain files to delete
+            using var files = versionQueryRepository.GetFilesToDeleteForVersion(dbClient, version);
 
             // report progress
             _logger.Information("{numFiles} files determined for deletion.", files.Tables[0].Rows.Count);
@@ -124,20 +121,11 @@ public class DeleteJob : Job
                 }
 
                 // update database
-                var deleteFileParams = new (string, object)[]
-                {
-                    ("id", file["fileversionid"])
-                };
-                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileversiontable WHERE fileversionid = @id", deleteFileParams);
+                await backupMutationRepository.DeleteFileVersionAsync(dbClient, Convert.ToInt64(file["fileversionid"]));
             }
 
             // update backup metadata
-            await dbClient.ExecuteNonQueryAsync($"DELETE FROM filelink WHERE versionID = {Version}");
-            await dbClient.ExecuteNonQueryAsync("DELETE FROM filetable WHERE fileid NOT IN (SELECT fileid FROM fileversiontable)");
-            await dbClient.ExecuteNonQueryAsync($"UPDATE versiontable SET versionStatus = 1 WHERE versionID = {Version}");
-
-            await dbClient.ExecuteNonQueryAsync($"DELETE FROM folderlink WHERE versionID = {Version}");
-            await dbClient.ExecuteNonQueryAsync("DELETE FROM foldertable WHERE id NOT IN (SELECT folderid FROM folderlink)");
+            await backupMutationRepository.DeleteVersionMetadataAsync(dbClient, version);
 
             dbClient.CommitTransaction();
         }
@@ -154,7 +142,7 @@ public class DeleteJob : Job
             configurationManager.FreeSpace = storage.GetFreeSpace().ToString();
 
             using var dbClient = dbClientFactory.CreateDbClient();
-            configurationManager.BackupSize = (await dbClient.ExecuteScalarAsync("SELECT SUM(FileSize) FROM fileversiontable")).ToString();
+            configurationManager.BackupSize = (await versionQueryRepository.GetTotalBackupFileSizeAsync(dbClient)).ToString();
         }
         catch (Exception ex)
         {
@@ -166,7 +154,7 @@ public class DeleteJob : Job
         if (storage is FileSystemStorage)
         {
             using var dbClient = dbClientFactory.CreateDbClient();
-            using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT versiondate FROM versiontable WHERE versionid NOT IN (SELECT filepackage FROM fileversiontable)", null);
+            using var reader = await versionQueryRepository.GetOrphanedVersionDatesAsync(dbClient);
 
             while (await reader.ReadAsync())
             {
