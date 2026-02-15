@@ -121,7 +121,7 @@ public class JobService : IJobService
             await presentationService.ShowStatusWindowAsync();
         }
 
-        await jobRuntime.PrepareAsync(action, statusDialog);
+        cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog);
     }
 
     /// <summary>

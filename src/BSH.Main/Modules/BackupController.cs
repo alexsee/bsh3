@@ -123,7 +123,7 @@ public class BackupController
             PresentationController.Current.ShowStatusWindow();
         }
 
-        await jobRuntime.PrepareAsync(action, statusDialog);
+        cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog);
     }
 
     /// <summary>

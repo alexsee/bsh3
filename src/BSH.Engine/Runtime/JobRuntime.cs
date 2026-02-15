@@ -82,7 +82,7 @@ public sealed class JobRuntime
         return false;
     }
 
-    public async Task PrepareAsync(ActionType action, bool statusDialog)
+    public async Task<CancellationToken> PrepareAsync(ActionType action, bool statusDialog)
     {
         GetNewCancellationToken();
 
@@ -100,5 +100,7 @@ public sealed class JobRuntime
         {
             throw new PasswordRequiredException();
         }
+
+        return cancellationToken;
     }
 }
