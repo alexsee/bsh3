@@ -15,7 +15,6 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
-using Brightbits.BSH.Engine.Repo;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -26,7 +25,6 @@ namespace Brightbits.BSH.Engine.Jobs;
 public class RestoreJob : Job
 {
     private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
-    private readonly IVersionQueryRepository versionQueryRepository;
 
     public int Version
     {
@@ -60,9 +58,8 @@ public class RestoreJob : Job
         IDbClientFactory dbClientFactory,
         IQueryManager queryManager,
         IConfigurationManager configurationManager,
-        IVersionQueryRepository versionQueryRepository = null) : base(storage, dbClientFactory, queryManager, configurationManager)
+        IVersionQueryRepository versionQueryRepository) : base(storage, dbClientFactory, queryManager, configurationManager, versionQueryRepository)
     {
-        this.versionQueryRepository = versionQueryRepository ?? new VersionQueryRepository();
     }
 
     /// <summary>

@@ -19,6 +19,7 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
 using Microsoft.Win32;
@@ -73,6 +74,7 @@ static class BackupLogic
 
     private static IMediaWatcher dCWatcher;
     private static IMediaWatcherFactory mediaWatcherFactory;
+    private static IFileCollectorServiceFactory fileCollectorServiceFactory;
 
     private static ISchedulerAdapter schedulerService;
     private static ISchedulerAdapterFactory schedulerAdapterFactory;
@@ -115,11 +117,30 @@ static class BackupLogic
         ScheduleRepository = new ScheduleRepository(DbClientFactory);
         VersionQueryRepository = new VersionQueryRepository();
         BackupMutationRepository = new BackupMutationRepository(DbClientFactory);
+        fileCollectorServiceFactory = new FileCollectorServiceFactory();
         mediaWatcherFactory = new MediaWatcherFactory();
         schedulerAdapterFactory = new SchedulerAdapterFactory();
 
-        BackupService = new BackupService(ConfigurationManager, QueryManager, DbClientFactory, storageFactory, new VolumeShadowCopyClient(), VersionQueryRepository, BackupMutationRepository);
-        BackupController = new BackupController(BackupService, ConfigurationManager);
+        BackupService = new BackupService(
+            ConfigurationManager,
+            QueryManager,
+            DbClientFactory,
+            storageFactory,
+            new VolumeShadowCopyClient(),
+            fileCollectorServiceFactory,
+            VersionQueryRepository,
+            BackupMutationRepository);
+
+        BackupController = new BackupController(
+            BackupService,
+            ConfigurationManager,
+            () => StatusController.Current.IsTaskRunning(),
+            async (action, silent, cancellationTokenSource) =>
+            {
+                var waitForMediaService = new WaitForMediaService(BackupService, silent, action, cancellationTokenSource);
+                return await waitForMediaService.ExecuteAsync();
+            },
+            () => Task.FromResult(BackupLogic.BackupController.RequestPassword()));
 
         // first time start?
         if (ConfigurationManager.IsConfigured == "0")
@@ -318,7 +339,6 @@ static class BackupLogic
         Log.Information("Service for \"Full automatic backup\" is started.");
 
         // start scheduler
-        schedulerAdapterFactory ??= new SchedulerAdapterFactory();
         schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
         schedulerService.ScheduleAutoBackup(async () => await RunAutoBackup());
@@ -447,7 +467,6 @@ static class BackupLogic
         Log.Information("Service for \"Scheduled backups\" is started.");
 
         // start scheduler
-        schedulerAdapterFactory ??= new SchedulerAdapterFactory();
         schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
 
@@ -772,7 +791,6 @@ static class BackupLogic
         // only start, if local device
         if (ConfigurationManager.MediumType != MediaType.FileTransferServer)
         {
-            mediaWatcherFactory ??= new MediaWatcherFactory();
             dCWatcher = mediaWatcherFactory.Create();
             dCWatcher.StartWatching();
 

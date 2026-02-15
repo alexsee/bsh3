@@ -25,6 +25,7 @@ public class JobService : IJobService
     private readonly IStatusService statusService;
     private readonly IPresentationService presentationService;
     private readonly ILocalSettingsService localSettingsService;
+    private readonly Func<IWaitForMediaService> waitForMediaServiceFactory;
     private readonly JobRuntime jobRuntime;
 
     private IJobReport jobReportCallback;
@@ -44,13 +45,17 @@ public class JobService : IJobService
         IConfigurationManager configurationManager,
         IStatusService statusService,
         IPresentationService presentationService,
-        ILocalSettingsService localSettingsService)
+        ILocalSettingsService localSettingsService,
+        Func<IWaitForMediaService> waitForMediaServiceFactory)
     {
+        ArgumentNullException.ThrowIfNull(waitForMediaServiceFactory);
+
         this.backupService = backupService;
         this.configurationManager = configurationManager;
         this.statusService = statusService;
         this.presentationService = presentationService;
         this.localSettingsService = localSettingsService;
+        this.waitForMediaServiceFactory = waitForMediaServiceFactory;
 
         this.jobRuntime = new JobRuntime(
             backupService,
@@ -58,7 +63,7 @@ public class JobService : IJobService
             () => this.configurationManager.Medium == "1",
             async (_, silent, cancellationTokenSource) =>
             {
-                var waitForMediaService = App.GetService<IWaitForMediaService>();
+                var waitForMediaService = this.waitForMediaServiceFactory();
                 return await waitForMediaService.ExecuteAsync(silent, cancellationTokenSource);
             },
             this.RequestPassword);

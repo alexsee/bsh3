@@ -14,8 +14,6 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
-using Brightbits.BSH.Engine.Repo;
-using Brightbits.BSH.Engine.Services.FileCollector;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Services;
@@ -32,6 +30,7 @@ public class BackupService : IBackupService
 
     private readonly IDbClientFactory dbClientFactory;
     private readonly IVssClient vssClient;
+    private readonly IFileCollectorServiceFactory fileCollectorServiceFactory;
     private readonly IVersionQueryRepository versionQueryRepository;
     private readonly IBackupMutationRepository backupMutationRepository;
 
@@ -49,18 +48,27 @@ public class BackupService : IBackupService
         IDbClientFactory dbClientFactory,
         IStorageFactory storageFactory,
         IVssClient vssClient,
-        IVersionQueryRepository versionQueryRepository = null,
-        IBackupMutationRepository backupMutationRepository = null)
+        IFileCollectorServiceFactory fileCollectorServiceFactory,
+        IVersionQueryRepository versionQueryRepository,
+        IBackupMutationRepository backupMutationRepository)
     {
+        ArgumentNullException.ThrowIfNull(configurationManager);
+        ArgumentNullException.ThrowIfNull(queryManager);
+        ArgumentNullException.ThrowIfNull(dbClientFactory);
+        ArgumentNullException.ThrowIfNull(storageFactory);
         ArgumentNullException.ThrowIfNull(vssClient);
+        ArgumentNullException.ThrowIfNull(fileCollectorServiceFactory);
+        ArgumentNullException.ThrowIfNull(versionQueryRepository);
+        ArgumentNullException.ThrowIfNull(backupMutationRepository);
 
         this.configurationManager = configurationManager;
         this.queryManager = queryManager;
         this.dbClientFactory = dbClientFactory;
         this.storageFactory = storageFactory;
         this.vssClient = vssClient;
-        this.versionQueryRepository = versionQueryRepository ?? new VersionQueryRepository();
-        this.backupMutationRepository = backupMutationRepository ?? new BackupMutationRepository(dbClientFactory);
+        this.fileCollectorServiceFactory = fileCollectorServiceFactory;
+        this.versionQueryRepository = versionQueryRepository;
+        this.backupMutationRepository = backupMutationRepository;
     }
 
     /// <summary>
@@ -162,7 +170,7 @@ public class BackupService : IBackupService
             dbClientFactory,
             queryManager,
             configurationManager,
-            new FileCollectorServiceFactory(),
+            fileCollectorServiceFactory,
             this.vssClient,
             versionQueryRepository,
             backupMutationRepository,

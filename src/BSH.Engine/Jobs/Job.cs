@@ -11,7 +11,6 @@ using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
-using Brightbits.BSH.Engine.Repo;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -30,6 +29,7 @@ public abstract class Job
     protected readonly IQueryManager queryManager;
 
     protected readonly IConfigurationManager configurationManager;
+    protected readonly IVersionQueryRepository versionQueryRepository;
 
     protected readonly bool silent;
 
@@ -40,12 +40,25 @@ public abstract class Job
         get;
     }
 
-    protected Job(IStorageProvider storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager, bool silent = false)
+    protected Job(
+        IStorageProvider storage,
+        IDbClientFactory dbClientFactory,
+        IQueryManager queryManager,
+        IConfigurationManager configurationManager,
+        IVersionQueryRepository versionQueryRepository,
+        bool silent = false)
     {
+        ArgumentNullException.ThrowIfNull(storage);
+        ArgumentNullException.ThrowIfNull(dbClientFactory);
+        ArgumentNullException.ThrowIfNull(queryManager);
+        ArgumentNullException.ThrowIfNull(configurationManager);
+        ArgumentNullException.ThrowIfNull(versionQueryRepository);
+
         this.storage = storage;
         this.dbClientFactory = dbClientFactory;
         this.queryManager = queryManager;
         this.configurationManager = configurationManager;
+        this.versionQueryRepository = versionQueryRepository;
         this.silent = silent;
         this.FileErrorList = new Collection<FileExceptionEntry>();
     }
@@ -269,7 +282,6 @@ public abstract class Job
             configurationManager.FreeSpace = storage.GetFreeSpace().ToString();
 
             using var dbClient = dbClientFactory.CreateDbClient();
-            IVersionQueryRepository versionQueryRepository = new VersionQueryRepository();
             configurationManager.BackupSize = (await versionQueryRepository.GetTotalBackupFileSizeAsync(dbClient)).ToString();
         }
         catch (Exception ex)

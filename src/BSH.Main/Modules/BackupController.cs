@@ -45,20 +45,30 @@ public class BackupController
     /// </summary>
     /// <param name="backupService"></param>
     /// <param name="configurationManager"></param>
-    public BackupController(IBackupService backupService, IConfigurationManager configurationManager)
+    /// <param name="isTaskRunning"></param>
+    /// <param name="waitForMediaAsync"></param>
+    /// <param name="requestPasswordAsync"></param>
+    public BackupController(
+        IBackupService backupService,
+        IConfigurationManager configurationManager,
+        Func<bool> isTaskRunning,
+        Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync,
+        Func<Task<bool>> requestPasswordAsync)
     {
+        ArgumentNullException.ThrowIfNull(backupService);
+        ArgumentNullException.ThrowIfNull(configurationManager);
+        ArgumentNullException.ThrowIfNull(isTaskRunning);
+        ArgumentNullException.ThrowIfNull(waitForMediaAsync);
+        ArgumentNullException.ThrowIfNull(requestPasswordAsync);
+
         this.backupService = backupService;
         this.configurationManager = configurationManager;
         this.jobRuntime = new JobRuntime(
             backupService,
-            () => StatusController.Current.IsTaskRunning(),
+            isTaskRunning,
             () => this.configurationManager.Medium == "1",
-            async (action, silent, cancellationTokenSource) =>
-            {
-                var waitForMediaService = new WaitForMediaService(this.backupService, silent, action, cancellationTokenSource);
-                return await waitForMediaService.ExecuteAsync();
-            },
-            () => Task.FromResult(this.RequestPassword()));
+            waitForMediaAsync,
+            requestPasswordAsync);
 
         jobReportCallback = StatusController.Current;
 

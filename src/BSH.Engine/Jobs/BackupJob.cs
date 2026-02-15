@@ -18,7 +18,6 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
-using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Utils;
@@ -37,7 +36,6 @@ public class BackupJob : Job
 
     private readonly IFileCollectorServiceFactory fileCollectorServiceFactory;
     private readonly IVssClient vssClient;
-    private readonly IVersionQueryRepository versionQueryRepository;
     private readonly IBackupMutationRepository backupMutationRepository;
 
     public string Title
@@ -76,15 +74,16 @@ public class BackupJob : Job
         IConfigurationManager configurationManager,
         IFileCollectorServiceFactory fileCollectorServiceFactory,
         IVssClient vssClient,
-        IVersionQueryRepository versionQueryRepository = null,
-        IBackupMutationRepository backupMutationRepository = null,
-        bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
+        IVersionQueryRepository versionQueryRepository,
+        IBackupMutationRepository backupMutationRepository,
+        bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, versionQueryRepository, silent)
     {
+        ArgumentNullException.ThrowIfNull(fileCollectorServiceFactory);
         ArgumentNullException.ThrowIfNull(vssClient);
+        ArgumentNullException.ThrowIfNull(backupMutationRepository);
 
         this.fileCollectorServiceFactory = fileCollectorServiceFactory;
-        this.versionQueryRepository = versionQueryRepository ?? new VersionQueryRepository();
-        this.backupMutationRepository = backupMutationRepository ?? new BackupMutationRepository(dbClientFactory);
+        this.backupMutationRepository = backupMutationRepository;
         this.vssClient = vssClient;
     }
 

@@ -11,6 +11,7 @@ using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Activation;
 using BSH.MainApp.Contracts.Services;
@@ -89,6 +90,7 @@ public partial class App : Application
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IStatusService, StatusService>();
             services.AddTransient<IWaitForMediaService, WaitForMediaService>();
+            services.AddSingleton<Func<IWaitForMediaService>>(x => () => x.GetRequiredService<IWaitForMediaService>());
             services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();
             services.AddSingleton<IOrchestrationService, OrchestrationService>();
             services.AddSingleton<IJobService, JobService>();
@@ -107,6 +109,7 @@ public partial class App : Application
             services.AddSingleton<IVssClient, VolumeShadowCopyClient>();
             services.AddSingleton<ISchedulerAdapterFactory, SchedulerAdapterFactory>();
             services.AddSingleton<IMediaWatcherFactory, MediaWatcherFactory>();
+            services.AddSingleton<IFileCollectorServiceFactory, FileCollectorServiceFactory>();
             services.AddSingleton<IBackupService, BackupService>();
 
             services.AddSingleton<IStorageFactory, StorageFactory>();
