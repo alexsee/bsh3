@@ -21,7 +21,6 @@ using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Services.FileCollector;
-using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
 using Serilog;
 
@@ -76,15 +75,17 @@ public class BackupJob : Job
         IQueryManager queryManager,
         IConfigurationManager configurationManager,
         IFileCollectorServiceFactory fileCollectorServiceFactory,
+        IVssClient vssClient,
         IVersionQueryRepository versionQueryRepository = null,
         IBackupMutationRepository backupMutationRepository = null,
-        IVssClient vssClient = null,
         bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
     {
+        ArgumentNullException.ThrowIfNull(vssClient);
+
         this.fileCollectorServiceFactory = fileCollectorServiceFactory;
         this.versionQueryRepository = versionQueryRepository ?? new VersionQueryRepository();
         this.backupMutationRepository = backupMutationRepository ?? new BackupMutationRepository(dbClientFactory);
-        this.vssClient = vssClient ?? new VolumeShadowCopyClient();
+        this.vssClient = vssClient;
     }
 
     /// <summary>
@@ -674,7 +675,7 @@ public class BackupJob : Job
         }
 
         var fileType = 1;
-        if (storage is FileSystemStorage)
+        if (storage.Kind == StorageProviderKind.LocalFileSystem)
         {
             if (compress)
             {

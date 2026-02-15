@@ -22,15 +22,22 @@ public class ScheduledBackupService : IScheduledBackupService
     private readonly IJobService jobService;
     private readonly IQueryManager queryManager;
     private readonly IScheduleRepository scheduleRepository;
+    private readonly ISchedulerAdapterFactory schedulerAdapterFactory;
 
     private ISchedulerAdapter schedulerService;
 
-    public ScheduledBackupService(IConfigurationManager configurationManager, IJobService jobService, IQueryManager queryManager, IScheduleRepository scheduleRepository)
+    public ScheduledBackupService(
+        IConfigurationManager configurationManager,
+        IJobService jobService,
+        IQueryManager queryManager,
+        IScheduleRepository scheduleRepository,
+        ISchedulerAdapterFactory schedulerAdapterFactory)
     {
         this.configurationManager = configurationManager;
         this.jobService = jobService;
         this.queryManager = queryManager;
         this.scheduleRepository = scheduleRepository;
+        this.schedulerAdapterFactory = schedulerAdapterFactory;
     }
 
     public async Task InitializeAsync()
@@ -75,7 +82,7 @@ public class ScheduledBackupService : IScheduledBackupService
         Log.Information("Service for \"Full automatic backup\" is started.");
 
         // start scheduler
-        schedulerService = new SchedulerService();
+        schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
         schedulerService.ScheduleAutoBackup(async () => await RunAutoBackup());
     }
@@ -187,7 +194,7 @@ public class ScheduledBackupService : IScheduledBackupService
         Log.Information("Service for \"Scheduled backups\" is started.");
 
         // start scheduler
-        schedulerService = new SchedulerService();
+        schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
 
         // read scheduler entries in database

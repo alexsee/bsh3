@@ -15,7 +15,6 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Repo;
-using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -151,7 +150,7 @@ public class DeleteJob : Job
         }
 
         // clean storage folders
-        if (storage is FileSystemStorage)
+        if (storage.Kind == StorageProviderKind.LocalFileSystem)
         {
             using var dbClient = dbClientFactory.CreateDbClient();
             using var reader = await versionQueryRepository.GetOrphanedVersionDatesAsync(dbClient);

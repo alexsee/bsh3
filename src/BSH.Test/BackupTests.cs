@@ -25,6 +25,7 @@ public class BackupTests
     private IConfigurationManager configurationManager;
     private IQueryManager queryManager;
     private IFileCollectorServiceFactory fileCollectorServiceFactory;
+    private VssClientMock vssClient;
 
     private IBackupService backupService;
 
@@ -49,9 +50,11 @@ public class BackupTests
         configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
 
+        vssClient = new VssClientMock();
+
         var storageFactory = new StorageFactory(configurationManager);
         queryManager = new QueryManager(dbClientFactory, configurationManager, storageFactory);
-        backupService = new BackupService(configurationManager, queryManager, dbClientFactory, storageFactory, new VolumeShadowCopyClient());
+        backupService = new BackupService(configurationManager, queryManager, dbClientFactory, storageFactory, vssClient);
 
         fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
             new System.Collections.Generic.List<Brightbits.BSH.Engine.Models.FolderTableRow>(),
@@ -74,7 +77,7 @@ public class BackupTests
     public void TestEmptySources()
     {
         var fs = new StorageMock();
-        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory);
+        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient);
         backupJob.SourceFolder = "";
         backupJob.Title = "Blub";
         backupJob.Description = "";
@@ -88,7 +91,7 @@ public class BackupTests
     public void TestFailMedium()
     {
         var fs = new StorageMock(failCheckMedium: true);
-        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory);
+        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient);
         backupJob.SourceFolder = "D:\\Meine Dokumente";
         backupJob.Title = "Blub";
         backupJob.Description = "";
@@ -102,7 +105,7 @@ public class BackupTests
     public async Task TestSimpleFullAndIncremental()
     {
         var fs = new StorageMock();
-        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory);
+        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient);
         backupJob.SourceFolder = "D:\\Meine Dokumente";
         backupJob.Title = "Blub";
         backupJob.Description = "";
@@ -131,7 +134,7 @@ public class BackupTests
 
         // generate backup job
         var fs = new StorageMock();
-        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory);
+        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient);
         backupJob.SourceFolder = "D:\\Meine Dokumente";
         backupJob.Title = "Blub";
         backupJob.Description = "";
@@ -154,7 +157,7 @@ public class BackupTests
 
         // generate backup job
         var fs = new StorageMock();
-        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory);
+        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient);
         backupJob.SourceFolder = "D:\\Meine Dokumente";
         backupJob.Title = "Blub";
         backupJob.Description = "";
@@ -175,7 +178,7 @@ public class BackupTests
         // generate backup job
         var fs = new StorageMock(false, true);
 
-        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory);
+        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient);
         backupJob.SourceFolder = "D:\\Meine Dokumente";
         backupJob.Title = "Blub";
         backupJob.Description = "";
@@ -197,7 +200,7 @@ public class BackupTests
         // generate backup job
         var fs = new StorageMock();
 
-        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory);
+        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient);
         backupJob.SourceFolder = "D:\\";
         backupJob.Title = "Blub";
         backupJob.Description = "";
@@ -215,7 +218,7 @@ public class BackupTests
     public async Task TestCancellation()
     {
         var fs = new StorageMock();
-        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory);
+        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient);
         backupJob.SourceFolder = "D:\\Meine Dokumente";
         backupJob.Title = "Blub";
         backupJob.Description = "";

@@ -16,7 +16,6 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services.FileCollector;
-using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Services;
@@ -73,7 +72,7 @@ public class BackupService : IBackupService
         using (var storage = storageFactory.GetCurrentStorageProvider())
         {
             // have we checked before?
-            if (lastMediaCheckResult && storage.GetType() != typeof(FtpStorage) && DateTime.Now.Subtract(lastMediaCheckDate).TotalSeconds < 30)
+            if (lastMediaCheckResult && storage.Kind != StorageProviderKind.Ftp && DateTime.Now.Subtract(lastMediaCheckDate).TotalSeconds < 30)
             {
                 lastMediaCheckDate = DateTime.Now;
                 return lastMediaCheckResult;
@@ -164,9 +163,9 @@ public class BackupService : IBackupService
             queryManager,
             configurationManager,
             new FileCollectorServiceFactory(),
+            this.vssClient,
             versionQueryRepository,
             backupMutationRepository,
-            this.vssClient,
             silent)
         {
             Title = title,

@@ -8,6 +8,7 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Security;
 using Serilog;
 
@@ -66,6 +67,8 @@ public class FileSystemStorage : Storage, IStorage
 
         networkStorage = !string.IsNullOrEmpty(networkUserName);
     }
+
+    public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
 
     public async Task<bool> CheckMedium(bool quickCheck = false)
     {

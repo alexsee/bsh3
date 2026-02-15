@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Threading.Tasks;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Storage;
 
 namespace BSH.Test.Mocks
@@ -16,6 +17,8 @@ namespace BSH.Test.Mocks
             this.failCheckMedium = failCheckMedium;
             this.failAllCopies = failAllCopies;
         }
+
+        public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
 
         public bool CanWriteToStorage()
         {

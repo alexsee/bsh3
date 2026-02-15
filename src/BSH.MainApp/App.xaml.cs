@@ -105,6 +105,8 @@ public partial class App : Application
             services.AddSingleton<IScheduleRepository, ScheduleRepository>();
 
             services.AddSingleton<IVssClient, VolumeShadowCopyClient>();
+            services.AddSingleton<ISchedulerAdapterFactory, SchedulerAdapterFactory>();
+            services.AddSingleton<IMediaWatcherFactory, MediaWatcherFactory>();
             services.AddSingleton<IBackupService, BackupService>();
 
             services.AddSingleton<IStorageFactory, StorageFactory>();

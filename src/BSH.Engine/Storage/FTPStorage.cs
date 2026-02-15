@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Security;
 using FluentFTP;
 using FluentFTP.Client.BaseClient;
@@ -69,6 +70,8 @@ public class FtpStorage : Storage, IStorage
         this.encryption = encryption;
         this.currentStorageVersion = currentStorageVersion;
     }
+
+    public StorageProviderKind Kind => StorageProviderKind.Ftp;
 
     private static string Combine(string path1, string path2)
     {

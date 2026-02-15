@@ -72,8 +72,10 @@ static class BackupLogic
     public static string DatabaseFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
 
     private static IMediaWatcher dCWatcher;
+    private static IMediaWatcherFactory mediaWatcherFactory;
 
     private static ISchedulerAdapter schedulerService;
+    private static ISchedulerAdapterFactory schedulerAdapterFactory;
 
     private static Timer tmrUserReminder;
 
@@ -113,6 +115,8 @@ static class BackupLogic
         ScheduleRepository = new ScheduleRepository(DbClientFactory);
         VersionQueryRepository = new VersionQueryRepository();
         BackupMutationRepository = new BackupMutationRepository(DbClientFactory);
+        mediaWatcherFactory = new MediaWatcherFactory();
+        schedulerAdapterFactory = new SchedulerAdapterFactory();
 
         BackupService = new BackupService(ConfigurationManager, QueryManager, DbClientFactory, storageFactory, new VolumeShadowCopyClient(), VersionQueryRepository, BackupMutationRepository);
         BackupController = new BackupController(BackupService, ConfigurationManager);
@@ -314,7 +318,8 @@ static class BackupLogic
         Log.Information("Service for \"Full automatic backup\" is started.");
 
         // start scheduler
-        schedulerService = new SchedulerService();
+        schedulerAdapterFactory ??= new SchedulerAdapterFactory();
+        schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
         schedulerService.ScheduleAutoBackup(async () => await RunAutoBackup());
 
@@ -442,7 +447,8 @@ static class BackupLogic
         Log.Information("Service for \"Scheduled backups\" is started.");
 
         // start scheduler
-        schedulerService = new SchedulerService();
+        schedulerAdapterFactory ??= new SchedulerAdapterFactory();
+        schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
 
         // observe power mode
@@ -766,7 +772,8 @@ static class BackupLogic
         // only start, if local device
         if (ConfigurationManager.MediumType != MediaType.FileTransferServer)
         {
-            dCWatcher = new UsbWatchService();
+            mediaWatcherFactory ??= new MediaWatcherFactory();
+            dCWatcher = mediaWatcherFactory.Create();
             dCWatcher.StartWatching();
 
             // observe devices

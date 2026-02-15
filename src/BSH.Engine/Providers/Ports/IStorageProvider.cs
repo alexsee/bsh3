@@ -8,6 +8,8 @@ namespace Brightbits.BSH.Engine.Providers.Ports;
 
 public interface IStorageProvider : IDisposable
 {
+    StorageProviderKind Kind { get; }
+
     Task<bool> CheckMedium(bool quickCheck = false);
 
     void Open();
