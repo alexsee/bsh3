@@ -12,6 +12,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Security;
 using BSH.Main.Properties;
 using Serilog;
@@ -34,7 +35,7 @@ public class BackupController
 
     private IJobReport jobReportCallback;
 
-    private CancellationTokenSource cancellationTokenSource;
+    private readonly JobRuntime jobRuntime;
 
     private CancellationToken cancellationToken;
 
@@ -48,6 +49,16 @@ public class BackupController
     {
         this.backupService = backupService;
         this.configurationManager = configurationManager;
+        this.jobRuntime = new JobRuntime(
+            backupService,
+            () => StatusController.Current.IsTaskRunning(),
+            () => this.configurationManager.Medium == "1",
+            async (action, silent, cancellationTokenSource) =>
+            {
+                var waitForMediaService = new WaitForMediaService(this.backupService, silent, action, cancellationTokenSource);
+                return await waitForMediaService.ExecuteAsync();
+            },
+            () => Task.FromResult(this.RequestPassword()));
 
         jobReportCallback = StatusController.Current;
 
@@ -60,8 +71,7 @@ public class BackupController
     /// <returns>Returns the new CancellationToken.</returns>
     public CancellationToken GetNewCancellationToken()
     {
-        cancellationTokenSource = new CancellationTokenSource();
-        cancellationToken = cancellationTokenSource.Token;
+        cancellationToken = jobRuntime.GetNewCancellationToken();
         return cancellationToken;
     }
 
@@ -71,13 +81,7 @@ public class BackupController
     public void Cancel()
     {
         _logger.Debug("Cancellation of current task requested by user.");
-
-        if (cancellationTokenSource == null)
-        {
-            return;
-        }
-
-        cancellationTokenSource.Cancel();
+        jobRuntime.Cancel();
     }
 
     /// <summary>
@@ -88,22 +92,7 @@ public class BackupController
     /// <returns>Returns true, if the backup media is available, otherwise false.</returns>
     public async Task<bool> CheckMediaAsync(ActionType action, bool silent = false)
     {
-        _logger.Debug("Media check requested by task {action}.", action);
-
-        // check if media is available
-        if (await backupService.CheckMedia())
-        {
-            return true;
-        }
-
-        // should we wait for media
-        if (configurationManager.Medium == "1" && !silent)
-        {
-            var waitForMediaService = new WaitForMediaService(backupService, silent, action, cancellationTokenSource);
-            return await waitForMediaService.ExecuteAsync();
-        }
-
-        return false;
+        return await jobRuntime.CheckMediaAsync(action, silent);
     }
 
     /// <summary>
@@ -118,31 +107,13 @@ public class BackupController
     /// <exception cref="PasswordRequiredException"></exception>
     private async Task PrepareJob(ActionType action, bool statusDialog)
     {
-        GetNewCancellationToken();
-
-        // other task running?
-        if (StatusController.Current.IsTaskRunning())
-        {
-            throw new TaskRunningException();
-        }
-
         // show dialog?
         if (statusDialog)
         {
             PresentationController.Current.ShowStatusWindow();
         }
 
-        // check media
-        if (!await CheckMediaAsync(action, !statusDialog))
-        {
-            throw new DeviceNotReadyException();
-        }
-
-        // check password
-        if (!RequestPassword())
-        {
-            throw new PasswordRequiredException();
-        }
+        await jobRuntime.PrepareAsync(action, statusDialog);
     }
 
     /// <summary>
@@ -233,7 +204,7 @@ public class BackupController
     /// <param name="shutdownApp">Specifies if the application should be closed after completion.</param>
     /// <param name="sourceFolders">Specifies the source folders to consider for the backup.</param>
     /// <returns></returns>
-    public async Task CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "")
+    public async Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "")
     {
         _logger.Debug("Backup task is started with title: {title}, description: {description}, statusDialog: {statusDialog}, fullBackup: {fullBackup}",
             title, description, statusDialog, fullBackup);
@@ -241,7 +212,7 @@ public class BackupController
         // check job requirements
         if (!await PrepareJobAndHandleExceptions(ActionType.Backup, statusDialog))
         {
-            return;
+            return false;
         }
 
         // run backup job
@@ -278,6 +249,8 @@ public class BackupController
                 Environment.Exit(0);
             }
         }
+
+        return !cancellationToken.IsCancellationRequested;
     }
 
     /// <summary>
@@ -371,7 +344,7 @@ public class BackupController
         }
 
         ((ForwardJobReport)forwardJobReport).ForwardExceptions(!statusDialog);
-        jobReportCallback.ReportState(JobState.FINISHED);
+        jobReportCallback.ReportState(cancellationToken.IsCancellationRequested ? JobState.CANCELED : JobState.FINISHED);
 
         // finish
         HandleFinishedStatusDialog(statusDialog);
@@ -450,7 +423,7 @@ public class BackupController
         }
 
         ((ForwardJobReport)forwardJobReport).ForwardExceptions(!statusDialog);
-        jobReportCallback.ReportState(JobState.FINISHED);
+        jobReportCallback.ReportState(cancellationToken.IsCancellationRequested ? JobState.CANCELED : JobState.FINISHED);
 
         // finish
         HandleFinishedStatusDialog(statusDialog);

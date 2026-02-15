@@ -228,7 +228,7 @@ public class RestoreJob : Job
 
                         ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_TEXT);
                         ReportExceptions(FileErrorList);
-                        ReportState(JobState.FINISHED);
+                        ReportState(JobState.CANCELED);
                         return;
                     }
                 }

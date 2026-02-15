@@ -13,6 +13,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Services;
@@ -317,27 +318,6 @@ static class BackupLogic
     {
         Log.Information("Automatic backup is scheduled and will be performed now.");
 
-        // check if backup is in progress
-        if (StatusController.Current.IsTaskRunning())
-        {
-            Log.Warning("Automatic backup cancelled due to other task in progress.");
-            return;
-        }
-
-        // check if device is ready
-        if (!await BackupService.CheckMedia())
-        {
-            Log.Warning("Automatic backup cancelled due to not reachable storage device.");
-            return;
-        }
-
-        // request password
-        if (!BackupController.RequestPassword())
-        {
-            Log.Warning("Automatic backup cancelled due to wrong password.");
-            return;
-        }
-
         // stop automatic backup when device ready
         StopDoBackupWhenDriveIsAvailable();
 
@@ -345,19 +325,11 @@ static class BackupLogic
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
         // run backup
-        var cancellationToken = BackupController.GetNewCancellationToken();
-        Engine.Jobs.IJobReport argjobReport = StatusController.Current;
-
-        var task = BackupService.StartBackup("Automatisches Backup", "", ref argjobReport, cancellationToken, false, "", true);
-        if (task == null)
-        {
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
-            return;
-        }
+        var task = BackupController.CreateBackupAsync("Automatisches Backup", "", false);
 
         await task.ContinueWith((x) =>
         {
-            if (!cancellationToken.IsCancellationRequested)
+            if (x.Result)
             {
                 RemoveOldBackups();
             }
@@ -427,11 +399,7 @@ static class BackupLogic
         // delete old versions
         foreach (var version in listDelete)
         {
-            var cancellationToken = BackupController.GetNewCancellationToken();
-            Engine.Jobs.IJobReport argjobReport = StatusController.Current;
-
-            var task = BackupService.StartDelete(version.Id, ref argjobReport, cancellationToken, true);
-            task.Wait();
+            BackupController.DeleteBackupAsync(version.Id, false).Wait();
         }
     }
 
@@ -646,25 +614,6 @@ static class BackupLogic
     {
         Log.Information("Scheduled backup is planned and will be performed now.");
 
-        // Prüfen, ob was in Arbeit ist
-        if (StatusController.Current.IsTaskRunning())
-        {
-            Log.Warning("Scheduled backup cancelled due to other task in progress.");
-            return;
-        }
-
-        if (!await BackupService.CheckMedia())
-        {
-            Log.Warning("Scheduled backup cancelled due to not reachable storage device.");
-            return;
-        }
-
-        if (!BackupController.RequestPassword())
-        {
-            Log.Warning("Scheduled backup cancelled due to wrong password.");
-            return;
-        }
-
         // Automatisches nachholen abbrechen
         StopDoBackupWhenDriveIsAvailable();
 
@@ -689,19 +638,11 @@ static class BackupLogic
         }
 
         // Backup durchführen
-        var cancellationToken = BackupController.GetNewCancellationToken();
-        Engine.Jobs.IJobReport argjobReport = StatusController.Current;
-
-        var task = BackupService.StartBackup(Resources.BACKUP_TITLE_AUTOMATIC, "", ref argjobReport, cancellationToken, FullBackup, "", true);
-        if (task == null)
-        {
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
-            return;
-        }
+        var task = BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_AUTOMATIC, "", false, FullBackup);
 
         await task.ContinueWith((x) =>
         {
-            if (!cancellationToken.IsCancellationRequested)
+            if (x.Result)
             {
                 RemoveOldBackupsScheduled();
             }
@@ -783,11 +724,7 @@ static class BackupLogic
         // delete versions
         foreach (var version in listDelete)
         {
-            var cancellationToken = BackupController.GetNewCancellationToken();
-            Engine.Jobs.IJobReport argjobReport = StatusController.Current;
-
-            var task = BackupService.StartDelete(version.Id, ref argjobReport, cancellationToken, true);
-            task.Wait();
+            BackupController.DeleteBackupAsync(version.Id, false).Wait();
         }
     }
 

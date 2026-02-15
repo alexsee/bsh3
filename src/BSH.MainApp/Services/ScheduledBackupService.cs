@@ -22,17 +22,15 @@ public class ScheduledBackupService : IScheduledBackupService
     private readonly IJobService jobService;
     private readonly IQueryManager queryManager;
     private readonly IDbClientFactory dbClientFactory;
-    private readonly IStatusService statusService;
 
     private ISchedulerAdapter schedulerService;
 
-    public ScheduledBackupService(IConfigurationManager configurationManager, IJobService jobService, IQueryManager queryManager, IDbClientFactory dbClientFactory, IStatusService statusService)
+    public ScheduledBackupService(IConfigurationManager configurationManager, IJobService jobService, IQueryManager queryManager, IDbClientFactory dbClientFactory)
     {
         this.configurationManager = configurationManager;
         this.jobService = jobService;
         this.queryManager = queryManager;
         this.dbClientFactory = dbClientFactory;
-        this.statusService = statusService;
     }
 
     public async Task InitializeAsync()
@@ -98,41 +96,15 @@ public class ScheduledBackupService : IScheduledBackupService
     {
         Log.Information("Automatic backup is scheduled and will be performed now.");
 
-        // check if backup is in progress
-        if (statusService.IsTaskRunning())
-        {
-            Log.Warning("Automatic backup cancelled due to other task in progress.");
-            return;
-        }
-
-        // check if device is ready
-        if (!await jobService.CheckMediaAsync(ActionType.Backup, true))
-        {
-            Log.Warning("Automatic backup cancelled due to not reachable storage device.");
-            return;
-        }
-
-        // request password
-        if (!await jobService.RequestPassword())
-        {
-            Log.Warning("Automatic backup cancelled due to wrong password.");
-            return;
-        }
-
         // lower process priority
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
         // run backup
         var task = jobService.CreateBackupAsync("Automatisches Backup", "", false);
-        if (task == null)
-        {
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
-            return;
-        }
 
         await task.ContinueWith(async (x) =>
         {
-            if (!jobService.IsCancellationRequested)
+            if (x.Result)
             {
                 await RemoveOldBackups();
             }
@@ -386,25 +358,6 @@ public class ScheduledBackupService : IScheduledBackupService
     {
         Log.Information("Scheduled backup is planned and will be performed now.");
 
-        // Prüfen, ob was in Arbeit ist
-        if (statusService.IsTaskRunning())
-        {
-            Log.Warning("Scheduled backup cancelled due to other task in progress.");
-            return;
-        }
-
-        if (!await jobService.CheckMediaAsync(ActionType.Backup, true))
-        {
-            Log.Warning("Scheduled backup cancelled due to not reachable storage device.");
-            return;
-        }
-
-        if (!await jobService.RequestPassword())
-        {
-            Log.Warning("Scheduled backup cancelled due to wrong password.");
-            return;
-        }
-
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
@@ -424,15 +377,10 @@ public class ScheduledBackupService : IScheduledBackupService
 
         // Backup durchführen
         var task = jobService.CreateBackupAsync("Automatische Sicherung", "", false, fullBackupOption);
-        if (task == null)
-        {
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
-            return;
-        }
 
         await task.ContinueWith(async (x) =>
         {
-            if (!jobService.IsCancellationRequested)
+            if (x.Result)
             {
                 await RemoveOldBackupsScheduled();
             }

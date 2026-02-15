@@ -323,7 +323,7 @@ public class BackupJob : Job
                     // standby
                     Win32Stuff.AllowSystemSleep();
 
-                    ReportState(JobState.FINISHED);
+                    ReportState(JobState.CANCELED);
                     return;
                 }
             }
