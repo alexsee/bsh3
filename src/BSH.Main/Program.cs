@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AutoUpdaterDotNET;
 using BSH.Main.Model.CommandLine;
@@ -202,7 +203,7 @@ static class Program
         // run automatic backup deletion
         if (opts.AutoDeletion)
         {
-            BackupLogic.CommandAutoDelete();
+            Task.Run(BackupLogic.CommandAutoDelete).GetAwaiter().GetResult();
         }
 
         // create manual backup

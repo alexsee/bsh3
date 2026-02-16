@@ -369,18 +369,19 @@ static class BackupLogic
         // lower process priority
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        // run backup
-        var task = BackupController.CreateBackupAsync("Automatisches Backup", "", false);
-
-        await task.ContinueWith((x) =>
+        try
         {
-            if (x.Result)
+            // run backup
+            var succeeded = await BackupController.CreateBackupAsync("Automatisches Backup", "", false);
+            if (succeeded)
             {
-                RemoveOldBackups();
+                await RemoveOldBackups();
             }
-        }, TaskContinuationOptions.OnlyOnRanToCompletion)
-            .ContinueWith((x) => Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal,
-            TaskContinuationOptions.None);
+        }
+        finally
+        {
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
+        }
     }
 
     private static List<VersionDetails> GetAutomaticVersionsToDelete()
@@ -436,7 +437,7 @@ static class BackupLogic
         return listDelete;
     }
 
-    private static void RemoveOldBackups()
+    private static async Task RemoveOldBackups()
     {
         // get versions to clean
         var listDelete = GetAutomaticVersionsToDelete();
@@ -444,7 +445,7 @@ static class BackupLogic
         // delete old versions
         foreach (var version in listDelete)
         {
-            BackupController.DeleteBackupAsync(version.Id, false).Wait();
+            await BackupController.DeleteBackupAsync(version.Id, false);
         }
     }
 
@@ -679,20 +680,22 @@ static class BackupLogic
             }
         }
 
-        // Backup durchführen
-        var task = BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_AUTOMATIC, "", false, FullBackup);
-
-        await task.ContinueWith((x) =>
+        try
         {
-            if (x.Result)
+            // Backup durchführen
+            var succeeded = await BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_AUTOMATIC, "", false, FullBackup);
+            if (succeeded)
             {
-                RemoveOldBackupsScheduled();
+                await RemoveOldBackupsScheduled();
             }
-        }, TaskContinuationOptions.OnlyOnRanToCompletion)
-            .ContinueWith((x) => Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal, TaskContinuationOptions.None);
+        }
+        finally
+        {
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
+        }
     }
 
-    private static void RemoveOldBackupsScheduled()
+    private static async Task RemoveOldBackupsScheduled()
     {
         // lower process priority
         var proc = Process.GetCurrentProcess();
@@ -766,7 +769,7 @@ static class BackupLogic
         // delete versions
         foreach (var version in listDelete)
         {
-            BackupController.DeleteBackupAsync(version.Id, false).Wait();
+            await BackupController.DeleteBackupAsync(version.Id, false);
         }
     }
 
@@ -850,16 +853,16 @@ static class BackupLogic
         }
     }
 
-    public static void CommandAutoDelete()
+    public static async Task CommandAutoDelete()
     {
         // check device
-        if (!BackupService.CheckMedia().Result)
+        if (!await BackupService.CheckMedia())
         {
             return;
         }
 
         // delete old versions
-        RemoveOldBackups();
+        await RemoveOldBackups();
     }
 
     public static DateTime GetNextBackupDate()
