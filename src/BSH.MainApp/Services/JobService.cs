@@ -15,7 +15,7 @@ using Serilog;
 
 namespace BSH.MainApp.Services;
 
-public class JobService : IJobService
+public class JobService : IJobService, IDisposable
 {
     private readonly ILogger _logger = Log.ForContext<JobService>();
 
@@ -516,5 +516,11 @@ public class JobService : IJobService
         }
 
         return false;
+    }
+
+    public void Dispose()
+    {
+        jobRuntime.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

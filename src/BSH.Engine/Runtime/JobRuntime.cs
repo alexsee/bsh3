@@ -11,7 +11,7 @@ using Serilog;
 
 namespace Brightbits.BSH.Engine.Runtime;
 
-public sealed class JobRuntime
+public sealed class JobRuntime : IDisposable
 {
     private readonly ILogger _logger = Log.ForContext<JobRuntime>();
     private readonly IBackupService backupService;
@@ -19,10 +19,21 @@ public sealed class JobRuntime
     private readonly Func<bool> shouldWaitForMedia;
     private readonly Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync;
     private readonly Func<Task<bool>> requestPasswordAsync;
+    private readonly object cancellationTokenSync = new();
     private CancellationTokenSource cancellationTokenSource;
     private CancellationToken cancellationToken;
+    private bool disposed;
 
-    public bool IsCancellationRequested => cancellationTokenSource?.IsCancellationRequested ?? false;
+    public bool IsCancellationRequested
+    {
+        get
+        {
+            lock (cancellationTokenSync)
+            {
+                return cancellationTokenSource?.IsCancellationRequested ?? false;
+            }
+        }
+    }
 
     public JobRuntime(
         IBackupService backupService,
@@ -48,26 +59,43 @@ public sealed class JobRuntime
 
     public CancellationToken GetNewCancellationToken()
     {
-        cancellationTokenSource = new CancellationTokenSource();
-        cancellationToken = cancellationTokenSource.Token;
-        return cancellationToken;
+        lock (cancellationTokenSync)
+        {
+            ThrowIfDisposed();
+
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+            cancellationToken = cancellationTokenSource.Token;
+
+            return cancellationToken;
+        }
     }
 
     public void Cancel()
     {
         _logger.Debug("Cancellation of current task requested by runtime.");
 
-        if (cancellationTokenSource == null)
+        lock (cancellationTokenSync)
         {
-            return;
-        }
+            if (disposed || cancellationTokenSource == null)
+            {
+                return;
+            }
 
-        cancellationTokenSource.Cancel();
+            cancellationTokenSource.Cancel();
+        }
     }
 
     public async Task<bool> CheckMediaAsync(ActionType action, bool silent = false)
     {
         _logger.Debug("Media check requested by task {action}.", action);
+
+        CancellationTokenSource cts;
+        lock (cancellationTokenSync)
+        {
+            ThrowIfDisposed();
+            cts = cancellationTokenSource;
+        }
 
         if (await backupService.CheckMedia())
         {
@@ -76,7 +104,7 @@ public sealed class JobRuntime
 
         if (shouldWaitForMedia() && !silent)
         {
-            return await waitForMediaAsync(action, silent, cancellationTokenSource);
+            return await waitForMediaAsync(action, silent, cts);
         }
 
         return false;
@@ -84,7 +112,7 @@ public sealed class JobRuntime
 
     public async Task<CancellationToken> PrepareAsync(ActionType action, bool statusDialog)
     {
-        GetNewCancellationToken();
+        var newCancellationToken = GetNewCancellationToken();
 
         if (isTaskRunning())
         {
@@ -101,6 +129,32 @@ public sealed class JobRuntime
             throw new PasswordRequiredException();
         }
 
-        return cancellationToken;
+        return newCancellationToken;
+    }
+
+    public void Dispose()
+    {
+        lock (cancellationTokenSync)
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = null;
+            cancellationToken = default;
+        }
+
+        GC.SuppressFinalize(this);
+    }
+
+    private void ThrowIfDisposed()
+    {
+        if (disposed)
+        {
+            throw new ObjectDisposedException(nameof(JobRuntime));
+        }
     }
 }

@@ -208,6 +208,7 @@ public partial class App : Application
     private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
         TrayIcon?.Dispose();
+        Host.Dispose();
         Environment.Exit(0);
     }
 }

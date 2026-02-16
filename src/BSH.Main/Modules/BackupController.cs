@@ -25,7 +25,7 @@ namespace Brightbits.BSH.Main;
 /// to start and cancel tasks. External services can also subscribe to the state and 
 /// status of the tasks being executed.
 /// </summary>
-public class BackupController
+public class BackupController : IDisposable
 {
     private readonly ILogger _logger = Log.ForContext<BackupController>();
 
@@ -528,5 +528,11 @@ public class BackupController
         }
 
         return false;
+    }
+
+    public void Dispose()
+    {
+        jobRuntime.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
