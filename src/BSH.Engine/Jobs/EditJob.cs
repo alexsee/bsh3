@@ -109,7 +109,7 @@ public class EditJob : Job
                             dbClient,
                             remoteFilePath,
                             reader.GetInt32("fileType"),
-                            reader.GetInt32("fileversionid"));
+                            Convert.ToInt64(reader["fileversionid"]));
                     }
                     catch (Exception ex)
                     {
@@ -157,7 +157,7 @@ public class EditJob : Job
     /// <param name="remoteFile"></param>
     /// <param name="fileType"></param>
     /// <param name="fileVersionId"></param>
-    private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, int fileVersionId)
+    private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, long fileVersionId)
     {
         if (fileType == 5)
         {

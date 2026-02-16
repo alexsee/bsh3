@@ -211,7 +211,7 @@ public class BackupMutationRepository : IBackupMutationRepository
         await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileversiontable WHERE fileversionid = @id", parameters);
     }
 
-    public async Task DeleteVersionMetadataAsync(DbClient dbClient, int versionId)
+    public async Task DeleteVersionMetadataAsync(DbClient dbClient, long versionId)
     {
         var parameters = new (string, object)[]
         {
@@ -259,7 +259,7 @@ public class BackupMutationRepository : IBackupMutationRepository
             parameters.ToArray());
     }
 
-    public async Task UpdateFileVersionTypeAsync(DbClient dbClient, int fileVersionId, int fileType)
+    public async Task UpdateFileVersionTypeAsync(DbClient dbClient, long fileVersionId, int fileType)
     {
         var parameters = new (string, object)[]
         {
@@ -288,7 +288,7 @@ public class BackupMutationRepository : IBackupMutationRepository
             parameters);
     }
 
-    public async Task UpdateVersionDetailsAsync(int versionId, string title, string description)
+    public async Task UpdateVersionDetailsAsync(long versionId, string title, string description)
     {
         using var dbClient = dbClientFactory.CreateDbClient();
         var parameters = new (string, object)[]

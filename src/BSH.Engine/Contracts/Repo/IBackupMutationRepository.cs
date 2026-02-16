@@ -20,9 +20,9 @@ public interface IBackupMutationRepository
     Task AddFileVersionWithLinkAsync(DbClient dbClient, long fileId, long newVersionId, double fileSize, DateTime fileDateCreated, DateTime fileDateModified, int fileType, string longFileName);
     Task RenameVersionDateAsync(DbClient dbClient, long versionId, string newVersionDate);
     Task DeleteFileVersionAsync(DbClient dbClient, long fileVersionId);
-    Task DeleteVersionMetadataAsync(DbClient dbClient, int versionId);
+    Task DeleteVersionMetadataAsync(DbClient dbClient, long versionId);
     Task DeleteSingleFileMetadataAsync(DbClient dbClient, string fileFilter, string pathFilter);
-    Task UpdateFileVersionTypeAsync(DbClient dbClient, int fileVersionId, int fileType);
+    Task UpdateFileVersionTypeAsync(DbClient dbClient, long fileVersionId, int fileType);
     Task SetVersionStableAsync(string version, bool stable);
-    Task UpdateVersionDetailsAsync(int versionId, string title, string description);
+    Task UpdateVersionDetailsAsync(long versionId, string title, string description);
 }

@@ -424,11 +424,11 @@ public class BackupService : IBackupService
     /// <param name="version">The ID of the version to edit</param>
     /// <param name="versionDetails">The new details for the version</param>
     /// <exception cref="ArgumentNullException">Thrown when versionDetails is null</exception>
-    /// <exception cref="ArgumentException">Thrown when version is not a valid integer</exception>
+    /// <exception cref="ArgumentException">Thrown when version is not a valid identifier</exception>
     public async Task UpdateVersionAsync(string version, VersionDetails versionDetails)
     {
         ArgumentNullException.ThrowIfNull(versionDetails);
-        if (!int.TryParse(version, out var versionId))
+        if (!long.TryParse(version, out var versionId))
         {
             throw new ArgumentException("Invalid version ID", nameof(version));
         }
