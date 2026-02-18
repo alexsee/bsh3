@@ -11,14 +11,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Services.FileCollector;
-using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
 using Serilog;
 
@@ -34,6 +35,8 @@ public class BackupJob : Job
     private readonly HashSet<string> junctionFolders = new();
 
     private readonly IFileCollectorServiceFactory fileCollectorServiceFactory;
+    private readonly IVssClient vssClient;
+    private readonly IBackupMutationRepository backupMutationRepository;
 
     public string Title
     {
@@ -65,14 +68,23 @@ public class BackupJob : Job
         get; set;
     }
 
-    public BackupJob(IStorage storage,
+    public BackupJob(IStorageProvider storage,
         IDbClientFactory dbClientFactory,
         IQueryManager queryManager,
         IConfigurationManager configurationManager,
         IFileCollectorServiceFactory fileCollectorServiceFactory,
-        bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, silent)
+        IVssClient vssClient,
+        IVersionQueryRepository versionQueryRepository,
+        IBackupMutationRepository backupMutationRepository,
+        bool silent = false) : base(storage, dbClientFactory, queryManager, configurationManager, versionQueryRepository, silent)
     {
+        ArgumentNullException.ThrowIfNull(fileCollectorServiceFactory);
+        ArgumentNullException.ThrowIfNull(vssClient);
+        ArgumentNullException.ThrowIfNull(backupMutationRepository);
+
         this.fileCollectorServiceFactory = fileCollectorServiceFactory;
+        this.backupMutationRepository = backupMutationRepository;
+        this.vssClient = vssClient;
     }
 
     /// <summary>
@@ -121,7 +133,7 @@ public class BackupJob : Job
             ///
 
             // get last version
-            var lastVersionDate = await dbClient.ExecuteScalarAsync("SELECT versionDate FROM versiontable ORDER BY versionID LIMIT 1");
+            var lastVersionDate = await versionQueryRepository.GetLastVersionDateAsync(dbClient);
 
             // full backup?
             var fullBackup = string.IsNullOrEmpty(lastVersionDate?.ToString()) || FullBackup;
@@ -147,20 +159,7 @@ public class BackupJob : Job
 
             var folderListString = string.Join("|", folderList);
 
-            // create new backup
-            var backupParameters = new (string, object)[]
-            {
-                ("newVersionDate", newVersionDate),
-                ("title", Title),
-                ("description", Description),
-                ("type", fullBackup ? "2" : "1"),
-                ("sources", folderListString)
-            };
-
-            var newVersionId = (long)await dbClient.ExecuteScalarAsync(CommandType.Text,
-                "INSERT INTO versiontable (versionDate, versionTitle, versionDescription, versionType, versionStatus, versionStable, versionSources) VALUES (" +
-                "@newVersionDate, @title, @description, @type, '0', '0', @sources); select last_insert_rowid()",
-                backupParameters);
+            var newVersionId = await backupMutationRepository.CreateVersionAsync(dbClient, newVersionDate, Title, Description, fullBackup, folderListString);
 
             ///
             /// PHASE 2 : Obtain new files and backup them
@@ -221,47 +220,28 @@ public class BackupJob : Job
                     ReportFileProgress(file.FileNamePath());
 
                     // search for database entry
-                    var fileSelectParameters = new (string, object)[]
-                    {
-                        ("fileName", file.FileName),
-                        ("filePath", "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\")
-                    };
+                    var filePath = "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\";
+                    var fileId = await backupMutationRepository.GetFileIdAsync(dbClient, file.FileName, filePath);
+                    file.FileId = fileId?.ToString();
 
-                    file.FileId = (await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT fileID FROM filetable WHERE fileName = @fileName AND filePath = @filePath LIMIT 1", fileSelectParameters))?.ToString();
-
-                    if (!long.TryParse(file.FileId, out var fileId))
+                    if (!fileId.HasValue)
                     {
                         // file does not have an entry
-                        var fileInsertParameters = new (string, object)[] {
-                            ("fileName", file.FileName),
-                            ("filePath", "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\")
-                        };
-
-                        file.FileId = (await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT INTO filetable ( fileName, filePath ) VALUES ( @fileName, @filePath ); SELECT MAX(fileID) FROM filetable", fileInsertParameters))?.ToString();
+                        fileId = await backupMutationRepository.CreateFileAsync(dbClient, file.FileName, filePath);
+                        file.FileId = fileId.ToString();
                     }
                     else
                     {
                         // file was found, so we already have a version of the file
                         if (!FullBackup)
                         {
-                            var fileSelectParameters2 = new (string, object)[] {
-                                ("fileID", fileId),
-                                ("fileSize", file.FileSize),
-                                ("fileDateModified", file.FileDateModified)
-                            };
+                            var fileVersionId = await backupMutationRepository.GetMatchingFileVersionIdAsync(dbClient, fileId.Value, file.FileSize, file.FileDateModified);
+                            file.FilePackage = fileVersionId?.ToString();
 
-                            file.FilePackage = (await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT fileversionID FROM fileversiontable WHERE" +
-                                " fileID = @fileID AND fileStatus = 1 AND fileSize = @fileSize AND datetime(fileDateModified) = datetime(@fileDateModified) ORDER BY fileversionID DESC LIMIT 1", fileSelectParameters2))?.ToString();
-
-                            if (long.TryParse(file.FilePackage, out var filePackage))
+                            if (fileVersionId.HasValue)
                             {
                                 // file is the same, so only create a link
-                                var fileInsertParameters2 = new (string, object)[] {
-                                    ("fileversionID", filePackage),
-                                    ("versionID", newVersionId)
-                                };
-
-                                await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO filelink ( fileversionID, versionID ) VALUES ( @fileversionID, @versionID )", fileInsertParameters2);
+                                await backupMutationRepository.AddFileLinkAsync(dbClient, fileVersionId.Value, newVersionId);
                                 isModifiedFile = false;
                             }
                         }
@@ -319,7 +299,7 @@ public class BackupJob : Job
                     // standby
                     Win32Stuff.AllowSystemSleep();
 
-                    ReportState(JobState.FINISHED);
+                    ReportState(JobState.CANCELED);
                     return;
                 }
             }
@@ -367,7 +347,7 @@ public class BackupJob : Job
 
                     if (lastVersion != null && storage.RenameDirectory(lastVersion.CreationDate.ToString("dd-MM-yyyy HH-mm-ss"), newVersionDate))
                     {
-                        await dbClient.ExecuteNonQueryAsync("UPDATE versiontable SET versionDate = '" + newVersionDate + "' WHERE versionID = " + lastVersion.Id);
+                        await backupMutationRepository.RenameVersionDateAsync(dbClient, long.Parse(lastVersion.Id), newVersionDate);
                     }
                 }
                 catch (Exception ex)
@@ -414,25 +394,14 @@ public class BackupJob : Job
         _logger.Information("Backup job finished.");
     }
 
-    private static async Task ProcessEmptyFolders(DbClient dbClient, long newVersionId, List<FolderTableRow> emptyFolder)
+    private async Task ProcessEmptyFolders(DbClient dbClient, long newVersionId, List<FolderTableRow> emptyFolder)
     {
         foreach (var folder in emptyFolder)
         {
             // backup folder
-            var folderParameters = new (string, object)[]
-            {
-                ("folder", "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\")
-            };
-
-            var folderId = await dbClient.ExecuteScalarAsync(CommandType.Text, "INSERT OR IGNORE INTO foldertable ( folder ) VALUES ( @folder ); SELECT id FROM foldertable WHERE folder = @folder", folderParameters);
-
-            // add folder link
-            var folderLinkParameters = new (string, object)[] {
-                ("folderid", folderId),
-                ("versionID", newVersionId)
-            };
-
-            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO folderlink ( folderid, versionid ) VALUES ( @folderid, @versionID )", folderLinkParameters);
+            var folderPath = "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\";
+            var folderId = await backupMutationRepository.AddOrGetFolderIdAsync(dbClient, folderPath);
+            await backupMutationRepository.AddFolderLinkAsync(dbClient, folderId, newVersionId);
         }
     }
 
@@ -501,13 +470,7 @@ public class BackupJob : Job
         if (!string.IsNullOrEmpty(displayName) && Path.GetFileName(path) != displayName)
         {
             path = Path.GetFileName(file.FileRoot) + path.Replace(file.FileRoot, "", StringComparison.OrdinalIgnoreCase);
-
-            var junctionInsertParameters = new (string, object)[] {
-                ("path", path),
-                ("displayName", displayName)
-            };
-
-            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT OR IGNORE INTO folderjunctiontable VALUES (@path, @displayName)", junctionInsertParameters);
+            await backupMutationRepository.AddFolderJunctionAsync(dbClient, path, displayName);
         }
     }
 
@@ -524,7 +487,7 @@ public class BackupJob : Job
     /// <param name="useVss"></param>
     /// <returns></returns>
     /// <exception cref="FileNotProcessedException"></exception>
-    private async Task<bool> CopyFileToDeviceAsync(IStorage storage, FileTableRow file, double newVersionId, string newVersionDate, DbClient dbClient, bool normalCopy = false, bool useVss = false)
+    private async Task<bool> CopyFileToDeviceAsync(IStorageProvider storage, FileTableRow file, long newVersionId, string newVersionDate, DbClient dbClient, bool normalCopy = false, bool useVss = false)
     {
         // file variables
         var localFileName = file.FileNamePath();
@@ -541,7 +504,7 @@ public class BackupJob : Job
                 // temporary file path
                 var vssTempFile = Path.Combine(Path.GetTempPath(), file.FileName);
 
-                if (VolumeShadowCopyService.CopyFile(localFileName, vssTempFile))
+                if (vssClient.CopyFile(localFileName, vssTempFile))
                 {
                     if (!File.Exists(vssTempFile))
                     {
@@ -702,7 +665,7 @@ public class BackupJob : Job
     /// <param name="longFileName"></param>
     /// <param name="compress"></param>
     /// <param name="encrypt"></param>
-    private async Task AddFileVersionDatabaseEntryAsync(DbClient dbClient, FileTableRow file, double newVersionId, string longFileName, bool compress, bool encrypt)
+    private async Task AddFileVersionDatabaseEntryAsync(DbClient dbClient, FileTableRow file, long newVersionId, string longFileName, bool compress, bool encrypt)
     {
         // correct path
         if (!file.FilePath.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
@@ -711,7 +674,7 @@ public class BackupJob : Job
         }
 
         var fileType = 1;
-        if (storage is FileSystemStorage)
+        if (storage.Kind == StorageProviderKind.LocalFileSystem)
         {
             if (compress)
             {
@@ -737,28 +700,19 @@ public class BackupJob : Job
             }
         }
 
-        // update database
-        var fileInsertParameters = new (string, object)[] {
-                ("fileID", file.FileId),
-                ("filePackage", newVersionId),
-                ("fileSize", file.FileSize),
-                ("fileDateCreated", file.FileDateCreated),
-                ("fileDateModified", file.FileDateModified),
-                ("fileHash", ""),
-                ("fileType", fileType),
-                ("fileStatus", 1),
-                ("longfilename", longFileName)
-            };
+        if (!long.TryParse(file.FileId, out var fileId))
+        {
+            throw new InvalidOperationException("File id must be available before file version metadata can be stored.");
+        }
 
-        await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO fileversiontable " +
-            "( fileID, filePackage, fileSize, fileDateCreated, fileDateModified, fileHash, fileType, fileStatus, longfilename ) VALUES " +
-            "( @fileID, @filePackage, @fileSize, @fileDateCreated, @fileDateModified, @fileHash, @fileType, @fileStatus, @longfilename )", fileInsertParameters);
-
-        // add file link
-        var fileLinkInsertParameters = new (string, object)[] {
-                ("versionID", newVersionId)
-            };
-        await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO filelink ( fileversionID, versionID ) VALUES ( last_insert_rowid(), @versionID )", fileLinkInsertParameters);
-
+        await backupMutationRepository.AddFileVersionWithLinkAsync(
+            dbClient,
+            fileId,
+            newVersionId,
+            file.FileSize,
+            file.FileDateCreated,
+            file.FileDateModified,
+            fileType,
+            longFileName);
     }
 }

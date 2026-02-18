@@ -4,8 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:BSH.MainApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Interactivity="using:Microsoft.Xaml.Interactivity" xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
-                mc:Ignorable="d"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    mc:Ignorable="d"
     Title="Backup Service Home"
     Width="1200" Height="800" Closed="WindowEx_Closed">
 
@@ -45,13 +46,13 @@
                         PaneTitle="Backup Service Home"
                         MenuItemsSource="{x:Bind ViewModel.NavigationItems}"
                         SelectedItem="{x:Bind ViewModel.CurrentPage, Mode=TwoWay}">
-            <Interactivity:Interaction.Behaviors>
-                <Core:EventTriggerBehavior EventName="ItemInvoked">
-                    <Core:EventTriggerBehavior.Actions>
-                        <Core:InvokeCommandAction Command="{x:Bind ViewModel.NavigateToMainPageCommand}" />
-                    </Core:EventTriggerBehavior.Actions>
-                </Core:EventTriggerBehavior>
-            </Interactivity:Interaction.Behaviors>
+            <i:Interaction.Behaviors>
+                <i:EventTriggerBehavior EventName="ItemInvoked">
+                    <i:EventTriggerBehavior.Actions>
+                        <i:InvokeCommandAction Command="{x:Bind ViewModel.NavigateToMainPageCommand}" />
+                    </i:EventTriggerBehavior.Actions>
+                </i:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
             <Frame x:Name="ContentArea" x:FieldModifier="public" Navigated="ContentArea_Navigated" />
         </NavigationView>
 

@@ -8,7 +8,7 @@
     xmlns:converters="using:BSH.MainApp.Converters"
     xmlns:models="using:BSH.MainApp.Models"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:engine="using:Brightbits.BSH.Engine.Models" xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:engine="using:Brightbits.BSH.Engine.Models"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -32,12 +32,12 @@
                 Spacing="4"
                 Background="Transparent">
                 <i:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="PointerEntered">
-                        <core:ChangePropertyAction PropertyName="Opacity" Value="0.7" />
-                    </core:EventTriggerBehavior>
-                    <core:EventTriggerBehavior EventName="PointerExited">
-                        <core:ChangePropertyAction PropertyName="Opacity" Value="1.0" />
-                    </core:EventTriggerBehavior>
+                    <i:EventTriggerBehavior EventName="PointerEntered">
+                        <i:ChangePropertyAction PropertyName="Opacity" Value="0.7" />
+                    </i:EventTriggerBehavior>
+                    <i:EventTriggerBehavior EventName="PointerExited">
+                        <i:ChangePropertyAction PropertyName="Opacity" Value="1.0" />
+                    </i:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
                 <TextBlock Text="{x:Bind FileName, Mode=OneWay}" VerticalAlignment="Center" FontSize="12" FontWeight="Medium" />
             </StackPanel>
@@ -152,11 +152,11 @@
                         <!-- favorites -->
                         <TextBlock Grid.Row="0" Text="Favourites" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
                         <ListView Margin="8,0,12,0" SelectedItem="{x:Bind ViewModel.CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{x:Bind ViewModel.Favorites, Mode=TwoWay}">
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="SelectionChanged">
-                                    <core:InvokeCommandAction Command="{x:Bind ViewModel.LoadFavoriteCommand}" />
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
+                            <i:Interaction.Behaviors>
+                                <i:EventTriggerBehavior EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{x:Bind ViewModel.LoadFavoriteCommand}" />
+                                </i:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
                         </ListView>
 
                         <!-- backup list -->
@@ -167,11 +167,11 @@
                         ItemTemplate="{StaticResource VersionTemplate}" 
                         ItemsSource="{x:Bind ViewModel.Versions, Mode=OneWay}" 
                         SelectedItem="{x:Bind ViewModel.CurrentVersion, Mode=TwoWay}">
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="SelectionChanged">
-                                    <core:InvokeCommandAction Command="{x:Bind ViewModel.LoadVersionCommand}"/>
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
+                            <i:Interaction.Behaviors>
+                                <i:EventTriggerBehavior EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{x:Bind ViewModel.LoadVersionCommand}"/>
+                                </i:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
                         </ListView>
                     </Grid>
                 </SplitView.Pane>
@@ -264,11 +264,11 @@
                         <ListView 
                         ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" 
                         SelectedItem="{x:Bind ViewModel.CurrentItem, Mode=TwoWay}">
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="DoubleTapped">
-                                    <core:InvokeCommandAction Command="{x:Bind ViewModel.LoadFolderCommand}" />
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
+                            <i:Interaction.Behaviors>
+                                <i:EventTriggerBehavior EventName="DoubleTapped">
+                                    <i:InvokeCommandAction Command="{x:Bind ViewModel.LoadFolderCommand}" />
+                                </i:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
                             <ListView.HeaderTemplate>
                                 <DataTemplate>
                                     <Grid Padding="12">

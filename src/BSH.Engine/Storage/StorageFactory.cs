@@ -3,6 +3,7 @@
 
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Storage;
+using Brightbits.BSH.Engine.Providers.Ports;
 
 namespace Brightbits.BSH.Engine.Storage;
 
@@ -15,7 +16,7 @@ public class StorageFactory : IStorageFactory
         this.configurationManager = configurationManager;
     }
 
-    public IStorage GetCurrentStorageProvider()
+    public IStorageProvider GetCurrentStorageProvider()
     {
         if (configurationManager.MediumType != MediaType.FileTransferServer)
         {

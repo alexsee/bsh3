@@ -9,11 +9,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
-using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -23,7 +24,7 @@ namespace Brightbits.BSH.Engine.Jobs;
 /// </summary>
 public class RestoreJob : Job
 {
-    private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+    private static readonly ILogger _logger = Log.ForContext<RestoreJob>();
 
     public int Version
     {
@@ -53,10 +54,11 @@ public class RestoreJob : Job
 
     private RequestOverwriteResult overwriteRequestPersistent = RequestOverwriteResult.None;
 
-    public RestoreJob(IStorage storage,
+    public RestoreJob(IStorageProvider storage,
         IDbClientFactory dbClientFactory,
         IQueryManager queryManager,
-        IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
+        IConfigurationManager configurationManager,
+        IVersionQueryRepository versionQueryRepository) : base(storage, dbClientFactory, queryManager, configurationManager, versionQueryRepository)
     {
     }
 
@@ -95,7 +97,7 @@ public class RestoreJob : Job
 
             // obtain files that need to be restored
             var countFiles = 0;
-            var getFileSQL = "";
+            System.Data.Common.DbDataReader reader;
 
             // single file or path?
             if (!string.IsNullOrEmpty(Path.GetFileName(File).Trim()))
@@ -113,18 +115,8 @@ public class RestoreJob : Job
                     filePath = "\\" + filePath;
                 }
 
-                // query single file
-                getFileSQL = $"SELECT " +
-                    $"fileversiontable.*, filetable.*, versiontable.versionDate " +
-                    $"FROM filetable, fileversiontable, versiontable, filelink " +
-                    $"WHERE filelink.fileversionID = fileversiontable.fileversionID " +
-                    $"AND filelink.versionID = {Version} " +
-                    $"AND fileversiontable.filePackage = versiontable.versionID " +
-                    $"AND filetable.fileName LIKE \"{fileName}\" " +
-                    $"AND filetable.filePath LIKE \"{filePath}\" " +
-                    $"AND fileversiontable.fileID = filetable.fileID LIMIT 1";
-
                 countFiles = 1;
+                reader = await versionQueryRepository.GetRestoreSingleFileAsync(dbClient, Version, fileName, filePath);
             }
             else
             {
@@ -134,22 +126,8 @@ public class RestoreJob : Job
                     File += "\\";
                 }
 
-                var c = await dbClient.ExecuteScalarAsync(CommandType.Text,
-                    $"SELECT COUNT(*) FROM filetable, fileversiontable, filelink " +
-                    $"WHERE filelink.fileversionID = fileversiontable.fileversionID " +
-                    $"AND fileversiontable.fileID = filetable.fileID " +
-                    $"AND filelink.versionID = {Version} " +
-                    $"AND filetable.filePath LIKE \"{File}%\"", null);
-
-                countFiles = int.Parse(c.ToString());
-
-                getFileSQL = $"SELECT filetable.*, versiontable.versionDate, fileversiontable.* " +
-                    $"FROM filetable, versiontable, fileversiontable, filelink " +
-                    $"WHERE filelink.fileversionID = fileversiontable.fileversionID " +
-                    $"AND fileversiontable.fileID = filetable.fileID " +
-                    $"AND filePackage = versiontable.versionID " +
-                    $"AND filelink.versionID = {Version} " +
-                    $"AND filePath LIKE \"{File}%\"";
+                countFiles = await versionQueryRepository.CountRestoreFilesByPathAsync(dbClient, Version, File);
+                reader = await versionQueryRepository.GetRestoreFilesByPathAsync(dbClient, Version, File);
             }
 
             // determine target folder
@@ -180,7 +158,7 @@ public class RestoreJob : Job
             ReportProgress(countFiles, 0);
 
             // restore files
-            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, getFileSQL, null))
+            using (reader)
             {
                 var i = 0;
                 while (await reader.ReadAsync(token))
@@ -228,7 +206,7 @@ public class RestoreJob : Job
 
                         ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_TEXT);
                         ReportExceptions(FileErrorList);
-                        ReportState(JobState.FINISHED);
+                        ReportState(JobState.CANCELED);
                         return;
                     }
                 }
@@ -237,11 +215,11 @@ public class RestoreJob : Job
             }
 
             // restore folders
-            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, $"SELECT folder FROM foldertable, folderlink WHERE foldertable.id = folderlink.folderid AND folderlink.versionid = {Version} AND foldertable.folder LIKE \"{File}%\"", null))
+            using (var folderReader = await versionQueryRepository.GetRestoreFoldersByPathAsync(dbClient, Version, File))
             {
-                while (await reader.ReadAsync(token))
+                while (await folderReader.ReadAsync(token))
                 {
-                    var fileDest = GetFileDestination(destFolders, reader.GetString("folder"));
+                    var fileDest = GetFileDestination(destFolders, folderReader.GetString("folder"));
 
                     // create path
                     try
@@ -254,7 +232,7 @@ public class RestoreJob : Job
                     }
                 }
 
-                await reader.CloseAsync();
+                await folderReader.CloseAsync();
             }
         }
 
@@ -304,7 +282,7 @@ public class RestoreJob : Job
     /// <param name="destination"></param>
     /// <param name="warning"></param>
     /// <exception cref="FileNotProcessedException"></exception>
-    public async Task CopyFileFromDevice(IStorage storage, IDataReader reader, string destination, bool warning = true)
+    public async Task CopyFileFromDevice(IStorageProvider storage, IDataReader reader, string destination, bool warning = true)
     {
         ArgumentNullException.ThrowIfNull(storage);
 

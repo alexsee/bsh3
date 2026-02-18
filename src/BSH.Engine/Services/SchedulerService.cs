@@ -24,14 +24,25 @@ public class SchedulerService : ISchedulerService
     {
         Task.Run(async () =>
         {
-            var properties = new NameValueCollection {
-                { "quartz.threadPool.threadCount", "1" },
-                { "quartz.threadPool.maxConcurrency", "1" }
-            };
+            // If scheduler exists and is shutdown, clear it
+            if (this.scheduler != null && this.scheduler.IsShutdown)
+            {
+                this.scheduler = null;
+            }
 
-            var factory = new StdSchedulerFactory(properties);
-            this.scheduler = await factory.GetScheduler();
+            // Only create a new scheduler if we don't have one
+            if (this.scheduler == null)
+            {
+                var properties = new NameValueCollection {
+                    { "quartz.threadPool.threadCount", "1" },
+                    { "quartz.threadPool.maxConcurrency", "1" }
+                };
 
+                var factory = new StdSchedulerFactory(properties);
+                this.scheduler = await factory.GetScheduler();
+            }
+
+            // Start the scheduler if it's not running
             await this.scheduler.Start();
         }).Wait();
     }
@@ -131,7 +142,11 @@ public class SchedulerService : ISchedulerService
             return;
         }
 
-        scheduler.Shutdown();
+        Task.Run(async () =>
+        {
+            await scheduler.Shutdown();
+            scheduler = null;
+        }).Wait();
     }
 
     private sealed class RunActionJob : IJob

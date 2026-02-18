@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AutoUpdaterDotNET;
 using BSH.Main.Model.CommandLine;
@@ -97,6 +98,7 @@ static class Program
         // close application
         NotificationController.Current.Shutdown();
         BackupLogic.StopSystem();
+        BackupLogic.BackupController?.Dispose();
         Settings.Default.StartParameters = Environment.CommandLine;
         Settings.Default.Save();
 
@@ -115,6 +117,7 @@ static class Program
 
     private static void ApplicationExit(object sender, EventArgs e)
     {
+        BackupLogic.BackupController?.Dispose();
         Log.CloseAndFlush();
     }
 
@@ -124,6 +127,7 @@ static class Program
         Log.CloseAndFlush();
 
         BackupLogic.StopSystem();
+        BackupLogic.BackupController?.Dispose();
 
         Application.Exit();
         Environment.Exit(0);
@@ -199,7 +203,7 @@ static class Program
         // run automatic backup deletion
         if (opts.AutoDeletion)
         {
-            BackupLogic.CommandAutoDelete();
+            Task.Run(BackupLogic.CommandAutoDelete).GetAwaiter().GetResult();
         }
 
         // create manual backup

@@ -4,10 +4,14 @@
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Activation;
 using BSH.MainApp.Contracts.Services;
@@ -17,6 +21,7 @@ using BSH.MainApp.Models;
 using BSH.MainApp.Notifications;
 using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
+using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Views;
 using H.NotifyIcon;
 using Microsoft.Extensions.DependencyInjection;
@@ -86,6 +91,7 @@ public partial class App : Application
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IStatusService, StatusService>();
             services.AddTransient<IWaitForMediaService, WaitForMediaService>();
+            services.AddSingleton<Func<IWaitForMediaService>>(x => () => x.GetRequiredService<IWaitForMediaService>());
             services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();
             services.AddSingleton<IOrchestrationService, OrchestrationService>();
             services.AddSingleton<IJobService, JobService>();
@@ -97,7 +103,14 @@ public partial class App : Application
 
             services.AddSingleton<IDbClientFactory, DbClientFactory>();
             services.AddSingleton<IDbMigrationService, DbMigrationService>();
+            services.AddSingleton<IVersionQueryRepository, VersionQueryRepository>();
+            services.AddSingleton<IBackupMutationRepository, BackupMutationRepository>();
+            services.AddSingleton<IScheduleRepository, ScheduleRepository>();
 
+            services.AddSingleton<IVssClient, VolumeShadowCopyClient>();
+            services.AddSingleton<ISchedulerAdapterFactory, SchedulerAdapterFactory>();
+            services.AddSingleton<IMediaWatcherFactory, MediaWatcherFactory>();
+            services.AddSingleton<IFileCollectorServiceFactory, FileCollectorServiceFactory>();
             services.AddSingleton<IBackupService, BackupService>();
 
             services.AddSingleton<IStorageFactory, StorageFactory>();
@@ -111,6 +124,8 @@ public partial class App : Application
             services.AddTransient<MainPage>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
+
+            services.AddTransient<FilterViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
@@ -196,6 +211,7 @@ public partial class App : Application
     private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
         TrayIcon?.Dispose();
+        Host.Dispose();
         Environment.Exit(0);
     }
 }

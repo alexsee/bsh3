@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using Brightbits.BSH.Engine.Providers.Ports;
 using BSH.Service.Shared;
 using Serilog;
 using ServiceWire.NamedPipes;
@@ -11,7 +12,17 @@ namespace Brightbits.BSH.Engine.Services;
 
 public static class VolumeShadowCopyService
 {
+    private static readonly IVssClient _client = new VolumeShadowCopyClient();
+
     public static bool CopyFile(string fileName, string destFileName)
+    {
+        return _client.CopyFile(fileName, destFileName);
+    }
+}
+
+public sealed class VolumeShadowCopyClient : IVssClient
+{
+    public bool CopyFile(string fileName, string destFileName)
     {
         ArgumentNullException.ThrowIfNull(fileName);
         ArgumentNullException.ThrowIfNull(destFileName);

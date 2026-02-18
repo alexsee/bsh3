@@ -11,10 +11,15 @@ using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
 using Microsoft.Win32;
@@ -50,11 +55,29 @@ static class BackupLogic
         get; private set;
     }
 
+    public static IScheduleRepository ScheduleRepository
+    {
+        get; private set;
+    }
+
+    public static IVersionQueryRepository VersionQueryRepository
+    {
+        get; private set;
+    }
+
+    public static IBackupMutationRepository BackupMutationRepository
+    {
+        get; private set;
+    }
+
     public static string DatabaseFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
 
-    private static UsbWatchService dCWatcher;
+    private static IMediaWatcher dCWatcher;
+    private static IMediaWatcherFactory mediaWatcherFactory;
+    private static IFileCollectorServiceFactory fileCollectorServiceFactory;
 
-    private static SchedulerService schedulerService;
+    private static ISchedulerAdapter schedulerService;
+    private static ISchedulerAdapterFactory schedulerAdapterFactory;
 
     private static Timer tmrUserReminder;
 
@@ -91,9 +114,33 @@ static class BackupLogic
         // start main system
         var storageFactory = new StorageFactory(ConfigurationManager);
         QueryManager = new QueryManager(DbClientFactory, ConfigurationManager, storageFactory);
+        ScheduleRepository = new ScheduleRepository(DbClientFactory);
+        VersionQueryRepository = new VersionQueryRepository();
+        BackupMutationRepository = new BackupMutationRepository(DbClientFactory);
+        fileCollectorServiceFactory = new FileCollectorServiceFactory();
+        mediaWatcherFactory = new MediaWatcherFactory();
+        schedulerAdapterFactory = new SchedulerAdapterFactory();
 
-        BackupService = new BackupService(ConfigurationManager, QueryManager, DbClientFactory, storageFactory);
-        BackupController = new BackupController(BackupService, ConfigurationManager);
+        BackupService = new BackupService(
+            ConfigurationManager,
+            QueryManager,
+            DbClientFactory,
+            storageFactory,
+            new VolumeShadowCopyClient(),
+            fileCollectorServiceFactory,
+            VersionQueryRepository,
+            BackupMutationRepository);
+
+        BackupController = new BackupController(
+            BackupService,
+            ConfigurationManager,
+            () => StatusController.Current.IsTaskRunning(),
+            async (action, silent, cancellationTokenSource) =>
+            {
+                var waitForMediaService = new WaitForMediaService(BackupService, silent, action, cancellationTokenSource);
+                return await waitForMediaService.ExecuteAsync();
+            },
+            () => Task.FromResult(BackupLogic.BackupController.RequestPassword()));
 
         // first time start?
         if (ConfigurationManager.IsConfigured == "0")
@@ -292,7 +339,7 @@ static class BackupLogic
         Log.Information("Service for \"Full automatic backup\" is started.");
 
         // start scheduler
-        schedulerService = new SchedulerService();
+        schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
         schedulerService.ScheduleAutoBackup(async () => await RunAutoBackup());
 
@@ -316,53 +363,25 @@ static class BackupLogic
     {
         Log.Information("Automatic backup is scheduled and will be performed now.");
 
-        // check if backup is in progress
-        if (StatusController.Current.IsTaskRunning())
-        {
-            Log.Warning("Automatic backup cancelled due to other task in progress.");
-            return;
-        }
-
-        // check if device is ready
-        if (!await BackupService.CheckMedia())
-        {
-            Log.Warning("Automatic backup cancelled due to not reachable storage device.");
-            return;
-        }
-
-        // request password
-        if (!BackupController.RequestPassword())
-        {
-            Log.Warning("Automatic backup cancelled due to wrong password.");
-            return;
-        }
-
         // stop automatic backup when device ready
         StopDoBackupWhenDriveIsAvailable();
 
         // lower process priority
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        // run backup
-        var cancellationToken = BackupController.GetNewCancellationToken();
-        Engine.Jobs.IJobReport argjobReport = StatusController.Current;
-
-        var task = BackupService.StartBackup("Automatisches Backup", "", ref argjobReport, cancellationToken, false, "", true);
-        if (task == null)
+        try
+        {
+            // run backup
+            var succeeded = await BackupController.CreateBackupAsync("Automatisches Backup", "", false);
+            if (succeeded)
+            {
+                await RemoveOldBackups();
+            }
+        }
+        finally
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
-            return;
         }
-
-        await task.ContinueWith((x) =>
-        {
-            if (!cancellationToken.IsCancellationRequested)
-            {
-                RemoveOldBackups();
-            }
-        }, TaskContinuationOptions.OnlyOnRanToCompletion)
-            .ContinueWith((x) => Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal,
-            TaskContinuationOptions.None);
     }
 
     private static List<VersionDetails> GetAutomaticVersionsToDelete()
@@ -418,7 +437,7 @@ static class BackupLogic
         return listDelete;
     }
 
-    private static void RemoveOldBackups()
+    private static async Task RemoveOldBackups()
     {
         // get versions to clean
         var listDelete = GetAutomaticVersionsToDelete();
@@ -426,11 +445,7 @@ static class BackupLogic
         // delete old versions
         foreach (var version in listDelete)
         {
-            var cancellationToken = BackupController.GetNewCancellationToken();
-            Engine.Jobs.IJobReport argjobReport = StatusController.Current;
-
-            var task = BackupService.StartDelete(version.Id, ref argjobReport, cancellationToken, true);
-            task.Wait();
+            await BackupController.DeleteBackupAsync(version.Id, false);
         }
     }
 
@@ -453,20 +468,18 @@ static class BackupLogic
         Log.Information("Service for \"Scheduled backups\" is started.");
 
         // start scheduler
-        schedulerService = new SchedulerService();
+        schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
 
         // observe power mode
         SystemEvents.PowerModeChanged += PowerModeChanged;
 
         // read scheduler entries in database
-        using var dbClient = DbClientFactory.CreateDbClient();
-        using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
-
-        while (await reader.ReadAsync())
+        var schedules = await ScheduleRepository.GetSchedulesAsync();
+        foreach (var schedule in schedules)
         {
-            var scheduleDate = reader.GetDateTimeParsed("timDate");
-            var scheduleType = reader.GetInt32("timType");
+            var scheduleDate = schedule.Date;
+            var scheduleType = schedule.Type;
 
             if (scheduleType == 1)
             {
@@ -592,7 +605,6 @@ static class BackupLogic
             }
         }
 
-        await reader.CloseAsync();
     }
 
     public static bool DoPastBackup(DateTime date, bool orOlder = false)
@@ -645,25 +657,6 @@ static class BackupLogic
     {
         Log.Information("Scheduled backup is planned and will be performed now.");
 
-        // Prüfen, ob was in Arbeit ist
-        if (StatusController.Current.IsTaskRunning())
-        {
-            Log.Warning("Scheduled backup cancelled due to other task in progress.");
-            return;
-        }
-
-        if (!await BackupService.CheckMedia())
-        {
-            Log.Warning("Scheduled backup cancelled due to not reachable storage device.");
-            return;
-        }
-
-        if (!BackupController.RequestPassword())
-        {
-            Log.Warning("Scheduled backup cancelled due to wrong password.");
-            return;
-        }
-
         // Automatisches nachholen abbrechen
         StopDoBackupWhenDriveIsAvailable();
 
@@ -687,28 +680,22 @@ static class BackupLogic
             }
         }
 
-        // Backup durchführen
-        var cancellationToken = BackupController.GetNewCancellationToken();
-        Engine.Jobs.IJobReport argjobReport = StatusController.Current;
-
-        var task = BackupService.StartBackup(Resources.BACKUP_TITLE_AUTOMATIC, "", ref argjobReport, cancellationToken, FullBackup, "", true);
-        if (task == null)
+        try
+        {
+            // Backup durchführen
+            var succeeded = await BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_AUTOMATIC, "", false, FullBackup);
+            if (succeeded)
+            {
+                await RemoveOldBackupsScheduled();
+            }
+        }
+        finally
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
-            return;
         }
-
-        await task.ContinueWith((x) =>
-        {
-            if (!cancellationToken.IsCancellationRequested)
-            {
-                RemoveOldBackupsScheduled();
-            }
-        }, TaskContinuationOptions.OnlyOnRanToCompletion)
-            .ContinueWith((x) => Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal, TaskContinuationOptions.None);
     }
 
-    private static void RemoveOldBackupsScheduled()
+    private static async Task RemoveOldBackupsScheduled()
     {
         // lower process priority
         var proc = Process.GetCurrentProcess();
@@ -782,11 +769,7 @@ static class BackupLogic
         // delete versions
         foreach (var version in listDelete)
         {
-            var cancellationToken = BackupController.GetNewCancellationToken();
-            Engine.Jobs.IJobReport argjobReport = StatusController.Current;
-
-            var task = BackupService.StartDelete(version.Id, ref argjobReport, cancellationToken, true);
-            task.Wait();
+            await BackupController.DeleteBackupAsync(version.Id, false);
         }
     }
 
@@ -811,7 +794,7 @@ static class BackupLogic
         // only start, if local device
         if (ConfigurationManager.MediumType != MediaType.FileTransferServer)
         {
-            dCWatcher = new UsbWatchService();
+            dCWatcher = mediaWatcherFactory.Create();
             dCWatcher.StartWatching();
 
             // observe devices
@@ -870,16 +853,16 @@ static class BackupLogic
         }
     }
 
-    public static void CommandAutoDelete()
+    public static async Task CommandAutoDelete()
     {
         // check device
-        if (!BackupService.CheckMedia().Result)
+        if (!await BackupService.CheckMedia())
         {
             return;
         }
 
         // delete old versions
-        RemoveOldBackups();
+        await RemoveOldBackups();
     }
 
     public static DateTime GetNextBackupDate()
@@ -891,7 +874,6 @@ static class BackupLogic
 
         return schedulerService.GetNextRun();
     }
-
     public static async Task<bool> HasScheduleEntriesAsync()
     {
         using var dbClient = DbClientFactory.CreateDbClient();

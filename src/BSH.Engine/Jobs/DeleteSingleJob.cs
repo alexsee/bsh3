@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
@@ -10,11 +9,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
-using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -24,10 +24,19 @@ namespace Brightbits.BSH.Engine.Jobs;
 /// </summary>
 public class DeleteSingleJob : Job
 {
-    private static readonly ILogger _logger = Log.ForContext<DeleteJob>();
+    private static readonly ILogger _logger = Log.ForContext<DeleteSingleJob>();
+    private readonly IBackupMutationRepository backupMutationRepository;
 
-    public DeleteSingleJob(IStorage storage, IDbClientFactory dbClientFactory, IQueryManager queryManager, IConfigurationManager configurationManager) : base(storage, dbClientFactory, queryManager, configurationManager)
+    public DeleteSingleJob(
+        IStorageProvider storage,
+        IDbClientFactory dbClientFactory,
+        IQueryManager queryManager,
+        IConfigurationManager configurationManager,
+        IVersionQueryRepository versionQueryRepository,
+        IBackupMutationRepository backupMutationRepository) : base(storage, dbClientFactory, queryManager, configurationManager, versionQueryRepository)
     {
+        ArgumentNullException.ThrowIfNull(backupMutationRepository);
+        this.backupMutationRepository = backupMutationRepository;
     }
 
     /// <summary>
@@ -67,42 +76,7 @@ public class DeleteSingleJob : Job
             storage.Open();
 
             // get file list
-            var fileIds = new List<int>();
-            var fileVersionIds = new List<int>();
-
-            string selectFileSQL;
-            (string, object)[] selectFileParameters;
-
-            if (!string.IsNullOrEmpty(fileFilter) && !string.IsNullOrEmpty(pathFilter))
-            {
-                selectFileSQL = "SELECT ft.fileID " +
-                                "FROM fileTable AS ft " +
-                                "WHERE fileName = @fileName AND filePath = @filePath";
-                selectFileParameters =
-                [
-                    ("fileName", fileFilter),
-                    ("filePath", pathFilter)
-                ];
-            }
-            else
-            {
-                selectFileSQL = "SELECT ft.fileID " +
-                                "FROM fileTable AS ft " +
-                                "WHERE filePath LIKE @filePath";
-                selectFileParameters = [
-                    ("filePath", pathFilter)
-                ];
-            }
-
-            // obtain files
-            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, selectFileSQL, selectFileParameters))
-            {
-                while (await reader.ReadAsync())
-                {
-                    fileIds.Add(reader.GetInt32(0));
-                }
-                await reader.CloseAsync();
-            }
+            var fileIds = await versionQueryRepository.GetFileIdsForDeleteSingleAsync(dbClient, fileFilter, pathFilter);
 
             // report progress
             _logger.Information("{numFiles} files determined for deletion.", fileIds.Count);
@@ -111,19 +85,7 @@ public class DeleteSingleJob : Job
             foreach (var fileId in fileIds)
             {
                 // obtain all file versions
-                var deleteFileParams = new (string, object)[]
-                {
-                    ("fileId", fileId)
-                };
-
-                using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text,
-                    "SELECT * FROM fileVersionTable AS fvt " +
-                                                    "INNER JOIN fileTable AS ft ON " +
-                                                    "  ft.fileID = fvt.fileID " +
-                                                    "INNER JOIN versionTable AS vt ON " +
-                                                    "  fvt.filePackage = vt.versionID " +
-                                                    "WHERE fvt.fileID = @fileId",
-                    deleteFileParams);
+                using var reader = await versionQueryRepository.GetFileVersionsForDeleteSingleAsync(dbClient, fileId);
                 var i = 0;
                 while (await reader.ReadAsync())
                 {
@@ -158,35 +120,13 @@ public class DeleteSingleJob : Job
                         _logger.Error(ex.InnerException, "File {fileName} could not be deleted. {exception}", reader.GetString("fileName"), fileExceptionEntry);
                     }
 
-                    // add to deleted id list
-                    fileVersionIds.Add(reader.GetInt32(reader.GetOrdinal("fileversionid")));
                 }
 
                 await reader.CloseAsync();
             }
 
             // delete metadata from database
-            string subQuerySQL;
-            var deleteParams = new List<(string, object)>();
-
-            if (!string.IsNullOrEmpty(fileFilter) && !string.IsNullOrEmpty(pathFilter))
-            {
-                subQuerySQL = "SELECT ft.fileID FROM fileTable AS ft WHERE fileName = @fileName AND filePath = @filePath";
-
-                deleteParams.Add(("fileName", fileFilter));
-                deleteParams.Add(("filePath", pathFilter));
-            }
-            else
-            {
-                subQuerySQL = "SELECT ft.fileID FROM fileTable AS ft WHERE filePath LIKE @filePath";
-
-                deleteParams.Add(("filePath", pathFilter));
-            }
-
-            // delete metadata
-            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileLink WHERE fileversionid IN (SELECT fileversionid FROM fileversiontable AS fvt WHERE fvt.fileID IN (" + subQuerySQL + "))", deleteParams.ToArray());
-            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileversiontable WHERE fileID IN (" + subQuerySQL + ")", deleteParams.ToArray());
-            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileTable AS ft WHERE " + subQuerySQL[(subQuerySQL.IndexOf("WHERE ") + 6)..], deleteParams.ToArray());
+            await backupMutationRepository.DeleteSingleFileMetadataAsync(dbClient, fileFilter, pathFilter);
 
             dbClient.CommitTransaction();
         }
@@ -260,7 +200,7 @@ public class DeleteSingleJob : Job
             }
             else if (fileType == "5" || fileType == "6")
             {
-                storage.DeleteFileFromStorageEncryped(remoteFile);
+                storage.DeleteFileFromStorageEncrypted(remoteFile);
             }
         }
         catch (Exception ex)

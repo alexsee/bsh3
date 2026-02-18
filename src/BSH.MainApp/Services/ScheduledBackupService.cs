@@ -1,13 +1,14 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Data;
 using System.Diagnostics;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Utils;
 using BSH.MainApp.Contracts.Services;
@@ -20,18 +21,23 @@ public class ScheduledBackupService : IScheduledBackupService
     private readonly IConfigurationManager configurationManager;
     private readonly IJobService jobService;
     private readonly IQueryManager queryManager;
-    private readonly IDbClientFactory dbClientFactory;
-    private readonly IStatusService statusService;
+    private readonly IScheduleRepository scheduleRepository;
+    private readonly ISchedulerAdapterFactory schedulerAdapterFactory;
 
-    private SchedulerService schedulerService;
+    private ISchedulerAdapter schedulerService;
 
-    public ScheduledBackupService(IConfigurationManager configurationManager, IJobService jobService, IQueryManager queryManager, IDbClientFactory dbClientFactory, IStatusService statusService)
+    public ScheduledBackupService(
+        IConfigurationManager configurationManager,
+        IJobService jobService,
+        IQueryManager queryManager,
+        IScheduleRepository scheduleRepository,
+        ISchedulerAdapterFactory schedulerAdapterFactory)
     {
         this.configurationManager = configurationManager;
         this.jobService = jobService;
         this.queryManager = queryManager;
-        this.dbClientFactory = dbClientFactory;
-        this.statusService = statusService;
+        this.scheduleRepository = scheduleRepository;
+        this.schedulerAdapterFactory = schedulerAdapterFactory;
     }
 
     public async Task InitializeAsync()
@@ -98,7 +104,7 @@ public class ScheduledBackupService : IScheduledBackupService
         Log.Information("Service for \"Full automatic backup\" is started.");
 
         // start scheduler
-        schedulerService = new SchedulerService();
+        schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
         schedulerService.ScheduleAutoBackup(async () => await RunAutoBackup());
     }
@@ -119,41 +125,15 @@ public class ScheduledBackupService : IScheduledBackupService
     {
         Log.Information("Automatic backup is scheduled and will be performed now.");
 
-        // check if backup is in progress
-        if (statusService.IsTaskRunning())
-        {
-            Log.Warning("Automatic backup cancelled due to other task in progress.");
-            return;
-        }
-
-        // check if device is ready
-        if (!await jobService.CheckMediaAsync(ActionType.Backup, true))
-        {
-            Log.Warning("Automatic backup cancelled due to not reachable storage device.");
-            return;
-        }
-
-        // request password
-        if (!await jobService.RequestPassword())
-        {
-            Log.Warning("Automatic backup cancelled due to wrong password.");
-            return;
-        }
-
         // lower process priority
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
         // run backup
         var task = jobService.CreateBackupAsync("Automatisches Backup", "", false);
-        if (task == null)
-        {
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
-            return;
-        }
 
         await task.ContinueWith(async (x) =>
         {
-            if (!jobService.IsCancellationRequested)
+            if (x.Result)
             {
                 await RemoveOldBackups();
             }
@@ -236,17 +216,15 @@ public class ScheduledBackupService : IScheduledBackupService
         Log.Information("Service for \"Scheduled backups\" is started.");
 
         // start scheduler
-        schedulerService = new SchedulerService();
+        schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
 
         // read scheduler entries in database
-        using var dbClient = dbClientFactory.CreateDbClient();
-        using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
-
-        while (await reader.ReadAsync())
+        var schedules = await scheduleRepository.GetSchedulesAsync();
+        foreach (var schedule in schedules)
         {
-            var scheduleDate = reader.GetDateTimeParsed("timDate");
-            var scheduleType = reader.GetInt32("timType");
+            var scheduleDate = schedule.Date;
+            var scheduleType = schedule.Type;
 
             if (scheduleType == 1)
             {
@@ -357,7 +335,6 @@ public class ScheduledBackupService : IScheduledBackupService
             }
         }
 
-        await reader.CloseAsync();
     }
 
     private bool DoPastBackup(DateTime date, bool orOlder = false)
@@ -407,25 +384,6 @@ public class ScheduledBackupService : IScheduledBackupService
     {
         Log.Information("Scheduled backup is planned and will be performed now.");
 
-        // Prüfen, ob was in Arbeit ist
-        if (statusService.IsTaskRunning())
-        {
-            Log.Warning("Scheduled backup cancelled due to other task in progress.");
-            return;
-        }
-
-        if (!await jobService.CheckMediaAsync(ActionType.Backup, true))
-        {
-            Log.Warning("Scheduled backup cancelled due to not reachable storage device.");
-            return;
-        }
-
-        if (!await jobService.RequestPassword())
-        {
-            Log.Warning("Scheduled backup cancelled due to wrong password.");
-            return;
-        }
-
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
@@ -445,15 +403,10 @@ public class ScheduledBackupService : IScheduledBackupService
 
         // Backup durchführen
         var task = jobService.CreateBackupAsync("Automatische Sicherung", "", false, fullBackupOption);
-        if (task == null)
-        {
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
-            return;
-        }
 
         await task.ContinueWith(async (x) =>
         {
-            if (!jobService.IsCancellationRequested)
+            if (x.Result)
             {
                 await RemoveOldBackupsScheduled();
             }
