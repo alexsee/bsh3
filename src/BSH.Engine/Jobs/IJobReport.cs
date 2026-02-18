@@ -5,26 +5,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Runtime.Ports;
 
 namespace Brightbits.BSH.Engine.Jobs;
 
-public interface IJobReport
+public interface IJobReport : IJobRuntimeEvents
 {
-    void ReportAction(ActionType action, bool silent);
-
-    void ReportState(JobState jobState);
-
-    void ReportStatus(string title, string text);
-
-    void ReportProgress(int total, int current);
-
-    void ReportFileProgress(string file);
-
-    void ReportExceptions(Collection<FileExceptionEntry> files, bool silent);
-
-    Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile);
-
-    Task RequestShowErrorInsufficientDiskSpaceAsync();
 }
 
 public class ForwardJobReport : IJobReport

@@ -233,6 +233,7 @@ public class NotificationController : IStatusReport
                 break;
 
             case JobState.FINISHED:
+            case JobState.CANCELED:
                 ReportSystemStatus_Safe(StatusController.Current.SystemStatus);
                 break;
         }

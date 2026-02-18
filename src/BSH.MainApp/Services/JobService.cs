@@ -6,6 +6,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Security;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Helpers;
@@ -14,7 +15,7 @@ using Serilog;
 
 namespace BSH.MainApp.Services;
 
-public class JobService : IJobService
+public class JobService : IJobService, IDisposable
 {
     private readonly ILogger _logger = Log.ForContext<JobService>();
 
@@ -24,13 +25,14 @@ public class JobService : IJobService
     private readonly IStatusService statusService;
     private readonly IPresentationService presentationService;
     private readonly ILocalSettingsService localSettingsService;
-    private CancellationTokenSource cancellationTokenSource;
+    private readonly Func<IWaitForMediaService> waitForMediaServiceFactory;
+    private readonly JobRuntime jobRuntime;
 
     private IJobReport jobReportCallback;
 
     private CancellationToken cancellationToken;
 
-    public bool IsCancellationRequested => cancellationTokenSource.IsCancellationRequested;
+    public bool IsCancellationRequested => jobRuntime.IsCancellationRequested;
 
     /// <summary>
     /// Initializes a new instance of the JobService given the BackupService and
@@ -43,13 +45,29 @@ public class JobService : IJobService
         IConfigurationManager configurationManager,
         IStatusService statusService,
         IPresentationService presentationService,
-        ILocalSettingsService localSettingsService)
+        ILocalSettingsService localSettingsService,
+        Func<IWaitForMediaService> waitForMediaServiceFactory)
     {
+        ArgumentNullException.ThrowIfNull(waitForMediaServiceFactory);
+
         this.backupService = backupService;
         this.configurationManager = configurationManager;
         this.statusService = statusService;
         this.presentationService = presentationService;
         this.localSettingsService = localSettingsService;
+        this.waitForMediaServiceFactory = waitForMediaServiceFactory;
+
+        this.jobRuntime = new JobRuntime(
+            backupService,
+            () => this.statusService.IsTaskRunning(),
+            () => this.configurationManager.Medium == "1",
+            async (_, silent, cancellationTokenSource) =>
+            {
+                var waitForMediaService = this.waitForMediaServiceFactory();
+                return await waitForMediaService.ExecuteAsync(silent, cancellationTokenSource);
+            },
+            this.RequestPassword);
+
         jobReportCallback = (IJobReport)statusService;
 
         GetNewCancellationToken();
@@ -61,8 +79,7 @@ public class JobService : IJobService
     /// <returns>Returns the new CancellationToken.</returns>
     public CancellationToken GetNewCancellationToken()
     {
-        cancellationTokenSource = new CancellationTokenSource();
-        cancellationToken = cancellationTokenSource.Token;
+        cancellationToken = jobRuntime.GetNewCancellationToken();
         return cancellationToken;
     }
 
@@ -72,13 +89,7 @@ public class JobService : IJobService
     public void Cancel()
     {
         _logger.Debug("Cancellation of current task requested by user.");
-
-        if (cancellationTokenSource == null)
-        {
-            return;
-        }
-
-        cancellationTokenSource.Cancel();
+        jobRuntime.Cancel();
     }
 
     /// <summary>
@@ -89,22 +100,7 @@ public class JobService : IJobService
     /// <returns>Returns true, if the backup media is available, otherwise false.</returns>
     public async Task<bool> CheckMediaAsync(ActionType action, bool silent = false)
     {
-        _logger.Debug("Media check requested by task {action}.", action);
-
-        // check if media is available
-        if (await backupService.CheckMedia())
-        {
-            return true;
-        }
-
-        // should we wait for media
-        if (configurationManager.Medium == "1" && !silent)
-        {
-            var waitForMediaService = App.GetService<IWaitForMediaService>();
-            return await waitForMediaService.ExecuteAsync(silent, cancellationTokenSource);
-        }
-
-        return false;
+        return await jobRuntime.CheckMediaAsync(action, silent);
     }
 
     /// <summary>
@@ -119,31 +115,13 @@ public class JobService : IJobService
     /// <exception cref="PasswordRequiredException"></exception>
     private async Task PrepareJob(ActionType action, bool statusDialog)
     {
-        GetNewCancellationToken();
-
-        // other task running?
-        if (statusService.IsTaskRunning())
-        {
-            throw new TaskRunningException();
-        }
-
         // show dialog?
         if (statusDialog)
         {
             await presentationService.ShowStatusWindowAsync();
         }
 
-        // check media
-        if (!await CheckMediaAsync(action, !statusDialog))
-        {
-            throw new DeviceNotReadyException();
-        }
-
-        // check password
-        if (!await RequestPassword())
-        {
-            throw new PasswordRequiredException();
-        }
+        cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog);
     }
 
     /// <summary>
@@ -234,7 +212,7 @@ public class JobService : IJobService
     /// <param name="shutdownApp">Specifies if the application should be closed after completion.</param>
     /// <param name="sourceFolders">Specifies the source folders to consider for the backup.</param>
     /// <returns></returns>
-    public async Task CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "")
+    public async Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "")
     {
         _logger.Debug("Backup task is started with title: {title}, description: {description}, statusDialog: {statusDialog}, fullBackup: {fullBackup}",
             title, description, statusDialog, fullBackup);
@@ -242,7 +220,7 @@ public class JobService : IJobService
         // check job requirements
         if (!await PrepareJobAndHandleExceptions(ActionType.Backup, statusDialog))
         {
-            return;
+            return false;
         }
 
         // run backup job
@@ -257,6 +235,7 @@ public class JobService : IJobService
         }
 
         await HandleFinishedStatusDialog(statusDialog);
+        return !cancellationToken.IsCancellationRequested;
     }
 
     /// <summary>
@@ -537,5 +516,11 @@ public class JobService : IJobService
         }
 
         return false;
+    }
+
+    public void Dispose()
+    {
+        jobRuntime.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

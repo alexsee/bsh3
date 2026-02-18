@@ -1750,7 +1750,7 @@ public partial class frmBrowser : IStatusReport
             return;
         }
 
-        Invoke(new Action(() => { if (jobState == JobState.FINISHED) { try { ReloadBrowser(); } catch { } } }));
+        Invoke(new Action(() => { if (jobState == JobState.FINISHED || jobState == JobState.CANCELED) { try { ReloadBrowser(); } catch { } } }));
     }
 
     public void ReportStatus(string title, string text)

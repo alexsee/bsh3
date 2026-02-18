@@ -14,7 +14,7 @@ public interface IJobService
 
     void Cancel();
     Task<bool> CheckMediaAsync(ActionType action, bool silent = false);
-    Task CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "");
+    Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "");
     Task DeleteBackupAsync(string version, bool statusDialog = true);
     Task DeleteBackupsAsync(List<string> versions, bool statusDialog = true);
     Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true);
