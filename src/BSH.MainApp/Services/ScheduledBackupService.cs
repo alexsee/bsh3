@@ -4,9 +4,7 @@
 using System.Diagnostics;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Contracts.Repo;
-using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Services;
@@ -76,24 +74,7 @@ public class ScheduledBackupService : IScheduledBackupService
 
     public async Task<bool> HasScheduleEntriesAsync()
     {
-        using var dbClient = dbClientFactory.CreateDbClient();
-        var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT COUNT(*) FROM schedule", null);
-        if (result == null)
-        {
-            return false;
-        }
-
-        if (result is long longCount)
-        {
-            return longCount > 0;
-        }
-
-        if (result is int intCount)
-        {
-            return intCount > 0;
-        }
-
-        return int.TryParse(result.ToString(), out var count) && count > 0;
+        return await scheduleRepository.HasScheduleEntriesAsync();
     }
 
 

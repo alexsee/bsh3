@@ -9,6 +9,7 @@ namespace Brightbits.BSH.Engine.Contracts.Repo;
 
 public interface IScheduleRepository
 {
+    Task<bool> HasScheduleEntriesAsync();
     Task<IReadOnlyList<ScheduleEntry>> GetSchedulesAsync();
     Task ReplaceSchedulesAsync(IEnumerable<ScheduleEntry> schedules);
 }
