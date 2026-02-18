@@ -595,6 +595,9 @@ A directory with the same name is already being backed up. Backup Service Home c
   <data name="DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT" xml:space="preserve">
     <value> with predefined schedule</value>
   </data>
+  <data name="DLG_UC_OVERVIEW_LBL_SCHEDULE_WARNING_NO_ENTRIES_TEXT" xml:space="preserve">
+    <value> Warning: Scheduled backups are enabled but no schedule is set.</value>
+  </data>
   <data name="DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT" xml:space="preserve">
     <value> ({0} source directories)</value>
   </data>

@@ -4,9 +4,7 @@
 using System.Diagnostics;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Contracts.Repo;
-using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Services;
@@ -72,6 +70,11 @@ public class ScheduledBackupService : IScheduledBackupService
         }
 
         return schedulerService.GetNextRun();
+    }
+
+    public async Task<bool> HasScheduleEntriesAsync()
+    {
+        return await scheduleRepository.HasScheduleEntriesAsync();
     }
 
 

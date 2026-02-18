@@ -1525,6 +1525,15 @@ namespace BSH.Main.Properties {
                 return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  Achtung: Für geplante Sicherungen ist kein Zeitplan eingerichtet. ähnelt.
+        /// </summary>
+        public static string DLG_UC_OVERVIEW_LBL_SCHEDULE_WARNING_NO_ENTRIES_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_SCHEDULE_WARNING_NO_ENTRIES_TEXT", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  ({0} Quellverzeichnis(se)) ähnelt.

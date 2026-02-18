@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -53,6 +54,7 @@ public partial class ucOverview : IMainTabs, IStatusReport
     }
 
     private frmMain SuperBase;
+    private bool hasScheduleWarning;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public frmMain Super
@@ -75,8 +77,11 @@ public partial class ucOverview : IMainTabs, IStatusReport
             loadingCircle.NumberSpoke = 50;
             if (StatusController.Current.SystemStatus == SystemStatus.NOT_CONFIGURED)
             {
+                hasScheduleWarning = false;
                 return;
             }
+
+            hasScheduleWarning = false;
 
             // retrieve details from database
             var freeSpace = long.Parse(BackupLogic.ConfigurationManager.FreeSpace);
@@ -129,6 +134,7 @@ public partial class ucOverview : IMainTabs, IStatusReport
             else if (BackupLogic.ConfigurationManager.TaskType == TaskType.Schedule)
             {
                 lblBackupMode.Text = Resources.DLG_UC_OVERVIEW_LBL_BACKUP_MODE_SCHEDULED_TEXT;
+                hasScheduleWarning = !await BackupLogic.HasScheduleEntriesAsync();
             }
             else
             {
@@ -317,6 +323,16 @@ public partial class ucOverview : IMainTabs, IStatusReport
             else
             {
                 infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_STATUS_DEACTIVATED_TEXT);
+            }
+
+            if (hasScheduleWarning)
+            {
+                infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_SCHEDULE_WARNING_NO_ENTRIES_TEXT);
+                lblInfo.ForeColor = Color.FromArgb(196, 90, 0);
+            }
+            else
+            {
+                lblInfo.ForeColor = Color.Black;
             }
 
             lblInfo.Text = infoText.ToString();

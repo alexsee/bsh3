@@ -12,4 +12,6 @@ public interface IScheduledBackupService
     void Stop();
 
     DateTime GetNextBackupDate();
+
+    Task<bool> HasScheduleEntriesAsync();
 }

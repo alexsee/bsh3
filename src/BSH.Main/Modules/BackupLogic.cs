@@ -874,4 +874,8 @@ static class BackupLogic
 
         return schedulerService.GetNextRun();
     }
+    public static async Task<bool> HasScheduleEntriesAsync()
+    {
+        return await ScheduleRepository.HasScheduleEntriesAsync();
+    }
 }
