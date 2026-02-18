@@ -2,13 +2,12 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.ObjectModel;
-using System.Data;
-using System.Globalization;
 using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Contracts.Repo;
 using BSH.MainApp.Contracts.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EngineScheduleEntry = Brightbits.BSH.Engine.Models.ScheduleEntry;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -54,7 +53,7 @@ public enum DeleteInterval
 public partial class EditScheduleViewModel : ModalViewModel
 {
     private readonly IConfigurationManager configurationManager;
-    private readonly IDbClientFactory dbClientFactory;
+    private readonly IScheduleRepository scheduleRepository;
     private readonly IPresentationService presentationService;
 
     public override string Title => "Edit Backup Schedule";
@@ -94,10 +93,10 @@ public partial class EditScheduleViewModel : ModalViewModel
     [ObservableProperty]
     private int fullBackupDay = 1;
 
-    public EditScheduleViewModel(IConfigurationManager configurationManager, IDbClientFactory dbClientFactory, IPresentationService presentationService)
+    public EditScheduleViewModel(IConfigurationManager configurationManager, IScheduleRepository scheduleRepository, IPresentationService presentationService)
     {
         this.configurationManager = configurationManager;
-        this.dbClientFactory = dbClientFactory;
+        this.scheduleRepository = scheduleRepository;
         this.presentationService = presentationService;
     }
 
@@ -235,29 +234,22 @@ public partial class EditScheduleViewModel : ModalViewModel
         try
         {
             ScheduleList.Clear();
-
-            using var dbClient = dbClientFactory.CreateDbClient();
-            using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null);
-
-            while (await reader.ReadAsync())
+            var schedules = await scheduleRepository.GetSchedulesAsync();
+            foreach (var schedule in schedules)
             {
                 try
                 {
-                    var intervalType = reader.GetInt32("timType");
-                    var dateString = reader["timDate"].ToString();
-
-                    if (string.IsNullOrEmpty(dateString) || !DateTime.TryParse(dateString, CultureInfo.InvariantCulture, out var parsedDate))
+                    // Convert database timType (1-5) to ViewModel intervalType (0-4)
+                    var vmIntervalType = schedule.Type - 1;
+                    if (vmIntervalType < 0 || vmIntervalType > 4)
                     {
                         continue;
                     }
 
-                    // Convert database timType (1-5) to ViewModel intervalType (0-4)
-                    var vmIntervalType = intervalType - 1;
-
                     var entry = new ScheduleEntry
                     {
                         IntervalType = vmIntervalType,
-                        StartTime = parsedDate
+                        StartTime = schedule.Date
                     };
 
                     ScheduleList.Add(entry);
@@ -268,7 +260,6 @@ public partial class EditScheduleViewModel : ModalViewModel
                 }
             }
 
-            await reader.CloseAsync();
         }
         catch
         {
@@ -282,21 +273,18 @@ public partial class EditScheduleViewModel : ModalViewModel
 
         try
         {
-            using var dbClient = dbClientFactory.CreateDbClient();
-
-            // Delete all existing schedules
-            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM schedule", null);
-
-            // Insert all current schedules
+            var schedules = new List<EngineScheduleEntry>();
             foreach (var entry in ScheduleList)
             {
                 // Convert ViewModel intervalType (0-4) to database timType (1-5)
-                var dbIntervalType = entry.IntervalType + 1;
-                var dateString = entry.StartTime.ToString("dd.MM.yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-
-                var query = $"INSERT INTO schedule (timType, timDate) VALUES (@type, @date)";
-                await dbClient.ExecuteNonQueryAsync(CommandType.Text, query, [("type", dbIntervalType), ("date", dateString)]);
+                schedules.Add(new EngineScheduleEntry
+                {
+                    Type = entry.IntervalType + 1,
+                    Date = entry.StartTime
+                });
             }
+
+            await scheduleRepository.ReplaceSchedulesAsync(schedules);
         }
         catch
         {
