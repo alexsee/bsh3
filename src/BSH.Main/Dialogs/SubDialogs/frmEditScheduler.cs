@@ -2,8 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
-using System.Data;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using Brightbits.BSH.Engine.Models;
 using BSH.Main.Utils;
 using Resources = BSH.Main.Properties.Resources;
 
@@ -19,61 +20,54 @@ public partial class frmEditScheduler
     private async void frmEditScheduler_Load(object sender, EventArgs e)
     {
         // Zeitplaner lesen
-        using (var dbClient = BackupLogic.DbClientFactory.CreateDbClient())
+        var schedules = await BackupLogic.ScheduleRepository.GetSchedulesAsync();
+        lwTimeSchedule.Items.Clear();
+        foreach (var schedule in schedules)
         {
-            using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM schedule", null))
+            try
             {
-                lwTimeSchedule.Items.Clear();
-                while (await reader.ReadAsync())
+                var newEntry = new ListViewItem();
+                var parsedDate = schedule.Date;
+
+                switch (schedule.Type)
                 {
-                    try
-                    {
-                        var newEntry = new ListViewItem();
-                        var parsedDate = DateTime.Parse(reader["timDate"].ToString());
+                    case 1:
+                        newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_ONCE;
+                        newEntry.SubItems.Add(parsedDate.ToString());
+                        newEntry.SubItems[0].Tag = 0;
+                        break;
 
-                        switch (reader["timType"].ToString())
-                        {
-                            case "1":
-                                newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_ONCE;
-                                newEntry.SubItems.Add(reader["timDate"].ToString());
-                                newEntry.SubItems[0].Tag = 0;
-                                break;
+                    case 2:
+                        newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY;
+                        newEntry.SubItems.Add(string.Format(Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT, parsedDate.Minute));
+                        newEntry.SubItems[0].Tag = 1;
+                        break;
 
-                            case "2":
-                                newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY;
-                                newEntry.SubItems.Add(string.Format(Resources.DLG_EDIT_SCHEDULER_INTERVAL_HOURLY_AT, parsedDate.Minute));
-                                newEntry.SubItems[0].Tag = 1;
-                                break;
+                    case 3:
+                        newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_DAILY;
+                        newEntry.SubItems.Add(parsedDate.ToShortTimeString());
+                        newEntry.SubItems[0].Tag = 2;
+                        break;
 
-                            case "3":
-                                newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_DAILY;
-                                newEntry.SubItems.Add(parsedDate.ToShortTimeString());
-                                newEntry.SubItems[0].Tag = 2;
-                                break;
+                    case 4:
+                        newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY;
+                        newEntry.SubItems.Add(parsedDate.ToString("dddd") + ", " + parsedDate.ToString(UiFormatUtils.DATE_FORMAT_HOUR_MINUTE));
+                        newEntry.SubItems[0].Tag = 3;
+                        break;
 
-                            case "4":
-                                newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_WEEKLY;
-                                newEntry.SubItems.Add(parsedDate.ToString("dddd") + ", " + parsedDate.ToString(UiFormatUtils.DATE_FORMAT_HOUR_MINUTE));
-                                newEntry.SubItems[0].Tag = 3;
-                                break;
-
-                            case "5":
-                                newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY;
-                                newEntry.SubItems.Add(string.Format(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT, parsedDate.Day, parsedDate.ToString(UiFormatUtils.DATE_FORMAT_HOUR_MINUTE)));
-                                newEntry.SubItems[0].Tag = 4;
-                                break;
-                        }
-
-                        newEntry.Tag = parsedDate;
-                        lwTimeSchedule.Items.Add(newEntry);
-                    }
-                    catch
-                    {
-                        // ignore error
-                    }
+                    case 5:
+                        newEntry.Text = Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY;
+                        newEntry.SubItems.Add(string.Format(Resources.DLG_EDIT_SCHEDULER_INTERVAL_MONTHLY_AT, parsedDate.Day, parsedDate.ToString(UiFormatUtils.DATE_FORMAT_HOUR_MINUTE)));
+                        newEntry.SubItems[0].Tag = 4;
+                        break;
                 }
 
-                await reader.CloseAsync();
+                newEntry.Tag = parsedDate;
+                lwTimeSchedule.Items.Add(newEntry);
+            }
+            catch
+            {
+                // ignore error
             }
         }
 
@@ -190,36 +184,37 @@ public partial class frmEditScheduler
 
     private async void cmdOK_Click(object sender, EventArgs e)
     {
-        using var dbClient = BackupLogic.DbClientFactory.CreateDbClient();
-        await dbClient.ExecuteNonQueryAsync("DELETE FROM schedule");
+        var schedules = new List<ScheduleEntry>();
 
         // Automatische Backups
         foreach (ListViewItem entry in lwTimeSchedule.Items)
         {
-            var parsedDate = Convert.ToDateTime(entry.Tag).ToString("dd.MM.yyyy HH:mm:ss");
+            var parsedDate = Convert.ToDateTime(entry.Tag);
             switch (entry.SubItems[0].Tag)
             {
                 case 0:
-                    await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 1, '" + parsedDate + "' )");
+                    schedules.Add(new ScheduleEntry() { Type = 1, Date = parsedDate });
                     break;
 
                 case 1:
-                    await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 2, '" + parsedDate + "' )");
+                    schedules.Add(new ScheduleEntry() { Type = 2, Date = parsedDate });
                     break;
 
                 case 2:
-                    await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 3, '" + parsedDate + "' )");
+                    schedules.Add(new ScheduleEntry() { Type = 3, Date = parsedDate });
                     break;
 
                 case 3:
-                    await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 4, '" + parsedDate + "' )");
+                    schedules.Add(new ScheduleEntry() { Type = 4, Date = parsedDate });
                     break;
 
                 case 4:
-                    await dbClient.ExecuteNonQueryAsync("INSERT INTO schedule ( timType, timDate) VALUES ( 5, '" + parsedDate + "' )");
+                    schedules.Add(new ScheduleEntry() { Type = 5, Date = parsedDate });
                     break;
             }
         }
+
+        await BackupLogic.ScheduleRepository.ReplaceSchedulesAsync(schedules);
 
         // Löschintervalle speichern
         if (rdDontDelete.Checked)

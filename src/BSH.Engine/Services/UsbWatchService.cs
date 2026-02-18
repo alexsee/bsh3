@@ -3,11 +3,12 @@
 
 using System;
 using System.Management;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Services;
 
-public class UsbWatchService
+public class UsbWatchService : IMediaWatcher
 {
     private ManagementEventWatcher watcher;
 
