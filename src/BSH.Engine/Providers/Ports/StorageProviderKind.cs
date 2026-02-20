@@ -6,5 +6,6 @@ namespace Brightbits.BSH.Engine.Providers.Ports;
 public enum StorageProviderKind
 {
     LocalFileSystem = 0,
-    Ftp = 1
+    Ftp = 1,
+    WebDav = 2
 }
