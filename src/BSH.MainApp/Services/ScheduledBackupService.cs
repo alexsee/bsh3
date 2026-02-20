@@ -4,13 +4,7 @@
 using System.Diagnostics;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
-<<<<<<< HEAD
-using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Contracts.Repo;
-using Brightbits.BSH.Engine.Database;
-=======
-using Brightbits.BSH.Engine.Contracts.Repo;
->>>>>>> c112415ceeb5145e2d113a68debc42994e4fe2e5
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Services;

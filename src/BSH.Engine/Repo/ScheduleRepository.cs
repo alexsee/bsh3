@@ -20,8 +20,6 @@ public class ScheduleRepository : IScheduleRepository
         this.dbClientFactory = dbClientFactory;
     }
 
-<<<<<<< HEAD
-=======
     public async Task<bool> HasScheduleEntriesAsync()
     {
         using var dbClient = dbClientFactory.CreateDbClient();
@@ -43,8 +41,6 @@ public class ScheduleRepository : IScheduleRepository
 
         return int.TryParse(result.ToString(), out var count) && count > 0;
     }
-
->>>>>>> c112415ceeb5145e2d113a68debc42994e4fe2e5
     public async Task<IReadOnlyList<ScheduleEntry>> GetSchedulesAsync()
     {
         var result = new List<ScheduleEntry>();
