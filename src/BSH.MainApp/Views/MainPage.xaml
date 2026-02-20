@@ -68,6 +68,12 @@
                     <TextBlock Grid.Column="0" Grid.Row="3">Last Backup:</TextBlock>
                     <TextBlock Grid.Column="1" Grid.Row="3" Text="{x:Bind ViewModel.LastBackupDate, Mode=OneWay}">Today, 13:00</TextBlock>
 
+                    <TextBlock Grid.Column="0"
+                               Grid.ColumnSpan="2"
+                               Grid.Row="4"
+                               Foreground="{StaticResource WarningTextBrush}"
+                               Text="{x:Bind ViewModel.ScheduleWarningText, Mode=OneWay}"
+                               Visibility="{x:Bind ViewModel.ScheduleWarningVisible, Mode=OneWay}" />
 
                     <TextBlock Grid.Column="0" Grid.Row="5">Backup mode:</TextBlock>
                     <TextBlock Grid.Column="1" Grid.Row="5" Text="{x:Bind ViewModel.BackupMode, Mode=OneWay}">Automatic Backup</TextBlock>

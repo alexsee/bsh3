@@ -86,6 +86,12 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     private bool CanDeleteSourceFolder() => !string.IsNullOrEmpty(SelectedSource);
 
+    [RelayCommand]
+    private async Task ShowExcludeFileFolderWindow()
+    {
+        await this.presentationController.ShowExcludeFileFolderWindowAsync();
+    }
+
     #endregion
 
     #region Target Settings

@@ -632,6 +632,9 @@ Ein Verzeichnis mit dem selben Namen wird bereits gesichert. Backup Service Home
   <data name="DLG_UC_OVERVIEW_LBL_SCHEDULED_BACKUP_TEXT" xml:space="preserve">
     <value> nach eingestelltem Zeitplan</value>
   </data>
+  <data name="DLG_UC_OVERVIEW_LBL_SCHEDULE_WARNING_NO_ENTRIES_TEXT" xml:space="preserve">
+    <value> Achtung: Für geplante Sicherungen ist kein Zeitplan eingerichtet.</value>
+  </data>
   <data name="DLG_UC_OVERVIEW_LBL_SOURCE_FOLDERS_TEXT" xml:space="preserve">
     <value> ({0} Quellverzeichnis(se))</value>
   </data>

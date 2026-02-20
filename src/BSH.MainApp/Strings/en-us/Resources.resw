@@ -157,6 +157,9 @@
   <data name="MainView_BackupMode_Scheduled" xml:space="preserve">
     <value>Scheduled backups</value>
   </data>
+  <data name="MainView_ScheduleWarning_NoEntries" xml:space="preserve">
+    <value>Scheduled backups are enabled but no schedule is set.</value>
+  </data>
   <data name="DATETIME_FORMAT" xml:space="preserve">
     <value>dd. MMM yyyy hh:mm</value>
   </data>
