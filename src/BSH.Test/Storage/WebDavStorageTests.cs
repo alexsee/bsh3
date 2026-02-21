@@ -46,7 +46,7 @@ public class WebDavStorageTests
 
         var handler = new TestHttpMessageHandler(request =>
         {
-            if (request.Method == HttpMethod.Head && request.RequestUri?.AbsolutePath == "/folder/nested/file.txt")
+            if (request.Method.Method == "HEAD" && NormalizeRequestPath(request) == "/folder/nested/file.txt")
             {
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
@@ -71,12 +71,12 @@ public class WebDavStorageTests
 
         var handler = new TestHttpMessageHandler(request =>
         {
-            if (request.Method == HttpMethod.Head && request.RequestUri?.AbsolutePath == "/folder/file.txt")
+            if (request.Method.Method == "HEAD" && NormalizeRequestPath(request) == "/folder/file.txt")
             {
                 return new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
             }
 
-            if (request.Method == HttpMethod.Get && request.RequestUri?.AbsolutePath == "/folder/file.txt")
+            if (request.Method.Method == "GET" && NormalizeRequestPath(request) == "/folder/file.txt")
             {
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
@@ -99,22 +99,24 @@ public class WebDavStorageTests
 
         var handler = new TestHttpMessageHandler(request =>
         {
-            if (request.Method.Method == "PROPFIND" && request.RequestUri?.AbsolutePath == "/folder")
+            var normalizedPath = NormalizeRequestPath(request);
+
+            if (request.Method.Method == "PROPFIND" && normalizedPath == "/folder")
             {
                 return new HttpResponseMessage(HttpStatusCode.MultiStatus);
             }
 
-            if (request.Method == HttpMethod.Put && request.RequestUri?.AbsolutePath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal) == true)
+            if (request.Method.Method == "PUT" && normalizedPath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal))
             {
                 return new HttpResponseMessage(HttpStatusCode.Created);
             }
 
-            if (request.Method == HttpMethod.Delete && request.RequestUri?.AbsolutePath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal) == true)
+            if (request.Method.Method == "DELETE" && normalizedPath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal))
             {
                 return new HttpResponseMessage(HttpStatusCode.NoContent);
             }
 
-            if (request.Method == HttpMethod.Get && request.RequestUri?.AbsolutePath == "/folder/backup.bshv")
+            if (request.Method.Method == "GET" && normalizedPath.EndsWith("/backup.bshv", StringComparison.Ordinal))
             {
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -144,22 +146,24 @@ public class WebDavStorageTests
 
         var handler = new TestHttpMessageHandler(request =>
         {
-            if (request.Method.Method == "PROPFIND" && request.RequestUri?.AbsolutePath == "/folder")
+            var normalizedPath = NormalizeRequestPath(request);
+
+            if (request.Method.Method == "PROPFIND" && normalizedPath == "/folder")
             {
                 return new HttpResponseMessage(HttpStatusCode.MultiStatus);
             }
 
-            if (request.Method == HttpMethod.Put && request.RequestUri?.AbsolutePath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal) == true)
+            if (request.Method.Method == "PUT" && normalizedPath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal))
             {
                 return new HttpResponseMessage(HttpStatusCode.Created);
             }
 
-            if (request.Method == HttpMethod.Delete && request.RequestUri?.AbsolutePath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal) == true)
+            if (request.Method.Method == "DELETE" && normalizedPath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal))
             {
                 return new HttpResponseMessage(HttpStatusCode.NoContent);
             }
 
-            if (request.Method == HttpMethod.Get && request.RequestUri?.AbsolutePath == "/folder/backup.bshv")
+            if (request.Method.Method == "GET" && normalizedPath.EndsWith("/backup.bshv", StringComparison.Ordinal))
             {
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -184,17 +188,17 @@ public class WebDavStorageTests
 
         var handler = new TestHttpMessageHandler(request =>
         {
-            if (request.Method.Method == "PROPFIND" && request.RequestUri?.AbsolutePath == "/folder/target%20folder")
+            if (request.Method.Method == "PROPFIND" && NormalizeRequestPath(request) == "/folder/target folder")
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
 
-            if (request.Method.Method == "MKCOL" && request.RequestUri?.AbsolutePath == "/folder/target%20folder")
+            if (request.Method.Method == "MKCOL" && NormalizeRequestPath(request) == "/folder/target folder")
             {
                 return new HttpResponseMessage(HttpStatusCode.Created);
             }
 
-            if (request.Method.Method == "MOVE" && request.RequestUri?.AbsolutePath == "/folder/source/path")
+            if (request.Method.Method == "MOVE" && NormalizeRequestPath(request) == "/folder/source/path")
             {
                 return new HttpResponseMessage(HttpStatusCode.Created);
             }
@@ -237,6 +241,13 @@ public class WebDavStorageTests
         field?.SetValue(storage, client);
 
         return client;
+    }
+
+    private static string NormalizeRequestPath(HttpRequestMessage request)
+    {
+        var absolutePath = request.RequestUri?.AbsolutePath ?? string.Empty;
+        var unescapedPath = Uri.UnescapeDataString(absolutePath);
+        return unescapedPath.TrimEnd('/');
     }
 
     private sealed class TestHttpMessageHandler : HttpMessageHandler
