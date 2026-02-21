@@ -11,6 +11,7 @@ using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Utils;
 
 namespace Brightbits.BSH.Engine;
 
@@ -553,11 +554,11 @@ public class QueryManager : IQueryManager
             {
                 var fileType = reader.GetInt32("fileType");
 
-                if (fileType == 1)
+                if (fileType == BackupFileType.Local)
                 {
                     result = GetFileNameFromDrive(FileTableRow.FromReaderFileVersion(reader));
                 }
-                else if (fileType >= 2 && fileType <= 6)
+                else if (BackupFileType.IsKnown(fileType))
                 {
                     temp = true;
 
@@ -566,22 +567,22 @@ public class QueryManager : IQueryManager
 
                     if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
                     {
-                        remoteFilePath = reader.GetString("versionDate") + "\\_LONG_FILES\\" + reader.GetString("longfilename");
+                        remoteFilePath = reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
                     }
                     else
                     {
                         remoteFilePath = reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
                     }
 
-                    if (fileType == 3)
+                    if (BackupFileType.IsRegular(fileType))
                     {
                         storage.CopyFileFromStorage(localFilePath, remoteFilePath);
                     }
-                    else if (fileType == 2 || fileType == 4)
+                    else if (BackupFileType.IsCompressed(fileType))
                     {
                         storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
                     }
-                    else if (fileType == 5 || fileType == 6)
+                    else if (BackupFileType.IsEncrypted(fileType))
                     {
                         storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
                     }
