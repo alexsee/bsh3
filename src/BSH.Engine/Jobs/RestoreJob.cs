@@ -15,6 +15,7 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
+using Brightbits.BSH.Engine.Utils;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -357,15 +358,15 @@ public class RestoreJob : Job
                 remoteFilePath = reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
             }
 
-            if (fileType == 1 || fileType == 3)
+            if (BackupFileType.IsRegular(fileType))
             {
                 storage.CopyFileFromStorage(localFilePath, remoteFilePath);
             }
-            else if (fileType == 2 || fileType == 4)
+            else if (BackupFileType.IsCompressed(fileType))
             {
                 storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
             }
-            else if (fileType == 5 || fileType == 6)
+            else if (BackupFileType.IsEncrypted(fileType))
             {
                 storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, Password);
             }
