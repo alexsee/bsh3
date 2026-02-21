@@ -35,6 +35,11 @@ namespace BSH.Test.Mocks
             return !failAllCopies;
         }
 
+        public bool FileExists(string remoteFile)
+        {
+            return !failAllCopies;
+        }
+
         public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
         {
             return !failAllCopies;

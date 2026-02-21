@@ -200,6 +200,21 @@ public class WebDavStorage : Storage, IStorage
         return DownloadFileFromStorage(NormalizeRemotePath(CleanRemoteFileName(remoteFile)), GetLocalFileName(localFile));
     }
 
+    public bool FileExists(string remoteFile)
+    {
+        var remoteFilePath = NormalizeRemotePath(CleanRemoteFileName(remoteFile));
+
+        try
+        {
+            Open();
+            return FileExistsAsync(remoteFilePath).GetAwaiter().GetResult();
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
     {
         var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) + ".zip";
@@ -602,6 +617,42 @@ public class WebDavStorage : Storage, IStorage
         await sourceStream.CopyToAsync(destinationStream);
 
         return true;
+    }
+
+    private async Task<bool> FileExistsAsync(string remoteFile)
+    {
+        if (!TryBuildUri(remoteFile, out var remoteFileUri))
+        {
+            return false;
+        }
+
+        using var headRequest = new HttpRequestMessage(HttpMethod.Head, remoteFileUri);
+        using var headResponse = await webDavClient.SendAsync(headRequest);
+
+        if (headResponse.StatusCode == HttpStatusCode.NotFound)
+        {
+            return false;
+        }
+
+        if (headResponse.IsSuccessStatusCode)
+        {
+            return true;
+        }
+
+        if (headResponse.StatusCode != HttpStatusCode.MethodNotAllowed
+            && headResponse.StatusCode != HttpStatusCode.NotImplemented)
+        {
+            return false;
+        }
+
+        // Fallback for servers that do not implement HEAD correctly.
+        using var getResponse = await webDavClient.GetAsync(remoteFileUri, HttpCompletionOption.ResponseHeadersRead);
+        if (getResponse.StatusCode == HttpStatusCode.NotFound)
+        {
+            return false;
+        }
+
+        return getResponse.IsSuccessStatusCode;
     }
 
     private async Task<bool> DeleteResourceAsync(string remotePath)
