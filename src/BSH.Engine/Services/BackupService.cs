@@ -80,7 +80,7 @@ public class BackupService : IBackupService
         using (var storage = storageFactory.GetCurrentStorageProvider())
         {
             // have we checked before?
-            if (lastMediaCheckResult && storage.Kind != StorageProviderKind.Ftp && DateTime.Now.Subtract(lastMediaCheckDate).TotalSeconds < 30)
+            if (lastMediaCheckResult && storage.Kind == StorageProviderKind.LocalFileSystem && DateTime.Now.Subtract(lastMediaCheckDate).TotalSeconds < 30)
             {
                 lastMediaCheckDate = DateTime.Now;
                 return lastMediaCheckResult;
