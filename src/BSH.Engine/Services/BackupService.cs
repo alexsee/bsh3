@@ -299,7 +299,7 @@ public class BackupService : IBackupService
         // run delete
         jobReport.ReportAction(ActionType.Delete, silent);
 
-        currentTask = Task.Run(deleteJob.DeleteAsync);
+        currentTask = deleteJob.DeleteAsync();
 
         // error handling
         currentTask.ContinueWith(t =>
