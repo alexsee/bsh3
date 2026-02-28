@@ -23,6 +23,11 @@
 		<Content Include="Assets\*.*" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Remove="Windows\AddScheduleWindow.xaml" />
+	  <None Remove="Windows\EditScheduleWindow.xaml" />
+	  <None Remove="Windows\ModalWindow.xaml" />
+	</ItemGroup>
+	<ItemGroup>
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
@@ -52,6 +57,15 @@
 		<None Update="Views\FilterPages\ExcludeFilesPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</None>
+		<Page Update="Windows\ModalWindow.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Windows\EditScheduleWindow.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Windows\AddScheduleWindow.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
 		<None Update="Windows\FilterWindow.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</None>
