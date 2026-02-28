@@ -189,7 +189,7 @@ public class BackupService : IBackupService
         // start backup
         jobReport.ReportAction(ActionType.Backup, silent);
 
-        currentTask = Task.Factory.StartNew(async () => await backupJob.BackupAsync(cancellationToken));
+        currentTask = Task.Run(async () => await backupJob.BackupAsync(cancellationToken), cancellationToken);
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -251,7 +251,7 @@ public class BackupService : IBackupService
         // run restore
         jobReport.ReportAction(ActionType.Restore, silent);
 
-        currentTask = Task.Factory.StartNew(() => restoreJob.RestoreAsync(cancellationToken));
+        currentTask = Task.Run(async () => await restoreJob.RestoreAsync(cancellationToken), cancellationToken);
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -299,7 +299,7 @@ public class BackupService : IBackupService
         // run delete
         jobReport.ReportAction(ActionType.Delete, silent);
 
-        currentTask = Task.Factory.StartNew(deleteJob.DeleteAsync);
+        currentTask = Task.Run(deleteJob.DeleteAsync, cancellationToken);
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -345,7 +345,7 @@ public class BackupService : IBackupService
         // run delete
         jobReport.ReportAction(ActionType.Delete, silent);
 
-        currentTask = Task.Factory.StartNew(async () => await deleteJob.DeleteSingleAsync(fileFilter, pathFilter));
+        currentTask = Task.Run(async () => await deleteJob.DeleteSingleAsync(fileFilter, pathFilter), cancellationToken);
 
         // error handling
         currentTask.ContinueWith(t =>
@@ -396,7 +396,7 @@ public class BackupService : IBackupService
         // run edit
         jobReport.ReportAction(ActionType.Modify, silent);
 
-        currentTask = Task.Factory.StartNew(editJob.EditAsync);
+        currentTask = Task.Run(editJob.EditAsync, cancellationToken);
 
         // error handling
         currentTask.ContinueWith(t =>
