@@ -228,8 +228,7 @@ public class BackupController : IDisposable
         // run backup job
         try
         {
-            var task = backupService.StartBackup(title, description, ref jobReportCallback, cancellationToken, fullBackup, sourceFolders, !statusDialog);
-            await task.ConfigureAwait(true);
+            await backupService.StartBackup(title, description, ref jobReportCallback, cancellationToken, fullBackup, sourceFolders, !statusDialog);
         }
         catch
         {
@@ -285,8 +284,7 @@ public class BackupController : IDisposable
         // run restore job
         try
         {
-            var task = backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, FileOverwrite.Ask, !statusDialog);
-            await task.ConfigureAwait(true);
+            await backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, FileOverwrite.Ask, !statusDialog);
         }
         catch
         {
@@ -331,8 +329,7 @@ public class BackupController : IDisposable
                 jobReportCallback.ReportProgress(files.Count, files.IndexOf(file) + 1);
 
                 // restore file
-                var task = backupService.StartRestore(version, file, destination, ref forwardJobReport, cancellationToken, fileOverwrite, !statusDialog);
-                await task.ConfigureAwait(true);
+                await backupService.StartRestore(version, file, destination, ref forwardJobReport, cancellationToken, fileOverwrite, !statusDialog);
             }
             catch
             {
@@ -380,8 +377,7 @@ public class BackupController : IDisposable
 
         try
         {
-            var task = backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
-            await task.ConfigureAwait(true);
+            await backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
         }
         catch
         {
@@ -418,8 +414,7 @@ public class BackupController : IDisposable
         {
             try
             {
-                var task = backupService.StartDelete(version, ref forwardJobReport, cancellationToken, !statusDialog);
-                await task.ConfigureAwait(true);
+                await backupService.StartDelete(version, ref forwardJobReport, cancellationToken, !statusDialog);
             }
             catch
             {
@@ -460,8 +455,7 @@ public class BackupController : IDisposable
         // run delete job
         try
         {
-            var task = backupService.StartDeleteSingle(fileFilter, folderFilter, ref jobReportCallback, cancellationToken, !statusDialog);
-            await task.ConfigureAwait(true);
+            await backupService.StartDeleteSingle(fileFilter, folderFilter, ref jobReportCallback, cancellationToken, !statusDialog);
         }
         catch
         {

@@ -226,8 +226,7 @@ public class JobService : IJobService, IDisposable
         // run backup job
         try
         {
-            var task = backupService.StartBackup(title, description, ref jobReportCallback, cancellationToken, fullBackup, sourceFolders, !statusDialog);
-            await task.ConfigureAwait(true);
+            await backupService.StartBackup(title, description, ref jobReportCallback, cancellationToken, fullBackup, sourceFolders, !statusDialog);
         }
         catch
         {
@@ -260,8 +259,7 @@ public class JobService : IJobService, IDisposable
         // run restore job
         try
         {
-            var task = backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, FileOverwrite.Ask, !statusDialog);
-            await task.ConfigureAwait(true);
+            await backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, FileOverwrite.Ask, !statusDialog);
         }
         catch
         {
@@ -298,8 +296,7 @@ public class JobService : IJobService, IDisposable
         {
             try
             {
-                var task = backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, fileOverwrite, !statusDialog);
-                await task.ConfigureAwait(true);
+                await backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, fileOverwrite, !statusDialog);
             }
             catch
             {
@@ -343,8 +340,7 @@ public class JobService : IJobService, IDisposable
         // run delete job
         try
         {
-            var task = backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
-            await task.ConfigureAwait(true);
+            await backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
         }
         catch
         {
@@ -372,12 +368,11 @@ public class JobService : IJobService, IDisposable
         }
 
         // run delete job
-        foreach (string version in versions)
+        foreach (var version in versions)
         {
             try
             {
-                var task = backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
-                await task.ConfigureAwait(true);
+                await backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
             }
             catch
             {
@@ -415,8 +410,7 @@ public class JobService : IJobService, IDisposable
         // run delete job
         try
         {
-            var task = backupService.StartDeleteSingle(fileFilter, folderFilter, ref jobReportCallback, cancellationToken, !statusDialog);
-            await task.ConfigureAwait(true);
+            await backupService.StartDeleteSingle(fileFilter, folderFilter, ref jobReportCallback, cancellationToken, !statusDialog);
         }
         catch
         {
@@ -445,8 +439,7 @@ public class JobService : IJobService, IDisposable
         // run modify job
         try
         {
-            var task = backupService.StartEdit(ref jobReportCallback, cancellationToken, statusDialog);
-            await task.ConfigureAwait(true);
+            await backupService.StartEdit(ref jobReportCallback, cancellationToken, statusDialog);
         }
         catch
         {
