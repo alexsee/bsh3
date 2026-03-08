@@ -24,13 +24,6 @@ public class StorageFactory : IStorageFactory
             return new FileSystemStorage(configurationManager);
         }
 
-        var remoteHost = configurationManager.FtpHost ?? "";
-        if (remoteHost.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-            || remoteHost.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-        {
-            return new WebDavStorage(configurationManager);
-        }
-
         return new FtpStorage(configurationManager);
     }
 }
