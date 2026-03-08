@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
@@ -80,38 +81,31 @@ public class WebDavStorage : Storage, IStorage
         {
             Open();
 
-            var oldTimeout = webDavClient.Timeout;
-            webDavClient.Timeout = quickCheck ? TimeSpan.FromSeconds(15) : TimeSpan.FromSeconds(60);
+            using var timeoutCts = new CancellationTokenSource(quickCheck ? TimeSpan.FromSeconds(15) : TimeSpan.FromSeconds(60));
+            var cancellationToken = timeoutCts.Token;
 
-            try
+            if (!await DirectoryExistsAsync("", cancellationToken))
             {
-                if (!await DirectoryExistsAsync(""))
-                {
-                    _logger.Warning("WebDAV server does not have the specified folder.");
-                    return false;
-                }
-
-                if (!await CanWriteToStorageAsync())
-                {
-                    _logger.Warning("WebDAV server is not writable.");
-                    return false;
-                }
-
-                var versionContent = await ReadTextFileIfExistsAsync("backup.bshv");
-                if (!string.IsNullOrWhiteSpace(versionContent)
-                    && int.TryParse(versionContent, out var storageVersion)
-                    && storageVersion != currentStorageVersion)
-                {
-                    _logger.Warning("WebDAV server contains an inconsistent state. Version file contains a different version than the computers backup version.");
-                    throw new DeviceContainsWrongStateException();
-                }
-
-                return true;
+                _logger.Warning("WebDAV server does not have the specified folder.");
+                return false;
             }
-            finally
+
+            if (!await CanWriteToStorageAsync(cancellationToken))
             {
-                webDavClient.Timeout = oldTimeout;
+                _logger.Warning("WebDAV server is not writable.");
+                return false;
             }
+
+            var versionContent = await ReadTextFileIfExistsAsync("backup.bshv", cancellationToken);
+            if (!string.IsNullOrWhiteSpace(versionContent)
+                && int.TryParse(versionContent, out var storageVersion)
+                && storageVersion != currentStorageVersion)
+            {
+                _logger.Warning("WebDAV server contains an inconsistent state. Version file contains a different version than the computers backup version.");
+                throw new DeviceContainsWrongStateException();
+            }
+
+            return true;
         }
         catch (DeviceContainsWrongStateException)
         {
@@ -410,17 +404,17 @@ public class WebDavStorage : Storage, IStorage
         webDavClient?.Dispose();
     }
 
-    private async Task<bool> CanWriteToStorageAsync()
+    private async Task<bool> CanWriteToStorageAsync(CancellationToken cancellationToken = default)
     {
         var probeFileName = "bsh.writetest." + Guid.NewGuid().ToString("N");
         var probeContent = Encoding.UTF8.GetBytes(DateTime.UtcNow.ToString("O"));
 
-        if (!await PutFileAsync(probeFileName, probeContent))
+        if (!await PutFileAsync(probeFileName, probeContent, cancellationToken))
         {
             return false;
         }
 
-        await DeleteResourceAsync(probeFileName);
+        await DeleteResourceAsync(probeFileName, cancellationToken);
         return true;
     }
 
@@ -540,7 +534,7 @@ public class WebDavStorage : Storage, IStorage
         return true;
     }
 
-    private async Task<bool> DirectoryExistsAsync(string relativeDirectory)
+    private async Task<bool> DirectoryExistsAsync(string relativeDirectory, CancellationToken cancellationToken = default)
     {
         if (!TryBuildUri(relativeDirectory, out var directoryUri))
         {
@@ -551,7 +545,7 @@ public class WebDavStorage : Storage, IStorage
         request.Headers.TryAddWithoutValidation("Depth", "0");
         request.Content = new StringContent("<?xml version=\"1.0\" encoding=\"utf-8\" ?><d:propfind xmlns:d=\"DAV:\"><d:prop><d:resourcetype/></d:prop></d:propfind>", Encoding.UTF8, "application/xml");
 
-        using var response = await webDavClient.SendAsync(request);
+        using var response = await webDavClient.SendAsync(request, cancellationToken);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
@@ -580,13 +574,13 @@ public class WebDavStorage : Storage, IStorage
         return response.StatusCode == HttpStatusCode.MethodNotAllowed;
     }
 
-    private async Task<bool> PutFileAsync(string remoteFile, byte[] content)
+    private async Task<bool> PutFileAsync(string remoteFile, byte[] content, CancellationToken cancellationToken = default)
     {
         using var memoryStream = new MemoryStream(content);
-        return await PutFileAsync(remoteFile, memoryStream);
+        return await PutFileAsync(remoteFile, memoryStream, cancellationToken);
     }
 
-    private async Task<bool> PutFileAsync(string remoteFile, Stream sourceStream)
+    private async Task<bool> PutFileAsync(string remoteFile, Stream sourceStream, CancellationToken cancellationToken = default)
     {
         if (!TryBuildUri(remoteFile, out var remoteFileUri))
         {
@@ -595,7 +589,7 @@ public class WebDavStorage : Storage, IStorage
 
         using var request = new HttpRequestMessage(HttpMethod.Put, remoteFileUri);
         request.Content = new StreamContent(sourceStream);
-        using var response = await webDavClient.SendAsync(request);
+        using var response = await webDavClient.SendAsync(request, cancellationToken);
         return response.IsSuccessStatusCode;
     }
 
@@ -655,7 +649,7 @@ public class WebDavStorage : Storage, IStorage
         return getResponse.IsSuccessStatusCode;
     }
 
-    private async Task<bool> DeleteResourceAsync(string remotePath)
+    private async Task<bool> DeleteResourceAsync(string remotePath, CancellationToken cancellationToken = default)
     {
         if (!TryBuildUri(remotePath, out var resourceUri))
         {
@@ -663,7 +657,7 @@ public class WebDavStorage : Storage, IStorage
         }
 
         using var request = new HttpRequestMessage(HttpMethod.Delete, resourceUri);
-        using var response = await webDavClient.SendAsync(request);
+        using var response = await webDavClient.SendAsync(request, cancellationToken);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
@@ -673,14 +667,14 @@ public class WebDavStorage : Storage, IStorage
         return response.IsSuccessStatusCode;
     }
 
-    private async Task<string> ReadTextFileIfExistsAsync(string remoteFile)
+    private async Task<string> ReadTextFileIfExistsAsync(string remoteFile, CancellationToken cancellationToken = default)
     {
         if (!TryBuildUri(remoteFile, out var remoteFileUri))
         {
             return null;
         }
 
-        using var response = await webDavClient.GetAsync(remoteFileUri, HttpCompletionOption.ResponseContentRead);
+        using var response = await webDavClient.GetAsync(remoteFileUri, HttpCompletionOption.ResponseContentRead, cancellationToken);
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             return null;
