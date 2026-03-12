@@ -177,11 +177,17 @@ public class QueryManagerTests
     [Test]
     public async Task GetNextVersionWhereFileAsyncTest()
     {
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO versiontable (versionID, versionDate, versionTitle, versionDescription, versionStable, versionSources, versionStatus, versionType) VALUES (3, '03-01-2021 00-00-00', '3.0.0', 'Incremental version', 1, '', 0, 1)");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (1, 3)");
+
         var result = await queryManager.GetNextVersionWhereFileAsync("2", "file1.txt");
-        Assert.That(result, Is.Null);
+        Assert.That(result, Is.EqualTo("3"));
 
         result = await queryManager.GetNextVersionWhereFileAsync("1", "file1.txt");
         Assert.That(result, Is.EqualTo("2"));
+
+        result = await queryManager.GetNextVersionWhereFileAsync("3", "file1.txt");
+        Assert.That(result, Is.Null);
     }
 
     [Test]

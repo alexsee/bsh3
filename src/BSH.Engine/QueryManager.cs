@@ -329,7 +329,7 @@ public class QueryManager : IQueryManager
                 "AND filelink.versionID = a.versionID " +
                 "AND filetable.fileID = fileversiontable.fileID " +
                 "AND (filetable.filePath LIKE @searchString OR filetable.fileName LIKE @searchString)) " +
-                "ORDER BY versionID DESC LIMIT 1", parameters);
+                "ORDER BY versionID ASC LIMIT 1", parameters);
 
             if (result != null)
             {
