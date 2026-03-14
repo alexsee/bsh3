@@ -386,6 +386,7 @@ public class FtpStorage : Storage, IStorage
     public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
     {
         var remoteFilePath = Combine(folderPath, remoteFile + ".zip").GetFtpPath();
+        var expectedEntryName = Path.GetFileName(localFile);
 
         // create directory if not exists
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
@@ -406,12 +407,32 @@ public class FtpStorage : Storage, IStorage
             return false;
         }
 
-        using (var zipFile = ZipFile.OpenRead(tmpFile))
+        try
         {
-            zipFile.GetEntry(Path.GetFileName(localFile)).ExtractToFile(GetLocalFileName(localFile), true);
+            using var zipFile = ZipFile.OpenRead(tmpFile);
+            var zipEntry = zipFile.GetEntry(expectedEntryName);
+
+            if (zipEntry == null)
+            {
+                _logger.Warning("Compressed file {remoteFile} does not contain expected entry {entryName}.", remoteFilePath, expectedEntryName);
+                return false;
+            }
+
+            zipEntry.ExtractToFile(GetLocalFileName(localFile), true);
+        }
+        catch (InvalidDataException ex)
+        {
+            _logger.Warning(ex, "Compressed file {remoteFile} is not a valid zip archive.", remoteFilePath);
+            return false;
+        }
+        finally
+        {
+            if (File.Exists(tmpFile))
+            {
+                File.Delete(tmpFile);
+            }
         }
 
-        File.Delete(tmpFile);
         return true;
     }
 

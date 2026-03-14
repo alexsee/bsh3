@@ -340,12 +340,29 @@ public class FileSystemStorage : Storage, IStorage
     public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
     {
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".zip");
+        var expectedEntryName = Path.GetFileName(localFile);
 
         // create directory if not exists
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
-        using var zipFile = ZipFile.OpenRead(remoteFilePath);
-        zipFile.GetEntry(Path.GetFileName(localFile)).ExtractToFile(GetLocalFileName(localFile), true);
+        try
+        {
+            using var zipFile = ZipFile.OpenRead(remoteFilePath);
+            var zipEntry = zipFile.GetEntry(expectedEntryName);
+
+            if (zipEntry == null)
+            {
+                _logger.Warning("Compressed file {remoteFile} does not contain expected entry {entryName}.", remoteFilePath, expectedEntryName);
+                return false;
+            }
+
+            zipEntry.ExtractToFile(GetLocalFileName(localFile), true);
+        }
+        catch (InvalidDataException ex)
+        {
+            _logger.Warning(ex, "Compressed file {remoteFile} is not a valid zip archive.", remoteFilePath);
+            return false;
+        }
 
         return true;
     }
