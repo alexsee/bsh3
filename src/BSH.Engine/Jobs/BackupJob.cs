@@ -673,32 +673,7 @@ public class BackupJob : Job
             file.FilePath += "\\";
         }
 
-        var fileType = 1;
-        if (storage.Kind == StorageProviderKind.LocalFileSystem)
-        {
-            if (compress)
-            {
-                fileType = 2;
-            }
-
-            if (encrypt)
-            {
-                fileType = 6;
-            }
-        }
-        else
-        {
-            fileType = 3;
-            if (compress)
-            {
-                fileType = 4;
-            }
-
-            if (encrypt)
-            {
-                fileType = 5;
-            }
-        }
+        var fileType = BackupFileType.GetFileType(storage.Kind, compress, encrypt);
 
         if (!long.TryParse(file.FileId, out var fileId))
         {
