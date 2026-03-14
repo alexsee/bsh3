@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<winex:WindowEx xmlns:winex="using:WinUIEx"
+    x:Class="BSH.MainApp.Windows.ModalWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BSH.MainApp.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="ModalWindow"
+    IsResizable="False" IsMaximizable="False">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Frame Grid.Row="0" x:Name="ModalFramePage" />
+        <Grid Grid.Row="1" Background="#fafafa" Padding="30,10" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                <Button Command="{x:Bind ViewModel.CancelCommand}">Cancel</Button>
+                <Button Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}">Save</Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</winex:WindowEx>

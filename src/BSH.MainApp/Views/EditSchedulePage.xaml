@@ -1,0 +1,115 @@
+<Page
+    x:Class="BSH.MainApp.Views.EditSchedulePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
+    xmlns:converters="using:BSH.MainApp.Converters"
+    xmlns:viewmodels="using:BSH.MainApp.ViewModels.Windows"
+    d:DataContext="{d:DesignInstance Type=viewmodels:EditScheduleViewModel}">
+
+    <Page.Resources>
+        <converters:EnumComparisonConverter x:Key="EnumComparisonConverter" />
+
+        <viewmodels:DeleteInterval x:Key="DeleteInterval_DontDelete">DontDelete</viewmodels:DeleteInterval>
+        <viewmodels:DeleteInterval x:Key="DeleteInterval_Manual">Manual</viewmodels:DeleteInterval>
+        <viewmodels:DeleteInterval x:Key="DeleteInterval_Auto">Auto</viewmodels:DeleteInterval>
+    </Page.Resources>
+
+    <ScrollViewer Grid.Row="0" Padding="30">
+        <StackPanel Orientation="Vertical" Spacing="20">
+            <TextBlock FontSize="24" FontWeight="SemiBold">Schedules &amp; Maintenance</TextBlock>
+
+            <!-- Schedule List Section -->
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <TextBlock FontSize="16" FontWeight="SemiBold">Backup Schedules</TextBlock>
+
+                <ListView x:Name="ScheduleListView" ItemsSource="{x:Bind ViewModel.ScheduleList, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedSchedule, Mode=TwoWay}"
+                            Height="150"
+                            SelectionMode="Single">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="12" ColumnSpacing="20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding IntervalName}" FontWeight="SemiBold"/>
+                                <TextBlock Grid.Column="1" Text="{Binding TimeDisplay}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Command="{x:Bind ViewModel.AddScheduleCommand}">Add Schedule</Button>
+                    <Button Command="{x:Bind ViewModel.DeleteScheduleCommand}" IsEnabled="{x:Bind ViewModel.DeleteButtonEnabled, Mode=OneWay}">Delete</Button>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Delete Interval Section -->
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <toolkit:SettingsExpander Header="Delete old backups" Description="Specify how old backups should be deleted" IsExpanded="true">
+                    <toolkit:SettingsExpander.HeaderIcon>
+                        <FontIcon Glyph="&#xE74D;" />
+                    </toolkit:SettingsExpander.HeaderIcon>
+                    <toolkit:SettingsExpander.Items>
+                        <toolkit:SettingsCard>
+                            <toolkit:SettingsCard.Header>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <RadioButton IsChecked="{Binding DeleteMode, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource DeleteInterval_Manual}}" Content="Delete backups that are older than"/>
+                                    <NumberBox Value="{x:Bind ViewModel.DeleteInterval, Mode=TwoWay}" Minimum="1" Maximum="999" SpinButtonPlacementMode="Inline" Width="150"/>
+                                    <ComboBox SelectedValue="{x:Bind ViewModel.DeleteIntervalType, Mode=TwoWay}" Width="100">
+                                        <ComboBoxItem>Hours</ComboBoxItem>
+                                        <ComboBoxItem>Days</ComboBoxItem>
+                                        <ComboBoxItem>Weeks</ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                            </toolkit:SettingsCard.Header>
+                        </toolkit:SettingsCard>
+
+                        <toolkit:SettingsCard>
+                            <toolkit:SettingsCard.Header>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <RadioButton IsChecked="{Binding DeleteMode, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource DeleteInterval_Auto}}" Content="Keep at least backups for"/>
+                                    <NumberBox Value="{x:Bind ViewModel.AutoDeleteHourBackups, Mode=TwoWay}" Minimum="1" Maximum="10000" SpinButtonPlacementMode="Inline" Width="150"/>
+                                    <TextBlock VerticalAlignment="Center">hours. Then keep daily backups for one month. Then keep weekly backups.</TextBlock>
+                                </StackPanel>
+                            </toolkit:SettingsCard.Header>
+                        </toolkit:SettingsCard>
+
+                        <toolkit:SettingsCard>
+                            <toolkit:SettingsCard.Header>
+                                <RadioButton IsChecked="{Binding DeleteMode, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource DeleteInterval_DontDelete}}" Content="Don't delete any backup automatically"/>
+                            </toolkit:SettingsCard.Header>
+                        </toolkit:SettingsCard>
+                    </toolkit:SettingsExpander.Items>
+                </toolkit:SettingsExpander>
+            </StackPanel>
+
+            <!-- Full Backup Section -->
+            <toolkit:SettingsExpander Header="Schedule full backups" Description="Create full backups on regular schedule" IsExpanded="true">
+                <toolkit:SettingsExpander.HeaderIcon>
+                    <FontIcon Glyph="&#xE7B8;" />
+                </toolkit:SettingsExpander.HeaderIcon>
+                <toolkit:SettingsExpander.Content>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.EnableFullBackup, Mode=TwoWay}" />
+                </toolkit:SettingsExpander.Content>
+                <toolkit:SettingsExpander.Items>
+                    <toolkit:SettingsCard>
+                        <toolkit:SettingsCard.Header>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock VerticalAlignment="Center">Create full backup every</TextBlock>
+                                <NumberBox Value="{x:Bind ViewModel.FullBackupDay, Mode=TwoWay}" Minimum="1" Maximum="365" SpinButtonPlacementMode="Inline" Width="150"/>
+                                <TextBlock VerticalAlignment="Center">days</TextBlock>
+                            </StackPanel>
+                        </toolkit:SettingsCard.Header>
+                    </toolkit:SettingsCard>
+                </toolkit:SettingsExpander.Items>
+            </toolkit:SettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
