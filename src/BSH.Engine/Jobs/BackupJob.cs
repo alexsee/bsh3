@@ -489,123 +489,24 @@ public class BackupJob : Job
     /// <exception cref="FileNotProcessedException"></exception>
     private async Task<bool> CopyFileToDeviceAsync(IStorageProvider storage, FileTableRow file, long newVersionId, string newVersionDate, DbClient dbClient, bool normalCopy = false, bool useVss = false)
     {
-        // file variables
         var localFileName = file.FileNamePath();
         var remoteFileName = Path.Combine(newVersionDate, Path.GetFileName(file.FileRoot), file.FilePath, file.FileName);
         var longFileName = "";
 
-        // copy via vss?
         if (useVss)
         {
-            try
-            {
-                _logger.Information("File {fileName} will be attempted to backup via Volume Shadow Copy Service.", localFileName);
-
-                // temporary file path
-                var vssTempFile = Path.Combine(Path.GetTempPath(), file.FileName);
-
-                if (vssClient.CopyFile(localFileName, vssTempFile))
-                {
-                    if (!File.Exists(vssTempFile))
-                    {
-                        // we could not copy the file
-                        _logger.Warning("File {fileName} could not be copied via Volume Shadow Copy Service.", localFileName);
-                        throw new FileNotProcessedException();
-                    }
-
-                    // set new local file name
-                    localFileName = vssTempFile;
-                }
-                else
-                {
-                    // error during copy, so delete temporary file
-                    try
-                    {
-                        File.Delete(vssTempFile);
-                    }
-                    catch
-                    {
-                        // not necessary to handle this error
-                    }
-
-                    // we could not copy the file
-                    _logger.Warning("File {fileName} could not be copied via Volume Shadow Copy Service.", localFileName);
-                    throw new FileNotProcessedException();
-                }
-            }
-            catch (Exception ex)
-            {
-                // we could not copy the file
-                throw new FileNotProcessedException(ex);
-            }
+            localFileName = PrepareVssTempFile(localFileName, file);
         }
 
-        // check if we need to compress the file
-        var doNotCompress = false;
+        var compress = ShouldCompress(file, normalCopy);
+        var encrypt = ShouldEncrypt(file, normalCopy);
+        remoteFileName = EnsureSupportedRemotePath(storage, remoteFileName, localFileName, file, newVersionDate, compress, encrypt, out longFileName);
 
-        if (configurationManager.Compression == 1)
-        {
-            var fileExt = Path.GetExtension(file.FileNamePath()).ToLower(CultureInfo.InvariantCulture);
-
-            if (!string.IsNullOrEmpty(fileExt))
-            {
-                var exts = configurationManager.ExcludeCompression.Split('|');
-
-                if (exts.Contains(fileExt))
-                {
-                    doNotCompress = true;
-                }
-            }
-
-            if (CompressionUtils.IsCompressedFile(fileExt) || file.FileSize < 4 * 8)
-            {
-                doNotCompress = true;
-            }
-        }
-
-        // compress or encrypt?
-        var compress = configurationManager.Compression == 1 && !normalCopy && !doNotCompress;
-        var encrypt = configurationManager.Encrypt == 1 && !normalCopy && file.FileSize > 0;
-
-        // check if path is too long
-        if (storage.IsPathTooLong(remoteFileName, compress, encrypt))
-        {
-            longFileName = Guid.NewGuid().ToString();
-            longFileName += Path.GetExtension(localFileName);
-
-            remoteFileName = Path.Combine(newVersionDate, "_LONGFILES_", longFileName);
-
-            _logger.Debug("{fileName} path is too long to be copied, it will be renamed instead to {longFile}.", file.FileNamePath(), longFileName);
-        }
-
-        // send file to storage provider
         bool result;
         try
         {
-            if (compress)
-            {
-                result = storage.CopyFileToStorageCompressed(localFileName, remoteFileName);
-            }
-            else if (encrypt)
-            {
-                result = storage.CopyFileToStorageEncrypted(localFileName, remoteFileName, Password);
-            }
-            else
-            {
-                result = storage.CopyFileToStorage(localFileName, remoteFileName);
-            }
-
-            if (useVss && localFileName.StartsWith(Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
-            {
-                try
-                {
-                    File.Delete(localFileName);
-                }
-                catch
-                {
-                    // could not delete temporary file
-                }
-            }
+            result = CopyFileToStorage(storage, localFileName, remoteFileName, compress, encrypt);
+            DeleteVssTempFile(localFileName, useVss);
         }
         catch (IOException ex)
         {
@@ -654,6 +555,113 @@ public class BackupJob : Job
         await AddFileVersionDatabaseEntryAsync(dbClient, file, newVersionId, longFileName, compress, encrypt);
 
         return true;
+    }
+
+    private string PrepareVssTempFile(string localFileName, FileTableRow file)
+    {
+        try
+        {
+            _logger.Information("File {fileName} will be attempted to backup via Volume Shadow Copy Service.", localFileName);
+
+            var vssTempFile = Path.Combine(Path.GetTempPath(), file.FileName);
+            if (vssClient.CopyFile(localFileName, vssTempFile) && File.Exists(vssTempFile))
+            {
+                return vssTempFile;
+            }
+
+            TryDeleteFile(vssTempFile);
+            _logger.Warning("File {fileName} could not be copied via Volume Shadow Copy Service.", localFileName);
+            throw new FileNotProcessedException();
+        }
+        catch (Exception ex)
+        {
+            throw new FileNotProcessedException(ex);
+        }
+    }
+
+    private bool ShouldCompress(FileTableRow file, bool normalCopy)
+    {
+        if (configurationManager.Compression != 1 || normalCopy)
+        {
+            return false;
+        }
+
+        var fileExt = Path.GetExtension(file.FileNamePath()).ToLower(CultureInfo.InvariantCulture);
+        if (CompressionUtils.IsCompressedFile(fileExt) || file.FileSize < 4 * 8)
+        {
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(fileExt))
+        {
+            return true;
+        }
+
+        var excludedExtensions = configurationManager.ExcludeCompression.Split('|');
+        return !excludedExtensions.Contains(fileExt);
+    }
+
+    private bool ShouldEncrypt(FileTableRow file, bool normalCopy)
+    {
+        return configurationManager.Encrypt == 1 && !normalCopy && file.FileSize > 0;
+    }
+
+    private string EnsureSupportedRemotePath(
+        IStorageProvider storage,
+        string remoteFileName,
+        string localFileName,
+        FileTableRow file,
+        string newVersionDate,
+        bool compress,
+        bool encrypt,
+        out string longFileName)
+    {
+        longFileName = "";
+        if (!storage.IsPathTooLong(remoteFileName, compress, encrypt))
+        {
+            return remoteFileName;
+        }
+
+        longFileName = Guid.NewGuid() + Path.GetExtension(localFileName);
+        _logger.Debug("{fileName} path is too long to be copied, it will be renamed instead to {longFile}.", file.FileNamePath(), longFileName);
+        return Path.Combine(newVersionDate, "_LONGFILES_", longFileName);
+    }
+
+    private bool CopyFileToStorage(IStorageProvider storage, string localFileName, string remoteFileName, bool compress, bool encrypt)
+    {
+        if (compress)
+        {
+            return storage.CopyFileToStorageCompressed(localFileName, remoteFileName);
+        }
+
+        if (encrypt)
+        {
+            return storage.CopyFileToStorageEncrypted(localFileName, remoteFileName, Password);
+        }
+
+        return storage.CopyFileToStorage(localFileName, remoteFileName);
+    }
+
+    private static void DeleteVssTempFile(string localFileName, bool useVss)
+    {
+        if (!useVss || !localFileName.StartsWith(Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        TryDeleteFile(localFileName);
+    }
+
+    private static void TryDeleteFile(string fileName)
+    {
+        try
+        {
+            File.Delete(fileName);
+        }
+        catch
+        {
+            // not critical
+        }
     }
 
     /// <summary>

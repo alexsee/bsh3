@@ -706,59 +706,7 @@ static class BackupLogic
 
         try
         {
-            if (ConfigurationManager.IntervallDelete == "auto")
-            {
-                // automatic deletion
-                listDelete.AddRange(GetAutomaticVersionsToDelete());
-            }
-            else if (string.IsNullOrEmpty(ConfigurationManager.IntervallDelete))
-            {
-                // don't delete anything
-            }
-            else
-            {
-                // custom intervals
-                var intervals = ConfigurationManager.IntervallDelete.Split('|');
-                var listVersions = QueryManager.GetVersions();
-
-                foreach (var version in listVersions)
-                {
-                    // ignore fixed versions
-                    if (version.Stable)
-                    {
-                        continue;
-                    }
-
-                    // Löschung
-                    switch (intervals[0] ?? "")
-                    {
-                        case "hour":
-                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0) && !listDelete.Contains(version))
-                            {
-                                listDelete.Add(version);
-                            }
-
-                            break;
-
-                        case "day":
-                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0, 0) && !listDelete.Contains(version))
-                            {
-                                listDelete.Add(version);
-                            }
-
-                            break;
-
-                        case "week":
-
-                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan((int)Math.Round(Convert.ToDouble(intervals[1]) * 7d), 0, 0, 0) && !listDelete.Contains(version))
-                            {
-                                listDelete.Add(version);
-                            }
-
-                            break;
-                    }
-                }
-            }
+            listDelete.AddRange(GetScheduledVersionsToDelete());
         }
         catch (Exception ex)
         {
@@ -771,6 +719,59 @@ static class BackupLogic
         {
             await BackupController.DeleteBackupAsync(version.Id, false);
         }
+    }
+
+    private static List<VersionDetails> GetScheduledVersionsToDelete()
+    {
+        if (ConfigurationManager.IntervallDelete == "auto")
+        {
+            return GetAutomaticVersionsToDelete();
+        }
+
+        if (string.IsNullOrEmpty(ConfigurationManager.IntervallDelete))
+        {
+            return new List<VersionDetails>();
+        }
+
+        return GetCustomVersionsToDelete(ConfigurationManager.IntervallDelete);
+    }
+
+    private static List<VersionDetails> GetCustomVersionsToDelete(string intervalConfig)
+    {
+        var listDelete = new List<VersionDetails>();
+        var intervals = intervalConfig.Split('|');
+        var listVersions = QueryManager.GetVersions();
+
+        foreach (var version in listVersions)
+        {
+            if (version.Stable || listDelete.Contains(version))
+            {
+                continue;
+            }
+
+            if (ShouldDeleteVersion(version, intervals))
+            {
+                listDelete.Add(version);
+            }
+        }
+
+        return listDelete;
+    }
+
+    private static bool ShouldDeleteVersion(VersionDetails version, string[] intervals)
+    {
+        if (intervals.Length < 2)
+        {
+            return false;
+        }
+
+        return intervals[0] switch
+        {
+            "hour" => DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0),
+            "day" => DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0, 0),
+            "week" => DateTime.Now.Subtract(version.CreationDate) > new TimeSpan((int)Math.Round(Convert.ToDouble(intervals[1]) * 7d), 0, 0, 0),
+            _ => false
+        };
     }
 
     #endregion

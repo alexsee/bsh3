@@ -77,97 +77,115 @@ public class FileSystemStorage : Storage, IStorage
             // connect to network
             using var networkConn = new NetworkConnection(backupFolder, networkUserName, networkPassword);
 
-            // check path
             if (Directory.Exists(backupFolder))
             {
-                // check if we can write to the folder
-                if (!CanWriteToStorage(backupFolder))
-                {
-                    return false;
-                }
-
-                // store volume serial if not present
-                var volumeSerial = Win32Stuff.GetVolumeSerial(backupFolder[..3]);
-
-                if (string.IsNullOrEmpty(volumeSerialNumber) && volumeSerial != null)
-                {
-                    configurationManager.MediaVolumeSerial = volumeSerial;
-                }
-
-                // check serial
-                if (!string.IsNullOrEmpty(volumeSerial) && !string.IsNullOrEmpty(volumeSerialNumber))
-                {
-                    if (volumeSerial == volumeSerialNumber)
-                    {
-                        return await IsValidStorage();
-                    }
-                    else
-                    {
-                        _logger.Information("Storage device serial number is not equal to the stored id. We are not sure if that is the same device.");
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                _logger.Information("Medium directory {directoryName} not found; searching for device with corresponding serial number.", backupFolder);
-
-                // search for medium (maybe the drive letter has changed)
-                if (string.IsNullOrEmpty(volumeSerialNumber))
-                {
-                    return false;
-                }
-
-                foreach (var drive in DriveInfo.GetDrives())
-                {
-                    if (drive.DriveType != DriveType.Fixed && drive.DriveType != DriveType.Removable)
-                    {
-                        continue;
-                    }
-
-                    try
-                    {
-                        // get serial id
-                        var volumeSerial = Win32Stuff.GetVolumeSerial(drive.RootDirectory.FullName[..3]);
-
-                        if (!string.IsNullOrEmpty(volumeSerial) && volumeSerial == volumeSerialNumber)
-                        {
-                            // drive found
-                            _logger.Information("Drive letter updated with the serial number {volumeSerialNumber} at {driveLetter}.",
-                                volumeSerialNumber, drive.RootDirectory.FullName);
-
-                            var newBackupFolder = drive.RootDirectory.FullName[..1] + configurationManager.BackupFolder[1..];
-
-                            if (Directory.Exists(newBackupFolder) && CanWriteToStorage(newBackupFolder))
-                            {
-                                // update folder path
-                                configurationManager.BackupFolder = newBackupFolder;
-                                backupFolder = newBackupFolder;
-
-                                return await IsValidStorage();
-                            }
-                        }
-                    }
-                    catch (DeviceContainsWrongStateException)
-                    {
-                        throw;
-                    }
-                    catch (Exception)
-                    {
-                        // could not access device, ignore that
-                    }
-                }
-
-                return false;
+                return await CheckExistingMediumAsync();
             }
 
-            // check storage version
-            return await IsValidStorage();
+            return await TryFindMovedMediumAsync();
         }
         catch (Win32Exception)
         {
             return false;
         }
+    }
+
+    private async Task<bool> CheckExistingMediumAsync()
+    {
+        if (!CanWriteToStorage(backupFolder))
+        {
+            return false;
+        }
+
+        var volumeSerial = Win32Stuff.GetVolumeSerial(backupFolder[..3]);
+        StoreSerialNumberIfMissing(volumeSerial);
+
+        if (HasSerialMismatch(volumeSerial))
+        {
+            _logger.Information("Storage device serial number is not equal to the stored id. We are not sure if that is the same device.");
+            return false;
+        }
+
+        return await IsValidStorage();
+    }
+
+    private async Task<bool> TryFindMovedMediumAsync()
+    {
+        _logger.Information("Medium directory {directoryName} not found; searching for device with corresponding serial number.", backupFolder);
+
+        if (string.IsNullOrEmpty(volumeSerialNumber))
+        {
+            return false;
+        }
+
+        foreach (var drive in DriveInfo.GetDrives())
+        {
+            if (!IsCandidateBackupDrive(drive))
+            {
+                continue;
+            }
+
+            if (await TrySwitchBackupFolderToDriveAsync(drive))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsCandidateBackupDrive(DriveInfo drive)
+    {
+        return drive.DriveType == DriveType.Fixed || drive.DriveType == DriveType.Removable;
+    }
+
+    private async Task<bool> TrySwitchBackupFolderToDriveAsync(DriveInfo drive)
+    {
+        try
+        {
+            var volumeSerial = Win32Stuff.GetVolumeSerial(drive.RootDirectory.FullName[..3]);
+            if (string.IsNullOrEmpty(volumeSerial) || volumeSerial != volumeSerialNumber)
+            {
+                return false;
+            }
+
+            _logger.Information("Drive letter updated with the serial number {volumeSerialNumber} at {driveLetter}.",
+                volumeSerialNumber, drive.RootDirectory.FullName);
+
+            var newBackupFolder = drive.RootDirectory.FullName[..1] + configurationManager.BackupFolder[1..];
+            if (!Directory.Exists(newBackupFolder) || !CanWriteToStorage(newBackupFolder))
+            {
+                return false;
+            }
+
+            configurationManager.BackupFolder = newBackupFolder;
+            backupFolder = newBackupFolder;
+            return await IsValidStorage();
+        }
+        catch (DeviceContainsWrongStateException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            // could not access device, ignore that
+            return false;
+        }
+    }
+
+    private void StoreSerialNumberIfMissing(string volumeSerial)
+    {
+        if (string.IsNullOrEmpty(volumeSerialNumber) && volumeSerial != null)
+        {
+            configurationManager.MediaVolumeSerial = volumeSerial;
+        }
+    }
+
+    private bool HasSerialMismatch(string volumeSerial)
+    {
+        return !string.IsNullOrEmpty(volumeSerial) &&
+               !string.IsNullOrEmpty(volumeSerialNumber) &&
+               volumeSerial != volumeSerialNumber;
     }
 
     /// <summary>

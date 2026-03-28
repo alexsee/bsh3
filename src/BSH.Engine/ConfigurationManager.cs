@@ -3,14 +3,18 @@
 
 using System;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Database;
 
 namespace Brightbits.BSH.Engine;
 
 public class ConfigurationManager : IConfigurationManager
 {
+    private static readonly string[] IntegerBackedProperties = { "Status", "TaskType", "Compression", "Encrypt", "MediumType" };
+
     private readonly IDbClientFactory dbClientFactory;
 
     private string taskType = "2";
@@ -509,40 +513,50 @@ public class ConfigurationManager : IConfigurationManager
 
         foreach (var configEntry in GetType().GetProperties())
         {
-            if (configEntry == null)
+            var result = await LoadConfigurationValueAsync(dbClient, configEntry.Name);
+            if (result == null || result.Equals(DBNull.Value) || TrySetIntegerBackedProperty(configEntry, result))
             {
                 continue;
             }
 
-            var parameters = new (string, object)[] {
-                   ("value", configEntry.Name.Replace("_", ""))
-                };
-
-            var result = await dbClient.ExecuteScalarAsync(CommandType.Text, "SELECT confValue FROM configuration WHERE confProperty LIKE @value LIMIT 1", parameters);
-
-            if (result == null || result.Equals(DBNull.Value))
-            {
-                continue;
-            }
-
-            if (configEntry.Name == "Status" || configEntry.Name == "TaskType" || configEntry.Name == "Compression" || configEntry.Name == "Encrypt" || configEntry.Name == "MediumType")
-            {
-                if (int.TryParse(result.ToString(), out var val))
-                {
-                    configEntry.SetValue(this, val);
-                    continue;
-                }
-                if (configEntry.Name == "MediumType")
-                {
-                    Enum.TryParse(result.ToString(), out MediaType outValue);
-                    configEntry.SetValue(this, outValue);
-                }
-            }
-            else
-            {
-                configEntry.SetValue(this, result);
-            }
+            configEntry.SetValue(this, result);
         }
+    }
+
+    private async Task<object> LoadConfigurationValueAsync(DbClient dbClient, string propertyName)
+    {
+        var parameters = new (string, object)[]
+        {
+            ("value", propertyName.Replace("_", ""))
+        };
+
+        return await dbClient.ExecuteScalarAsync(
+            CommandType.Text,
+            "SELECT confValue FROM configuration WHERE confProperty LIKE @value LIMIT 1",
+            parameters);
+    }
+
+    private bool TrySetIntegerBackedProperty(System.Reflection.PropertyInfo configEntry, object result)
+    {
+        if (!IntegerBackedProperties.Contains(configEntry.Name))
+        {
+            return false;
+        }
+
+        if (int.TryParse(result.ToString(), out var val))
+        {
+            configEntry.SetValue(this, val);
+            return true;
+        }
+
+        if (configEntry.Name == "MediumType")
+        {
+            Enum.TryParse(result.ToString(), out MediaType outValue);
+            configEntry.SetValue(this, outValue);
+            return true;
+        }
+
+        return false;
     }
 
     private void SaveProperty(string property, string value)
