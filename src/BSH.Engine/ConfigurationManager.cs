@@ -553,10 +553,11 @@ public class ConfigurationManager : IConfigurationManager
         {
             Enum.TryParse(result.ToString(), out MediaType outValue);
             configEntry.SetValue(this, outValue);
-            return true;
         }
 
-        return false;
+        // Integer-backed properties are considered handled even when parsing fails,
+        // so invalid persisted values do not overwrite in-memory defaults.
+        return true;
     }
 
     private void SaveProperty(string property, string value)
