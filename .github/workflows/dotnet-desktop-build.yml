@@ -49,7 +49,7 @@ jobs:
     
     - name: Start sonarcloud scanner
       run: |
-        dotnet sonarscanner begin /k:"alexsee_bsh3" /o:"alexsee" /d:sonar.login="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+        dotnet sonarscanner begin /k:"alexsee_bsh3" /o:"alexsee" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -66,7 +66,7 @@ jobs:
       working-directory: ./src
 
     - name: Finish the sonar cloud scanner
-      run: dotnet sonarscanner end /d:sonar.login="$env:SONAR_TOKEN"
+      run: dotnet sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
