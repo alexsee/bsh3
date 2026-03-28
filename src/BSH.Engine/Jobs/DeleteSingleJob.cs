@@ -15,6 +15,7 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
+using Brightbits.BSH.Engine.Utils;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -104,7 +105,7 @@ public class DeleteSingleJob : Job
                             reader.GetString("filePath"),
                             reader.GetString("longfilename"),
                             reader.GetString("versionDate"),
-                            reader.GetInt32("fileType").ToString()
+                            reader.GetInt32("fileType")
                         );
                     }
                     catch (FileNotProcessedException ex)
@@ -174,31 +175,25 @@ public class DeleteSingleJob : Job
     /// <param name="versionDate"></param>
     /// <param name="fileType"></param>
     /// <exception cref="FileNotProcessedException"></exception>
-    private void DeleteFileFromDevice(string fileName, string filePath, string longFileName, string versionDate, string fileType)
+    private void DeleteFileFromDevice(string fileName, string filePath, string longFileName, string versionDate, int fileType)
     {
         // determine remote file name
-        string remoteFile;
-        if ((fileType == "1" || fileType == "2" || fileType == "6") && !string.IsNullOrEmpty(longFileName))
-        {
-            remoteFile = Path.Combine(versionDate, "_LONG_FILES", longFileName);
-        }
-        else
-        {
-            remoteFile = Path.Combine(versionDate + filePath, fileName);
-        }
+        var remoteFile = !string.IsNullOrEmpty(longFileName)
+            ? Path.Combine(versionDate, "_LONGFILES_", longFileName)
+            : Path.Combine(versionDate + filePath, fileName);
 
         // delete file
         try
         {
-            if (fileType == "1" || fileType == "3")
+            if (BackupFileType.IsRegular(fileType))
             {
                 storage.DeleteFileFromStorage(remoteFile);
             }
-            else if (fileType == "2" || fileType == "4")
+            else if (BackupFileType.IsCompressed(fileType))
             {
                 storage.DeleteFileFromStorageCompressed(remoteFile);
             }
-            else if (fileType == "5" || fileType == "6")
+            else if (BackupFileType.IsEncrypted(fileType))
             {
                 storage.DeleteFileFromStorageEncrypted(remoteFile);
             }

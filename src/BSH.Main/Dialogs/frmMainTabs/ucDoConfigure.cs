@@ -11,6 +11,7 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Utils;
 using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;
@@ -154,15 +155,23 @@ public partial class ucDoConfigure : IMainTabs
                 }
                 else if (tcSource.SelectedIndex == 1)
                 {
-                    // check ftp credentials
+                    // check remote credentials (FTP/WebDAV)
                     try
                     {
-                        txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
+                        txtFTPPath.Text = NormalizeRemoteFolder(txtFTPServer.Text, txtFTPPath.Text);
 
-                        var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
-                        if (!profile)
+                        var isRemoteConnectionValid = VerifyRemoteStorageConnection(
+                            txtFTPServer.Text,
+                            Convert.ToInt32(txtFTPPort.Text),
+                            txtFTPUsername.Text,
+                            txtFTPPassword.Text,
+                            txtFTPPath.Text,
+                            Convert.ToString(cboFtpEncoding.SelectedItem),
+                            chkFtpEncryption.Checked);
+
+                        if (!isRemoteConnectionValid)
                         {
-                            // directory not found
+                            // remote storage unavailable
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
                             await ShowWizardStepAsync(iWizardStep);
@@ -180,6 +189,7 @@ public partial class ucDoConfigure : IMainTabs
                         return;
                     }
                 }
+
                 else
                 {
                     txtUNCPath.Text = txtUNCPath.Text.Replace("//", @"\\");
@@ -256,10 +266,10 @@ public partial class ucDoConfigure : IMainTabs
                         configurationManager.FtpPort = txtFTPPort.Text;
                         configurationManager.FtpUser = txtFTPUsername.Text;
                         configurationManager.FtpPass = txtFTPPassword.Text;
-                        configurationManager.FtpFolder = txtFTPPath.Text;
+                        configurationManager.FtpFolder = NormalizeRemoteFolder(txtFTPServer.Text, txtFTPPath.Text);
                         configurationManager.FtpCoding = Convert.ToString(cboFtpEncoding.SelectedItem);
 
-                        configurationManager.FtpEncryptionMode = chkFtpEncryption2.Checked ? "0" : "3";
+                        configurationManager.FtpEncryptionMode = chkFtpEncryption.Checked ? "0" : "3";
                         configurationManager.FtpSslProtocols = "0";
                     }
                     else
@@ -409,26 +419,24 @@ public partial class ucDoConfigure : IMainTabs
                     // check ftp server credentials
                     try
                     {
-                        txtFTPPath2.Text = FtpStorage.GetFtpPath(txtFTPPath2.Text);
+                        txtFTPPath2.Text = NormalizeRemoteFolder(txtFTPServer2.Text, txtFTPPath2.Text);
 
-                        using (var storage = new FtpStorage(
+                        using var storage = CreateRemoteStorage(
                             txtFTPServer2.Text,
                             Convert.ToInt32(txtFTPPort2.Text),
                             txtFTPUser2.Text,
                             txtFTPPass2.Text,
                             txtFTPPath2.Text,
                             Convert.ToString(cboFtpEncoding2.SelectedItem),
-                            !chkFtpEncryption2.Checked,
-                            0))
+                            chkFtpEncryption2.Checked);
+
+                        storage.Open();
+                        if (!storage.FileExists("backup.bshdb"))
                         {
-                            storage.Open();
-                            if (!storage.FileExists("backup.bshdb"))
-                            {
-                                MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                iWizardStep -= 1;
-                                await ShowWizardStepAsync(iWizardStep);
-                                return;
-                            }
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            iWizardStep -= 1;
+                            await ShowWizardStepAsync(iWizardStep);
+                            return;
                         }
 
                         MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -480,15 +488,17 @@ public partial class ucDoConfigure : IMainTabs
                     {
                         // download backup database
                         DeleteCurrentDatabaseFile();
-                        using IStorage storage = new FtpStorage(
+
+                        txtFTPPath2.Text = NormalizeRemoteFolder(txtFTPServer2.Text, txtFTPPath2.Text);
+                        using IStorage storage = CreateRemoteStorage(
                             txtFTPServer2.Text,
                             int.Parse(txtFTPPort2.Text),
                             txtFTPUser2.Text,
                             txtFTPPass2.Text,
                             txtFTPPath2.Text,
                             Convert.ToString(cboFtpEncoding2.SelectedItem),
-                            !chkFtpEncryption2.Checked,
-                            0);
+                            chkFtpEncryption2.Checked);
+
                         storage.Open();
                         storage.CopyFileFromStorage(BackupLogic.DatabaseFile, "backup.bshdb");
                     }
@@ -527,9 +537,7 @@ public partial class ucDoConfigure : IMainTabs
                     BackupLogic.ConfigurationManager.BackupFolder = lvBackups.SelectedItems[0].Tag.ToString();
                     BackupLogic.ConfigurationManager.MediumType = MediaType.LocalDevice;
 
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
+                    await RemapFileTypesForLocalStorageAsync();
                 }
                 else if (tcStep5.SelectedIndex == 1)
                 {
@@ -543,9 +551,7 @@ public partial class ucDoConfigure : IMainTabs
                     BackupLogic.ConfigurationManager.FtpCoding = Convert.ToString(cboFtpEncoding2.SelectedItem);
                     BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
 
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
+                    await RemapFileTypesForRemoteStorageAsync();
                 }
                 else
                 {
@@ -708,12 +714,20 @@ public partial class ucDoConfigure : IMainTabs
 
     private void cmdFTPCheck_Click(object sender, EventArgs e)
     {
-        // check ftp credentials
+        // check remote credentials (FTP/WebDAV)
         try
         {
-            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            txtFTPPath.Text = NormalizeRemoteFolder(txtFTPServer.Text, txtFTPPath.Text);
+            var isRemoteConnectionValid = VerifyRemoteStorageConnection(
+                txtFTPServer.Text,
+                Convert.ToInt32(txtFTPPort.Text),
+                txtFTPUsername.Text,
+                txtFTPPassword.Text,
+                txtFTPPath.Text,
+                Convert.ToString(cboFtpEncoding.SelectedItem),
+                chkFtpEncryption.Checked);
 
-            if (!profile)
+            if (!isRemoteConnectionValid)
             {
                 MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT, Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -788,6 +802,78 @@ public partial class ucDoConfigure : IMainTabs
             newEntry.Group = gGroup;
             newEntry.Tag = entry.RootDirectory.FullName;
         }
+    }
+
+    private static string NormalizeRemoteFolder(string host, string path)
+    {
+        return FtpStorage.GetFtpPath(path ?? "");
+    }
+
+    private static bool VerifyRemoteStorageConnection(
+        string host,
+        int port,
+        string user,
+        string password,
+        string path,
+        string encoding,
+        bool enforceUnencryptedConnection)
+    {
+        using var storage = CreateRemoteStorage(host, port, user, password, path, encoding, enforceUnencryptedConnection);
+        storage.Open();
+
+        var probeLocalFile = Path.GetTempFileName();
+        var probeRemoteFile = "bsh.connectiontest." + Guid.NewGuid().ToString("N");
+
+        try
+        {
+            File.WriteAllText(probeLocalFile, DateTime.UtcNow.ToString("O"));
+            if (!storage.CopyFileToStorage(probeLocalFile, probeRemoteFile))
+            {
+                return false;
+            }
+
+            storage.DeleteFileFromStorage(probeRemoteFile);
+            return true;
+        }
+        finally
+        {
+            if (File.Exists(probeLocalFile))
+            {
+                File.Delete(probeLocalFile);
+            }
+        }
+    }
+
+    private static IStorage CreateRemoteStorage(
+        string host,
+        int port,
+        string user,
+        string password,
+        string path,
+        string encoding,
+        bool enforceUnencryptedConnection)
+    {
+        return new FtpStorage(host, port, user, password, path, encoding, !enforceUnencryptedConnection, 0);
+    }
+
+    private static async Task RemapFileTypesForLocalStorageAsync()
+    {
+        await UpdateFileTypesAsync(BackupFileType.Local, BackupFileType.Ftp, BackupFileType.WebDav);
+        await UpdateFileTypesAsync(BackupFileType.LocalCompressed, BackupFileType.FtpCompressed, BackupFileType.WebDavCompressed);
+        await UpdateFileTypesAsync(BackupFileType.LocalEncrypted, BackupFileType.FtpEncrypted, BackupFileType.WebDavEncrypted);
+    }
+
+    private static async Task RemapFileTypesForRemoteStorageAsync()
+    {
+        await UpdateFileTypesAsync(BackupFileType.Ftp, BackupFileType.Local, BackupFileType.WebDav);
+        await UpdateFileTypesAsync(BackupFileType.FtpCompressed, BackupFileType.LocalCompressed, BackupFileType.WebDavCompressed);
+        await UpdateFileTypesAsync(BackupFileType.FtpEncrypted, BackupFileType.LocalEncrypted, BackupFileType.WebDavEncrypted);
+    }
+
+    private static Task UpdateFileTypesAsync(int targetType, params int[] sourceTypes)
+    {
+        return BackupLogic.DbClientFactory.ExecuteNonQueryAsync(
+            $"UPDATE fileversiontable SET fileType = {targetType} WHERE fileType IN ({string.Join(", ", sourceTypes)})");
     }
 
     private void cmdChange_Click(object sender, EventArgs e)
