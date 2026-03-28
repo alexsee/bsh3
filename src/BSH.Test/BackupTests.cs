@@ -335,8 +335,12 @@ public class BackupTests
 
     private static string CreateTempFile(string extension)
     {
-        var tempFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}{extension}");
-        File.WriteAllText(tempFile, "backup-test-content");
-        return tempFile;
+        var testFilesDir = Path.Combine(Environment.CurrentDirectory, "testfiles");
+        Directory.CreateDirectory(testFilesDir);
+
+        var testFile = Path.Combine(testFilesDir, $"{Guid.NewGuid()}{extension}");
+        var content = new string('a', 256);
+        File.WriteAllText(testFile, content);
+        return testFile;
     }
 }
