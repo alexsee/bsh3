@@ -6,6 +6,7 @@ using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels.Windows;
+using BSH.MainApp.Views;
 using BSH.MainApp.Windows;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Controls;
@@ -163,6 +164,22 @@ public class PresentationService : IPresentationService
         {
             var dialog = new FilterWindow();
             await dialog.ShowDialogAsync();
+        });
+    }
+
+    public async Task ShowEditScheduleWindowAsync()
+    {
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            await ModalWindow.ShowDialogAsync<EditScheduleViewModel>(typeof(EditSchedulePage));
+        });
+    }
+
+    public async Task<(AddScheduleViewModel, bool)> ShowAddScheduleWindowAsync()
+    {
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            return await ModalWindow.ShowDialogAsync<AddScheduleViewModel>(typeof(AddSchedulePage));
         });
     }
 }
