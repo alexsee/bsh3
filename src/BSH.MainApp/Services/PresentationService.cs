@@ -126,35 +126,72 @@ public class PresentationService : IPresentationService
     {
         return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
-            if (commands != null && commands.Count > 3)
-            {
-                throw new InvalidOperationException("A maximum of 3 commands can be specified");
-            }
-
-            IUICommand defaultCommand = new UICommand("OK");
-            IUICommand? secondaryCommand = null;
-            IUICommand? cancelCommand = null;
-            if (commands != null)
-            {
-                defaultCommand = commands.Count > defaultCommandIndex ? commands[(int)defaultCommandIndex] : commands.FirstOrDefault() ?? defaultCommand;
-                cancelCommand = commands.Count > cancelCommandIndex ? commands[(int)cancelCommandIndex] : null;
-                secondaryCommand = commands.FirstOrDefault(c => c != defaultCommand && c != cancelCommand);
-            }
-            var dialog = new ContentDialog();
-            dialog.XamlRoot = App.MainWindow.Content.XamlRoot;
-            dialog.Content = new TextBlock() { Text = content };
-            dialog.Title = title;
-            dialog.PrimaryButtonText = defaultCommand.Label;
-            if (secondaryCommand != null)
-            {
-                dialog.SecondaryButtonText = secondaryCommand.Label;
-            }
-            if (cancelCommand != null)
-            {
-                dialog.CloseButtonText = cancelCommand.Label;
-            }
+            ValidateCommands(commands);
+            var (defaultCommand, secondaryCommand, cancelCommand) = ResolveCommands(commands, defaultCommandIndex, cancelCommandIndex);
+            var dialog = BuildDialog(title, content, defaultCommand, secondaryCommand, cancelCommand);
             return await dialog.ShowAsync();
         });
+    }
+
+    private static void ValidateCommands(IList<IUICommand>? commands)
+    {
+        if (commands != null && commands.Count > 3)
+        {
+            throw new InvalidOperationException("A maximum of 3 commands can be specified");
+        }
+    }
+
+    private static (IUICommand defaultCommand, IUICommand? secondaryCommand, IUICommand? cancelCommand) ResolveCommands(
+        IList<IUICommand>? commands,
+        uint defaultCommandIndex,
+        uint cancelCommandIndex)
+    {
+        IUICommand defaultCommand = new UICommand("OK");
+        IUICommand? cancelCommand = null;
+
+        if (commands == null)
+        {
+            return (defaultCommand, null, cancelCommand);
+        }
+
+        defaultCommand = commands.Count > defaultCommandIndex
+            ? commands[(int)defaultCommandIndex]
+            : commands.FirstOrDefault() ?? defaultCommand;
+
+        cancelCommand = commands.Count > cancelCommandIndex
+            ? commands[(int)cancelCommandIndex]
+            : null;
+
+        var secondaryCommand = commands.FirstOrDefault(c => c != defaultCommand && c != cancelCommand);
+        return (defaultCommand, secondaryCommand, cancelCommand);
+    }
+
+    private static ContentDialog BuildDialog(
+        string title,
+        string content,
+        IUICommand defaultCommand,
+        IUICommand? secondaryCommand,
+        IUICommand? cancelCommand)
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = App.MainWindow.Content.XamlRoot,
+            Content = new TextBlock { Text = content },
+            Title = title,
+            PrimaryButtonText = defaultCommand.Label
+        };
+
+        if (secondaryCommand != null)
+        {
+            dialog.SecondaryButtonText = secondaryCommand.Label;
+        }
+
+        if (cancelCommand != null)
+        {
+            dialog.CloseButtonText = cancelCommand.Label;
+        }
+
+        return dialog;
     }
 
     public async Task ShowExcludeFileFolderWindowAsync()

@@ -11,6 +11,7 @@ using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 
 namespace Brightbits.BSH.Engine;
 
@@ -551,49 +552,62 @@ public class QueryManager : IQueryManager
         {
             if (await reader.ReadAsync())
             {
-                var fileType = reader.GetInt32("fileType");
-
-                if (fileType == 1)
-                {
-                    result = GetFileNameFromDrive(FileTableRow.FromReaderFileVersion(reader));
-                }
-                else if (fileType >= 2 && fileType <= 6)
-                {
-                    temp = true;
-
-                    var localFilePath = Path.Combine(Path.GetTempPath(), reader.GetString("fileName"));
-                    var remoteFilePath = "";
-
-                    if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
-                    {
-                        remoteFilePath = reader.GetString("versionDate") + "\\_LONG_FILES\\" + reader.GetString("longfilename");
-                    }
-                    else
-                    {
-                        remoteFilePath = reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
-                    }
-
-                    if (fileType == 3)
-                    {
-                        storage.CopyFileFromStorage(localFilePath, remoteFilePath);
-                    }
-                    else if (fileType == 2 || fileType == 4)
-                    {
-                        storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
-                    }
-                    else if (fileType == 5 || fileType == 6)
-                    {
-                        storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
-                    }
-
-                    result = localFilePath;
-                }
+                (result, temp) = ResolveFileFromStorage(reader, storage, password);
             }
 
             await reader.CloseAsync();
         }
 
         return (result, temp);
+    }
+
+    private (string result, bool temp) ResolveFileFromStorage(System.Data.Common.DbDataReader reader, IStorageProvider storage, string password)
+    {
+        var fileType = reader.GetInt32("fileType");
+        if (fileType == 1)
+        {
+            return (GetFileNameFromDrive(FileTableRow.FromReaderFileVersion(reader)), false);
+        }
+
+        if (fileType < 2 || fileType > 6)
+        {
+            return (null, false);
+        }
+
+        var localFilePath = Path.Combine(Path.GetTempPath(), reader.GetString("fileName"));
+        var remoteFilePath = BuildRemoteFilePath(reader);
+        CopyFileByType(storage, fileType, localFilePath, remoteFilePath, password);
+        return (localFilePath, true);
+    }
+
+    private static string BuildRemoteFilePath(System.Data.Common.DbDataReader reader)
+    {
+        if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
+        {
+            return reader.GetString("versionDate") + "\\_LONG_FILES\\" + reader.GetString("longfilename");
+        }
+
+        return reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
+    }
+
+    private static void CopyFileByType(IStorageProvider storage, int fileType, string localFilePath, string remoteFilePath, string password)
+    {
+        if (fileType == 3)
+        {
+            storage.CopyFileFromStorage(localFilePath, remoteFilePath);
+            return;
+        }
+
+        if (fileType == 2 || fileType == 4)
+        {
+            storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
+            return;
+        }
+
+        if (fileType == 5 || fileType == 6)
+        {
+            storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
+        }
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Storage;
@@ -11,14 +12,27 @@ namespace BSH.Test.Mocks
     {
         private readonly bool failCheckMedium;
         private readonly bool failAllCopies;
+        private readonly bool pathTooLong;
+        private readonly bool throwIoOnFirstRegularCopy;
+        private int regularCopyAttempts;
 
-        public StorageMock(bool failCheckMedium = false, bool failAllCopies = false)
+        public StorageMock(
+            bool failCheckMedium = false,
+            bool failAllCopies = false,
+            bool pathTooLong = false,
+            bool throwIoOnFirstRegularCopy = false)
         {
             this.failCheckMedium = failCheckMedium;
             this.failAllCopies = failAllCopies;
+            this.pathTooLong = pathTooLong;
+            this.throwIoOnFirstRegularCopy = throwIoOnFirstRegularCopy;
         }
 
         public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
+        public int CopyFileToStorageCalls { get; private set; }
+        public int CopyFileToStorageCompressedCalls { get; private set; }
+        public int CopyFileToStorageEncryptedCalls { get; private set; }
+        public string LastRemoteFile { get; private set; }
 
         public bool CanWriteToStorage()
         {
@@ -47,16 +61,29 @@ namespace BSH.Test.Mocks
 
         public bool CopyFileToStorage(string localFile, string remoteFile)
         {
+            CopyFileToStorageCalls++;
+            LastRemoteFile = remoteFile;
+            regularCopyAttempts++;
+
+            if (throwIoOnFirstRegularCopy && regularCopyAttempts == 1)
+            {
+                throw new IOException("Simulated IO failure");
+            }
+
             return !failAllCopies;
         }
 
         public bool CopyFileToStorageCompressed(string localFile, string remoteFile)
         {
+            CopyFileToStorageCompressedCalls++;
+            LastRemoteFile = remoteFile;
             return !failAllCopies;
         }
 
         public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password)
         {
+            CopyFileToStorageEncryptedCalls++;
+            LastRemoteFile = remoteFile;
             return !failAllCopies;
         }
 
@@ -96,7 +123,7 @@ namespace BSH.Test.Mocks
 
         public bool IsPathTooLong(string path, bool compression, bool encryption)
         {
-            return false;
+            return pathTooLong;
         }
 
         public void Open()

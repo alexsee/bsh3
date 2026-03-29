@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using BSH.MainApp.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 
@@ -9,13 +8,8 @@ namespace BSH.MainApp.Activation;
 
 public class AppNotificationActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
 {
-    private readonly INavigationService _navigationService;
-    private readonly IAppNotificationService _notificationService;
-
-    public AppNotificationActivationHandler(INavigationService navigationService, IAppNotificationService notificationService)
+    public AppNotificationActivationHandler()
     {
-        _navigationService = navigationService;
-        _notificationService = notificationService;
     }
 
     protected override bool CanHandleInternal(LaunchActivatedEventArgs args)
