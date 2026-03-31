@@ -435,6 +435,12 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.configurationManager.TaskType = newValue;
     }
 
+    [RelayCommand]
+    private async Task OpenEditScheduleWindow()
+    {
+        await this.presentationController.ShowEditScheduleWindowAsync();
+    }
+
     #endregion
 
     #region Enhanced Settings
