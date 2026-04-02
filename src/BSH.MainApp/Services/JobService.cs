@@ -292,11 +292,19 @@ public class JobService : IJobService, IDisposable
         // run restore job
         var fileOverwrite = FileOverwrite.Ask;
 
-        foreach (var file in files)
+        jobReportCallback.ReportAction(ActionType.Restore, !statusDialog);
+        jobReportCallback.ReportState(JobState.RUNNING);
+
+        IJobReport forwardJobReport = new ForwardJobReport(jobReportCallback);
+
+        for (var i = 0; i < files.Count; i++)
         {
+            var file = files[i];
             try
             {
-                await backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, fileOverwrite, !statusDialog);
+                jobReportCallback.ReportProgress(files.Count, i + 1);
+
+                await backupService.StartRestore(version, file, destination, ref forwardJobReport, cancellationToken, fileOverwrite, !statusDialog);
             }
             catch
             {
@@ -316,6 +324,9 @@ public class JobService : IJobService, IDisposable
                 break;
             }
         }
+
+        ((ForwardJobReport)forwardJobReport).ForwardExceptions(!statusDialog);
+        jobReportCallback.ReportState(cancellationToken.IsCancellationRequested ? JobState.CANCELED : JobState.FINISHED);
 
         // finish
         await HandleFinishedStatusDialog(statusDialog);
@@ -368,11 +379,16 @@ public class JobService : IJobService, IDisposable
         }
 
         // run delete job
+        jobReportCallback.ReportAction(ActionType.Delete, !statusDialog);
+        jobReportCallback.ReportState(JobState.RUNNING);
+
+        IJobReport forwardJobReport = new ForwardJobReport(jobReportCallback);
+
         foreach (var version in versions)
         {
             try
             {
-                await backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
+                await backupService.StartDelete(version, ref forwardJobReport, cancellationToken, !statusDialog);
             }
             catch
             {
@@ -384,6 +400,9 @@ public class JobService : IJobService, IDisposable
                 break;
             }
         }
+
+        ((ForwardJobReport)forwardJobReport).ForwardExceptions(!statusDialog);
+        jobReportCallback.ReportState(cancellationToken.IsCancellationRequested ? JobState.CANCELED : JobState.FINISHED);
 
         // finish
         await HandleFinishedStatusDialog(statusDialog);
