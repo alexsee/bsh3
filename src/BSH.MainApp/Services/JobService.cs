@@ -292,11 +292,20 @@ public class JobService : IJobService, IDisposable
         // run restore job
         var fileOverwrite = FileOverwrite.Ask;
 
-        foreach (var file in files)
+        jobReportCallback.ReportAction(ActionType.Restore, !statusDialog);
+        jobReportCallback.ReportState(JobState.RUNNING);
+
+        var forwardJobReport = new ForwardJobReport(jobReportCallback);
+
+        for (var i = 0; i < files.Count; i++)
         {
+            var file = files[i];
             try
             {
-                await backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, fileOverwrite, !statusDialog);
+                jobReportCallback.ReportProgress(files.Count, i + 1);
+
+                IJobReport activeReport = forwardJobReport;
+                await backupService.StartRestore(version, file, destination, ref activeReport, cancellationToken, fileOverwrite, !statusDialog);
             }
             catch
             {
@@ -316,6 +325,13 @@ public class JobService : IJobService, IDisposable
                 break;
             }
         }
+
+        forwardJobReport.ForwardExceptions(!statusDialog);
+
+        var finalRestoreState = cancellationToken.IsCancellationRequested
+            ? JobState.CANCELED
+            : (forwardJobReport.HasExceptions ? JobState.ERROR : JobState.FINISHED);
+        jobReportCallback.ReportState(finalRestoreState);
 
         // finish
         await HandleFinishedStatusDialog(statusDialog);
@@ -368,11 +384,20 @@ public class JobService : IJobService, IDisposable
         }
 
         // run delete job
-        foreach (var version in versions)
+        jobReportCallback.ReportAction(ActionType.Delete, !statusDialog);
+        jobReportCallback.ReportState(JobState.RUNNING);
+
+        var forwardJobReport = new ForwardJobReport(jobReportCallback);
+
+        for (var i = 0; i < versions.Count; i++)
         {
+            var version = versions[i];
             try
             {
-                await backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
+                jobReportCallback.ReportProgress(versions.Count, i + 1);
+
+                IJobReport activeReport = forwardJobReport;
+                await backupService.StartDelete(version, ref activeReport, cancellationToken, !statusDialog);
             }
             catch
             {
@@ -384,6 +409,13 @@ public class JobService : IJobService, IDisposable
                 break;
             }
         }
+
+        forwardJobReport.ForwardExceptions(!statusDialog);
+
+        var finalDeleteState = cancellationToken.IsCancellationRequested
+            ? JobState.CANCELED
+            : (forwardJobReport.HasExceptions ? JobState.ERROR : JobState.FINISHED);
+        jobReportCallback.ReportState(finalDeleteState);
 
         // finish
         await HandleFinishedStatusDialog(statusDialog);

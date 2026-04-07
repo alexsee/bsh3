@@ -16,7 +16,9 @@ public interface IJobReport : IJobRuntimeEvents
 public class ForwardJobReport : IJobReport
 {
     private readonly IJobReport report;
-    private List<FileExceptionEntry> files = new();
+    private readonly List<FileExceptionEntry> files = new();
+
+    public bool HasExceptions => this.files.Count > 0;
 
     public ForwardJobReport(IJobReport report)
     {

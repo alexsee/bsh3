@@ -322,11 +322,12 @@ public class BackupController : IDisposable
 
         IJobReport forwardJobReport = new ForwardJobReport(jobReportCallback);
 
-        foreach (var file in files)
+        for (var i = 0; i < files.Count; i++)
         {
+            var file = files[i];
             try
             {
-                jobReportCallback.ReportProgress(files.Count, files.IndexOf(file) + 1);
+                jobReportCallback.ReportProgress(files.Count, i + 1);
 
                 // restore file
                 await backupService.StartRestore(version, file, destination, ref forwardJobReport, cancellationToken, fileOverwrite, !statusDialog);
