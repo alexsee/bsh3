@@ -308,7 +308,7 @@ public class BackupTests
     {
         configurationManager.SourceFolder = "D:\\Meine Dokumente";
 
-        var storageFactory = new StorageFactoryMock(() => new StorageMock(freeSpace: 1000));
+        var storageFactory = new StorageFactoryMock(new StorageMock(freeSpace: 1000));
         var service = new BackupService(configurationManager, queryManager, dbClientFactory, storageFactory, vssClient, fileCollectorServiceFactory, versionQueryRepository, backupMutationRepository);
 
         var result = await service.EstimateBackupSpaceAsync();
@@ -332,7 +332,7 @@ public class BackupTests
         var token = new CancellationTokenSource().Token;
         await backupJob.BackupAsync(token);
 
-        var storageFactory = new StorageFactoryMock(() => new StorageMock(freeSpace: 2000));
+        var storageFactory = new StorageFactoryMock(new StorageMock(freeSpace: 2000));
         var service = new BackupService(configurationManager, queryManager, dbClientFactory, storageFactory, vssClient, fileCollectorServiceFactory, versionQueryRepository, backupMutationRepository);
 
         var result = await service.EstimateBackupSpaceAsync();

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
 using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Storage;
@@ -10,22 +9,17 @@ namespace BSH.Test.Mocks;
 
 public class StorageFactoryMock : IStorageFactory
 {
-    private readonly Func<IStorageProvider> factory;
+    private readonly IStorageProvider storageProvider;
 
     public StorageFactoryMock()
-        : this(() => new StorageMock())
+        : this(new StorageMock())
     {
     }
 
     public StorageFactoryMock(IStorageProvider storageProvider)
-        : this(() => storageProvider)
     {
+        this.storageProvider = storageProvider;
     }
 
-    public StorageFactoryMock(Func<IStorageProvider> factory)
-    {
-        this.factory = factory;
-    }
-
-    public IStorageProvider GetCurrentStorageProvider() => factory();
+    public IStorageProvider GetCurrentStorageProvider() => storageProvider;
 }

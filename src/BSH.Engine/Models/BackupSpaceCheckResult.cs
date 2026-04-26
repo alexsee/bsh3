@@ -3,19 +3,7 @@
 
 namespace Brightbits.BSH.Engine.Models;
 
-public sealed class BackupSpaceCheckResult
+public sealed record BackupSpaceCheckResult(long EstimatedRequiredSpace, long AvailableSpace)
 {
-    public BackupSpaceCheckResult(long estimatedRequiredSpace, long availableSpace)
-    {
-        EstimatedRequiredSpace = estimatedRequiredSpace;
-        AvailableSpace = availableSpace;
-    }
-
-    public long EstimatedRequiredSpace { get; }
-
-    public long AvailableSpace { get; }
-
-    public bool HasMeaningfulFreeSpace => AvailableSpace > 0;
-
-    public bool ShouldWarn => HasMeaningfulFreeSpace && EstimatedRequiredSpace > AvailableSpace;
+    public bool ShouldWarn => AvailableSpace > 0 && EstimatedRequiredSpace > AvailableSpace;
 }

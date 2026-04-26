@@ -13,7 +13,6 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Security;
 using Humanizer;
@@ -273,34 +272,31 @@ public class BackupController : IDisposable
 
     private async Task<bool> CheckBackupSpaceAsync(bool statusDialog, bool fullBackup, string sourceFolders)
     {
-        BackupSpaceCheckResult? spaceCheck;
-
         try
         {
-            spaceCheck = await backupService.EstimateBackupSpaceAsync(fullBackup, sourceFolders);
+            var spaceCheck = await backupService.EstimateBackupSpaceAsync(fullBackup, sourceFolders);
+            if (!spaceCheck.ShouldWarn)
+            {
+                return true;
+            }
+
+            if (statusDialog)
+            {
+                using var warningWindow = new frmBackupSpaceWarning(spaceCheck.EstimatedRequiredSpace, spaceCheck.AvailableSpace);
+                return warningWindow.ShowDialog() == DialogResult.Yes;
+            }
+
+            _logger.Warning(
+                "Backup preflight estimated {requiredSpace} required space, but only {availableSpace} are available. The backup will continue because it runs silently.",
+                spaceCheck.EstimatedRequiredSpace.Bytes().Humanize(),
+                spaceCheck.AvailableSpace.Bytes().Humanize());
+            return true;
         }
         catch (Exception ex)
         {
             _logger.Warning(ex, "Backup space preflight could not be completed. The backup will continue without the warning.");
             return true;
         }
-
-        if (spaceCheck == null || !spaceCheck.ShouldWarn)
-        {
-            return true;
-        }
-
-        if (statusDialog)
-        {
-            using var warningWindow = new frmBackupSpaceWarning(spaceCheck.EstimatedRequiredSpace, spaceCheck.AvailableSpace);
-            return warningWindow.ShowDialog() == DialogResult.Yes;
-        }
-
-        _logger.Warning(
-            "Backup preflight estimated {requiredSpace} required space, but only {availableSpace} are available. The backup will continue because it runs silently.",
-            spaceCheck.EstimatedRequiredSpace.Bytes().Humanize(),
-            spaceCheck.AvailableSpace.Bytes().Humanize());
-        return true;
     }
 
     /// <summary>

@@ -151,12 +151,12 @@ public class BackupJob : Job
             // begin with transaction
             dbClient.BeginTransaction();
 
-            // variable for new files
-            var newFiles = false;
+            // Track whether this version contains any persisted backup content.
+            // Reused file links and empty-folder links count as valid history too.
+            var versionHasEntries = false;
 
             // store all folders or just the selection
-            var selectedFolders = string.IsNullOrEmpty(Sources) ? SourceFolder.Split('|') : Sources.Split('|');
-            var folderList = GetSourceFolders(selectedFolders);
+            var folderList = GetSourceFolders(GetSelectedFolders());
 
             var folderListString = string.Join("|", folderList);
 
@@ -181,6 +181,11 @@ public class BackupJob : Job
             // process empty folders
             await ProcessEmptyFolders(dbClient, newVersionId, emptyFolder);
 
+            if (emptyFolder.Count > 0)
+            {
+                versionHasEntries = true;
+            }
+
             // process all files
             var cancel = false;
             for (var i = 0; i < files.Count; i++)
@@ -203,6 +208,7 @@ public class BackupJob : Job
                         // file is the same, so only create a link
                         await backupMutationRepository.AddFileLinkAsync(dbClient, fileVersionId.Value, newVersionId);
                         isModifiedFile = false;
+                        versionHasEntries = true;
                     }
                     else if (string.IsNullOrEmpty(file.FileId))
                     {
@@ -225,7 +231,7 @@ public class BackupJob : Job
                         {
                             _logger.Debug("{fileName} backed up successfully.", file.FileNamePath());
 
-                            newFiles = true;
+                            versionHasEntries = true;
                         }
                     }
                 }
@@ -296,39 +302,26 @@ public class BackupJob : Job
                 }
             }
 
-            // commit backup
-            if (newFiles)
+            if (!versionHasEntries)
             {
-                dbClient.CommitTransaction();
+                _logger.Warning("Backup version {versionDate} has no persisted content. Rolling back version.", newVersionDate);
+                dbClient.RollbackTransaction();
+                configurationManager.LastVersionDate = "";
             }
             else
             {
-                // no new files, so optimize workload
-                dbClient.RollbackTransaction();
+                // Commit the new version even if all files were reused from older backups.
+                // The version row and file links are the backup history.
+                dbClient.CommitTransaction();
 
-                try
+                // save version infos
+                configurationManager.LastBackupDone = newVersionDate;
+                configurationManager.LastVersionDate = "";
+
+                if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
                 {
-                    var lastVersion = await queryManager.GetLastBackupAsync();
-
-                    if (lastVersion != null && storage.RenameDirectory(lastVersion.CreationDate.ToString("dd-MM-yyyy HH-mm-ss"), newVersionDate))
-                    {
-                        await backupMutationRepository.RenameVersionDateAsync(dbClient, long.Parse(lastVersion.Id), newVersionDate);
-                    }
+                    configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
                 }
-                catch (Exception ex)
-                {
-                    // don't do anything
-                    _logger.Error(ex, "Backup could not be refreshed. New backup will be ignored.");
-                }
-            }
-
-            // save version infos
-            configurationManager.LastBackupDone = newVersionDate;
-            configurationManager.LastVersionDate = "";
-
-            if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
-            {
-                configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
             }
         }
 
@@ -368,13 +361,13 @@ public class BackupJob : Job
             var lastVersionDate = await versionQueryRepository.GetLastVersionDateAsync(dbClient);
             var fullBackup = string.IsNullOrEmpty(lastVersionDate?.ToString()) || FullBackup;
 
-            var selectedFolders = string.IsNullOrEmpty(Sources) ? SourceFolder : Sources;
-            if (string.IsNullOrWhiteSpace(selectedFolders))
+            var selectedFolders = GetSelectedFolders();
+            if (selectedFolders.Length == 0)
             {
                 return null;
             }
 
-            var folderList = GetSourceFolders(selectedFolders.Split('|'));
+            var folderList = GetSourceFolders(selectedFolders);
             if (folderList.Count == 0)
             {
                 return null;
@@ -435,6 +428,12 @@ public class BackupJob : Job
         return fileCollector;
     }
 
+    private string[] GetSelectedFolders()
+    {
+        var selectedFolders = string.IsNullOrEmpty(Sources) ? SourceFolder : Sources;
+        return string.IsNullOrWhiteSpace(selectedFolders) ? Array.Empty<string>() : selectedFolders.Split('|');
+    }
+
     private (List<FileTableRow> files, List<FolderTableRow> emptyFolders) CollectBackupItems(List<string> folderList)
     {
         var files = new List<FileTableRow>();
@@ -462,9 +461,7 @@ public class BackupJob : Job
             return null;
         }
 
-        var fileVersionId = await backupMutationRepository.GetMatchingFileVersionIdAsync(dbClient, fileId.Value, file.FileSize, file.FileDateModified);
-        file.FilePackage = fileVersionId?.ToString();
-        return fileVersionId;
+        return await backupMutationRepository.GetMatchingFileVersionIdAsync(dbClient, fileId.Value, file.FileSize, file.FileDateModified);
     }
 
     private static string GetBackupFilePath(FileTableRow file)
@@ -752,12 +749,6 @@ public class BackupJob : Job
     /// <param name="encrypt"></param>
     private async Task AddFileVersionDatabaseEntryAsync(DbClient dbClient, FileTableRow file, long newVersionId, string longFileName, bool compress, bool encrypt)
     {
-        // correct path
-        if (!file.FilePath.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
-        {
-            file.FilePath += "\\";
-        }
-
         var fileType = 1;
         if (storage.Kind == StorageProviderKind.LocalFileSystem)
         {
