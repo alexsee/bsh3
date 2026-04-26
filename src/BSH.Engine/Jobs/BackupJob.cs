@@ -31,6 +31,7 @@ namespace Brightbits.BSH.Engine.Jobs;
 public class BackupJob : Job
 {
     private static readonly ILogger _logger = Log.ForContext<BackupJob>();
+    private const double SafetyMarginFactor = 1.2d;
 
     private readonly HashSet<string> junctionFolders = new();
 
@@ -150,12 +151,12 @@ public class BackupJob : Job
             // begin with transaction
             dbClient.BeginTransaction();
 
-            // variable for new files
-            var newFiles = false;
+            // Track whether this version contains any persisted backup content.
+            // Reused file links and empty-folder links count as valid history too.
+            var versionHasEntries = false;
 
             // store all folders or just the selection
-            var selectedFolders = string.IsNullOrEmpty(Sources) ? SourceFolder.Split('|') : Sources.Split('|');
-            var folderList = GetSourceFolders(selectedFolders);
+            var folderList = GetSourceFolders(GetSelectedFolders());
 
             var folderListString = string.Join("|", folderList);
 
@@ -166,32 +167,7 @@ public class BackupJob : Job
             /// 
 
             // obtain all files
-            var files = new List<FileTableRow>();
-            var emptyFolder = new List<FolderTableRow>();
-
-            foreach (var folderEntry in folderList)
-            {
-                var fileCollector = fileCollectorServiceFactory.Create();
-
-                // file exclusions
-                fileCollector.FileExclusionHandlers.Add(new DatabaseFileExclusion());
-                fileCollector.FileExclusionHandlers.Add(new PathFileExclusion(configurationManager));
-                fileCollector.FileExclusionHandlers.Add(new TypeFileExclusion(configurationManager));
-                fileCollector.FileExclusionHandlers.Add(new SizeFileExclusion(configurationManager));
-                fileCollector.FileExclusionHandlers.Add(new MaskFileExclusion(configurationManager));
-                fileCollector.FileExclusionHandlers.Add(new NameFileExclusion(configurationManager));
-
-                // folder exclusions
-                fileCollector.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
-                fileCollector.FolderExclusionHandlers.Add(new MaskFolderExclusion(configurationManager));
-                fileCollector.FolderExclusionHandlers.Add(new ReparsePointFolderExclusion());
-                fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion());
-                fileCollector.FolderExclusionHandlers.Add(new TemporaryFolderExclusion());
-
-                var filesList = fileCollector.GetLocalFileList(folderEntry, true);
-                emptyFolder.AddRange(fileCollector.EmptyFolders);
-                files.AddRange(filesList);
-            }
+            var (files, emptyFolder) = CollectBackupItems(folderList);
 
             // report progress
             _logger.Information("{numFiles} files and {numFolders} folders are collected for backup.", files.Count, emptyFolder.Count);
@@ -204,6 +180,11 @@ public class BackupJob : Job
 
             // process empty folders
             await ProcessEmptyFolders(dbClient, newVersionId, emptyFolder);
+
+            if (emptyFolder.Count > 0)
+            {
+                versionHasEntries = true;
+            }
 
             // process all files
             var cancel = false;
@@ -220,31 +201,21 @@ public class BackupJob : Job
                     ReportFileProgress(file.FileNamePath());
 
                     // search for database entry
-                    var filePath = "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\";
-                    var fileId = await backupMutationRepository.GetFileIdAsync(dbClient, file.FileName, filePath);
-                    file.FileId = fileId?.ToString();
+                    var fileVersionId = await GetExistingFileVersionIdAsync(dbClient, file, fullBackup);
 
-                    if (!fileId.HasValue)
+                    if (fileVersionId.HasValue)
+                    {
+                        // file is the same, so only create a link
+                        await backupMutationRepository.AddFileLinkAsync(dbClient, fileVersionId.Value, newVersionId);
+                        isModifiedFile = false;
+                        versionHasEntries = true;
+                    }
+                    else if (string.IsNullOrEmpty(file.FileId))
                     {
                         // file does not have an entry
-                        fileId = await backupMutationRepository.CreateFileAsync(dbClient, file.FileName, filePath);
+                        var filePath = GetBackupFilePath(file);
+                        var fileId = await backupMutationRepository.CreateFileAsync(dbClient, file.FileName, filePath);
                         file.FileId = fileId.ToString();
-                    }
-                    else
-                    {
-                        // file was found, so we already have a version of the file
-                        if (!FullBackup)
-                        {
-                            var fileVersionId = await backupMutationRepository.GetMatchingFileVersionIdAsync(dbClient, fileId.Value, file.FileSize, file.FileDateModified);
-                            file.FilePackage = fileVersionId?.ToString();
-
-                            if (fileVersionId.HasValue)
-                            {
-                                // file is the same, so only create a link
-                                await backupMutationRepository.AddFileLinkAsync(dbClient, fileVersionId.Value, newVersionId);
-                                isModifiedFile = false;
-                            }
-                        }
                     }
 
                     // check if we need to backup the file
@@ -260,7 +231,7 @@ public class BackupJob : Job
                         {
                             _logger.Debug("{fileName} backed up successfully.", file.FileNamePath());
 
-                            newFiles = true;
+                            versionHasEntries = true;
                         }
                     }
                 }
@@ -331,39 +302,26 @@ public class BackupJob : Job
                 }
             }
 
-            // commit backup
-            if (newFiles)
+            if (!versionHasEntries)
             {
-                dbClient.CommitTransaction();
+                _logger.Warning("Backup version {versionDate} has no persisted content. Rolling back version.", newVersionDate);
+                dbClient.RollbackTransaction();
+                configurationManager.LastVersionDate = "";
             }
             else
             {
-                // no new files, so optimize workload
-                dbClient.RollbackTransaction();
+                // Commit the new version even if all files were reused from older backups.
+                // The version row and file links are the backup history.
+                dbClient.CommitTransaction();
 
-                try
+                // save version infos
+                configurationManager.LastBackupDone = newVersionDate;
+                configurationManager.LastVersionDate = "";
+
+                if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
                 {
-                    var lastVersion = await queryManager.GetLastBackupAsync();
-
-                    if (lastVersion != null && storage.RenameDirectory(lastVersion.CreationDate.ToString("dd-MM-yyyy HH-mm-ss"), newVersionDate))
-                    {
-                        await backupMutationRepository.RenameVersionDateAsync(dbClient, long.Parse(lastVersion.Id), newVersionDate);
-                    }
+                    configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
                 }
-                catch (Exception ex)
-                {
-                    // don't do anything
-                    _logger.Error(ex, "Backup could not be refreshed. New backup will be ignored.");
-                }
-            }
-
-            // save version infos
-            configurationManager.LastBackupDone = newVersionDate;
-            configurationManager.LastVersionDate = "";
-
-            if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
-            {
-                configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
             }
         }
 
@@ -394,6 +352,49 @@ public class BackupJob : Job
         _logger.Information("Backup job finished.");
     }
 
+    public async Task<long?> EstimateRequiredSpaceAsync()
+    {
+        try
+        {
+            using var dbClient = dbClientFactory.CreateDbClient();
+
+            var lastVersionDate = await versionQueryRepository.GetLastVersionDateAsync(dbClient);
+            var fullBackup = string.IsNullOrEmpty(lastVersionDate?.ToString()) || FullBackup;
+
+            var selectedFolders = GetSelectedFolders();
+            if (selectedFolders.Length == 0)
+            {
+                return null;
+            }
+
+            var folderList = GetSourceFolders(selectedFolders);
+            if (folderList.Count == 0)
+            {
+                return null;
+            }
+
+            var (files, _) = CollectBackupItems(folderList);
+            long requiredSpace = 0;
+
+            foreach (var file in files)
+            {
+                if (await GetExistingFileVersionIdAsync(dbClient, file, fullBackup) != null)
+                {
+                    continue;
+                }
+
+                requiredSpace += (long)Math.Ceiling(file.FileSize);
+            }
+
+            return ApplySafetyMargin(requiredSpace);
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "Backup space could not be estimated.");
+            return null;
+        }
+    }
+
     private async Task ProcessEmptyFolders(DbClient dbClient, long newVersionId, List<FolderTableRow> emptyFolder)
     {
         foreach (var folder in emptyFolder)
@@ -403,6 +404,79 @@ public class BackupJob : Job
             var folderId = await backupMutationRepository.AddOrGetFolderIdAsync(dbClient, folderPath);
             await backupMutationRepository.AddFolderLinkAsync(dbClient, folderId, newVersionId);
         }
+    }
+
+    private IFileCollectorService CreateFileCollector()
+    {
+        var fileCollector = fileCollectorServiceFactory.Create();
+
+        // file exclusions
+        fileCollector.FileExclusionHandlers.Add(new DatabaseFileExclusion());
+        fileCollector.FileExclusionHandlers.Add(new PathFileExclusion(configurationManager));
+        fileCollector.FileExclusionHandlers.Add(new TypeFileExclusion(configurationManager));
+        fileCollector.FileExclusionHandlers.Add(new SizeFileExclusion(configurationManager));
+        fileCollector.FileExclusionHandlers.Add(new MaskFileExclusion(configurationManager));
+        fileCollector.FileExclusionHandlers.Add(new NameFileExclusion(configurationManager));
+
+        // folder exclusions
+        fileCollector.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
+        fileCollector.FolderExclusionHandlers.Add(new MaskFolderExclusion(configurationManager));
+        fileCollector.FolderExclusionHandlers.Add(new ReparsePointFolderExclusion());
+        fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion());
+        fileCollector.FolderExclusionHandlers.Add(new TemporaryFolderExclusion());
+
+        return fileCollector;
+    }
+
+    private string[] GetSelectedFolders()
+    {
+        var selectedFolders = string.IsNullOrEmpty(Sources) ? SourceFolder : Sources;
+        return string.IsNullOrWhiteSpace(selectedFolders) ? Array.Empty<string>() : selectedFolders.Split('|');
+    }
+
+    private (List<FileTableRow> files, List<FolderTableRow> emptyFolders) CollectBackupItems(List<string> folderList)
+    {
+        var files = new List<FileTableRow>();
+        var emptyFolders = new List<FolderTableRow>();
+
+        foreach (var folderEntry in folderList)
+        {
+            var fileCollector = CreateFileCollector();
+            var filesList = fileCollector.GetLocalFileList(folderEntry, true);
+            emptyFolders.AddRange(fileCollector.EmptyFolders);
+            files.AddRange(filesList);
+        }
+
+        return (files, emptyFolders);
+    }
+
+    private async Task<long?> GetExistingFileVersionIdAsync(DbClient dbClient, FileTableRow file, bool fullBackup)
+    {
+        var filePath = GetBackupFilePath(file);
+        var fileId = await backupMutationRepository.GetFileIdAsync(dbClient, file.FileName, filePath);
+        file.FileId = fileId?.ToString();
+
+        if (!fileId.HasValue || fullBackup)
+        {
+            return null;
+        }
+
+        return await backupMutationRepository.GetMatchingFileVersionIdAsync(dbClient, fileId.Value, file.FileSize, file.FileDateModified);
+    }
+
+    private static string GetBackupFilePath(FileTableRow file)
+    {
+        return "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\";
+    }
+
+    private static long ApplySafetyMargin(long bytes)
+    {
+        if (bytes <= 0)
+        {
+            return 0;
+        }
+
+        return (long)Math.Ceiling(bytes * SafetyMarginFactor);
     }
 
     /// <summary>
@@ -675,12 +749,6 @@ public class BackupJob : Job
     /// <param name="encrypt"></param>
     private async Task AddFileVersionDatabaseEntryAsync(DbClient dbClient, FileTableRow file, long newVersionId, string longFileName, bool compress, bool encrypt)
     {
-        // correct path
-        if (!file.FilePath.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
-        {
-            file.FilePath += "\\";
-        }
-
         var fileType = 1;
         if (storage.Kind == StorageProviderKind.LocalFileSystem)
         {

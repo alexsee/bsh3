@@ -94,6 +94,40 @@ public class BackupService : IBackupService
         return lastMediaCheckResult;
     }
 
+    public async Task<BackupSpaceCheckResult> EstimateBackupSpaceAsync(bool fullBackup = false, string sources = "")
+    {
+        using var storage = storageFactory.GetCurrentStorageProvider();
+        var availableSpace = storage.GetFreeSpace();
+        if (availableSpace <= 0)
+        {
+            return new BackupSpaceCheckResult(0, 0);
+        }
+
+        var backupJob = new BackupJob(
+            storage,
+            dbClientFactory,
+            queryManager,
+            configurationManager,
+            fileCollectorServiceFactory,
+            vssClient,
+            versionQueryRepository,
+            backupMutationRepository,
+            silent: true)
+        {
+            FullBackup = fullBackup,
+            Sources = sources,
+            SourceFolder = configurationManager.SourceFolder,
+        };
+
+        var estimatedRequiredSpace = await backupJob.EstimateRequiredSpaceAsync();
+        if (!estimatedRequiredSpace.HasValue)
+        {
+            return new BackupSpaceCheckResult(0, availableSpace);
+        }
+
+        return new BackupSpaceCheckResult(estimatedRequiredSpace.Value, availableSpace);
+    }
+
     /// <summary>
     /// Sets the current password.
     /// </summary>

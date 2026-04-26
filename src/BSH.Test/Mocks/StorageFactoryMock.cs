@@ -6,7 +6,20 @@ using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Storage;
 
 namespace BSH.Test.Mocks;
+
 public class StorageFactoryMock : IStorageFactory
 {
-    public IStorageProvider GetCurrentStorageProvider() => new StorageMock();
+    private readonly IStorageProvider storageProvider;
+
+    public StorageFactoryMock()
+        : this(new StorageMock())
+    {
+    }
+
+    public StorageFactoryMock(IStorageProvider storageProvider)
+    {
+        this.storageProvider = storageProvider;
+    }
+
+    public IStorageProvider GetCurrentStorageProvider() => storageProvider;
 }

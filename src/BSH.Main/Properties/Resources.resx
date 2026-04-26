@@ -730,6 +730,21 @@ Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   <data name="INFO_NO_DISKSPACE_LEFT_TITLE" xml:space="preserve">
     <value>Nicht genug Speicherplatz.</value>
   </data>
+  <data name="INFO_BACKUP_SPACE_WARNING_CANCEL" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="INFO_BACKUP_SPACE_WARNING_CONTINUE" xml:space="preserve">
+    <value>Fortfahren</value>
+  </data>
+  <data name="INFO_BACKUP_SPACE_WARNING_HEADING" xml:space="preserve">
+    <value>Der Platz auf dem Sicherungsmedium reicht möglicherweise nicht aus.</value>
+  </data>
+  <data name="INFO_BACKUP_SPACE_WARNING_TEXT" xml:space="preserve">
+    <value>Die ausgewählten Dateien werden voraussichtlich {0} Speicherplatz benötigen, auf dem Sicherungsmedium sind aber nur {1} frei. Die Schätzung enthält bereits einen Sicherheitszuschlag von 20 %. Möchten Sie trotzdem fortfahren?</value>
+  </data>
+  <data name="INFO_BACKUP_SPACE_WARNING_TITLE" xml:space="preserve">
+    <value>Backup benötigt wahrscheinlich mehr Platz.</value>
+  </data>
   <data name="LBL_CHANGE_DATE" xml:space="preserve">
     <value>Änderungsdatum: </value>
   </data>

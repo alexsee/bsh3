@@ -303,6 +303,44 @@ public class BackupTests
         Assert.That(version, Is.Null);
     }
 
+    [Test]
+    public async Task EstimateBackupSpaceAppliesSafetyMargin()
+    {
+        configurationManager.SourceFolder = "D:\\Meine Dokumente";
+
+        var storageFactory = new StorageFactoryMock(new StorageMock(freeSpace: 1000));
+        var service = new BackupService(configurationManager, queryManager, dbClientFactory, storageFactory, vssClient, fileCollectorServiceFactory, versionQueryRepository, backupMutationRepository);
+
+        var result = await service.EstimateBackupSpaceAsync();
+
+        Assert.That(result.AvailableSpace, Is.EqualTo(1000));
+        Assert.That(result.EstimatedRequiredSpace, Is.EqualTo(1229));
+        Assert.That(result.ShouldWarn, Is.True);
+    }
+
+    [Test]
+    public async Task EstimateBackupSpaceSkipsUnchangedFiles()
+    {
+        configurationManager.SourceFolder = "D:\\Meine Dokumente";
+
+        var fs = new StorageMock();
+        var backupJob = new BackupJob(fs, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository);
+        backupJob.SourceFolder = "D:\\Meine Dokumente";
+        backupJob.Title = "Blub";
+        backupJob.Description = "";
+
+        var token = new CancellationTokenSource().Token;
+        await backupJob.BackupAsync(token);
+
+        var storageFactory = new StorageFactoryMock(new StorageMock(freeSpace: 2000));
+        var service = new BackupService(configurationManager, queryManager, dbClientFactory, storageFactory, vssClient, fileCollectorServiceFactory, versionQueryRepository, backupMutationRepository);
+
+        var result = await service.EstimateBackupSpaceAsync();
+
+        Assert.That(result.EstimatedRequiredSpace, Is.EqualTo(0));
+        Assert.That(result.ShouldWarn, Is.False);
+    }
+
     private BackupJob CreateBackupJobForSingleTempFile(StorageMock storage, VssClientMock vss, string extension)
     {
         var filePath = CreateTempFile(extension);

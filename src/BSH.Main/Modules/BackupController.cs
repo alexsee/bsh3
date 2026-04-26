@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BSH.Main.Dialogs.SubDialogs;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
@@ -14,7 +15,9 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Security;
-using BSH.Main.Properties;
+using Humanizer;
+using Resources = BSH.Main.Properties.Resources;
+using Settings = BSH.Main.Properties.Settings;
 using Serilog;
 
 namespace Brightbits.BSH.Main;
@@ -225,6 +228,12 @@ public class BackupController : IDisposable
             return false;
         }
 
+        if (!await CheckBackupSpaceAsync(statusDialog, fullBackup, sourceFolders))
+        {
+            HandleFinishedStatusDialog(statusDialog);
+            return false;
+        }
+
         // run backup job
         try
         {
@@ -260,6 +269,35 @@ public class BackupController : IDisposable
         }
 
         return !cancellationToken.IsCancellationRequested;
+    }
+
+    private async Task<bool> CheckBackupSpaceAsync(bool statusDialog, bool fullBackup, string sourceFolders)
+    {
+        try
+        {
+            var spaceCheck = await backupService.EstimateBackupSpaceAsync(fullBackup, sourceFolders);
+            if (!spaceCheck.ShouldWarn)
+            {
+                return true;
+            }
+
+            if (statusDialog)
+            {
+                using var warningWindow = new frmBackupSpaceWarning(spaceCheck.EstimatedRequiredSpace, spaceCheck.AvailableSpace);
+                return warningWindow.ShowDialog() == DialogResult.Yes;
+            }
+
+            _logger.Warning(
+                "Backup preflight estimated {requiredSpace} required space, but only {availableSpace} are available. The backup will continue because it runs silently.",
+                spaceCheck.EstimatedRequiredSpace.Bytes().Humanize(),
+                spaceCheck.AvailableSpace.Bytes().Humanize());
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "Backup space preflight could not be completed. The backup will continue without the warning.");
+            return true;
+        }
     }
 
     /// <summary>

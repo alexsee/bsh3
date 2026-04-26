@@ -11,6 +11,7 @@ namespace Brightbits.BSH.Engine.Contracts.Services;
 public interface IBackupService
 {
     Task<bool> CheckMedia(bool quickCheck = false);
+    Task<BackupSpaceCheckResult> EstimateBackupSpaceAsync(bool fullBackup = false, string sources = "");
     string GetPassword();
     bool HasPassword();
     void SetPassword(string password);
