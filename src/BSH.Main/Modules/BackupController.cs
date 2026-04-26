@@ -16,7 +16,8 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Security;
 using Humanizer;
-using BSH.Main.Properties;
+using Resources = BSH.Main.Properties.Resources;
+using Settings = BSH.Main.Properties.Settings;
 using Serilog;
 
 namespace Brightbits.BSH.Main;

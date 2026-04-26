@@ -4,8 +4,8 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using BSH.Main.Properties;
 using Humanizer;
+using Resources = BSH.Main.Properties.Resources;
 
 namespace BSH.Main.Dialogs.SubDialogs;
 
