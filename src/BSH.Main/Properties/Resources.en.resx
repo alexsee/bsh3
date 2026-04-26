@@ -675,6 +675,21 @@ Double-click here to start configuring.</value>
   <data name="INFO_NO_DISKSPACE_LEFT_TITLE" xml:space="preserve">
     <value>Not enough disk space.</value>
   </data>
+  <data name="INFO_BACKUP_SPACE_WARNING_CANCEL" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="INFO_BACKUP_SPACE_WARNING_CONTINUE" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="INFO_BACKUP_SPACE_WARNING_HEADING" xml:space="preserve">
+    <value>The selected files may need more space than is available.</value>
+  </data>
+  <data name="INFO_BACKUP_SPACE_WARNING_TEXT" xml:space="preserve">
+    <value>The selected files are estimated to need {0}, but only {1} are available on the backup medium. The estimate already includes a 20% safety margin. Do you want to continue anyway?</value>
+  </data>
+  <data name="INFO_BACKUP_SPACE_WARNING_TITLE" xml:space="preserve">
+    <value>Estimated backup space is low.</value>
+  </data>
   <data name="LBL_CHANGE_DATE" xml:space="preserve">
     <value>Last modified: </value>
   </data>

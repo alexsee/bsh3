@@ -1821,6 +1821,51 @@ namespace BSH.Main.Properties {
                 return ResourceManager.GetString("INFO_NO_DISKSPACE_LEFT_TITLE", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Abbrechen ähnelt.
+        /// </summary>
+        public static string INFO_BACKUP_SPACE_WARNING_CANCEL {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_SPACE_WARNING_CANCEL", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Fortfahren ähnelt.
+        /// </summary>
+        public static string INFO_BACKUP_SPACE_WARNING_CONTINUE {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_SPACE_WARNING_CONTINUE", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Der Platz auf dem Sicherungsmedium reicht möglicherweise nicht aus. ähnelt.
+        /// </summary>
+        public static string INFO_BACKUP_SPACE_WARNING_HEADING {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_SPACE_WARNING_HEADING", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die ausgewählten Dateien werden voraussichtlich {0} Speicherplatz benötigen, auf dem Sicherungsmedium sind aber nur {1} frei. Die Schätzung enthält bereits einen Sicherheitszuschlag von 20 %. Möchten Sie trotzdem fortfahren? ähnelt.
+        /// </summary>
+        public static string INFO_BACKUP_SPACE_WARNING_TEXT {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_SPACE_WARNING_TEXT", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Backup benötigt wahrscheinlich mehr Platz. ähnelt.
+        /// </summary>
+        public static string INFO_BACKUP_SPACE_WARNING_TITLE {
+            get {
+                return ResourceManager.GetString("INFO_BACKUP_SPACE_WARNING_TITLE", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Änderungsdatum:  ähnelt.

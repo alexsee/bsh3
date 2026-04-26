@@ -14,18 +14,21 @@ namespace BSH.Test.Mocks
         private readonly bool failAllCopies;
         private readonly bool pathTooLong;
         private readonly bool throwIoOnFirstRegularCopy;
+        private readonly long freeSpace;
         private int regularCopyAttempts;
 
         public StorageMock(
             bool failCheckMedium = false,
             bool failAllCopies = false,
             bool pathTooLong = false,
-            bool throwIoOnFirstRegularCopy = false)
+            bool throwIoOnFirstRegularCopy = false,
+            long freeSpace = 0)
         {
             this.failCheckMedium = failCheckMedium;
             this.failAllCopies = failAllCopies;
             this.pathTooLong = pathTooLong;
             this.throwIoOnFirstRegularCopy = throwIoOnFirstRegularCopy;
+            this.freeSpace = freeSpace;
         }
 
         public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
@@ -118,7 +121,7 @@ namespace BSH.Test.Mocks
 
         public long GetFreeSpace()
         {
-            return 0;
+            return freeSpace;
         }
 
         public bool IsPathTooLong(string path, bool compression, bool encryption)
