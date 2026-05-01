@@ -91,8 +91,7 @@ public sealed class JobSessionRunner
 
             try
             {
-                var sessionJobReport = jobReport;
-                await backupService.StartBackup(title, description, ref sessionJobReport, cancellationToken, fullBackup, sourceFolders, !statusDialog);
+                await backupService.StartBackup(title, description, ref jobReport, cancellationToken, fullBackup, sourceFolders, !statusDialog);
             }
             catch
             {
