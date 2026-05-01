@@ -10,6 +10,7 @@ using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime;
+using Brightbits.BSH.Engine.Runtime.Ports;
 using NUnit.Framework;
 
 namespace BSH.Test.Runtime;
@@ -21,10 +22,10 @@ public class JobSessionRunnerTests
     {
         var backupService = new BackupServiceStub();
         using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
-        IJobReport report = new JobReportStub();
 
-        var result = await runner.RunSingleBackupAsync("title", "description", report);
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
 
         Assert.That(result.Started, Is.False);
         Assert.That(result.Failure, Is.EqualTo(JobSessionStartFailure.TaskRunning));
@@ -36,10 +37,10 @@ public class JobSessionRunnerTests
     {
         var backupService = new BackupServiceStub { CheckMediaResult = false };
         using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
-        IJobReport report = new JobReportStub();
 
-        var result = await runner.RunSingleBackupAsync("title", "description", report);
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
 
         Assert.That(result.Started, Is.False);
         Assert.That(result.Failure, Is.EqualTo(JobSessionStartFailure.DeviceNotReady));
@@ -51,10 +52,10 @@ public class JobSessionRunnerTests
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
         using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
+        var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
-        IJobReport report = new JobReportStub();
 
-        var result = await runner.RunSingleBackupAsync("title", "description", report);
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
 
         Assert.That(result.Started, Is.False);
         Assert.That(result.Failure, Is.EqualTo(JobSessionStartFailure.PasswordRequired));
@@ -66,10 +67,10 @@ public class JobSessionRunnerTests
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
         using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
-        IJobReport report = new JobReportStub();
 
-        var result = await runner.RunSingleBackupAsync("title", "description", report, statusDialog: true, fullBackup: true, sourceFolders: "C:\\Data");
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true, fullBackup: true, sourceFolders: "C:\\Data");
 
         Assert.That(result.Started, Is.True);
         Assert.That(result.Canceled, Is.False);
@@ -117,7 +118,7 @@ public class JobSessionRunnerTests
         public void UpdateDatabaseFile(string databaseFile) { }
     }
 
-    private sealed class JobReportStub : IJobReport
+    private sealed class JobReportStub : IJobSessionPresenter
     {
         public void ReportAction(ActionType action, bool silent) { }
         public void ReportState(JobState jobState) { }
@@ -127,5 +128,14 @@ public class JobSessionRunnerTests
         public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent) { }
         public Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile) => Task.FromResult(RequestOverwriteResult.None);
         public Task RequestShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
+
+        public Task ShowStatusWindowAsync() => Task.CompletedTask;
+        public Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false) => Task.CompletedTask;
+        public Task ShowErrorTaskRunningAsync() => Task.CompletedTask;
+        public Task ShowErrorDeviceNotReadyAsync() => Task.CompletedTask;
+        public Task ShowErrorPasswordRequiredAsync() => Task.CompletedTask;
+        public Task CancelAsync() => Task.CompletedTask;
+        public CancellationToken GetCancellationToken() => CancellationToken.None;
+        public void SetCancellationToken(CancellationToken cancellationToken) { }
     }
 }
