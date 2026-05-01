@@ -36,6 +36,7 @@ public class BackupController : IDisposable
     private IJobReport jobReportCallback;
 
     private readonly JobRuntime jobRuntime;
+    private readonly JobSessionRunner jobSessionRunner;
 
     private CancellationToken cancellationToken;
 
@@ -69,6 +70,7 @@ public class BackupController : IDisposable
             () => this.configurationManager.Medium == "1",
             waitForMediaAsync,
             requestPasswordAsync);
+        this.jobSessionRunner = new JobSessionRunner(backupService, this.jobRuntime);
 
         jobReportCallback = StatusController.Current;
 
@@ -219,20 +221,39 @@ public class BackupController : IDisposable
         _logger.Debug("Backup task is started with title: {title}, description: {description}, statusDialog: {statusDialog}, fullBackup: {fullBackup}",
             title, description, statusDialog, fullBackup);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Backup, statusDialog))
+        // show dialog?
+        if (statusDialog)
         {
-            return false;
+            PresentationController.Current.ShowStatusWindow();
         }
 
-        // run backup job
-        try
+        var result = await jobSessionRunner.RunSingleBackupAsync(title, description, jobReportCallback, statusDialog, fullBackup, sourceFolders);
+
+        if (!result.Started)
         {
-            await backupService.StartBackup(title, description, ref jobReportCallback, cancellationToken, fullBackup, sourceFolders, !statusDialog);
-        }
-        catch
-        {
-            // exception already handled
+            switch (result.Failure)
+            {
+                case JobSessionStartFailure.TaskRunning:
+                    _logger.Error("Another task is running, so the backup task will not be started.");
+                    if (statusDialog)
+                    {
+                        MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    break;
+                case JobSessionStartFailure.DeviceNotReady:
+                    _logger.Error("Device is not ready, so the backup task will not be started.");
+                    if (statusDialog)
+                    {
+                        MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    break;
+                case JobSessionStartFailure.PasswordRequired:
+                    _logger.Error("Password request was cancelled, so the backup task will not be started.");
+                    break;
+            }
+
+            HandleFinishedStatusDialog(statusDialog);
+            return false;
         }
 
         HandleFinishedStatusDialog(statusDialog);
@@ -259,7 +280,7 @@ public class BackupController : IDisposable
             }
         }
 
-        return !cancellationToken.IsCancellationRequested;
+        return !result.Canceled;
     }
 
     /// <summary>
