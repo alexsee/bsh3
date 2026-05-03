@@ -40,6 +40,16 @@ public interface IJobSessionPresenter : IJobReport
     Task ShowErrorPasswordRequiredAsync();
 
     /// <summary>
+    /// Requests the password from the user for the current live session.
+    /// </summary>
+    Task<JobSessionPasswordRequest> RequestPasswordAsync();
+
+    /// <summary>
+    /// Shows an error when the entered password is incorrect.
+    /// </summary>
+    Task ShowErrorPasswordWrongAsync();
+
+    /// <summary>
     /// Cancels the running job session.
     /// </summary>
     Task CancelAsync();

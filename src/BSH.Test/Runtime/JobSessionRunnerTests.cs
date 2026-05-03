@@ -11,6 +11,7 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Runtime.Ports;
+using Brightbits.BSH.Engine.Security;
 using NUnit.Framework;
 
 namespace BSH.Test.Runtime;
@@ -69,10 +70,10 @@ public class JobSessionRunnerTests
     [Test]
     public async Task RunSingleBackupAsync_ReturnsPasswordRequired_WhenPasswordRequestFails()
     {
-        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
         using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
         var presenter = new JobReportStub();
-        var runner = new JobSessionRunner(backupService, jobRuntime);
+        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, Hash.GetMD5Hash("secret"), new StoredPasswordAdapterStub());
 
         var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
 
@@ -102,20 +103,74 @@ public class JobSessionRunnerTests
         Assert.That(backupService.LastSilent, Is.False);
     }
 
+    [Test]
+    public async Task RunSingleBackupAsync_UsesStoredPasswordBeforePrompting()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
+        var presenter = new JobReportStub();
+        var storedPasswordAdapter = new StoredPasswordAdapterStub { StoredPassword = "secret" };
+        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, Hash.GetMD5Hash("secret"), storedPasswordAdapter);
+
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(backupService.LastPasswordSet, Is.EqualTo("secret"));
+        Assert.That(presenter.RequestPasswordCalls, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_PromptsAndPersistsPassword_WhenStoredPasswordIsUnavailable()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
+        var presenter = new JobReportStub
+        {
+            NextPasswordRequest = new JobSessionPasswordRequest("secret", true)
+        };
+        var storedPasswordAdapter = new StoredPasswordAdapterStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, Hash.GetMD5Hash("secret"), storedPasswordAdapter);
+
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(backupService.LastPasswordSet, Is.EqualTo("secret"));
+        Assert.That(storedPasswordAdapter.StoredPassword, Is.EqualTo("secret"));
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_RetriesPrompt_WhenPasswordIsWrong()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
+        var presenter = new JobReportStub();
+        presenter.PasswordRequests.Enqueue(new JobSessionPasswordRequest("wrong", false));
+        presenter.PasswordRequests.Enqueue(new JobSessionPasswordRequest("secret", false));
+        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, Hash.GetMD5Hash("secret"), new StoredPasswordAdapterStub());
+
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(presenter.ShowErrorPasswordWrongCalls, Is.EqualTo(1));
+        Assert.That(presenter.RequestPasswordCalls, Is.EqualTo(2));
+    }
+
     private sealed class BackupServiceStub : IBackupService
     {
         public bool CheckMediaResult { get; set; } = true;
+        public bool HasPasswordResult { get; set; } = true;
         public int StartBackupCalls { get; private set; }
         public string LastTitle { get; private set; }
         public string LastDescription { get; private set; }
         public bool LastFullBackup { get; private set; }
         public string LastSources { get; private set; }
         public bool LastSilent { get; private set; }
+        public string LastPasswordSet { get; private set; }
 
         public Task<bool> CheckMedia(bool quickCheck = false) => Task.FromResult(CheckMediaResult);
         public string GetPassword() => string.Empty;
-        public bool HasPassword() => true;
-        public void SetPassword(string password) { }
+        public bool HasPassword() => HasPasswordResult;
+        public void SetPassword(string password) => LastPasswordSet = password;
         public Task SetStableAsync(string version, bool stable) => Task.CompletedTask;
         public Task UpdateVersionAsync(string version, VersionDetails versionDetails) => Task.CompletedTask;
 
@@ -152,6 +207,10 @@ public class JobSessionRunnerTests
         public int ShowErrorTaskRunningCalls { get; private set; }
         public int ShowErrorDeviceNotReadyCalls { get; private set; }
         public int ShowErrorPasswordRequiredCalls { get; private set; }
+        public int ShowErrorPasswordWrongCalls { get; private set; }
+        public int RequestPasswordCalls { get; private set; }
+        public JobSessionPasswordRequest NextPasswordRequest { get; set; }
+        public System.Collections.Generic.Queue<JobSessionPasswordRequest> PasswordRequests { get; } = new();
 
         public Task ShowStatusWindowAsync()
         {
@@ -178,8 +237,35 @@ public class JobSessionRunnerTests
             ShowErrorPasswordRequiredCalls++;
             return Task.CompletedTask;
         }
+
+        public Task<JobSessionPasswordRequest> RequestPasswordAsync()
+        {
+            RequestPasswordCalls++;
+            if (PasswordRequests.Count > 0)
+            {
+                return Task.FromResult(PasswordRequests.Dequeue());
+            }
+
+            return Task.FromResult(NextPasswordRequest);
+        }
+
+        public Task ShowErrorPasswordWrongAsync()
+        {
+            ShowErrorPasswordWrongCalls++;
+            return Task.CompletedTask;
+        }
+
         public Task CancelAsync() => Task.CompletedTask;
         public CancellationToken GetCancellationToken() => CancellationToken.None;
         public void SetCancellationToken(CancellationToken cancellationToken) { }
+    }
+
+    private sealed class StoredPasswordAdapterStub : IStoredPasswordAdapter
+    {
+        public string StoredPassword { get; set; } = string.Empty;
+
+        public string GetPassword() => StoredPassword;
+
+        public void StorePassword(string password) => StoredPassword = password;
     }
 }

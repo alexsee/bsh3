@@ -86,6 +86,18 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
         return Task.CompletedTask;
     }
 
+    public Task<JobSessionPasswordRequest> RequestPasswordAsync()
+    {
+        var request = PresentationController.Current.RequestPassword();
+        return Task.FromResult(new JobSessionPasswordRequest(request.password, request.persist));
+    }
+
+    public Task ShowErrorPasswordWrongAsync()
+    {
+        MessageBox.Show(Resources.MSG_PASSWORD_WRONG_TEXT, Resources.MSG_PASSWORD_WRONG_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        return Task.CompletedTask;
+    }
+
     public Task CancelAsync()
     {
         BackupLogic.BackupController.Cancel();
