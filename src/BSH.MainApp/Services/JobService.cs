@@ -27,6 +27,9 @@ public class JobService : IJobService, IDisposable
     private readonly ILocalSettingsService localSettingsService;
     private readonly Func<IWaitForMediaService> waitForMediaServiceFactory;
     private readonly JobRuntime jobRuntime;
+    private readonly JobSessionRunner jobSessionRunner;
+    private readonly WinUIJobSessionPresenter presenter;
+    private readonly WinUIStoredPasswordAdapter storedPasswordAdapter;
 
     private IJobReport jobReportCallback;
 
@@ -67,6 +70,14 @@ public class JobService : IJobService, IDisposable
                 return await waitForMediaService.ExecuteAsync(silent, cancellationTokenSource);
             },
             this.RequestPassword);
+        this.presenter = new WinUIJobSessionPresenter(this.presentationService, this.statusService, this.Cancel);
+        this.storedPasswordAdapter = new WinUIStoredPasswordAdapter(this.localSettingsService);
+        this.jobSessionRunner = new JobSessionRunner(
+            backupService,
+            this.jobRuntime,
+            () => this.configurationManager.Encrypt == 1,
+            () => this.configurationManager.EncryptPassMD5,
+            this.storedPasswordAdapter);
 
         jobReportCallback = (IJobReport)statusService;
 
@@ -217,24 +228,16 @@ public class JobService : IJobService, IDisposable
         _logger.Debug("Backup task is started with title: {title}, description: {description}, statusDialog: {statusDialog}, fullBackup: {fullBackup}",
             title, description, statusDialog, fullBackup);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Backup, statusDialog))
+        var result = await jobSessionRunner.RunSingleBackupAsync(title, description, presenter, statusDialog, fullBackup, sourceFolders);
+        if (!result.Started)
         {
+            LogSingleOperationStartFailure(result.Failure, "backup");
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return false;
         }
 
-        // run backup job
-        try
-        {
-            await backupService.StartBackup(title, description, ref jobReportCallback, cancellationToken, fullBackup, sourceFolders, !statusDialog);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        await HandleFinishedStatusDialog(statusDialog);
-        return !cancellationToken.IsCancellationRequested;
+        await presenter.CompleteAsync(triggerShutdown: shutdownPC);
+        return !result.Canceled;
     }
 
     /// <summary>
@@ -250,24 +253,15 @@ public class JobService : IJobService, IDisposable
         _logger.Debug("Restore task for version {version} and file \"{file}\" to \"{destination}\" started.",
             version, file, destination);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Restore, statusDialog))
+        var result = await jobSessionRunner.RunSingleRestoreAsync(version, file, destination, presenter, statusDialog);
+        if (!result.Started)
         {
+            LogSingleOperationStartFailure(result.Failure, "restore");
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
-        // run restore job
-        try
-        {
-            await backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, FileOverwrite.Ask, !statusDialog);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        // finish
-        await HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync();
     }
 
     /// <summary>
@@ -347,24 +341,15 @@ public class JobService : IJobService, IDisposable
     {
         _logger.Debug("Delete task started for version {version}.", version);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
+        var result = await jobSessionRunner.RunSingleDeleteAsync(version, presenter, statusDialog);
+        if (!result.Started)
         {
+            LogSingleOperationStartFailure(result.Failure, "delete");
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
-        // run delete job
-        try
-        {
-            await backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        // finish
-        await HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync();
     }
 
     /// <summary>
@@ -433,24 +418,15 @@ public class JobService : IJobService, IDisposable
     {
         _logger.Debug("Delete task started for file and folder filter.");
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
+        var result = await jobSessionRunner.RunSingleDeleteSingleAsync(fileFilter, folderFilter, presenter, statusDialog);
+        if (!result.Started)
         {
+            LogSingleOperationStartFailure(result.Failure, "delete");
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
-        // run delete job
-        try
-        {
-            await backupService.StartDeleteSingle(fileFilter, folderFilter, ref jobReportCallback, cancellationToken, !statusDialog);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        // finish
-        await HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync();
     }
 
     /// <summary>
@@ -462,24 +438,15 @@ public class JobService : IJobService, IDisposable
     {
         _logger.Debug("Modify task started.");
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Modify, statusDialog))
+        var result = await jobSessionRunner.RunSingleModifyAsync(presenter, statusDialog);
+        if (!result.Started)
         {
+            LogSingleOperationStartFailure(result.Failure, "modify");
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
-        // run modify job
-        try
-        {
-            await backupService.StartEdit(ref jobReportCallback, cancellationToken, statusDialog);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        // finish
-        await HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync();
     }
 
     /// <summary>
@@ -547,5 +514,21 @@ public class JobService : IJobService, IDisposable
     {
         jobRuntime.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    private void LogSingleOperationStartFailure(JobSessionStartFailure failure, string operationName)
+    {
+        switch (failure)
+        {
+            case JobSessionStartFailure.TaskRunning:
+                _logger.Error("Another task is running, so the {operationName} task will not be started.", operationName);
+                break;
+            case JobSessionStartFailure.DeviceNotReady:
+                _logger.Error("Device is not ready, so the {operationName} task will not be started.", operationName);
+                break;
+            case JobSessionStartFailure.PasswordRequired:
+                _logger.Error("Password request was cancelled, so the {operationName} task will not be started.", operationName);
+                break;
+        }
     }
 }
