@@ -110,7 +110,7 @@ public sealed class JobRuntime : IDisposable
         return false;
     }
 
-    public async Task<CancellationToken> PrepareAsync(ActionType action, bool statusDialog)
+    public async Task<CancellationToken> PrepareAsync(ActionType action, bool statusDialog, bool requirePassword = true)
     {
         var newCancellationToken = GetNewCancellationToken();
 
@@ -124,7 +124,7 @@ public sealed class JobRuntime : IDisposable
             throw new DeviceNotReadyException();
         }
 
-        if (!await requestPasswordAsync())
+        if (requirePassword && !await requestPasswordAsync())
         {
             throw new PasswordRequiredException();
         }

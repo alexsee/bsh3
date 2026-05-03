@@ -15,8 +15,8 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using Brightbits.BSH.Engine.Security;
-using BSH.Main.Properties;
 using Serilog;
+using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 
@@ -39,6 +39,7 @@ public class BackupController : IDisposable
     private readonly JobRuntime jobRuntime;
     private readonly JobSessionRunner jobSessionRunner;
     private readonly IJobSessionPresenter presenter;
+    private readonly IStoredPasswordAdapter storedPasswordAdapter;
 
     private CancellationToken cancellationToken;
 
@@ -73,7 +74,13 @@ public class BackupController : IDisposable
             waitForMediaAsync,
             requestPasswordAsync);
         this.presenter = new WinFormsJobSessionPresenter(backupService, configurationManager);
-        this.jobSessionRunner = new JobSessionRunner(backupService, this.jobRuntime);
+        this.storedPasswordAdapter = new WinFormsStoredPasswordAdapter();
+        this.jobSessionRunner = new JobSessionRunner(
+            backupService,
+            this.jobRuntime,
+            () => this.configurationManager.Encrypt == 1,
+            () => this.configurationManager.EncryptPassMD5,
+            this.storedPasswordAdapter);
 
         jobReportCallback = StatusController.Current;
 
@@ -489,40 +496,32 @@ public class BackupController : IDisposable
             return true;
         }
 
-        // password stored
-        if (!string.IsNullOrEmpty(Settings.Default.BackupPwd))
+        var storedPassword = storedPasswordAdapter.GetPassword();
+        if (!string.IsNullOrEmpty(storedPassword))
         {
-            var storedPassword = Crypto.DecryptString(Settings.Default.BackupPwd);
-            if (storedPassword.Length > 0)
-            {
-                backupService.SetPassword(storedPassword);
-                return true;
-            }
+            backupService.SetPassword(storedPassword);
+            return true;
         }
 
-        // request password from user
-        var request = PresentationController.Current.RequestPassword();
-        while (!string.IsNullOrEmpty(request.password))
+        var request = presenter.RequestPasswordAsync().GetAwaiter().GetResult();
+        while (!string.IsNullOrEmpty(request.Password))
         {
-            if ((Hash.GetMD5Hash(request.password) ?? "") == (configurationManager.EncryptPassMD5 ?? ""))
+            if ((Hash.GetMD5Hash(request.Password) ?? string.Empty) == (configurationManager.EncryptPassMD5 ?? string.Empty))
             {
-                backupService.SetPassword(request.password);
+                backupService.SetPassword(request.Password);
 
-                // persist password?
-                if (request.persist)
+                if (request.Persist)
                 {
-                    Settings.Default.BackupPwd = Crypto.EncryptString(request.password);
-                    Settings.Default.Save();
+                    storedPasswordAdapter.StorePassword(request.Password);
                 }
 
                 return true;
             }
 
-            // report back to user
             _logger.Debug("Password given by user is not correct. Request retry.");
 
-            MessageBox.Show(Resources.MSG_PASSWORD_WRONG_TEXT, Resources.MSG_PASSWORD_WRONG_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            request = PresentationController.Current.RequestPassword();
+            presenter.ShowErrorPasswordWrongAsync().GetAwaiter().GetResult();
+            request = presenter.RequestPasswordAsync().GetAwaiter().GetResult();
         }
 
         return false;
