@@ -113,7 +113,7 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
 
     public void ReportState(JobState jobState)
     {
-        StatusController.Current.JobState = jobState;
+        StatusController.Current.ReportState(jobState);
 
         if (jobState == JobState.FINISHED && lastActionType == ActionType.Backup && configurationManager.InfoBackupDone == "1")
         {
@@ -158,8 +158,8 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
         dlgFilesOverwrite.lblFileName2.Text = localFile.FileName;
         dlgFilesOverwrite.lblFileDateChanged1.Text = Resources.LBL_CHANGE_DATE + remoteFile.FileDateModified.ToString();
         dlgFilesOverwrite.lblFileDateChanged2.Text = Resources.LBL_CHANGE_DATE + localFile.FileDateModified.ToString();
-        dlgFilesOverwrite.lblFileSize1.Text = Resources.LBL_SIZE + remoteFile.FileSize.Humanize();
-        dlgFilesOverwrite.lblFileSize2.Text = Resources.LBL_SIZE + localFile.FileSize.Humanize();
+        dlgFilesOverwrite.lblFileSize1.Text = Resources.LBL_SIZE + remoteFile.FileSize.Bytes().Humanize();
+        dlgFilesOverwrite.lblFileSize2.Text = Resources.LBL_SIZE + localFile.FileSize.Bytes().Humanize();
         if (!localFile.FilePath.StartsWith(@"\\"))
         {
             dlgFilesOverwrite.picIco1.Image = Icon.ExtractAssociatedIcon(localFile.FilePath + localFile.FileName).ToBitmap();
@@ -167,7 +167,7 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
 
         dlgFilesOverwrite.picIco2.Image = dlgFilesOverwrite.picIco1.Image;
 
-        if (dlgFilesOverwrite.ShowDialog() == DialogResult.Cancel)
+        if (await dlgFilesOverwrite.ShowDialogAsync() == DialogResult.Cancel)
         {
             await CancelAsync();
             return RequestOverwriteResult.NoOverwrite;

@@ -278,6 +278,7 @@ public class BackupController : IDisposable
         _logger.Debug("Restore task for version {version} and file \"{file}\" to \"{destination}\" started.",
             version, file, destination);
 
+        // check job requirements
         if (!await PrepareJobAndHandleExceptions(ActionType.Restore, statusDialog))
         {
             return;
@@ -285,13 +286,16 @@ public class BackupController : IDisposable
 
         try
         {
+            // run restore job
             await backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, FileOverwrite.Ask, !statusDialog);
         }
         catch
         {
+            // exception already handled
         }
 
-        await presenter.CompleteAsync();
+        // finish
+        HandleFinishedStatusDialog(statusDialog);
     }
 
     /// <summary>
