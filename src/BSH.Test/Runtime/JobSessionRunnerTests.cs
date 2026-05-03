@@ -245,6 +245,28 @@ public class JobSessionRunnerTests
     }
 
     [Test]
+    public async Task RunSingleBackupAsync_ReturnsCanceled_WhenOperationRequestsCancellation()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        backupService.OnStartBackup = (_, _) =>
+        {
+            jobRuntime.Cancel();
+            return Task.CompletedTask;
+        };
+
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(result.Canceled, Is.True);
+        Assert.That(result.Failure, Is.EqualTo(JobSessionStartFailure.None));
+        Assert.That(backupService.StartBackupCalls, Is.EqualTo(1));
+    }
+
+    [Test]
     public async Task RunBatchRestoreAsync_CarriesForwardOverwriteChoice_AndReportsFinishedState()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
@@ -280,6 +302,29 @@ public class JobSessionRunnerTests
         Assert.That(presenter.ReportedExceptions[0].Exception.Message, Is.EqualTo("boom"));
     }
 
+    [Test]
+    public async Task RunBatchDeleteAsync_ReportsCanceledAndStopsProcessing_WhenCancellationIsRequested()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        backupService.OnStartDelete = (_, _) =>
+        {
+            jobRuntime.Cancel();
+            return Task.CompletedTask;
+        };
+
+        var result = await runner.RunBatchDeleteAsync(new[] { "5", "6", "7" }, presenter, statusDialog: true);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(result.Canceled, Is.True);
+        Assert.That(backupService.StartDeleteCalls, Is.EqualTo(1));
+        Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.RUNNING, JobState.CANCELED }));
+        Assert.That(presenter.ProgressUpdates, Is.EqualTo(new[] { "3/1" }));
+    }
+
     private sealed class BackupServiceStub : IBackupService
     {
         public bool CheckMediaResult { get; set; } = true;
@@ -303,6 +348,8 @@ public class JobSessionRunnerTests
         public FileOverwrite LastOverwrite { get; private set; }
         public System.Collections.Generic.List<FileOverwrite> RestoreOverwrites { get; } = new();
         public System.Collections.Generic.Queue<FileExceptionEntry> DeleteFailures { get; } = new();
+        public Func<IJobReport, CancellationToken, Task> OnStartBackup { get; set; }
+        public Func<IJobReport, CancellationToken, Task> OnStartDelete { get; set; }
 
         public Task<bool> CheckMedia(bool quickCheck = false) => Task.FromResult(CheckMediaResult);
         public string GetPassword() => string.Empty;
@@ -319,7 +366,7 @@ public class JobSessionRunnerTests
             LastFullBackup = fullBackup;
             LastSources = sources;
             LastSilent = silent;
-            return Task.CompletedTask;
+            return OnStartBackup?.Invoke(jobReport, cancellationToken) ?? Task.CompletedTask;
         }
 
         public Task StartDelete(string version, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
@@ -332,7 +379,7 @@ public class JobSessionRunnerTests
                 jobReport.ReportExceptions(new Collection<FileExceptionEntry> { DeleteFailures.Dequeue() }, silent);
             }
 
-            return Task.CompletedTask;
+            return OnStartDelete?.Invoke(jobReport, cancellationToken) ?? Task.CompletedTask;
         }
 
         public Task StartDeleteSingle(string fileFilter, string pathFilter, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
