@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Runtime.Ports;
@@ -33,8 +32,6 @@ public class BackupController : IDisposable
     private readonly IBackupService backupService;
 
     private readonly IConfigurationManager configurationManager;
-
-    private IJobReport jobReportCallback;
 
     private readonly JobRuntime jobRuntime;
     private readonly JobSessionRunner jobSessionRunner;
@@ -82,8 +79,6 @@ public class BackupController : IDisposable
             () => this.configurationManager.EncryptPassMD5,
             this.storedPasswordAdapter);
 
-        jobReportCallback = StatusController.Current;
-
         GetNewCancellationToken();
     }
 
@@ -115,104 +110,6 @@ public class BackupController : IDisposable
     public async Task<bool> CheckMediaAsync(ActionType action, bool silent = false)
     {
         return await jobRuntime.CheckMediaAsync(action, silent);
-    }
-
-    /// <summary>
-    /// Prepares a backup job by setting internal states, informs all observers, and
-    /// shows (if applicable) the corresponding user interfaces to the user.
-    /// </summary>
-    /// <param name="action">Specifies the action that is executed.</param>
-    /// <param name="statusDialog">Specifies if the status window should be shown.</param>
-    /// <returns></returns>
-    /// <exception cref="TaskRunningException"></exception>
-    /// <exception cref="DeviceNotReadyException"></exception>
-    /// <exception cref="PasswordRequiredException"></exception>
-    private async Task PrepareJob(ActionType action, bool statusDialog)
-    {
-        // show dialog?
-        if (statusDialog)
-        {
-            PresentationController.Current.ShowStatusWindow();
-        }
-
-        cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog);
-    }
-
-    /// <summary>
-    /// Prepares a backup job by setting internal states, informs all observers, and
-    /// shows (if applicable) the corresponding user interfaces to the user. This method
-    /// also handles potential exceptions and returns false.
-    /// </summary>
-    /// <param name="action">Specifies the action that is executed.</param>
-    /// <param name="statusDialog">Specifies if the status window should be shown.</param>
-    /// <returns></returns>
-    private async Task<bool> PrepareJobAndHandleExceptions(ActionType action, bool statusDialog)
-    {
-        try
-        {
-            await PrepareJob(action, statusDialog);
-        }
-        catch (TaskRunningException ex)
-        {
-            _logger.Error(ex, "Another task is running, so the backup task will not be started.");
-
-            if (statusDialog)
-            {
-                MessageBox.Show(Resources.MSG_TASK_RUNNING_TEXT, Resources.MSG_TASK_RUNNING_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
-            HandleFinishedStatusDialog(statusDialog);
-            return false;
-        }
-        catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
-        {
-            _logger.Error(ex, "Device is not ready, so the backup task will not be started.");
-
-            if (statusDialog)
-            {
-                MessageBox.Show(Resources.MSG_BACKUP_DEVICE_NOT_READY_TEXT, Resources.MSG_BACKUP_DEVICE_NOT_READY_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
-            HandleFinishedStatusDialog(statusDialog);
-            return false;
-        }
-        catch (PasswordRequiredException ex)
-        {
-            _logger.Error(ex, "Password request was cancelled, so the backup task will not be started.");
-            HandleFinishedStatusDialog(statusDialog);
-            return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Ensures that the corresponding finishing tasks of the status windows are handled according
-    /// to the user settings. If the user specifies to shutdown the computer, the computer will be
-    /// shut down. If the user specifies to hibernate the computer, the computer will be put into
-    /// this mode as well.
-    /// </summary>
-    /// <param name="statusDialog"></param>
-    /// <param name="triggerAction"></param>
-    private void HandleFinishedStatusDialog(bool statusDialog, bool triggerAction = false)
-    {
-        // finish job
-        if (statusDialog)
-        {
-            var action = PresentationController.Current.CloseStatusWindow();
-            if (triggerAction && action == TaskCompleteAction.ShutdownPC)
-            {
-                _logger.Debug("Computer will be shutdown after task has finished.");
-
-                Process.Start("shutdown.exe", "-s -t 60 -c \"" + Resources.TASK_BSH_SHUTDOWN_PC + "\"");
-            }
-            else if (triggerAction && action == TaskCompleteAction.HibernatePC)
-            {
-                _logger.Debug("Computer will be hibernated after task has finished.");
-
-                Process.Start("rundll32.exe", "powrprof.dll,SetSuspendState");
-            }
-        }
     }
 
     /// <summary>
@@ -322,54 +219,28 @@ public class BackupController : IDisposable
         _logger.Debug("Restore task for version {version} and {files} files to \"{destination}\" started.",
             version, files.Count, destination);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Restore, statusDialog))
+        var result = await jobSessionRunner.RunBatchRestoreAsync(version, files, destination, presenter, statusDialog);
+
+        if (!result.Started)
         {
+            switch (result.Failure)
+            {
+                case JobSessionStartFailure.TaskRunning:
+                    _logger.Error("Another task is running, so the restore task will not be started.");
+                    break;
+                case JobSessionStartFailure.DeviceNotReady:
+                    _logger.Error("Device is not ready, so the restore task will not be started.");
+                    break;
+                case JobSessionStartFailure.PasswordRequired:
+                    _logger.Error("Password request was cancelled, so the restore task will not be started.");
+                    break;
+            }
+
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
-        // run restore job
-        var fileOverwrite = FileOverwrite.Ask;
-
-        jobReportCallback.ReportAction(ActionType.Restore, !statusDialog);
-        jobReportCallback.ReportState(JobState.RUNNING);
-
-        IJobReport forwardJobReport = new ForwardJobReport(jobReportCallback);
-
-        for (var i = 0; i < files.Count; i++)
-        {
-            var file = files[i];
-            try
-            {
-                jobReportCallback.ReportProgress(files.Count, i + 1);
-
-                // restore file
-                await backupService.StartRestore(version, file, destination, ref forwardJobReport, cancellationToken, fileOverwrite, !statusDialog);
-            }
-            catch
-            {
-                // exception already handled
-            }
-            finally
-            {
-                // persist overwrite
-                if (StatusController.Current.LastFileOverwriteChoice == RequestOverwriteResult.OverwriteAll || StatusController.Current.LastFileOverwriteChoice == RequestOverwriteResult.NoOverwriteAll)
-                {
-                    fileOverwrite = StatusController.Current.LastFileOverwriteChoice == RequestOverwriteResult.OverwriteAll ? FileOverwrite.Overwrite : FileOverwrite.DontCopy;
-                }
-            }
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
-        }
-
-        ((ForwardJobReport)forwardJobReport).ForwardExceptions(!statusDialog);
-        jobReportCallback.ReportState(cancellationToken.IsCancellationRequested ? JobState.CANCELED : JobState.FINISHED);
-
-        // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync();
     }
 
     /// <summary>
@@ -416,40 +287,28 @@ public class BackupController : IDisposable
     {
         _logger.Debug("Delete task started for {versions} versions.", versions.Count);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
+        var result = await jobSessionRunner.RunBatchDeleteAsync(versions, presenter, statusDialog);
+
+        if (!result.Started)
         {
+            switch (result.Failure)
+            {
+                case JobSessionStartFailure.TaskRunning:
+                    _logger.Error("Another task is running, so the delete task will not be started.");
+                    break;
+                case JobSessionStartFailure.DeviceNotReady:
+                    _logger.Error("Device is not ready, so the delete task will not be started.");
+                    break;
+                case JobSessionStartFailure.PasswordRequired:
+                    _logger.Error("Password request was cancelled, so the delete task will not be started.");
+                    break;
+            }
+
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
-        // run delete job
-        jobReportCallback.ReportAction(ActionType.Delete, !statusDialog);
-        jobReportCallback.ReportState(JobState.RUNNING);
-
-        IJobReport forwardJobReport = new ForwardJobReport(jobReportCallback);
-
-        foreach (var version in versions)
-        {
-            try
-            {
-                await backupService.StartDelete(version, ref forwardJobReport, cancellationToken, !statusDialog);
-            }
-            catch
-            {
-                // exception already handled
-            }
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
-        }
-
-        ((ForwardJobReport)forwardJobReport).ForwardExceptions(!statusDialog);
-        jobReportCallback.ReportState(cancellationToken.IsCancellationRequested ? JobState.CANCELED : JobState.FINISHED);
-
-        // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync();
     }
 
     /// <summary>
