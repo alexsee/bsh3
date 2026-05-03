@@ -285,24 +285,28 @@ public class BackupController : IDisposable
         _logger.Debug("Restore task for version {version} and file \"{file}\" to \"{destination}\" started.",
             version, file, destination);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Restore, statusDialog))
+        var result = await jobSessionRunner.RunSingleRestoreAsync(version, file, destination, presenter, statusDialog);
+
+        if (!result.Started)
         {
+            switch (result.Failure)
+            {
+                case JobSessionStartFailure.TaskRunning:
+                    _logger.Error("Another task is running, so the restore task will not be started.");
+                    break;
+                case JobSessionStartFailure.DeviceNotReady:
+                    _logger.Error("Device is not ready, so the restore task will not be started.");
+                    break;
+                case JobSessionStartFailure.PasswordRequired:
+                    _logger.Error("Password request was cancelled, so the restore task will not be started.");
+                    break;
+            }
+
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
-        try
-        {
-            // run restore job
-            await backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, FileOverwrite.Ask, !statusDialog);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync();
     }
 
     /// <summary>
@@ -378,25 +382,28 @@ public class BackupController : IDisposable
     {
         _logger.Debug("Delete task started for version {version}.", version);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
+        var result = await jobSessionRunner.RunSingleDeleteAsync(version, presenter, statusDialog);
+
+        if (!result.Started)
         {
+            switch (result.Failure)
+            {
+                case JobSessionStartFailure.TaskRunning:
+                    _logger.Error("Another task is running, so the delete task will not be started.");
+                    break;
+                case JobSessionStartFailure.DeviceNotReady:
+                    _logger.Error("Device is not ready, so the delete task will not be started.");
+                    break;
+                case JobSessionStartFailure.PasswordRequired:
+                    _logger.Error("Password request was cancelled, so the delete task will not be started.");
+                    break;
+            }
+
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
-        // run delete job
-
-        try
-        {
-            await backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync();
     }
 
     /// <summary>
@@ -457,24 +464,61 @@ public class BackupController : IDisposable
     {
         _logger.Debug("Delete task started for file and folder filter.");
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
+        var result = await jobSessionRunner.RunSingleDeleteSingleAsync(fileFilter, folderFilter, presenter, statusDialog);
+
+        if (!result.Started)
         {
+            switch (result.Failure)
+            {
+                case JobSessionStartFailure.TaskRunning:
+                    _logger.Error("Another task is running, so the delete task will not be started.");
+                    break;
+                case JobSessionStartFailure.DeviceNotReady:
+                    _logger.Error("Device is not ready, so the delete task will not be started.");
+                    break;
+                case JobSessionStartFailure.PasswordRequired:
+                    _logger.Error("Password request was cancelled, so the delete task will not be started.");
+                    break;
+            }
+
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
-        // run delete job
-        try
+        await presenter.CompleteAsync();
+    }
+
+    /// <summary>
+    /// Runs a modify backup task to edit the backup.
+    /// </summary>
+    /// <param name="statusDialog">Specifies if the user should be shown a status user interface.</param>
+    /// <returns></returns>
+    public async Task ModifyBackupAsync(bool statusDialog = true)
+    {
+        _logger.Debug("Modify task started.");
+
+        var result = await jobSessionRunner.RunSingleModifyAsync(presenter, statusDialog);
+
+        if (!result.Started)
         {
-            await backupService.StartDeleteSingle(fileFilter, folderFilter, ref jobReportCallback, cancellationToken, !statusDialog);
-        }
-        catch
-        {
-            // exception already handled
+            switch (result.Failure)
+            {
+                case JobSessionStartFailure.TaskRunning:
+                    _logger.Error("Another task is running, so the modify task will not be started.");
+                    break;
+                case JobSessionStartFailure.DeviceNotReady:
+                    _logger.Error("Device is not ready, so the modify task will not be started.");
+                    break;
+                case JobSessionStartFailure.PasswordRequired:
+                    _logger.Error("Password request was cancelled, so the modify task will not be started.");
+                    break;
+            }
+
+            await presenter.CompleteAsync(honorCompletionActions: false);
+            return;
         }
 
-        // finish
-        HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync();
     }
 
     /// <summary>

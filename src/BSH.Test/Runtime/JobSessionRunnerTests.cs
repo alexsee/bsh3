@@ -177,17 +177,94 @@ public class JobSessionRunnerTests
         Assert.That(presenter.RequestPasswordCalls, Is.EqualTo(1));
     }
 
+    [Test]
+    public async Task RunSingleRestoreAsync_StartsRestore_WhenSessionCanBePrepared()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunSingleRestoreAsync("5", "\\file.txt", "C:\\Restore", presenter, statusDialog: true, overwrite: FileOverwrite.Overwrite);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(backupService.StartRestoreCalls, Is.EqualTo(1));
+        Assert.That(backupService.LastVersion, Is.EqualTo("5"));
+        Assert.That(backupService.LastFile, Is.EqualTo("\\file.txt"));
+        Assert.That(backupService.LastDestination, Is.EqualTo("C:\\Restore"));
+        Assert.That(backupService.LastOverwrite, Is.EqualTo(FileOverwrite.Overwrite));
+        Assert.That(backupService.LastSilent, Is.False);
+    }
+
+    [Test]
+    public async Task RunSingleDeleteAsync_StartsDelete_WhenSessionCanBePrepared()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunSingleDeleteAsync("7", presenter, statusDialog: false);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(backupService.StartDeleteCalls, Is.EqualTo(1));
+        Assert.That(backupService.LastVersion, Is.EqualTo("7"));
+        Assert.That(backupService.LastSilent, Is.True);
+    }
+
+    [Test]
+    public async Task RunSingleDeleteSingleAsync_StartsDeleteSingle_WhenSessionCanBePrepared()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunSingleDeleteSingleAsync("*.tmp", "\\cache\\", presenter, statusDialog: true);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(backupService.StartDeleteSingleCalls, Is.EqualTo(1));
+        Assert.That(backupService.LastFileFilter, Is.EqualTo("*.tmp"));
+        Assert.That(backupService.LastPathFilter, Is.EqualTo("\\cache\\"));
+        Assert.That(backupService.LastSilent, Is.False);
+    }
+
+    [Test]
+    public async Task RunSingleModifyAsync_StartsEdit_WhenSessionCanBePrepared()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunSingleModifyAsync(presenter, statusDialog: true);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(backupService.StartEditCalls, Is.EqualTo(1));
+        Assert.That(backupService.LastSilent, Is.False);
+    }
+
     private sealed class BackupServiceStub : IBackupService
     {
         public bool CheckMediaResult { get; set; } = true;
         public bool HasPasswordResult { get; set; } = true;
         public int StartBackupCalls { get; private set; }
+        public int StartRestoreCalls { get; private set; }
+        public int StartDeleteCalls { get; private set; }
+        public int StartDeleteSingleCalls { get; private set; }
+        public int StartEditCalls { get; private set; }
         public string LastTitle { get; private set; }
         public string LastDescription { get; private set; }
+        public string LastVersion { get; private set; }
+        public string LastFile { get; private set; }
+        public string LastDestination { get; private set; }
+        public string LastFileFilter { get; private set; }
+        public string LastPathFilter { get; private set; }
         public bool LastFullBackup { get; private set; }
         public string LastSources { get; private set; }
         public bool LastSilent { get; private set; }
         public string LastPasswordSet { get; private set; }
+        public FileOverwrite LastOverwrite { get; private set; }
 
         public Task<bool> CheckMedia(bool quickCheck = false) => Task.FromResult(CheckMediaResult);
         public string GetPassword() => string.Empty;
@@ -207,10 +284,40 @@ public class JobSessionRunnerTests
             return Task.CompletedTask;
         }
 
-        public Task StartDelete(string version, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => throw new NotImplementedException();
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => throw new NotImplementedException();
-        public Task StartEdit(ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => throw new NotImplementedException();
-        public Task StartRestore(string version, string file, string destination, ref IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => throw new NotImplementedException();
+        public Task StartDelete(string version, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
+        {
+            StartDeleteCalls++;
+            LastVersion = version;
+            LastSilent = silent;
+            return Task.CompletedTask;
+        }
+
+        public Task StartDeleteSingle(string fileFilter, string pathFilter, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
+        {
+            StartDeleteSingleCalls++;
+            LastFileFilter = fileFilter;
+            LastPathFilter = pathFilter;
+            LastSilent = silent;
+            return Task.CompletedTask;
+        }
+
+        public Task StartEdit(ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
+        {
+            StartEditCalls++;
+            LastSilent = silent;
+            return Task.CompletedTask;
+        }
+
+        public Task StartRestore(string version, string file, string destination, ref IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false)
+        {
+            StartRestoreCalls++;
+            LastVersion = version;
+            LastFile = file;
+            LastDestination = destination;
+            LastOverwrite = overwrite;
+            LastSilent = silent;
+            return Task.CompletedTask;
+        }
         public void UpdateDatabaseFile(string databaseFile) { }
     }
 

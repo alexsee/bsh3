@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Exceptions;
@@ -80,7 +81,105 @@ public sealed class JobSessionRunner
         bool fullBackup = false,
         string sourceFolders = "")
     {
+        return await RunSingleOperationAsync(
+            ActionType.Backup,
+            presenter,
+            statusDialog,
+            requirePassword: true,
+            async (jobReport, cancellationToken) =>
+            {
+                await backupService.StartBackup(title, description, ref jobReport, cancellationToken, fullBackup, sourceFolders, !statusDialog);
+            });
+    }
+
+    /// <summary>
+    /// Runs a single restore session with shared session preparation and error handling.
+    /// </summary>
+    public async Task<SingleBackupSessionResult> RunSingleRestoreAsync(
+        string version,
+        string file,
+        string destination,
+        IJobSessionPresenter presenter,
+        bool statusDialog = true,
+        FileOverwrite overwrite = FileOverwrite.Ask)
+    {
+        return await RunSingleOperationAsync(
+            ActionType.Restore,
+            presenter,
+            statusDialog,
+            requirePassword: true,
+            async (jobReport, cancellationToken) =>
+            {
+                await backupService.StartRestore(version, file, destination, ref jobReport, cancellationToken, overwrite, !statusDialog);
+            });
+    }
+
+    /// <summary>
+    /// Runs a single delete session with shared session preparation and error handling.
+    /// </summary>
+    public async Task<SingleBackupSessionResult> RunSingleDeleteAsync(
+        string version,
+        IJobSessionPresenter presenter,
+        bool statusDialog = true)
+    {
+        return await RunSingleOperationAsync(
+            ActionType.Delete,
+            presenter,
+            statusDialog,
+            requirePassword: false,
+            async (jobReport, cancellationToken) =>
+            {
+                await backupService.StartDelete(version, ref jobReport, cancellationToken, !statusDialog);
+            });
+    }
+
+    /// <summary>
+    /// Runs a single delete-single-file session with shared session preparation and error handling.
+    /// </summary>
+    public async Task<SingleBackupSessionResult> RunSingleDeleteSingleAsync(
+        string fileFilter,
+        string pathFilter,
+        IJobSessionPresenter presenter,
+        bool statusDialog = true)
+    {
+        return await RunSingleOperationAsync(
+            ActionType.Delete,
+            presenter,
+            statusDialog,
+            requirePassword: false,
+            async (jobReport, cancellationToken) =>
+            {
+                await backupService.StartDeleteSingle(fileFilter, pathFilter, ref jobReport, cancellationToken, !statusDialog);
+            });
+    }
+
+    /// <summary>
+    /// Runs a single modify session with shared session preparation and error handling.
+    /// </summary>
+    public async Task<SingleBackupSessionResult> RunSingleModifyAsync(
+        IJobSessionPresenter presenter,
+        bool statusDialog = true)
+    {
+        return await RunSingleOperationAsync(
+            ActionType.Modify,
+            presenter,
+            statusDialog,
+            requirePassword: true,
+            async (jobReport, cancellationToken) =>
+            {
+                await backupService.StartEdit(ref jobReport, cancellationToken, !statusDialog);
+            });
+    }
+
+    private async Task<SingleBackupSessionResult> RunSingleOperationAsync(
+        ActionType action,
+        IJobSessionPresenter presenter,
+        bool statusDialog,
+        bool requirePassword,
+        Func<IJobReport, CancellationToken, Task> startAsync)
+    {
         ArgumentNullException.ThrowIfNull(presenter);
+        ArgumentNullException.ThrowIfNull(startAsync);
 
         IJobReport jobReport = presenter;
 
@@ -91,14 +190,17 @@ public sealed class JobSessionRunner
                 await presenter.ShowStatusWindowAsync();
             }
 
-            await ResolvePasswordAsync(presenter);
+            if (requirePassword)
+            {
+                await ResolvePasswordAsync(presenter);
+            }
 
-            var cancellationToken = await jobRuntime.PrepareAsync(ActionType.Backup, statusDialog, requirePassword: false);
+            var cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog, requirePassword: false);
             presenter.SetCancellationToken(cancellationToken);
 
             try
             {
-                await backupService.StartBackup(title, description, ref jobReport, cancellationToken, fullBackup, sourceFolders, !statusDialog);
+                await startAsync(jobReport, cancellationToken);
             }
             catch
             {
