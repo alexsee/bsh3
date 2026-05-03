@@ -3,6 +3,22 @@
 
 using Resources = BSH.Main.Properties.Resources;
 
+using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Runtime.Ports;
+using Humanizer;
+using Serilog;
+
 namespace Brightbits.BSH.Main;
 
 /// <summary>
