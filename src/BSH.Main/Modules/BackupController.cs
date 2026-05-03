@@ -241,7 +241,7 @@ public class BackupController : IDisposable
                     break;
             }
 
-            await presenter.CompleteAsync();
+            await presenter.CompleteAsync(honorCompletionActions: false);
             return false;
         }
 

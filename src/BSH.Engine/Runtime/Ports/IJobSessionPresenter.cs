@@ -20,9 +20,9 @@ public interface IJobSessionPresenter : IJobReport
     Task ShowStatusWindowAsync();
 
     /// <summary>
-    /// Handles completion of the job session, including shutdown/hibernate actions.
+    /// Handles completion of the job session, including optional shutdown/hibernate actions.
     /// </summary>
-    Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false);
+    Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false, bool honorCompletionActions = true);
 
     /// <summary>
     /// Shows error dialog when another task is already running.

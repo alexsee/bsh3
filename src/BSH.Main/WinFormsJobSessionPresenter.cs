@@ -50,12 +50,12 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
         return Task.CompletedTask;
     }
 
-    public async Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false)
+    public async Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false, bool honorCompletionActions = true)
     {
         var action = PresentationController.Current.CloseStatusWindow();
 
-        var executeShutdown = triggerShutdown || action == TaskCompleteAction.ShutdownPC;
-        var executeHibernate = triggerHibernate || action == TaskCompleteAction.HibernatePC;
+        var executeShutdown = triggerShutdown || (honorCompletionActions && action == TaskCompleteAction.ShutdownPC);
+        var executeHibernate = triggerHibernate || (honorCompletionActions && action == TaskCompleteAction.HibernatePC);
 
         if (executeShutdown)
         {

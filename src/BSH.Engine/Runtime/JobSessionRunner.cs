@@ -104,17 +104,29 @@ public sealed class JobSessionRunner
         }
         catch (TaskRunningException)
         {
-            await presenter.ShowErrorTaskRunningAsync();
+            if (statusDialog)
+            {
+                await presenter.ShowErrorTaskRunningAsync();
+            }
+
             return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.TaskRunning };
         }
         catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
         {
-            await presenter.ShowErrorDeviceNotReadyAsync();
+            if (statusDialog)
+            {
+                await presenter.ShowErrorDeviceNotReadyAsync();
+            }
+
             return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.DeviceNotReady };
         }
         catch (PasswordRequiredException)
         {
-            await presenter.ShowErrorPasswordRequiredAsync();
+            if (statusDialog)
+            {
+                await presenter.ShowErrorPasswordRequiredAsync();
+            }
+
             return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.PasswordRequired };
         }
     }

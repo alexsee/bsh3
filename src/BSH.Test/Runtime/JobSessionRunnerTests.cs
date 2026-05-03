@@ -30,6 +30,25 @@ public class JobSessionRunnerTests
         Assert.That(result.Started, Is.False);
         Assert.That(result.Failure, Is.EqualTo(JobSessionStartFailure.TaskRunning));
         Assert.That(backupService.StartBackupCalls, Is.EqualTo(0));
+        Assert.That(presenter.ShowErrorTaskRunningCalls, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_DoesNotShowStartupErrors_WhenStartedSilently()
+    {
+        var backupService = new BackupServiceStub();
+        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: false);
+
+        Assert.That(result.Started, Is.False);
+        Assert.That(result.Failure, Is.EqualTo(JobSessionStartFailure.TaskRunning));
+        Assert.That(presenter.ShowStatusWindowCalls, Is.EqualTo(0));
+        Assert.That(presenter.ShowErrorTaskRunningCalls, Is.EqualTo(0));
+        Assert.That(presenter.ShowErrorDeviceNotReadyCalls, Is.EqualTo(0));
+        Assert.That(presenter.ShowErrorPasswordRequiredCalls, Is.EqualTo(0));
     }
 
     [Test]
@@ -129,11 +148,36 @@ public class JobSessionRunnerTests
         public Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile) => Task.FromResult(RequestOverwriteResult.None);
         public Task RequestShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
 
-        public Task ShowStatusWindowAsync() => Task.CompletedTask;
-        public Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false) => Task.CompletedTask;
-        public Task ShowErrorTaskRunningAsync() => Task.CompletedTask;
-        public Task ShowErrorDeviceNotReadyAsync() => Task.CompletedTask;
-        public Task ShowErrorPasswordRequiredAsync() => Task.CompletedTask;
+        public int ShowStatusWindowCalls { get; private set; }
+        public int ShowErrorTaskRunningCalls { get; private set; }
+        public int ShowErrorDeviceNotReadyCalls { get; private set; }
+        public int ShowErrorPasswordRequiredCalls { get; private set; }
+
+        public Task ShowStatusWindowAsync()
+        {
+            ShowStatusWindowCalls++;
+            return Task.CompletedTask;
+        }
+
+        public Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false, bool honorCompletionActions = true) => Task.CompletedTask;
+
+        public Task ShowErrorTaskRunningAsync()
+        {
+            ShowErrorTaskRunningCalls++;
+            return Task.CompletedTask;
+        }
+
+        public Task ShowErrorDeviceNotReadyAsync()
+        {
+            ShowErrorDeviceNotReadyCalls++;
+            return Task.CompletedTask;
+        }
+
+        public Task ShowErrorPasswordRequiredAsync()
+        {
+            ShowErrorPasswordRequiredCalls++;
+            return Task.CompletedTask;
+        }
         public Task CancelAsync() => Task.CompletedTask;
         public CancellationToken GetCancellationToken() => CancellationToken.None;
         public void SetCancellationToken(CancellationToken cancellationToken) { }
