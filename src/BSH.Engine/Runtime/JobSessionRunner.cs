@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Runtime.Ports;
 
 namespace Brightbits.BSH.Engine.Runtime;
 
-/// <summary>
-/// Defines startup failure reasons for a job session before a job begins execution.
-/// </summary>
 public enum JobSessionStartFailure
 {
     None = 0,
@@ -65,29 +63,29 @@ public sealed class JobSessionRunner
     }
 
     /// <summary>
-    /// Runs a complete single-backup session by preparing runtime prerequisites and
-    /// executing exactly one backup operation.
+    /// Runs a single-backup session with full error handling and user dialogs.
     /// </summary>
-    /// <param name="title">Backup title.</param>
-    /// <param name="description">Backup description.</param>
-    /// <param name="jobReport">Job report callback used by the backup job.</param>
-    /// <param name="statusDialog">Whether the caller is running with a visible status dialog.</param>
-    /// <param name="fullBackup">Whether a full backup should be executed.</param>
-    /// <param name="sourceFolders">Optional source folder filter for this backup run.</param>
-    /// <returns>
-    /// A <see cref="SingleBackupSessionResult"/> describing startup outcome and cancellation state.
-    /// </returns>
     public async Task<SingleBackupSessionResult> RunSingleBackupAsync(
         string title,
         string description,
-        IJobReport jobReport,
+        IJobSessionPresenter presenter,
         bool statusDialog = true,
         bool fullBackup = false,
         string sourceFolders = "")
     {
+        ArgumentNullException.ThrowIfNull(presenter);
+
+        IJobReport jobReport = presenter;
+
         try
         {
+            if (statusDialog)
+            {
+                await presenter.ShowStatusWindowAsync();
+            }
+
             var cancellationToken = await jobRuntime.PrepareAsync(ActionType.Backup, statusDialog);
+            presenter.SetCancellationToken(cancellationToken);
 
             try
             {
@@ -95,7 +93,6 @@ public sealed class JobSessionRunner
             }
             catch
             {
-                // exception already handled
             }
 
             return new SingleBackupSessionResult()
@@ -107,14 +104,29 @@ public sealed class JobSessionRunner
         }
         catch (TaskRunningException)
         {
+            if (statusDialog)
+            {
+                await presenter.ShowErrorTaskRunningAsync();
+            }
+
             return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.TaskRunning };
         }
         catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
         {
+            if (statusDialog)
+            {
+                await presenter.ShowErrorDeviceNotReadyAsync();
+            }
+
             return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.DeviceNotReady };
         }
         catch (PasswordRequiredException)
         {
+            if (statusDialog)
+            {
+                await presenter.ShowErrorPasswordRequiredAsync();
+            }
+
             return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.PasswordRequired };
         }
     }
