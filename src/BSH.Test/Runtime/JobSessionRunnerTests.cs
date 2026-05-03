@@ -73,7 +73,7 @@ public class JobSessionRunnerTests
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
         using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
         var presenter = new JobReportStub();
-        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, Hash.GetMD5Hash("secret"), new StoredPasswordAdapterStub());
+        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, () => Hash.GetMD5Hash("secret"), new StoredPasswordAdapterStub());
 
         var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
 
@@ -110,7 +110,7 @@ public class JobSessionRunnerTests
         using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
         var presenter = new JobReportStub();
         var storedPasswordAdapter = new StoredPasswordAdapterStub { StoredPassword = "secret" };
-        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, Hash.GetMD5Hash("secret"), storedPasswordAdapter);
+        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, () => Hash.GetMD5Hash("secret"), storedPasswordAdapter);
 
         var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
 
@@ -129,7 +129,7 @@ public class JobSessionRunnerTests
             NextPasswordRequest = new JobSessionPasswordRequest("secret", true)
         };
         var storedPasswordAdapter = new StoredPasswordAdapterStub();
-        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, Hash.GetMD5Hash("secret"), storedPasswordAdapter);
+        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, () => Hash.GetMD5Hash("secret"), storedPasswordAdapter);
 
         var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
 
@@ -146,13 +146,35 @@ public class JobSessionRunnerTests
         var presenter = new JobReportStub();
         presenter.PasswordRequests.Enqueue(new JobSessionPasswordRequest("wrong", false));
         presenter.PasswordRequests.Enqueue(new JobSessionPasswordRequest("secret", false));
-        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, Hash.GetMD5Hash("secret"), new StoredPasswordAdapterStub());
+        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, () => Hash.GetMD5Hash("secret"), new StoredPasswordAdapterStub());
 
         var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
 
         Assert.That(result.Started, Is.True);
         Assert.That(presenter.ShowErrorPasswordWrongCalls, Is.EqualTo(1));
         Assert.That(presenter.RequestPasswordCalls, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_UsesLatestPasswordHash_WhenConfigurationChangesAfterConstruction()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
+        var presenter = new JobReportStub
+        {
+            NextPasswordRequest = new JobSessionPasswordRequest("new-secret", false)
+        };
+        var currentHash = Hash.GetMD5Hash("old-secret");
+        var runner = new JobSessionRunner(backupService, jobRuntime, () => true, () => currentHash, new StoredPasswordAdapterStub());
+
+        currentHash = Hash.GetMD5Hash("new-secret");
+
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: true);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(backupService.LastPasswordSet, Is.EqualTo("new-secret"));
+        Assert.That(presenter.ShowErrorPasswordWrongCalls, Is.EqualTo(0));
+        Assert.That(presenter.RequestPasswordCalls, Is.EqualTo(1));
     }
 
     private sealed class BackupServiceStub : IBackupService

@@ -79,7 +79,7 @@ public class BackupController : IDisposable
             backupService,
             this.jobRuntime,
             () => this.configurationManager.Encrypt == 1,
-            this.configurationManager.EncryptPassMD5,
+            () => this.configurationManager.EncryptPassMD5,
             this.storedPasswordAdapter);
 
         jobReportCallback = StatusController.Current;

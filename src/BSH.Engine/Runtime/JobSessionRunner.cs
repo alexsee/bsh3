@@ -49,7 +49,7 @@ public sealed class JobSessionRunner
     private readonly IBackupService backupService;
     private readonly JobRuntime jobRuntime;
     private readonly Func<bool> shouldResolvePassword;
-    private readonly string expectedPasswordHash;
+    private readonly Func<string> expectedPasswordHashProvider;
     private readonly IStoredPasswordAdapter storedPasswordAdapter;
 
     /// <summary>
@@ -57,7 +57,7 @@ public sealed class JobSessionRunner
     /// </summary>
     /// <param name="backupService">Backup engine service used to execute backup operations.</param>
     /// <param name="jobRuntime">Shared runtime responsible for session preparation and cancellation lifecycle.</param>
-    public JobSessionRunner(IBackupService backupService, JobRuntime jobRuntime, Func<bool> shouldResolvePassword = null, string expectedPasswordHash = "", IStoredPasswordAdapter storedPasswordAdapter = null)
+    public JobSessionRunner(IBackupService backupService, JobRuntime jobRuntime, Func<bool> shouldResolvePassword = null, Func<string> expectedPasswordHashProvider = null, IStoredPasswordAdapter storedPasswordAdapter = null)
     {
         ArgumentNullException.ThrowIfNull(backupService);
         ArgumentNullException.ThrowIfNull(jobRuntime);
@@ -65,7 +65,7 @@ public sealed class JobSessionRunner
         this.backupService = backupService;
         this.jobRuntime = jobRuntime;
         this.shouldResolvePassword = shouldResolvePassword ?? (() => false);
-        this.expectedPasswordHash = expectedPasswordHash ?? string.Empty;
+        this.expectedPasswordHashProvider = expectedPasswordHashProvider ?? (() => string.Empty);
         this.storedPasswordAdapter = storedPasswordAdapter;
     }
 
@@ -178,7 +178,8 @@ public sealed class JobSessionRunner
 
     private bool IsValidPassword(string password)
     {
+        var expectedPasswordHash = expectedPasswordHashProvider() ?? string.Empty;
         return !string.IsNullOrEmpty(password) &&
-            string.Equals(Hash.GetMD5Hash(password) ?? string.Empty, expectedPasswordHash ?? string.Empty, StringComparison.Ordinal);
+            string.Equals(Hash.GetMD5Hash(password) ?? string.Empty, expectedPasswordHash, StringComparison.Ordinal);
     }
 }
