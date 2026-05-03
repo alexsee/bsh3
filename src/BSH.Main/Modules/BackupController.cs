@@ -129,23 +129,8 @@ public class BackupController : IDisposable
             title, description, statusDialog, fullBackup);
 
         var result = await jobSessionRunner.RunSingleBackupAsync(title, description, presenter, statusDialog, fullBackup, sourceFolders);
-
-        if (!result.Started)
+        if (!await HandleSessionStartAsync(result, "backup"))
         {
-            switch (result.Failure)
-            {
-                case JobSessionStartFailure.TaskRunning:
-                    _logger.Error("Another task is running, so the backup task will not be started.");
-                    break;
-                case JobSessionStartFailure.DeviceNotReady:
-                    _logger.Error("Device is not ready, so the backup task will not be started.");
-                    break;
-                case JobSessionStartFailure.PasswordRequired:
-                    _logger.Error("Password request was cancelled, so the backup task will not be started.");
-                    break;
-            }
-
-            await presenter.CompleteAsync(honorCompletionActions: false);
             return false;
         }
 
@@ -183,23 +168,8 @@ public class BackupController : IDisposable
             version, file, destination);
 
         var result = await jobSessionRunner.RunSingleRestoreAsync(version, file, destination, presenter, statusDialog);
-
-        if (!result.Started)
+        if (!await HandleSessionStartAsync(result, "restore"))
         {
-            switch (result.Failure)
-            {
-                case JobSessionStartFailure.TaskRunning:
-                    _logger.Error("Another task is running, so the restore task will not be started.");
-                    break;
-                case JobSessionStartFailure.DeviceNotReady:
-                    _logger.Error("Device is not ready, so the restore task will not be started.");
-                    break;
-                case JobSessionStartFailure.PasswordRequired:
-                    _logger.Error("Password request was cancelled, so the restore task will not be started.");
-                    break;
-            }
-
-            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
@@ -220,23 +190,8 @@ public class BackupController : IDisposable
             version, files.Count, destination);
 
         var result = await jobSessionRunner.RunBatchRestoreAsync(version, files, destination, presenter, statusDialog);
-
-        if (!result.Started)
+        if (!await HandleSessionStartAsync(result, "restore"))
         {
-            switch (result.Failure)
-            {
-                case JobSessionStartFailure.TaskRunning:
-                    _logger.Error("Another task is running, so the restore task will not be started.");
-                    break;
-                case JobSessionStartFailure.DeviceNotReady:
-                    _logger.Error("Device is not ready, so the restore task will not be started.");
-                    break;
-                case JobSessionStartFailure.PasswordRequired:
-                    _logger.Error("Password request was cancelled, so the restore task will not be started.");
-                    break;
-            }
-
-            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
@@ -254,23 +209,8 @@ public class BackupController : IDisposable
         _logger.Debug("Delete task started for version {version}.", version);
 
         var result = await jobSessionRunner.RunSingleDeleteAsync(version, presenter, statusDialog);
-
-        if (!result.Started)
+        if (!await HandleSessionStartAsync(result, "delete"))
         {
-            switch (result.Failure)
-            {
-                case JobSessionStartFailure.TaskRunning:
-                    _logger.Error("Another task is running, so the delete task will not be started.");
-                    break;
-                case JobSessionStartFailure.DeviceNotReady:
-                    _logger.Error("Device is not ready, so the delete task will not be started.");
-                    break;
-                case JobSessionStartFailure.PasswordRequired:
-                    _logger.Error("Password request was cancelled, so the delete task will not be started.");
-                    break;
-            }
-
-            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
@@ -288,23 +228,8 @@ public class BackupController : IDisposable
         _logger.Debug("Delete task started for {versions} versions.", versions.Count);
 
         var result = await jobSessionRunner.RunBatchDeleteAsync(versions, presenter, statusDialog);
-
-        if (!result.Started)
+        if (!await HandleSessionStartAsync(result, "delete"))
         {
-            switch (result.Failure)
-            {
-                case JobSessionStartFailure.TaskRunning:
-                    _logger.Error("Another task is running, so the delete task will not be started.");
-                    break;
-                case JobSessionStartFailure.DeviceNotReady:
-                    _logger.Error("Device is not ready, so the delete task will not be started.");
-                    break;
-                case JobSessionStartFailure.PasswordRequired:
-                    _logger.Error("Password request was cancelled, so the delete task will not be started.");
-                    break;
-            }
-
-            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
@@ -324,23 +249,8 @@ public class BackupController : IDisposable
         _logger.Debug("Delete task started for file and folder filter.");
 
         var result = await jobSessionRunner.RunSingleDeleteSingleAsync(fileFilter, folderFilter, presenter, statusDialog);
-
-        if (!result.Started)
+        if (!await HandleSessionStartAsync(result, "delete"))
         {
-            switch (result.Failure)
-            {
-                case JobSessionStartFailure.TaskRunning:
-                    _logger.Error("Another task is running, so the delete task will not be started.");
-                    break;
-                case JobSessionStartFailure.DeviceNotReady:
-                    _logger.Error("Device is not ready, so the delete task will not be started.");
-                    break;
-                case JobSessionStartFailure.PasswordRequired:
-                    _logger.Error("Password request was cancelled, so the delete task will not be started.");
-                    break;
-            }
-
-            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
@@ -357,23 +267,8 @@ public class BackupController : IDisposable
         _logger.Debug("Modify task started.");
 
         var result = await jobSessionRunner.RunSingleModifyAsync(presenter, statusDialog);
-
-        if (!result.Started)
+        if (!await HandleSessionStartAsync(result, "modify"))
         {
-            switch (result.Failure)
-            {
-                case JobSessionStartFailure.TaskRunning:
-                    _logger.Error("Another task is running, so the modify task will not be started.");
-                    break;
-                case JobSessionStartFailure.DeviceNotReady:
-                    _logger.Error("Device is not ready, so the modify task will not be started.");
-                    break;
-                case JobSessionStartFailure.PasswordRequired:
-                    _logger.Error("Password request was cancelled, so the modify task will not be started.");
-                    break;
-            }
-
-            await presenter.CompleteAsync(honorCompletionActions: false);
             return;
         }
 
@@ -434,5 +329,33 @@ public class BackupController : IDisposable
     {
         jobRuntime.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    private async Task<bool> HandleSessionStartAsync(SingleBackupSessionResult result, string operationName)
+    {
+        if (result.Started)
+        {
+            return true;
+        }
+
+        LogSingleOperationStartFailure(result.Failure, operationName);
+        await presenter.CompleteAsync(honorCompletionActions: false);
+        return false;
+    }
+
+    private void LogSingleOperationStartFailure(JobSessionStartFailure failure, string operationName)
+    {
+        switch (failure)
+        {
+            case JobSessionStartFailure.TaskRunning:
+                _logger.Error("Another task is running, so the {operationName} task will not be started.", operationName);
+                break;
+            case JobSessionStartFailure.DeviceNotReady:
+                _logger.Error("Device is not ready, so the {operationName} task will not be started.", operationName);
+                break;
+            case JobSessionStartFailure.PasswordRequired:
+                _logger.Error("Password request was cancelled, so the {operationName} task will not be started.", operationName);
+                break;
+        }
     }
 }
