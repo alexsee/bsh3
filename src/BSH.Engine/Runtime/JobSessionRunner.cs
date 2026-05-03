@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts.Services;
@@ -115,6 +116,35 @@ public sealed class JobSessionRunner
     }
 
     /// <summary>
+    /// Runs a batch restore session with shared lifecycle orchestration, overwrite carry-forward,
+    /// exception aggregation, and final-state reporting.
+    /// </summary>
+    public async Task<SingleBackupSessionResult> RunBatchRestoreAsync(
+        string version,
+        IReadOnlyList<string> files,
+        string destination,
+        IJobSessionPresenter presenter,
+        bool statusDialog = true)
+    {
+        ArgumentNullException.ThrowIfNull(files);
+
+        var overwrite = FileOverwrite.Ask;
+
+        return await RunBatchOperationAsync(
+            ActionType.Restore,
+            presenter,
+            statusDialog,
+            requirePassword: true,
+            files.Count,
+            async (jobReport, cancellationToken, index) =>
+            {
+                var file = files[index];
+                await backupService.StartRestore(version, file, destination, ref jobReport, cancellationToken, overwrite, !statusDialog);
+                overwrite = presenter.ResolveBatchOverwriteChoice(overwrite);
+            });
+    }
+
+    /// <summary>
     /// Runs a single delete session with shared session preparation and error handling.
     /// </summary>
     public async Task<SingleBackupSessionResult> RunSingleDeleteAsync(
@@ -129,6 +159,30 @@ public sealed class JobSessionRunner
             requirePassword: false,
             async (jobReport, cancellationToken) =>
             {
+                await backupService.StartDelete(version, ref jobReport, cancellationToken, !statusDialog);
+            });
+    }
+
+    /// <summary>
+    /// Runs a batch delete session with shared lifecycle orchestration, exception aggregation,
+    /// and final-state reporting.
+    /// </summary>
+    public async Task<SingleBackupSessionResult> RunBatchDeleteAsync(
+        IReadOnlyList<string> versions,
+        IJobSessionPresenter presenter,
+        bool statusDialog = true)
+    {
+        ArgumentNullException.ThrowIfNull(versions);
+
+        return await RunBatchOperationAsync(
+            ActionType.Delete,
+            presenter,
+            statusDialog,
+            requirePassword: false,
+            versions.Count,
+            async (jobReport, cancellationToken, index) =>
+            {
+                var version = versions[index];
                 await backupService.StartDelete(version, ref jobReport, cancellationToken, !statusDialog);
             });
     }
@@ -205,6 +259,98 @@ public sealed class JobSessionRunner
             catch
             {
             }
+
+            return new SingleBackupSessionResult()
+            {
+                Started = true,
+                Canceled = cancellationToken.IsCancellationRequested,
+                Failure = JobSessionStartFailure.None
+            };
+        }
+        catch (TaskRunningException)
+        {
+            if (statusDialog)
+            {
+                await presenter.ShowErrorTaskRunningAsync();
+            }
+
+            return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.TaskRunning };
+        }
+        catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
+        {
+            if (statusDialog)
+            {
+                await presenter.ShowErrorDeviceNotReadyAsync();
+            }
+
+            return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.DeviceNotReady };
+        }
+        catch (PasswordRequiredException)
+        {
+            if (statusDialog)
+            {
+                await presenter.ShowErrorPasswordRequiredAsync();
+            }
+
+            return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.PasswordRequired };
+        }
+    }
+
+    private async Task<SingleBackupSessionResult> RunBatchOperationAsync(
+        ActionType action,
+        IJobSessionPresenter presenter,
+        bool statusDialog,
+        bool requirePassword,
+        int itemCount,
+        Func<IJobReport, CancellationToken, int, Task> runItemAsync)
+    {
+        ArgumentNullException.ThrowIfNull(presenter);
+        ArgumentNullException.ThrowIfNull(runItemAsync);
+
+        try
+        {
+            if (statusDialog)
+            {
+                await presenter.ShowStatusWindowAsync();
+            }
+
+            if (requirePassword)
+            {
+                await ResolvePasswordAsync(presenter);
+            }
+
+            var cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog, requirePassword: false);
+            presenter.SetCancellationToken(cancellationToken);
+
+            presenter.ReportAction(action, !statusDialog);
+            presenter.ReportState(JobState.RUNNING);
+
+            var forwardJobReport = new ForwardJobReport(presenter);
+
+            for (var i = 0; i < itemCount; i++)
+            {
+                try
+                {
+                    presenter.ReportProgress(itemCount, i + 1);
+                    IJobReport activeReport = forwardJobReport;
+                    await runItemAsync(activeReport, cancellationToken, i);
+                }
+                catch
+                {
+                }
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+            }
+
+            forwardJobReport.ForwardExceptions(!statusDialog);
+
+            var finalState = cancellationToken.IsCancellationRequested
+                ? JobState.CANCELED
+                : (forwardJobReport.HasExceptions ? JobState.ERROR : JobState.FINISHED);
+            presenter.ReportState(finalState);
 
             return new SingleBackupSessionResult()
             {

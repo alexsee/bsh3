@@ -244,6 +244,42 @@ public class JobSessionRunnerTests
         Assert.That(backupService.LastSilent, Is.False);
     }
 
+    [Test]
+    public async Task RunBatchRestoreAsync_CarriesForwardOverwriteChoice_AndReportsFinishedState()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        presenter.BatchOverwriteChoices.Enqueue(FileOverwrite.Overwrite);
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunBatchRestoreAsync("11", new[] { "\\a.txt", "\\b.txt" }, "C:\\Restore", presenter, statusDialog: true);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(backupService.StartRestoreCalls, Is.EqualTo(2));
+        Assert.That(backupService.RestoreOverwrites, Is.EqualTo(new[] { FileOverwrite.Ask, FileOverwrite.Overwrite }));
+        Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.RUNNING, JobState.FINISHED }));
+        Assert.That(presenter.ProgressUpdates, Is.EqualTo(new[] { "2/1", "2/2" }));
+    }
+
+    [Test]
+    public async Task RunBatchDeleteAsync_ReportsError_WhenAnyItemFails()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        backupService.DeleteFailures.Enqueue(new FileExceptionEntry() { Exception = new InvalidOperationException("boom") });
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunBatchDeleteAsync(new[] { "5", "6" }, presenter, statusDialog: false);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(backupService.StartDeleteCalls, Is.EqualTo(2));
+        Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.RUNNING, JobState.ERROR }));
+        Assert.That(presenter.ReportedExceptions.Count, Is.EqualTo(1));
+        Assert.That(presenter.ReportedExceptions[0].Exception.Message, Is.EqualTo("boom"));
+    }
+
     private sealed class BackupServiceStub : IBackupService
     {
         public bool CheckMediaResult { get; set; } = true;
@@ -265,6 +301,8 @@ public class JobSessionRunnerTests
         public bool LastSilent { get; private set; }
         public string LastPasswordSet { get; private set; }
         public FileOverwrite LastOverwrite { get; private set; }
+        public System.Collections.Generic.List<FileOverwrite> RestoreOverwrites { get; } = new();
+        public System.Collections.Generic.Queue<FileExceptionEntry> DeleteFailures { get; } = new();
 
         public Task<bool> CheckMedia(bool quickCheck = false) => Task.FromResult(CheckMediaResult);
         public string GetPassword() => string.Empty;
@@ -289,6 +327,11 @@ public class JobSessionRunnerTests
             StartDeleteCalls++;
             LastVersion = version;
             LastSilent = silent;
+            if (DeleteFailures.Count > 0)
+            {
+                jobReport.ReportExceptions(new Collection<FileExceptionEntry> { DeleteFailures.Dequeue() }, silent);
+            }
+
             return Task.CompletedTask;
         }
 
@@ -316,6 +359,7 @@ public class JobSessionRunnerTests
             LastDestination = destination;
             LastOverwrite = overwrite;
             LastSilent = silent;
+            RestoreOverwrites.Add(overwrite);
             return Task.CompletedTask;
         }
         public void UpdateDatabaseFile(string databaseFile) { }
@@ -324,11 +368,17 @@ public class JobSessionRunnerTests
     private sealed class JobReportStub : IJobSessionPresenter
     {
         public void ReportAction(ActionType action, bool silent) { }
-        public void ReportState(JobState jobState) { }
+        public void ReportState(JobState jobState) => ReportedStates.Add(jobState);
         public void ReportStatus(string title, string text) { }
-        public void ReportProgress(int total, int current) { }
+        public void ReportProgress(int total, int current) => ProgressUpdates.Add($"{total}/{current}");
         public void ReportFileProgress(string file) { }
-        public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent) { }
+        public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)
+        {
+            foreach (var file in files)
+            {
+                ReportedExceptions.Add(file);
+            }
+        }
         public Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile) => Task.FromResult(RequestOverwriteResult.None);
         public Task RequestShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
 
@@ -340,6 +390,10 @@ public class JobSessionRunnerTests
         public int RequestPasswordCalls { get; private set; }
         public JobSessionPasswordRequest NextPasswordRequest { get; set; }
         public System.Collections.Generic.Queue<JobSessionPasswordRequest> PasswordRequests { get; } = new();
+        public System.Collections.Generic.Queue<FileOverwrite> BatchOverwriteChoices { get; } = new();
+        public System.Collections.Generic.List<JobState> ReportedStates { get; } = new();
+        public System.Collections.Generic.List<string> ProgressUpdates { get; } = new();
+        public System.Collections.Generic.List<FileExceptionEntry> ReportedExceptions { get; } = new();
 
         public Task ShowStatusWindowAsync()
         {
@@ -387,6 +441,16 @@ public class JobSessionRunnerTests
         public Task CancelAsync() => Task.CompletedTask;
         public CancellationToken GetCancellationToken() => CancellationToken.None;
         public void SetCancellationToken(CancellationToken cancellationToken) { }
+
+        public FileOverwrite ResolveBatchOverwriteChoice(FileOverwrite currentOverwrite)
+        {
+            if (BatchOverwriteChoices.Count > 0)
+            {
+                return BatchOverwriteChoices.Dequeue();
+            }
+
+            return currentOverwrite;
+        }
     }
 
     private sealed class StoredPasswordAdapterStub : IStoredPasswordAdapter

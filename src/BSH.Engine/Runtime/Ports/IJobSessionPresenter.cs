@@ -63,4 +63,9 @@ public interface IJobSessionPresenter : IJobReport
     /// Sets the cancellation token for the current session.
     /// </summary>
     void SetCancellationToken(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Resolves the overwrite mode that should be carried into the next batch restore item.
+    /// </summary>
+    FileOverwrite ResolveBatchOverwriteChoice(FileOverwrite currentOverwrite);
 }

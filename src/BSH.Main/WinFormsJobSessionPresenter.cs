@@ -114,6 +114,16 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
         this.cancellationToken = cancellationToken;
     }
 
+    public FileOverwrite ResolveBatchOverwriteChoice(FileOverwrite currentOverwrite)
+    {
+        return lastFileOverwriteChoice switch
+        {
+            RequestOverwriteResult.OverwriteAll => FileOverwrite.Overwrite,
+            RequestOverwriteResult.NoOverwriteAll => FileOverwrite.DontCopy,
+            _ => currentOverwrite
+        };
+    }
+
     private bool IsTaskRunning() => StatusController.Current.IsTaskRunning();
 
     public void ReportAction(ActionType action, bool silent)
@@ -179,7 +189,7 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
 
         dlgFilesOverwrite.picIco2.Image = dlgFilesOverwrite.picIco1.Image;
 
-        if (await dlgFilesOverwrite.ShowDialogAsync() == DialogResult.Cancel)
+        if (dlgFilesOverwrite.ShowDialog() == DialogResult.Cancel)
         {
             await CancelAsync();
             return RequestOverwriteResult.NoOverwrite;
