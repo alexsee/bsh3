@@ -189,7 +189,7 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
 
         dlgFilesOverwrite.picIco2.Image = dlgFilesOverwrite.picIco1.Image;
 
-        if (await dlgFilesOverwrite.ShowDialogAsync() == DialogResult.Cancel)
+        if (dlgFilesOverwrite.ShowDialog() == DialogResult.Cancel)
         {
             await CancelAsync();
             return RequestOverwriteResult.NoOverwrite;
