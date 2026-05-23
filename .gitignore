@@ -171,3 +171,5 @@ output/
 /src/.sonarqube
 /output-release
 /src/BackupServiceHome-UWP/_pkginfo.txt
+.clawpatch/
+.dotnet/

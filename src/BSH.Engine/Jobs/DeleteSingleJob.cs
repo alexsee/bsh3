@@ -180,7 +180,7 @@ public class DeleteSingleJob : Job
         string remoteFile;
         if ((fileType == "1" || fileType == "2" || fileType == "6") && !string.IsNullOrEmpty(longFileName))
         {
-            remoteFile = Path.Combine(versionDate, "_LONG_FILES", longFileName);
+            remoteFile = Path.Combine(versionDate, "_LONGFILES_", longFileName);
         }
         else
         {
