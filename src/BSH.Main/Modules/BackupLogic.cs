@@ -81,8 +81,25 @@ static class BackupLogic
 
     private static Timer tmrUserReminder;
 
-    private static async Task LoadDatabaseAsync()
+    private static void ResetStartupServices()
     {
+        DbClientFactory = null;
+        ConfigurationManager = null;
+        QueryManager = null;
+        ScheduleRepository = null;
+        VersionQueryRepository = null;
+        BackupMutationRepository = null;
+        BackupService = null;
+        BackupController = null;
+        fileCollectorServiceFactory = null;
+        mediaWatcherFactory = null;
+        schedulerAdapterFactory = null;
+    }
+
+    private static async Task<bool> LoadDatabaseAsync()
+    {
+        ResetStartupServices();
+
         try
         {
             // init database and configuration manager
@@ -95,11 +112,15 @@ static class BackupLogic
             // database migration?
             var dbMigration = new DbMigrationService(DbClientFactory, ConfigurationManager);
             await dbMigration.InitializeAsync();
+            return true;
         }
         catch (Exception ex)
         {
+            ResetStartupServices();
+
             // global error
             ExceptionController.HandleGlobalException(null, new System.Threading.ThreadExceptionEventArgs(ex));
+            return false;
         }
     }
 
@@ -109,7 +130,10 @@ static class BackupLogic
     public static async Task StartupAsync()
     {
         // init database
-        await LoadDatabaseAsync();
+        if (!await LoadDatabaseAsync())
+        {
+            return;
+        }
 
         // start main system
         var storageFactory = new StorageFactory(ConfigurationManager);
