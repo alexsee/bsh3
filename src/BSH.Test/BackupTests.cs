@@ -136,6 +136,67 @@ public class BackupTests
     }
 
     [Test]
+    public async Task TestIncrementalCreatesNewFileVersionForSameSizeEditWithinSameSecond()
+    {
+        var firstModified = new DateTime(2024, 1, 2, 3, 4, 5, 100, DateTimeKind.Local);
+        var secondModified = new DateTime(2024, 1, 2, 3, 4, 5, 900, DateTimeKind.Local);
+        var created = new DateTime(2024, 1, 2, 3, 0, 0, DateTimeKind.Local);
+
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
+            new List<FolderTableRow>(),
+            new List<FileTableRow>
+            {
+                new FileTableRow
+                {
+                    FileName = "test.txt",
+                    FilePath = "",
+                    FileRoot = "D:\\Meine Dokumente",
+                    FileSize = 1024,
+                    FileDateCreated = created,
+                    FileDateModified = firstModified,
+                }
+            });
+
+        var firstBackupJob = new BackupJob(new StorageMock(), dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = "D:\\Meine Dokumente",
+            Title = "Blub",
+            Description = "",
+        };
+
+        var token = new CancellationTokenSource().Token;
+        await firstBackupJob.BackupAsync(token);
+
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
+            new List<FolderTableRow>(),
+            new List<FileTableRow>
+            {
+                new FileTableRow
+                {
+                    FileName = "test.txt",
+                    FilePath = "",
+                    FileRoot = "D:\\Meine Dokumente",
+                    FileSize = 1024,
+                    FileDateCreated = created,
+                    FileDateModified = secondModified,
+                }
+            });
+
+        var secondBackupJob = new BackupJob(new StorageMock(), dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = "D:\\Meine Dokumente",
+            Title = "Blub",
+            Description = "",
+        };
+
+        await secondBackupJob.BackupAsync(token);
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(2));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileversionID FROM filelink WHERE versionID = 2")), Is.EqualTo(2));
+    }
+
+    [Test]
     public async Task TestCompressedFull()
     {
         // set compressed state

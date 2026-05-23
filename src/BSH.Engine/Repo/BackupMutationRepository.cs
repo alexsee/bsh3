@@ -86,7 +86,7 @@ public class BackupMutationRepository : IBackupMutationRepository
         var result = await dbClient.ExecuteScalarAsync(
             CommandType.Text,
             "SELECT fileversionID FROM fileversiontable WHERE" +
-            " fileID = @fileID AND fileStatus = 1 AND fileSize = @fileSize AND datetime(fileDateModified) = datetime(@fileDateModified) ORDER BY fileversionID DESC LIMIT 1",
+            " fileID = @fileID AND fileStatus = 1 AND fileSize = @fileSize AND fileDateModified = @fileDateModified ORDER BY fileversionID DESC LIMIT 1",
             parameters);
 
         if (result == null)
