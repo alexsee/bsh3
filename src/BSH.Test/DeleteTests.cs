@@ -114,6 +114,26 @@ public class DeleteTests
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT versionStatus FROM versiontable WHERE versionID = 1")), Is.EqualTo(1));
     }
 
+    [Test]
+    public async Task TestDeleteSingleUsesLongFileDirectoryForEncryptedLongFiles()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await SeedVersionAsync(1, versionDate);
+        await SeedFileForVersionAsync(1, 1, 1, "encrypted-long.txt", @"\docs\", 6, "very-long-file-name");
+
+        var storage = new RecordingDeleteStorage();
+        var deleteJob = CreateDeleteSingleJob(storage);
+
+        await deleteJob.DeleteSingleAsync("encrypted-long.txt", @"\docs\");
+
+        Assert.That(storage.DeletedEncrypted, Has.Count.EqualTo(1));
+        Assert.That(storage.DeletedEncrypted[0], Is.EqualTo(Path.Combine(versionDate, "_LONGFILES_", "very-long-file-name")));
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(0));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filetable")), Is.EqualTo(0));
+    }
+
     private DeleteJob CreateDeleteJob(IStorage storage, string version)
     {
         return new DeleteJob(
@@ -126,6 +146,17 @@ public class DeleteTests
         {
             Version = version
         };
+    }
+
+    private DeleteSingleJob CreateDeleteSingleJob(IStorage storage)
+    {
+        return new DeleteSingleJob(
+            storage,
+            dbClientFactory,
+            queryManager,
+            configurationManager,
+            versionQueryRepository,
+            backupMutationRepository);
     }
 
     private async Task SeedVersionAsync(int versionId, string versionDate)
