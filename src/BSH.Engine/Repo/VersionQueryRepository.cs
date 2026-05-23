@@ -55,8 +55,8 @@ public class VersionQueryRepository : IVersionQueryRepository
             "WHERE filelink.fileversionID = fileversiontable.fileversionID " +
             "AND filelink.versionID = @version " +
             "AND fileversiontable.filePackage = versiontable.versionID " +
-            "AND filetable.fileName LIKE @fileName " +
-            "AND filetable.filePath LIKE @filePath " +
+            "AND filetable.fileName = @fileName " +
+            "AND filetable.filePath = @filePath " +
             "AND fileversiontable.fileID = filetable.fileID LIMIT 1",
             parameters);
     }
