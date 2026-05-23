@@ -9,6 +9,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Repo;
 using BSH.Test.Mocks;
 using NUnit.Framework;
 
@@ -18,6 +19,7 @@ public class QueryManagerTests
     private IDbClientFactory dbClientFactory;
     private IConfigurationManager configurationManager;
     private IQueryManager queryManager;
+    private VersionQueryRepository versionQueryRepository;
 
     [SetUp]
     public async Task Setup()
@@ -45,6 +47,7 @@ public class QueryManagerTests
 
         var storageFactory = new StorageFactoryMock();
         queryManager = new QueryManager(dbClientFactory, configurationManager, storageFactory);
+        versionQueryRepository = new VersionQueryRepository();
 
         // insert some data
         await PopulateExampleData();
@@ -255,6 +258,28 @@ public class QueryManagerTests
     {
         var result = await queryManager.GetFileNameFromDriveAsync(1, "file1.txt", "\\source_1\\", null);
         Assert.That(result, Is.EqualTo(("X:\\Backups\\01-01-2021 00-00-00\\source_1\\file1.txt", false)));
+    }
+
+    [Test]
+    public async Task GetRestoreSingleFileAsyncTreatsLikeMetacharactersAsLiteral()
+    {
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filetable (fileID, fileName, filePath) VALUES (4, 'report_1%.txt', '\\source_%\\')");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filetable (fileID, fileName, filePath) VALUES (5, 'reportA12.txt', '\\source_X\\')");
+
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (4, 1)");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (5, 1)");
+
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO fileversiontable (fileversionID, fileStatus, fileType, fileHash, fileDateModified, fileDateCreated, fileSize, filePackage, fileID) VALUES (4, 0, 1, 'hash4', '2021-01-01 00:00:00', '2021-01-01 00:00:00', 100, 1, '4')");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO fileversiontable (fileversionID, fileStatus, fileType, fileHash, fileDateModified, fileDateCreated, fileSize, filePackage, fileID) VALUES (5, 0, 1, 'hash5', '2021-01-01 00:00:00', '2021-01-01 00:00:00', 100, 1, '5')");
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        using var reader = await versionQueryRepository.GetRestoreSingleFileAsync(dbClient, 1, "report_1%.txt", "\\source_%\\");
+
+        Assert.That(await reader.ReadAsync(), Is.True);
+        Assert.That(reader.GetInt32(reader.GetOrdinal("fileID")), Is.EqualTo(4));
+        Assert.That(reader.GetString(reader.GetOrdinal("fileName")), Is.EqualTo("report_1%.txt"));
+        Assert.That(reader.GetString(reader.GetOrdinal("filePath")), Is.EqualTo("\\source_%\\"));
+        Assert.That(await reader.ReadAsync(), Is.False);
     }
 
     [Test]
