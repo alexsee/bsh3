@@ -32,6 +32,7 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
     private readonly IBackupService backupService;
     private readonly IConfigurationManager configurationManager;
     private CancellationToken cancellationToken;
+    private bool statusWindowShown;
     private ActionType lastActionType = ActionType.Check;
     private RequestOverwriteResult lastFileOverwriteChoice = RequestOverwriteResult.None;
 
@@ -47,12 +48,18 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
     public Task ShowStatusWindowAsync()
     {
         PresentationController.Current.ShowStatusWindow();
+        statusWindowShown = true;
         return Task.CompletedTask;
     }
 
-    public async Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false, bool honorCompletionActions = true)
+    public Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false, bool honorCompletionActions = true)
     {
-        var action = PresentationController.Current.CloseStatusWindow();
+        var action = TaskCompleteAction.NoAction;
+        if (statusWindowShown)
+        {
+            action = PresentationController.Current.CloseStatusWindow();
+            statusWindowShown = false;
+        }
 
         var executeShutdown = triggerShutdown || (honorCompletionActions && action == TaskCompleteAction.ShutdownPC);
         var executeHibernate = triggerHibernate || (honorCompletionActions && action == TaskCompleteAction.HibernatePC);
@@ -67,6 +74,8 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
             _logger.Debug("Computer will be hibernated after task has finished.");
             Process.Start("rundll32.exe", "powrprof.dll,SetSuspendState");
         }
+
+        return Task.CompletedTask;
     }
 
     public Task ShowErrorTaskRunningAsync()

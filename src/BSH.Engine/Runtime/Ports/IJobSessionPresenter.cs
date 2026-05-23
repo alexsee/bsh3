@@ -21,6 +21,7 @@ public interface IJobSessionPresenter : IJobReport
 
     /// <summary>
     /// Handles completion of the job session, including optional shutdown/hibernate actions.
+    /// Status-window completion actions should only be honored for a window opened by this session.
     /// </summary>
     Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false, bool honorCompletionActions = true);
 

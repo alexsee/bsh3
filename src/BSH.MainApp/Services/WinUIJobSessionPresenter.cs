@@ -22,6 +22,7 @@ public sealed class WinUIJobSessionPresenter : IJobSessionPresenter
     private readonly IPresentationService presentationService;
     private readonly IStatusService statusService;
     private CancellationToken cancellationToken;
+    private bool statusWindowShown;
 
     public WinUIJobSessionPresenter(IPresentationService presentationService, IStatusService statusService, Action cancelAction)
     {
@@ -34,7 +35,11 @@ public sealed class WinUIJobSessionPresenter : IJobSessionPresenter
         this.statusService = statusService;
     }
 
-    public Task ShowStatusWindowAsync() => presentationService.ShowStatusWindowAsync();
+    public async Task ShowStatusWindowAsync()
+    {
+        await presentationService.ShowStatusWindowAsync();
+        statusWindowShown = true;
+    }
 
     public async Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false, bool honorCompletionActions = true)
     {
@@ -42,7 +47,11 @@ public sealed class WinUIJobSessionPresenter : IJobSessionPresenter
         _ = triggerHibernate;
         _ = honorCompletionActions;
 
-        await presentationService.CloseStatusWindowAsync();
+        if (statusWindowShown)
+        {
+            await presentationService.CloseStatusWindowAsync();
+            statusWindowShown = false;
+        }
     }
 
     public Task ShowErrorTaskRunningAsync()

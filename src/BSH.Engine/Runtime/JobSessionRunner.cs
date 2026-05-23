@@ -246,13 +246,13 @@ public sealed class JobSessionRunner
                 await presenter.ShowStatusWindowAsync();
             }
 
+            var cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog, requirePassword: false);
+            presenter.SetCancellationToken(cancellationToken);
+
             if (requirePassword)
             {
                 await ResolvePasswordAsync(presenter);
             }
-
-            var cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog, requirePassword: false);
-            presenter.SetCancellationToken(cancellationToken);
 
             try
             {
@@ -320,13 +320,13 @@ public sealed class JobSessionRunner
                 await presenter.ShowStatusWindowAsync();
             }
 
+            var cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog, requirePassword: false);
+            presenter.SetCancellationToken(cancellationToken);
+
             if (requirePassword)
             {
                 await ResolvePasswordAsync(presenter);
             }
-
-            var cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog, requirePassword: false);
-            presenter.SetCancellationToken(cancellationToken);
 
             presenter.ReportAction(action, !statusDialog);
             presenter.ReportState(JobState.RUNNING);
