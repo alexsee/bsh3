@@ -106,6 +106,7 @@ public partial class App : Application
             services.AddSingleton<IVersionQueryRepository, VersionQueryRepository>();
             services.AddSingleton<IBackupMutationRepository, BackupMutationRepository>();
             services.AddSingleton<IScheduleRepository, ScheduleRepository>();
+            services.AddSingleton<ScheduleSettingsService>();
 
             services.AddSingleton<IVssClient, VolumeShadowCopyClient>();
             services.AddSingleton<ISchedulerAdapterFactory, SchedulerAdapterFactory>();
@@ -126,6 +127,7 @@ public partial class App : Application
             services.AddTransient<SettingsPage>();
 
             services.AddTransient<FilterViewModel>();
+            services.AddTransient<ScheduleEditorViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
