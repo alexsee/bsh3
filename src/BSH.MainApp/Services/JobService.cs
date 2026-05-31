@@ -21,6 +21,7 @@ public class JobService : IJobService, IDisposable
     private readonly IConfigurationManager configurationManager;
     private readonly IStatusService statusService;
     private readonly IPresentationService presentationService;
+    private readonly ICompletionActionService completionActionService;
     private readonly Func<IWaitForMediaService> waitForMediaServiceFactory;
     private readonly JobRuntime jobRuntime;
     private readonly JobSessionRunner jobSessionRunner;
@@ -39,6 +40,7 @@ public class JobService : IJobService, IDisposable
         IConfigurationManager configurationManager,
         IStatusService statusService,
         IPresentationService presentationService,
+        ICompletionActionService completionActionService,
         ILocalSettingsService localSettingsService,
         Func<IWaitForMediaService> waitForMediaServiceFactory)
     {
@@ -48,6 +50,7 @@ public class JobService : IJobService, IDisposable
         this.configurationManager = configurationManager;
         this.statusService = statusService;
         this.presentationService = presentationService;
+        this.completionActionService = completionActionService;
         this.waitForMediaServiceFactory = waitForMediaServiceFactory;
 
         this.jobRuntime = new JobRuntime(
@@ -60,7 +63,7 @@ public class JobService : IJobService, IDisposable
                 return await waitForMediaService.ExecuteAsync(silent, cancellationTokenSource);
             },
             this.RequestPassword);
-        this.presenter = new WinUIJobSessionPresenter(this.presentationService, this.statusService, this.Cancel);
+        this.presenter = new WinUIJobSessionPresenter(this.presentationService, this.statusService, this.Cancel, this.completionActionService);
         var storedPasswordAdapter = new WinUIStoredPasswordAdapter(localSettingsService);
         this.jobSessionRunner = new JobSessionRunner(
             backupService,
@@ -123,7 +126,7 @@ public class JobService : IJobService, IDisposable
             return false;
         }
 
-        await presenter.CompleteAsync(triggerShutdown: shutdownPC);
+        await presenter.CompleteAsync(triggerShutdown: shutdownPC && !result.Canceled, honorCompletionActions: !result.Canceled);
         return !result.Canceled;
     }
 
@@ -146,7 +149,7 @@ public class JobService : IJobService, IDisposable
             return;
         }
 
-        await presenter.CompleteAsync();
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -167,7 +170,7 @@ public class JobService : IJobService, IDisposable
             return;
         }
 
-        await presenter.CompleteAsync();
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -186,7 +189,7 @@ public class JobService : IJobService, IDisposable
             return;
         }
 
-        await presenter.CompleteAsync();
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -204,7 +207,7 @@ public class JobService : IJobService, IDisposable
             return;
         }
 
-        await presenter.CompleteAsync();
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -225,7 +228,7 @@ public class JobService : IJobService, IDisposable
             return;
         }
 
-        await presenter.CompleteAsync();
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -243,7 +246,7 @@ public class JobService : IJobService, IDisposable
             return;
         }
 
-        await presenter.CompleteAsync();
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>

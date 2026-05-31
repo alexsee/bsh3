@@ -37,17 +37,19 @@ public class PresentationService : IPresentationService
 
     public async Task<TaskCompleteAction> CloseStatusWindowAsync()
     {
+        var action = TaskCompleteAction.NoAction;
         if (statusWindow != null)
         {
             await statusWindow.DispatcherQueue.EnqueueAsync(() =>
             {
+                action = statusWindow.ViewModel.SelectedCompletionAction;
                 statusWindow.Close();
             });
 
             App.GetService<IStatusService>().RemoveObserver(statusWindow.ViewModel);
             statusWindow = null;
         }
-        return TaskCompleteAction.NoAction;
+        return action;
     }
 
     public async Task ShowMainWindowAsync()
