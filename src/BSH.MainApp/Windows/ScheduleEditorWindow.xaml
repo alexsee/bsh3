@@ -77,37 +77,49 @@
                             </CommandBar>
                         </Grid>
 
-                        <Grid Grid.Row="1" ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="170" />
-                                <ColumnDefinition Width="240" />
-                                <ColumnDefinition Width="200" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <ComboBox
-                                Grid.Column="0"
-                                Header="Repeat"
-                                HorizontalAlignment="Stretch"
-                                ItemsSource="{Binding ScheduleKinds}"
-                                SelectedItem="{Binding SelectedScheduleKind, Mode=TwoWay}" />
-                            <DatePicker
-                                Grid.Column="1"
-                                Header="Date"
-                                Date="{Binding StartDate, Mode=TwoWay}" />
-                            <TimePicker
-                                Grid.Column="2"
-                                Header="Time"
-                                Time="{Binding StartTime, Mode=TwoWay}" />
-                            <Button
-                                Grid.Column="3"
-                                MinWidth="78"
-                                Margin="0,28,0,0"
-                                Command="{Binding AddScheduleCommand}"
-                                Style="{StaticResource AccentButtonStyle}">
-                                Add
-                            </Button>
-                        </Grid>
+                        <StackPanel Grid.Row="1" Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <ComboBox
+                                    Header="Repeat"
+                                    ItemsSource="{Binding ScheduleKinds}"
+                                    SelectedItem="{Binding SelectedScheduleKind, Mode=TwoWay}"
+                                    Width="170" />
+                                <DatePicker
+                                    Header="Date"
+                                    Date="{Binding StartDate, Mode=TwoWay}"
+                                    Visibility="{x:Bind ViewModel.ShowDatePicker, Mode=OneWay}"
+                                    Width="240" />
+                                <ComboBox
+                                    Header="Day"
+                                    ItemsSource="{Binding WeeklyDays}"
+                                    SelectedItem="{Binding SelectedWeeklyDay, Mode=TwoWay}"
+                                    Visibility="{x:Bind ViewModel.ShowWeeklyDayPicker, Mode=OneWay}"
+                                    Width="160" />
+                                <NumberBox
+                                    Header="Day of month"
+                                    Minimum="1"
+                                    Maximum="31"
+                                    SpinButtonPlacementMode="Inline"
+                                    Value="{Binding SelectedMonthlyDay, Mode=TwoWay}"
+                                    Visibility="{x:Bind ViewModel.ShowMonthlyDayPicker, Mode=OneWay}"
+                                    Width="160" />
+                                <TimePicker
+                                    Header="{x:Bind ViewModel.TimeHeader, Mode=OneWay}"
+                                    Time="{Binding StartTime, Mode=TwoWay}"
+                                    Width="200" />
+                                <Button
+                                    MinWidth="78"
+                                    Margin="0,28,0,0"
+                                    Command="{Binding AddScheduleCommand}"
+                                    Style="{StaticResource AccentButtonStyle}">
+                                    Add
+                                </Button>
+                            </StackPanel>
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="{x:Bind ViewModel.AddScheduleHelpText, Mode=OneWay}"
+                                TextWrapping="WrapWholeWords" />
+                        </StackPanel>
 
                         <Grid Grid.Row="2" Padding="12,0" ColumnSpacing="16">
                             <Grid.ColumnDefinitions>

@@ -61,6 +61,35 @@ public sealed class ScheduleSettings
         return entry;
     }
 
+    public ScheduleEntry AddSchedule(
+        ScheduleEntryKind kind,
+        DateTimeOffset startDate,
+        TimeSpan startTime,
+        DayOfWeek weeklyDay,
+        int monthlyDay)
+    {
+        return AddSchedule(kind, BuildScheduleDate(kind, startDate, startTime, weeklyDay, monthlyDay));
+    }
+
+    public static DateTime BuildScheduleDate(
+        ScheduleEntryKind kind,
+        DateTimeOffset startDate,
+        TimeSpan startTime,
+        DayOfWeek weeklyDay,
+        int monthlyDay)
+    {
+        var date = startDate.Date;
+        return kind switch
+        {
+            ScheduleEntryKind.Once => date.Add(startTime),
+            ScheduleEntryKind.Hourly => date.Add(startTime),
+            ScheduleEntryKind.Daily => date.Add(startTime),
+            ScheduleEntryKind.Weekly => GetWeeklyDate(date, startTime, weeklyDay),
+            ScheduleEntryKind.Monthly => GetMonthlyDate(date, startTime, monthlyDay),
+            _ => date.Add(startTime),
+        };
+    }
+
     public bool DeleteSchedule(ScheduleEntry entry)
     {
         return Entries.Remove(entry);
@@ -70,5 +99,17 @@ public sealed class ScheduleSettings
     {
         var entry = Entries.FirstOrDefault(x => x.Type == (int)kind && x.Date == date);
         return entry != null && Entries.Remove(entry);
+    }
+
+    private static DateTime GetWeeklyDate(DateTime baseDate, TimeSpan startTime, DayOfWeek weeklyDay)
+    {
+        var daysUntilSelectedDay = ((int)weeklyDay - (int)baseDate.DayOfWeek + 7) % 7;
+        return baseDate.AddDays(daysUntilSelectedDay).Add(startTime);
+    }
+
+    private static DateTime GetMonthlyDate(DateTime baseDate, TimeSpan startTime, int monthlyDay)
+    {
+        var day = Math.Clamp(monthlyDay, 1, DateTime.DaysInMonth(baseDate.Year, baseDate.Month));
+        return new DateTime(baseDate.Year, baseDate.Month, day).Add(startTime);
     }
 }

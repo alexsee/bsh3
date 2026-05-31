@@ -110,4 +110,21 @@ public class ScheduleSettingsServiceTests
         Assert.That(reloaded.ScheduledFullBackupDays, Is.EqualTo(7));
         Assert.That(reloaded.PerformMissedBackupsLater, Is.True);
     }
+
+    [Test]
+    public void BuildScheduleDateUsesKindSpecificDateParts()
+    {
+        var baseDate = new DateTimeOffset(new DateTime(2026, 6, 1, 8, 0, 0));
+        var startTime = new TimeSpan(14, 30, 0);
+
+        Assert.That(
+            ScheduleSettings.BuildScheduleDate(ScheduleEntryKind.Once, baseDate, startTime, DayOfWeek.Friday, 31),
+            Is.EqualTo(new DateTime(2026, 6, 1, 14, 30, 0)));
+        Assert.That(
+            ScheduleSettings.BuildScheduleDate(ScheduleEntryKind.Weekly, baseDate, startTime, DayOfWeek.Friday, 31),
+            Is.EqualTo(new DateTime(2026, 6, 5, 14, 30, 0)));
+        Assert.That(
+            ScheduleSettings.BuildScheduleDate(ScheduleEntryKind.Monthly, baseDate, startTime, DayOfWeek.Friday, 31),
+            Is.EqualTo(new DateTime(2026, 6, 30, 14, 30, 0)));
+    }
 }

@@ -37,6 +37,20 @@ public partial class ScheduleEditorViewModel : ObservableObject
         ScheduleEntryKind.Monthly
     ];
 
+    public IReadOnlyList<DayOfWeek> WeeklyDays
+    {
+        get;
+    } =
+    [
+        DayOfWeek.Monday,
+        DayOfWeek.Tuesday,
+        DayOfWeek.Wednesday,
+        DayOfWeek.Thursday,
+        DayOfWeek.Friday,
+        DayOfWeek.Saturday,
+        DayOfWeek.Sunday
+    ];
+
     public IReadOnlyList<ScheduleRetentionMode> RetentionModes
     {
         get;
@@ -63,6 +77,11 @@ public partial class ScheduleEditorViewModel : ObservableObject
     } = new();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDatePicker))]
+    [NotifyPropertyChangedFor(nameof(ShowWeeklyDayPicker))]
+    [NotifyPropertyChangedFor(nameof(ShowMonthlyDayPicker))]
+    [NotifyPropertyChangedFor(nameof(TimeHeader))]
+    [NotifyPropertyChangedFor(nameof(AddScheduleHelpText))]
     private ScheduleEntryKind selectedScheduleKind = ScheduleEntryKind.Daily;
 
     [ObservableProperty]
@@ -70,6 +89,12 @@ public partial class ScheduleEditorViewModel : ObservableObject
 
     [ObservableProperty]
     private TimeSpan startTime = DateTime.Now.TimeOfDay;
+
+    [ObservableProperty]
+    private DayOfWeek selectedWeeklyDay = DayOfWeek.Monday;
+
+    [ObservableProperty]
+    private int selectedMonthlyDay = 1;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(DeleteScheduleCommand))]
@@ -95,6 +120,26 @@ public partial class ScheduleEditorViewModel : ObservableObject
 
     [ObservableProperty]
     private bool performMissedBackupsLater;
+
+    public bool ShowDatePicker => SelectedScheduleKind == ScheduleEntryKind.Once;
+
+    public bool ShowWeeklyDayPicker => SelectedScheduleKind == ScheduleEntryKind.Weekly;
+
+    public bool ShowMonthlyDayPicker => SelectedScheduleKind == ScheduleEntryKind.Monthly;
+
+    public string TimeHeader => SelectedScheduleKind == ScheduleEntryKind.Hourly
+        ? "Minute"
+        : "Time";
+
+    public string AddScheduleHelpText => SelectedScheduleKind switch
+    {
+        ScheduleEntryKind.Once => "Run once on the selected date and time.",
+        ScheduleEntryKind.Hourly => "Run every hour at the selected minute.",
+        ScheduleEntryKind.Daily => "Run every day at the selected time.",
+        ScheduleEntryKind.Weekly => "Run every week on the selected day and time.",
+        ScheduleEntryKind.Monthly => "Run every month on the selected day and time.",
+        _ => string.Empty,
+    };
 
     public ScheduleEditorViewModel(
         ScheduleSettingsService scheduleSettingsService,
@@ -123,8 +168,12 @@ public partial class ScheduleEditorViewModel : ObservableObject
     [RelayCommand]
     private void AddSchedule()
     {
-        var date = StartDate.Date.Add(StartTime);
-        settings.AddSchedule(SelectedScheduleKind, date);
+        settings.AddSchedule(
+            SelectedScheduleKind,
+            StartDate,
+            StartTime,
+            SelectedWeeklyDay,
+            SelectedMonthlyDay);
         LoadEntries();
     }
 
