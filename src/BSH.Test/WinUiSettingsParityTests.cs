@@ -58,11 +58,11 @@ public class WinUiSettingsParityTests
 
         viewModel.OnNavigatedTo(null!);
         viewModel.AddCompressionExclusion("7z");
-        viewModel.SelectedCompressionExclusion = "zip";
+        viewModel.SelectedCompressionExclusion = ".zip";
         viewModel.RemoveCompressionExclusionCommand.Execute(null);
 
-        Assert.That(viewModel.CompressionExclusions, Is.EquivalentTo(new[] { "rar", "7z" }));
-        Assert.That(configuration.ExcludeCompression, Is.EqualTo("rar|7z"));
+        Assert.That(viewModel.CompressionExclusions, Is.EquivalentTo(new[] { ".rar", ".7z" }));
+        Assert.That(configuration.ExcludeCompression, Is.EqualTo(".rar|.7z"));
     }
 
     [Test]

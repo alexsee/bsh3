@@ -296,10 +296,13 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         );
     }
 
-    async partial void OnSelectedMediaTypeChanging(MediaType oldValue, MediaType newValue)
+    public async Task ChangeSelectedMediaTypeAsync(MediaType newValue)
     {
-        if (oldValue == MediaType.Unset) return;
-        if (oldValue == newValue) return;
+        var oldValue = SelectedMediaType;
+        if (oldValue == MediaType.Unset || oldValue == newValue)
+        {
+            return;
+        }
 
         var result = await this.presentationController.ShowMessageBoxAsync(
             "MsgBox_MediaType_Change_Title".GetLocalized(),
@@ -310,31 +313,27 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             ]
         );
 
-        // run the task
-        if (result == ContentDialogResult.Primary)
+        if (result != ContentDialogResult.Primary)
         {
-            // add remove all backups logic
-            var versions = this.queryManager.GetVersions().Select(x => x.Id).ToList();
-            await this.jobService.DeleteBackupsAsync(versions);
-            this.configurationManager.MediumType = newValue;
+            return;
+        }
 
-            // update UI
-            if (newValue == MediaType.LocalDevice)
-            {
-                this.FtpRemoteVisibility = Visibility.Collapsed;
-                this.LocalDeviceVisibility = Visibility.Visible;
-            }
-            else
-            {
-                this.FtpRemoteVisibility = Visibility.Visible;
-                this.LocalDeviceVisibility = Visibility.Collapsed;
-            }
+        var versions = this.queryManager.GetVersions().Select(x => x.Id).ToList();
+        await this.jobService.DeleteBackupsAsync(versions);
+
+        SelectedMediaType = newValue;
+        this.configurationManager.MediumType = newValue;
+
+        if (newValue == MediaType.LocalDevice)
+        {
+            this.FtpRemoteVisibility = Visibility.Collapsed;
+            this.LocalDeviceVisibility = Visibility.Visible;
         }
         else
         {
-            SelectedMediaType = oldValue;
+            this.FtpRemoteVisibility = Visibility.Visible;
+            this.LocalDeviceVisibility = Visibility.Collapsed;
         }
-
     }
 
     partial void OnLocalUNCUserChanged(string? oldValue, string newValue)
@@ -538,7 +537,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     private static string NormalizeExtension(string? extension)
     {
-        return (extension ?? string.Empty).Trim().TrimStart('*').TrimStart('.').ToLowerInvariant();
+        var normalized = (extension ?? string.Empty).Trim().TrimStart('*').TrimStart('.').ToLowerInvariant();
+        return string.IsNullOrEmpty(normalized) ? string.Empty : "." + normalized;
     }
 
     partial void OnWaitForDeviceChanged(bool oldValue, bool newValue)
@@ -548,13 +548,18 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.configurationManager.ShowWaitOnMediaAutoBackups = newValue ? "1" : "0";
     }
 
-    async partial void OnModeTypeChanging(ModeType oldValue, ModeType newValue)
+    [RelayCommand]
+    public async Task ChangeModeTypeAsync(ModeType newValue)
     {
-        if (oldValue == ModeType.Unset) return;
-        if (oldValue == newValue) return;
+        var oldValue = ModeType;
+        if (oldValue == ModeType.Unset || oldValue == newValue)
+        {
+            return;
+        }
 
         if (newValue == ModeType.Compression)
         {
+            ModeType = newValue;
             this.configurationManager.Compression = 1;
             this.configurationManager.Encrypt = 0;
         }
@@ -564,15 +569,16 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             var (password, _) = await presentationController.RequestPasswordAsync();
             if (password == null)
             {
-                ModeType = oldValue;
                 return;
             }
 
+            ModeType = newValue;
             this.configurationManager.EncryptPassMD5 = Hash.GetMD5Hash(password);
             this.configurationManager.Encrypt = 1;
         }
         else
         {
+            ModeType = newValue;
             this.configurationManager.Compression = 0;
             this.configurationManager.Encrypt = 0;
         }

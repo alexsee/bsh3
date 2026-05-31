@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using BSH.MainApp.ViewModels;
+using Brightbits.BSH.Engine;
 using Microsoft.UI.Xaml.Controls;
 
 namespace BSH.MainApp.Views.SettingsPages;
@@ -13,5 +14,18 @@ public sealed partial class TargetSettingsPage : Page
     public TargetSettingsPage()
     {
         this.InitializeComponent();
+    }
+
+    private async void MediaTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (DataContext is not SettingsViewModel viewModel ||
+            MediaTypeComboBox.SelectedItem is not MediaType mediaType ||
+            mediaType == viewModel.SelectedMediaType)
+        {
+            return;
+        }
+
+        await viewModel.ChangeSelectedMediaTypeAsync(mediaType);
+        MediaTypeComboBox.SelectedItem = viewModel.SelectedMediaType;
     }
 }

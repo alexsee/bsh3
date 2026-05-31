@@ -38,9 +38,11 @@
                     <!-- target type selection -->
                     <StackPanel Orientation="Horizontal" Spacing="20">
                         <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Text="Backup storage:" />
-                        <ComboBox VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="300"
+                        <ComboBox x:Name="MediaTypeComboBox"
+                            VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="300"
                             ItemsSource="{Binding MediaTypes}"
-                            SelectedItem="{Binding SelectedMediaType, Mode=TwoWay}">
+                            SelectedItem="{Binding SelectedMediaType, Mode=OneWay}"
+                            SelectionChanged="MediaTypeComboBox_SelectionChanged">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate x:DataType="engine:MediaType">
                                     <TextBlock Text="{x:Bind viewmodels:SettingsViewModel.GetMediaTypeDisplayName((engine:MediaType))}" />
