@@ -30,6 +30,6 @@ public interface IQueryManager
     Task<VersionDetails> GetVersionByIdAsync(string id);
     List<VersionDetails> GetVersions(bool desc = true);
     Task<List<FileTableRow>> GetVersionsByFileAsync(string fileName, string filePath);
-    Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int? limit = 500);
+    Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500);
     Task<bool> HasChangesOrNewAsync(string path, string versionId);
 }
