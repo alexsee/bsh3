@@ -38,6 +38,7 @@
                 <SelectorBarItem x:Name="FilesItem" Text="Files" />
                 <SelectorBarItem x:Name="FoldersItem" Text="Folders" />
                 <SelectorBarItem x:Name="FileTypesItem" Text="File types" />
+                <SelectorBarItem x:Name="MaxFileSizeItem" Text="Max file size" />
                 <SelectorBarItem x:Name="RegexItem" Text="Regular expressions" />
             </SelectorBar>
 

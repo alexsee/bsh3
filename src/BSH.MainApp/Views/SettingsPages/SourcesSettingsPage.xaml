@@ -48,6 +48,7 @@
                             <Grid Height="250">
                                 <Grid.RowDefinitions>
                                     <RowDefinition />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="40" />
                                 </Grid.RowDefinitions>
 
@@ -62,7 +63,12 @@
                                     </ListView.HeaderTemplate>
                                 </ListView>
 
-                                <Grid Grid.Row="1">
+                                <TextBlock Grid.Row="1"
+                                           Foreground="Red"
+                                           Text="{Binding SourceValidationErrorMessage}"
+                                           TextWrapping="Wrap" />
+
+                                <Grid Grid.Row="2">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition />

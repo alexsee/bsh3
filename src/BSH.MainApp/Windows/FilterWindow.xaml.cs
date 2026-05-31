@@ -54,6 +54,10 @@ public sealed partial class FilterWindow : WindowEx
         {
             pageType = typeof(Views.FilterPages.ExcludeFileTypesPage);
         }
+        else if (ReferenceEquals(selected, MaxFileSizeItem))
+        {
+            pageType = typeof(Views.FilterPages.ExcludeMaxFileSizePage);
+        }
         else
         {
             pageType = typeof(Views.FilterPages.ExcludeRegexPage);
