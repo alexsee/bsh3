@@ -56,11 +56,13 @@ public class JobService : IJobService, IDisposable
         this.jobRuntime = new JobRuntime(
             backupService,
             () => this.statusService.IsTaskRunning(),
-            () => this.configurationManager.Medium == "1",
+            silent => this.configurationManager.Medium == "1" &&
+                (!silent || this.configurationManager.ShowWaitOnMediaAutoBackups == "1"),
             async (_, silent, cancellationTokenSource) =>
             {
                 var waitForMediaService = this.waitForMediaServiceFactory();
-                return await waitForMediaService.ExecuteAsync(silent, cancellationTokenSource);
+                var suppressPrompt = silent && this.configurationManager.ShowWaitOnMediaAutoBackups != "1";
+                return await waitForMediaService.ExecuteAsync(suppressPrompt, cancellationTokenSource);
             },
             this.RequestPassword);
         this.presenter = new WinUIJobSessionPresenter(this.presentationService, this.statusService, this.Cancel, this.completionActionService);

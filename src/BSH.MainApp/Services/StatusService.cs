@@ -17,6 +17,7 @@ public class StatusService : IJobReport, IStatusService
     private readonly List<IStatusReport> observers = new();
     private readonly IConfigurationManager configurationManager;
     private readonly IPresentationService presentationService;
+    private readonly IAppNotificationService? appNotificationService;
     private RequestOverwriteResult lastFileOverwriteChoice = RequestOverwriteResult.None;
 
     private ActionType lastActionType = ActionType.Check;
@@ -63,10 +64,14 @@ public class StatusService : IJobReport, IStatusService
 
     public RequestOverwriteResult LastFileOverwriteChoice => lastFileOverwriteChoice;
 
-    public StatusService(IConfigurationManager configurationManager, IPresentationService presentationService)
+    public StatusService(
+        IConfigurationManager configurationManager,
+        IPresentationService presentationService,
+        IAppNotificationService? appNotificationService = null)
     {
         this.configurationManager = configurationManager;
         this.presentationService = presentationService;
+        this.appNotificationService = appNotificationService;
     }
 
     public void Initialize()
@@ -104,16 +109,19 @@ public class StatusService : IJobReport, IStatusService
             x.ReportState(jobState);
         }
 
-        //// finished successfully
-        //if (jobState == JobState.FINISHED && lastActionType == ActionType.Backup && configurationManager.InfoBackupDone == "1")
-        //{
-        //    NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_SUCCESSFUL_TITLE, Resources.INFO_BACKUP_SUCCESSFUL_TEXT, ToolTipIcon.Info);
-        //}
+        if (lastActionType != ActionType.Backup || configurationManager.InfoBackupDone != "1")
+        {
+            return;
+        }
 
-        //if (jobState == JobState.ERROR && lastActionType == ActionType.Backup && configurationManager.InfoBackupDone == "1")
-        //{
-        //    NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_UNSUCCESSFUL_TITLE, Resources.INFO_BACKUP_UNSUCCESSFUL_TEXT, ToolTipIcon.Warning);
-        //}
+        if (jobState == JobState.FINISHED)
+        {
+            ShowNotification("Backup successful", "Planned backup was performed successfully.");
+        }
+        else if (jobState == JobState.ERROR)
+        {
+            ShowNotification("Backup with errors finished", "The planned backup was ended with problems. Click here for more information.");
+        }
     }
 
     public void ReportStatus(string title, string text)
@@ -185,5 +193,10 @@ public class StatusService : IJobReport, IStatusService
     public async Task RequestShowErrorInsufficientDiskSpaceAsync()
     {
         await this.presentationService.ShowErrorInsufficientDiskSpaceAsync();
+    }
+
+    private void ShowNotification(string title, string text)
+    {
+        appNotificationService?.Show(ToastNotificationPayload.Create(title, text));
     }
 }

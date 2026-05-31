@@ -16,7 +16,7 @@ public sealed class JobRuntime : IDisposable
     private readonly ILogger _logger = Log.ForContext<JobRuntime>();
     private readonly IBackupService backupService;
     private readonly Func<bool> isTaskRunning;
-    private readonly Func<bool> shouldWaitForMedia;
+    private readonly Func<bool, bool> shouldWaitForMedia;
     private readonly Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync;
     private readonly Func<Task<bool>> requestPasswordAsync;
     private readonly object cancellationTokenSync = new();
@@ -39,6 +39,21 @@ public sealed class JobRuntime : IDisposable
         IBackupService backupService,
         Func<bool> isTaskRunning,
         Func<bool> shouldWaitForMedia,
+        Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync,
+        Func<Task<bool>> requestPasswordAsync)
+        : this(
+            backupService,
+            isTaskRunning,
+            silent => shouldWaitForMedia() && !silent,
+            waitForMediaAsync,
+            requestPasswordAsync)
+    {
+    }
+
+    public JobRuntime(
+        IBackupService backupService,
+        Func<bool> isTaskRunning,
+        Func<bool, bool> shouldWaitForMedia,
         Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync,
         Func<Task<bool>> requestPasswordAsync)
     {
@@ -102,7 +117,7 @@ public sealed class JobRuntime : IDisposable
             return true;
         }
 
-        if (shouldWaitForMedia() && !silent)
+        if (shouldWaitForMedia(silent))
         {
             return await waitForMediaAsync(action, silent, cts);
         }
