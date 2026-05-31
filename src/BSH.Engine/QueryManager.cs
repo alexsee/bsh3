@@ -480,7 +480,7 @@ public class QueryManager : IQueryManager
         return result;
     }
 
-    public async Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm)
+    public async Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500)
     {
         var result = new List<FileTableRow>();
 
@@ -493,7 +493,8 @@ public class QueryManager : IQueryManager
         {
             var parameters = new (string, object)[] {
                 ("versionID", version),
-                ("searchTerm", "%" + searchTerm + "%")
+                ("searchTerm", "%" + searchTerm + "%"),
+                ("limit", limit)
             };
 
             using var reader = await dbClient.ExecuteDataReaderAsync(
@@ -519,7 +520,7 @@ public class QueryManager : IQueryManager
                 "WHERE filelink.versionID = @versionID " +
                 "AND (filetable.fileName LIKE @searchTerm OR filetable.filePath LIKE @searchTerm) " +
                 "ORDER BY filetable.filePath, filetable.fileName " +
-                "LIMIT 500",
+                "LIMIT @limit",
                 parameters);
             while (await reader.ReadAsync())
             {
