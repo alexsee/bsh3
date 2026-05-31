@@ -223,14 +223,6 @@
                             Command="{x:Bind ViewModel.RestoreFileCommand}" 
                             Icon="Copy" 
                             Label="Restore" />
-                            <AppBarButton
-                            Command="{x:Bind ViewModel.NavigateToPreviousVersionCommand}"
-                            Icon="Back"
-                            Label="Previous version" />
-                            <AppBarButton
-                            Command="{x:Bind ViewModel.NavigateToNextVersionCommand}"
-                            Icon="Forward"
-                            Label="Next version" />
                             <AppBarSeparator />
                             <AppBarButton 
                             Command="{x:Bind ViewModel.ShowFilePreviewCommand}" 
