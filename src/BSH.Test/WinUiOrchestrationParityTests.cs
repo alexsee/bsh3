@@ -53,6 +53,65 @@ public class WinUiOrchestrationParityTests
     }
 
     [Test]
+    public async Task StartAsyncMonitorsPowerAndStopsAutomationWhenPowerIsDisconnected()
+    {
+        var powerStatusService = new TestPowerStatusService { HasBattery = true };
+        var statusService = new TestStatusService();
+        var scheduledBackupService = new TestScheduledBackupService();
+        var service = new OrchestrationService(
+            new TestConfigurationManager
+            {
+                IsConfigured = "1",
+                DbStatus = "0",
+                DeativateAutoBackupsWhenAkku = "1",
+                TaskType = TaskType.Auto
+            },
+            statusService,
+            scheduledBackupService,
+            new TestQueryManager(),
+            new TestNotificationService(),
+            powerStatusService);
+
+        await service.StartAsync();
+        powerStatusService.SetIsRunningOnBattery(true);
+
+        Assert.That(powerStatusService.StartMonitoringCalls, Is.EqualTo(1));
+        Assert.That(scheduledBackupService.StopCalls, Is.EqualTo(1));
+        Assert.That(statusService.SystemStatus, Is.EqualTo(SystemStatus.DEACTIVATED));
+    }
+
+    [Test]
+    public async Task StartAsyncMonitorsPowerAndRestartsAutomationWhenPowerIsReconnected()
+    {
+        var powerStatusService = new TestPowerStatusService
+        {
+            HasBattery = true,
+            IsRunningOnBattery = true
+        };
+        var statusService = new TestStatusService();
+        var scheduledBackupService = new TestScheduledBackupService();
+        var service = new OrchestrationService(
+            new TestConfigurationManager
+            {
+                IsConfigured = "1",
+                DbStatus = "0",
+                DeativateAutoBackupsWhenAkku = "1",
+                TaskType = TaskType.Auto
+            },
+            statusService,
+            scheduledBackupService,
+            new TestQueryManager(),
+            new TestNotificationService(),
+            powerStatusService);
+
+        await service.StartAsync();
+        powerStatusService.SetIsRunningOnBattery(false);
+
+        Assert.That(scheduledBackupService.StartCalls, Is.EqualTo(1));
+        Assert.That(statusService.SystemStatus, Is.EqualTo(SystemStatus.ACTIVATED));
+    }
+
+    [Test]
     public async Task StartAsyncShowsLowDiskSpaceNotificationWhenConfigured()
     {
         var configurationManager = new TestConfigurationManager
@@ -256,7 +315,36 @@ public class WinUiOrchestrationParityTests
 
     private sealed class TestPowerStatusService : IPowerStatusService
     {
+        private EventHandler? powerStatusChanged;
+
+        public bool HasBattery { get; set; }
         public bool IsRunningOnBattery { get; set; }
+        public int StartMonitoringCalls { get; private set; }
+        public int StopMonitoringCalls { get; private set; }
+
+        public void StartPowerStatusMonitoring(EventHandler powerStatusChanged)
+        {
+            this.powerStatusChanged -= powerStatusChanged;
+            this.powerStatusChanged += powerStatusChanged;
+            StartMonitoringCalls++;
+        }
+
+        public void StopPowerStatusMonitoring(EventHandler powerStatusChanged)
+        {
+            this.powerStatusChanged -= powerStatusChanged;
+            StopMonitoringCalls++;
+        }
+
+        public void SetIsRunningOnBattery(bool isRunningOnBattery)
+        {
+            if (IsRunningOnBattery == isRunningOnBattery)
+            {
+                return;
+            }
+
+            IsRunningOnBattery = isRunningOnBattery;
+            powerStatusChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private sealed class TestNotificationService : IAppNotificationService

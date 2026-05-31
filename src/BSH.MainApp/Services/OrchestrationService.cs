@@ -57,6 +57,7 @@ public class OrchestrationService : IOrchestrationService
 
             // report system start
             statusService.SetSystemStatus(SystemStatus.ACTIVATED);
+            UpdatePowerStatusMonitoring();
 
             if (ShouldPauseForBattery())
             {
@@ -96,6 +97,10 @@ public class OrchestrationService : IOrchestrationService
 
         // stop all services
         scheduledBackupService.Stop();
+        if (turnOff)
+        {
+            StopPowerStatusMonitoring();
+        }
 
         // set status to deactivated
         statusService.SetSystemStatus(SystemStatus.DEACTIVATED);
@@ -113,6 +118,46 @@ public class OrchestrationService : IOrchestrationService
     {
         return configurationManager.DeativateAutoBackupsWhenAkku == "1" &&
             powerStatusService.IsRunningOnBattery;
+    }
+
+    private void UpdatePowerStatusMonitoring()
+    {
+        if (configurationManager.DeativateAutoBackupsWhenAkku == "1")
+        {
+            StartPowerStatusMonitoring();
+        }
+        else
+        {
+            StopPowerStatusMonitoring();
+        }
+    }
+
+    private void StartPowerStatusMonitoring()
+    {
+        powerStatusService.StartPowerStatusMonitoring(OnPowerStatusChanged);
+    }
+
+    private void StopPowerStatusMonitoring()
+    {
+        powerStatusService.StopPowerStatusMonitoring(OnPowerStatusChanged);
+    }
+
+    private async void OnPowerStatusChanged(object? sender, EventArgs e)
+    {
+        if (configurationManager.DeativateAutoBackupsWhenAkku != "1")
+        {
+            StopPowerStatusMonitoring();
+            return;
+        }
+
+        if (powerStatusService.IsRunningOnBattery)
+        {
+            await StopAsync();
+        }
+        else
+        {
+            await StartAsync();
+        }
     }
 
     private void CheckFreeDiskSpaceNotification()

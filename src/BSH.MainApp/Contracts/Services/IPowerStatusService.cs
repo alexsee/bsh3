@@ -5,8 +5,17 @@ namespace BSH.MainApp.Contracts.Services;
 
 public interface IPowerStatusService
 {
+    bool HasBattery
+    {
+        get;
+    }
+
     bool IsRunningOnBattery
     {
         get;
     }
+
+    void StartPowerStatusMonitoring(EventHandler powerStatusChanged);
+
+    void StopPowerStatusMonitoring(EventHandler powerStatusChanged);
 }
