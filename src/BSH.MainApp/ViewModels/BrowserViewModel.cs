@@ -21,6 +21,9 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private readonly IJobService jobService;
     private readonly IBackupService backupService;
     private readonly IPresentationService presentationService;
+    private BrowserContentMode contentMode = BrowserContentMode.Folder;
+    private long contentRequestId;
+    private bool suppressSearchTermsChanged;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
@@ -38,7 +41,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private string? currentFavorite;
 
     [ObservableProperty]
-    private string searchTerms;
+    private string searchTerms = string.Empty;
 
     [ObservableProperty]
     private bool toggleInfoPane = false;
@@ -62,11 +65,42 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         this.presentationService = presentationService;
     }
 
-    private bool CanUpFolder() => CurrentFolderPath.Count > 1;
+    private bool CanUpFolder() => contentMode == BrowserContentMode.Folder && CurrentFolderPath.Count > 1;
     private bool HasFileOrFolderSelected() => CurrentItem != null && CurrentVersion != null;
-    private bool CanRestoreAll() => CurrentVersion != null && CurrentFolderPath.Count > 0;
+    private bool CanRestoreAll() => contentMode == BrowserContentMode.Folder && CurrentVersion != null && CurrentFolderPath.Count > 0;
     private bool HasVersionSelected() => CurrentVersion != null;
     private bool HasFileSelected() => CurrentItem != null && CurrentItem.IsFile;
+
+    partial void OnSearchTermsChanged(string value)
+    {
+        if (suppressSearchTermsChanged)
+        {
+            return;
+        }
+
+        _ = ApplySearchTermsAsync(value);
+    }
+
+    private async Task ApplySearchTermsAsync(string value)
+    {
+        if (CurrentVersion == null)
+        {
+            return;
+        }
+
+        var requestId = BeginContentRequest();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            if (CurrentFolderPath.Count > 0)
+            {
+                await LoadFolderAsync(CurrentVersion.Id, CurrentFolderPath[^1].FullPath, requestId);
+            }
+
+            return;
+        }
+
+        await LoadSearchResultsAsync(CurrentVersion.Id, value, requestId);
+    }
 
     [RelayCommand(CanExecute = nameof(HasVersionSelected))]
     private async Task LoadVersion()
@@ -84,7 +118,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         sources.ForEach(Favorites.Add);
         CurrentFavorite = sources[0];
 
-        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite);
+        ClearSearchTerms();
+        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite, BeginContentRequest());
     }
 
     [RelayCommand]
@@ -95,7 +130,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite);
+        ClearSearchTerms();
+        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite, BeginContentRequest());
     }
 
     [RelayCommand(CanExecute = nameof(HasVersionSelected))]
@@ -107,7 +143,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
 
         // load folder
-        await LoadFolderAsync(CurrentVersion.Id, CurrentItem.FullPath);
+        ClearSearchTerms();
+        await LoadFolderAsync(CurrentVersion.Id, CurrentItem.FullPath, BeginContentRequest());
     }
 
     [RelayCommand(CanExecute = nameof(CanUpFolder))]
@@ -119,7 +156,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
 
         // load parent folder
-        await LoadFolderAsync(CurrentVersion.Id, CurrentFolderPath[^2].FullPath);
+        ClearSearchTerms();
+        await LoadFolderAsync(CurrentVersion.Id, CurrentFolderPath[^2].FullPath, BeginContentRequest());
     }
 
     [RelayCommand]
@@ -133,13 +171,23 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         var favorite = CurrentFavorite;
         var versionId = CurrentVersion.Id;
         var currentFolder = CurrentFolderPath[^1].FullPath;
+        var searchTerms = SearchTerms;
+        var wasSearching = contentMode == BrowserContentMode.Search && !string.IsNullOrWhiteSpace(searchTerms);
 
         LoadVersions();
 
         CurrentVersion = Versions.First(x => x.Id == versionId);
         CurrentFavorite = favorite;
 
-        await LoadFolderAsync(CurrentVersion.Id, currentFolder);
+        var requestId = BeginContentRequest();
+        if (wasSearching)
+        {
+            await LoadSearchResultsAsync(CurrentVersion.Id, searchTerms, requestId);
+        }
+        else
+        {
+            await LoadFolderAsync(CurrentVersion.Id, currentFolder, requestId);
+        }
     }
 
     [RelayCommand]
@@ -150,7 +198,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        await LoadFolderAsync(CurrentVersion.Id, selectedItem.FullPath);
+        ClearSearchTerms();
+        await LoadFolderAsync(CurrentVersion.Id, selectedItem.FullPath, BeginContentRequest());
     }
 
     [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
@@ -187,7 +236,16 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
     private async Task ShowFileProperties()
     {
-        throw new NotImplementedException();
+        if (CurrentItem == null || CurrentVersion == null)
+        {
+            return;
+        }
+
+        var fileDetails = await queryManager.GetFileDetailsAsync(CurrentVersion.Id, CurrentItem.Name, CurrentItem.FullPath);
+        if (fileDetails != null)
+        {
+            await presentationService.ShowFileDetailsAsync(fileDetails);
+        }
     }
 
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
@@ -274,16 +332,17 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         backupVersions.ForEach(Versions.Add);
     }
 
-    private async Task LoadFolderAsync(string version, string path)
+    private async Task LoadFolderAsync(string version, string path, long requestId)
     {
         var rootSplit = path.Split("\\", StringSplitOptions.RemoveEmptyEntries);
 
-        CurrentFolderPath.Clear();
+        var folderPath = new List<FileOrFolderItem>();
         for (var i = 0; i < rootSplit.Length; i++)
         {
-            CurrentFolderPath.Add(new FileOrFolderItem()
+            folderPath.Add(new FileOrFolderItem()
             {
                 Name = rootSplit[i],
+                DisplayName = rootSplit[i],
                 FullPath = string.Join("\\", rootSplit[0..(i + 1)])
             });
         }
@@ -298,6 +357,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             .Select(x => new FileOrFolderItem()
             {
                 Name = x[(x.LastIndexOf("\\") + 1)..],
+                DisplayName = x[(x.LastIndexOf("\\") + 1)..],
                 FullPath = x
             })
             .ToList();
@@ -307,6 +367,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             .Select(x => new FileOrFolderItem()
             {
                 Name = x.FileName,
+                DisplayName = x.FileName,
                 FullPath = x.FilePath,
                 IsFile = true,
                 FileNameOnDrive = x.FileName,
@@ -323,15 +384,84 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             file.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive, 64);
         }
 
-        // merge lists
-        Items.Clear();
-        folderList.ForEach(Items.Add);
-        fileList.ForEach(Items.Add);
+        if (!IsCurrentContentRequest(requestId))
+        {
+            return;
+        }
 
-        // notify UI about potential changes
+        contentMode = BrowserContentMode.Folder;
+        CurrentItem = null;
+        CurrentFolderPath.Clear();
+        folderPath.ForEach(CurrentFolderPath.Add);
+        ReplaceItems(folderList.Concat(fileList));
+        NotifyContentCommandsChanged();
+    }
+
+    private async Task LoadSearchResultsAsync(string version, string searchTerms, long requestId)
+    {
+        var fileList = (await queryManager.SearchFilesByVersionAsync(version, searchTerms))
+            .Select(x => new FileOrFolderItem()
+            {
+                Name = x.FileName,
+                DisplayName = $"{x.FileName} - {x.FilePath.Trim('\\')}",
+                FullPath = x.FilePath,
+                IsFile = true,
+                FileNameOnDrive = x.FileName,
+
+                FileDateModified = x.FileDateModified,
+                FileDateCreated = x.FileDateCreated,
+                FileSize = x.FileSize
+            })
+            .ToList();
+
+        foreach (var file in fileList)
+        {
+            file.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive);
+            file.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive, 64);
+        }
+
+        if (!IsCurrentContentRequest(requestId))
+        {
+            return;
+        }
+
+        contentMode = BrowserContentMode.Search;
+        CurrentItem = null;
+        ReplaceItems(fileList);
+        NotifyContentCommandsChanged();
+    }
+
+    private long BeginContentRequest() => Interlocked.Increment(ref contentRequestId);
+
+    private bool IsCurrentContentRequest(long requestId) => Interlocked.Read(ref contentRequestId) == requestId;
+
+    private void ClearSearchTerms()
+    {
+        if (SearchTerms.Length == 0)
+        {
+            return;
+        }
+
+        suppressSearchTermsChanged = true;
+        SearchTerms = string.Empty;
+        suppressSearchTermsChanged = false;
+    }
+
+    private void ReplaceItems(IEnumerable<FileOrFolderItem> items)
+    {
+        Items.Clear();
+        foreach (var item in items)
+        {
+            Items.Add(item);
+        }
+    }
+
+    private void NotifyContentCommandsChanged()
+    {
         LoadVersionCommand.NotifyCanExecuteChanged();
         LoadFolderCommand.NotifyCanExecuteChanged();
         UpFolderCommand.NotifyCanExecuteChanged();
+        RestoreAllCommand.NotifyCanExecuteChanged();
     }
 
     public async void OnNavigatedTo(object parameter)
@@ -348,5 +478,11 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     public void OnNavigatedFrom()
     {
         FileSystemIconHelpers.ClearIconCache();
+    }
+
+    private enum BrowserContentMode
+    {
+        Folder,
+        Search
     }
 }
