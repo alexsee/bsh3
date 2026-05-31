@@ -10,7 +10,7 @@ public class EnumComparisonConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return Equals(value, parameter);
+        return ((int)value).Equals(parameter);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
