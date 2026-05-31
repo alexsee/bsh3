@@ -25,6 +25,12 @@ jobs:
     environment: sonarcloud
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+
     - name: Set up JDK 17
       uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
       with:
@@ -35,12 +41,8 @@ jobs:
       uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
       with:
         dotnet-version: 10.0.300
-
-    - name: Checkout
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      with:
-        fetch-depth: 0
-        persist-credentials: false
+        cache: true
+        cache-dependency-path: src/**/packages.lock.json
 
     - name: Install SonarCloud scanner
       run: |
@@ -55,14 +57,18 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       working-directory: ./src
 
+    - name: Restore dependencies
+      run: dotnet restore "Backup Service Home 3.sln" --locked-mode -a x64
+      working-directory: ./src
+
     - name: Build application
       run: |
-        dotnet build --configuration Release
+        dotnet build "Backup Service Home 3.sln" --configuration Release --no-restore -p:Platform=x64
       working-directory: ./src
 
     - name: Test application and collect coverage
       run: |
-        dotnet-coverage collect 'dotnet test' -f xml -o 'coverage.xml'
+        dotnet-coverage collect 'dotnet test "Backup Service Home 3.sln" --configuration Release --no-build --no-restore -p:Platform=x64' -f xml -o 'coverage.xml'
       working-directory: ./src
 
     - name: Finish the sonar cloud scanner

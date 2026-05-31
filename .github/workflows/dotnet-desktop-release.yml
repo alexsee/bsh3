@@ -30,20 +30,26 @@ jobs:
       env:
         REF_NAME: ${{ github.ref_name }}
 
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
-      with:
-        dotnet-version: 10.0.300
-
     - name: Checkout
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       with:
         fetch-depth: 0
         persist-credentials: false
 
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+      with:
+        dotnet-version: 10.0.300
+        cache: true
+        cache-dependency-path: src/**/packages.lock.json
+
+    - name: Restore dependencies
+      run: dotnet restore "Backup Service Home 3.sln" --locked-mode -a x64
+      working-directory: ./src
+
     - name: Build the application
       run: |
-        dotnet publish -c Release -o ../output -a x64 --self-contained /p:Version=$env:BUILD_VERSION /p:FileVersion=$env:INFO_VERSION
+        dotnet publish -c Release -o ../output -a x64 --self-contained --no-restore /p:Version=$env:BUILD_VERSION /p:FileVersion=$env:INFO_VERSION
         rm -R ../output/*.pdb
       working-directory: ./src
 
