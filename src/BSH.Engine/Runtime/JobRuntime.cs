@@ -16,8 +16,8 @@ public sealed class JobRuntime : IDisposable
     private readonly ILogger _logger = Log.ForContext<JobRuntime>();
     private readonly IBackupService backupService;
     private readonly Func<bool> isTaskRunning;
-    private readonly Func<bool, bool> shouldWaitForMedia;
-    private readonly Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync;
+    private readonly Func<bool, MediaWaitMode> selectMediaWaitMode;
+    private readonly Func<ActionType, MediaWaitMode, CancellationTokenSource, Task<bool>> waitForMediaAsync;
     private readonly Func<Task<bool>> requestPasswordAsync;
     private readonly object cancellationTokenSync = new();
     private CancellationTokenSource cancellationTokenSource;
@@ -44,8 +44,8 @@ public sealed class JobRuntime : IDisposable
         : this(
             backupService,
             isTaskRunning,
-            silent => shouldWaitForMedia() && !silent,
-            waitForMediaAsync,
+            silent => shouldWaitForMedia() && !silent ? MediaWaitMode.PromptUser : MediaWaitMode.None,
+            (action, mode, cancellationTokenSource) => waitForMediaAsync(action, mode == MediaWaitMode.SilentPolling, cancellationTokenSource),
             requestPasswordAsync)
     {
     }
@@ -56,16 +56,39 @@ public sealed class JobRuntime : IDisposable
         Func<bool, bool> shouldWaitForMedia,
         Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync,
         Func<Task<bool>> requestPasswordAsync)
+        : this(
+            backupService,
+            isTaskRunning,
+            silent =>
+            {
+                if (!shouldWaitForMedia(silent))
+                {
+                    return MediaWaitMode.None;
+                }
+
+                return silent ? MediaWaitMode.SilentPolling : MediaWaitMode.PromptUser;
+            },
+            (action, mode, cancellationTokenSource) => waitForMediaAsync(action, mode == MediaWaitMode.SilentPolling, cancellationTokenSource),
+            requestPasswordAsync)
+    {
+    }
+
+    public JobRuntime(
+        IBackupService backupService,
+        Func<bool> isTaskRunning,
+        Func<bool, MediaWaitMode> selectMediaWaitMode,
+        Func<ActionType, MediaWaitMode, CancellationTokenSource, Task<bool>> waitForMediaAsync,
+        Func<Task<bool>> requestPasswordAsync)
     {
         ArgumentNullException.ThrowIfNull(backupService);
         ArgumentNullException.ThrowIfNull(isTaskRunning);
-        ArgumentNullException.ThrowIfNull(shouldWaitForMedia);
+        ArgumentNullException.ThrowIfNull(selectMediaWaitMode);
         ArgumentNullException.ThrowIfNull(waitForMediaAsync);
         ArgumentNullException.ThrowIfNull(requestPasswordAsync);
 
         this.backupService = backupService;
         this.isTaskRunning = isTaskRunning;
-        this.shouldWaitForMedia = shouldWaitForMedia;
+        this.selectMediaWaitMode = selectMediaWaitMode;
         this.waitForMediaAsync = waitForMediaAsync;
         this.requestPasswordAsync = requestPasswordAsync;
 
@@ -117,9 +140,10 @@ public sealed class JobRuntime : IDisposable
             return true;
         }
 
-        if (shouldWaitForMedia(silent))
+        var waitMode = selectMediaWaitMode(silent);
+        if (waitMode != MediaWaitMode.None)
         {
-            return await waitForMediaAsync(action, silent, cts);
+            return await waitForMediaAsync(action, waitMode, cts);
         }
 
         return false;

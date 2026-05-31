@@ -19,6 +19,7 @@ using BSH.MainApp.Models;
 using BSH.MainApp.Services;
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
+using Windows.System.Power;
 using Windows.UI.Popups;
 
 namespace BSH.Test;
@@ -132,9 +133,10 @@ public class WinUiOrchestrationParityTests
         var runtime = new JobRuntime(
             new TestBackupService { IsMediaAvailable = false },
             () => false,
-            silent => silent,
-            async (_, _, cancellationTokenSource) =>
+            silent => silent ? MediaWaitMode.PromptUser : MediaWaitMode.None,
+            async (_, waitMode, cancellationTokenSource) =>
             {
+                Assert.That(waitMode, Is.EqualTo(MediaWaitMode.PromptUser));
                 waitWasRequested = true;
                 cancellationTokenSource.Cancel();
                 await Task.Yield();
@@ -147,6 +149,15 @@ public class WinUiOrchestrationParityTests
         Assert.That(result, Is.False);
         Assert.That(waitWasRequested, Is.True);
         Assert.That(runtime.IsCancellationRequested, Is.True);
+    }
+
+    [TestCase(BatteryStatus.Discharging, PowerSupplyStatus.NotPresent, true)]
+    [TestCase(BatteryStatus.Idle, PowerSupplyStatus.NotPresent, true)]
+    [TestCase(BatteryStatus.Charging, PowerSupplyStatus.Adequate, false)]
+    [TestCase(BatteryStatus.NotPresent, PowerSupplyStatus.NotPresent, false)]
+    public void PowerStatusServiceDetectsBatteryMode(BatteryStatus batteryStatus, PowerSupplyStatus powerSupplyStatus, bool expected)
+    {
+        Assert.That(PowerStatusService.DetermineIsRunningOnBattery(batteryStatus, powerSupplyStatus), Is.EqualTo(expected));
     }
 
     private sealed class TestConfigurationManager : IConfigurationManager

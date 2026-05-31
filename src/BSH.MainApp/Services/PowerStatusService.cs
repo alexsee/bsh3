@@ -14,12 +14,24 @@ public class PowerStatusService : IPowerStatusService
         {
             try
             {
-                return PowerManager.PowerSupplyStatus == PowerSupplyStatus.Inadequate;
+                return DetermineIsRunningOnBattery(PowerManager.BatteryStatus, PowerManager.PowerSupplyStatus);
             }
             catch
             {
                 return false;
             }
         }
+    }
+
+    public static bool DetermineIsRunningOnBattery(BatteryStatus batteryStatus, PowerSupplyStatus powerSupplyStatus)
+    {
+        if (batteryStatus == BatteryStatus.NotPresent)
+        {
+            return false;
+        }
+
+        return batteryStatus == BatteryStatus.Discharging ||
+            powerSupplyStatus == PowerSupplyStatus.NotPresent ||
+            powerSupplyStatus == PowerSupplyStatus.Inadequate;
     }
 }
