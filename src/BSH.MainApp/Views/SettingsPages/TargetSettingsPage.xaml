@@ -67,7 +67,15 @@
 
                                         <TextBlock Grid.Column="0" Text="Storage path:" />
                                         <TextBox Grid.Column="1" Text="{Binding LocalDevicePath}" IsReadOnly="True" />
-                                        <Button Grid.Column="2" Content="Change" Command="{x:Bind ViewModel.ChangeLocalPathCommand}" />
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <ProgressRing Width="20"
+                                                          Height="20"
+                                                          IsActive="{Binding IsMovingBackupTarget, Mode=OneWay}"
+                                                          Visibility="{Binding BackupTargetMoveProgressVisibility, Mode=OneWay}" />
+                                            <Button Content="Change"
+                                                    Command="{x:Bind ViewModel.ChangeLocalPathCommand}"
+                                                    IsEnabled="{Binding IsBackupTargetChangeEnabled, Mode=OneWay}" />
+                                        </StackPanel>
                                     </Grid>
 
                                     <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Network authentication</TextBlock>

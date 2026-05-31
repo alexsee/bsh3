@@ -13,6 +13,7 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Security;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
+using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
 using BSH.MainApp.ViewModels.Windows;
 using Microsoft.UI.Xaml.Controls;
@@ -54,7 +55,7 @@ public class WinUiSettingsParityTests
         {
             ExcludeCompression = ".zip|rar"
         };
-        var viewModel = new SettingsViewModel(configuration, new TestPresentationService(), new TestJobService(), new TestQueryManager());
+        var viewModel = CreateSettingsViewModel(configuration);
 
         viewModel.OnNavigatedTo(null!);
         viewModel.AddCompressionExclusion("7z");
@@ -72,7 +73,7 @@ public class WinUiSettingsParityTests
         {
             SourceFolder = @"C:\Users\alex\Documents"
         };
-        var viewModel = new SettingsViewModel(configuration, new TestPresentationService(), new TestJobService(), new TestQueryManager());
+        var viewModel = CreateSettingsViewModel(configuration);
 
         viewModel.OnNavigatedTo(null!);
 
@@ -98,7 +99,7 @@ public class WinUiSettingsParityTests
             {
                 BackupFolder = oldPath
             };
-            var viewModel = new SettingsViewModel(configuration, new TestPresentationService(), new TestJobService(), new TestQueryManager());
+            var viewModel = CreateSettingsViewModel(configuration);
 
             await viewModel.MoveExistingLocalBackupDataAsync(newPath);
 
@@ -119,7 +120,7 @@ public class WinUiSettingsParityTests
     public void TargetSettingsPersistFtpAndUncValues()
     {
         var configuration = new TestConfigurationManager();
-        var viewModel = new SettingsViewModel(configuration, new TestPresentationService(), new TestJobService(), new TestQueryManager());
+        var viewModel = CreateSettingsViewModel(configuration);
 
         viewModel.OnNavigatedTo(null!);
 
@@ -192,6 +193,16 @@ public class WinUiSettingsParityTests
         public string UNCUsername { get; set; } = "";
 
         public Task InitializeAsync() => Task.CompletedTask;
+    }
+
+    private static SettingsViewModel CreateSettingsViewModel(TestConfigurationManager configuration)
+    {
+        return new SettingsViewModel(
+            configuration,
+            new TestPresentationService(),
+            new TestJobService(),
+            new TestQueryManager(),
+            new BackupTargetService());
     }
 
     private sealed class TestPresentationService : IPresentationService

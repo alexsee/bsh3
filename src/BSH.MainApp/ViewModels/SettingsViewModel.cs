@@ -33,6 +33,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IPresentationService presentationController;
     private readonly IJobService jobService;
     private readonly IQueryManager queryManager;
+    private readonly IBackupTargetService backupTargetService;
 
     #region Sources Settings
 
@@ -85,18 +86,13 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             return false;
         }
 
-        string fullPath;
-        try
-        {
-            fullPath = Path.GetFullPath(folderPath.Trim()).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        }
-        catch
+        if (!PathRules.TryNormalizeFolderPath(folderPath, out var fullPath))
         {
             SourceValidationErrorMessage = "Selected source folder path is invalid.";
             return false;
         }
 
-        if (IsDriveRoot(fullPath))
+        if (PathRules.IsDriveRoot(fullPath))
         {
             SourceValidationErrorMessage = "Selecting a drive root is risky. Choose a specific folder instead.";
             return false;
@@ -182,6 +178,15 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty]
     private bool ftpRemoteEnforceUnencrypted;
+
+    [ObservableProperty]
+    private bool isMovingBackupTarget;
+
+    [ObservableProperty]
+    private bool isBackupTargetChangeEnabled = true;
+
+    [ObservableProperty]
+    private Visibility backupTargetMoveProgressVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RemoveCompressionExclusionCommand))]
@@ -287,9 +292,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
                 {
                     UseLocalPath(folder.Path);
                 }),
-                new UICommand("MsgBox_LocalPath_Change_Move".GetLocalized(), (x) =>
+                new UICommand("MsgBox_LocalPath_Change_Move".GetLocalized(), async (x) =>
                 {
-                    _ = MoveExistingLocalBackupDataAsync(folder.Path);
+                    await MoveExistingLocalBackupDataAsync(folder.Path);
                 }),
                 new UICommand("MsgBox_Cancel".GetLocalized())
             ]
@@ -424,41 +429,31 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     public async Task MoveExistingLocalBackupDataAsync(string newFolderPath)
     {
-        var oldFolderPath = this.configurationManager.BackupFolder;
-
         try
         {
-            if (IsDriveRoot(newFolderPath))
-            {
-                throw new IOException("Selecting a drive root as backup target is not supported. Choose a specific folder instead.");
-            }
+            IsMovingBackupTarget = true;
+            IsBackupTargetChangeEnabled = false;
+            BackupTargetMoveProgressVisibility = Visibility.Visible;
 
-            if (string.IsNullOrWhiteSpace(oldFolderPath) || string.Equals(oldFolderPath, newFolderPath, StringComparison.OrdinalIgnoreCase))
+            var oldFolderPath = this.configurationManager.BackupFolder;
+            var result = await this.backupTargetService.MoveExistingBackupDataAsync(oldFolderPath, newFolderPath);
+
+            if (result.Success)
             {
                 UseLocalPath(newFolderPath);
                 return;
             }
 
-            if (Directory.Exists(newFolderPath) && Directory.EnumerateFileSystemEntries(newFolderPath).Any())
-            {
-                throw new IOException("The selected target folder already contains files.");
-            }
-
-            Directory.CreateDirectory(Path.GetDirectoryName(newFolderPath) ?? newFolderPath);
-            if (Directory.Exists(newFolderPath))
-            {
-                Directory.Delete(newFolderPath, true);
-            }
-
-            Directory.Move(oldFolderPath, newFolderPath);
-            UseLocalPath(newFolderPath);
-        }
-        catch (Exception ex)
-        {
             await this.presentationController.ShowMessageBoxAsync(
                 "Could not move backup data",
-                ex.Message,
+                result.ErrorMessage ?? "The backup data could not be moved.",
                 [new UICommand("OK")]);
+        }
+        finally
+        {
+            IsMovingBackupTarget = false;
+            IsBackupTargetChangeEnabled = true;
+            BackupTargetMoveProgressVisibility = Visibility.Collapsed;
         }
     }
 
@@ -491,11 +486,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.WaitForDevice = this.configurationManager.ShowWaitOnMediaAutoBackups == "1";
 
         this.CompressionExclusions.Clear();
-        foreach (var entry in (this.configurationManager.ExcludeCompression ?? string.Empty)
-            .Split('|', StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => NormalizeExtension(x))
-            .Where(x => !string.IsNullOrEmpty(x))
-            .Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (var entry in CompressionExclusionFormatter.Parse(this.configurationManager.ExcludeCompression))
         {
             this.CompressionExclusions.Add(entry);
         }
@@ -504,7 +495,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     public void AddCompressionExclusion(string? extension)
     {
-        var normalized = NormalizeExtension(extension);
+        var normalized = CompressionExclusionFormatter.NormalizeExtension(extension);
         if (string.IsNullOrEmpty(normalized) || this.CompressionExclusions.Contains(normalized, StringComparer.OrdinalIgnoreCase))
         {
             return;
@@ -532,13 +523,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     private void SaveCompressionExclusions()
     {
-        this.configurationManager.ExcludeCompression = string.Join("|", this.CompressionExclusions.Select(x => NormalizeExtension(x)).Where(x => !string.IsNullOrEmpty(x)));
-    }
-
-    private static string NormalizeExtension(string? extension)
-    {
-        var normalized = (extension ?? string.Empty).Trim().TrimStart('*').TrimStart('.').ToLowerInvariant();
-        return string.IsNullOrEmpty(normalized) ? string.Empty : "." + normalized;
+        this.configurationManager.ExcludeCompression = CompressionExclusionFormatter.Format(this.CompressionExclusions);
     }
 
     partial void OnWaitForDeviceChanged(bool oldValue, bool newValue)
@@ -742,12 +727,18 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     #endregion
 
-    public SettingsViewModel(IConfigurationManager configurationManager, IPresentationService presentationService, IJobService jobService, IQueryManager queryManager)
+    public SettingsViewModel(
+        IConfigurationManager configurationManager,
+        IPresentationService presentationService,
+        IJobService jobService,
+        IQueryManager queryManager,
+        IBackupTargetService backupTargetService)
     {
         this.configurationManager = configurationManager;
         this.presentationController = presentationService;
         this.jobService = jobService;
         this.queryManager = queryManager;
+        this.backupTargetService = backupTargetService;
     }
 
     private static string DecryptConfigurationPassword(string password)
@@ -765,13 +756,6 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         {
             return string.Empty;
         }
-    }
-
-    private static bool IsDriveRoot(string folderPath)
-    {
-        var fullPath = Path.GetFullPath(folderPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        var root = Path.GetPathRoot(fullPath)?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        return !string.IsNullOrEmpty(root) && string.Equals(fullPath, root, StringComparison.OrdinalIgnoreCase);
     }
 
     public void OnNavigatedFrom()
