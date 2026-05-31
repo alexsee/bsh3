@@ -8,7 +8,6 @@ using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Models;
-using BSH.MainApp.Utils;
 using BSH.MainApp.ViewModels.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -21,6 +20,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private readonly IJobService jobService;
     private readonly IBackupService backupService;
     private readonly IPresentationService presentationService;
+    private readonly IBrowserContentService browserContentService;
+    private readonly IBrowserDialogService browserDialogService;
     private BrowserContentMode contentMode = BrowserContentMode.Folder;
     private long contentRequestId;
     private bool suppressSearchTermsChanged;
@@ -28,6 +29,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
     [NotifyCanExecuteChangedFor(nameof(RestoreAllCommand))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteMultipleBackupsCommand))]
     private VersionDetails? currentVersion;
 
     [ObservableProperty]
@@ -35,10 +37,16 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [NotifyCanExecuteChangedFor(nameof(RestoreAllCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowFilePreviewCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowFilePropertiesCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddFolderToFavoritesCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NavigateToPreviousVersionCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NavigateToNextVersionCommand))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteSelectedContentCommand))]
     private FileOrFolderItem? currentItem;
 
     [ObservableProperty]
-    private string? currentFavorite;
+    [NotifyCanExecuteChangedFor(nameof(RenameFavoriteCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RemoveFavoriteCommand))]
+    private BrowserFavoriteItem? currentFavorite;
 
     [ObservableProperty]
     private string searchTerms = string.Empty;
@@ -51,18 +59,26 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     public ObservableCollection<FileOrFolderItem> CurrentFolderPath { get; set; } = [];
 
-    public ObservableCollection<string> Favorites { get; set; } = [];
+    public ObservableCollection<BrowserFavoriteItem> Favorites { get; set; } = [];
 
     public ObservableCollection<FileOrFolderItem> Items { get; set; } = [];
 
     public ObservableCollection<VersionDetails> Versions { get; set; } = [];
 
-    public BrowserViewModel(IQueryManager queryManager, IJobService jobService, IBackupService backupService, IPresentationService presentationService)
+    public BrowserViewModel(
+        IQueryManager queryManager,
+        IJobService jobService,
+        IBackupService backupService,
+        IPresentationService presentationService,
+        IBrowserContentService browserContentService,
+        IBrowserDialogService browserDialogService)
     {
         this.queryManager = queryManager;
         this.jobService = jobService;
         this.backupService = backupService;
         this.presentationService = presentationService;
+        this.browserContentService = browserContentService;
+        this.browserDialogService = browserDialogService;
     }
 
     private bool CanUpFolder() => contentMode == BrowserContentMode.Folder && CurrentFolderPath.Count > 1;
@@ -70,6 +86,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private bool CanRestoreAll() => contentMode == BrowserContentMode.Folder && CurrentVersion != null && CurrentFolderPath.Count > 0;
     private bool HasVersionSelected() => CurrentVersion != null;
     private bool HasFileSelected() => CurrentItem != null && CurrentItem.IsFile;
+    private bool HasUserFavoriteSelected() => CurrentFavorite?.IsUserFavorite == true;
 
     partial void OnSearchTermsChanged(string value)
     {
@@ -110,16 +127,16 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        var sources = CurrentVersion.Sources.Split("|")
-            .Select(x => x[(x.LastIndexOf("\\") + 1)..])
-            .ToList();
+        await LoadFavoritesAsync();
+        if (Favorites.Count == 0)
+        {
+            return;
+        }
 
-        Favorites.Clear();
-        sources.ForEach(Favorites.Add);
-        CurrentFavorite = sources[0];
+        CurrentFavorite = Favorites[0];
 
         ClearSearchTerms();
-        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite, BeginContentRequest());
+        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite.Path, BeginContentRequest());
     }
 
     [RelayCommand]
@@ -131,7 +148,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
 
         ClearSearchTerms();
-        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite, BeginContentRequest());
+        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite.Path, BeginContentRequest());
     }
 
     [RelayCommand(CanExecute = nameof(HasVersionSelected))]
@@ -244,7 +261,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         var fileDetails = await queryManager.GetFileDetailsAsync(CurrentVersion.Id, CurrentItem.Name, CurrentItem.FullPath);
         if (fileDetails != null)
         {
-            await presentationService.ShowFileDetailsAsync(fileDetails);
+            await browserDialogService.ShowFileDetailsAsync(fileDetails);
         }
     }
 
@@ -254,10 +271,117 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         throw new NotImplementedException();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanAddFolderToFavorites))]
     private async Task AddFolderToFavorites()
     {
-        throw new NotImplementedException();
+        var folder = GetFolderForFavorite();
+        if (folder == null)
+        {
+            return;
+        }
+
+        await browserContentService.AddFavoriteAsync(folder);
+        await LoadFavoritesAsync();
+        CurrentFavorite = Favorites.FirstOrDefault(x => browserContentService.PathsMatch(x.Path, folder.FullPath)) ?? CurrentFavorite;
+    }
+
+    [RelayCommand(CanExecute = nameof(HasUserFavoriteSelected))]
+    private async Task RenameFavorite()
+    {
+        if (CurrentFavorite?.IsUserFavorite != true)
+        {
+            return;
+        }
+
+        var name = await browserDialogService.ShowRenameFavoriteWindowAsync(CurrentFavorite);
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return;
+        }
+
+        await browserContentService.RenameFavoriteAsync(CurrentFavorite, name);
+        var path = CurrentFavorite.Path;
+        await LoadFavoritesAsync();
+        CurrentFavorite = Favorites.FirstOrDefault(x => browserContentService.PathsMatch(x.Path, path));
+    }
+
+    [RelayCommand(CanExecute = nameof(HasUserFavoriteSelected))]
+    private async Task RemoveFavorite()
+    {
+        if (CurrentFavorite?.IsUserFavorite != true)
+        {
+            return;
+        }
+
+        await browserContentService.RemoveFavoriteAsync(CurrentFavorite);
+        await LoadFavoritesAsync();
+        CurrentFavorite = Favorites.FirstOrDefault();
+    }
+
+    [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
+    private async Task NavigateToPreviousVersion()
+    {
+        await NavigateToContainingVersionAsync(previous: true);
+    }
+
+    [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
+    private async Task NavigateToNextVersion()
+    {
+        await NavigateToContainingVersionAsync(previous: false);
+    }
+
+    [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
+    private async Task DeleteSelectedContent()
+    {
+        if (CurrentItem == null || CurrentVersion == null)
+        {
+            return;
+        }
+
+        if (!await browserDialogService.ShowDeleteSelectedContentWindowAsync(CurrentItem))
+        {
+            return;
+        }
+
+        if (CurrentItem.IsFile)
+        {
+            await jobService.DeleteSingleFileAsync(CurrentItem.Name, CurrentItem.FullPath);
+        }
+        else
+        {
+            await jobService.DeleteSingleFileAsync(string.Empty, CurrentItem.FullPath + "%");
+        }
+
+        await Refresh();
+    }
+
+    [RelayCommand(CanExecute = nameof(HasVersionSelected))]
+    private async Task DeleteMultipleBackups()
+    {
+        if (Versions.Count == 0)
+        {
+            LoadVersions();
+        }
+
+        var versionsToDelete = await browserDialogService.ShowDeleteBackupsWindowAsync(Versions.ToList());
+        if (versionsToDelete.Count == 0)
+        {
+            return;
+        }
+
+        await jobService.DeleteBackupsAsync(versionsToDelete.ToList());
+
+        LoadVersions();
+        if (Versions.Count == 0)
+        {
+            CurrentVersion = null;
+            Items.Clear();
+            CurrentFolderPath.Clear();
+            return;
+        }
+
+        CurrentVersion = Versions.FirstOrDefault(x => !versionsToDelete.Contains(x.Id)) ?? Versions[0];
+        await LoadVersion();
     }
 
     [RelayCommand(CanExecute = nameof(HasVersionSelected))]
@@ -332,57 +456,47 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         backupVersions.ForEach(Versions.Add);
     }
 
+    private async Task LoadFavoritesAsync()
+    {
+        if (CurrentVersion == null)
+        {
+            return;
+        }
+
+        Favorites.Clear();
+        foreach (var favorite in await browserContentService.GetFavoritesAsync(CurrentVersion))
+        {
+            Favorites.Add(favorite);
+        }
+    }
+
+    private async Task NavigateToContainingVersionAsync(bool previous)
+    {
+        if (CurrentItem == null || CurrentVersion == null)
+        {
+            return;
+        }
+
+        var versionId = CurrentItem.IsFile
+            ? previous
+                ? await queryManager.GetBackVersionWhereFileAsync(CurrentVersion.Id, CurrentItem.Name)
+                : await queryManager.GetNextVersionWhereFileAsync(CurrentVersion.Id, CurrentItem.Name)
+            : previous
+                ? await queryManager.GetBackVersionWhereFilesInFolderAsync(CurrentVersion.Id, CurrentItem.FullPath)
+                : await queryManager.GetNextVersionWhereFilesInFolderAsync(CurrentVersion.Id, CurrentItem.FullPath);
+
+        if (versionId == null)
+        {
+            return;
+        }
+
+        CurrentVersion = await queryManager.GetVersionByIdAsync(versionId);
+        await LoadVersion();
+    }
+
     private async Task LoadFolderAsync(string version, string path, long requestId)
     {
-        var rootSplit = path.Split("\\", StringSplitOptions.RemoveEmptyEntries);
-
-        var folderPath = new List<FileOrFolderItem>();
-        for (var i = 0; i < rootSplit.Length; i++)
-        {
-            folderPath.Add(new FileOrFolderItem()
-            {
-                Name = rootSplit[i],
-                DisplayName = rootSplit[i],
-                FullPath = string.Join("\\", rootSplit[0..(i + 1)])
-            });
-        }
-
-        // obtain child folders
-        var folderList = (await queryManager.GetFolderListAsync(version, '\\' + path + @"\%"))
-            .Where(x =>
-            {
-                var split = x.Split("\\", StringSplitOptions.RemoveEmptyEntries);
-                return split.Length == rootSplit.Length + 1;
-            })
-            .Select(x => new FileOrFolderItem()
-            {
-                Name = x[(x.LastIndexOf("\\") + 1)..],
-                DisplayName = x[(x.LastIndexOf("\\") + 1)..],
-                FullPath = x
-            })
-            .ToList();
-
-        // obtain files in folder
-        var fileList = (await queryManager.GetFilesByVersionAsync(version, '\\' + path + '\\'))
-            .Select(x => new FileOrFolderItem()
-            {
-                Name = x.FileName,
-                DisplayName = x.FileName,
-                FullPath = x.FilePath,
-                IsFile = true,
-                FileNameOnDrive = x.FileName,
-
-                FileDateModified = x.FileDateModified,
-                FileDateCreated = x.FileDateCreated,
-                FileSize = x.FileSize
-            })
-            .ToList();
-
-        foreach (var file in fileList)
-        {
-            file.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive);
-            file.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive, 64);
-        }
+        var snapshot = await browserContentService.LoadFolderAsync(version, path);
 
         if (!IsCurrentContentRequest(requestId))
         {
@@ -392,33 +506,17 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         contentMode = BrowserContentMode.Folder;
         CurrentItem = null;
         CurrentFolderPath.Clear();
-        folderPath.ForEach(CurrentFolderPath.Add);
-        ReplaceItems(folderList.Concat(fileList));
+        foreach (var folder in snapshot.FolderPath)
+        {
+            CurrentFolderPath.Add(folder);
+        }
+        ReplaceItems(snapshot.Items);
         NotifyContentCommandsChanged();
     }
 
     private async Task LoadSearchResultsAsync(string version, string searchTerms, long requestId)
     {
-        var fileList = (await queryManager.SearchFilesByVersionAsync(version, searchTerms))
-            .Select(x => new FileOrFolderItem()
-            {
-                Name = x.FileName,
-                DisplayName = $"{x.FileName} - {x.FilePath.Trim('\\')}",
-                FullPath = x.FilePath,
-                IsFile = true,
-                FileNameOnDrive = x.FileName,
-
-                FileDateModified = x.FileDateModified,
-                FileDateCreated = x.FileDateCreated,
-                FileSize = x.FileSize
-            })
-            .ToList();
-
-        foreach (var file in fileList)
-        {
-            file.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive);
-            file.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive, 64);
-        }
+        var fileList = await browserContentService.SearchFilesAsync(version, searchTerms);
 
         if (!IsCurrentContentRequest(requestId))
         {
@@ -462,7 +560,15 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         LoadFolderCommand.NotifyCanExecuteChanged();
         UpFolderCommand.NotifyCanExecuteChanged();
         RestoreAllCommand.NotifyCanExecuteChanged();
+        AddFolderToFavoritesCommand.NotifyCanExecuteChanged();
+        NavigateToPreviousVersionCommand.NotifyCanExecuteChanged();
+        NavigateToNextVersionCommand.NotifyCanExecuteChanged();
+        DeleteSelectedContentCommand.NotifyCanExecuteChanged();
     }
+
+    private bool CanAddFolderToFavorites() => GetFolderForFavorite() != null;
+
+    private FileOrFolderItem? GetFolderForFavorite() => browserContentService.GetFolderForFavorite(CurrentItem, CurrentFolderPath);
 
     public async void OnNavigatedTo(object parameter)
     {
@@ -477,12 +583,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     public void OnNavigatedFrom()
     {
-        FileSystemIconHelpers.ClearIconCache();
-    }
-
-    private enum BrowserContentMode
-    {
-        Folder,
-        Search
+        browserContentService.ClearIconCache();
     }
 }

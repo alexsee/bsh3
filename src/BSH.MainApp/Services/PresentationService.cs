@@ -123,22 +123,6 @@ public class PresentationService : IPresentationService
         return messageBoxResult == ContentDialogResult.Primary;
     }
 
-    public async Task ShowFileDetailsAsync(FileDetails fileDetails)
-    {
-        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
-        {
-            var dialog = new ContentDialog
-            {
-                XamlRoot = App.MainWindow.Content.XamlRoot,
-                Title = fileDetails.Name,
-                CloseButtonText = "Close",
-                Content = BuildFileDetailsContent(fileDetails)
-            };
-
-            await dialog.ShowAsync();
-        });
-    }
-
     public async Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
     {
         return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
@@ -209,52 +193,6 @@ public class PresentationService : IPresentationService
         }
 
         return dialog;
-    }
-
-    private static Grid BuildFileDetailsContent(FileDetails fileDetails)
-    {
-        var grid = new Grid
-        {
-            RowSpacing = 8,
-            ColumnSpacing = 16,
-            MaxWidth = 560
-        };
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
-        AddDetailsRow(grid, "Restore path", fileDetails.RestorePath);
-        AddDetailsRow(grid, "Type", fileDetails.Type);
-        AddDetailsRow(grid, "Size", fileDetails.Size.ToString("N0") + " bytes");
-        AddDetailsRow(grid, "Created", fileDetails.Created.ToString("g"));
-        AddDetailsRow(grid, "Modified", fileDetails.Modified.ToString("g"));
-        AddDetailsRow(grid, "Available versions", string.Join(Environment.NewLine, fileDetails.AvailableVersions.Select(x => $"{x.Id} - {x.CreationDate:g}")));
-
-        return grid;
-    }
-
-    private static void AddDetailsRow(Grid grid, string label, string value)
-    {
-        var row = grid.RowDefinitions.Count;
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-
-        var labelBlock = new TextBlock
-        {
-            Text = label,
-            FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
-        };
-        Grid.SetRow(labelBlock, row);
-        Grid.SetColumn(labelBlock, 0);
-
-        var valueBlock = new TextBlock
-        {
-            Text = value,
-            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
-        };
-        Grid.SetRow(valueBlock, row);
-        Grid.SetColumn(valueBlock, 1);
-
-        grid.Children.Add(labelBlock);
-        grid.Children.Add(valueBlock);
     }
 
     public async Task ShowExcludeFileFolderWindowAsync()

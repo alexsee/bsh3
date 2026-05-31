@@ -22,7 +22,6 @@ public interface IPresentationService
     Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync();
     Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel);
     Task<bool> ShowDeleteBackupWindowAsync();
-    Task ShowFileDetailsAsync(FileDetails fileDetails);
     Task ShowErrorInsufficientDiskSpaceAsync();
     Task ShowMainWindowAsync();
     Task ShowStatusWindowAsync();
