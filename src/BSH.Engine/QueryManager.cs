@@ -518,7 +518,8 @@ public class QueryManager : IQueryManager
                 "INNER JOIN versiontable On (versiontable.versionID = fileversiontable.filePackage) " +
                 "WHERE filelink.versionID = @versionID " +
                 "AND (filetable.fileName LIKE @searchTerm OR filetable.filePath LIKE @searchTerm) " +
-                "ORDER BY filetable.filePath, filetable.fileName",
+                "ORDER BY filetable.filePath, filetable.fileName " +
+                "LIMIT 500",
                 parameters);
             while (await reader.ReadAsync())
             {
