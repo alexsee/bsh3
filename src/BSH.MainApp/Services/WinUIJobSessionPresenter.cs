@@ -19,18 +19,24 @@ namespace BSH.MainApp.Services;
 public sealed class WinUIJobSessionPresenter : IJobSessionPresenter
 {
     private readonly Action cancelAction;
+    private readonly ICompletionActionService completionActionService;
     private readonly IPresentationService presentationService;
     private readonly IStatusService statusService;
     private CancellationToken cancellationToken;
     private bool statusWindowShown;
 
-    public WinUIJobSessionPresenter(IPresentationService presentationService, IStatusService statusService, Action cancelAction)
+    public WinUIJobSessionPresenter(
+        IPresentationService presentationService,
+        IStatusService statusService,
+        Action cancelAction,
+        ICompletionActionService? completionActionService = null)
     {
         ArgumentNullException.ThrowIfNull(presentationService);
         ArgumentNullException.ThrowIfNull(statusService);
         ArgumentNullException.ThrowIfNull(cancelAction);
 
         this.cancelAction = cancelAction;
+        this.completionActionService = completionActionService ?? new CompletionActionService();
         this.presentationService = presentationService;
         this.statusService = statusService;
     }
@@ -43,15 +49,37 @@ public sealed class WinUIJobSessionPresenter : IJobSessionPresenter
 
     public async Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false, bool honorCompletionActions = true)
     {
-        _ = triggerShutdown;
-        _ = triggerHibernate;
-        _ = honorCompletionActions;
-
+        var action = TaskCompleteAction.NoAction;
         if (statusWindowShown)
         {
-            await presentationService.CloseStatusWindowAsync();
+            action = await presentationService.CloseStatusWindowAsync();
             statusWindowShown = false;
         }
+
+        var completionAction = ResolveCompletionAction(triggerShutdown, triggerHibernate, honorCompletionActions, action);
+        if (completionAction != TaskCompleteAction.NoAction)
+        {
+            await completionActionService.ExecuteAsync(completionAction);
+        }
+    }
+
+    private static TaskCompleteAction ResolveCompletionAction(
+        bool triggerShutdown,
+        bool triggerHibernate,
+        bool honorCompletionActions,
+        TaskCompleteAction selectedAction)
+    {
+        if (triggerShutdown)
+        {
+            return TaskCompleteAction.ShutdownPC;
+        }
+
+        if (triggerHibernate)
+        {
+            return TaskCompleteAction.HibernatePC;
+        }
+
+        return honorCompletionActions ? selectedAction : TaskCompleteAction.NoAction;
     }
 
     public Task ShowErrorTaskRunningAsync()

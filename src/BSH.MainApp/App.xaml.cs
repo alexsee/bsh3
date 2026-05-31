@@ -98,6 +98,7 @@ public partial class App : Application
             services.AddSingleton<Func<IWaitForMediaService>>(x => () => x.GetRequiredService<IWaitForMediaService>());
             services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();
             services.AddSingleton<IOrchestrationService, OrchestrationService>();
+            services.AddSingleton<ICompletionActionService, CompletionActionService>();
             services.AddSingleton<IJobService, JobService>();
             services.AddSingleton<IPresentationService, PresentationService>();
 

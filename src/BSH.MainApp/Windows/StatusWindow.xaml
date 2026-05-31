@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Title="{x:Bind ViewModel.StatusTitle, Mode=OneWay}"
-    Height="300" Width="600" IsResizable="False" IsMaximizable="False" IsMinimizable="False" IsAlwaysOnTop="True">
+    Height="340" Width="600" IsResizable="False" IsMaximizable="False" IsMinimizable="False" IsAlwaysOnTop="True">
 
     <Grid Background="White">
         <Grid.RowDefinitions>
@@ -28,6 +28,14 @@
                 <TextBlock Text="files processed" />
             </StackPanel>
             <TextBlock Text="{x:Bind ViewModel.CurrentFileText, Mode=OneWay}" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock VerticalAlignment="Center" Text="After completion" />
+                <ComboBox Width="180" SelectedIndex="{x:Bind ViewModel.SelectedCompletionActionIndex, Mode=TwoWay}">
+                    <ComboBoxItem Content="No action" />
+                    <ComboBoxItem Content="Shutdown" />
+                    <ComboBoxItem Content="Hibernate" />
+                </ComboBox>
+            </StackPanel>
         </StackPanel>
 
         <Grid Grid.Row="1" Background="#fafafa" Padding="30,10" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">

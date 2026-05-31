@@ -21,6 +21,19 @@ namespace BSH.Test;
 
 public class WinUiPresentationParityTests
 {
+    [TestCase(0, TaskCompleteAction.NoAction)]
+    [TestCase(1, TaskCompleteAction.ShutdownPC)]
+    [TestCase(2, TaskCompleteAction.HibernatePC)]
+    public void StatusViewModelMapsSelectedCompletionAction(int selectedIndex, TaskCompleteAction expectedAction)
+    {
+        var viewModel = new StatusViewModel(null)
+        {
+            SelectedCompletionActionIndex = selectedIndex
+        };
+
+        Assert.That(viewModel.SelectedCompletionAction, Is.EqualTo(expectedAction));
+    }
+
     [Test]
     public void MainWindowSupportMenuDelegatesToPresentationService()
     {
@@ -76,6 +89,69 @@ public class WinUiPresentationParityTests
             silent: true);
 
         Assert.That(presentationService.ExceptionListRequests, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task WinUiJobSessionPresenterExecutesSelectedStatusCompletionAction()
+    {
+        var presentationService = new TestPresentationService
+        {
+            CloseStatusWindowResult = TaskCompleteAction.HibernatePC
+        };
+        var completionActionService = new TestCompletionActionService();
+        var presenter = new WinUIJobSessionPresenter(
+            presentationService,
+            new StatusService(new TestConfigurationManager(), presentationService),
+            () => { },
+            completionActionService);
+
+        await presenter.ShowStatusWindowAsync();
+        await presenter.CompleteAsync();
+
+        Assert.That(presentationService.CloseStatusWindowCalls, Is.EqualTo(1));
+        Assert.That(completionActionService.Actions, Is.EqualTo(new[] { TaskCompleteAction.HibernatePC }));
+    }
+
+    [TestCase(true, false, TaskCompleteAction.ShutdownPC)]
+    [TestCase(false, true, TaskCompleteAction.HibernatePC)]
+    public async Task WinUiJobSessionPresenterExecutesExplicitCompletionActions(
+        bool triggerShutdown,
+        bool triggerHibernate,
+        TaskCompleteAction expectedAction)
+    {
+        var presentationService = new TestPresentationService();
+        var completionActionService = new TestCompletionActionService();
+        var presenter = new WinUIJobSessionPresenter(
+            presentationService,
+            new StatusService(new TestConfigurationManager(), presentationService),
+            () => { },
+            completionActionService);
+
+        await presenter.CompleteAsync(triggerShutdown: triggerShutdown, triggerHibernate: triggerHibernate);
+
+        Assert.That(presentationService.CloseStatusWindowCalls, Is.EqualTo(0));
+        Assert.That(completionActionService.Actions, Is.EqualTo(new[] { expectedAction }));
+    }
+
+    [Test]
+    public async Task WinUiJobSessionPresenterDoesNotExecuteSelectedActionWhenCompletionActionsAreSuppressed()
+    {
+        var presentationService = new TestPresentationService
+        {
+            CloseStatusWindowResult = TaskCompleteAction.ShutdownPC
+        };
+        var completionActionService = new TestCompletionActionService();
+        var presenter = new WinUIJobSessionPresenter(
+            presentationService,
+            new StatusService(new TestConfigurationManager(), presentationService),
+            () => { },
+            completionActionService);
+
+        await presenter.ShowStatusWindowAsync();
+        await presenter.CompleteAsync(honorCompletionActions: false);
+
+        Assert.That(presentationService.CloseStatusWindowCalls, Is.EqualTo(1));
+        Assert.That(completionActionService.Actions, Is.Empty);
     }
 
     private sealed class TestConfigurationManager : IConfigurationManager
@@ -135,11 +211,17 @@ public class WinUiPresentationParityTests
         public int ExceptionListRequests { get; private set; }
         public int HelpSupportCalls { get; private set; }
         public int ResetConfigurationCalls { get; private set; }
+        public int CloseStatusWindowCalls { get; private set; }
+        public TaskCompleteAction CloseStatusWindowResult { get; set; } = TaskCompleteAction.NoAction;
         public IReadOnlyCollection<FileExceptionEntry>? LastExceptionList { get; private set; }
 
         public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
         public Task CloseMainWindowAsync() => Task.CompletedTask;
-        public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
+        public Task<TaskCompleteAction> CloseStatusWindowAsync()
+        {
+            CloseStatusWindowCalls++;
+            return Task.FromResult(CloseStatusWindowResult);
+        }
         public Task OpenCurrentEventLogAsync() { EventLogCalls++; return Task.CompletedTask; }
         public Task OpenHelpSupportAsync() { HelpSupportCalls++; return Task.CompletedTask; }
         public Task<(string? password, bool persist)> RequestPasswordAsync() => Task.FromResult<(string?, bool)>((null, false));
@@ -164,5 +246,16 @@ public class WinUiPresentationParityTests
         public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.None);
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
         public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
+    }
+
+    private sealed class TestCompletionActionService : ICompletionActionService
+    {
+        public List<TaskCompleteAction> Actions { get; } = new();
+
+        public Task ExecuteAsync(TaskCompleteAction action)
+        {
+            Actions.Add(action);
+            return Task.CompletedTask;
+        }
     }
 }
