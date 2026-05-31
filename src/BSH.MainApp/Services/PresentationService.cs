@@ -123,6 +123,89 @@ public class PresentationService : IPresentationService
         return messageBoxResult == ContentDialogResult.Primary;
     }
 
+    public async Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions)
+    {
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            var versionList = new ListView
+            {
+                SelectionMode = ListViewSelectionMode.Multiple,
+                ItemsSource = versions,
+                DisplayMemberPath = nameof(VersionDetails.CreationDate),
+                MaxHeight = 360
+            };
+
+            var dialog = new ContentDialog
+            {
+                XamlRoot = App.MainWindow.Content.XamlRoot,
+                Title = "Delete backups",
+                Content = versionList,
+                PrimaryButtonText = "Delete",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Close
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result != ContentDialogResult.Primary)
+            {
+                return Array.Empty<string>();
+            }
+
+            var selected = versionList.SelectedItems.Cast<VersionDetails>().Select(x => x.Id).ToArray();
+            if (selected.Length == 0)
+            {
+                return Array.Empty<string>();
+            }
+
+            var confirmDialog = new ContentDialog
+            {
+                XamlRoot = App.MainWindow.Content.XamlRoot,
+                Title = "Delete backups",
+                Content = new TextBlock { Text = "Are you sure you want to delete the selected backups?" },
+                PrimaryButtonText = "Yes",
+                CloseButtonText = "No"
+            };
+
+            return await confirmDialog.ShowAsync() == ContentDialogResult.Primary ? selected : Array.Empty<string>();
+        });
+    }
+
+    public async Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item)
+    {
+        var itemType = item.IsFile ? "file" : "folder";
+        var messageBoxResult = await ShowMessageBoxAsync(
+            "Delete from all backups",
+            $"Are you sure you want to delete this {itemType} from all backups?",
+            new List<IUICommand> { new UICommand("Yes"), new UICommand("No") });
+        return messageBoxResult == ContentDialogResult.Primary;
+    }
+
+    public async Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite)
+    {
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            var nameBox = new TextBox
+            {
+                Text = favorite.Name,
+                Header = "Name",
+                MinWidth = 320
+            };
+
+            var dialog = new ContentDialog
+            {
+                XamlRoot = App.MainWindow.Content.XamlRoot,
+                Title = "Rename favorite",
+                Content = nameBox,
+                PrimaryButtonText = "Rename",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary
+            };
+
+            var result = await dialog.ShowAsync();
+            return result == ContentDialogResult.Primary ? nameBox.Text : null;
+        });
+    }
+
     public async Task ShowFileDetailsAsync(FileDetails fileDetails)
     {
         await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>

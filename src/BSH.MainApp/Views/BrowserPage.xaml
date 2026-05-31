@@ -43,6 +43,17 @@
             </StackPanel>
         </DataTemplate>
 
+        <DataTemplate x:Name="FavoriteTemplate" x:DataType="models:BrowserFavoriteItem">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B7;" Margin="0,0,8,0" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{x:Bind Name, Mode=OneWay}" />
+            </Grid>
+        </DataTemplate>
+
         <converters:VisibilityInvertConverter x:Key="VisibilityInvertConverter" />
         <converters:FileSizeConverter x:Key="FileSizeConverter" />
 
@@ -151,12 +162,18 @@
 
                         <!-- favorites -->
                         <TextBlock Grid.Row="0" Text="Favourites" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
-                        <ListView Margin="8,0,12,0" SelectedItem="{x:Bind ViewModel.CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{x:Bind ViewModel.Favorites, Mode=TwoWay}">
+                        <ListView Margin="8,0,12,0" SelectedItem="{x:Bind ViewModel.CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{x:Bind ViewModel.Favorites, Mode=TwoWay}" ItemTemplate="{StaticResource FavoriteTemplate}">
                             <i:Interaction.Behaviors>
                                 <i:EventTriggerBehavior EventName="SelectionChanged">
                                     <i:InvokeCommandAction Command="{x:Bind ViewModel.LoadFavoriteCommand}" />
                                 </i:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
+                            <ListView.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RenameFavoriteCommand}" Text="Rename" />
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RemoveFavoriteCommand}" Text="Remove" />
+                                </MenuFlyout>
+                            </ListView.ContextFlyout>
                         </ListView>
 
                         <!-- backup list -->
@@ -206,6 +223,14 @@
                             Command="{x:Bind ViewModel.RestoreFileCommand}" 
                             Icon="Copy" 
                             Label="Restore" />
+                            <AppBarButton
+                            Command="{x:Bind ViewModel.NavigateToPreviousVersionCommand}"
+                            Icon="Back"
+                            Label="Previous version" />
+                            <AppBarButton
+                            Command="{x:Bind ViewModel.NavigateToNextVersionCommand}"
+                            Icon="Forward"
+                            Label="Next version" />
                             <AppBarSeparator />
                             <AppBarButton 
                             Command="{x:Bind ViewModel.ShowFilePreviewCommand}" 
@@ -247,10 +272,12 @@
                                 <AppBarButton.Flyout>
                                     <MenuFlyout Placement="BottomEdgeAlignedRight">
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllCommand}" Text="Restore all"/>
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Visibility="Collapsed" Text="Add to folder favorites"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Text="Add to folder favorites"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteSelectedContentCommand}" Icon="Delete" Text="Delete selected from all backups"/>
                                         <MenuFlyoutSeparator />
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.EditBackupCommand}" Icon="Edit" Text="Edit backup" />
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupCommand}" Icon="Delete" Text="Delete backup"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteMultipleBackupsCommand}" Icon="Delete" Text="Delete multiple backups"/>
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.LockBackupCommand}" Text="Lock/unlock backup" />
                                     </MenuFlyout>
                                 </AppBarButton.Flyout>
