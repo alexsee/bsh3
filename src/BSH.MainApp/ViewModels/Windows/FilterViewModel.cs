@@ -32,6 +32,20 @@ public partial class FilterViewModel : ObservableObject
 
     public ObservableCollection<string> RegexPatterns { get; } = [];
 
+    private bool excludeFilesBigger;
+    public bool ExcludeFilesBigger
+    {
+        get => excludeFilesBigger;
+        set => SetProperty(ref excludeFilesBigger, value);
+    }
+
+    private decimal excludeFileBigger;
+    public decimal ExcludeFileBigger
+    {
+        get => excludeFileBigger;
+        set => SetProperty(ref excludeFileBigger, value);
+    }
+
     private string? fileTypeInputText;
     public string? FileTypeInputText
     {
@@ -172,6 +186,9 @@ public partial class FilterViewModel : ObservableObject
         {
             RegexPatterns.Add(entry);
         }
+
+        ExcludeFilesBigger = decimal.TryParse(configurationManager.ExcludeFileBigger, out var maxFileSize);
+        ExcludeFileBigger = ExcludeFilesBigger ? maxFileSize : 0;
     }
 
     public void SaveToConfiguration()
@@ -180,6 +197,7 @@ public partial class FilterViewModel : ObservableObject
         configurationManager.ExcludeFile = string.Join("|", ExcludeFiles.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
         configurationManager.ExcludeFileTypes = string.Join("|", ExcludeFileTypes.Select(x => x.Trim().TrimStart('*').TrimStart('.')).Where(x => !string.IsNullOrEmpty(x)));
         configurationManager.ExcludeMask = string.Join("|", RegexPatterns.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
+        configurationManager.ExcludeFileBigger = ExcludeFilesBigger && ExcludeFileBigger > 0 ? ExcludeFileBigger.ToString() : string.Empty;
     }
 
     private string? selectedFolder;
@@ -400,6 +418,8 @@ public partial class FilterViewModel : ObservableObject
 
     private void AddRegex(string? regex)
     {
+        ValidationErrorMessage = null;
+
         if (string.IsNullOrWhiteSpace(regex))
         {
             return;
@@ -419,7 +439,8 @@ public partial class FilterViewModel : ObservableObject
             }
             catch (ArgumentException)
             {
-                continue;
+                ValidationErrorMessage = "Invalid regular expression. Fix the pattern before saving it.";
+                return;
             }
 
             RegexPatterns.Add(line);

@@ -93,6 +93,7 @@ public partial class App : Application
             services.AddSingleton<IBrowserFavoritesService, BrowserFavoritesService>();
             services.AddSingleton<IBrowserContentService, BrowserContentService>();
             services.AddSingleton<IBrowserDialogService, BrowserDialogService>();
+            services.AddSingleton<IBackupTargetService, BackupTargetService>();
             services.AddTransient<IWaitForMediaService, WaitForMediaService>();
             services.AddSingleton<Func<IWaitForMediaService>>(x => () => x.GetRequiredService<IWaitForMediaService>());
             services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();

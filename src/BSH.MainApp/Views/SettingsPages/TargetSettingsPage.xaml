@@ -38,9 +38,11 @@
                     <!-- target type selection -->
                     <StackPanel Orientation="Horizontal" Spacing="20">
                         <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Text="Backup storage:" />
-                        <ComboBox VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="300"
+                        <ComboBox x:Name="MediaTypeComboBox"
+                            VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="300"
                             ItemsSource="{Binding MediaTypes}"
-                            SelectedItem="{Binding SelectedMediaType, Mode=TwoWay}">
+                            SelectedItem="{Binding SelectedMediaType, Mode=OneWay}"
+                            SelectionChanged="MediaTypeComboBox_SelectionChanged">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate x:DataType="engine:MediaType">
                                     <TextBlock Text="{x:Bind viewmodels:SettingsViewModel.GetMediaTypeDisplayName((engine:MediaType))}" />
@@ -65,7 +67,15 @@
 
                                         <TextBlock Grid.Column="0" Text="Storage path:" />
                                         <TextBox Grid.Column="1" Text="{Binding LocalDevicePath}" IsReadOnly="True" />
-                                        <Button Grid.Column="2" Content="Change" Command="{x:Bind ViewModel.ChangeLocalPathCommand}" />
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                            <ProgressRing Width="20"
+                                                          Height="20"
+                                                          IsActive="{Binding IsMovingBackupTarget, Mode=OneWay}"
+                                                          Visibility="{Binding BackupTargetMoveProgressVisibility, Mode=OneWay}" />
+                                            <Button Content="Change"
+                                                    Command="{x:Bind ViewModel.ChangeLocalPathCommand}"
+                                                    IsEnabled="{Binding IsBackupTargetChangeEnabled, Mode=OneWay}" />
+                                        </StackPanel>
                                     </Grid>
 
                                     <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Network authentication</TextBlock>
