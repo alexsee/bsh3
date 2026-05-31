@@ -174,32 +174,12 @@ public class StatusService : IJobReport, IStatusService
 
     public void ShowExceptionDialog()
     {
-        if (LastFilesException.Count == 0)
+        if (LastFilesException == null || LastFilesException.Count == 0)
         {
             return;
         }
 
-        //// files with exceptions
-        //using var dlgFileNotCopied = new frmFileNotCopied();
-        //foreach (var entry in LastFilesException)
-        //{
-        //    var innerException = entry.Exception.Message.ToString();
-
-        //    // show inner exception if file not processed exception
-        //    if (entry.Exception.GetType() == typeof(FileNotProcessedException) &&
-        //        entry.Exception.InnerException != null)
-        //    {
-        //        innerException = entry.Exception.InnerException.Message.ToString();
-        //    }
-
-        //    var newEntry = new ListViewItem();
-        //    newEntry.Text = entry.File.FileNamePath();
-        //    newEntry.SubItems.Add(innerException);
-        //    newEntry.Tag = entry;
-        //    dlgFileNotCopied.lvFiles.Items.Add(newEntry);
-        //}
-
-        //dlgFileNotCopied.ShowDialog();
+        _ = presentationService.ShowFileExceptionsAsync(LastFilesException);
     }
 
     public async Task RequestShowErrorInsufficientDiskSpaceAsync()

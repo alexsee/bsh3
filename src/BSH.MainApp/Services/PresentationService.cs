@@ -1,8 +1,14 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Diagnostics;
+using System.Reflection;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Exceptions;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels.Windows;
@@ -52,6 +58,10 @@ public class PresentationService : IPresentationService
 
     public async Task CloseMainWindowAsync()
     {
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+        {
+            App.MainWindow.Close();
+        });
     }
 
     public async Task ShowBackupBrowserWindowAsync()
@@ -62,10 +72,59 @@ public class PresentationService : IPresentationService
 
     public async Task CloseBackupBrowserWindowAsync()
     {
+        await ShowMainWindowAsync();
     }
 
     public async Task ShowAboutWindowAsync()
     {
+        var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
+
+        await ShowMessageBoxAsync(
+            "About Backup Service Home 3",
+            $"Backup Service Home 3{Environment.NewLine}Version {version}",
+            [new UICommand("OK")]);
+    }
+
+    public Task OpenHelpSupportAsync()
+    {
+        OpenShellTarget("https://www.brightbits.de/?pk_campaign=software_link&pk_kwd=menu_help&pk_source=bsh-3");
+        return Task.CompletedTask;
+    }
+
+    public Task OpenCurrentEventLogAsync()
+    {
+        var date = DateTime.Now.ToString("yyyyMMdd");
+        var logFile = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Alexosoft",
+            "Backup Service Home 3",
+            $"log{date}.txt");
+
+        OpenShellTarget(logFile);
+        return Task.CompletedTask;
+    }
+
+    public async Task ResetConfigurationAsync()
+    {
+        var result = await ShowMessageBoxAsync(
+            "Reset Configuration",
+            "This deletes the current configuration and backup database. Do you want to continue?",
+            [new UICommand("Yes"), new UICommand("No")],
+            defaultCommandIndex: 0,
+            cancelCommandIndex: 1);
+
+        if (result != ContentDialogResult.Primary)
+        {
+            return;
+        }
+
+        DbClientFactory.ClosePool();
+        DeleteDatabaseFiles(App.DatabaseFile);
+
+        await App.GetService<IDbClientFactory>().InitializeAsync(App.DatabaseFile);
+        await App.GetService<IConfigurationManager>().InitializeAsync();
+        App.GetService<IStatusService>().Initialize();
+        App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.SettingsViewModel");
     }
 
     public async Task<(string? password, bool persist)> RequestPasswordAsync()
@@ -96,6 +155,37 @@ public class PresentationService : IPresentationService
 
     public async Task ShowErrorInsufficientDiskSpaceAsync()
     {
+        await ShowMessageBoxAsync(
+            "Insufficient Storage Space on Backup Medium",
+            "The backup medium does not have enough free space for this operation.",
+            [new UICommand("OK")]);
+    }
+
+    public async Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files)
+    {
+        if (files.Count == 0)
+        {
+            return;
+        }
+
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            var list = new ListView
+            {
+                MaxHeight = 360,
+                ItemsSource = files.Select(entry => $"{entry.File.FileNamePath()}{Environment.NewLine}{GetExceptionMessage(entry)}").ToList()
+            };
+
+            var dialog = new ContentDialog
+            {
+                XamlRoot = App.MainWindow.Content.XamlRoot,
+                Title = "Files could not be copied",
+                Content = list,
+                PrimaryButtonText = "OK"
+            };
+
+            await dialog.ShowAsync();
+        });
     }
 
     public async Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync()
@@ -130,7 +220,9 @@ public class PresentationService : IPresentationService
             ValidateCommands(commands);
             var (defaultCommand, secondaryCommand, cancelCommand) = ResolveCommands(commands, defaultCommandIndex, cancelCommandIndex);
             var dialog = BuildDialog(title, content, defaultCommand, secondaryCommand, cancelCommand);
-            return await dialog.ShowAsync();
+            var result = await dialog.ShowAsync();
+            InvokeCommandForResult(result, defaultCommand, secondaryCommand, cancelCommand);
+            return result;
         });
     }
 
@@ -193,6 +285,56 @@ public class PresentationService : IPresentationService
         }
 
         return dialog;
+    }
+
+    private static void InvokeCommandForResult(
+        ContentDialogResult result,
+        IUICommand defaultCommand,
+        IUICommand? secondaryCommand,
+        IUICommand? cancelCommand)
+    {
+        var command = result switch
+        {
+            ContentDialogResult.Primary => defaultCommand,
+            ContentDialogResult.Secondary => secondaryCommand,
+            ContentDialogResult.None => cancelCommand,
+            _ => null
+        };
+
+        command?.Invoked?.Invoke(command);
+    }
+
+    private static string GetExceptionMessage(FileExceptionEntry entry)
+    {
+        if (entry.Exception is FileNotProcessedException && entry.Exception.InnerException != null)
+        {
+            return entry.Exception.InnerException.Message;
+        }
+
+        return entry.Exception.Message;
+    }
+
+    private static void OpenShellTarget(string target)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+        }
+        catch
+        {
+            // Opening support/log targets is best-effort, matching legacy behavior.
+        }
+    }
+
+    private static void DeleteDatabaseFiles(string databaseFile)
+    {
+        foreach (var path in new[] { databaseFile, databaseFile + "-wal", databaseFile + "-shm" })
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
     }
 
     public async Task ShowExcludeFileFolderWindowAsync()

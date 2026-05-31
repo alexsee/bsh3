@@ -70,7 +70,13 @@ public sealed class WinUIJobSessionPresenter : IJobSessionPresenter
             null);
     }
 
-    public Task ShowErrorPasswordRequiredAsync() => Task.CompletedTask;
+    public Task ShowErrorPasswordRequiredAsync()
+    {
+        return presentationService.ShowMessageBoxAsync(
+            "Password required",
+            "A password is required to access this backup.",
+            null);
+    }
 
     public async Task<JobSessionPasswordRequest> RequestPasswordAsync()
     {

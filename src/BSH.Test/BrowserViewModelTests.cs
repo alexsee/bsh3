@@ -225,14 +225,18 @@ public class BrowserViewModelTests
         public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
         public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
+        public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
+        public Task OpenHelpSupportAsync() => Task.CompletedTask;
         public Task<(string? password, bool persist)> RequestPasswordAsync() => Task.FromResult<(string?, bool)>((null, false));
         public Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile) => Task.FromResult(RequestOverwriteResult.None);
+        public Task ResetConfigurationAsync() => Task.CompletedTask;
         public Task ShowAboutWindowAsync() => Task.CompletedTask;
         public Task ShowBackupBrowserWindowAsync() => Task.CompletedTask;
         public Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync() => Task.FromResult((false, new NewBackupViewModel()));
         public Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel) => Task.FromResult((false, backupViewModel));
         public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);
         public Task ShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
+        public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
         public Task ShowMainWindowAsync() => Task.CompletedTask;
         public Task ShowStatusWindowAsync() => Task.CompletedTask;
         public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.None);

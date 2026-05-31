@@ -209,15 +209,19 @@ public class WinUiSettingsParityTests
     {
         public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
         public Task CloseMainWindowAsync() => Task.CompletedTask;
+        public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
+        public Task OpenHelpSupportAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
         public Task<(string? password, bool persist)> RequestPasswordAsync() => Task.FromResult<(string?, bool)>(("password", false));
         public Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile) => Task.FromResult(RequestOverwriteResult.Overwrite);
+        public Task ResetConfigurationAsync() => Task.CompletedTask;
         public Task ShowAboutWindowAsync() => Task.CompletedTask;
         public Task ShowBackupBrowserWindowAsync() => Task.CompletedTask;
         public Task<(bool, BSH.MainApp.ViewModels.Windows.NewBackupViewModel)> ShowCreateBackupWindowAsync() => throw new NotImplementedException();
         public Task<(bool, BSH.MainApp.ViewModels.Windows.EditBackupViewModel)> ShowEditBackupWindowAsync(BSH.MainApp.ViewModels.Windows.EditBackupViewModel backupViewModel) => throw new NotImplementedException();
         public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(true);
         public Task ShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
+        public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
         public Task ShowMainWindowAsync() => Task.CompletedTask;
         public Task ShowStatusWindowAsync() => Task.CompletedTask;
         public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.Primary);
