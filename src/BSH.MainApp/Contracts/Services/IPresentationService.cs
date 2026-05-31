@@ -22,10 +22,6 @@ public interface IPresentationService
     Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync();
     Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel);
     Task<bool> ShowDeleteBackupWindowAsync();
-    Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions);
-    Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item);
-    Task ShowFileDetailsAsync(FileDetails fileDetails);
-    Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite);
     Task ShowErrorInsufficientDiskSpaceAsync();
     Task ShowMainWindowAsync();
     Task ShowStatusWindowAsync();

@@ -76,30 +76,30 @@ public class BrowserViewModelTests
     [Test]
     public async Task DeleteSelectedContentConfirmsAndCallsDeleteSingleForFile()
     {
-        var presentationService = new BrowserPresentationService { ConfirmSelectedContentDelete = true };
+        var dialogService = new BrowserDialogService { ConfirmSelectedContentDelete = true };
         var jobService = new BrowserJobService();
-        var viewModel = CreateViewModel(jobService: jobService, presentationService: presentationService);
+        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
         viewModel.CurrentVersion = Version("2");
         viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
 
         await viewModel.DeleteSelectedContentCommand.ExecuteAsync(null);
 
-        Assert.That(presentationService.SelectedContentDeletePrompted, Is.True);
+        Assert.That(dialogService.SelectedContentDeletePrompted, Is.True);
         Assert.That(jobService.DeleteSingleCalls, Is.EqualTo(new[] { ("report.txt", @"\source\docs\") }));
     }
 
     [Test]
     public async Task DeleteMultipleBackupsConfirmsSelectedVersionsAndRefreshes()
     {
-        var presentationService = new BrowserPresentationService { VersionsSelectedForDelete = ["1", "3"] };
+        var dialogService = new BrowserDialogService { VersionsSelectedForDelete = ["1", "3"] };
         var jobService = new BrowserJobService();
         var queryManager = new BrowserQueryManager();
-        var viewModel = CreateViewModel(queryManager, jobService, presentationService);
+        var viewModel = CreateViewModel(queryManager, jobService, dialogService);
         viewModel.CurrentVersion = Version("2");
 
         await viewModel.DeleteMultipleBackupsCommand.ExecuteAsync(null);
 
-        Assert.That(presentationService.MultiDeletePromptedVersions, Is.EqualTo(new[] { "2", "1", "3" }));
+        Assert.That(dialogService.MultiDeletePromptedVersions, Is.EqualTo(new[] { "2", "1", "3" }));
         Assert.That(jobService.DeleteBackupsCalls.Single(), Is.EqualTo(new[] { "1", "3" }));
         Assert.That(queryManager.GetVersionsCallCount, Is.GreaterThanOrEqualTo(1));
     }
@@ -107,15 +107,19 @@ public class BrowserViewModelTests
     private static BrowserViewModel CreateViewModel(
         BrowserQueryManager? queryManager = null,
         BrowserJobService? jobService = null,
-        BrowserPresentationService? presentationService = null,
+        BrowserDialogService? browserDialogService = null,
         BrowserFavoritesService? favoritesService = null)
     {
+        queryManager ??= new BrowserQueryManager();
+        favoritesService ??= new BrowserFavoritesService(new MemoryLocalSettingsService());
+
         return new BrowserViewModel(
-            queryManager ?? new BrowserQueryManager(),
+            queryManager,
             jobService ?? new BrowserJobService(),
             new BrowserBackupService(),
-            presentationService ?? new BrowserPresentationService(),
-            favoritesService ?? new BrowserFavoritesService(new MemoryLocalSettingsService()));
+            new BrowserPresentationService(),
+            new BrowserContentService(queryManager, favoritesService),
+            browserDialogService ?? new BrowserDialogService());
     }
 
     private static VersionDetails Version(string id) => new()
@@ -203,13 +207,21 @@ public class BrowserViewModelTests
         public void UpdateDatabaseFile(string databaseFile) { }
     }
 
-    private sealed class BrowserPresentationService : IPresentationService
+    private sealed class BrowserDialogService : IBrowserDialogService
     {
         public bool ConfirmSelectedContentDelete { get; set; }
         public bool SelectedContentDeletePrompted { get; private set; }
         public IReadOnlyList<string>? VersionsSelectedForDelete { get; set; }
         public IReadOnlyList<string> MultiDeletePromptedVersions { get; private set; } = [];
 
+        public Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item) { SelectedContentDeletePrompted = true; return Task.FromResult(ConfirmSelectedContentDelete); }
+        public Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions) { MultiDeletePromptedVersions = versions.Select(x => x.Id).ToList(); return Task.FromResult(VersionsSelectedForDelete ?? []); }
+        public Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite) => Task.FromResult<string?>(favorite.Name);
+        public Task ShowFileDetailsAsync(FileDetails fileDetails) => Task.CompletedTask;
+    }
+
+    private sealed class BrowserPresentationService : IPresentationService
+    {
         public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
         public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
@@ -220,10 +232,6 @@ public class BrowserViewModelTests
         public Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync() => Task.FromResult((false, new NewBackupViewModel()));
         public Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel) => Task.FromResult((false, backupViewModel));
         public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);
-        public Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item) { SelectedContentDeletePrompted = true; return Task.FromResult(ConfirmSelectedContentDelete); }
-        public Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions) { MultiDeletePromptedVersions = versions.Select(x => x.Id).ToList(); return Task.FromResult(VersionsSelectedForDelete ?? []); }
-        public Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite) => Task.FromResult<string?>(favorite.Name);
-        public Task ShowFileDetailsAsync(FileDetails fileDetails) => Task.CompletedTask;
         public Task ShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
         public Task ShowMainWindowAsync() => Task.CompletedTask;
         public Task ShowStatusWindowAsync() => Task.CompletedTask;
