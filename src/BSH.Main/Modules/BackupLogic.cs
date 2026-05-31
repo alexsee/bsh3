@@ -412,6 +412,9 @@ static class BackupLogic
     {
         var listDelete = new List<VersionDetails>();
         var listVersions = QueryManager.GetVersions();
+        var hourlyBackupThreshold = int.TryParse(ConfigurationManager.IntervallAutoHourBackups, out var threshold) && threshold > 0
+            ? threshold
+            : 24;
 
         foreach (var version in listVersions)
         {
@@ -421,8 +424,8 @@ static class BackupLogic
                 continue;
             }
 
-            // version not older than 24h
-            if (DateTime.Now.Subtract(version.CreationDate) <= new TimeSpan(24, 0, 0))
+            // keep hourly backups for the configured automatic-retention threshold
+            if (DateTime.Now.Subtract(version.CreationDate) <= new TimeSpan(hourlyBackupThreshold, 0, 0))
             {
                 continue;
             }

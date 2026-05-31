@@ -202,4 +202,13 @@ public class PresentationService : IPresentationService
             await dialog.ShowDialogAsync();
         });
     }
+
+    public async Task ShowScheduleEditorWindowAsync()
+    {
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            var dialog = new ScheduleEditorWindow();
+            await dialog.ShowDialogAsync();
+        });
+    }
 }

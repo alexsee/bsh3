@@ -127,6 +127,9 @@ public class ScheduledBackupService : IScheduledBackupService
     {
         var listDelete = new List<VersionDetails>();
         var listVersions = queryManager.GetVersions();
+        var hourlyBackupThreshold = int.TryParse(configurationManager.IntervallAutoHourBackups, out var threshold) && threshold > 0
+            ? threshold
+            : 24;
 
         foreach (var version in listVersions)
         {
@@ -136,8 +139,8 @@ public class ScheduledBackupService : IScheduledBackupService
                 continue;
             }
 
-            // version not older than 24h
-            if (DateTime.Now.Subtract(version.CreationDate) <= new TimeSpan(24, 0, 0))
+            // keep hourly backups for the configured automatic-retention threshold
+            if (DateTime.Now.Subtract(version.CreationDate) <= new TimeSpan(hourlyBackupThreshold, 0, 0))
             {
                 continue;
             }
@@ -377,8 +380,11 @@ public class ScheduledBackupService : IScheduledBackupService
             if (Item[0] == "day")
             {
                 var lastFullBackup = await queryManager.GetLastFullBackupAsync();
-                var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
-                fullBackupOption = Diff.Days >= Convert.ToInt32(Item[1]);
+                if (lastFullBackup != null)
+                {
+                    var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
+                    fullBackupOption = Diff.Days >= Convert.ToInt32(Item[1]);
+                }
             }
         }
 
