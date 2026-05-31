@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
@@ -224,6 +225,41 @@ public class QueryManagerTests
         result = await queryManager.GetFilesByVersionAsync("2", "\\source_1\\");
         Assert.That(result.Count, Is.EqualTo(1));
         Assert.That(result[0].FileName, Is.EqualTo("file1.txt"));
+    }
+
+    [Test]
+    public async Task SearchFilesByVersionAsyncReturnsMatchingFilesWithPathContext()
+    {
+        var result = await queryManager.SearchFilesByVersionAsync("1", "file2");
+
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result[0].FileName, Is.EqualTo("file2.txt"));
+        Assert.That(result[0].FilePath, Is.EqualTo("\\source_1\\subfolder\\"));
+    }
+
+    [Test]
+    public async Task SearchFilesByVersionAsyncMatchesFilePath()
+    {
+        var result = await queryManager.SearchFilesByVersionAsync("1", "source_2");
+
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result[0].FileName, Is.EqualTo("file3.txt"));
+        Assert.That(result[0].FilePath, Is.EqualTo("\\source_2\\subfolder\\"));
+    }
+
+    [Test]
+    public async Task GetFileDetailsAsyncComposesMetadataAndAvailableVersions()
+    {
+        var result = await queryManager.GetFileDetailsAsync("2", "file1.txt", "\\source_1\\");
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Name, Is.EqualTo("file1.txt"));
+        Assert.That(result.RestorePath, Is.EqualTo("Y:\\MyFiles\\source_1\\file1.txt"));
+        Assert.That(result.Type, Is.EqualTo("Regular copy"));
+        Assert.That(result.Size, Is.EqualTo(100d));
+        Assert.That(result.Created, Is.EqualTo(new DateTime(2021, 1, 1)));
+        Assert.That(result.Modified, Is.EqualTo(new DateTime(2021, 1, 1)));
+        Assert.That(result.AvailableVersions.Select(x => x.Id), Is.EqualTo(new[] { "2", "1" }));
     }
 
     [Test]

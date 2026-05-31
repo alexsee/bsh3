@@ -38,7 +38,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private string? currentFavorite;
 
     [ObservableProperty]
-    private string searchTerms;
+    private string searchTerms = string.Empty;
 
     [ObservableProperty]
     private bool toggleInfoPane = false;
@@ -68,6 +68,31 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private bool HasVersionSelected() => CurrentVersion != null;
     private bool HasFileSelected() => CurrentItem != null && CurrentItem.IsFile;
 
+    partial void OnSearchTermsChanged(string value)
+    {
+        _ = ApplySearchTermsAsync(value);
+    }
+
+    private async Task ApplySearchTermsAsync(string value)
+    {
+        if (CurrentVersion == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            if (CurrentFolderPath.Count > 0)
+            {
+                await LoadFolderAsync(CurrentVersion.Id, CurrentFolderPath[^1].FullPath);
+            }
+
+            return;
+        }
+
+        await LoadSearchResultsAsync(CurrentVersion.Id, value);
+    }
+
     [RelayCommand(CanExecute = nameof(HasVersionSelected))]
     private async Task LoadVersion()
     {
@@ -84,6 +109,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         sources.ForEach(Favorites.Add);
         CurrentFavorite = sources[0];
 
+        SearchTerms = string.Empty;
         await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite);
     }
 
@@ -187,7 +213,16 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
     private async Task ShowFileProperties()
     {
-        throw new NotImplementedException();
+        if (CurrentItem == null || CurrentVersion == null)
+        {
+            return;
+        }
+
+        var fileDetails = await queryManager.GetFileDetailsAsync(CurrentVersion.Id, CurrentItem.Name, CurrentItem.FullPath);
+        if (fileDetails != null)
+        {
+            await presentationService.ShowFileDetailsAsync(fileDetails);
+        }
     }
 
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
@@ -276,6 +311,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     private async Task LoadFolderAsync(string version, string path)
     {
+        CurrentItem = null;
         var rootSplit = path.Split("\\", StringSplitOptions.RemoveEmptyEntries);
 
         CurrentFolderPath.Clear();
@@ -284,6 +320,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             CurrentFolderPath.Add(new FileOrFolderItem()
             {
                 Name = rootSplit[i],
+                DisplayName = rootSplit[i],
                 FullPath = string.Join("\\", rootSplit[0..(i + 1)])
             });
         }
@@ -298,6 +335,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             .Select(x => new FileOrFolderItem()
             {
                 Name = x[(x.LastIndexOf("\\") + 1)..],
+                DisplayName = x[(x.LastIndexOf("\\") + 1)..],
                 FullPath = x
             })
             .ToList();
@@ -307,6 +345,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             .Select(x => new FileOrFolderItem()
             {
                 Name = x.FileName,
+                DisplayName = x.FileName,
                 FullPath = x.FilePath,
                 IsFile = true,
                 FileNameOnDrive = x.FileName,
@@ -332,6 +371,36 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         LoadVersionCommand.NotifyCanExecuteChanged();
         LoadFolderCommand.NotifyCanExecuteChanged();
         UpFolderCommand.NotifyCanExecuteChanged();
+    }
+
+    private async Task LoadSearchResultsAsync(string version, string searchTerms)
+    {
+        CurrentItem = null;
+        var fileList = (await queryManager.SearchFilesByVersionAsync(version, searchTerms))
+            .Select(x => new FileOrFolderItem()
+            {
+                Name = x.FileName,
+                DisplayName = $"{x.FileName} - {x.FilePath.Trim('\\')}",
+                FullPath = x.FilePath,
+                IsFile = true,
+                FileNameOnDrive = x.FileName,
+
+                FileDateModified = x.FileDateModified,
+                FileDateCreated = x.FileDateCreated,
+                FileSize = x.FileSize
+            })
+            .ToList();
+
+        foreach (var file in fileList)
+        {
+            file.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive);
+            file.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive, 64);
+        }
+
+        Items.Clear();
+        fileList.ForEach(Items.Add);
+
+        LoadFolderCommand.NotifyCanExecuteChanged();
     }
 
     public async void OnNavigatedTo(object parameter)
