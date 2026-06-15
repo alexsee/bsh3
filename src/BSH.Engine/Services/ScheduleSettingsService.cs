@@ -26,15 +26,16 @@ public sealed class ScheduleSettingsService
 
     public async Task<ScheduleSettings> LoadAsync()
     {
-        var settings = new ScheduleSettings();
+        var settings = LoadPolicySettings();
         settings.Entries.AddRange(await scheduleRepository.GetSchedulesAsync());
-
-        LoadRetention(settings);
-        settings.AutomaticHourlyBackupThreshold = ParsePositiveInt(configurationManager.IntervallAutoHourBackups, 24);
-        LoadScheduledFullBackup(settings);
         settings.PerformMissedBackupsLater = configurationManager.DoPastBackups == "1";
 
         return settings;
+    }
+
+    public SchedulePolicy LoadPolicy()
+    {
+        return new SchedulePolicy(LoadPolicySettings());
     }
 
     public async Task SaveAsync(ScheduleSettings settings)
@@ -71,6 +72,15 @@ public sealed class ScheduleSettingsService
         settings.RetentionIntervalUnit = parts.Length > 0
             ? ParseRetentionUnit(parts[0])
             : ScheduleRetentionIntervalUnit.Day;
+    }
+
+    private ScheduleSettings LoadPolicySettings()
+    {
+        var settings = new ScheduleSettings();
+        LoadRetention(settings);
+        settings.AutomaticHourlyBackupThreshold = ParsePositiveInt(configurationManager.IntervallAutoHourBackups, 24);
+        LoadScheduledFullBackup(settings);
+        return settings;
     }
 
     private void LoadScheduledFullBackup(ScheduleSettings settings)

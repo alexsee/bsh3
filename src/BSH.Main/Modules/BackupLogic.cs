@@ -60,6 +60,11 @@ static class BackupLogic
         get; private set;
     }
 
+    public static ScheduleSettingsService ScheduleSettingsService
+    {
+        get; private set;
+    }
+
     public static IVersionQueryRepository VersionQueryRepository
     {
         get; private set;
@@ -87,6 +92,7 @@ static class BackupLogic
         ConfigurationManager = null;
         QueryManager = null;
         ScheduleRepository = null;
+        ScheduleSettingsService = null;
         VersionQueryRepository = null;
         BackupMutationRepository = null;
         BackupService = null;
@@ -139,6 +145,7 @@ static class BackupLogic
         var storageFactory = new StorageFactory(ConfigurationManager);
         QueryManager = new QueryManager(DbClientFactory, ConfigurationManager, storageFactory);
         ScheduleRepository = new ScheduleRepository(DbClientFactory);
+        ScheduleSettingsService = new ScheduleSettingsService(ConfigurationManager, ScheduleRepository);
         VersionQueryRepository = new VersionQueryRepository();
         BackupMutationRepository = new BackupMutationRepository(DbClientFactory);
         fileCollectorServiceFactory = new FileCollectorServiceFactory();
@@ -408,66 +415,10 @@ static class BackupLogic
         }
     }
 
-    private static List<VersionDetails> GetAutomaticVersionsToDelete()
-    {
-        var listDelete = new List<VersionDetails>();
-        var listVersions = QueryManager.GetVersions();
-        var hourlyBackupThreshold = int.TryParse(ConfigurationManager.IntervallAutoHourBackups, out var threshold) && threshold > 0
-            ? threshold
-            : 24;
-
-        foreach (var version in listVersions)
-        {
-            // ignore fixed versions
-            if (version.Stable)
-            {
-                continue;
-            }
-
-            // keep hourly backups for the configured automatic-retention threshold
-            if (DateTime.Now.Subtract(version.CreationDate) <= new TimeSpan(hourlyBackupThreshold, 0, 0))
-            {
-                continue;
-            }
-
-            // version older than 1 month
-            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(DateTime.DaysInMonth(version.CreationDate.Year, version.CreationDate.Month), 0, 0, 0))
-            {
-                // keep if last backup of the week
-                if (listVersions.Exists(x =>
-                    version.CreationDate != x.CreationDate &&
-                    version.CreationDate.Year == x.CreationDate.Year &&
-                    version.CreationDate.Month == x.CreationDate.Month &&
-                    version.CreationDate.Day - (int)version.CreationDate.DayOfWeek == x.CreationDate.Day - (int)x.CreationDate.DayOfWeek &&
-                    version.CreationDate.DayOfWeek < x.CreationDate.DayOfWeek)
-                    )
-                {
-                    listDelete.Add(version);
-                }
-            }
-            else
-            {
-                // keep if last backup on that day
-                if (listVersions.Exists(x =>
-                    version.CreationDate != x.CreationDate &&
-                    version.CreationDate.Year == x.CreationDate.Year &&
-                    version.CreationDate.Month == x.CreationDate.Month &&
-                    version.CreationDate.Day == x.CreationDate.Day &&
-                    version.CreationDate.TimeOfDay < x.CreationDate.TimeOfDay)
-                    )
-                {
-                    listDelete.Add(version);
-                }
-            }
-        }
-
-        return listDelete;
-    }
-
     private static async Task RemoveOldBackups()
     {
-        // get versions to clean
-        var listDelete = GetAutomaticVersionsToDelete();
+        var listDelete = ScheduleSettingsService.LoadPolicy()
+            .GetAutomaticVersionsToDelete(QueryManager.GetVersions(), DateTime.Now);
 
         // delete old versions
         foreach (var version in listDelete)
@@ -690,22 +641,9 @@ static class BackupLogic
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        // Vollsicherung durchführen?
-        var FullBackup = false;
-        if (!string.IsNullOrEmpty(ConfigurationManager.ScheduleFullBackup))
-        {
-            // Letzte Vollsicherung ermitteln
-            var Item = ConfigurationManager.ScheduleFullBackup.Split('|');
-            if (Item[0] == "day")
-            {
-                var lastFullBackup = await QueryManager.GetLastFullBackupAsync();
-                if (lastFullBackup != null)
-                {
-                    var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
-                    FullBackup = Diff.Days >= Convert.ToInt32(Item[1]);
-                }
-            }
-        }
+        var lastFullBackup = await QueryManager.GetLastFullBackupAsync();
+        var FullBackup = ScheduleSettingsService.LoadPolicy()
+            .ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
 
         try
         {
@@ -750,55 +688,9 @@ static class BackupLogic
 
     private static List<VersionDetails> GetScheduledVersionsToDelete()
     {
-        if (ConfigurationManager.IntervallDelete == "auto")
-        {
-            return GetAutomaticVersionsToDelete();
-        }
-
-        if (string.IsNullOrEmpty(ConfigurationManager.IntervallDelete))
-        {
-            return new List<VersionDetails>();
-        }
-
-        return GetCustomVersionsToDelete(ConfigurationManager.IntervallDelete);
-    }
-
-    private static List<VersionDetails> GetCustomVersionsToDelete(string intervalConfig)
-    {
-        var listDelete = new List<VersionDetails>();
-        var intervals = intervalConfig.Split('|');
-        var listVersions = QueryManager.GetVersions();
-
-        foreach (var version in listVersions)
-        {
-            if (version.Stable || listDelete.Contains(version))
-            {
-                continue;
-            }
-
-            if (ShouldDeleteVersion(version, intervals))
-            {
-                listDelete.Add(version);
-            }
-        }
-
-        return listDelete;
-    }
-
-    private static bool ShouldDeleteVersion(VersionDetails version, string[] intervals)
-    {
-        if (intervals.Length < 2)
-        {
-            return false;
-        }
-
-        return intervals[0] switch
-        {
-            "hour" => DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0),
-            "day" => DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0, 0),
-            "week" => DateTime.Now.Subtract(version.CreationDate) > new TimeSpan((int)Math.Round(Convert.ToDouble(intervals[1]) * 7d), 0, 0, 0),
-            _ => false
-        };
+        return ScheduleSettingsService.LoadPolicy()
+            .GetVersionsToDelete(QueryManager.GetVersions(), DateTime.Now)
+            .ToList();
     }
 
     #endregion
