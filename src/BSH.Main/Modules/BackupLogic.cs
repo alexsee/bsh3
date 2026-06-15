@@ -641,9 +641,11 @@ static class BackupLogic
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        var lastFullBackup = await QueryManager.GetLastFullBackupAsync();
-        var FullBackup = ScheduleSettingsService.LoadPolicy()
-            .ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
+        var schedulePolicy = ScheduleSettingsService.LoadPolicy();
+        var lastFullBackup = schedulePolicy.ScheduledFullBackupsEnabled
+            ? await QueryManager.GetLastFullBackupAsync()
+            : null;
+        var FullBackup = schedulePolicy.ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
 
         try
         {

@@ -318,9 +318,11 @@ public class ScheduledBackupService : IScheduledBackupService
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        var lastFullBackup = await queryManager.GetLastFullBackupAsync();
-        var fullBackupOption = scheduleSettingsService.LoadPolicy()
-            .ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
+        var schedulePolicy = scheduleSettingsService.LoadPolicy();
+        var lastFullBackup = schedulePolicy.ScheduledFullBackupsEnabled
+            ? await queryManager.GetLastFullBackupAsync()
+            : null;
+        var fullBackupOption = schedulePolicy.ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
 
         // Backup durchführen
         var task = jobService.CreateBackupAsync("Automatische Sicherung", "", false, fullBackupOption);

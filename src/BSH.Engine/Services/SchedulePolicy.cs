@@ -17,6 +17,8 @@ public sealed class SchedulePolicy
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
+    public bool ScheduledFullBackupsEnabled => settings.EnableScheduledFullBackups;
+
     public bool ShouldPerformFullBackup(DateTime? lastFullBackup, DateTime now)
     {
         var intervalDays = Math.Max(1, settings.ScheduledFullBackupDays);
@@ -43,40 +45,42 @@ public sealed class SchedulePolicy
     {
         var versionList = versions.ToList();
         var hourlyBackupThreshold = TimeSpan.FromHours(Math.Max(1, settings.AutomaticHourlyBackupThreshold));
-        var result = new List<VersionDetails>();
+        var candidates = versionList
+            .Where(version => !version.Stable && now.Subtract(version.CreationDate) > hourlyBackupThreshold)
+            .ToList();
 
-        foreach (var version in versionList)
-        {
-            if (version.Stable || now.Subtract(version.CreationDate) <= hourlyBackupThreshold)
-            {
-                continue;
-            }
+        var dailyCandidates = candidates
+            .Where(version => !UsesWeeklyRetention(version, now));
+        var weeklyCandidates = candidates
+            .Where(version => UsesWeeklyRetention(version, now));
 
-            if (now.Subtract(version.CreationDate) > TimeSpan.FromDays(
-                DateTime.DaysInMonth(version.CreationDate.Year, version.CreationDate.Month)))
-            {
-                if (versionList.Any(x =>
-                    version.CreationDate != x.CreationDate
-                    && version.CreationDate.Year == x.CreationDate.Year
-                    && version.CreationDate.Month == x.CreationDate.Month
-                    && version.CreationDate.Day - (int)version.CreationDate.DayOfWeek == x.CreationDate.Day - (int)x.CreationDate.DayOfWeek
-                    && version.CreationDate.DayOfWeek < x.CreationDate.DayOfWeek))
-                {
-                    result.Add(version);
-                }
-            }
-            else if (versionList.Any(x =>
-                version.CreationDate != x.CreationDate
-                && version.CreationDate.Year == x.CreationDate.Year
-                && version.CreationDate.Month == x.CreationDate.Month
-                && version.CreationDate.Day == x.CreationDate.Day
-                && version.CreationDate.TimeOfDay < x.CreationDate.TimeOfDay))
-            {
-                result.Add(version);
-            }
-        }
+        return GetSupersededVersions(dailyCandidates, versionList, version => version.CreationDate.Date)
+            .Concat(GetSupersededVersions(weeklyCandidates, versionList, version => GetWeekStart(version.CreationDate)))
+            .ToList();
+    }
 
-        return result;
+    private static IEnumerable<VersionDetails> GetSupersededVersions(
+        IEnumerable<VersionDetails> candidates,
+        IEnumerable<VersionDetails> allVersions,
+        Func<VersionDetails, DateTime> getRetentionPeriod)
+    {
+        var newestVersionByPeriod = allVersions
+            .GroupBy(getRetentionPeriod)
+            .ToDictionary(group => group.Key, group => group.Max(version => version.CreationDate));
+
+        return candidates.Where(version =>
+            version.CreationDate < newestVersionByPeriod[getRetentionPeriod(version)]);
+    }
+
+    private static bool UsesWeeklyRetention(VersionDetails version, DateTime now)
+    {
+        return now.Subtract(version.CreationDate) > TimeSpan.FromDays(
+            DateTime.DaysInMonth(version.CreationDate.Year, version.CreationDate.Month));
+    }
+
+    private static DateTime GetWeekStart(DateTime date)
+    {
+        return date.Date.AddDays(-(int)date.DayOfWeek);
     }
 
     private IReadOnlyList<VersionDetails> GetIntervalVersionsToDelete(

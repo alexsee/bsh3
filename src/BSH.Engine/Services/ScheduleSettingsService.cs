@@ -67,11 +67,17 @@ public sealed class ScheduleSettingsService
         }
 
         var parts = interval.Split('|');
+        if (parts.Length != 2
+            || !TryParseRetentionUnit(parts[0], out var unit)
+            || !TryParsePositiveInt(parts[1], out var retentionInterval))
+        {
+            settings.RetentionMode = ScheduleRetentionMode.None;
+            return;
+        }
+
         settings.RetentionMode = ScheduleRetentionMode.Interval;
-        settings.RetentionInterval = parts.Length > 1 ? ParsePositiveInt(parts[1], 1) : 1;
-        settings.RetentionIntervalUnit = parts.Length > 0
-            ? ParseRetentionUnit(parts[0])
-            : ScheduleRetentionIntervalUnit.Day;
+        settings.RetentionInterval = retentionInterval;
+        settings.RetentionIntervalUnit = unit;
     }
 
     private ScheduleSettings LoadPolicySettings()
@@ -93,8 +99,14 @@ public sealed class ScheduleSettingsService
         }
 
         var parts = fullBackup.Split('|');
-        settings.EnableScheduledFullBackups = parts.Length > 0 && parts[0] == "day";
-        settings.ScheduledFullBackupDays = parts.Length > 1 ? ParsePositiveInt(parts[1], 1) : 1;
+        if (parts.Length != 2 || parts[0] != "day" || !TryParsePositiveInt(parts[1], out var intervalDays))
+        {
+            settings.EnableScheduledFullBackups = false;
+            return;
+        }
+
+        settings.EnableScheduledFullBackups = true;
+        settings.ScheduledFullBackupDays = intervalDays;
     }
 
     private static string BuildRetentionConfig(ScheduleSettings settings)
@@ -107,14 +119,17 @@ public sealed class ScheduleSettingsService
         };
     }
 
-    private static ScheduleRetentionIntervalUnit ParseRetentionUnit(string unit)
+    private static bool TryParseRetentionUnit(string value, out ScheduleRetentionIntervalUnit unit)
     {
-        return unit switch
+        unit = value switch
         {
             "hour" => ScheduleRetentionIntervalUnit.Hour,
+            "day" => ScheduleRetentionIntervalUnit.Day,
             "week" => ScheduleRetentionIntervalUnit.Week,
             _ => ScheduleRetentionIntervalUnit.Day,
         };
+
+        return value is "hour" or "day" or "week";
     }
 
     private static string FormatRetentionUnit(ScheduleRetentionIntervalUnit unit)
@@ -129,8 +144,13 @@ public sealed class ScheduleSettingsService
 
     private static int ParsePositiveInt(string value, int fallback)
     {
-        return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) && parsed > 0
+        return TryParsePositiveInt(value, out var parsed)
             ? parsed
             : fallback;
+    }
+
+    private static bool TryParsePositiveInt(string value, out int parsed)
+    {
+        return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out parsed) && parsed > 0;
     }
 }

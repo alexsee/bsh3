@@ -112,7 +112,7 @@ public class ScheduleSettingsServiceTests
     }
 
     [Test]
-    public async Task LoadAsyncUsesSafeDefaultsForMalformedPolicySettings()
+    public async Task LoadAsyncDisablesMalformedDestructivePolicySettings()
     {
         configurationManager.IntervallDelete = "week|invalid";
         configurationManager.IntervallAutoHourBackups = "invalid";
@@ -120,12 +120,9 @@ public class ScheduleSettingsServiceTests
 
         var settings = await scheduleSettingsService.LoadAsync();
 
-        Assert.That(settings.RetentionMode, Is.EqualTo(ScheduleRetentionMode.Interval));
-        Assert.That(settings.RetentionIntervalUnit, Is.EqualTo(ScheduleRetentionIntervalUnit.Week));
-        Assert.That(settings.RetentionInterval, Is.EqualTo(1));
+        Assert.That(settings.RetentionMode, Is.EqualTo(ScheduleRetentionMode.None));
         Assert.That(settings.AutomaticHourlyBackupThreshold, Is.EqualTo(24));
-        Assert.That(settings.EnableScheduledFullBackups, Is.True);
-        Assert.That(settings.ScheduledFullBackupDays, Is.EqualTo(1));
+        Assert.That(settings.EnableScheduledFullBackups, Is.False);
     }
 
     [Test]

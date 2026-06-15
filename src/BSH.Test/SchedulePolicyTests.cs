@@ -29,6 +29,16 @@ public class SchedulePolicyTests
     }
 
     [Test]
+    public void ScheduledFullBackupsEnabledExposesWhetherHistoryIsRequired()
+    {
+        Assert.That(new SchedulePolicy(new ScheduleSettings()).ScheduledFullBackupsEnabled, Is.False);
+        Assert.That(new SchedulePolicy(new ScheduleSettings
+        {
+            EnableScheduledFullBackups = true
+        }).ScheduledFullBackupsEnabled, Is.True);
+    }
+
+    [Test]
     public void GetVersionsToDeleteUsesTypedIntervalRetention()
     {
         var oldVersion = CreateVersion("old", Now.AddDays(-15));
@@ -62,6 +72,39 @@ public class SchedulePolicyTests
             Now);
 
         Assert.That(result.Select(x => x.Id), Is.EqualTo(new[] { "old-hour" }));
+    }
+
+    [Test]
+    public void GetAutomaticVersionsToDeleteKeepsNewestVersionAcrossMonthBoundaryWeek()
+    {
+        var now = new DateTime(2026, 7, 15, 23, 0, 0);
+        var olderVersion = CreateVersion("may", new DateTime(2026, 5, 31, 8, 0, 0));
+        var newerVersion = CreateVersion("june", new DateTime(2026, 6, 1, 8, 0, 0));
+        var policy = new SchedulePolicy(new ScheduleSettings
+        {
+            RetentionMode = ScheduleRetentionMode.Automatic,
+            AutomaticHourlyBackupThreshold = 1
+        });
+
+        var result = policy.GetVersionsToDelete(new[] { olderVersion, newerVersion }, now);
+
+        Assert.That(result.Select(x => x.Id), Is.EqualTo(new[] { "may" }));
+    }
+
+    [Test]
+    public void GetAutomaticVersionsToDeleteKeepsStableVersionAsPeriodWinner()
+    {
+        var oldVersion = CreateVersion("old", Now.AddHours(-38));
+        var stableVersion = CreateVersion("stable", Now.AddHours(-37), stable: true);
+        var policy = new SchedulePolicy(new ScheduleSettings
+        {
+            RetentionMode = ScheduleRetentionMode.Automatic,
+            AutomaticHourlyBackupThreshold = 24
+        });
+
+        var result = policy.GetVersionsToDelete(new[] { oldVersion, stableVersion }, Now);
+
+        Assert.That(result.Select(x => x.Id), Is.EqualTo(new[] { "old" }));
     }
 
     private static VersionDetails CreateVersion(string id, DateTime creationDate, bool stable = false)
