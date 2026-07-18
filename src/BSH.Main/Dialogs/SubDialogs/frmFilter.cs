@@ -61,8 +61,6 @@ public partial class frmFilter
                 }
             }
 
-            chkIncludeSystemFolders.Checked = BackupLogic.ConfigurationManager.IncludeSystemFolders == "1";
-
             if (!string.IsNullOrEmpty(BackupLogic.ConfigurationManager.ExcludeMask))
             {
                 txtRegEx.Text = BackupLogic.ConfigurationManager.ExcludeMask.Replace("|", "\r\n");
@@ -137,8 +135,6 @@ public partial class frmFilter
         {
             BackupLogic.ConfigurationManager.ExcludeFile = "";
         }
-
-        BackupLogic.ConfigurationManager.IncludeSystemFolders = chkIncludeSystemFolders.Checked ? "1" : "0";
 
         // Fenster schließen
         Close();
