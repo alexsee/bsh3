@@ -23,342 +23,491 @@
         <models:SetupImportSourceKind x:Key="Import_Local">LocalMedia</models:SetupImportSourceKind>
         <models:SetupImportSourceKind x:Key="Import_Ftp">Ftp</models:SetupImportSourceKind>
         <models:SetupImportSourceKind x:Key="Import_Path">ExplicitPath</models:SetupImportSourceKind>
+        <converters:VisibilityInvertConverter x:Key="VisibilityInvertConverter" />
+
+        <Style x:Key="SetupTargetOptionButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="168" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
     </Page.Resources>
 
-    <Grid Background="White" Margin="30">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Grid Background="White">
+        <Grid
+            Width="800"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Stretch"
+            Margin="40,36">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <StackPanel
-            Grid.Row="0"
-            Spacing="4"
-            Visibility="{x:Bind ViewModel.WizardChromeVisibility, Mode=OneWay}">
-            <TextBlock FontSize="24" FontWeight="SemiBold" Text="{x:Bind ViewModel.Title, Mode=OneWay}" />
-            <TextBlock TextWrapping="WrapWholeWords" Text="{x:Bind ViewModel.Description, Mode=OneWay}" />
-            <TextBlock
-                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                Text="{x:Bind ViewModel.ValidationErrorMessage, Mode=OneWay}"
-                TextWrapping="WrapWholeWords" />
-        </StackPanel>
+            <StackPanel
+                Grid.Row="0"
+                Spacing="10"
+                Visibility="{x:Bind ViewModel.WizardChromeVisibility, Mode=OneWay}">
+                <TextBlock FontSize="24" FontWeight="SemiBold" Text="{x:Bind ViewModel.Title, Mode=OneWay}" />
+                <TextBlock
+                    Opacity="0.75"
+                    TextWrapping="WrapWholeWords"
+                    Text="{x:Bind ViewModel.Description, Mode=OneWay}" />
+            </StackPanel>
 
-        <!-- Welcome keeps its own validation line -->
-        <TextBlock
-            Grid.Row="0"
-            Margin="0,0,0,8"
-            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-            Text="{x:Bind ViewModel.ValidationErrorMessage, Mode=OneWay}"
-            TextWrapping="WrapWholeWords"
-            Visibility="{x:Bind ViewModel.WelcomeVisibility, Mode=OneWay}" />
+            <ScrollViewer Grid.Row="1" Margin="0,28,0,0" VerticalScrollBarVisibility="Auto">
+                <Grid Background="White">
+                    <!-- Welcome -->
+                    <StackPanel
+                        Visibility="{x:Bind ViewModel.WelcomeVisibility, Mode=OneWay}"
+                        VerticalAlignment="Center"
+                        Spacing="0">
+                        <TextBlock
+                            FontSize="32"
+                            FontWeight="SemiBold"
+                            TextAlignment="Center"
+                            Text="Set up Backup Service Home" />
+                        <TextBlock
+                            Margin="0,14,0,32"
+                            FontSize="15"
+                            Opacity="0.72"
+                            TextAlignment="Center"
+                            TextWrapping="WrapWholeWords"
+                            Text="Protect your files in a few steps. Choose how you want to begin." />
 
-        <ScrollViewer Grid.Row="1" Margin="0,12,0,0" VerticalScrollBarVisibility="Auto">
-            <Grid Background="White">
-                <!-- Welcome -->
-                <Grid Visibility="{x:Bind ViewModel.WelcomeVisibility, Mode=OneWay}" MaxWidth="760" HorizontalAlignment="Left">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                        <Border
+                            Padding="20,18"
+                            Background="#F3F8FF"
+                            BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                            BorderThickness="2"
+                            CornerRadius="8">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <FontIcon
+                                    Grid.Column="0"
+                                    FontSize="22"
+                                    Glyph="&#xE8B7;"
+                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    VerticalAlignment="Top" />
+                                <StackPanel Grid.Column="1" Spacing="6">
+                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="Start a new backup setup" />
+                                    <TextBlock
+                                        Opacity="0.75"
+                                        TextWrapping="WrapWholeWords"
+                                        Text="Recommended for first-time use. Pick the folders to protect, choose where backups are stored, and decide whether backups run automatically." />
+                                </StackPanel>
+                                <Button
+                                    Grid.Column="2"
+                                    MinWidth="120"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Command="{x:Bind ViewModel.StartNewSetupCommand}"
+                                    Content="Continue" />
+                            </Grid>
+                        </Border>
 
-                    <TextBlock
-                        Grid.Row="0"
-                        FontSize="34"
-                        FontWeight="SemiBold"
-                        Text="Set up Backup Service Home" />
-                    <TextBlock
-                        Grid.Row="1"
-                        Margin="0,10,0,28"
-                        FontSize="16"
-                        Opacity="0.72"
-                        TextWrapping="WrapWholeWords"
-                        Text="Protect your files in a few steps. Choose how you want to begin." />
+                        <Border
+                            Margin="0,20,0,0"
+                            Padding="20,18"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <FontIcon
+                                    Grid.Column="0"
+                                    FontSize="22"
+                                    Glyph="&#xE8B5;"
+                                    VerticalAlignment="Top" />
+                                <StackPanel Grid.Column="1" Spacing="6">
+                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="Import an existing backup" />
+                                    <TextBlock
+                                        Opacity="0.75"
+                                        TextWrapping="WrapWholeWords"
+                                        Text="Already have a Backup Service Home database on a drive, network share, or FTP server? Import it and remap source folders if paths changed." />
+                                </StackPanel>
+                                <Button
+                                    Grid.Column="2"
+                                    MinWidth="120"
+                                    VerticalAlignment="Center"
+                                    Command="{x:Bind ViewModel.StartImportCommand}"
+                                    Content="Import" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
 
-                    <!-- Primary: new setup -->
-                    <Border
-                        Grid.Row="2"
-                        Padding="20"
-                        Background="#F3F8FF"
-                        BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
-                        BorderThickness="2"
-                        CornerRadius="8">
-                        <Grid ColumnSpacing="16">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <FontIcon
-                                Grid.Column="0"
-                                FontSize="28"
-                                Glyph="&#xE8B7;"
-                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                VerticalAlignment="Top" />
-                            <StackPanel Grid.Column="1" Spacing="6">
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="Start a new backup setup" />
-                                <TextBlock
-                                    Opacity="0.75"
-                                    TextWrapping="WrapWholeWords"
-                                    Text="Recommended for first-time use. Pick the folders to protect, choose where backups are stored, and decide whether backups run automatically." />
+                    <!-- Sources -->
+                    <Grid Visibility="{x:Bind ViewModel.SourcesVisibility, Mode=OneWay}" RowSpacing="20">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" MinHeight="180" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Button
+                            Grid.Row="0"
+                            MinHeight="44"
+                            Padding="16,10"
+                            HorizontalAlignment="Left"
+                            Style="{StaticResource AccentButtonStyle}"
+                            Command="{x:Bind ViewModel.AddSourceFolderCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE710;" FontSize="16" />
+                                <TextBlock Text="Add a folder to back up" VerticalAlignment="Center" />
                             </StackPanel>
-                            <Button
-                                Grid.Column="2"
-                                MinWidth="140"
-                                VerticalAlignment="Center"
-                                Style="{StaticResource AccentButtonStyle}"
-                                Command="{x:Bind ViewModel.StartNewSetupCommand}"
-                                Content="Continue" />
-                        </Grid>
-                    </Border>
+                        </Button>
 
-                    <!-- Secondary: import -->
-                    <Border
-                        Grid.Row="3"
-                        Margin="0,14,0,0"
-                        Padding="20"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8">
-                        <Grid ColumnSpacing="16">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <FontIcon
-                                Grid.Column="0"
-                                FontSize="28"
-                                Glyph="&#xE8B5;"
-                                VerticalAlignment="Top" />
-                            <StackPanel Grid.Column="1" Spacing="6">
-                                <TextBlock FontSize="18" FontWeight="SemiBold" Text="Import an existing backup" />
-                                <TextBlock
-                                    Opacity="0.75"
-                                    TextWrapping="WrapWholeWords"
-                                    Text="Already have a Backup Service Home database on a drive, network share, or FTP server? Import it and remap source folders if paths changed." />
-                            </StackPanel>
-                            <Button
-                                Grid.Column="2"
-                                MinWidth="140"
-                                VerticalAlignment="Center"
-                                Command="{x:Bind ViewModel.StartImportCommand}"
-                                Content="Import" />
-                        </Grid>
-                    </Border>
-                </Grid>
-
-                <!-- Sources -->
-                <Grid Visibility="{x:Bind ViewModel.SourcesVisibility, Mode=OneWay}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <ListView
-                        ItemsSource="{x:Bind ViewModel.Sources, Mode=OneWay}"
-                        SelectedItem="{x:Bind ViewModel.SelectedSource, Mode=TwoWay}" />
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,12,0,0">
-                        <Button Command="{x:Bind ViewModel.AddSourceFolderCommand}" Content="Add folder" />
-                        <Button Command="{x:Bind ViewModel.RemoveSourceFolderCommand}" Content="Remove" />
-                    </StackPanel>
-                </Grid>
-
-                <!-- Target -->
-                <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.TargetVisibility, Mode=OneWay}">
-                    <RadioButton Content="Local, removable, or network drive"
-                                 IsChecked="{Binding SelectedTargetKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Local}}" />
-                    <RadioButton Content="UNC / network path"
-                                 IsChecked="{Binding SelectedTargetKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Unc}}" />
-                    <RadioButton Content="FTP server"
-                                 IsChecked="{Binding SelectedTargetKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Ftp}}" />
-
-                    <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">
                         <ListView
-                            Height="180"
-                            ItemsSource="{x:Bind ViewModel.AvailableDrives, Mode=OneWay}"
-                            SelectedItem="{x:Bind ViewModel.SelectedDrive, Mode=TwoWay}"
-                            DisplayMemberPath="DisplayName" />
-                        <Button Command="{x:Bind ViewModel.RefreshDrivesCommand}" Content="Refresh drives" HorizontalAlignment="Left" />
-                    </StackPanel>
+                            Grid.Row="1"
+                            ItemsSource="{x:Bind ViewModel.Sources, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedSource, Mode=TwoWay}" />
 
-                    <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.UncTargetVisibility, Mode=OneWay}">
-                        <TextBox Header="UNC path" Text="{x:Bind ViewModel.UncPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBox Header="UNC username" Text="{x:Bind ViewModel.UncUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <PasswordBox Header="UNC password" Password="{Binding UncPassword, Mode=TwoWay}" />
-                    </StackPanel>
-
-                    <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.FtpTargetVisibility, Mode=OneWay}">
-                        <TextBox Header="FTP host" Text="{x:Bind ViewModel.FtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBox Header="FTP port" Text="{x:Bind ViewModel.FtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBox Header="FTP user" Text="{x:Bind ViewModel.FtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <PasswordBox Header="FTP password" Password="{Binding FtpPassword, Mode=TwoWay}" />
-                        <TextBox Header="FTP folder" Text="{x:Bind ViewModel.FtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBox Header="FTP encoding" Text="{x:Bind ViewModel.FtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <CheckBox Content="Enforce unencrypted FTP" IsChecked="{x:Bind ViewModel.FtpEnforceUnencrypted, Mode=TwoWay}" />
-                    </StackPanel>
-                </StackPanel>
-
-                <!-- Mode -->
-                <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.ModeVisibility, Mode=OneWay}">
-                    <RadioButton Content="Automatic backups"
-                                 IsChecked="{Binding SelectedTaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Auto}}" />
-                    <TextBlock Margin="28,0,0,0" TextWrapping="WrapWholeWords"
-                               Text="The system starts immediately and creates the first backup." />
-                    <RadioButton Content="Manual backups"
-                                 IsChecked="{Binding SelectedTaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Manual}}" />
-                    <TextBlock Margin="28,0,0,0" TextWrapping="WrapWholeWords"
-                               Text="Open settings after setup so you can refine the configuration before the first backup." />
-                </StackPanel>
-
-                <!-- Import media -->
-                <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.ImportMediaVisibility, Mode=OneWay}">
-                    <RadioButton Content="Local or network media"
-                                 IsChecked="{Binding SelectedImportSourceKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Local}}" />
-                    <RadioButton Content="FTP server"
-                                 IsChecked="{Binding SelectedImportSourceKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Ftp}}" />
-                    <RadioButton Content="Explicit folder path"
-                                 IsChecked="{Binding SelectedImportSourceKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Path}}" />
-
-                    <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.LocalImportVisibility, Mode=OneWay}">
-                        <ListView
-                            Height="160"
-                            ItemsSource="{x:Bind ViewModel.AvailableDrives, Mode=OneWay}"
-                            SelectedItem="{x:Bind ViewModel.SelectedImportDrive, Mode=TwoWay}"
-                            DisplayMemberPath="DisplayName" />
-                        <Button Command="{x:Bind ViewModel.RefreshDrivesCommand}" Content="Refresh drives" HorizontalAlignment="Left" />
-                    </StackPanel>
-
-                    <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.ExplicitImportVisibility, Mode=OneWay}">
-                        <TextBox Header="Folder containing backup.bshdb" Text="{x:Bind ViewModel.ExplicitImportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button Command="{x:Bind ViewModel.BrowseExplicitImportPathCommand}" Content="Browse..." HorizontalAlignment="Left" />
-                    </StackPanel>
-
-                    <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.FtpImportVisibility, Mode=OneWay}">
-                        <TextBox Header="FTP host" Text="{x:Bind ViewModel.ImportFtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBox Header="FTP port" Text="{x:Bind ViewModel.ImportFtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBox Header="FTP user" Text="{x:Bind ViewModel.ImportFtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <PasswordBox Header="FTP password" Password="{Binding ImportFtpPassword, Mode=TwoWay}" />
-                        <TextBox Header="FTP folder" Text="{x:Bind ViewModel.ImportFtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBox Header="FTP encoding" Text="{x:Bind ViewModel.ImportFtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <CheckBox Content="Enforce unencrypted FTP" IsChecked="{x:Bind ViewModel.ImportFtpEnforceUnencrypted, Mode=TwoWay}" />
-                    </StackPanel>
-                </StackPanel>
-
-                <!-- Import select -->
-                <ListView
-                    Visibility="{x:Bind ViewModel.ImportSelectVisibility, Mode=OneWay}"
-                    ItemsSource="{x:Bind ViewModel.DiscoveredBackups, Mode=OneWay}"
-                    SelectedItem="{x:Bind ViewModel.SelectedDiscoveredBackup, Mode=TwoWay}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:DiscoveredBackup">
-                            <TextBlock Text="{x:Bind DisplayName, Mode=OneTime}" TextWrapping="Wrap" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-
-                <!-- Import remap: two columns -->
-                <Grid Visibility="{x:Bind ViewModel.ImportRemapVisibility, Mode=OneWay}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <Grid Margin="12,0,12,8" ColumnSpacing="16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" FontWeight="SemiBold" Text="Original path" />
-                        <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="Path on this PC" />
+                        <Button
+                            Grid.Row="2"
+                            Margin="0,8,0,0"
+                            HorizontalAlignment="Left"
+                            Command="{x:Bind ViewModel.RemoveSourceFolderCommand}"
+                            Content="Remove selected folder" />
                     </Grid>
 
-                    <ListView
-                        Grid.Row="1"
-                        ItemsSource="{x:Bind ViewModel.SourceRemaps, Mode=OneWay}"
-                        SelectedItem="{x:Bind ViewModel.SelectedSourceRemap, Mode=TwoWay}">
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                <Setter Property="Padding" Value="12,4" />
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="models:SourceRemap">
-                                <Grid ColumnSpacing="16" Padding="0,6">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock
-                                        Grid.Column="0"
-                                        Text="{x:Bind OriginalPath, Mode=OneTime}"
-                                        TextWrapping="Wrap"
-                                        VerticalAlignment="Center" />
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        FontWeight="SemiBold"
-                                        Text="{x:Bind CurrentPath, Mode=OneTime}"
-                                        TextWrapping="Wrap"
-                                        VerticalAlignment="Center" />
+                    <!-- Target -->
+                    <StackPanel Spacing="28" Visibility="{x:Bind ViewModel.TargetVisibility, Mode=OneWay}">
+                        <StackPanel
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="12">
+                            <Button
+                                Style="{StaticResource SetupTargetOptionButtonStyle}"
+                                Command="{x:Bind ViewModel.SelectLocalTargetCommand}">
+                                <Grid>
+                                    <Border
+                                        Padding="10,12"
+                                        CornerRadius="8"
+                                        BorderThickness="2"
+                                        BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                                        Background="#F3F8FF"
+                                        Visibility="{x:Bind ViewModel.IsLocalTargetSelected, Mode=OneWay}">
+                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                            <FontIcon FontSize="18" Glyph="&#xEDA2;" HorizontalAlignment="Center"
+                                                      Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
+                                                       Text="This PC or drive" />
+                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
+                                                       Text="Disk, USB, or mapped drive" />
+                                        </StackPanel>
+                                    </Border>
+                                    <Border
+                                        Padding="10,12"
+                                        CornerRadius="8"
+                                        BorderThickness="1"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        Visibility="{x:Bind ViewModel.IsLocalTargetSelected, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}">
+                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                            <FontIcon FontSize="18" Glyph="&#xEDA2;" HorizontalAlignment="Center" />
+                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
+                                                       Text="This PC or drive" />
+                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
+                                                       Text="Disk, USB, or mapped drive" />
+                                        </StackPanel>
+                                    </Border>
                                 </Grid>
+                            </Button>
+
+                            <Button
+                                Style="{StaticResource SetupTargetOptionButtonStyle}"
+                                Command="{x:Bind ViewModel.SelectUncTargetCommand}">
+                                <Grid>
+                                    <Border
+                                        Padding="10,12"
+                                        CornerRadius="8"
+                                        BorderThickness="2"
+                                        BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                                        Background="#F3F8FF"
+                                        Visibility="{x:Bind ViewModel.IsUncTargetSelected, Mode=OneWay}">
+                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                            <FontIcon FontSize="18" Glyph="&#xE968;" HorizontalAlignment="Center"
+                                                      Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
+                                                       Text="Network share" />
+                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
+                                                       Text="UNC path like \\server\share" />
+                                        </StackPanel>
+                                    </Border>
+                                    <Border
+                                        Padding="10,12"
+                                        CornerRadius="8"
+                                        BorderThickness="1"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        Visibility="{x:Bind ViewModel.IsUncTargetSelected, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}">
+                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                            <FontIcon FontSize="18" Glyph="&#xE968;" HorizontalAlignment="Center" />
+                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
+                                                       Text="Network share" />
+                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
+                                                       Text="UNC path like \\server\share" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </Button>
+
+                            <Button
+                                Style="{StaticResource SetupTargetOptionButtonStyle}"
+                                Command="{x:Bind ViewModel.SelectFtpTargetCommand}">
+                                <Grid>
+                                    <Border
+                                        Padding="10,12"
+                                        CornerRadius="8"
+                                        BorderThickness="2"
+                                        BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                                        Background="#F3F8FF"
+                                        Visibility="{x:Bind ViewModel.IsFtpTargetSelected, Mode=OneWay}">
+                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                            <FontIcon FontSize="18" Glyph="&#xE839;" HorizontalAlignment="Center"
+                                                      Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
+                                                       Text="FTP server" />
+                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
+                                                       Text="Remote host and login" />
+                                        </StackPanel>
+                                    </Border>
+                                    <Border
+                                        Padding="10,12"
+                                        CornerRadius="8"
+                                        BorderThickness="1"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        Visibility="{x:Bind ViewModel.IsFtpTargetSelected, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}">
+                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                            <FontIcon FontSize="18" Glyph="&#xE839;" HorizontalAlignment="Center" />
+                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
+                                                       Text="FTP server" />
+                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
+                                                       Text="Remote host and login" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">
+                            <TextBlock FontWeight="SemiBold" Text="Select the drive for your backups" />
+                            <TextBlock Opacity="0.72" TextWrapping="WrapWholeWords"
+                                       Text="Backups will be stored under Backups\ComputerName\UserName on the drive you choose." />
+                            <ListView
+                                Height="160"
+                                ItemsSource="{x:Bind ViewModel.AvailableDrives, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedDrive, Mode=TwoWay}"
+                                DisplayMemberPath="DisplayName" />
+                            <Button Command="{x:Bind ViewModel.RefreshDrivesCommand}" Content="Refresh drives" HorizontalAlignment="Left" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.UncTargetVisibility, Mode=OneWay}">
+                            <TextBlock FontWeight="SemiBold" Text="Enter the network share" />
+                            <TextBox Header="Network path (for example \\server\backups)" Text="{x:Bind ViewModel.UncPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="Username (optional)" Text="{x:Bind ViewModel.UncUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <PasswordBox Header="Password (optional)" Password="{Binding UncPassword, Mode=TwoWay}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.FtpTargetVisibility, Mode=OneWay}">
+                            <TextBlock FontWeight="SemiBold" Text="Enter your FTP server details" />
+                            <TextBox Header="FTP host" Text="{x:Bind ViewModel.FtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="FTP port" Text="{x:Bind ViewModel.FtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="FTP user" Text="{x:Bind ViewModel.FtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <PasswordBox Header="FTP password" Password="{Binding FtpPassword, Mode=TwoWay}" />
+                            <TextBox Header="FTP folder" Text="{x:Bind ViewModel.FtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="FTP encoding" Text="{x:Bind ViewModel.FtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <CheckBox Content="Enforce unencrypted FTP" IsChecked="{x:Bind ViewModel.FtpEnforceUnencrypted, Mode=TwoWay}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Mode -->
+                    <StackPanel Spacing="24" Visibility="{x:Bind ViewModel.ModeVisibility, Mode=OneWay}">
+                        <StackPanel Spacing="8">
+                            <RadioButton Content="Automatic backups"
+                                         IsChecked="{Binding SelectedTaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Auto}}" />
+                            <TextBlock Margin="28,0,0,0" Opacity="0.75" TextWrapping="WrapWholeWords"
+                                       Text="The system starts immediately and creates the first backup." />
+                        </StackPanel>
+                        <StackPanel Spacing="8">
+                            <RadioButton Content="Manual backups"
+                                         IsChecked="{Binding SelectedTaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Manual}}" />
+                            <TextBlock Margin="28,0,0,0" Opacity="0.75" TextWrapping="WrapWholeWords"
+                                       Text="Open settings after setup so you can refine the configuration before the first backup." />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Import media -->
+                    <StackPanel Spacing="24" Visibility="{x:Bind ViewModel.ImportMediaVisibility, Mode=OneWay}">
+                        <StackPanel Spacing="14">
+                            <RadioButton Content="Local or network media"
+                                         IsChecked="{Binding SelectedImportSourceKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Local}}" />
+                            <RadioButton Content="FTP server"
+                                         IsChecked="{Binding SelectedImportSourceKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Ftp}}" />
+                            <RadioButton Content="Explicit folder path"
+                                         IsChecked="{Binding SelectedImportSourceKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Path}}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalImportVisibility, Mode=OneWay}">
+                            <ListView
+                                Height="160"
+                                ItemsSource="{x:Bind ViewModel.AvailableDrives, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedImportDrive, Mode=TwoWay}"
+                                DisplayMemberPath="DisplayName" />
+                            <Button Command="{x:Bind ViewModel.RefreshDrivesCommand}" Content="Refresh drives" HorizontalAlignment="Left" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.ExplicitImportVisibility, Mode=OneWay}">
+                            <TextBox Header="Folder containing backup.bshdb" Text="{x:Bind ViewModel.ExplicitImportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button Command="{x:Bind ViewModel.BrowseExplicitImportPathCommand}" Content="Browse..." HorizontalAlignment="Left" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.FtpImportVisibility, Mode=OneWay}">
+                            <TextBox Header="FTP host" Text="{x:Bind ViewModel.ImportFtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="FTP port" Text="{x:Bind ViewModel.ImportFtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="FTP user" Text="{x:Bind ViewModel.ImportFtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <PasswordBox Header="FTP password" Password="{Binding ImportFtpPassword, Mode=TwoWay}" />
+                            <TextBox Header="FTP folder" Text="{x:Bind ViewModel.ImportFtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="FTP encoding" Text="{x:Bind ViewModel.ImportFtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <CheckBox Content="Enforce unencrypted FTP" IsChecked="{x:Bind ViewModel.ImportFtpEnforceUnencrypted, Mode=TwoWay}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Import select -->
+                    <ListView
+                        Visibility="{x:Bind ViewModel.ImportSelectVisibility, Mode=OneWay}"
+                        ItemsSource="{x:Bind ViewModel.DiscoveredBackups, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.SelectedDiscoveredBackup, Mode=TwoWay}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:DiscoveredBackup">
+                                <TextBlock Text="{x:Bind DisplayName, Mode=OneTime}" TextWrapping="Wrap" />
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
 
-                    <Button
-                        Grid.Row="2"
-                        Margin="0,12,0,0"
-                        HorizontalAlignment="Left"
-                        Command="{x:Bind ViewModel.RemapSelectedSourceCommand}"
-                        Content="Change path on this PC" />
+                    <!-- Import remap -->
+                    <Grid Visibility="{x:Bind ViewModel.ImportRemapVisibility, Mode=OneWay}" RowSpacing="16">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Margin="12,0,12,0" ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" FontWeight="SemiBold" Text="Original path" />
+                            <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="Path on this PC" />
+                        </Grid>
+
+                        <ListView
+                            Grid.Row="1"
+                            ItemsSource="{x:Bind ViewModel.SourceRemaps, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedSourceRemap, Mode=TwoWay}">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Padding" Value="12,8" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:SourceRemap">
+                                    <Grid ColumnSpacing="16" Padding="0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            Text="{x:Bind OriginalPath, Mode=OneTime}"
+                                            TextWrapping="Wrap"
+                                            VerticalAlignment="Center" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            FontWeight="SemiBold"
+                                            Text="{x:Bind CurrentPath, Mode=OneTime}"
+                                            TextWrapping="Wrap"
+                                            VerticalAlignment="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                        <Button
+                            Grid.Row="2"
+                            Margin="0,8,0,0"
+                            HorizontalAlignment="Left"
+                            Command="{x:Bind ViewModel.RemapSelectedSourceCommand}"
+                            Content="Change path on this PC" />
+                    </Grid>
+
+                    <!-- Progress -->
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="16"
+                        Visibility="{x:Bind ViewModel.ProgressVisibility, Mode=OneWay}">
+                        <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" Width="48" Height="48" />
+                        <TextBlock Text="Applying setup..." HorizontalAlignment="Center" />
+                    </StackPanel>
                 </Grid>
+            </ScrollViewer>
 
-                <!-- Progress -->
-                <StackPanel
-                    HorizontalAlignment="Center"
+            <Border
+                Grid.Row="2"
+                Margin="0,28,0,0"
+                BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                BorderThickness="0,1,0,0"
+                Visibility="{x:Bind ViewModel.WizardChromeVisibility, Mode=OneWay}" />
+
+            <Grid
+                Grid.Row="3"
+                Margin="0,20,0,0"
+                ColumnSpacing="12"
+                Visibility="{x:Bind ViewModel.WizardChromeVisibility, Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Column="0"
                     VerticalAlignment="Center"
-                    Spacing="12"
-                    Visibility="{x:Bind ViewModel.ProgressVisibility, Mode=OneWay}">
-                    <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" Width="48" Height="48" />
-                    <TextBlock Text="Applying setup..." HorizontalAlignment="Center" />
-                </StackPanel>
+                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                    Text="{x:Bind ViewModel.ValidationErrorMessage, Mode=OneWay}"
+                    TextWrapping="WrapWholeWords" />
+
+                <Button
+                    Grid.Column="1"
+                    MinWidth="100"
+                    Command="{x:Bind ViewModel.GoBackCommand}"
+                    Content="Back"
+                    Visibility="{x:Bind ViewModel.BackButtonVisibility, Mode=OneWay}" />
+                <Button
+                    Grid.Column="2"
+                    MinWidth="100"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Command="{x:Bind ViewModel.GoNextCommand}"
+                    Content="Next"
+                    Visibility="{x:Bind ViewModel.NextButtonVisibility, Mode=OneWay}" />
             </Grid>
-        </ScrollViewer>
-
-        <Border
-            Grid.Row="2"
-            Margin="0,16,0,0"
-            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
-            BorderThickness="0,1,0,0"
-            Visibility="{x:Bind ViewModel.WizardChromeVisibility, Mode=OneWay}" />
-
-        <Grid
-            Grid.Row="3"
-            Margin="0,16,0,0"
-            Visibility="{x:Bind ViewModel.WizardChromeVisibility, Mode=OneWay}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Button
-                Grid.Column="1"
-                Margin="0,0,8,0"
-                MinWidth="100"
-                Command="{x:Bind ViewModel.GoBackCommand}"
-                Content="Back"
-                Visibility="{x:Bind ViewModel.BackButtonVisibility, Mode=OneWay}" />
-            <Button
-                Grid.Column="2"
-                MinWidth="100"
-                Style="{StaticResource AccentButtonStyle}"
-                Command="{x:Bind ViewModel.GoNextCommand}"
-                Content="Next"
-                Visibility="{x:Bind ViewModel.NextButtonVisibility, Mode=OneWay}" />
         </Grid>
     </Grid>
 </Page>
