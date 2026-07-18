@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:BSH.MainApp.Converters"
+    xmlns:controls="using:BSH.MainApp.Controls"
     xmlns:models="using:BSH.MainApp.Models"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
     xmlns:engine="using:Brightbits.BSH.Engine"
@@ -23,17 +24,6 @@
         <models:SetupImportSourceKind x:Key="Import_Local">LocalMedia</models:SetupImportSourceKind>
         <models:SetupImportSourceKind x:Key="Import_Ftp">Ftp</models:SetupImportSourceKind>
         <models:SetupImportSourceKind x:Key="Import_Path">ExplicitPath</models:SetupImportSourceKind>
-        <converters:VisibilityInvertConverter x:Key="VisibilityInvertConverter" />
-
-        <Style x:Key="SetupTargetOptionButtonStyle" TargetType="Button">
-            <Setter Property="Width" Value="168" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="VerticalContentAlignment" Value="Stretch" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-        </Style>
     </Page.Resources>
 
     <Grid Background="White">
@@ -189,119 +179,27 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Center"
                             Spacing="12">
-                            <Button
-                                Style="{StaticResource SetupTargetOptionButtonStyle}"
-                                Command="{x:Bind ViewModel.SelectLocalTargetCommand}">
-                                <Grid>
-                                    <Border
-                                        Padding="10,12"
-                                        CornerRadius="8"
-                                        BorderThickness="2"
-                                        BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
-                                        Background="#F3F8FF"
-                                        Visibility="{x:Bind ViewModel.IsLocalTargetSelected, Mode=OneWay}">
-                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
-                                            <FontIcon FontSize="18" Glyph="&#xEDA2;" HorizontalAlignment="Center"
-                                                      Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
-                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
-                                                       Text="This PC or drive" />
-                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
-                                                       Text="Disk, USB, or mapped drive" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Padding="10,12"
-                                        CornerRadius="8"
-                                        BorderThickness="1"
-                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                        Visibility="{x:Bind ViewModel.IsLocalTargetSelected, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}">
-                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
-                                            <FontIcon FontSize="18" Glyph="&#xEDA2;" HorizontalAlignment="Center" />
-                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
-                                                       Text="This PC or drive" />
-                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
-                                                       Text="Disk, USB, or mapped drive" />
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                            </Button>
-
-                            <Button
-                                Style="{StaticResource SetupTargetOptionButtonStyle}"
-                                Command="{x:Bind ViewModel.SelectUncTargetCommand}">
-                                <Grid>
-                                    <Border
-                                        Padding="10,12"
-                                        CornerRadius="8"
-                                        BorderThickness="2"
-                                        BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
-                                        Background="#F3F8FF"
-                                        Visibility="{x:Bind ViewModel.IsUncTargetSelected, Mode=OneWay}">
-                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
-                                            <FontIcon FontSize="18" Glyph="&#xE968;" HorizontalAlignment="Center"
-                                                      Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
-                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
-                                                       Text="Network share" />
-                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
-                                                       Text="UNC path like \\server\share" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Padding="10,12"
-                                        CornerRadius="8"
-                                        BorderThickness="1"
-                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                        Visibility="{x:Bind ViewModel.IsUncTargetSelected, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}">
-                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
-                                            <FontIcon FontSize="18" Glyph="&#xE968;" HorizontalAlignment="Center" />
-                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
-                                                       Text="Network share" />
-                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
-                                                       Text="UNC path like \\server\share" />
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                            </Button>
-
-                            <Button
-                                Style="{StaticResource SetupTargetOptionButtonStyle}"
-                                Command="{x:Bind ViewModel.SelectFtpTargetCommand}">
-                                <Grid>
-                                    <Border
-                                        Padding="10,12"
-                                        CornerRadius="8"
-                                        BorderThickness="2"
-                                        BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
-                                        Background="#F3F8FF"
-                                        Visibility="{x:Bind ViewModel.IsFtpTargetSelected, Mode=OneWay}">
-                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
-                                            <FontIcon FontSize="18" Glyph="&#xE839;" HorizontalAlignment="Center"
-                                                      Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
-                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
-                                                       Text="FTP server" />
-                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
-                                                       Text="Remote host and login" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Padding="10,12"
-                                        CornerRadius="8"
-                                        BorderThickness="1"
-                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                        Visibility="{x:Bind ViewModel.IsFtpTargetSelected, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}">
-                                        <StackPanel Spacing="4" HorizontalAlignment="Center">
-                                            <FontIcon FontSize="18" Glyph="&#xE839;" HorizontalAlignment="Center" />
-                                            <TextBlock FontSize="13" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"
-                                                       Text="FTP server" />
-                                            <TextBlock FontSize="11" Opacity="0.75" TextAlignment="Center" TextWrapping="WrapWholeWords"
-                                                       Text="Remote host and login" />
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                            </Button>
+                            <controls:SetupOptionCard
+                                Title="This PC or drive"
+                                Description="Disk, USB, or mapped drive"
+                                Glyph="&#xEDA2;"
+                                IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Local}}"
+                                Command="{x:Bind ViewModel.SelectTargetCommand}"
+                                CommandParameter="{StaticResource Target_Local}" />
+                            <controls:SetupOptionCard
+                                Title="Network share"
+                                Description="UNC path like \\server\share"
+                                Glyph="&#xE968;"
+                                IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Unc}}"
+                                Command="{x:Bind ViewModel.SelectTargetCommand}"
+                                CommandParameter="{StaticResource Target_Unc}" />
+                            <controls:SetupOptionCard
+                                Title="FTP server"
+                                Description="Remote host and login"
+                                Glyph="&#xE839;"
+                                IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Ftp}}"
+                                Command="{x:Bind ViewModel.SelectTargetCommand}"
+                                CommandParameter="{StaticResource Target_Ftp}" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">
@@ -352,17 +250,36 @@
                     </StackPanel>
 
                     <!-- Import media -->
-                    <StackPanel Spacing="24" Visibility="{x:Bind ViewModel.ImportMediaVisibility, Mode=OneWay}">
-                        <StackPanel Spacing="14">
-                            <RadioButton Content="Local or network media"
-                                         IsChecked="{Binding SelectedImportSourceKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Local}}" />
-                            <RadioButton Content="FTP server"
-                                         IsChecked="{Binding SelectedImportSourceKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Ftp}}" />
-                            <RadioButton Content="Explicit folder path"
-                                         IsChecked="{Binding SelectedImportSourceKind, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Path}}" />
+                    <StackPanel Spacing="28" Visibility="{x:Bind ViewModel.ImportMediaVisibility, Mode=OneWay}">
+                        <StackPanel
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="12">
+                            <controls:SetupOptionCard
+                                Title="This PC or drive"
+                                Description="Browse a drive for backups"
+                                Glyph="&#xEDA2;"
+                                IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Local}}"
+                                Command="{x:Bind ViewModel.SelectImportSourceCommand}"
+                                CommandParameter="{StaticResource Import_Local}" />
+                            <controls:SetupOptionCard
+                                Title="FTP server"
+                                Description="Remote host and login"
+                                Glyph="&#xE839;"
+                                IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Ftp}}"
+                                Command="{x:Bind ViewModel.SelectImportSourceCommand}"
+                                CommandParameter="{StaticResource Import_Ftp}" />
+                            <controls:SetupOptionCard
+                                Title="Folder path"
+                                Description="Folder with backup.bshdb"
+                                Glyph="&#xE8B7;"
+                                IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Path}}"
+                                Command="{x:Bind ViewModel.SelectImportSourceCommand}"
+                                CommandParameter="{StaticResource Import_Path}" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalImportVisibility, Mode=OneWay}">
+                            <TextBlock FontWeight="SemiBold" Text="Select the drive that contains your backup" />
                             <ListView
                                 Height="160"
                                 ItemsSource="{x:Bind ViewModel.AvailableDrives, Mode=OneWay}"
@@ -372,11 +289,13 @@
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.ExplicitImportVisibility, Mode=OneWay}">
-                            <TextBox Header="Folder containing backup.bshdb" Text="{x:Bind ViewModel.ExplicitImportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock FontWeight="SemiBold" Text="Choose the folder that contains backup.bshdb" />
+                            <TextBox Header="Folder path" Text="{x:Bind ViewModel.ExplicitImportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button Command="{x:Bind ViewModel.BrowseExplicitImportPathCommand}" Content="Browse..." HorizontalAlignment="Left" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.FtpImportVisibility, Mode=OneWay}">
+                            <TextBlock FontWeight="SemiBold" Text="Enter your FTP server details" />
                             <TextBox Header="FTP host" Text="{x:Bind ViewModel.ImportFtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Header="FTP port" Text="{x:Bind ViewModel.ImportFtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Header="FTP user" Text="{x:Bind ViewModel.ImportFtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

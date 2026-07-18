@@ -233,15 +233,6 @@ public partial class SetupViewModel : ObservableObject
         SelectedDriveRoot = value?.RootPath;
     }
 
-    [ObservableProperty]
-    private bool isLocalTargetSelected = true;
-
-    [ObservableProperty]
-    private bool isUncTargetSelected;
-
-    [ObservableProperty]
-    private bool isFtpTargetSelected;
-
     partial void OnSelectedTargetKindChanged(SetupTargetKind value)
     {
         UpdateTargetVisibility();
@@ -418,21 +409,15 @@ public partial class SetupViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SelectLocalTarget()
+    private void SelectTarget(SetupTargetKind kind)
     {
-        SelectedTargetKind = SetupTargetKind.LocalDrive;
+        SelectedTargetKind = kind;
     }
 
     [RelayCommand]
-    private void SelectUncTarget()
+    private void SelectImportSource(SetupImportSourceKind kind)
     {
-        SelectedTargetKind = SetupTargetKind.Unc;
-    }
-
-    [RelayCommand]
-    private void SelectFtpTarget()
-    {
-        SelectedTargetKind = SetupTargetKind.Ftp;
+        SelectedImportSourceKind = kind;
     }
 
     [RelayCommand]
@@ -990,12 +975,9 @@ public partial class SetupViewModel : ObservableObject
 
     private void UpdateTargetVisibility()
     {
-        IsLocalTargetSelected = SelectedTargetKind == SetupTargetKind.LocalDrive;
-        IsUncTargetSelected = SelectedTargetKind == SetupTargetKind.Unc;
-        IsFtpTargetSelected = SelectedTargetKind == SetupTargetKind.Ftp;
-        LocalTargetVisibility = IsLocalTargetSelected ? Visibility.Visible : Visibility.Collapsed;
-        UncTargetVisibility = IsUncTargetSelected ? Visibility.Visible : Visibility.Collapsed;
-        FtpTargetVisibility = IsFtpTargetSelected ? Visibility.Visible : Visibility.Collapsed;
+        LocalTargetVisibility = SelectedTargetKind == SetupTargetKind.LocalDrive ? Visibility.Visible : Visibility.Collapsed;
+        UncTargetVisibility = SelectedTargetKind == SetupTargetKind.Unc ? Visibility.Visible : Visibility.Collapsed;
+        FtpTargetVisibility = SelectedTargetKind == SetupTargetKind.Ftp ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void UpdateImportSourceVisibility()
