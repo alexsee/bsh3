@@ -5,6 +5,7 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Runtime;
+using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
 using Serilog;
 
@@ -39,10 +40,11 @@ public class JobService : IJobService, IDisposable
         IStatusService statusService,
         IPresentationService presentationService,
         ICompletionActionService completionActionService,
-        ILocalSettingsService localSettingsService,
+        IStoredPasswordAdapter storedPasswordAdapter,
         Func<IWaitForMediaService> waitForMediaServiceFactory)
     {
         ArgumentNullException.ThrowIfNull(waitForMediaServiceFactory);
+        ArgumentNullException.ThrowIfNull(storedPasswordAdapter);
 
         this.backupService = backupService;
         this.configurationManager = configurationManager;
@@ -63,7 +65,6 @@ public class JobService : IJobService, IDisposable
             },
             this.RequestPassword);
         this.presenter = new WinUIJobSessionPresenter(this.presentationService, this.statusService, this.Cancel, this.completionActionService);
-        var storedPasswordAdapter = new WinUIStoredPasswordAdapter(localSettingsService);
         this.jobSessionRunner = new JobSessionRunner(
             backupService,
             this.jobRuntime,

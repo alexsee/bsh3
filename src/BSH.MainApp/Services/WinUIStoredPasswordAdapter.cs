@@ -12,6 +12,8 @@ namespace BSH.MainApp.Services;
 /// </summary>
 public sealed class WinUIStoredPasswordAdapter : IStoredPasswordAdapter
 {
+    public const string SettingKey = "BackupPassword";
+
     private readonly ILocalSettingsService localSettingsService;
 
     public WinUIStoredPasswordAdapter(ILocalSettingsService localSettingsService)
@@ -23,7 +25,7 @@ public sealed class WinUIStoredPasswordAdapter : IStoredPasswordAdapter
 
     public async Task<string> GetPasswordAsync()
     {
-        var encryptedPassword = await localSettingsService.ReadSettingAsync<string>(AppExtrasService.BackupPasswordSettingKey);
+        var encryptedPassword = await localSettingsService.ReadSettingAsync<string>(SettingKey);
         if (string.IsNullOrEmpty(encryptedPassword))
         {
             return string.Empty;
@@ -36,9 +38,9 @@ public sealed class WinUIStoredPasswordAdapter : IStoredPasswordAdapter
     {
         if (string.IsNullOrEmpty(password))
         {
-            return localSettingsService.SaveSettingAsync(AppExtrasService.BackupPasswordSettingKey, string.Empty);
+            return localSettingsService.SaveSettingAsync(SettingKey, string.Empty);
         }
 
-        return localSettingsService.SaveSettingAsync(AppExtrasService.BackupPasswordSettingKey, Crypto.EncryptString(password));
+        return localSettingsService.SaveSettingAsync(SettingKey, Crypto.EncryptString(password));
     }
 }

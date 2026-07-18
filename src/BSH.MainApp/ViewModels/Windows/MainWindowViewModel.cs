@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.ObjectModel;
+using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -45,7 +46,8 @@ public partial class MainWindowViewModel : ObservableObject
 
     private readonly IPresentationService? presentationService;
     private readonly INavigationService? navigationService;
-    private readonly IAppExtrasService? appExtrasService;
+    private readonly IUpdateService? updateService;
+    private readonly IStoredPasswordAdapter? storedPasswordAdapter;
 
     [ObservableProperty]
     private NavigationViewItem? currentPage;
@@ -56,12 +58,14 @@ public partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(
         IPresentationService? presentationService = null,
         INavigationService? navigationService = null,
-        IAppExtrasService? appExtrasService = null,
+        IUpdateService? updateService = null,
+        IStoredPasswordAdapter? storedPasswordAdapter = null,
         bool buildNavigationItems = true)
     {
         this.presentationService = presentationService;
         this.navigationService = navigationService;
-        this.appExtrasService = appExtrasService;
+        this.updateService = updateService;
+        this.storedPasswordAdapter = storedPasswordAdapter;
 
         if (!buildNavigationItems)
         {
@@ -135,13 +139,13 @@ public partial class MainWindowViewModel : ObservableObject
                 _ = GetPresentationService().OpenCurrentEventLogAsync();
                 return true;
             case SupportActionKeys.CheckForUpdates:
-                _ = GetAppExtrasService().CheckForUpdatesAsync();
+                _ = GetUpdateService().CheckAsync(notifyWhenUpToDate: true);
                 return true;
             case SupportActionKeys.ClearStoredPassword:
-                _ = GetAppExtrasService().ClearStoredPasswordAsync();
+                _ = GetStoredPasswordAdapter().StorePasswordAsync(string.Empty);
                 return true;
             case SupportActionKeys.ResetUniqueUserId:
-                _ = GetAppExtrasService().ResetUniqueUserIdAsync();
+                _ = GetUpdateService().ResetUniqueUserIdAsync();
                 return true;
             case SupportActionKeys.ResetConfiguration:
                 _ = GetPresentationService().ResetConfigurationAsync();
@@ -161,8 +165,13 @@ public partial class MainWindowViewModel : ObservableObject
         return navigationService ?? App.GetService<INavigationService>();
     }
 
-    private IAppExtrasService GetAppExtrasService()
+    private IUpdateService GetUpdateService()
     {
-        return appExtrasService ?? App.GetService<IAppExtrasService>();
+        return updateService ?? App.GetService<IUpdateService>();
+    }
+
+    private IStoredPasswordAdapter GetStoredPasswordAdapter()
+    {
+        return storedPasswordAdapter ?? App.GetService<IStoredPasswordAdapter>();
     }
 }

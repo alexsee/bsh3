@@ -1,6 +1,7 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Security;
 using BSH.MainApp.Contracts.Services;
 using Microsoft.Win32;
 
@@ -8,25 +9,64 @@ namespace BSH.MainApp.Services;
 
 public sealed class RegistryStartupLaunchAdapter : IStartupLaunchAdapter
 {
+    public const string ValueName = "BackupServiceHome3Run";
     private const string RunKeyPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
 
-    public bool IsEnabled(string valueName)
+    private readonly Func<string> getExecutablePath;
+
+    public RegistryStartupLaunchAdapter(Func<string>? getExecutablePath = null)
     {
-        using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath);
-        var value = key?.GetValue(valueName);
-        return value is string text && !string.IsNullOrEmpty(text);
+        this.getExecutablePath = getExecutablePath ?? (() => Environment.ProcessPath ?? AppContext.BaseDirectory);
     }
 
-    public void SetEnabled(string valueName, string command)
+    public bool IsEnabled()
     {
-        using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true)
-            ?? throw new InvalidOperationException("Unable to open startup registry key.");
-        key.SetValue(valueName, command);
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath);
+            var value = key?.GetValue(ValueName);
+            return value is string text && !string.IsNullOrEmpty(text);
+        }
+        catch (SecurityException)
+        {
+            return false;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
     }
 
-    public void Disable(string valueName)
+    public bool TrySetEnabled(bool enabled)
     {
-        using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true);
-        key?.DeleteValue(valueName, throwOnMissingValue: false);
+        try
+        {
+            if (enabled)
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true)
+                    ?? throw new InvalidOperationException("Unable to open startup registry key.");
+                var executablePath = getExecutablePath();
+                key.SetValue(ValueName, $"\"{executablePath}\" -delayedstart");
+            }
+            else
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true);
+                key?.DeleteValue(ValueName, throwOnMissingValue: false);
+            }
+
+            return true;
+        }
+        catch (SecurityException)
+        {
+            return false;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
+        catch (InvalidOperationException)
+        {
+            return false;
+        }
     }
 }

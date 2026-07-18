@@ -34,8 +34,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IQueryManager queryManager;
     private readonly IBackupTargetService backupTargetService;
     private readonly IOrchestrationService orchestrationService;
-    private readonly IAppExtrasService appExtrasService;
-    private bool suppressAppExtrasPersistence;
+    private readonly IStartupLaunchAdapter startupLaunchAdapter;
+    private readonly IUpdateService updateService;
 
     #region Sources Settings
 
@@ -680,22 +680,18 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.EnableNotificationWhenBackupOutdated = !string.IsNullOrEmpty(this.configurationManager.RemindAfterDays);
         this.NotificationWhenBackupOutdated = int.TryParse(this.configurationManager.RemindAfterDays, out var days) ? days : 0;
 
-        _ = InitAppExtrasSettingsAsync();
+        // Set backing fields so load does not re-enter the persistence handlers.
+        launchAtWindowsStartup = startupLaunchAdapter.IsEnabled();
+        OnPropertyChanged(nameof(LaunchAtWindowsStartup));
+        _ = LoadUpdateSettingsAsync();
     }
 
-    private async Task InitAppExtrasSettingsAsync()
+    private async Task LoadUpdateSettingsAsync()
     {
-        suppressAppExtrasPersistence = true;
-        try
-        {
-            LaunchAtWindowsStartup = appExtrasService.IsLaunchAtStartupEnabled();
-            AutomaticallyCheckForUpdates = await appExtrasService.GetAutoSearchUpdatesAsync();
-            DownloadBetaUpdates = await appExtrasService.GetDownloadBetaAsync();
-        }
-        finally
-        {
-            suppressAppExtrasPersistence = false;
-        }
+        automaticallyCheckForUpdates = await updateService.GetAutoSearchEnabledAsync();
+        downloadBetaUpdates = await updateService.GetDownloadBetaAsync();
+        OnPropertyChanged(nameof(AutomaticallyCheckForUpdates));
+        OnPropertyChanged(nameof(DownloadBetaUpdates));
     }
 
     partial void OnEnableNotificationWhenDiskspaceLowChanged(bool oldValue, bool newValue)
@@ -759,41 +755,42 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     partial void OnLaunchAtWindowsStartupChanged(bool oldValue, bool newValue)
     {
-        if (suppressAppExtrasPersistence || oldValue == newValue)
+        if (oldValue == newValue)
         {
             return;
         }
 
-        if (!appExtrasService.TrySetLaunchAtStartup(newValue))
+        if (startupLaunchAdapter.TrySetEnabled(newValue))
         {
-            suppressAppExtrasPersistence = true;
-            LaunchAtWindowsStartup = oldValue;
-            suppressAppExtrasPersistence = false;
-            _ = presentationController.ShowMessageBoxAsync(
-                "Access denied",
-                "Windows startup could not be changed. Check your permissions and try again.",
-                [new UICommand("OK")]);
+            return;
         }
+
+        launchAtWindowsStartup = oldValue;
+        OnPropertyChanged(nameof(LaunchAtWindowsStartup));
+        _ = presentationController.ShowMessageBoxAsync(
+            "Access denied",
+            "Windows startup could not be changed. Check your permissions and try again.",
+            [new UICommand("OK")]);
     }
 
     partial void OnAutomaticallyCheckForUpdatesChanged(bool oldValue, bool newValue)
     {
-        if (suppressAppExtrasPersistence || oldValue == newValue)
+        if (oldValue == newValue)
         {
             return;
         }
 
-        _ = appExtrasService.SetAutoSearchUpdatesAsync(newValue);
+        _ = updateService.SetAutoSearchEnabledAsync(newValue);
     }
 
     partial void OnDownloadBetaUpdatesChanged(bool oldValue, bool newValue)
     {
-        if (suppressAppExtrasPersistence || oldValue == newValue)
+        if (oldValue == newValue)
         {
             return;
         }
 
-        _ = appExtrasService.SetDownloadBetaAsync(newValue);
+        _ = updateService.SetDownloadBetaAsync(newValue);
     }
 
     #endregion
@@ -805,7 +802,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         IQueryManager queryManager,
         IBackupTargetService backupTargetService,
         IOrchestrationService orchestrationService,
-        IAppExtrasService appExtrasService)
+        IStartupLaunchAdapter startupLaunchAdapter,
+        IUpdateService updateService)
     {
         this.configurationManager = configurationManager;
         this.presentationController = presentationService;
@@ -813,7 +811,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.queryManager = queryManager;
         this.backupTargetService = backupTargetService;
         this.orchestrationService = orchestrationService;
-        this.appExtrasService = appExtrasService;
+        this.startupLaunchAdapter = startupLaunchAdapter;
+        this.updateService = updateService;
     }
 
     private static string DecryptConfigurationPassword(string password)

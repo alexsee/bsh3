@@ -10,6 +10,7 @@ using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
+using Brightbits.BSH.Engine.Runtime.Ports;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
@@ -100,17 +101,11 @@ public partial class App : Application
             services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();
             services.AddSingleton<IOrchestrationService, OrchestrationService>();
             services.AddSingleton<ICompletionActionService, CompletionActionService>();
+            services.AddSingleton<IStoredPasswordAdapter, WinUIStoredPasswordAdapter>();
             services.AddSingleton<IJobService, JobService>();
             services.AddSingleton<IPresentationService, PresentationService>();
             services.AddSingleton<IStartupLaunchAdapter, RegistryStartupLaunchAdapter>();
-            services.AddSingleton<IUpdateCheckAdapter, AutoUpdaterUpdateCheckAdapter>();
-            services.AddSingleton<IAppExtrasService>(sp => new AppExtrasService(
-                sp.GetRequiredService<ILocalSettingsService>(),
-                sp.GetRequiredService<IOrchestrationService>(),
-                sp.GetRequiredService<IStartupLaunchAdapter>(),
-                sp.GetRequiredService<IUpdateCheckAdapter>(),
-                () => Environment.ProcessPath ?? AppContext.BaseDirectory,
-                ExitApplication));
+            services.AddSingleton<IUpdateService, ApplicationUpdateService>();
             services.AddSingleton<ISetupService, SetupService>();
             services.AddSingleton<SetupRouting>();
 
@@ -183,39 +178,25 @@ public partial class App : Application
 
         InitializeTrayIcon();
 
-        await ConfigureUpdaterAsync();
-        await App.GetService<IAppExtrasService>().MaybeCheckForUpdatesOnStartupAsync();
+        var updateService = App.GetService<IUpdateService>();
+        await updateService.InitializeAsync(OnAutoUpdaterApplicationExit);
+        await updateService.MaybeCheckOnStartupAsync();
 
         await App.GetService<IActivationService>().ActivateAsync(args);
-    }
-
-    private static async Task ConfigureUpdaterAsync()
-    {
-        try
-        {
-            var appExtrasService = App.GetService<IAppExtrasService>();
-            var uniqueUserId = await appExtrasService.GetOrCreateUniqueUserIdAsync();
-            AutoUpdaterDotNET.AutoUpdater.HttpUserAgent =
-                $"Backup Service Home/{AppExtrasService.GetApplicationVersion()} {uniqueUserId}";
-            AutoUpdaterDotNET.AutoUpdater.TopMost = true;
-            AutoUpdaterDotNET.AutoUpdater.ApplicationExitEvent += OnAutoUpdaterApplicationExit;
-        }
-        catch
-        {
-            // Update configuration is best-effort.
-        }
     }
 
     private static void OnAutoUpdaterApplicationExit()
     {
         try
         {
-            App.GetService<IAppExtrasService>().ExitApplicationAsync().GetAwaiter().GetResult();
+            App.GetService<IOrchestrationService>().StopAsync().GetAwaiter().GetResult();
         }
         catch
         {
-            ExitApplication();
+            // Best-effort shutdown before updater exit.
         }
+
+        ExitApplication();
     }
 
     private void InitializeTrayIcon()
@@ -265,7 +246,8 @@ public partial class App : Application
 
     private async void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
-        await App.GetService<IAppExtrasService>().ExitApplicationAsync();
+        await App.GetService<IOrchestrationService>().StopAsync();
+        ExitApplication();
     }
 
     private static void ExitApplication()

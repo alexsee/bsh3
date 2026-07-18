@@ -5,7 +5,11 @@ namespace BSH.MainApp.Contracts.Services;
 
 public interface IStartupLaunchAdapter
 {
-    bool IsEnabled(string valueName);
-    void SetEnabled(string valueName, string command);
-    void Disable(string valueName);
+    bool IsEnabled();
+
+    /// <summary>
+    /// Enables or disables launch at Windows sign-in.
+    /// Returns false when the change could not be applied (for example access denied).
+    /// </summary>
+    bool TrySetEnabled(bool enabled);
 }
