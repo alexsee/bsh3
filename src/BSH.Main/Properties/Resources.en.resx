@@ -571,6 +571,18 @@ A directory with the same name is already being backed up. Backup Service Home c
   <data name="DLG_UC_OVERVIEW_LBL_MEDIA_FTP_BACKUP_TEXT" xml:space="preserve">
     <value> on FTP server ({0}).</value>
   </data>
+  <data name="DLG_UC_OVERVIEW_LBL_MEDIA_WEBDAV_BACKUP_TEXT" xml:space="preserve">
+    <value> on WebDAV server ({0}).</value>
+  </data>
+  <data name="DLG_REMOTE_PROTOCOL_LABEL" xml:space="preserve">
+    <value>Protocol:</value>
+  </data>
+  <data name="DLG_REMOTE_PROTOCOL_FTP" xml:space="preserve">
+    <value>FTP</value>
+  </data>
+  <data name="DLG_REMOTE_PROTOCOL_WEBDAV" xml:space="preserve">
+    <value>WebDAV</value>
+  </data>
   <data name="DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT" xml:space="preserve">
     <value> local hard drive ({0}).</value>
   </data>

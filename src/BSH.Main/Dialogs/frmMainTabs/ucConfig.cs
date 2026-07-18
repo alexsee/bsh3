@@ -23,6 +23,8 @@ public partial class ucConfig : IMainTabs
 
     private string selectedFolderCache = "";
 
+    private int previousMediaIndex;
+
     public ucConfig()
     {
         InitializeComponent();
@@ -111,6 +113,11 @@ public partial class ucConfig : IMainTabs
             // FTP
             BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
         }
+        else if (cboMedia.SelectedIndex == 2)
+        {
+            // WebDAV
+            BackupLogic.ConfigurationManager.MediumType = MediaType.WebDav;
+        }
         else
         {
             // directory
@@ -144,9 +151,9 @@ public partial class ucConfig : IMainTabs
         configurationManager.FtpUser = txtFTPUsername.Text;
         configurationManager.FtpPass = txtFTPPassword.Text;
         configurationManager.FtpFolder = FtpStorage.GetFtpPath(txtFTPPath.Text);
-        configurationManager.FtpCoding = cboFtpEncoding.SelectedItem?.ToString();
+        configurationManager.FtpCoding = cboMedia.SelectedIndex == 2 ? "" : cboFtpEncoding.SelectedItem?.ToString();
 
-        if (chkFtpEncryption.Checked)
+        if (cboMedia.SelectedIndex == 2 || chkFtpEncryption.Checked)
         {
             configurationManager.FtpEncryptionMode = "0";
             configurationManager.FtpSslProtocols = "0";
@@ -236,6 +243,15 @@ public partial class ucConfig : IMainTabs
             cboMedia.SelectedIndex = 1;
             plDevice.Visible = false;
             plFTP.Visible = true;
+            ApplyRemoteProtocolUi(useWebDav: false);
+        }
+        else if (BackupLogic.ConfigurationManager.MediumType == MediaType.WebDav)
+        {
+            // WebDAV
+            cboMedia.SelectedIndex = 2;
+            plDevice.Visible = false;
+            plFTP.Visible = true;
+            ApplyRemoteProtocolUi(useWebDav: true);
         }
         else
         {
@@ -245,12 +261,16 @@ public partial class ucConfig : IMainTabs
             plFTP.Visible = false;
         }
 
+        previousMediaIndex = cboMedia.SelectedIndex;
+
         // release media selection
         cboMedia.Tag = "1";
 
         var configurationManager = BackupLogic.ConfigurationManager;
         txtFTPServer.Text = configurationManager.FtpHost;
-        txtFTPPort.Text = string.IsNullOrEmpty(configurationManager.FtpPort) ? "21" : configurationManager.FtpPort;
+        txtFTPPort.Text = string.IsNullOrEmpty(configurationManager.FtpPort)
+            ? (configurationManager.MediumType == MediaType.WebDav ? "443" : "21")
+            : configurationManager.FtpPort;
         txtFTPUsername.Text = configurationManager.FtpUser;
         txtFTPPassword.Text = configurationManager.FtpPass;
         txtFTPPath.Text = configurationManager.FtpFolder;
@@ -473,8 +493,12 @@ public partial class ucConfig : IMainTabs
     {
         try
         {
-            // check FTP
-            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            var useWebDav = cboMedia.SelectedIndex == 2;
+            txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
+
+            var profile = useWebDav
+                ? WebDavStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text)
+                : FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
 
             if (profile)
             {
@@ -578,65 +602,72 @@ public partial class ucConfig : IMainTabs
             return;
         }
 
-        switch (cboMedia.SelectedIndex)
+        var selectedIndex = cboMedia.SelectedIndex;
+        if (selectedIndex == previousMediaIndex)
         {
-            case 0:
+            return;
+        }
 
-                if (MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT, Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                {
-                    // delete backups
-                    using (var dlgStatus = new frmShortStatus())
-                    {
-                        dlgStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT;
-                        dlgStatus.Show(SuperBase);
+        var warningText = selectedIndex == 0
+            ? Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT
+            : Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT;
 
-                        var versions = BackupLogic.QueryManager.GetVersions().Select(x => x.Id).ToList();
-                        await BackupLogic.BackupController.DeleteBackupsAsync(versions, false);
+        if (MessageBox.Show(warningText, Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+        {
+            // delete backups
+            using (var dlgStatus = new frmShortStatus())
+            {
+                dlgStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT;
+                dlgStatus.Show(SuperBase);
 
-                        dlgStatus.Close();
-                    }
+                var versions = BackupLogic.QueryManager.GetVersions().Select(x => x.Id).ToList();
+                await BackupLogic.BackupController.DeleteBackupsAsync(versions, false);
 
-                    plDevice.Visible = true;
-                    plFTP.Visible = false;
-                }
-                else
-                {
-                    // reset
-                    cboMedia.Tag = "";
-                    cboMedia.SelectedIndex = 1;
-                    cboMedia.Tag = "1";
-                }
+                dlgStatus.Close();
+            }
 
-                break;
+            ApplyMediaSelection(selectedIndex);
+            previousMediaIndex = selectedIndex;
+        }
+        else
+        {
+            // reset
+            cboMedia.Tag = "";
+            cboMedia.SelectedIndex = previousMediaIndex;
+            cboMedia.Tag = "1";
+        }
+    }
 
-            case 1:
+    private void ApplyMediaSelection(int selectedIndex)
+    {
+        if (selectedIndex == 0)
+        {
+            plDevice.Visible = true;
+            plFTP.Visible = false;
+            return;
+        }
 
-                if (MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT, Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                {
-                    // delete backups
-                    using (var formShortStatus = new frmShortStatus())
-                    {
-                        formShortStatus.lblStatus.Text = Resources.DLG_UC_CONFIG_STATUS_DELETE_BACKUP_TEXT;
-                        formShortStatus.Show(SuperBase);
+        plDevice.Visible = false;
+        plFTP.Visible = true;
+        ApplyRemoteProtocolUi(useWebDav: selectedIndex == 2);
+    }
 
-                        var versions = BackupLogic.QueryManager.GetVersions().Select(x => x.Id).ToList();
-                        await BackupLogic.BackupController.DeleteBackupsAsync(versions, false);
+    private void ApplyRemoteProtocolUi(bool useWebDav)
+    {
+        cboFtpEncoding.Visible = !useWebDav;
+        Label12.Visible = !useWebDav;
+        chkFtpEncryption.Visible = !useWebDav;
 
-                        formShortStatus.Close();
-                    }
-
-                    plDevice.Visible = false;
-                    plFTP.Visible = true;
-                }
-                else
-                {
-                    // reset
-                    cboMedia.Tag = "";
-                    cboMedia.SelectedIndex = 0;
-                    cboMedia.Tag = "1";
-                }
-
-                break;
+        if (useWebDav)
+        {
+            if (string.IsNullOrEmpty(txtFTPPort.Text) || txtFTPPort.Text == "21")
+            {
+                txtFTPPort.Text = "443";
+            }
+        }
+        else if (txtFTPPort.Text == "443")
+        {
+            txtFTPPort.Text = "21";
         }
     }
 
@@ -685,14 +716,15 @@ public partial class ucConfig : IMainTabs
             }
             else
             {
-                // FTP server
-                BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
+                // FTP or WebDAV server
+                var useWebDav = dlgChangeMedia.cboMedia.SelectedIndex == 2;
+                BackupLogic.ConfigurationManager.MediumType = useWebDav ? MediaType.WebDav : MediaType.FileTransferServer;
                 BackupLogic.ConfigurationManager.FtpHost = dlgChangeMedia.txtFTPServer.Text;
                 BackupLogic.ConfigurationManager.FtpPort = dlgChangeMedia.txtFTPPort.Text;
                 BackupLogic.ConfigurationManager.FtpUser = dlgChangeMedia.txtFTPUsername.Text;
                 BackupLogic.ConfigurationManager.FtpPass = dlgChangeMedia.txtFTPPassword.Text;
                 BackupLogic.ConfigurationManager.FtpFolder = dlgChangeMedia.txtFTPPath.Text;
-                BackupLogic.ConfigurationManager.FtpCoding = Convert.ToString(dlgChangeMedia.cboFtpEncoding.SelectedItem);
+                BackupLogic.ConfigurationManager.FtpCoding = useWebDav ? "" : Convert.ToString(dlgChangeMedia.cboFtpEncoding.SelectedItem);
             }
         }
 

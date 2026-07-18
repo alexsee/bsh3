@@ -18,12 +18,93 @@ namespace Brightbits.BSH.Main;
 
 public partial class ucDoConfigure : IMainTabs
 {
+    private ComboBox cboRemoteProtocol;
+    private ComboBox cboRemoteProtocolImport;
+
     public ucDoConfigure()
     {
         InitializeComponent();
+        InitializeRemoteProtocolSelectors();
     }
 
     private string tmpFolderStore = "";
+
+    private void InitializeRemoteProtocolSelectors()
+    {
+        cboRemoteProtocol = CreateRemoteProtocolComboBox();
+        cboRemoteProtocol.Location = new System.Drawing.Point(194, 232);
+        cboRemoteProtocol.SelectedIndexChanged += (_, _) => ApplyRemoteProtocolUi(isImport: false);
+        TabPage2.Controls.Add(cboRemoteProtocol);
+
+        var protocolLabel = new Label
+        {
+            AutoSize = true,
+            Location = new System.Drawing.Point(24, 236),
+            Text = Resources.DLG_REMOTE_PROTOCOL_LABEL
+        };
+        TabPage2.Controls.Add(protocolLabel);
+
+        cboRemoteProtocolImport = CreateRemoteProtocolComboBox();
+        cboRemoteProtocolImport.Location = new System.Drawing.Point(194, 232);
+        cboRemoteProtocolImport.SelectedIndexChanged += (_, _) => ApplyRemoteProtocolUi(isImport: true);
+        TabPage4.Controls.Add(cboRemoteProtocolImport);
+
+        var protocolLabelImport = new Label
+        {
+            AutoSize = true,
+            Location = new System.Drawing.Point(27, 236),
+            Text = Resources.DLG_REMOTE_PROTOCOL_LABEL
+        };
+        TabPage4.Controls.Add(protocolLabelImport);
+
+        ApplyRemoteProtocolUi(isImport: false);
+        ApplyRemoteProtocolUi(isImport: true);
+    }
+
+    private static ComboBox CreateRemoteProtocolComboBox()
+    {
+        var comboBox = new ComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            FormattingEnabled = true,
+            Size = new System.Drawing.Size(200, 33)
+        };
+        comboBox.Items.Add(Resources.DLG_REMOTE_PROTOCOL_FTP);
+        comboBox.Items.Add(Resources.DLG_REMOTE_PROTOCOL_WEBDAV);
+        comboBox.SelectedIndex = 0;
+        return comboBox;
+    }
+
+    private bool IsWebDavProtocolSelected(bool isImport = false)
+    {
+        var comboBox = isImport ? cboRemoteProtocolImport : cboRemoteProtocol;
+        return comboBox.SelectedIndex == 1;
+    }
+
+    private void ApplyRemoteProtocolUi(bool isImport)
+    {
+        var useWebDav = IsWebDavProtocolSelected(isImport);
+        var portBox = isImport ? txtFTPPort2 : txtFTPPort;
+        var encoding = isImport ? cboFtpEncoding2 : cboFtpEncoding;
+        var encodingLabel = isImport ? Label19 : Label18;
+        var encryption = isImport ? chkFtpEncryption2 : chkFtpEncryption;
+
+        encoding.Visible = !useWebDav;
+        encodingLabel.Visible = !useWebDav;
+        encryption.Visible = !useWebDav;
+
+        if (useWebDav)
+        {
+            if (string.IsNullOrEmpty(portBox.Text) || portBox.Text == "21")
+            {
+                portBox.Text = "443";
+            }
+        }
+        else if (portBox.Text == "443")
+        {
+            portBox.Text = "21";
+        }
+    }
 
     #region  Implementation of IMainTabs 
     public void CloseTab()
@@ -158,7 +239,8 @@ public partial class ucDoConfigure : IMainTabs
                     // check remote credentials (FTP/WebDAV)
                     try
                     {
-                        txtFTPPath.Text = NormalizeRemoteFolder(txtFTPServer.Text, txtFTPPath.Text);
+                        var useWebDav = IsWebDavProtocolSelected();
+                        txtFTPPath.Text = NormalizeRemoteFolder(txtFTPPath.Text);
 
                         var isRemoteConnectionValid = VerifyRemoteStorageConnection(
                             txtFTPServer.Text,
@@ -167,7 +249,8 @@ public partial class ucDoConfigure : IMainTabs
                             txtFTPPassword.Text,
                             txtFTPPath.Text,
                             Convert.ToString(cboFtpEncoding.SelectedItem),
-                            chkFtpEncryption.Checked);
+                            chkFtpEncryption.Checked,
+                            useWebDav);
 
                         if (!isRemoteConnectionValid)
                         {
@@ -260,16 +343,17 @@ public partial class ucDoConfigure : IMainTabs
                     }
                     else if (tcSource.SelectedIndex == 1)
                     {
-                        // ftp server
-                        configurationManager.MediumType = MediaType.FileTransferServer;
+                        // FTP or WebDAV server
+                        var useWebDav = IsWebDavProtocolSelected();
+                        configurationManager.MediumType = useWebDav ? MediaType.WebDav : MediaType.FileTransferServer;
                         configurationManager.FtpHost = txtFTPServer.Text;
                         configurationManager.FtpPort = txtFTPPort.Text;
                         configurationManager.FtpUser = txtFTPUsername.Text;
                         configurationManager.FtpPass = txtFTPPassword.Text;
-                        configurationManager.FtpFolder = NormalizeRemoteFolder(txtFTPServer.Text, txtFTPPath.Text);
-                        configurationManager.FtpCoding = Convert.ToString(cboFtpEncoding.SelectedItem);
+                        configurationManager.FtpFolder = NormalizeRemoteFolder(txtFTPPath.Text);
+                        configurationManager.FtpCoding = useWebDav ? "" : Convert.ToString(cboFtpEncoding.SelectedItem);
 
-                        configurationManager.FtpEncryptionMode = chkFtpEncryption.Checked ? "0" : "3";
+                        configurationManager.FtpEncryptionMode = useWebDav || chkFtpEncryption.Checked ? "0" : "3";
                         configurationManager.FtpSslProtocols = "0";
                     }
                     else
@@ -416,10 +500,11 @@ public partial class ucDoConfigure : IMainTabs
                     cmdBack.Enabled = true;
                     cmdNext.Enabled = true;
 
-                    // check ftp server credentials
+                    // check remote server credentials
                     try
                     {
-                        txtFTPPath2.Text = NormalizeRemoteFolder(txtFTPServer2.Text, txtFTPPath2.Text);
+                        var useWebDav = IsWebDavProtocolSelected(isImport: true);
+                        txtFTPPath2.Text = NormalizeRemoteFolder(txtFTPPath2.Text);
 
                         using var storage = CreateRemoteStorage(
                             txtFTPServer2.Text,
@@ -428,7 +513,8 @@ public partial class ucDoConfigure : IMainTabs
                             txtFTPPass2.Text,
                             txtFTPPath2.Text,
                             Convert.ToString(cboFtpEncoding2.SelectedItem),
-                            chkFtpEncryption2.Checked);
+                            chkFtpEncryption2.Checked,
+                            useWebDav);
 
                         storage.Open();
                         if (!storage.FileExists("backup.bshdb"))
@@ -443,7 +529,7 @@ public partial class ucDoConfigure : IMainTabs
                     }
                     catch (Exception ex)
                     {
-                        // ftp credentials wrong
+                        // remote credentials wrong
                         MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         iWizardStep -= 1;
                         await ShowWizardStepAsync(iWizardStep);
@@ -483,13 +569,14 @@ public partial class ucDoConfigure : IMainTabs
                 }
                 else if (tcStep5.SelectedIndex == 1)
                 {
-                    // ftp server
+                    // FTP or WebDAV server
                     try
                     {
                         // download backup database
                         DeleteCurrentDatabaseFile();
 
-                        txtFTPPath2.Text = NormalizeRemoteFolder(txtFTPServer2.Text, txtFTPPath2.Text);
+                        var useWebDav = IsWebDavProtocolSelected(isImport: true);
+                        txtFTPPath2.Text = NormalizeRemoteFolder(txtFTPPath2.Text);
                         using IStorage storage = CreateRemoteStorage(
                             txtFTPServer2.Text,
                             int.Parse(txtFTPPort2.Text),
@@ -497,7 +584,8 @@ public partial class ucDoConfigure : IMainTabs
                             txtFTPPass2.Text,
                             txtFTPPath2.Text,
                             Convert.ToString(cboFtpEncoding2.SelectedItem),
-                            chkFtpEncryption2.Checked);
+                            chkFtpEncryption2.Checked,
+                            useWebDav);
 
                         storage.Open();
                         storage.CopyFileFromStorage(BackupLogic.DatabaseFile, "backup.bshdb");
@@ -541,17 +629,18 @@ public partial class ucDoConfigure : IMainTabs
                 }
                 else if (tcStep5.SelectedIndex == 1)
                 {
-                    // refresh ftp credentials
+                    // refresh remote credentials
+                    var useWebDav = IsWebDavProtocolSelected(isImport: true);
                     BackupLogic.ConfigurationManager.BackupFolder = "";
                     BackupLogic.ConfigurationManager.FtpFolder = txtFTPPath2.Text;
                     BackupLogic.ConfigurationManager.FtpHost = txtFTPServer2.Text;
                     BackupLogic.ConfigurationManager.FtpPass = txtFTPPass2.Text;
                     BackupLogic.ConfigurationManager.FtpPort = txtFTPPort2.Text;
                     BackupLogic.ConfigurationManager.FtpUser = txtFTPUser2.Text;
-                    BackupLogic.ConfigurationManager.FtpCoding = Convert.ToString(cboFtpEncoding2.SelectedItem);
-                    BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
+                    BackupLogic.ConfigurationManager.FtpCoding = useWebDav ? "" : Convert.ToString(cboFtpEncoding2.SelectedItem);
+                    BackupLogic.ConfigurationManager.MediumType = useWebDav ? MediaType.WebDav : MediaType.FileTransferServer;
 
-                    await RemapFileTypesForRemoteStorageAsync();
+                    await RemapFileTypesForRemoteStorageAsync(useWebDav);
                 }
                 else
                 {
@@ -717,7 +806,8 @@ public partial class ucDoConfigure : IMainTabs
         // check remote credentials (FTP/WebDAV)
         try
         {
-            txtFTPPath.Text = NormalizeRemoteFolder(txtFTPServer.Text, txtFTPPath.Text);
+            var useWebDav = IsWebDavProtocolSelected();
+            txtFTPPath.Text = NormalizeRemoteFolder(txtFTPPath.Text);
             var isRemoteConnectionValid = VerifyRemoteStorageConnection(
                 txtFTPServer.Text,
                 Convert.ToInt32(txtFTPPort.Text),
@@ -725,7 +815,8 @@ public partial class ucDoConfigure : IMainTabs
                 txtFTPPassword.Text,
                 txtFTPPath.Text,
                 Convert.ToString(cboFtpEncoding.SelectedItem),
-                chkFtpEncryption.Checked);
+                chkFtpEncryption.Checked,
+                useWebDav);
 
             if (!isRemoteConnectionValid)
             {
@@ -804,7 +895,7 @@ public partial class ucDoConfigure : IMainTabs
         }
     }
 
-    private static string NormalizeRemoteFolder(string host, string path)
+    private static string NormalizeRemoteFolder(string path)
     {
         return FtpStorage.GetFtpPath(path ?? "");
     }
@@ -816,9 +907,15 @@ public partial class ucDoConfigure : IMainTabs
         string password,
         string path,
         string encoding,
-        bool enforceUnencryptedConnection)
+        bool enforceUnencryptedConnection,
+        bool useWebDav)
     {
-        using var storage = CreateRemoteStorage(host, port, user, password, path, encoding, enforceUnencryptedConnection);
+        if (useWebDav)
+        {
+            return WebDavStorage.CheckConnection(host, port, user, password, path);
+        }
+
+        using var storage = CreateRemoteStorage(host, port, user, password, path, encoding, enforceUnencryptedConnection, useWebDav: false);
         storage.Open();
 
         var probeLocalFile = Path.GetTempFileName();
@@ -851,8 +948,14 @@ public partial class ucDoConfigure : IMainTabs
         string password,
         string path,
         string encoding,
-        bool enforceUnencryptedConnection)
+        bool enforceUnencryptedConnection,
+        bool useWebDav)
     {
+        if (useWebDav)
+        {
+            return new WebDavStorage(host, port, user, password, path, currentStorageVersion: 0);
+        }
+
         return new FtpStorage(host, port, user, password, path, encoding, !enforceUnencryptedConnection, 0);
     }
 
@@ -863,8 +966,16 @@ public partial class ucDoConfigure : IMainTabs
         await UpdateFileTypesAsync(BackupFileType.LocalEncrypted, BackupFileType.FtpEncrypted, BackupFileType.WebDavEncrypted);
     }
 
-    private static async Task RemapFileTypesForRemoteStorageAsync()
+    private static async Task RemapFileTypesForRemoteStorageAsync(bool useWebDav)
     {
+        if (useWebDav)
+        {
+            await UpdateFileTypesAsync(BackupFileType.WebDav, BackupFileType.Local, BackupFileType.Ftp);
+            await UpdateFileTypesAsync(BackupFileType.WebDavCompressed, BackupFileType.LocalCompressed, BackupFileType.FtpCompressed);
+            await UpdateFileTypesAsync(BackupFileType.WebDavEncrypted, BackupFileType.LocalEncrypted, BackupFileType.FtpEncrypted);
+            return;
+        }
+
         await UpdateFileTypesAsync(BackupFileType.Ftp, BackupFileType.Local, BackupFileType.WebDav);
         await UpdateFileTypesAsync(BackupFileType.FtpCompressed, BackupFileType.LocalCompressed, BackupFileType.WebDavCompressed);
         await UpdateFileTypesAsync(BackupFileType.FtpEncrypted, BackupFileType.LocalEncrypted, BackupFileType.WebDavEncrypted);

@@ -848,7 +848,7 @@
     <value>TabPage1</value>
   </data>
   <data name="TabPage4.Text" xml:space="preserve">
-    <value>FTP-Server</value>
+    <value>FTP / WebDAV</value>
   </data>
   <data name="&gt;&gt;lvSourceFolders.Name" xml:space="preserve">
     <value>lvSourceFolders</value>
@@ -1082,7 +1082,7 @@
     <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="TabPage2.Text" xml:space="preserve">
-    <value>FTP-Server</value>
+    <value>FTP / WebDAV</value>
   </data>
   <data name="&gt;&gt;chkFtpEncryption.Name" xml:space="preserve">
     <value>chkFtpEncryption</value>

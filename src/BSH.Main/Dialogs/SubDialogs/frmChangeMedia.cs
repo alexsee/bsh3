@@ -28,10 +28,31 @@ public partial class frmChangeMedia
                 break;
 
             case 1:
+            case 2:
                 plDevice.Visible = false;
                 plFTP.Visible = true;
+                ApplyRemoteProtocolUi(useWebDav: cboMedia.SelectedIndex == 2);
 
                 break;
+        }
+    }
+
+    private void ApplyRemoteProtocolUi(bool useWebDav)
+    {
+        cboFtpEncoding.Visible = !useWebDav;
+        Label10.Visible = !useWebDav;
+        chkFtpEncryption.Visible = !useWebDav;
+
+        if (useWebDav)
+        {
+            if (string.IsNullOrEmpty(txtFTPPort.Text) || txtFTPPort.Text == "21")
+            {
+                txtFTPPort.Text = "443";
+            }
+        }
+        else if (string.IsNullOrEmpty(txtFTPPort.Text) || txtFTPPort.Text == "443")
+        {
+            txtFTPPort.Text = "21";
         }
     }
 
@@ -99,20 +120,29 @@ public partial class frmChangeMedia
         }
         else
         {
-            // FTP testen
+            // Remote storage testen
             try
             {
+                var useWebDav = cboMedia.SelectedIndex == 2;
                 txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-                using (var storage = new FtpStorage(
-                    txtFTPServer.Text,
-                    int.Parse(txtFTPPort.Text),
-                    txtFTPUsername.Text,
-                    txtFTPPassword.Text,
-                    txtFTPPath.Text,
-                    cboFtpEncoding.SelectedItem.ToString(),
-                    !chkFtpEncryption.Checked,
-                    0))
+                using (IStorage storage = useWebDav
+                    ? new WebDavStorage(
+                        txtFTPServer.Text,
+                        int.Parse(txtFTPPort.Text),
+                        txtFTPUsername.Text,
+                        txtFTPPassword.Text,
+                        txtFTPPath.Text,
+                        currentStorageVersion: 0)
+                    : new FtpStorage(
+                        txtFTPServer.Text,
+                        int.Parse(txtFTPPort.Text),
+                        txtFTPUsername.Text,
+                        txtFTPPassword.Text,
+                        txtFTPPath.Text,
+                        cboFtpEncoding.SelectedItem.ToString(),
+                        !chkFtpEncryption.Checked,
+                        0))
                 {
                     storage.Open();
 
@@ -142,12 +172,15 @@ public partial class frmChangeMedia
 
     private void cmdFTPCheck_Click(object sender, EventArgs e)
     {
-        // FTP testen
+        // Remote storage testen
         try
         {
+            var useWebDav = cboMedia.SelectedIndex == 2;
             txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, cboFtpEncoding.SelectedItem.ToString());
+            var profile = useWebDav
+                ? WebDavStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text)
+                : FtpStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, cboFtpEncoding.SelectedItem.ToString());
 
             if (!profile)
             {
