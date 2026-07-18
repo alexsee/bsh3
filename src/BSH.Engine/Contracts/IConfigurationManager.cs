@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Brightbits.BSH.Engine.Database;
 
 namespace Brightbits.BSH.Engine.Contracts;
 
@@ -234,4 +236,15 @@ public interface IConfigurationManager
     }
 
     Task InitializeAsync();
+
+    /// <summary>
+    /// Persists configuration properties using an existing database client without updating in-memory state.
+    /// Intended for shared transactions; call <see cref="ApplyLocalProperties"/> after a successful commit.
+    /// </summary>
+    void PersistProperties(DbClient dbClient, IReadOnlyList<(string Property, string Value)> properties);
+
+    /// <summary>
+    /// Updates in-memory configuration values without writing to the database.
+    /// </summary>
+    void ApplyLocalProperties(IReadOnlyList<(string Property, string Value)> properties);
 }

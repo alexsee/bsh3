@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime;
@@ -385,6 +386,35 @@ public class WinUiOrchestrationParityTests
         public string UNCUsername { get; set; } = "";
 
         public Task InitializeAsync() => Task.CompletedTask;
+
+        public void PersistProperties(DbClient dbClient, IReadOnlyList<(string Property, string Value)> properties)
+        {
+            ApplyLocalProperties(properties);
+        }
+
+        public void ApplyLocalProperties(IReadOnlyList<(string Property, string Value)> properties)
+        {
+            foreach (var (property, value) in properties)
+            {
+                switch (property)
+                {
+                    case nameof(IntervallDelete):
+                        IntervallDelete = value;
+                        break;
+                    case nameof(IntervallAutoHourBackups):
+                        IntervallAutoHourBackups = value;
+                        break;
+                    case nameof(ScheduleFullBackup):
+                        ScheduleFullBackup = value;
+                        break;
+                    case nameof(DoPastBackups):
+                        DoPastBackups = value;
+                        break;
+                    default:
+                        throw new ArgumentException($"Unsupported configuration property: {property}", nameof(property));
+                }
+            }
+        }
     }
 
     private sealed class TestStatusService : IStatusService

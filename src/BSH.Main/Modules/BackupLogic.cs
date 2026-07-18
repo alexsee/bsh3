@@ -145,7 +145,7 @@ static class BackupLogic
         var storageFactory = new StorageFactory(ConfigurationManager);
         QueryManager = new QueryManager(DbClientFactory, ConfigurationManager, storageFactory);
         ScheduleRepository = new ScheduleRepository(DbClientFactory);
-        ScheduleSettingsService = new ScheduleSettingsService(ConfigurationManager, ScheduleRepository);
+        ScheduleSettingsService = new ScheduleSettingsService(ConfigurationManager, ScheduleRepository, DbClientFactory);
         VersionQueryRepository = new VersionQueryRepository();
         BackupMutationRepository = new BackupMutationRepository(DbClientFactory);
         fileCollectorServiceFactory = new FileCollectorServiceFactory();

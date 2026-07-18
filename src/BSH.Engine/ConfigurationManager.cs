@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -625,11 +626,36 @@ public class ConfigurationManager : IConfigurationManager
     private void SaveProperty(string property, string value)
     {
         using var dbClient = dbClientFactory.CreateDbClient();
+        PersistProperty(dbClient, property, value);
+    }
 
+    public void PersistProperties(DbClient dbClient, IReadOnlyList<(string Property, string Value)> properties)
+    {
+        ArgumentNullException.ThrowIfNull(dbClient);
+        ArgumentNullException.ThrowIfNull(properties);
+
+        foreach (var (property, value) in properties)
+        {
+            PersistProperty(dbClient, property, value);
+        }
+    }
+
+    public void ApplyLocalProperties(IReadOnlyList<(string Property, string Value)> properties)
+    {
+        ArgumentNullException.ThrowIfNull(properties);
+
+        foreach (var (property, value) in properties)
+        {
+            ApplyLocalProperty(property, value);
+        }
+    }
+
+    private static void PersistProperty(DbClient dbClient, string property, string value)
+    {
         var parameters = new (string, object)[]
         {
             ("value", value),
-            ("prop", property.ToLower())
+            ("prop", property.ToLowerInvariant())
         };
 
         var result = dbClient.ExecuteNonQuery(CommandType.Text, "UPDATE configuration SET confValue = @value WHERE confProperty = @prop", parameters);
@@ -637,6 +663,27 @@ public class ConfigurationManager : IConfigurationManager
         if (result == 0)
         {
             dbClient.ExecuteNonQuery(CommandType.Text, "INSERT INTO configuration VALUES (@prop, @value)", parameters);
+        }
+    }
+
+    private void ApplyLocalProperty(string property, string value)
+    {
+        switch (property)
+        {
+            case nameof(IntervallDelete):
+                intervallDelete = value;
+                break;
+            case nameof(IntervallAutoHourBackups):
+                intervallAutoHourBackups = value;
+                break;
+            case nameof(ScheduleFullBackup):
+                scheduleFullBackup = value;
+                break;
+            case nameof(DoPastBackups):
+                doPastBackups = value;
+                break;
+            default:
+                throw new ArgumentException($"Unsupported configuration property: {property}", nameof(property));
         }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ public class ScheduleSettingsServiceTests
         await configurationManager.InitializeAsync();
 
         scheduleRepository = new ScheduleRepository(dbClientFactory);
-        scheduleSettingsService = new ScheduleSettingsService(configurationManager, scheduleRepository);
+        scheduleSettingsService = new ScheduleSettingsService(configurationManager, scheduleRepository, dbClientFactory);
     }
 
     [TearDown]
@@ -100,6 +101,13 @@ public class ScheduleSettingsServiceTests
         Assert.That(configurationManager.ScheduleFullBackup, Is.EqualTo("day|7"));
         Assert.That(configurationManager.DoPastBackups, Is.EqualTo("1"));
 
+        var persistedConfiguration = new ConfigurationManager(dbClientFactory);
+        await persistedConfiguration.InitializeAsync();
+        Assert.That(persistedConfiguration.IntervallDelete, Is.EqualTo("week|3"));
+        Assert.That(persistedConfiguration.IntervallAutoHourBackups, Is.EqualTo("36"));
+        Assert.That(persistedConfiguration.ScheduleFullBackup, Is.EqualTo("day|7"));
+        Assert.That(persistedConfiguration.DoPastBackups, Is.EqualTo("1"));
+
         var reloaded = await scheduleSettingsService.LoadAsync();
 
         Assert.That(reloaded.RetentionMode, Is.EqualTo(ScheduleRetentionMode.Interval));
@@ -109,6 +117,43 @@ public class ScheduleSettingsServiceTests
         Assert.That(reloaded.EnableScheduledFullBackups, Is.True);
         Assert.That(reloaded.ScheduledFullBackupDays, Is.EqualTo(7));
         Assert.That(reloaded.PerformMissedBackupsLater, Is.True);
+    }
+
+    [Test]
+    public async Task SaveAsyncRollsBackScheduleChangesWhenConfigPersistFails()
+    {
+        var baseline = await scheduleSettingsService.LoadAsync();
+        baseline.AddSchedule(ScheduleEntryKind.Daily, new DateTime(2026, 6, 1, 9, 0, 0));
+        await scheduleSettingsService.SaveAsync(baseline);
+
+        configurationManager.IntervallDelete = string.Empty;
+        configurationManager.IntervallAutoHourBackups = "24";
+        configurationManager.ScheduleFullBackup = string.Empty;
+        configurationManager.DoPastBackups = "0";
+
+        var failingConfiguration = new FailingPersistConfigurationManager(configurationManager);
+        var service = new ScheduleSettingsService(failingConfiguration, scheduleRepository, dbClientFactory);
+
+        var settings = await scheduleSettingsService.LoadAsync();
+        settings.Entries.Clear();
+        settings.AddSchedule(ScheduleEntryKind.Weekly, new DateTime(2026, 6, 8, 15, 0, 0));
+        settings.RetentionMode = ScheduleRetentionMode.Automatic;
+        settings.AutomaticHourlyBackupThreshold = 48;
+        settings.EnableScheduledFullBackups = true;
+        settings.ScheduledFullBackupDays = 5;
+        settings.PerformMissedBackupsLater = true;
+
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await service.SaveAsync(settings));
+
+        var reloaded = await scheduleSettingsService.LoadAsync();
+
+        Assert.That(reloaded.Entries, Has.Count.EqualTo(1));
+        Assert.That(reloaded.Entries[0].Type, Is.EqualTo((int)ScheduleEntryKind.Daily));
+        Assert.That(configurationManager.IntervallDelete, Is.EqualTo(string.Empty));
+        Assert.That(configurationManager.IntervallAutoHourBackups, Is.EqualTo("24"));
+        Assert.That(configurationManager.ScheduleFullBackup, Is.EqualTo(string.Empty));
+        Assert.That(configurationManager.DoPastBackups, Is.EqualTo("0"));
+        Assert.That(failingConfiguration.ApplyLocalPropertiesCalled, Is.False);
     }
 
     [Test]
@@ -140,5 +185,76 @@ public class ScheduleSettingsServiceTests
         Assert.That(
             ScheduleSettings.BuildScheduleDate(ScheduleEntryKind.Monthly, baseDate, startTime, DayOfWeek.Friday, 31),
             Is.EqualTo(new DateTime(2026, 6, 30, 14, 30, 0)));
+    }
+
+    private sealed class FailingPersistConfigurationManager : IConfigurationManager
+    {
+        private readonly IConfigurationManager inner;
+
+        public FailingPersistConfigurationManager(IConfigurationManager inner)
+        {
+            this.inner = inner;
+        }
+
+        public bool ApplyLocalPropertiesCalled { get; private set; }
+
+        public string AutoBackup { get => inner.AutoBackup; set => inner.AutoBackup = value; }
+        public string BackupFolder { get => inner.BackupFolder; set => inner.BackupFolder = value; }
+        public string BackupSize { get => inner.BackupSize; set => inner.BackupSize = value; }
+        public int Compression { get => inner.Compression; set => inner.Compression = value; }
+        public string DbStatus { get => inner.DbStatus; set => inner.DbStatus = value; }
+        public string DBVersion { get => inner.DBVersion; set => inner.DBVersion = value; }
+        public string DeativateAutoBackupsWhenAkku { get => inner.DeativateAutoBackupsWhenAkku; set => inner.DeativateAutoBackupsWhenAkku = value; }
+        public string DoPastBackups { get => inner.DoPastBackups; set => inner.DoPastBackups = value; }
+        public int Encrypt { get => inner.Encrypt; set => inner.Encrypt = value; }
+        public string EncryptPassMD5 { get => inner.EncryptPassMD5; set => inner.EncryptPassMD5 = value; }
+        public string ExcludeCompression { get => inner.ExcludeCompression; set => inner.ExcludeCompression = value; }
+        public string ExcludeFile { get => inner.ExcludeFile; set => inner.ExcludeFile = value; }
+        public string ExcludeFileBigger { get => inner.ExcludeFileBigger; set => inner.ExcludeFileBigger = value; }
+        public string ExcludeFileTypes { get => inner.ExcludeFileTypes; set => inner.ExcludeFileTypes = value; }
+        public string ExcludeFolder { get => inner.ExcludeFolder; set => inner.ExcludeFolder = value; }
+        public string ExcludeMask { get => inner.ExcludeMask; set => inner.ExcludeMask = value; }
+        public string IncludeSystemFolders { get => inner.IncludeSystemFolders; set => inner.IncludeSystemFolders = value; }
+        public string FreeSpace { get => inner.FreeSpace; set => inner.FreeSpace = value; }
+        public string FtpCoding { get => inner.FtpCoding; set => inner.FtpCoding = value; }
+        public string FtpEncryptionMode { get => inner.FtpEncryptionMode; set => inner.FtpEncryptionMode = value; }
+        public string FtpFolder { get => inner.FtpFolder; set => inner.FtpFolder = value; }
+        public string FtpHost { get => inner.FtpHost; set => inner.FtpHost = value; }
+        public string FtpPass { get => inner.FtpPass; set => inner.FtpPass = value; }
+        public string FtpPort { get => inner.FtpPort; set => inner.FtpPort = value; }
+        public string FtpSslProtocols { get => inner.FtpSslProtocols; set => inner.FtpSslProtocols = value; }
+        public string FtpUser { get => inner.FtpUser; set => inner.FtpUser = value; }
+        public string InfoBackupDone { get => inner.InfoBackupDone; set => inner.InfoBackupDone = value; }
+        public string IntervallAutoHourBackups { get => inner.IntervallAutoHourBackups; set => inner.IntervallAutoHourBackups = value; }
+        public string IntervallDelete { get => inner.IntervallDelete; set => inner.IntervallDelete = value; }
+        public string IsConfigured { get => inner.IsConfigured; set => inner.IsConfigured = value; }
+        public string LastBackupDone { get => inner.LastBackupDone; set => inner.LastBackupDone = value; }
+        public string LastVersionDate { get => inner.LastVersionDate; set => inner.LastVersionDate = value; }
+        public string MediaVolumeSerial { get => inner.MediaVolumeSerial; set => inner.MediaVolumeSerial = value; }
+        public string Medium { get => inner.Medium; set => inner.Medium = value; }
+        public MediaType MediumType { get => inner.MediumType; set => inner.MediumType = value; }
+        public string OldBackupPrevent { get => inner.OldBackupPrevent; set => inner.OldBackupPrevent = value; }
+        public string RemindAfterDays { get => inner.RemindAfterDays; set => inner.RemindAfterDays = value; }
+        public string RemindSpace { get => inner.RemindSpace; set => inner.RemindSpace = value; }
+        public string ScheduleFullBackup { get => inner.ScheduleFullBackup; set => inner.ScheduleFullBackup = value; }
+        public string ShowLocalizedPath { get => inner.ShowLocalizedPath; set => inner.ShowLocalizedPath = value; }
+        public string ShowWaitOnMediaAutoBackups { get => inner.ShowWaitOnMediaAutoBackups; set => inner.ShowWaitOnMediaAutoBackups = value; }
+        public string SourceFolder { get => inner.SourceFolder; set => inner.SourceFolder = value; }
+        public TaskType TaskType { get => inner.TaskType; set => inner.TaskType = value; }
+        public string UNCPassword { get => inner.UNCPassword; set => inner.UNCPassword = value; }
+        public string UNCUsername { get => inner.UNCUsername; set => inner.UNCUsername = value; }
+
+        public Task InitializeAsync() => inner.InitializeAsync();
+
+        public void PersistProperties(DbClient dbClient, IReadOnlyList<(string Property, string Value)> properties)
+        {
+            throw new InvalidOperationException("Simulated configuration persist failure.");
+        }
+
+        public void ApplyLocalProperties(IReadOnlyList<(string Property, string Value)> properties)
+        {
+            ApplyLocalPropertiesCalled = true;
+            inner.ApplyLocalProperties(properties);
+        }
     }
 }
