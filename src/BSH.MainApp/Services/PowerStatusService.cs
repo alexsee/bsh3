@@ -2,12 +2,14 @@
 // Licensed under the Apache License, Version 2.0.
 
 using BSH.MainApp.Contracts.Services;
+using Serilog;
 using Windows.System.Power;
 
 namespace BSH.MainApp.Services;
 
 public class PowerStatusService : IPowerStatusService
 {
+    private readonly ILogger logger = Log.ForContext<PowerStatusService>();
     private bool isMonitoring;
     private bool hasPowerStatusSnapshot;
     private bool hasBattery;
@@ -117,8 +119,10 @@ public class PowerStatusService : IPowerStatusService
 
             return changed;
         }
-        catch
+        catch (Exception ex)
         {
+            logger.Debug(ex, "Unable to read system power status; treating as not on battery.");
+
             var changed = hasPowerStatusSnapshot && (hasBattery || isRunningOnBattery);
 
             hasBattery = false;

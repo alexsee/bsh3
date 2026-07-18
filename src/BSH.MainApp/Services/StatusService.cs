@@ -173,6 +173,11 @@ public class StatusService : IJobReport, IStatusService
     public void AddObserver(IStatusReport jobReport, bool triggerLastState = false)
     {
         observers.Add(jobReport);
+        if (triggerLastState)
+        {
+            jobReport.ReportSystemStatus(SystemStatus);
+            jobReport.ReportState(JobState);
+        }
     }
 
     public void RemoveObserver(IStatusReport jobReport)

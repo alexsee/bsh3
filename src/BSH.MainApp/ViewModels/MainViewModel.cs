@@ -71,6 +71,9 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     [ObservableProperty]
     private double currentProgressMax = 100;
 
+    [ObservableProperty]
+    private string? systemStatusText;
+
     public MainViewModel(
         IPresentationService presentationService,
         IStatusService statusService,
@@ -86,8 +89,10 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         this.jobService = jobService;
         this.scheduledBackupService = scheduledBackupService;
         this.dispatcherQueue = dispatcherQueue;
-        this.statusService.AddObserver(this, true);
         this.configurationManager = configurationManager;
+        this.statusService.AddObserver(this, true);
+        // Apply immediately so the overview has status text before the first dispatcher tick.
+        ApplySystemStatus(this.statusService.SystemStatus);
     }
 
     public async void OnNavigatedTo(object parameter)
@@ -210,5 +215,17 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     public void ReportSystemStatus(SystemStatus systemStatus)
     {
+        dispatcherQueue.TryEnqueue(() => ApplySystemStatus(systemStatus));
+    }
+
+    private void ApplySystemStatus(SystemStatus systemStatus)
+    {
+        SystemStatusText = systemStatus switch
+        {
+            SystemStatus.PAUSED_DUE_TO_BATTERY => "MainView_SystemStatus_BatteryPaused".GetLocalized(),
+            SystemStatus.DEACTIVATED => "MainView_SystemStatus_Deactivated".GetLocalized(),
+            SystemStatus.NOT_CONFIGURED => "MainView_SystemStatus_NotConfigured".GetLocalized(),
+            _ => "MainView_SystemStatus_Running".GetLocalized(),
+        };
     }
 }
