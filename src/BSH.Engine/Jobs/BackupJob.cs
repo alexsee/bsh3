@@ -185,7 +185,7 @@ public class BackupJob : Job
                 fileCollector.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
                 fileCollector.FolderExclusionHandlers.Add(new MaskFolderExclusion(configurationManager));
                 fileCollector.FolderExclusionHandlers.Add(new ReparsePointFolderExclusion());
-                fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion());
+                fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion(configurationManager));
                 fileCollector.FolderExclusionHandlers.Add(new TemporaryFolderExclusion());
 
                 var filesList = fileCollector.GetLocalFileList(folderEntry, true);
@@ -195,6 +195,14 @@ public class BackupJob : Job
 
             // report progress
             _logger.Information("{numFiles} files and {numFolders} folders are collected for backup.", files.Count, emptyFolder.Count);
+
+            var freeSpaceBytes = storage.GetFreeSpace();
+            var estimatedBytes = DiskSpacePreflight.EstimateRequiredBytes(files.Select(f => f.FileSize));
+            if (DiskSpacePreflight.IsClearlyInsufficient(freeSpaceBytes, estimatedBytes))
+            {
+                await AbortForInsufficientDiskSpaceAsync(dbClient, newVersionDate, estimatedBytes, freeSpaceBytes);
+                return;
+            }
 
             ReportStatus(Resources.STATUS_BACKUP_COPY_SHORT, Resources.STATUS_BACKUP_COPY_TEXT);
             ReportProgress(files.Count, 0);
@@ -286,19 +294,9 @@ public class BackupJob : Job
                 // cancellation token requested?
                 if (token.IsCancellationRequested || cancel)
                 {
-                    // report progress
                     _logger.Information("Cancellation of backup job requested. Rollback all transfers.");
                     ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_TEXT);
-
-                    // undo
-                    storage.DeleteDirectory(newVersionDate);
-                    storage.Dispose();
-
-                    dbClient.RollbackTransaction();
-
-                    // standby
-                    Win32Stuff.AllowSystemSleep();
-
+                    RollbackIncompleteVersion(dbClient, newVersionDate);
                     ReportState(JobState.CANCELED);
                     return;
                 }
@@ -312,19 +310,9 @@ public class BackupJob : Job
                 // can we still write to device?
                 if (!storage.CanWriteToStorage())
                 {
-                    // report progress
                     _logger.Error("Cannot write to backup device. Rollback all transfers.");
                     ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_ERROR);
-
-                    // undo
-                    storage.DeleteDirectory(newVersionDate);
-                    storage.Dispose();
-
-                    dbClient.RollbackTransaction();
-
-                    // standby
-                    Win32Stuff.AllowSystemSleep();
-
+                    RollbackIncompleteVersion(dbClient, newVersionDate);
                     ReportExceptions(FileErrorList);
                     ReportState(JobState.ERROR);
                     return;
@@ -394,6 +382,31 @@ public class BackupJob : Job
         _logger.Information("Backup job finished.");
     }
 
+    private async Task AbortForInsufficientDiskSpaceAsync(
+        DbClient dbClient,
+        string versionDate,
+        long estimatedBytes,
+        long freeSpaceBytes)
+    {
+        _logger.Error(
+            "Insufficient free space on backup device before copy. Estimated need ~{estimatedBytes} bytes, available {freeSpaceBytes} bytes. Aborting.",
+            estimatedBytes,
+            freeSpaceBytes);
+
+        ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_ERROR);
+        await RequestShowErrorInsufficientDiskSpaceAsync();
+        RollbackIncompleteVersion(dbClient, versionDate);
+        ReportState(JobState.ERROR);
+    }
+
+    private void RollbackIncompleteVersion(DbClient dbClient, string versionDate)
+    {
+        storage.DeleteDirectory(versionDate);
+        storage.Dispose();
+        dbClient.RollbackTransaction();
+        Win32Stuff.AllowSystemSleep();
+    }
+
     private async Task ProcessEmptyFolders(DbClient dbClient, long newVersionId, List<FolderTableRow> emptyFolder)
     {
         foreach (var folder in emptyFolder)
@@ -410,9 +423,15 @@ public class BackupJob : Job
     /// </summary>
     /// <param name="selectedFolders">List of source folders.</param>
     /// <returns></returns>
-    private static List<string> GetSourceFolders(string[] selectedFolders)
+    private List<string> GetSourceFolders(string[] selectedFolders)
     {
         var folderList = new List<string>();
+        IFolderExclusion[] driveRootExclusions =
+        [
+            new ReparsePointFolderExclusion(),
+            new SystemFolderExclusion(configurationManager),
+            new TemporaryFolderExclusion()
+        ];
 
         foreach (var folder in selectedFolders)
         {
@@ -424,21 +443,17 @@ public class BackupJob : Job
             }
 
             // entire drive
-            var subFolders = Directory.GetDirectories(folder);
-
-            foreach (var subFolder in subFolders)
+            foreach (var subFolder in Directory.GetDirectories(folder))
             {
                 try
                 {
                     var folderInfo = new DirectoryInfo(subFolder);
-
-                    // check if the folder is not a system folder
-                    if ((folderInfo.Attributes & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint &&
-                        (folderInfo.Attributes & FileAttributes.System) != FileAttributes.System &&
-                        (folderInfo.Attributes & FileAttributes.Temporary) != FileAttributes.Temporary)
+                    if (driveRootExclusions.Any(exclusion => exclusion.IsFolderFiltered(folder, folderInfo)))
                     {
-                        folderList.Add(subFolder);
+                        continue;
                     }
+
+                    folderList.Add(subFolder);
                 }
                 catch (Exception ex)
                 {

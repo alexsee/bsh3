@@ -146,13 +146,26 @@
     <value>Exclude ...</value>
   </data>
   <data name="lstExcludeFolders.Size" type="System.Drawing.Size, System.Drawing">
-    <value>798, 456</value>
+    <value>798, 411</value>
   </data>
   <data name="cmdDeleteFolders.Text" xml:space="preserve">
     <value>&amp;Delete</value>
   </data>
   <data name="cmdAddFolders.Text" xml:space="preserve">
     <value>&amp;Add</value>
+  </data>
+  <data name="chkIncludeSystemFolders.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 423</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="chkIncludeSystemFolders.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>10, 4, 4, 4</value>
+  </data>
+  <data name="chkIncludeSystemFolders.Size" type="System.Drawing.Size, System.Drawing">
+    <value>792, 37</value>
+  </data>
+  <data name="chkIncludeSystemFolders.Text" xml:space="preserve">
+    <value>Include folders marked as System (e.g. Nextcloud sync folders)</value>
   </data>
   <data name="cmdDeleteFile.Text" xml:space="preserve">
     <value>&amp;Delete</value>
@@ -161,7 +174,7 @@
     <value>&amp;Add</value>
   </data>
   <data name="lstExcludeFiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>824, 516</value>
+    <value>798, 456</value>
   </data>
   <data name="FlowLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 468</value>
@@ -179,22 +192,25 @@
     <value>Directory</value>
   </data>
   <data name="FlowLayoutPanel2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 528</value>
+    <value>4, 468</value>
+  </data>
+  <data name="FlowLayoutPanel2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>798, 52</value>
   </data>
   <data name="TableLayoutPanel2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>832, 584</value>
+    <value>806, 524</value>
   </data>
   <data name="TabPage2.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 37</value>
   </data>
   <data name="TabPage2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>840, 592</value>
+    <value>814, 532</value>
   </data>
   <data name="TabPage2.Text" xml:space="preserve">
     <value>File type</value>
   </data>
   <data name="lstExcludeSingleFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>824, 516</value>
+    <value>798, 456</value>
   </data>
   <data name="cmdAddSingleFile.Text" xml:space="preserve">
     <value>&amp;Add</value>
@@ -203,16 +219,19 @@
     <value>&amp;Delete</value>
   </data>
   <data name="FlowLayoutPanel3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 528</value>
+    <value>4, 468</value>
+  </data>
+  <data name="FlowLayoutPanel3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>798, 52</value>
   </data>
   <data name="TableLayoutPanel3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>832, 584</value>
+    <value>806, 524</value>
   </data>
   <data name="TabPage3.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 37</value>
   </data>
   <data name="TabPage3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>840, 592</value>
+    <value>814, 532</value>
   </data>
   <data name="TabPage3.Text" xml:space="preserve">
     <value>File</value>
@@ -229,6 +248,9 @@
   <data name="Label4.Location" type="System.Drawing.Point, System.Drawing">
     <value>429, 8</value>
   </data>
+  <data name="FlowLayoutPanel4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>758, 56</value>
+  </data>
   <data name="LinkLabel1.Size" type="System.Drawing.Size, System.Drawing">
     <value>242, 28</value>
   </data>
@@ -239,7 +261,7 @@
     <value>4, 37</value>
   </data>
   <data name="TabPage4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>840, 592</value>
+    <value>814, 532</value>
   </data>
   <data name="TabPage4.Text" xml:space="preserve">
     <value>Other</value>
@@ -299,9 +321,6 @@
         XHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8P///xDP/HIAB//+AAf//wAH//8ADDSYAAP//AYD//wGA
         /ycAAA0ZwAP/AIAD//+AAScCgAEhL8wjHBv8PwRw
 </value>
-  </data>
-  <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>900, 800</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Set up filters</value>
