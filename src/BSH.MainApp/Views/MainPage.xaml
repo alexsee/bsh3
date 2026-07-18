@@ -55,9 +55,8 @@
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" FontSize="18" x:Name="tbBigStatus">
-                        Backup Service Home is running successfully
-                    </TextBlock>
+                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" FontSize="18" x:Name="tbBigStatus"
+                               Text="{x:Bind ViewModel.SystemStatusText, Mode=OneWay}" />
 
                     <TextBlock Grid.Column="0" Grid.Row="1">Available:</TextBlock>
                     <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind ViewModel.AvailableDiskSpace, Mode=OneWay}">653 GB</TextBlock>
