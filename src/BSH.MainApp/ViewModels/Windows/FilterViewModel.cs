@@ -39,13 +39,6 @@ public partial class FilterViewModel : ObservableObject
         set => SetProperty(ref excludeFilesBigger, value);
     }
 
-    private bool includeSystemFolders;
-    public bool IncludeSystemFolders
-    {
-        get => includeSystemFolders;
-        set => SetProperty(ref includeSystemFolders, value);
-    }
-
     private decimal excludeFileBigger;
     public decimal ExcludeFileBigger
     {
@@ -196,7 +189,6 @@ public partial class FilterViewModel : ObservableObject
 
         ExcludeFilesBigger = decimal.TryParse(configurationManager.ExcludeFileBigger, out var maxFileSize);
         ExcludeFileBigger = ExcludeFilesBigger ? maxFileSize : 0;
-        IncludeSystemFolders = configurationManager.IncludeSystemFolders == "1";
     }
 
     public void SaveToConfiguration()
@@ -206,7 +198,6 @@ public partial class FilterViewModel : ObservableObject
         configurationManager.ExcludeFileTypes = string.Join("|", ExcludeFileTypes.Select(x => x.Trim().TrimStart('*').TrimStart('.')).Where(x => !string.IsNullOrEmpty(x)));
         configurationManager.ExcludeMask = string.Join("|", RegexPatterns.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
         configurationManager.ExcludeFileBigger = ExcludeFilesBigger && ExcludeFileBigger > 0 ? ExcludeFileBigger.ToString() : string.Empty;
-        configurationManager.IncludeSystemFolders = IncludeSystemFolders ? "1" : "0";
     }
 
     private string? selectedFolder;
