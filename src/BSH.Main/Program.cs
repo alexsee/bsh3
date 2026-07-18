@@ -144,6 +144,14 @@ static class Program
         {
             BackupLogic.DatabaseFile = opts.DatabaseFile;
         }
+
+        // Kept for the legacy uninstaller, which still passes --deleteprotocol during upgrades.
+        if (opts.DeleteProtocol)
+        {
+            Application.Exit();
+            Environment.Exit(0);
+            return;
+        }
     }
 
     private static void CheckCommands(string[] args)
