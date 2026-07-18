@@ -621,7 +621,7 @@ public class BackupJob : Job
         return configurationManager.Encrypt == 1 && !normalCopy && file.FileSize > 0;
     }
 
-    private string EnsureSupportedRemotePath(
+    private static string EnsureSupportedRemotePath(
         IStorageProvider storage,
         string remoteFileName,
         string localFileName,

@@ -19,7 +19,7 @@ namespace BSH.Service;
 
 public class VSSService : IVSSRemoteObject
 {
-    private Exception exception;
+    private Exception? exception;
 
     public bool CopyFileWithVSS(string vssServiceFolder, string source, string destination)
     {
@@ -27,8 +27,11 @@ public class VSSService : IVSSRemoteObject
 
         try
         {
+            var root = fileInfo.Directory?.Root.Name
+                ?? throw new InvalidOperationException($"Could not determine volume root for '{source}'.");
+
             using var vss = new VssBackup();
-            vss.Setup(fileInfo.Directory.Root.Name);
+            vss.Setup(root);
 
             var snapshotPath = vss.GetSnapshotPath(source);
             XCopy.Copy(snapshotPath, destination, true, false);
@@ -43,7 +46,7 @@ public class VSSService : IVSSRemoteObject
         return false;
     }
 
-    public Exception GetException()
+    public Exception? GetException()
     {
         return this.exception;
     }

@@ -35,12 +35,12 @@ public class StatusService : IJobReport, IStatusService
     public string LastStatusTitle
     {
         get; set;
-    }
+    } = string.Empty;
 
     public string LastStatusText
     {
         get; set;
-    }
+    } = string.Empty;
 
     public int LastProgressTotal
     {
@@ -55,12 +55,12 @@ public class StatusService : IJobReport, IStatusService
     public string LastFileProgress
     {
         get; set;
-    }
+    } = string.Empty;
 
     public Collection<FileExceptionEntry> LastFilesException
     {
         get; set;
-    }
+    } = [];
 
     public RequestOverwriteResult LastFileOverwriteChoice => lastFileOverwriteChoice;
 

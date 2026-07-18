@@ -149,31 +149,31 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private Visibility ftpRemoteVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
-    private string localDevicePath;
+    private string localDevicePath = string.Empty;
 
     [ObservableProperty]
-    private string localUNCUser;
+    private string localUNCUser = string.Empty;
 
     [ObservableProperty]
-    private string localUNCPassword;
+    private string localUNCPassword = string.Empty;
 
     [ObservableProperty]
-    private string ftpRemoteHost;
+    private string ftpRemoteHost = string.Empty;
 
     [ObservableProperty]
     private int ftpRemotePort;
 
     [ObservableProperty]
-    private string ftpRemoteUser;
+    private string ftpRemoteUser = string.Empty;
 
     [ObservableProperty]
-    private string ftpRemotePassword;
+    private string ftpRemotePassword = string.Empty;
 
     [ObservableProperty]
-    private string ftpRemotePath;
+    private string ftpRemotePath = string.Empty;
 
     [ObservableProperty]
-    private string ftpRemoteEncoding;
+    private string ftpRemoteEncoding = string.Empty;
 
     [ObservableProperty]
     private bool ftpRemoteEnforceUnencrypted;

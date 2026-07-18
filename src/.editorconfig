@@ -280,3 +280,14 @@ dotnet_diagnostic.S5344.severity = none
 # Generated WinUI binding code; obsolescence of Window.Icon is upstream.
 [**/XamlTypeInfo.g.cs]
 dotnet_diagnostic.CS0618.severity = none
+
+# Legacy third-party PSD preview parser — high Sonar noise, low change value.
+[**/Preview/Psd/CPSD.cs]
+dotnet_diagnostic.S1854.severity = none
+dotnet_diagnostic.S1125.severity = none
+dotnet_diagnostic.S1481.severity = none
+dotnet_diagnostic.S125.severity = none
+dotnet_diagnostic.S2325.severity = none
+dotnet_diagnostic.S3776.severity = none
+dotnet_diagnostic.S101.severity = none
+dotnet_diagnostic.S4487.severity = none
