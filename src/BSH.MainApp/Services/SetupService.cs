@@ -96,6 +96,9 @@ public class SetupService : ISetupService
             case SetupTargetKind.Ftp:
                 ApplyFtpTarget(configuration);
                 break;
+            case SetupTargetKind.WebDav:
+                ApplyWebDavTarget(configuration);
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(configuration), configuration.TargetKind, "Unsupported setup target.");
         }
@@ -247,6 +250,9 @@ public class SetupService : ISetupService
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
+        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 7");
+        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 8");
+        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 9");
     }
 
     public async Task ConvertFileTypesForFtpImportAsync()
@@ -254,6 +260,13 @@ public class SetupService : ISetupService
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
+    }
+
+    public async Task ConvertFileTypesForWebDavImportAsync()
+    {
+        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 7 WHERE fileType = 1");
+        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 8 WHERE fileType = 2");
+        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 9 WHERE fileType = 6");
     }
 
     private void ApplyLocalTarget(string? backupFolder, string? mediaVolumeSerial, bool createFolder)
@@ -315,6 +328,17 @@ public class SetupService : ISetupService
         configurationManager.FtpCoding = configuration.FtpEncoding ?? "UTF8";
         configurationManager.FtpEncryptionMode = configuration.FtpEnforceUnencrypted ? "0" : "3";
         configurationManager.FtpSslProtocols = "0";
+    }
+
+    private void ApplyWebDavTarget(NewSetupConfiguration configuration)
+    {
+        configurationManager.MediumType = MediaType.WebDav;
+        configurationManager.BackupFolder = "";
+        configurationManager.FtpHost = configuration.FtpHost ?? "";
+        configurationManager.FtpPort = configuration.FtpPort ?? "443";
+        configurationManager.FtpUser = configuration.FtpUser ?? "";
+        configurationManager.FtpPass = configuration.FtpPassword ?? "";
+        configurationManager.FtpFolder = configuration.FtpFolder ?? "";
     }
 
     private static string EscapeSql(string value)

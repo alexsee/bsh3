@@ -51,6 +51,8 @@ public partial class SetupViewModel : ObservableObject
         FtpEncoding = "UTF8";
         ImportFtpPort = "21";
         ImportFtpEncoding = "UTF8";
+        WebDavPort = "443";
+        ImportWebDavPort = "443";
         SelectedTaskType = TaskType.Auto;
         SelectedTargetKind = SetupTargetKind.LocalDrive;
         SelectedImportSourceKind = SetupImportSourceKind.LocalMedia;
@@ -130,6 +132,21 @@ public partial class SetupViewModel : ObservableObject
     private bool ftpEnforceUnencrypted;
 
     [ObservableProperty]
+    private string webDavHost = "";
+
+    [ObservableProperty]
+    private string webDavPort = "443";
+
+    [ObservableProperty]
+    private string webDavUser = "";
+
+    [ObservableProperty]
+    private string webDavPassword = "";
+
+    [ObservableProperty]
+    private string webDavFolder = "";
+
+    [ObservableProperty]
     private TaskType selectedTaskType = TaskType.Auto;
 
     [ObservableProperty]
@@ -164,6 +181,21 @@ public partial class SetupViewModel : ObservableObject
 
     [ObservableProperty]
     private bool importFtpEnforceUnencrypted;
+
+    [ObservableProperty]
+    private string importWebDavHost = "";
+
+    [ObservableProperty]
+    private string importWebDavPort = "443";
+
+    [ObservableProperty]
+    private string importWebDavUser = "";
+
+    [ObservableProperty]
+    private string importWebDavPassword = "";
+
+    [ObservableProperty]
+    private string importWebDavFolder = "";
 
     [ObservableProperty]
     private SourceRemap? selectedSourceRemap;
@@ -211,10 +243,16 @@ public partial class SetupViewModel : ObservableObject
     private Visibility ftpTargetVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
+    private Visibility webDavTargetVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
     private Visibility localImportVisibility = Visibility.Visible;
 
     [ObservableProperty]
     private Visibility ftpImportVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
+    private Visibility webDavImportVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
     private Visibility explicitImportVisibility = Visibility.Collapsed;
@@ -645,6 +683,34 @@ public partial class SetupViewModel : ObservableObject
                     return false;
                 }
 
+            case SetupTargetKind.WebDav:
+                try
+                {
+                    if (!int.TryParse(WebDavPort, out var port))
+                    {
+                        ValidationErrorMessage = "WebDAV port is invalid.";
+                        return false;
+                    }
+
+                    var ok = WebDavStorage.CheckConnection(WebDavHost, port, WebDavUser, WebDavPassword, WebDavFolder);
+                    if (!ok)
+                    {
+                        ValidationErrorMessage = "The WebDAV directory was not found.";
+                        return false;
+                    }
+
+                    await presentationService.ShowMessageBoxAsync(
+                        "WebDAV connection successful",
+                        "The WebDAV connection was verified successfully.",
+                        [new UICommand("OK")]);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    ValidationErrorMessage = "WebDAV connection failed. " + ex.Message;
+                    return false;
+                }
+
             default:
                 ValidationErrorMessage = "Select a backup target.";
                 return false;
@@ -684,6 +750,10 @@ public partial class SetupViewModel : ObservableObject
 
             case SetupImportSourceKind.Ftp:
                 await ImportFromFtpAsync();
+                break;
+
+            case SetupImportSourceKind.WebDav:
+                await ImportFromWebDavAsync();
                 break;
         }
     }
@@ -817,6 +887,79 @@ public partial class SetupViewModel : ObservableObject
         }
     }
 
+    private async Task ImportFromWebDavAsync()
+    {
+        try
+        {
+            if (!int.TryParse(ImportWebDavPort, out var port))
+            {
+                ValidationErrorMessage = "WebDAV port is invalid.";
+                return;
+            }
+
+            using (var storage = new WebDavStorage(
+                ImportWebDavHost,
+                port,
+                ImportWebDavUser,
+                ImportWebDavPassword,
+                ImportWebDavFolder,
+                0))
+            {
+                storage.Open();
+                if (!storage.FileExists("backup.bshdb"))
+                {
+                    ValidationErrorMessage = "No backup database was found on the WebDAV server.";
+                    return;
+                }
+            }
+
+            var confirmed = await ConfirmDatabaseReplacementAsync();
+            if (!confirmed)
+            {
+                return;
+            }
+
+            CurrentStep = SetupWizardStep.Progress;
+            IsBusy = true;
+
+            setupService.PrepareDatabaseReplacement(DatabaseFile);
+            using (var storage = new WebDavStorage(
+                ImportWebDavHost,
+                port,
+                ImportWebDavUser,
+                ImportWebDavPassword,
+                ImportWebDavFolder,
+                0))
+            {
+                storage.Open();
+                storage.CopyFileFromStorage(DatabaseFile, "backup.bshdb");
+            }
+
+            await ReinitializeAfterImportAsync();
+
+            configurationManager.BackupFolder = "";
+            configurationManager.FtpFolder = ImportWebDavFolder;
+            configurationManager.FtpHost = ImportWebDavHost;
+            configurationManager.FtpPass = ImportWebDavPassword;
+            configurationManager.FtpPort = ImportWebDavPort;
+            configurationManager.FtpUser = ImportWebDavUser;
+            configurationManager.MediumType = MediaType.WebDav;
+            await setupService.ConvertFileTypesForWebDavImportAsync();
+
+            PrepareSourceRemapStep();
+            CurrentStep = SetupWizardStep.ImportRemap;
+        }
+        catch (Exception ex)
+        {
+            ValidationErrorMessage = "WebDAV import failed. " + ex.Message;
+            CurrentStep = SetupWizardStep.ImportMedia;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
     private void PrepareSourceRemapStep()
     {
         var sources = configurationManager.SourceFolder
@@ -877,6 +1020,17 @@ public partial class SetupViewModel : ObservableObject
                 FtpFolder = FtpFolder,
                 FtpEncoding = FtpEncoding,
                 FtpEnforceUnencrypted = FtpEnforceUnencrypted,
+                TaskType = SelectedTaskType
+            },
+            SetupTargetKind.WebDav => new NewSetupConfiguration
+            {
+                SourceFolders = Sources.ToList(),
+                TargetKind = SetupTargetKind.WebDav,
+                FtpHost = WebDavHost,
+                FtpPort = WebDavPort,
+                FtpUser = WebDavUser,
+                FtpPassword = WebDavPassword,
+                FtpFolder = WebDavFolder,
                 TaskType = SelectedTaskType
             },
             _ => null
@@ -951,7 +1105,7 @@ public partial class SetupViewModel : ObservableObject
             SetupWizardStep.Sources => ("Choose what to back up", "Select the folders on this PC that should be included in your backups. You can add more folders or remove ones you do not need."),
             SetupWizardStep.Target => ("Where should backups be stored?", "Pick one destination. Only the options for your choice appear below."),
             SetupWizardStep.Mode => ("Choose backup mode", "Run backups automatically or start them manually."),
-            SetupWizardStep.ImportMedia => ("Import backup", "Select the media, FTP server, or path that contains your backup database."),
+            SetupWizardStep.ImportMedia => ("Import backup", "Select the media, FTP/WebDAV server, or path that contains your backup database."),
             SetupWizardStep.ImportSelect => ("Select backup", "Choose which discovered backup database to import."),
             SetupWizardStep.ImportRemap => ("Remap source folders", "Match each original path from the imported backup to where that folder lives on this PC."),
             SetupWizardStep.Progress => ("Working", "Please wait while the setup is applied."),
@@ -967,12 +1121,14 @@ public partial class SetupViewModel : ObservableObject
         LocalTargetVisibility = SelectedTargetKind == SetupTargetKind.LocalDrive ? Visibility.Visible : Visibility.Collapsed;
         UncTargetVisibility = SelectedTargetKind == SetupTargetKind.Unc ? Visibility.Visible : Visibility.Collapsed;
         FtpTargetVisibility = SelectedTargetKind == SetupTargetKind.Ftp ? Visibility.Visible : Visibility.Collapsed;
+        WebDavTargetVisibility = SelectedTargetKind == SetupTargetKind.WebDav ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void UpdateImportSourceVisibility()
     {
         LocalImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.LocalMedia ? Visibility.Visible : Visibility.Collapsed;
         FtpImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.Ftp ? Visibility.Visible : Visibility.Collapsed;
+        WebDavImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.WebDav ? Visibility.Visible : Visibility.Collapsed;
         ExplicitImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.ExplicitPath ? Visibility.Visible : Visibility.Collapsed;
     }
 

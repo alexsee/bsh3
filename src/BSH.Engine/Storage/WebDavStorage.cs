@@ -75,6 +75,23 @@ public class WebDavStorage : Storage, IStorage
 
     public StorageProviderKind Kind => StorageProviderKind.WebDav;
 
+    public static bool CheckConnection(string host, int port, string userName, string password, string folderPath)
+    {
+        try
+        {
+            using var storage = new WebDavStorage(host, port, userName, password, folderPath, currentStorageVersion: 0);
+            storage.Open();
+
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            return storage.DirectoryExistsAsync("", timeoutCts.Token).GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Exception during WebDAV connection check.");
+            return false;
+        }
+    }
+
     public async Task<bool> CheckMedium(bool quickCheck = false)
     {
         try

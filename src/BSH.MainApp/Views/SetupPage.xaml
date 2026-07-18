@@ -21,8 +21,10 @@
         <models:SetupTargetKind x:Key="Target_Local">LocalDrive</models:SetupTargetKind>
         <models:SetupTargetKind x:Key="Target_Unc">Unc</models:SetupTargetKind>
         <models:SetupTargetKind x:Key="Target_Ftp">Ftp</models:SetupTargetKind>
+        <models:SetupTargetKind x:Key="Target_WebDav">WebDav</models:SetupTargetKind>
         <models:SetupImportSourceKind x:Key="Import_Local">LocalMedia</models:SetupImportSourceKind>
         <models:SetupImportSourceKind x:Key="Import_Ftp">Ftp</models:SetupImportSourceKind>
+        <models:SetupImportSourceKind x:Key="Import_WebDav">WebDav</models:SetupImportSourceKind>
         <models:SetupImportSourceKind x:Key="Import_Path">ExplicitPath</models:SetupImportSourceKind>
     </Page.Resources>
 
@@ -127,7 +129,7 @@
                                     <TextBlock
                                         Opacity="0.75"
                                         TextWrapping="WrapWholeWords"
-                                        Text="Already have a Backup Service Home database on a drive, network share, or FTP server? Import it and remap source folders if paths changed." />
+                                        Text="Already have a Backup Service Home database on a drive, network share, FTP, or WebDAV server? Import it and remap source folders if paths changed." />
                                 </StackPanel>
                                 <Button
                                     Grid.Column="2"
@@ -200,6 +202,13 @@
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Ftp}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
                                 CommandParameter="{StaticResource Target_Ftp}" />
+                            <controls:SetupOptionCard
+                                Title="WebDAV"
+                                Description="HTTPS URL and login"
+                                Glyph="&#xE774;"
+                                IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_WebDav}}"
+                                Command="{x:Bind ViewModel.SelectTargetCommand}"
+                                CommandParameter="{StaticResource Target_WebDav}" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">
@@ -230,6 +239,15 @@
                             <TextBox Header="FTP folder" Text="{x:Bind ViewModel.FtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Header="FTP encoding" Text="{x:Bind ViewModel.FtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <CheckBox Content="Enforce unencrypted FTP" IsChecked="{x:Bind ViewModel.FtpEnforceUnencrypted, Mode=TwoWay}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.WebDavTargetVisibility, Mode=OneWay}">
+                            <TextBlock FontWeight="SemiBold" Text="Enter your WebDAV server details" />
+                            <TextBox Header="Host URL (for example https://cloud.example.com/dav)" Text="{x:Bind ViewModel.WebDavHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="Port" Text="{x:Bind ViewModel.WebDavPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="Username" Text="{x:Bind ViewModel.WebDavUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <PasswordBox Header="Password" Password="{Binding WebDavPassword, Mode=TwoWay}" />
+                            <TextBox Header="Folder path" Text="{x:Bind ViewModel.WebDavFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                     </StackPanel>
 
@@ -270,6 +288,13 @@
                                 Command="{x:Bind ViewModel.SelectImportSourceCommand}"
                                 CommandParameter="{StaticResource Import_Ftp}" />
                             <controls:SetupOptionCard
+                                Title="WebDAV"
+                                Description="HTTPS URL and login"
+                                Glyph="&#xE774;"
+                                IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_WebDav}}"
+                                Command="{x:Bind ViewModel.SelectImportSourceCommand}"
+                                CommandParameter="{StaticResource Import_WebDav}" />
+                            <controls:SetupOptionCard
                                 Title="Folder path"
                                 Description="Folder with backup.bshdb"
                                 Glyph="&#xE8B7;"
@@ -303,6 +328,15 @@
                             <TextBox Header="FTP folder" Text="{x:Bind ViewModel.ImportFtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Header="FTP encoding" Text="{x:Bind ViewModel.ImportFtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <CheckBox Content="Enforce unencrypted FTP" IsChecked="{x:Bind ViewModel.ImportFtpEnforceUnencrypted, Mode=TwoWay}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.WebDavImportVisibility, Mode=OneWay}">
+                            <TextBlock FontWeight="SemiBold" Text="Enter your WebDAV server details" />
+                            <TextBox Header="Host URL (for example https://cloud.example.com/dav)" Text="{x:Bind ViewModel.ImportWebDavHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="Port" Text="{x:Bind ViewModel.ImportWebDavPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="Username" Text="{x:Bind ViewModel.ImportWebDavUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <PasswordBox Header="Password" Password="{Binding ImportWebDavPassword, Mode=TwoWay}" />
+                            <TextBox Header="Folder path" Text="{x:Bind ViewModel.ImportWebDavFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                     </StackPanel>
 

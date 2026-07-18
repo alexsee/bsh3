@@ -9,13 +9,15 @@ public enum SetupTargetKind
 {
     LocalDrive,
     Unc,
-    Ftp
+    Ftp,
+    WebDav
 }
 
 public enum SetupImportSourceKind
 {
     LocalMedia,
     Ftp,
+    WebDav,
     ExplicitPath
 }
 

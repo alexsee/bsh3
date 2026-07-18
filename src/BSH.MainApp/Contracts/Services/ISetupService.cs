@@ -32,4 +32,6 @@ public interface ISetupService
     Task ConvertFileTypesForLocalImportAsync();
 
     Task ConvertFileTypesForFtpImportAsync();
+
+    Task ConvertFileTypesForWebDavImportAsync();
 }

@@ -136,7 +136,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     public IList<MediaType> MediaTypes
     {
-        get => new List<MediaType>() { MediaType.LocalDevice, MediaType.FileTransferServer };
+        get => new List<MediaType>() { MediaType.LocalDevice, MediaType.FileTransferServer, MediaType.WebDav };
     }
 
     [ObservableProperty]
@@ -147,6 +147,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty]
     private Visibility ftpRemoteVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
+    private Visibility webDavRemoteVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
     private string localDevicePath;
@@ -200,26 +203,16 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
         // selected media type
         this.SelectedMediaType = this.configurationManager.MediumType;
-
-        if (SelectedMediaType == MediaType.LocalDevice)
-        {
-            this.FtpRemoteVisibility = Visibility.Collapsed;
-            this.LocalDeviceVisibility = Visibility.Visible;
-        }
-        else
-        {
-            this.FtpRemoteVisibility = Visibility.Visible;
-            this.LocalDeviceVisibility = Visibility.Collapsed;
-        }
+        UpdateTargetPanelVisibility(SelectedMediaType);
 
         // local device
         this.LocalDevicePath = this.configurationManager.BackupFolder;
         this.LocalUNCUser = this.configurationManager.UNCUsername;
         this.LocalUNCPassword = DecryptConfigurationPassword(this.configurationManager.UNCPassword);
 
-        // ftp remote
+        // remote (FTP / WebDAV share Ftp* configuration fields)
         this.FtpRemoteHost = this.configurationManager.FtpHost;
-        this.FtpRemotePort = string.IsNullOrEmpty(this.configurationManager.FtpPort) ? 21 : int.Parse(this.configurationManager.FtpPort);
+        this.FtpRemotePort = ResolveRemotePort(SelectedMediaType, this.configurationManager.FtpPort);
         this.FtpRemoteUser = this.configurationManager.FtpUser;
         this.FtpRemotePassword = this.configurationManager.FtpPass;
         this.FtpRemotePath = this.configurationManager.FtpFolder;
@@ -235,22 +228,36 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
     }
 
-    public static string GetMediaTypeDisplayName(MediaType mediaType)
+    private static int ResolveRemotePort(MediaType mediaType, string? configuredPort)
     {
-        if (mediaType == MediaType.LocalDevice)
+        if (!string.IsNullOrEmpty(configuredPort) && int.TryParse(configuredPort, out var port))
         {
-            return "MediaType_LocalDevice".GetLocalized();
+            return port;
         }
-        else
-        {
-            return "MediaType_FileTransferServer".GetLocalized();
-        }
+
+        return mediaType == MediaType.WebDav ? 443 : 21;
     }
 
-    [RelayCommand(CanExecute = nameof(CanExecuteCheckFtpRemote))]
+    private void UpdateTargetPanelVisibility(MediaType mediaType)
+    {
+        LocalDeviceVisibility = mediaType == MediaType.LocalDevice ? Visibility.Visible : Visibility.Collapsed;
+        FtpRemoteVisibility = mediaType == MediaType.FileTransferServer ? Visibility.Visible : Visibility.Collapsed;
+        WebDavRemoteVisibility = mediaType == MediaType.WebDav ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public static string GetMediaTypeDisplayName(MediaType mediaType)
+    {
+        return mediaType switch
+        {
+            MediaType.LocalDevice => "MediaType_LocalDevice".GetLocalized(),
+            MediaType.WebDav => "MediaType_WebDav".GetLocalized(),
+            _ => "MediaType_FileTransferServer".GetLocalized()
+        };
+    }
+
+    [RelayCommand(CanExecute = nameof(CanExecuteCheckRemoteConnection))]
     public async Task CheckFtpRemote()
     {
-        // check FTP
         var profile = FtpStorage.CheckConnection(FtpRemoteHost, FtpRemotePort, FtpRemoteUser, FtpRemotePassword, FtpRemotePath, FtpRemoteEncoding);
 
         if (profile)
@@ -263,7 +270,22 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
     }
 
-    private bool CanExecuteCheckFtpRemote()
+    [RelayCommand(CanExecute = nameof(CanExecuteCheckRemoteConnection))]
+    public async Task CheckWebDavRemote()
+    {
+        var ok = WebDavStorage.CheckConnection(FtpRemoteHost, FtpRemotePort, FtpRemoteUser, FtpRemotePassword, FtpRemotePath);
+
+        if (ok)
+        {
+            await presentationController.ShowMessageBoxAsync("MsgBox_WebDav_Successful_Title".GetLocalized(), "MsgBox_WebDav_Successful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
+        }
+        else
+        {
+            await presentationController.ShowMessageBoxAsync("MsgBox_WebDav_Unuccessful_Title".GetLocalized(), "MsgBox_WebDav_Unuccessful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
+        }
+    }
+
+    private bool CanExecuteCheckRemoteConnection()
     {
         return !string.IsNullOrEmpty(this.FtpRemoteHost) && !string.IsNullOrEmpty(this.FtpRemoteUser) && !string.IsNullOrEmpty(this.FtpRemotePassword);
     }
@@ -327,16 +349,15 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
         SelectedMediaType = newValue;
         this.configurationManager.MediumType = newValue;
+        UpdateTargetPanelVisibility(newValue);
 
-        if (newValue == MediaType.LocalDevice)
+        if (newValue == MediaType.WebDav && FtpRemotePort == 21)
         {
-            this.FtpRemoteVisibility = Visibility.Collapsed;
-            this.LocalDeviceVisibility = Visibility.Visible;
+            FtpRemotePort = 443;
         }
-        else
+        else if (newValue == MediaType.FileTransferServer && FtpRemotePort == 443)
         {
-            this.FtpRemoteVisibility = Visibility.Visible;
-            this.LocalDeviceVisibility = Visibility.Collapsed;
+            FtpRemotePort = 21;
         }
     }
 
@@ -363,6 +384,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         if (oldValue == null || oldValue == newValue) return;
         this.configurationManager.FtpHost = newValue;
         CheckFtpRemoteCommand.NotifyCanExecuteChanged();
+        CheckWebDavRemoteCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnFtpRemotePortChanged(int oldValue, int newValue)
@@ -376,6 +398,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         if (oldValue == null || oldValue == newValue) return;
         this.configurationManager.FtpUser = newValue;
         CheckFtpRemoteCommand.NotifyCanExecuteChanged();
+        CheckWebDavRemoteCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnFtpRemotePasswordChanged(string? oldValue, string newValue)
@@ -383,6 +406,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         if (oldValue == null || oldValue == newValue) return;
         this.configurationManager.FtpPass = newValue;
         CheckFtpRemoteCommand.NotifyCanExecuteChanged();
+        CheckWebDavRemoteCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnFtpRemotePathChanged(string? oldValue, string newValue)
