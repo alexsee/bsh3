@@ -8,8 +8,9 @@
     <Configurations>Debug;Release;Windows 10</Configurations>
     <IsPublishable>False</IsPublishable>
     <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
-    <Nullable>enable</Nullable>
     <Version>3.9.0.3</Version>
+    <!-- Tests use ? annotations when calling nullable-enabled app code, but the project itself is not nullable-enabled. -->
+    <NoWarn>$(NoWarn);CS8632</NoWarn>
   </PropertyGroup>
   <!-- in .csproj -->
   <PropertyGroup>
