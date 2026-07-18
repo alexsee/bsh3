@@ -55,6 +55,18 @@ public class StorageFactoryTests
     }
 
     [Test]
+    public void GetCurrentStorageProvider_WebDav_ConstructsWebDavStorage()
+    {
+        configurationManager.MediumType = MediaType.WebDav;
+        var factory = new StorageFactory(configurationManager);
+
+        using var provider = factory.GetCurrentStorageProvider();
+
+        Assert.That(provider, Is.InstanceOf<WebDavStorage>());
+        Assert.That(provider.Kind, Is.EqualTo(StorageProviderKind.WebDav));
+    }
+
+    [Test]
     public async Task MediumType_WebDav_RoundTripsThroughConfiguration()
     {
         configurationManager.MediumType = MediaType.WebDav;
