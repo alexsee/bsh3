@@ -112,6 +112,20 @@ public class ScheduleSettingsServiceTests
     }
 
     [Test]
+    public async Task LoadAsyncDisablesMalformedDestructivePolicySettings()
+    {
+        configurationManager.IntervallDelete = "week|invalid";
+        configurationManager.IntervallAutoHourBackups = "invalid";
+        configurationManager.ScheduleFullBackup = "day|invalid";
+
+        var settings = await scheduleSettingsService.LoadAsync();
+
+        Assert.That(settings.RetentionMode, Is.EqualTo(ScheduleRetentionMode.None));
+        Assert.That(settings.AutomaticHourlyBackupThreshold, Is.EqualTo(24));
+        Assert.That(settings.EnableScheduledFullBackups, Is.False);
+    }
+
+    [Test]
     public void BuildScheduleDateUsesKindSpecificDateParts()
     {
         var baseDate = new DateTimeOffset(new DateTime(2026, 6, 1, 8, 0, 0));

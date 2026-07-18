@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine.Models;
 using BSH.Main.Utils;
@@ -19,10 +18,9 @@ public partial class frmEditScheduler
 
     private async void frmEditScheduler_Load(object sender, EventArgs e)
     {
-        // Zeitplaner lesen
-        var schedules = await BackupLogic.ScheduleRepository.GetSchedulesAsync();
+        var settings = await BackupLogic.ScheduleSettingsService.LoadAsync();
         lwTimeSchedule.Items.Clear();
-        foreach (var schedule in schedules)
+        foreach (var schedule in settings.Entries)
         {
             try
             {
@@ -72,33 +70,30 @@ public partial class frmEditScheduler
         }
 
         // Löschintervalle festlegen
-        switch (BackupLogic.ConfigurationManager.IntervallDelete ?? "")
+        switch (settings.RetentionMode)
         {
-            case var @case when @case == "":
+            case ScheduleRetentionMode.None:
                 rdDontDelete.Checked = true;
                 break;
 
-            case "auto":
+            case ScheduleRetentionMode.Automatic:
                 rdDeleteAuto.Checked = true;
                 break;
 
-            default:
+            case ScheduleRetentionMode.Interval:
                 rdDeleteIntervall.Checked = true;
-
-                // Intervall auslesen
-                var Intervall = BackupLogic.ConfigurationManager.IntervallDelete.Split('|');
-                txtIntervall.Text = Intervall[1];
-                switch (Intervall[0] ?? "")
+                txtIntervall.Text = settings.RetentionInterval.ToString();
+                switch (settings.RetentionIntervalUnit)
                 {
-                    case "hour":
+                    case ScheduleRetentionIntervalUnit.Hour:
                         cboIntervall.SelectedIndex = 0;
                         break;
 
-                    case "day":
+                    case ScheduleRetentionIntervalUnit.Day:
                         cboIntervall.SelectedIndex = 1;
                         break;
 
-                    case "week":
+                    case ScheduleRetentionIntervalUnit.Week:
                         cboIntervall.SelectedIndex = 2;
                         break;
                 }
@@ -106,19 +101,14 @@ public partial class frmEditScheduler
                 break;
         }
 
-        nudIntervallHourBackups.Value = decimal.Parse(BackupLogic.ConfigurationManager.IntervallAutoHourBackups);
+        nudIntervallHourBackups.Value = settings.AutomaticHourlyBackupThreshold;
 
         // Vollsicherung
-        if (!string.IsNullOrEmpty(BackupLogic.ConfigurationManager.ScheduleFullBackup))
+        if (settings.EnableScheduledFullBackups)
         {
             chkFullBackup.Checked = true;
-            var Item = BackupLogic.ConfigurationManager.ScheduleFullBackup.Split('|');
-            if (Item[0] == "day")
-            {
-                cboFullBackup.SelectedIndex = 0;
-            }
-
-            nudFullBackup.Value = int.Parse(Item[1]);
+            cboFullBackup.SelectedIndex = 0;
+            nudFullBackup.Value = settings.ScheduledFullBackupDays;
         }
         else
         {
@@ -184,7 +174,8 @@ public partial class frmEditScheduler
 
     private async void cmdOK_Click(object sender, EventArgs e)
     {
-        var schedules = new List<ScheduleEntry>();
+        var settings = await BackupLogic.ScheduleSettingsService.LoadAsync();
+        settings.Entries.Clear();
 
         // Automatische Backups
         foreach (ListViewItem entry in lwTimeSchedule.Items)
@@ -193,76 +184,55 @@ public partial class frmEditScheduler
             switch (entry.SubItems[0].Tag)
             {
                 case 0:
-                    schedules.Add(new ScheduleEntry() { Type = 1, Date = parsedDate });
+                    settings.Entries.Add(new ScheduleEntry() { Type = 1, Date = parsedDate });
                     break;
 
                 case 1:
-                    schedules.Add(new ScheduleEntry() { Type = 2, Date = parsedDate });
+                    settings.Entries.Add(new ScheduleEntry() { Type = 2, Date = parsedDate });
                     break;
 
                 case 2:
-                    schedules.Add(new ScheduleEntry() { Type = 3, Date = parsedDate });
+                    settings.Entries.Add(new ScheduleEntry() { Type = 3, Date = parsedDate });
                     break;
 
                 case 3:
-                    schedules.Add(new ScheduleEntry() { Type = 4, Date = parsedDate });
+                    settings.Entries.Add(new ScheduleEntry() { Type = 4, Date = parsedDate });
                     break;
 
                 case 4:
-                    schedules.Add(new ScheduleEntry() { Type = 5, Date = parsedDate });
+                    settings.Entries.Add(new ScheduleEntry() { Type = 5, Date = parsedDate });
                     break;
             }
         }
-
-        await BackupLogic.ScheduleRepository.ReplaceSchedulesAsync(schedules);
 
         // Löschintervalle speichern
         if (rdDontDelete.Checked)
         {
-            BackupLogic.ConfigurationManager.IntervallDelete = "";
+            settings.RetentionMode = ScheduleRetentionMode.None;
         }
         else if (rdDeleteIntervall.Checked)
         {
-            if (!string.IsNullOrEmpty(txtIntervall.Text) && !string.IsNullOrEmpty(cboIntervall.Text))
+            settings.RetentionMode = ScheduleRetentionMode.Interval;
+            settings.RetentionInterval = int.TryParse(txtIntervall.Text, out var interval) ? interval : 1;
+            settings.RetentionIntervalUnit = cboIntervall.SelectedIndex switch
             {
-                // Manuelles Intervall
-                switch (cboIntervall.SelectedIndex)
-                {
-                    case 0:
-                        // Stündlich
-                        BackupLogic.ConfigurationManager.IntervallDelete = "hour|" + txtIntervall.Text;
-                        break;
-
-                    case 1:
-                        // Täglich
-                        BackupLogic.ConfigurationManager.IntervallDelete = "day|" + txtIntervall.Text;
-                        break;
-
-                    case 2:
-                        // Wöchentlich
-                        BackupLogic.ConfigurationManager.IntervallDelete = "week|" + txtIntervall.Text;
-                        break;
-                }
-            }
+                0 => ScheduleRetentionIntervalUnit.Hour,
+                2 => ScheduleRetentionIntervalUnit.Week,
+                _ => ScheduleRetentionIntervalUnit.Day,
+            };
         }
         else if (rdDeleteAuto.Checked)
         {
-            BackupLogic.ConfigurationManager.IntervallDelete = "auto";
-            BackupLogic.ConfigurationManager.IntervallAutoHourBackups = nudIntervallHourBackups.Value.ToString();
+            settings.RetentionMode = ScheduleRetentionMode.Automatic;
         }
 
+        settings.AutomaticHourlyBackupThreshold = decimal.ToInt32(nudIntervallHourBackups.Value);
+
         // Vollsicherung nach Sicherung oder Tag anlegen
-        if (chkFullBackup.Checked)
-        {
-            if (cboFullBackup.SelectedIndex == 0)
-            {
-                BackupLogic.ConfigurationManager.ScheduleFullBackup = "day|" + nudFullBackup.Value.ToString();
-            }
-        }
-        else
-        {
-            BackupLogic.ConfigurationManager.ScheduleFullBackup = "";
-        }
+        settings.EnableScheduledFullBackups = chkFullBackup.Checked && cboFullBackup.SelectedIndex == 0;
+        settings.ScheduledFullBackupDays = decimal.ToInt32(nudFullBackup.Value);
+
+        await BackupLogic.ScheduleSettingsService.SaveAsync(settings);
 
         Close();
     }
