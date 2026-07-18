@@ -185,7 +185,7 @@ public class BackupJob : Job
                 fileCollector.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
                 fileCollector.FolderExclusionHandlers.Add(new MaskFolderExclusion(configurationManager));
                 fileCollector.FolderExclusionHandlers.Add(new ReparsePointFolderExclusion());
-                fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion());
+                fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion(configurationManager));
                 fileCollector.FolderExclusionHandlers.Add(new TemporaryFolderExclusion());
 
                 var filesList = fileCollector.GetLocalFileList(folderEntry, true);
@@ -410,9 +410,15 @@ public class BackupJob : Job
     /// </summary>
     /// <param name="selectedFolders">List of source folders.</param>
     /// <returns></returns>
-    private static List<string> GetSourceFolders(string[] selectedFolders)
+    private List<string> GetSourceFolders(string[] selectedFolders)
     {
         var folderList = new List<string>();
+        IFolderExclusion[] driveRootExclusions =
+        [
+            new ReparsePointFolderExclusion(),
+            new SystemFolderExclusion(configurationManager),
+            new TemporaryFolderExclusion()
+        ];
 
         foreach (var folder in selectedFolders)
         {
@@ -424,21 +430,17 @@ public class BackupJob : Job
             }
 
             // entire drive
-            var subFolders = Directory.GetDirectories(folder);
-
-            foreach (var subFolder in subFolders)
+            foreach (var subFolder in Directory.GetDirectories(folder))
             {
                 try
                 {
                     var folderInfo = new DirectoryInfo(subFolder);
-
-                    // check if the folder is not a system folder
-                    if ((folderInfo.Attributes & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint &&
-                        (folderInfo.Attributes & FileAttributes.System) != FileAttributes.System &&
-                        (folderInfo.Attributes & FileAttributes.Temporary) != FileAttributes.Temporary)
+                    if (driveRootExclusions.Any(exclusion => exclusion.IsFolderFiltered(folder, folderInfo)))
                     {
-                        folderList.Add(subFolder);
+                        continue;
                     }
+
+                    folderList.Add(subFolder);
                 }
                 catch (Exception ex)
                 {
