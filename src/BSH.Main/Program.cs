@@ -206,8 +206,8 @@ static class Program
             Task.Run(BackupLogic.CommandAutoDelete).GetAwaiter().GetResult();
         }
 
-        // create manual backup
-        BackupLogic.BackupController.CreateBackupAsync(opts.Title, opts.Description, true, shutdownPC: opts.ShutdownPC, shutdownApp: opts.ShutdownApp);
+        // create manual backup (runs while Application.Run keeps the process alive)
+        _ = BackupLogic.BackupController.CreateBackupAsync(opts.Title, opts.Description, true, shutdownPC: opts.ShutdownPC, shutdownApp: opts.ShutdownApp);
 
         return 0;
     }

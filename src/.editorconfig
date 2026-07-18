@@ -250,3 +250,33 @@ dotnet_style_qualification_for_property = false:suggestion
 dotnet_style_qualification_for_field = false:suggestion
 dotnet_style_qualification_for_method = false:suggestion
 dotnet_style_qualification_for_event = false:suggestion
+
+# WinForms/WinUI designer stubs: the components field is often unused when there is no IContainer usage.
+[*.{Designer.cs,designer.cs}]
+dotnet_diagnostic.CS0649.severity = none
+
+# Win32 / COM interop names intentionally match native APIs (RECT, LOGFONT, MSG, etc.).
+[**/COMInterop/**.cs]
+dotnet_diagnostic.S101.severity = none
+dotnet_diagnostic.S2342.severity = none
+dotnet_diagnostic.S2346.severity = none
+
+[**/Win32.cs]
+dotnet_diagnostic.S101.severity = none
+dotnet_diagnostic.S2342.severity = none
+dotnet_diagnostic.S2346.severity = none
+dotnet_diagnostic.S1939.severity = none
+dotnet_diagnostic.S4200.severity = none
+
+[**/WinInvoke32.cs]
+dotnet_diagnostic.S101.severity = none
+dotnet_diagnostic.S4200.severity = none
+dotnet_diagnostic.S1118.severity = none
+
+# Existing encrypted backups require PBKDF2 with 1000 iterations; raising it would break decrypt.
+[**/Security/Encryption.cs]
+dotnet_diagnostic.S5344.severity = none
+
+# Generated WinUI binding code; obsolescence of Window.Icon is upstream.
+[**/XamlTypeInfo.g.cs]
+dotnet_diagnostic.CS0618.severity = none
