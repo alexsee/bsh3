@@ -28,28 +28,34 @@ public class WaitForMediaService : IWaitForMediaService
 
     public async Task<bool> ExecuteAsync(bool silent, CancellationTokenSource cancellationTokenSource)
     {
-        // show window?
-        if (!silent)
+        await ShowWindowAsync(silent, cancellationTokenSource);
+        var result = await WaitForMediaAvailabilityAsync(silent, cancellationTokenSource);
+        await CloseWindowAsync(silent, cancellationTokenSource);
+        return result;
+    }
+
+    private async Task ShowWindowAsync(bool silent, CancellationTokenSource cancellationTokenSource)
+    {
+        if (silent)
         {
-            await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
-            {
-                window = new WaitForMediumWindow();
-                window.ViewModel.OnCancelRequested += cancellationTokenSource.Cancel;
-                window.CenterOnScreen();
-                window.Activate();
-            });
+            return;
         }
 
-        // wait for media
-        var result = await Task.Run(async () =>
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
         {
-            while (true)
-            {
-                if (cancellationTokenSource.Token.IsCancellationRequested)
-                {
-                    break;
-                }
+            window = new WaitForMediumWindow();
+            window.ViewModel.OnCancelRequested += cancellationTokenSource.Cancel;
+            window.CenterOnScreen();
+            window.Activate();
+        });
+    }
 
+    private async Task<bool> WaitForMediaAvailabilityAsync(bool silent, CancellationTokenSource cancellationTokenSource)
+    {
+        return await Task.Run(async () =>
+        {
+            while (!cancellationTokenSource.Token.IsCancellationRequested)
+            {
                 try
                 {
                     await Task.Delay(THREAD_SLEEP_SECONDS);
@@ -57,7 +63,7 @@ public class WaitForMediaService : IWaitForMediaService
 
                     if (silent && currentWaitingTime > MAX_WAITING_SECONDS)
                     {
-                        break;
+                        return false;
                     }
 
                     if (await backupService.CheckMedia())
@@ -67,24 +73,26 @@ public class WaitForMediaService : IWaitForMediaService
                 }
                 catch
                 {
-                    break;
+                    return false;
                 }
             }
 
             return false;
         });
+    }
 
-        // close window
-        if (!silent && window != null)
+    private async Task CloseWindowAsync(bool silent, CancellationTokenSource cancellationTokenSource)
+    {
+        if (silent || window == null)
         {
-            await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
-            {
-                window.ViewModel.OnCancelRequested -= cancellationTokenSource.Cancel;
-                window.Close();
-                window = null;
-            });
+            return;
         }
 
-        return result;
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+        {
+            window.ViewModel.OnCancelRequested -= cancellationTokenSource.Cancel;
+            window.Close();
+            window = null;
+        });
     }
 }

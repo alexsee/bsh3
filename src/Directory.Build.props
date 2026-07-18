@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!-- Keep NuGet lock files aligned between VS (no -a) and CI (dotnet restore -a x64).
+         PlatformTarget/Platforms alone do not set restore RIDs; without this, VS rewrites
+         packages.lock.json without win-x64 and locked-mode CI restore fails (NU1004). -->
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true' Or '$(CI)' == 'true'">true</RestoreLockedMode>
+  </PropertyGroup>
+</Project>

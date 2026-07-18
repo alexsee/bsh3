@@ -10,6 +10,7 @@ using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
+using Brightbits.BSH.Engine.Runtime.Ports;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
@@ -90,12 +91,23 @@ public partial class App : Application
             // Core Services
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IStatusService, StatusService>();
+            services.AddSingleton<IBrowserFavoritesService, BrowserFavoritesService>();
+            services.AddSingleton<IBrowserContentService, BrowserContentService>();
+            services.AddSingleton<IBrowserDialogService, BrowserDialogService>();
+            services.AddSingleton<IBackupTargetService, BackupTargetService>();
+            services.AddSingleton<IPowerStatusService, PowerStatusService>();
             services.AddTransient<IWaitForMediaService, WaitForMediaService>();
             services.AddSingleton<Func<IWaitForMediaService>>(x => () => x.GetRequiredService<IWaitForMediaService>());
             services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();
             services.AddSingleton<IOrchestrationService, OrchestrationService>();
+            services.AddSingleton<ICompletionActionService, CompletionActionService>();
+            services.AddSingleton<IStoredPasswordAdapter, WinUIStoredPasswordAdapter>();
             services.AddSingleton<IJobService, JobService>();
             services.AddSingleton<IPresentationService, PresentationService>();
+            services.AddSingleton<IStartupLaunchAdapter, RegistryStartupLaunchAdapter>();
+            services.AddSingleton<IUpdateService, ApplicationUpdateService>();
+            services.AddSingleton<ISetupService, SetupService>();
+            services.AddSingleton<SetupRouting>();
 
             // Engine Services
             services.AddSingleton<IConfigurationManager, ConfigurationManager>();
@@ -106,6 +118,7 @@ public partial class App : Application
             services.AddSingleton<IVersionQueryRepository, VersionQueryRepository>();
             services.AddSingleton<IBackupMutationRepository, BackupMutationRepository>();
             services.AddSingleton<IScheduleRepository, ScheduleRepository>();
+            services.AddSingleton<ScheduleSettingsService>();
 
             services.AddSingleton<IVssClient, VolumeShadowCopyClient>();
             services.AddSingleton<ISchedulerAdapterFactory, SchedulerAdapterFactory>();
@@ -124,8 +137,11 @@ public partial class App : Application
             services.AddTransient<MainPage>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
+            services.AddTransient<SetupViewModel>();
+            services.AddTransient<SetupPage>();
 
             services.AddTransient<FilterViewModel>();
+            services.AddTransient<ScheduleEditorViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
@@ -161,6 +177,26 @@ public partial class App : Application
         await App.GetService<IOrchestrationService>().InitializeAsync();
 
         InitializeTrayIcon();
+
+        var updateService = App.GetService<IUpdateService>();
+        await updateService.InitializeAsync(OnAutoUpdaterApplicationExit);
+        await updateService.MaybeCheckOnStartupAsync();
+
+        await App.GetService<IActivationService>().ActivateAsync(args);
+    }
+
+    private static void OnAutoUpdaterApplicationExit()
+    {
+        try
+        {
+            App.GetService<IOrchestrationService>().StopAsync().GetAwaiter().GetResult();
+        }
+        catch
+        {
+            // Best-effort shutdown before updater exit.
+        }
+
+        ExitApplication();
     }
 
     private void InitializeTrayIcon()
@@ -208,10 +244,20 @@ public partial class App : Application
         await App.GetService<IPresentationService>().ShowMainWindowAsync();
     }
 
-    private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    private async void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
-        TrayIcon?.Dispose();
-        Host.Dispose();
+        await App.GetService<IOrchestrationService>().StopAsync();
+        ExitApplication();
+    }
+
+    private static void ExitApplication()
+    {
+        if (Current is App app)
+        {
+            app.TrayIcon?.Dispose();
+            app.Host.Dispose();
+        }
+
         Environment.Exit(0);
     }
 }

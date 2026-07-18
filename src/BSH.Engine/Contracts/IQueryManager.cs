@@ -14,6 +14,7 @@ public interface IQueryManager
     Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path);
     string GetFileNameFromDrive(FileTableRow file);
     Task<ValueTuple<string, bool>> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password);
+    Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath);
     Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path);
     Task<List<string>> GetFolderListAsync(string version, string path);
     Task<string> GetFullRestoreFolderAsync(string folder, string version);
@@ -29,5 +30,6 @@ public interface IQueryManager
     Task<VersionDetails> GetVersionByIdAsync(string id);
     List<VersionDetails> GetVersions(bool desc = true);
     Task<List<FileTableRow>> GetVersionsByFileAsync(string fileName, string filePath);
+    Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500);
     Task<bool> HasChangesOrNewAsync(string path, string versionId);
 }

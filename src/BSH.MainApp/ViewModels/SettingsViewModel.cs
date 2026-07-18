@@ -13,9 +13,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Windows.Storage.Pickers;
+using Microsoft.Windows.Storage.Pickers;
 using Windows.UI.Popups;
-using WinUIEx;
 
 namespace BSH.MainApp.ViewModels;
 
@@ -33,6 +32,10 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IPresentationService presentationController;
     private readonly IJobService jobService;
     private readonly IQueryManager queryManager;
+    private readonly IBackupTargetService backupTargetService;
+    private readonly IOrchestrationService orchestrationService;
+    private readonly IStartupLaunchAdapter startupLaunchAdapter;
+    private readonly IUpdateService updateService;
 
     #region Sources Settings
 
@@ -42,34 +45,69 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     public ObservableCollection<string> Sources { get; } = new();
 
+    private string? sourceValidationErrorMessage;
+    public string? SourceValidationErrorMessage
+    {
+        get => sourceValidationErrorMessage;
+        set => SetProperty(ref sourceValidationErrorMessage, value);
+    }
+
     private void InitSourcesSettings()
     {
-        Array.ForEach(this.configurationManager.SourceFolder.Split("|"), this.Sources.Add);
+        this.Sources.Clear();
+        Array.ForEach(
+            this.configurationManager.SourceFolder.Split("|", StringSplitOptions.RemoveEmptyEntries),
+            this.Sources.Add);
     }
 
     [RelayCommand]
     private async Task AddSourceFolder()
     {
-        var folderPicker = new FolderPicker
+        var folderPicker = new FolderPicker(App.MainWindow.AppWindow.Id)
         {
-            ViewMode = PickerViewMode.Thumbnail,
+            ViewMode = PickerViewMode.List,
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary
         };
-
-        var hwnd = App.MainWindow.GetWindowHandle();
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
 
         var folder = await folderPicker.PickSingleFolderAsync();
         if (folder != null)
         {
-            if (this.Sources.Contains(folder.Path))
-            {
-                return;
-            }
-
-            this.Sources.Add(folder.Path);
-            this.configurationManager.SourceFolder = string.Join("|", this.Sources);
+            TryAddSourceFolderPath(folder.Path);
         }
+    }
+
+    public bool TryAddSourceFolderPath(string folderPath)
+    {
+        SourceValidationErrorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(folderPath))
+        {
+            return false;
+        }
+
+        if (!PathRules.TryNormalizeFolderPath(folderPath, out var fullPath))
+        {
+            SourceValidationErrorMessage = "Selected source folder path is invalid.";
+            return false;
+        }
+
+        if (PathRules.IsDriveRoot(fullPath))
+        {
+            SourceValidationErrorMessage = "Selecting a drive root is risky. Choose a specific folder instead.";
+            return false;
+        }
+
+        var folderName = Path.GetFileName(fullPath);
+        if (this.Sources.Any(source =>
+            string.Equals(Path.GetFileName(source.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)), folderName, StringComparison.OrdinalIgnoreCase)))
+        {
+            SourceValidationErrorMessage = "A source folder with the same name is already configured.";
+            return false;
+        }
+
+        this.Sources.Add(fullPath);
+        this.configurationManager.SourceFolder = string.Join("|", this.Sources);
+        return true;
     }
 
     [RelayCommand(CanExecute = nameof(CanDeleteSourceFolder))]
@@ -140,6 +178,24 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool ftpRemoteEnforceUnencrypted;
 
+    [ObservableProperty]
+    private bool isMovingBackupTarget;
+
+    [ObservableProperty]
+    private bool isBackupTargetChangeEnabled = true;
+
+    [ObservableProperty]
+    private Visibility backupTargetMoveProgressVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RemoveCompressionExclusionCommand))]
+    private string? selectedCompressionExclusion;
+
+    [ObservableProperty]
+    private string? compressionExclusionInputText;
+
+    public ObservableCollection<string> CompressionExclusions { get; } = new();
+
     private void InitTargetSettings()
     {
         // selected media type
@@ -158,6 +214,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
         // local device
         this.LocalDevicePath = this.configurationManager.BackupFolder;
+        this.LocalUNCUser = this.configurationManager.UNCUsername;
+        this.LocalUNCPassword = DecryptConfigurationPassword(this.configurationManager.UNCPassword);
 
         // ftp remote
         this.FtpRemoteHost = this.configurationManager.FtpHost;
@@ -213,9 +271,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     public async Task ChangeLocalPath()
     {
-        var folderPicker = new FolderPicker
+        var folderPicker = new FolderPicker(App.MainWindow.AppWindow.Id)
         {
-            ViewMode = PickerViewMode.Thumbnail,
+            ViewMode = PickerViewMode.List,
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary
         };
 
@@ -231,39 +289,24 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             [
                 new UICommand("MsgBox_LocalPath_Change_Use".GetLocalized(), (x) =>
                 {
-                    this.LocalDevicePath = folder.Path;
-                    this.configurationManager.BackupFolder = folder.Path;
-
-                    // update media serial (if local path)
-                    if (folder.Path.StartsWith(@"\\"))
-                    {
-                        return;
-                    }
-
-                    this.LocalUNCUser = "";
-                    this.LocalUNCPassword = "";
-
-                    this.configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(folder.Path.Substring(0, 3));
-                    if (this.configurationManager.MediaVolumeSerial == null || this.configurationManager.MediaVolumeSerial == "0")
-                    {
-                        this.configurationManager.MediaVolumeSerial = "";
-                    }
+                    UseLocalPath(folder.Path);
                 }),
-                new UICommand("MsgBox_LocalPath_Change_Move".GetLocalized(), (x) =>
+                new UICommand("MsgBox_LocalPath_Change_Move".GetLocalized(), async (x) =>
                 {
-                    this.LocalDevicePath = folder.Path;
-
-                    // TODO: add move logic
+                    await MoveExistingLocalBackupDataAsync(folder.Path);
                 }),
                 new UICommand("MsgBox_Cancel".GetLocalized())
             ]
         );
     }
 
-    async partial void OnSelectedMediaTypeChanging(MediaType oldValue, MediaType newValue)
+    public async Task ChangeSelectedMediaTypeAsync(MediaType newValue)
     {
-        if (oldValue == MediaType.Unset) return;
-        if (oldValue == newValue) return;
+        var oldValue = SelectedMediaType;
+        if (oldValue == MediaType.Unset || oldValue == newValue)
+        {
+            return;
+        }
 
         var result = await this.presentationController.ShowMessageBoxAsync(
             "MsgBox_MediaType_Change_Title".GetLocalized(),
@@ -274,30 +317,27 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             ]
         );
 
-        // run the task
-        if (result == ContentDialogResult.Primary)
+        if (result != ContentDialogResult.Primary)
         {
-            // add remove all backups logic
-            var versions = this.queryManager.GetVersions().Select(x => x.Id).ToList();
-            await this.jobService.DeleteBackupsAsync(versions);
+            return;
+        }
 
-            // update UI
-            if (newValue == MediaType.LocalDevice)
-            {
-                this.FtpRemoteVisibility = Visibility.Collapsed;
-                this.LocalDeviceVisibility = Visibility.Visible;
-            }
-            else
-            {
-                this.FtpRemoteVisibility = Visibility.Visible;
-                this.LocalDeviceVisibility = Visibility.Collapsed;
-            }
+        var versions = this.queryManager.GetVersions().Select(x => x.Id).ToList();
+        await this.jobService.DeleteBackupsAsync(versions);
+
+        SelectedMediaType = newValue;
+        this.configurationManager.MediumType = newValue;
+
+        if (newValue == MediaType.LocalDevice)
+        {
+            this.FtpRemoteVisibility = Visibility.Collapsed;
+            this.LocalDeviceVisibility = Visibility.Visible;
         }
         else
         {
-            SelectedMediaType = oldValue;
+            this.FtpRemoteVisibility = Visibility.Visible;
+            this.LocalDeviceVisibility = Visibility.Collapsed;
         }
-
     }
 
     partial void OnLocalUNCUserChanged(string? oldValue, string newValue)
@@ -313,7 +353,107 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         if (oldValue == null) return;
         if (oldValue == newValue) return;
 
-        this.configurationManager.UNCPassword = newValue;
+        this.configurationManager.UNCPassword = string.IsNullOrEmpty(newValue)
+            ? string.Empty
+            : Crypto.EncryptString(newValue, System.Security.Cryptography.DataProtectionScope.LocalMachine);
+    }
+
+    partial void OnFtpRemoteHostChanged(string? oldValue, string newValue)
+    {
+        if (oldValue == null || oldValue == newValue) return;
+        this.configurationManager.FtpHost = newValue;
+        CheckFtpRemoteCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnFtpRemotePortChanged(int oldValue, int newValue)
+    {
+        if (oldValue == newValue) return;
+        this.configurationManager.FtpPort = newValue.ToString();
+    }
+
+    partial void OnFtpRemoteUserChanged(string? oldValue, string newValue)
+    {
+        if (oldValue == null || oldValue == newValue) return;
+        this.configurationManager.FtpUser = newValue;
+        CheckFtpRemoteCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnFtpRemotePasswordChanged(string? oldValue, string newValue)
+    {
+        if (oldValue == null || oldValue == newValue) return;
+        this.configurationManager.FtpPass = newValue;
+        CheckFtpRemoteCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnFtpRemotePathChanged(string? oldValue, string newValue)
+    {
+        if (oldValue == null || oldValue == newValue) return;
+        this.configurationManager.FtpFolder = newValue;
+    }
+
+    partial void OnFtpRemoteEncodingChanged(string? oldValue, string newValue)
+    {
+        if (oldValue == null || oldValue == newValue) return;
+        this.configurationManager.FtpCoding = newValue;
+    }
+
+    partial void OnFtpRemoteEnforceUnencryptedChanged(bool oldValue, bool newValue)
+    {
+        if (oldValue == newValue) return;
+        this.configurationManager.FtpEncryptionMode = newValue ? "3" : "0";
+    }
+
+    public void UseLocalPath(string folderPath)
+    {
+        this.LocalDevicePath = folderPath;
+        this.configurationManager.BackupFolder = folderPath;
+
+        if (folderPath.StartsWith(@"\\", StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        this.LocalUNCUser = "";
+        this.LocalUNCPassword = "";
+
+        if (folderPath.Length >= 3)
+        {
+            this.configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(folderPath[..3]);
+            if (this.configurationManager.MediaVolumeSerial == null || this.configurationManager.MediaVolumeSerial == "0")
+            {
+                this.configurationManager.MediaVolumeSerial = "";
+            }
+        }
+    }
+
+    public async Task MoveExistingLocalBackupDataAsync(string newFolderPath)
+    {
+        try
+        {
+            IsMovingBackupTarget = true;
+            IsBackupTargetChangeEnabled = false;
+            BackupTargetMoveProgressVisibility = Visibility.Visible;
+
+            var oldFolderPath = this.configurationManager.BackupFolder;
+            var result = await this.backupTargetService.MoveExistingBackupDataAsync(oldFolderPath, newFolderPath);
+
+            if (result.Success)
+            {
+                UseLocalPath(newFolderPath);
+                return;
+            }
+
+            await this.presentationController.ShowMessageBoxAsync(
+                "Could not move backup data",
+                result.ErrorMessage ?? "The backup data could not be moved.",
+                [new UICommand("OK")]);
+        }
+        finally
+        {
+            IsMovingBackupTarget = false;
+            IsBackupTargetChangeEnabled = true;
+            BackupTargetMoveProgressVisibility = Visibility.Collapsed;
+        }
     }
 
     #endregion
@@ -343,6 +483,46 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
 
         this.WaitForDevice = this.configurationManager.ShowWaitOnMediaAutoBackups == "1";
+
+        this.CompressionExclusions.Clear();
+        foreach (var entry in CompressionExclusionFormatter.Parse(this.configurationManager.ExcludeCompression))
+        {
+            this.CompressionExclusions.Add(entry);
+        }
+    }
+
+    [RelayCommand]
+    public void AddCompressionExclusion(string? extension)
+    {
+        var normalized = CompressionExclusionFormatter.NormalizeExtension(extension);
+        if (string.IsNullOrEmpty(normalized) || this.CompressionExclusions.Contains(normalized, StringComparer.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        this.CompressionExclusions.Add(normalized);
+        CompressionExclusionInputText = null;
+        SaveCompressionExclusions();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanRemoveCompressionExclusion))]
+    private void RemoveCompressionExclusion()
+    {
+        if (string.IsNullOrEmpty(SelectedCompressionExclusion))
+        {
+            return;
+        }
+
+        this.CompressionExclusions.Remove(SelectedCompressionExclusion);
+        SelectedCompressionExclusion = null;
+        SaveCompressionExclusions();
+    }
+
+    private bool CanRemoveCompressionExclusion() => !string.IsNullOrEmpty(SelectedCompressionExclusion);
+
+    private void SaveCompressionExclusions()
+    {
+        this.configurationManager.ExcludeCompression = CompressionExclusionFormatter.Format(this.CompressionExclusions);
     }
 
     partial void OnWaitForDeviceChanged(bool oldValue, bool newValue)
@@ -352,13 +532,18 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.configurationManager.ShowWaitOnMediaAutoBackups = newValue ? "1" : "0";
     }
 
-    async partial void OnModeTypeChanging(ModeType oldValue, ModeType newValue)
+    [RelayCommand]
+    public async Task ChangeModeTypeAsync(ModeType newValue)
     {
-        if (oldValue == ModeType.Unset) return;
-        if (oldValue == newValue) return;
+        var oldValue = ModeType;
+        if (oldValue == ModeType.Unset || oldValue == newValue)
+        {
+            return;
+        }
 
         if (newValue == ModeType.Compression)
         {
+            ModeType = newValue;
             this.configurationManager.Compression = 1;
             this.configurationManager.Encrypt = 0;
         }
@@ -368,15 +553,16 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             var (password, _) = await presentationController.RequestPasswordAsync();
             if (password == null)
             {
-                ModeType = oldValue;
                 return;
             }
 
+            ModeType = newValue;
             this.configurationManager.EncryptPassMD5 = Hash.GetMD5Hash(password);
             this.configurationManager.Encrypt = 1;
         }
         else
         {
+            ModeType = newValue;
             this.configurationManager.Compression = 0;
             this.configurationManager.Encrypt = 0;
         }
@@ -424,7 +610,14 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
         if (oldValue == newValue) return;
 
-        this.configurationManager.DeativateAutoBackupsWhenAkku = newValue ? "1" : "0";
+        var value = newValue ? "1" : "0";
+        if (configurationManager.DeativateAutoBackupsWhenAkku == value)
+        {
+            return;
+        }
+
+        configurationManager.DeativateAutoBackupsWhenAkku = value;
+        _ = orchestrationService.RefreshAutomationAsync();
     }
 
     partial void OnTaskTypeChanged(TaskType oldValue, TaskType newValue)
@@ -433,6 +626,12 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         if (oldValue == newValue) return;
 
         this.configurationManager.TaskType = newValue;
+    }
+
+    [RelayCommand]
+    private async Task ShowScheduleEditorWindow()
+    {
+        await this.presentationController.ShowScheduleEditorWindowAsync();
     }
 
     #endregion
@@ -460,17 +659,39 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private int notificationWhenBackupOutdated;
 
+    [ObservableProperty]
+    private bool launchAtWindowsStartup;
+
+    [ObservableProperty]
+    private bool automaticallyCheckForUpdates = true;
+
+    [ObservableProperty]
+    private bool downloadBetaUpdates;
+
     void InitEnhancedSettings()
     {
         this.EnableNotificationWhenDiskspaceLow = !string.IsNullOrEmpty(this.configurationManager.RemindSpace);
-        this.NotificationWhenDiskspaceLow = int.Parse(this.configurationManager.RemindSpace);
+        this.NotificationWhenDiskspaceLow = int.TryParse(this.configurationManager.RemindSpace, out var diskSpace) ? diskSpace : 0;
 
         this.EnableDirectoryLocalization = this.configurationManager.ShowLocalizedPath == "1";
         this.EnableNotificationWhenBackupFinished = this.configurationManager.InfoBackupDone == "1";
         this.EnableNotificationWhenBackupDeviceNotReady = this.configurationManager.Medium == "1";
 
         this.EnableNotificationWhenBackupOutdated = !string.IsNullOrEmpty(this.configurationManager.RemindAfterDays);
-        this.NotificationWhenBackupOutdated = int.Parse(this.configurationManager.RemindAfterDays);
+        this.NotificationWhenBackupOutdated = int.TryParse(this.configurationManager.RemindAfterDays, out var days) ? days : 0;
+
+        // Set backing fields so load does not re-enter the persistence handlers.
+        launchAtWindowsStartup = startupLaunchAdapter.IsEnabled();
+        OnPropertyChanged(nameof(LaunchAtWindowsStartup));
+        _ = LoadUpdateSettingsAsync();
+    }
+
+    private async Task LoadUpdateSettingsAsync()
+    {
+        automaticallyCheckForUpdates = await updateService.GetAutoSearchEnabledAsync();
+        downloadBetaUpdates = await updateService.GetDownloadBetaAsync();
+        OnPropertyChanged(nameof(AutomaticallyCheckForUpdates));
+        OnPropertyChanged(nameof(DownloadBetaUpdates));
     }
 
     partial void OnEnableNotificationWhenDiskspaceLowChanged(bool oldValue, bool newValue)
@@ -532,14 +753,83 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.configurationManager.RemindAfterDays = newValue.ToString();
     }
 
+    partial void OnLaunchAtWindowsStartupChanged(bool oldValue, bool newValue)
+    {
+        if (oldValue == newValue)
+        {
+            return;
+        }
+
+        if (startupLaunchAdapter.TrySetEnabled(newValue))
+        {
+            return;
+        }
+
+        launchAtWindowsStartup = oldValue;
+        OnPropertyChanged(nameof(LaunchAtWindowsStartup));
+        _ = presentationController.ShowMessageBoxAsync(
+            "Access denied",
+            "Windows startup could not be changed. Check your permissions and try again.",
+            [new UICommand("OK")]);
+    }
+
+    partial void OnAutomaticallyCheckForUpdatesChanged(bool oldValue, bool newValue)
+    {
+        if (oldValue == newValue)
+        {
+            return;
+        }
+
+        _ = updateService.SetAutoSearchEnabledAsync(newValue);
+    }
+
+    partial void OnDownloadBetaUpdatesChanged(bool oldValue, bool newValue)
+    {
+        if (oldValue == newValue)
+        {
+            return;
+        }
+
+        _ = updateService.SetDownloadBetaAsync(newValue);
+    }
+
     #endregion
 
-    public SettingsViewModel(IConfigurationManager configurationManager, IPresentationService presentationService, IJobService jobService, IQueryManager queryManager)
+    public SettingsViewModel(
+        IConfigurationManager configurationManager,
+        IPresentationService presentationService,
+        IJobService jobService,
+        IQueryManager queryManager,
+        IBackupTargetService backupTargetService,
+        IOrchestrationService orchestrationService,
+        IStartupLaunchAdapter startupLaunchAdapter,
+        IUpdateService updateService)
     {
         this.configurationManager = configurationManager;
         this.presentationController = presentationService;
         this.jobService = jobService;
         this.queryManager = queryManager;
+        this.backupTargetService = backupTargetService;
+        this.orchestrationService = orchestrationService;
+        this.startupLaunchAdapter = startupLaunchAdapter;
+        this.updateService = updateService;
+    }
+
+    private static string DecryptConfigurationPassword(string password)
+    {
+        if (string.IsNullOrEmpty(password))
+        {
+            return string.Empty;
+        }
+
+        try
+        {
+            return Crypto.DecryptString(password, System.Security.Cryptography.DataProtectionScope.LocalMachine);
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 
     public void OnNavigatedFrom()

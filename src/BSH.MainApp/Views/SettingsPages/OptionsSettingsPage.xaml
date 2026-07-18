@@ -45,7 +45,9 @@
                         <toolkit:SettingsCard>
                             <toolkit:SettingsCard.Header>
                                 <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                                    <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_RegularCopy}}">
+                                    <RadioButton x:Name="RegularCopyRadioButton"
+                                                 IsChecked="{Binding ModeType, Mode=OneWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_RegularCopy}}"
+                                                 Checked="ModeTypeRadioButton_Checked">
                                         No compression or encryption
                                     </RadioButton>
                                 </StackPanel>
@@ -55,7 +57,9 @@
                         <toolkit:SettingsCard>
                             <toolkit:SettingsCard.Header>
                                 <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                                    <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Compression}}">
+                                    <RadioButton x:Name="CompressionRadioButton"
+                                                 IsChecked="{Binding ModeType, Mode=OneWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Compression}}"
+                                                 Checked="ModeTypeRadioButton_Checked">
                                         Compress backups
                                     </RadioButton>
                                     <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords">
@@ -63,12 +67,39 @@
                                     </TextBlock>
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
+                            <StackPanel Spacing="8">
+                                <ListView Height="120"
+                                          ItemsSource="{Binding CompressionExclusions}"
+                                          SelectedItem="{Binding SelectedCompressionExclusion, Mode=TwoWay}">
+                                    <ListView.Header>
+                                        <TextBlock FontWeight="SemiBold">Excluded extensions</TextBlock>
+                                    </ListView.Header>
+                                </ListView>
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox PlaceholderText="Extension"
+                                             Text="{Binding CompressionExclusionInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <Button Grid.Column="1"
+                                            Content="Add"
+                                            Command="{Binding AddCompressionExclusionCommand}"
+                                            CommandParameter="{Binding CompressionExclusionInputText}" />
+                                    <Button Grid.Column="2"
+                                            Content="Remove"
+                                            Command="{Binding RemoveCompressionExclusionCommand}" />
+                                </Grid>
+                            </StackPanel>
                         </toolkit:SettingsCard>
 
                         <toolkit:SettingsCard>
                             <toolkit:SettingsCard.Header>
                                 <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                                    <RadioButton IsChecked="{Binding ModeType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}">
+                                    <RadioButton x:Name="EncryptionRadioButton"
+                                                 IsChecked="{Binding ModeType, Mode=OneWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}"
+                                                 Checked="ModeTypeRadioButton_Checked">
                                         Encrypt backups
                                     </RadioButton>
                                     <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords">

@@ -14,7 +14,7 @@ namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class StatusViewModel : ObservableObject, IStatusReport
 {
-    private readonly DispatcherQueue dispatcherQueue;
+    private readonly DispatcherQueue? dispatcherQueue;
 
     [ObservableProperty]
     private string statusTitle = "";
@@ -31,9 +31,24 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
     [ObservableProperty]
     private int currentProgress = 0;
 
-    public StatusViewModel()
+    [ObservableProperty]
+    private int selectedCompletionActionIndex = 0;
+
+    public TaskCompleteAction SelectedCompletionAction => SelectedCompletionActionIndex switch
     {
-        this.dispatcherQueue = App.GetService<DispatcherQueue>();
+        1 => TaskCompleteAction.ShutdownPC,
+        2 => TaskCompleteAction.HibernatePC,
+        _ => TaskCompleteAction.NoAction
+    };
+
+    public StatusViewModel()
+        : this(App.GetService<DispatcherQueue>())
+    {
+    }
+
+    public StatusViewModel(DispatcherQueue? dispatcherQueue)
+    {
+        this.dispatcherQueue = dispatcherQueue;
     }
 
     public void ReportAction(ActionType action, bool silent)
@@ -52,7 +67,7 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
 
     public void ReportFileProgress(string file)
     {
-        dispatcherQueue.TryEnqueue(() =>
+        UpdateOnUiThread(() =>
         {
             CurrentFileText = file;
         });
@@ -60,7 +75,7 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
 
     public void ReportProgress(int total, int current)
     {
-        dispatcherQueue.TryEnqueue(() =>
+        UpdateOnUiThread(() =>
         {
             TotalProgress = total;
             CurrentProgress = current;
@@ -69,7 +84,7 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
 
     public void ReportStatus(string title, string text)
     {
-        dispatcherQueue.TryEnqueue(() =>
+        UpdateOnUiThread(() =>
         {
             StatusTitle = title;
             StatusText = text;
@@ -80,5 +95,18 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
     public void Cancel()
     {
         App.GetService<IJobService>().Cancel();
+    }
+
+    partial void OnSelectedCompletionActionIndexChanged(int value)
+    {
+        OnPropertyChanged(nameof(SelectedCompletionAction));
+    }
+
+    private void UpdateOnUiThread(Action action)
+    {
+        if (dispatcherQueue == null || !dispatcherQueue.TryEnqueue(() => action()))
+        {
+            action();
+        }
     }
 }

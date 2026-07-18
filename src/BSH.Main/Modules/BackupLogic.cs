@@ -60,6 +60,11 @@ static class BackupLogic
         get; private set;
     }
 
+    public static ScheduleSettingsService ScheduleSettingsService
+    {
+        get; private set;
+    }
+
     public static IVersionQueryRepository VersionQueryRepository
     {
         get; private set;
@@ -81,8 +86,26 @@ static class BackupLogic
 
     private static Timer tmrUserReminder;
 
-    private static async Task LoadDatabaseAsync()
+    private static void ResetStartupServices()
     {
+        DbClientFactory = null;
+        ConfigurationManager = null;
+        QueryManager = null;
+        ScheduleRepository = null;
+        ScheduleSettingsService = null;
+        VersionQueryRepository = null;
+        BackupMutationRepository = null;
+        BackupService = null;
+        BackupController = null;
+        fileCollectorServiceFactory = null;
+        mediaWatcherFactory = null;
+        schedulerAdapterFactory = null;
+    }
+
+    private static async Task<bool> LoadDatabaseAsync()
+    {
+        ResetStartupServices();
+
         try
         {
             // init database and configuration manager
@@ -95,11 +118,15 @@ static class BackupLogic
             // database migration?
             var dbMigration = new DbMigrationService(DbClientFactory, ConfigurationManager);
             await dbMigration.InitializeAsync();
+            return true;
         }
         catch (Exception ex)
         {
+            ResetStartupServices();
+
             // global error
             ExceptionController.HandleGlobalException(null, new System.Threading.ThreadExceptionEventArgs(ex));
+            return false;
         }
     }
 
@@ -109,12 +136,16 @@ static class BackupLogic
     public static async Task StartupAsync()
     {
         // init database
-        await LoadDatabaseAsync();
+        if (!await LoadDatabaseAsync())
+        {
+            return;
+        }
 
         // start main system
         var storageFactory = new StorageFactory(ConfigurationManager);
         QueryManager = new QueryManager(DbClientFactory, ConfigurationManager, storageFactory);
         ScheduleRepository = new ScheduleRepository(DbClientFactory);
+        ScheduleSettingsService = new ScheduleSettingsService(ConfigurationManager, ScheduleRepository);
         VersionQueryRepository = new VersionQueryRepository();
         BackupMutationRepository = new BackupMutationRepository(DbClientFactory);
         fileCollectorServiceFactory = new FileCollectorServiceFactory();
@@ -384,63 +415,10 @@ static class BackupLogic
         }
     }
 
-    private static List<VersionDetails> GetAutomaticVersionsToDelete()
-    {
-        var listDelete = new List<VersionDetails>();
-        var listVersions = QueryManager.GetVersions();
-
-        foreach (var version in listVersions)
-        {
-            // ignore fixed versions
-            if (version.Stable)
-            {
-                continue;
-            }
-
-            // version not older than 24h
-            if (DateTime.Now.Subtract(version.CreationDate) <= new TimeSpan(24, 0, 0))
-            {
-                continue;
-            }
-
-            // version older than 1 month
-            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(DateTime.DaysInMonth(version.CreationDate.Year, version.CreationDate.Month), 0, 0, 0))
-            {
-                // keep if last backup of the week
-                if (listVersions.Exists(x =>
-                    version.CreationDate != x.CreationDate &&
-                    version.CreationDate.Year == x.CreationDate.Year &&
-                    version.CreationDate.Month == x.CreationDate.Month &&
-                    version.CreationDate.Day - (int)version.CreationDate.DayOfWeek == x.CreationDate.Day - (int)x.CreationDate.DayOfWeek &&
-                    version.CreationDate.DayOfWeek < x.CreationDate.DayOfWeek)
-                    )
-                {
-                    listDelete.Add(version);
-                }
-            }
-            else
-            {
-                // keep if last backup on that day
-                if (listVersions.Exists(x =>
-                    version.CreationDate != x.CreationDate &&
-                    version.CreationDate.Year == x.CreationDate.Year &&
-                    version.CreationDate.Month == x.CreationDate.Month &&
-                    version.CreationDate.Day == x.CreationDate.Day &&
-                    version.CreationDate.TimeOfDay < x.CreationDate.TimeOfDay)
-                    )
-                {
-                    listDelete.Add(version);
-                }
-            }
-        }
-
-        return listDelete;
-    }
-
     private static async Task RemoveOldBackups()
     {
-        // get versions to clean
-        var listDelete = GetAutomaticVersionsToDelete();
+        var listDelete = ScheduleSettingsService.LoadPolicy()
+            .GetAutomaticVersionsToDelete(QueryManager.GetVersions(), DateTime.Now);
 
         // delete old versions
         foreach (var version in listDelete)
@@ -663,22 +641,11 @@ static class BackupLogic
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        // Vollsicherung durchführen?
-        var FullBackup = false;
-        if (!string.IsNullOrEmpty(ConfigurationManager.ScheduleFullBackup))
-        {
-            // Letzte Vollsicherung ermitteln
-            var Item = ConfigurationManager.ScheduleFullBackup.Split('|');
-            if (Item[0] == "day")
-            {
-                var lastFullBackup = await QueryManager.GetLastFullBackupAsync();
-                if (lastFullBackup != null)
-                {
-                    var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
-                    FullBackup = Diff.Days >= Convert.ToInt32(Item[1]);
-                }
-            }
-        }
+        var schedulePolicy = ScheduleSettingsService.LoadPolicy();
+        var lastFullBackup = schedulePolicy.ScheduledFullBackupsEnabled
+            ? await QueryManager.GetLastFullBackupAsync()
+            : null;
+        var FullBackup = schedulePolicy.ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
 
         try
         {
@@ -706,59 +673,7 @@ static class BackupLogic
 
         try
         {
-            if (ConfigurationManager.IntervallDelete == "auto")
-            {
-                // automatic deletion
-                listDelete.AddRange(GetAutomaticVersionsToDelete());
-            }
-            else if (string.IsNullOrEmpty(ConfigurationManager.IntervallDelete))
-            {
-                // don't delete anything
-            }
-            else
-            {
-                // custom intervals
-                var intervals = ConfigurationManager.IntervallDelete.Split('|');
-                var listVersions = QueryManager.GetVersions();
-
-                foreach (var version in listVersions)
-                {
-                    // ignore fixed versions
-                    if (version.Stable)
-                    {
-                        continue;
-                    }
-
-                    // Löschung
-                    switch (intervals[0] ?? "")
-                    {
-                        case "hour":
-                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0) && !listDelete.Contains(version))
-                            {
-                                listDelete.Add(version);
-                            }
-
-                            break;
-
-                        case "day":
-                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0, 0) && !listDelete.Contains(version))
-                            {
-                                listDelete.Add(version);
-                            }
-
-                            break;
-
-                        case "week":
-
-                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan((int)Math.Round(Convert.ToDouble(intervals[1]) * 7d), 0, 0, 0) && !listDelete.Contains(version))
-                            {
-                                listDelete.Add(version);
-                            }
-
-                            break;
-                    }
-                }
-            }
+            listDelete.AddRange(GetScheduledVersionsToDelete());
         }
         catch (Exception ex)
         {
@@ -771,6 +686,13 @@ static class BackupLogic
         {
             await BackupController.DeleteBackupAsync(version.Id, false);
         }
+    }
+
+    private static List<VersionDetails> GetScheduledVersionsToDelete()
+    {
+        return ScheduleSettingsService.LoadPolicy()
+            .GetVersionsToDelete(QueryManager.GetVersions(), DateTime.Now)
+            .ToList();
     }
 
     #endregion

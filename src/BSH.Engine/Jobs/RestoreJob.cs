@@ -290,86 +290,17 @@ public class RestoreJob : Job
         var localFilePath = Path.Combine(destination, reader.GetString("fileName"));
         var fileType = reader.GetInt32("fileType");
 
-        // check overwrite
-        if (warning && System.IO.File.Exists(localFilePath))
+        if (await ShouldSkipOverwriteAsync(localFilePath, destination, reader, warning))
         {
-            if (FileOverwrite == FileOverwrite.Ask)
-            {
-                var localFileInfo = new FileInfo(localFilePath);
-
-                var localFile = new FileTableRow()
-                {
-                    FileName = reader.GetString("fileName"),
-                    FilePath = destination,
-                    FileSize = localFileInfo.Length,
-                    FileDateModified = localFileInfo.LastWriteTime
-                };
-
-                var remoteFile = new FileTableRow()
-                {
-                    FileName = reader.GetString("fileName"),
-                    FileSize = (long)reader.GetDouble(reader.GetOrdinal("fileSize")),
-                    FileDateModified = reader.GetDateTime("fileDateModified")
-                };
-
-                // request user input for overwrite
-                var overwriteRequest = this.overwriteRequestPersistent != RequestOverwriteResult.None ? this.overwriteRequestPersistent : await RequestOverwrite(localFile, remoteFile);
-
-                if (overwriteRequest == RequestOverwriteResult.NoOverwriteAll || overwriteRequest == RequestOverwriteResult.OverwriteAll)
-                {
-                    this.overwriteRequestPersistent = overwriteRequest;
-                }
-
-                if (overwriteRequest == RequestOverwriteResult.NoOverwrite || overwriteRequest == RequestOverwriteResult.NoOverwriteAll)
-                {
-                    return;
-                }
-            }
-            else if (FileOverwrite == FileOverwrite.DontCopy)
-            {
-                return;
-            }
+            return;
         }
 
-        // remove old file
-        if (System.IO.File.Exists(localFilePath))
-        {
-            try
-            {
-                System.IO.File.Delete(localFilePath);
-            }
-            catch (Exception ex)
-            {
-                throw new FileNotProcessedException(ex);
-            }
-        }
+        DeleteExistingFile(localFilePath);
 
         try
         {
-            // copy file
-            string remoteFilePath;
-
-            if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
-            {
-                remoteFilePath = reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
-            }
-            else
-            {
-                remoteFilePath = reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
-            }
-
-            if (BackupFileType.IsRegular(fileType))
-            {
-                storage.CopyFileFromStorage(localFilePath, remoteFilePath);
-            }
-            else if (BackupFileType.IsCompressed(fileType))
-            {
-                storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
-            }
-            else if (BackupFileType.IsEncrypted(fileType))
-            {
-                storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, Password);
-            }
+            var remoteFilePath = BuildRemoteFilePath(reader);
+            CopyFromStorage(storage, fileType, localFilePath, remoteFilePath);
         }
         catch (Exception ex)
         {
@@ -385,6 +316,105 @@ public class RestoreJob : Job
         catch
         {
             // ignore this exception
+        }
+    }
+
+    private async Task<bool> ShouldSkipOverwriteAsync(string localFilePath, string destination, IDataReader reader, bool warning)
+    {
+        if (!warning || !System.IO.File.Exists(localFilePath))
+        {
+            return false;
+        }
+
+        if (FileOverwrite == FileOverwrite.DontCopy)
+        {
+            return true;
+        }
+
+        if (FileOverwrite != FileOverwrite.Ask)
+        {
+            return false;
+        }
+
+        var overwriteRequest = await GetOverwriteDecisionAsync(localFilePath, destination, reader);
+        if (overwriteRequest == RequestOverwriteResult.NoOverwriteAll || overwriteRequest == RequestOverwriteResult.OverwriteAll)
+        {
+            overwriteRequestPersistent = overwriteRequest;
+        }
+
+        return overwriteRequest == RequestOverwriteResult.NoOverwrite || overwriteRequest == RequestOverwriteResult.NoOverwriteAll;
+    }
+
+    private async Task<RequestOverwriteResult> GetOverwriteDecisionAsync(string localFilePath, string destination, IDataReader reader)
+    {
+        if (overwriteRequestPersistent != RequestOverwriteResult.None)
+        {
+            return overwriteRequestPersistent;
+        }
+
+        var localFileInfo = new FileInfo(localFilePath);
+        var localFile = new FileTableRow
+        {
+            FileName = reader.GetString("fileName"),
+            FilePath = destination,
+            FileSize = localFileInfo.Length,
+            FileDateModified = localFileInfo.LastWriteTime
+        };
+
+        var remoteFile = new FileTableRow
+        {
+            FileName = reader.GetString("fileName"),
+            FileSize = (long)reader.GetDouble(reader.GetOrdinal("fileSize")),
+            FileDateModified = reader.GetDateTime("fileDateModified")
+        };
+
+        return await RequestOverwrite(localFile, remoteFile);
+    }
+
+    private static void DeleteExistingFile(string localFilePath)
+    {
+        if (!System.IO.File.Exists(localFilePath))
+        {
+            return;
+        }
+
+        try
+        {
+            System.IO.File.Delete(localFilePath);
+        }
+        catch (Exception ex)
+        {
+            throw new FileNotProcessedException(ex);
+        }
+    }
+
+    private static string BuildRemoteFilePath(IDataReader reader)
+    {
+        if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
+        {
+            return reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
+        }
+
+        return reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
+    }
+
+    private void CopyFromStorage(IStorageProvider storage, int fileType, string localFilePath, string remoteFilePath)
+    {
+        if (BackupFileType.IsRegular(fileType))
+        {
+            storage.CopyFileFromStorage(localFilePath, remoteFilePath);
+            return;
+        }
+
+        if (BackupFileType.IsCompressed(fileType))
+        {
+            storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
+            return;
+        }
+
+        if (BackupFileType.IsEncrypted(fileType))
+        {
+            storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, Password);
         }
     }
 }

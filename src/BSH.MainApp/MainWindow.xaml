@@ -45,6 +45,7 @@
                         IsPaneToggleButtonVisible="False"
                         PaneTitle="Backup Service Home"
                         MenuItemsSource="{x:Bind ViewModel.NavigationItems}"
+                        FooterMenuItemsSource="{x:Bind ViewModel.FooterNavigationItems}"
                         SelectedItem="{x:Bind ViewModel.CurrentPage, Mode=TwoWay}">
             <i:Interaction.Behaviors>
                 <i:EventTriggerBehavior EventName="ItemInvoked">

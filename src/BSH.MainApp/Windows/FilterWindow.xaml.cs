@@ -15,7 +15,7 @@ public sealed partial class FilterWindow : WindowEx
     public FilterWindow()
     {
         InitializeComponent();
-        ViewModel.WindowHandle = this.GetWindowHandle();
+        ViewModel.ParentWindowId = this.AppWindow.Id;
         ContentFrame.DataContext = ViewModel;
 
         FilterSelectorBar.SelectedItem = FilesItem;
@@ -53,6 +53,10 @@ public sealed partial class FilterWindow : WindowEx
         else if (ReferenceEquals(selected, FileTypesItem))
         {
             pageType = typeof(Views.FilterPages.ExcludeFileTypesPage);
+        }
+        else if (ReferenceEquals(selected, MaxFileSizeItem))
+        {
+            pageType = typeof(Views.FilterPages.ExcludeMaxFileSizePage);
         }
         else
         {

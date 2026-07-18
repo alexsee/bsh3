@@ -3,12 +3,14 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Repo;
 using BSH.Test.Mocks;
 using NUnit.Framework;
 
@@ -18,6 +20,7 @@ public class QueryManagerTests
     private IDbClientFactory dbClientFactory;
     private IConfigurationManager configurationManager;
     private IQueryManager queryManager;
+    private VersionQueryRepository versionQueryRepository;
 
     [SetUp]
     public async Task Setup()
@@ -45,6 +48,7 @@ public class QueryManagerTests
 
         var storageFactory = new StorageFactoryMock();
         queryManager = new QueryManager(dbClientFactory, configurationManager, storageFactory);
+        versionQueryRepository = new VersionQueryRepository();
 
         // insert some data
         await PopulateExampleData();
@@ -224,6 +228,41 @@ public class QueryManagerTests
     }
 
     [Test]
+    public async Task SearchFilesByVersionAsyncReturnsMatchingFilesWithPathContext()
+    {
+        var result = await queryManager.SearchFilesByVersionAsync("1", "file2");
+
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result[0].FileName, Is.EqualTo("file2.txt"));
+        Assert.That(result[0].FilePath, Is.EqualTo("\\source_1\\subfolder\\"));
+    }
+
+    [Test]
+    public async Task SearchFilesByVersionAsyncMatchesFilePath()
+    {
+        var result = await queryManager.SearchFilesByVersionAsync("1", "source_2");
+
+        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result[0].FileName, Is.EqualTo("file3.txt"));
+        Assert.That(result[0].FilePath, Is.EqualTo("\\source_2\\subfolder\\"));
+    }
+
+    [Test]
+    public async Task GetFileDetailsAsyncComposesMetadataAndAvailableVersions()
+    {
+        var result = await queryManager.GetFileDetailsAsync("2", "file1.txt", "\\source_1\\");
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Name, Is.EqualTo("file1.txt"));
+        Assert.That(result.RestorePath, Is.EqualTo("Y:\\MyFiles\\source_1\\file1.txt"));
+        Assert.That(result.Type, Is.EqualTo("Regular copy"));
+        Assert.That(result.Size, Is.EqualTo(100d));
+        Assert.That(result.Created, Is.EqualTo(new DateTime(2021, 1, 1)));
+        Assert.That(result.Modified, Is.EqualTo(new DateTime(2021, 1, 1)));
+        Assert.That(result.AvailableVersions.Select(x => x.Id), Is.EqualTo(new[] { "2", "1" }));
+    }
+
+    [Test]
     public void GetFileNameFromDriveTest()
     {
         var file = new FileTableRow()
@@ -255,6 +294,28 @@ public class QueryManagerTests
     {
         var result = await queryManager.GetFileNameFromDriveAsync(1, "file1.txt", "\\source_1\\", null);
         Assert.That(result, Is.EqualTo(("X:\\Backups\\01-01-2021 00-00-00\\source_1\\file1.txt", false)));
+    }
+
+    [Test]
+    public async Task GetRestoreSingleFileAsyncTreatsLikeMetacharactersAsLiteral()
+    {
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filetable (fileID, fileName, filePath) VALUES (4, 'report_1%.txt', '\\source_%\\')");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filetable (fileID, fileName, filePath) VALUES (5, 'reportA12.txt', '\\source_X\\')");
+
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (4, 1)");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (5, 1)");
+
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO fileversiontable (fileversionID, fileStatus, fileType, fileHash, fileDateModified, fileDateCreated, fileSize, filePackage, fileID) VALUES (4, 0, 1, 'hash4', '2021-01-01 00:00:00', '2021-01-01 00:00:00', 100, 1, '4')");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO fileversiontable (fileversionID, fileStatus, fileType, fileHash, fileDateModified, fileDateCreated, fileSize, filePackage, fileID) VALUES (5, 0, 1, 'hash5', '2021-01-01 00:00:00', '2021-01-01 00:00:00', 100, 1, '5')");
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        using var reader = await versionQueryRepository.GetRestoreSingleFileAsync(dbClient, 1, "report_1%.txt", "\\source_%\\");
+
+        Assert.That(await reader.ReadAsync(), Is.True);
+        Assert.That(reader.GetInt32(reader.GetOrdinal("fileID")), Is.EqualTo(4));
+        Assert.That(reader.GetString(reader.GetOrdinal("fileName")), Is.EqualTo("report_1%.txt"));
+        Assert.That(reader.GetString(reader.GetOrdinal("filePath")), Is.EqualTo("\\source_%\\"));
+        Assert.That(await reader.ReadAsync(), Is.False);
     }
 
     [Test]

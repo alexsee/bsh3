@@ -15,16 +15,21 @@ public interface IPresentationService
     Task CloseBackupBrowserWindowAsync();
     Task CloseMainWindowAsync();
     Task<TaskCompleteAction> CloseStatusWindowAsync();
+    Task OpenCurrentEventLogAsync();
+    Task OpenHelpSupportAsync();
     Task<(string? password, bool persist)> RequestPasswordAsync();
     Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile);
+    Task ResetConfigurationAsync();
     Task ShowAboutWindowAsync();
     Task ShowBackupBrowserWindowAsync();
     Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync();
     Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel);
     Task<bool> ShowDeleteBackupWindowAsync();
     Task ShowErrorInsufficientDiskSpaceAsync();
+    Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files);
     Task ShowMainWindowAsync();
     Task ShowStatusWindowAsync();
     Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1);
     Task ShowExcludeFileFolderWindowAsync();
+    Task ShowScheduleEditorWindowAsync();
 }

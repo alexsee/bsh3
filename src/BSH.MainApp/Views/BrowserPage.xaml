@@ -43,6 +43,18 @@
             </StackPanel>
         </DataTemplate>
 
+        <DataTemplate x:Name="FavoriteTemplate" x:DataType="models:BrowserFavoriteItem">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B7;" Margin="0,0,8,0" Visibility="{x:Bind IsUserFavorite, Converter={StaticResource VisibilityInvertConverter}}" />
+                <FontIcon VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE735;" Margin="0,0,8,0" Visibility="{x:Bind IsUserFavorite}" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{x:Bind Name, Mode=OneWay}" />
+            </Grid>
+        </DataTemplate>
+
         <converters:VisibilityInvertConverter x:Key="VisibilityInvertConverter" />
         <converters:FileSizeConverter x:Key="FileSizeConverter" />
 
@@ -135,7 +147,7 @@
                 </Grid>
 
                 <!-- search box -->
-                <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" Text="{x:Bind ViewModel.SearchTerms, Mode=TwoWay}" />
+                <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" Text="{x:Bind ViewModel.SearchTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
 
 
@@ -150,13 +162,19 @@
                         </Grid.RowDefinitions>
 
                         <!-- favorites -->
-                        <TextBlock Grid.Row="0" Text="Favourites" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
-                        <ListView Margin="8,0,12,0" SelectedItem="{x:Bind ViewModel.CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{x:Bind ViewModel.Favorites, Mode=TwoWay}">
+                        <TextBlock Grid.Row="0" Text="Favorites" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
+                        <ListView Margin="8,0,12,0" SelectedItem="{x:Bind ViewModel.CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{x:Bind ViewModel.Favorites, Mode=TwoWay}" ItemTemplate="{StaticResource FavoriteTemplate}">
                             <i:Interaction.Behaviors>
                                 <i:EventTriggerBehavior EventName="SelectionChanged">
                                     <i:InvokeCommandAction Command="{x:Bind ViewModel.LoadFavoriteCommand}" />
                                 </i:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
+                            <ListView.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RenameFavoriteCommand}" Text="Rename" />
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RemoveFavoriteCommand}" Text="Remove" />
+                                </MenuFlyout>
+                            </ListView.ContextFlyout>
                         </ListView>
 
                         <!-- backup list -->
@@ -221,7 +239,6 @@
                             LabelPosition="Collapsed"
                             Width="Auto"
                             MinWidth="40"
-                            Visibility="Collapsed"
                         >
                                 <AppBarButton.Icon>
                                     <FontIcon FontSize="16" Glyph="&#xe946;" />
@@ -248,10 +265,12 @@
                                 <AppBarButton.Flyout>
                                     <MenuFlyout Placement="BottomEdgeAlignedRight">
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllCommand}" Text="Restore all"/>
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Visibility="Collapsed" Text="Add to folder favorites"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Text="Add to folder favorites"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteSelectedContentCommand}" Icon="Delete" Text="Delete selected from all backups"/>
                                         <MenuFlyoutSeparator />
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.EditBackupCommand}" Icon="Edit" Text="Edit backup" />
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupCommand}" Icon="Delete" Text="Delete backup"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteMultipleBackupsCommand}" Icon="Delete" Text="Delete multiple backups"/>
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.LockBackupCommand}" Text="Lock/unlock backup" />
                                     </MenuFlyout>
                                 </AppBarButton.Flyout>
@@ -294,7 +313,7 @@
                                         <StackPanel Orientation="Horizontal">
                                             <FontIcon Visibility="{x:Bind IsFile, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}" VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B7;" Margin="0,0,10,0" />
                                             <Image Visibility="{x:Bind IsFile, Mode=OneWay}" Source="{x:Bind Icon16, Mode=OneWay}" Height="16" Width="16" Margin="0,0,10,0" />
-                                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{x:Bind Name, Mode=OneWay}" />
+                                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{x:Bind DisplayName, Mode=OneWay}" />
                                         </StackPanel>
                                         <TextBlock Visibility="{x:Bind IsFile, Mode=OneWay}" Grid.Column="1" VerticalAlignment="Center" Text="{x:Bind FileDateModified, Mode=OneWay}"/>
                                         <TextBlock Visibility="{x:Bind IsFile, Mode=OneWay}" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Text="{x:Bind FileSize, Mode=OneWay, Converter={StaticResource FileSizeConverter}}"/>

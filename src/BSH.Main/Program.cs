@@ -64,7 +64,7 @@ static class Program
             BackupLogic.StartupAsync().Wait();
 
             // parse command line if system is configured
-            if (BackupLogic.ConfigurationManager.IsConfigured == "1")
+            if (BackupLogic.ConfigurationManager?.IsConfigured == "1")
             {
                 CheckCommands(args);
             }

@@ -6,8 +6,8 @@ using System.Text.RegularExpressions;
 using Brightbits.BSH.Engine.Contracts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Windows.Storage.Pickers;
-using WinRT.Interop;
+using Microsoft.UI;
+using Microsoft.Windows.Storage.Pickers;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -31,6 +31,20 @@ public partial class FilterViewModel : ObservableObject
     public ObservableCollection<string> ExcludeFileTypes { get; } = [];
 
     public ObservableCollection<string> RegexPatterns { get; } = [];
+
+    private bool excludeFilesBigger;
+    public bool ExcludeFilesBigger
+    {
+        get => excludeFilesBigger;
+        set => SetProperty(ref excludeFilesBigger, value);
+    }
+
+    private decimal excludeFileBigger;
+    public decimal ExcludeFileBigger
+    {
+        get => excludeFileBigger;
+        set => SetProperty(ref excludeFileBigger, value);
+    }
 
     private string? fileTypeInputText;
     public string? FileTypeInputText
@@ -106,7 +120,7 @@ public partial class FilterViewModel : ObservableObject
         get;
     }
 
-    public nint WindowHandle
+    public WindowId ParentWindowId
     {
         get; set;
     }
@@ -172,6 +186,9 @@ public partial class FilterViewModel : ObservableObject
         {
             RegexPatterns.Add(entry);
         }
+
+        ExcludeFilesBigger = decimal.TryParse(configurationManager.ExcludeFileBigger, out var maxFileSize);
+        ExcludeFileBigger = ExcludeFilesBigger ? maxFileSize : 0;
     }
 
     public void SaveToConfiguration()
@@ -180,6 +197,7 @@ public partial class FilterViewModel : ObservableObject
         configurationManager.ExcludeFile = string.Join("|", ExcludeFiles.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
         configurationManager.ExcludeFileTypes = string.Join("|", ExcludeFileTypes.Select(x => x.Trim().TrimStart('*').TrimStart('.')).Where(x => !string.IsNullOrEmpty(x)));
         configurationManager.ExcludeMask = string.Join("|", RegexPatterns.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
+        configurationManager.ExcludeFileBigger = ExcludeFilesBigger && ExcludeFileBigger > 0 ? ExcludeFileBigger.ToString() : string.Empty;
     }
 
     private string? selectedFolder;
@@ -400,6 +418,8 @@ public partial class FilterViewModel : ObservableObject
 
     private void AddRegex(string? regex)
     {
+        ValidationErrorMessage = null;
+
         if (string.IsNullOrWhiteSpace(regex))
         {
             return;
@@ -419,7 +439,8 @@ public partial class FilterViewModel : ObservableObject
             }
             catch (ArgumentException)
             {
-                continue;
+                ValidationErrorMessage = "Invalid regular expression. Fix the pattern before saving it.";
+                return;
             }
 
             RegexPatterns.Add(line);
@@ -454,18 +475,16 @@ public partial class FilterViewModel : ObservableObject
 
     private async Task BrowseFolderAsync()
     {
-        if (WindowHandle == 0)
+        if (ParentWindowId.Value == 0)
         {
             return;
         }
 
-        var picker = new FolderPicker
+        var picker = new FolderPicker(ParentWindowId)
         {
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary
         };
-        picker.FileTypeFilter.Add("*");
 
-        InitializeWithWindow.Initialize(picker, WindowHandle);
         var folder = await picker.PickSingleFolderAsync();
         if (folder != null)
         {
@@ -475,18 +494,16 @@ public partial class FilterViewModel : ObservableObject
 
     private async Task BrowseFileAsync()
     {
-        if (WindowHandle == 0)
+        if (ParentWindowId.Value == 0)
         {
             return;
         }
 
-        var picker = new FileOpenPicker
+        var picker = new FileOpenPicker(ParentWindowId)
         {
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary
         };
-        picker.FileTypeFilter.Add("*");
 
-        InitializeWithWindow.Initialize(picker, WindowHandle);
         var files = await picker.PickMultipleFilesAsync();
         if (files == null || files.Count == 0)
         {

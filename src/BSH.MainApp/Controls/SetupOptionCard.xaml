@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="BSH.MainApp.Controls.SetupOptionCard"
+    x:Name="Root"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="SelectionStates">
+                <VisualState x:Name="Selected">
+                    <VisualState.Setters>
+                        <Setter Target="CardBorder.BorderThickness" Value="2" />
+                        <Setter Target="CardBorder.BorderBrush" Value="{ThemeResource AccentFillColorDefaultBrush}" />
+                        <Setter Target="CardBorder.Background" Value="#F3F8FF" />
+                        <Setter Target="GlyphIcon.Foreground" Value="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Unselected">
+                    <VisualState.Setters>
+                        <Setter Target="CardBorder.BorderThickness" Value="1" />
+                        <Setter Target="CardBorder.BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+                        <Setter Target="CardBorder.Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+                        <Setter Target="GlyphIcon.Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Button
+            Width="168"
+            Padding="0"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Stretch"
+            Background="Transparent"
+            BorderThickness="0"
+            Command="{Binding Command, ElementName=Root}"
+            CommandParameter="{Binding CommandParameter, ElementName=Root}">
+            <Border
+                x:Name="CardBorder"
+                Padding="10,12"
+                CornerRadius="8"
+                BorderThickness="1"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                    <FontIcon
+                        x:Name="GlyphIcon"
+                        FontSize="18"
+                        Glyph="{Binding Glyph, ElementName=Root}"
+                        HorizontalAlignment="Center" />
+                    <TextBlock
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap"
+                        Text="{Binding Title, ElementName=Root}" />
+                    <TextBlock
+                        FontSize="11"
+                        Opacity="0.75"
+                        TextAlignment="Center"
+                        TextWrapping="WrapWholeWords"
+                        Text="{Binding Description, ElementName=Root}" />
+                </StackPanel>
+            </Border>
+        </Button>
+    </Grid>
+</UserControl>

@@ -17,6 +17,7 @@ public class StatusService : IJobReport, IStatusService
     private readonly List<IStatusReport> observers = new();
     private readonly IConfigurationManager configurationManager;
     private readonly IPresentationService presentationService;
+    private readonly IAppNotificationService? appNotificationService;
     private RequestOverwriteResult lastFileOverwriteChoice = RequestOverwriteResult.None;
 
     private ActionType lastActionType = ActionType.Check;
@@ -63,10 +64,14 @@ public class StatusService : IJobReport, IStatusService
 
     public RequestOverwriteResult LastFileOverwriteChoice => lastFileOverwriteChoice;
 
-    public StatusService(IConfigurationManager configurationManager, IPresentationService presentationService)
+    public StatusService(
+        IConfigurationManager configurationManager,
+        IPresentationService presentationService,
+        IAppNotificationService? appNotificationService = null)
     {
         this.configurationManager = configurationManager;
         this.presentationService = presentationService;
+        this.appNotificationService = appNotificationService;
     }
 
     public void Initialize()
@@ -104,16 +109,19 @@ public class StatusService : IJobReport, IStatusService
             x.ReportState(jobState);
         }
 
-        //// finished successfully
-        //if (jobState == JobState.FINISHED && lastActionType == ActionType.Backup && configurationManager.InfoBackupDone == "1")
-        //{
-        //    NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_SUCCESSFUL_TITLE, Resources.INFO_BACKUP_SUCCESSFUL_TEXT, ToolTipIcon.Info);
-        //}
+        if (lastActionType != ActionType.Backup || configurationManager.InfoBackupDone != "1")
+        {
+            return;
+        }
 
-        //if (jobState == JobState.ERROR && lastActionType == ActionType.Backup && configurationManager.InfoBackupDone == "1")
-        //{
-        //    NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_UNSUCCESSFUL_TITLE, Resources.INFO_BACKUP_UNSUCCESSFUL_TEXT, ToolTipIcon.Warning);
-        //}
+        if (jobState == JobState.FINISHED)
+        {
+            ShowNotification("Backup successful", "Planned backup was performed successfully.");
+        }
+        else if (jobState == JobState.ERROR)
+        {
+            ShowNotification("Backup with errors finished", "The planned backup was ended with problems. Click here for more information.");
+        }
     }
 
     public void ReportStatus(string title, string text)
@@ -165,6 +173,11 @@ public class StatusService : IJobReport, IStatusService
     public void AddObserver(IStatusReport jobReport, bool triggerLastState = false)
     {
         observers.Add(jobReport);
+        if (triggerLastState)
+        {
+            jobReport.ReportSystemStatus(SystemStatus);
+            jobReport.ReportState(JobState);
+        }
     }
 
     public void RemoveObserver(IStatusReport jobReport)
@@ -174,36 +187,21 @@ public class StatusService : IJobReport, IStatusService
 
     public void ShowExceptionDialog()
     {
-        if (LastFilesException.Count == 0)
+        if (LastFilesException == null || LastFilesException.Count == 0)
         {
             return;
         }
 
-        //// files with exceptions
-        //using var dlgFileNotCopied = new frmFileNotCopied();
-        //foreach (var entry in LastFilesException)
-        //{
-        //    var innerException = entry.Exception.Message.ToString();
-
-        //    // show inner exception if file not processed exception
-        //    if (entry.Exception.GetType() == typeof(FileNotProcessedException) &&
-        //        entry.Exception.InnerException != null)
-        //    {
-        //        innerException = entry.Exception.InnerException.Message.ToString();
-        //    }
-
-        //    var newEntry = new ListViewItem();
-        //    newEntry.Text = entry.File.FileNamePath();
-        //    newEntry.SubItems.Add(innerException);
-        //    newEntry.Tag = entry;
-        //    dlgFileNotCopied.lvFiles.Items.Add(newEntry);
-        //}
-
-        //dlgFileNotCopied.ShowDialog();
+        _ = presentationService.ShowFileExceptionsAsync(LastFilesException);
     }
 
     public async Task RequestShowErrorInsufficientDiskSpaceAsync()
     {
         await this.presentationService.ShowErrorInsufficientDiskSpaceAsync();
+    }
+
+    private void ShowNotification(string title, string text)
+    {
+        appNotificationService?.Show(ToastNotificationPayload.Create(title, text));
     }
 }

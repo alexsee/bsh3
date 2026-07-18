@@ -130,9 +130,12 @@ public class EditJob : Job
             dbClient.CommitTransaction();
         }
 
-        // set new metadata
-        configurationManager.Encrypt = 0;
-        configurationManager.EncryptPassMD5 = "";
+        // Only clear global encryption metadata after every encrypted file was updated successfully.
+        if (FileErrorList.Count == 0)
+        {
+            configurationManager.Encrypt = 0;
+            configurationManager.EncryptPassMD5 = "";
+        }
 
         // close all database connections
         DbClientFactory.ClosePool();

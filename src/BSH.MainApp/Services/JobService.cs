@@ -4,13 +4,9 @@
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Exceptions;
-using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Runtime;
-using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
-using BSH.MainApp.Models;
 using Serilog;
 
 namespace BSH.MainApp.Services;
@@ -24,13 +20,11 @@ public class JobService : IJobService, IDisposable
     private readonly IConfigurationManager configurationManager;
     private readonly IStatusService statusService;
     private readonly IPresentationService presentationService;
-    private readonly ILocalSettingsService localSettingsService;
+    private readonly ICompletionActionService completionActionService;
     private readonly Func<IWaitForMediaService> waitForMediaServiceFactory;
     private readonly JobRuntime jobRuntime;
-
-    private IJobReport jobReportCallback;
-
-    private CancellationToken cancellationToken;
+    private readonly JobSessionRunner jobSessionRunner;
+    private readonly WinUIJobSessionPresenter presenter;
 
     public bool IsCancellationRequested => jobRuntime.IsCancellationRequested;
 
@@ -45,32 +39,55 @@ public class JobService : IJobService, IDisposable
         IConfigurationManager configurationManager,
         IStatusService statusService,
         IPresentationService presentationService,
-        ILocalSettingsService localSettingsService,
+        ICompletionActionService completionActionService,
+        IStoredPasswordAdapter storedPasswordAdapter,
         Func<IWaitForMediaService> waitForMediaServiceFactory)
     {
         ArgumentNullException.ThrowIfNull(waitForMediaServiceFactory);
+        ArgumentNullException.ThrowIfNull(storedPasswordAdapter);
 
         this.backupService = backupService;
         this.configurationManager = configurationManager;
         this.statusService = statusService;
         this.presentationService = presentationService;
-        this.localSettingsService = localSettingsService;
+        this.completionActionService = completionActionService;
         this.waitForMediaServiceFactory = waitForMediaServiceFactory;
 
         this.jobRuntime = new JobRuntime(
             backupService,
             () => this.statusService.IsTaskRunning(),
-            () => this.configurationManager.Medium == "1",
-            async (_, silent, cancellationTokenSource) =>
+            this.SelectMediaWaitMode,
+            async (_, waitMode, cancellationTokenSource) =>
             {
                 var waitForMediaService = this.waitForMediaServiceFactory();
-                return await waitForMediaService.ExecuteAsync(silent, cancellationTokenSource);
+                var suppressPrompt = waitMode == MediaWaitMode.SilentPolling;
+                return await waitForMediaService.ExecuteAsync(suppressPrompt, cancellationTokenSource);
             },
             this.RequestPassword);
-
-        jobReportCallback = (IJobReport)statusService;
+        this.presenter = new WinUIJobSessionPresenter(this.presentationService, this.statusService, this.Cancel, this.completionActionService);
+        this.jobSessionRunner = new JobSessionRunner(
+            backupService,
+            this.jobRuntime,
+            () => this.configurationManager.Encrypt == 1,
+            () => this.configurationManager.EncryptPassMD5,
+            storedPasswordAdapter);
 
         GetNewCancellationToken();
+    }
+
+    private MediaWaitMode SelectMediaWaitMode(bool silent)
+    {
+        if (configurationManager.Medium != "1")
+        {
+            return MediaWaitMode.None;
+        }
+
+        if (!silent || configurationManager.ShowWaitOnMediaAutoBackups == "1")
+        {
+            return MediaWaitMode.PromptUser;
+        }
+
+        return MediaWaitMode.None;
     }
 
     /// <summary>
@@ -79,8 +96,7 @@ public class JobService : IJobService, IDisposable
     /// <returns>Returns the new CancellationToken.</returns>
     public CancellationToken GetNewCancellationToken()
     {
-        cancellationToken = jobRuntime.GetNewCancellationToken();
-        return cancellationToken;
+        return jobRuntime.GetNewCancellationToken();
     }
 
     /// <summary>
@@ -104,104 +120,6 @@ public class JobService : IJobService, IDisposable
     }
 
     /// <summary>
-    /// Prepares a backup job by setting internal states, informs all observers, and
-    /// shows (if applicable) the corresponding user interfaces to the user.
-    /// </summary>
-    /// <param name="action">Specifies the action that is executed.</param>
-    /// <param name="statusDialog">Specifies if the status window should be shown.</param>
-    /// <returns></returns>
-    /// <exception cref="TaskRunningException"></exception>
-    /// <exception cref="DeviceNotReadyException"></exception>
-    /// <exception cref="PasswordRequiredException"></exception>
-    private async Task PrepareJob(ActionType action, bool statusDialog)
-    {
-        // show dialog?
-        if (statusDialog)
-        {
-            await presentationService.ShowStatusWindowAsync();
-        }
-
-        cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog);
-    }
-
-    /// <summary>
-    /// Prepares a backup job by setting internal states, informs all observers, and
-    /// shows (if applicable) the corresponding user interfaces to the user. This method
-    /// also handles potential exceptions and returns false.
-    /// </summary>
-    /// <param name="action">Specifies the action that is executed.</param>
-    /// <param name="statusDialog">Specifies if the status window should be shown.</param>
-    /// <returns></returns>
-    private async Task<bool> PrepareJobAndHandleExceptions(ActionType action, bool statusDialog)
-    {
-        try
-        {
-            await PrepareJob(action, statusDialog);
-        }
-        catch (TaskRunningException ex)
-        {
-            _logger.Error(ex, "Another task is running, so the backup task will not be started.");
-
-            if (statusDialog)
-            {
-                await presentationService.ShowMessageBoxAsync("MSG_TASK_RUNNING_TITLE".GetLocalized(), "MSG_TASK_RUNNING_TEXT".GetLocalized(), null);
-            }
-
-            await HandleFinishedStatusDialog(statusDialog);
-            return false;
-        }
-        catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
-        {
-            _logger.Error(ex, "Device is not ready, so the backup task will not be started.");
-
-            if (statusDialog)
-            {
-                await presentationService.ShowMessageBoxAsync("MSG_BACKUP_DEVICE_NOT_READY_TITLE".GetLocalized(), "MSG_BACKUP_DEVICE_NOT_READY_TEXT".GetLocalized(), null);
-            }
-
-            await HandleFinishedStatusDialog(statusDialog);
-            return false;
-        }
-        catch (PasswordRequiredException ex)
-        {
-            _logger.Error(ex, "Password request was cancelled, so the backup task will not be started.");
-            await HandleFinishedStatusDialog(statusDialog);
-            return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Ensures that the corresponding finishing tasks of the status windows are handled according
-    /// to the user settings. If the user specifies to shutdown the computer, the computer will be
-    /// shut down. If the user specifies to hibernate the computer, the computer will be put into
-    /// this mode as well.
-    /// </summary>
-    /// <param name="statusDialog"></param>
-    /// <param name="triggerAction"></param>
-    private async Task HandleFinishedStatusDialog(bool statusDialog, bool triggerAction = false)
-    {
-        // finish job
-        if (statusDialog)
-        {
-            var action = await presentationService.CloseStatusWindowAsync();
-            if (triggerAction && action == TaskCompleteAction.ShutdownPC)
-            {
-                _logger.Debug("Computer will be shutdown after task has finished.");
-
-                //Process.Start("shutdown.exe", "-s -t 60 -c \"" + Resources.TASK_BSH_SHUTDOWN_PC + "\"");
-            }
-            else if (triggerAction && action == TaskCompleteAction.HibernatePC)
-            {
-                _logger.Debug("Computer will be hibernated after task has finished.");
-
-                //Process.Start("rundll32.exe", "powrprof.dll,SetSuspendState");
-            }
-        }
-    }
-
-    /// <summary>
     /// Runs a new backup task given the corresponding options.
     /// </summary>
     /// <param name="title">Specifies the title of the backup.</param>
@@ -217,25 +135,14 @@ public class JobService : IJobService, IDisposable
         _logger.Debug("Backup task is started with title: {title}, description: {description}, statusDialog: {statusDialog}, fullBackup: {fullBackup}",
             title, description, statusDialog, fullBackup);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Backup, statusDialog))
+        var result = await jobSessionRunner.RunSingleBackupAsync(title, description, presenter, statusDialog, fullBackup, sourceFolders);
+        if (!await HandleSessionStartAsync(result, "backup", statusDialog))
         {
             return false;
         }
 
-        // run backup job
-        try
-        {
-            var task = backupService.StartBackup(title, description, ref jobReportCallback, cancellationToken, fullBackup, sourceFolders, !statusDialog);
-            await task.ConfigureAwait(true);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        await HandleFinishedStatusDialog(statusDialog);
-        return !cancellationToken.IsCancellationRequested;
+        await presenter.CompleteAsync(triggerShutdown: shutdownPC && !result.Canceled, honorCompletionActions: !result.Canceled);
+        return !result.Canceled;
     }
 
     /// <summary>
@@ -251,25 +158,13 @@ public class JobService : IJobService, IDisposable
         _logger.Debug("Restore task for version {version} and file \"{file}\" to \"{destination}\" started.",
             version, file, destination);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Restore, statusDialog))
+        var result = await jobSessionRunner.RunSingleRestoreAsync(version, file, destination, presenter, statusDialog);
+        if (!await HandleSessionStartAsync(result, "restore", statusDialog))
         {
             return;
         }
 
-        // run restore job
-        try
-        {
-            var task = backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, FileOverwrite.Ask, !statusDialog);
-            await task.ConfigureAwait(true);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        // finish
-        await HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -284,44 +179,13 @@ public class JobService : IJobService, IDisposable
     {
         _logger.Debug("Restore task for version {version} and {files} files to \"{destination}\" started.",
             version, files.Count, destination);
-
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Restore, statusDialog))
+        var result = await jobSessionRunner.RunBatchRestoreAsync(version, files, destination, presenter, statusDialog);
+        if (!await HandleSessionStartAsync(result, "restore", statusDialog))
         {
             return;
         }
 
-        // run restore job
-        var fileOverwrite = FileOverwrite.Ask;
-
-        foreach (var file in files)
-        {
-            try
-            {
-                var task = backupService.StartRestore(version, file, destination, ref jobReportCallback, cancellationToken, fileOverwrite, !statusDialog);
-                await task.ConfigureAwait(true);
-            }
-            catch
-            {
-                // exception already handled
-            }
-            finally
-            {
-                // persist overwrite
-                if (statusService.LastFileOverwriteChoice == RequestOverwriteResult.OverwriteAll || statusService.LastFileOverwriteChoice == RequestOverwriteResult.NoOverwriteAll)
-                {
-                    fileOverwrite = statusService.LastFileOverwriteChoice == RequestOverwriteResult.OverwriteAll ? FileOverwrite.Overwrite : FileOverwrite.DontCopy;
-                }
-            }
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
-        }
-
-        // finish
-        await HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -334,25 +198,13 @@ public class JobService : IJobService, IDisposable
     {
         _logger.Debug("Delete task started for version {version}.", version);
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
+        var result = await jobSessionRunner.RunSingleDeleteAsync(version, presenter, statusDialog);
+        if (!await HandleSessionStartAsync(result, "delete", statusDialog))
         {
             return;
         }
 
-        // run delete job
-        try
-        {
-            var task = backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
-            await task.ConfigureAwait(true);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        // finish
-        await HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -364,34 +216,13 @@ public class JobService : IJobService, IDisposable
     public async Task DeleteBackupsAsync(List<string> versions, bool statusDialog = true)
     {
         _logger.Debug("Delete task started for {versions} versions.", versions.Count);
-
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
+        var result = await jobSessionRunner.RunBatchDeleteAsync(versions, presenter, statusDialog);
+        if (!await HandleSessionStartAsync(result, "delete", statusDialog))
         {
             return;
         }
 
-        // run delete job
-        foreach (string version in versions)
-        {
-            try
-            {
-                var task = backupService.StartDelete(version, ref jobReportCallback, cancellationToken, !statusDialog);
-                await task.ConfigureAwait(true);
-            }
-            catch
-            {
-                // exception already handled
-            }
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
-        }
-
-        // finish
-        await HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -406,25 +237,13 @@ public class JobService : IJobService, IDisposable
     {
         _logger.Debug("Delete task started for file and folder filter.");
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Delete, statusDialog))
+        var result = await jobSessionRunner.RunSingleDeleteSingleAsync(fileFilter, folderFilter, presenter, statusDialog);
+        if (!await HandleSessionStartAsync(result, "delete", statusDialog))
         {
             return;
         }
 
-        // run delete job
-        try
-        {
-            var task = backupService.StartDeleteSingle(fileFilter, folderFilter, ref jobReportCallback, cancellationToken, !statusDialog);
-            await task.ConfigureAwait(true);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        // finish
-        await HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -436,25 +255,13 @@ public class JobService : IJobService, IDisposable
     {
         _logger.Debug("Modify task started.");
 
-        // check job requirements
-        if (!await PrepareJobAndHandleExceptions(ActionType.Modify, statusDialog))
+        var result = await jobSessionRunner.RunSingleModifyAsync(presenter, statusDialog);
+        if (!await HandleSessionStartAsync(result, "modify", statusDialog))
         {
             return;
         }
 
-        // run modify job
-        try
-        {
-            var task = backupService.StartEdit(ref jobReportCallback, cancellationToken, statusDialog);
-            await task.ConfigureAwait(true);
-        }
-        catch
-        {
-            // exception already handled
-        }
-
-        // finish
-        await HandleFinishedStatusDialog(statusDialog);
+        await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
     /// <summary>
@@ -464,63 +271,43 @@ public class JobService : IJobService, IDisposable
     /// <returns>Returns true, if the password was provided, otherwise false.</returns>
     public async Task<bool> RequestPassword()
     {
-        _logger.Debug("Password requested by user.");
-
-        if (backupService.HasPassword())
-        {
-            return true;
-        }
-
-        if (configurationManager.Encrypt != 1)
-        {
-            return true;
-        }
-
-        // password stored
-        var encryptedPassword = await localSettingsService.ReadSettingAsync<string>("BackupPassword");
-        if (!string.IsNullOrEmpty(encryptedPassword))
-        {
-            var storedPassword = Crypto.DecryptString(encryptedPassword);
-            if (storedPassword.Length > 0)
-            {
-                backupService.SetPassword(storedPassword);
-                return true;
-            }
-        }
-
-        // request password from user
-        var request = await presentationService.RequestPasswordAsync();
-        while (!string.IsNullOrEmpty(request.password))
-        {
-            if ((Hash.GetMD5Hash(request.password) ?? "") == (configurationManager.EncryptPassMD5 ?? ""))
-            {
-                backupService.SetPassword(request.password);
-
-                // persist password?
-                if (request.persist)
-                {
-                    await localSettingsService.SaveSettingAsync("BackupPassword", Crypto.EncryptString(request.password));
-                }
-                return true;
-            }
-
-            // report back to user
-            _logger.Debug("Password given by user is not correct. Request retry.");
-
-            await this.presentationService.ShowMessageBoxAsync(
-                "MSG_PASSWORD_WRONG_TITLE".GetLocalized(),
-                "MSG_PASSWORD_WRONG_TEXT".GetLocalized(),
-                null
-            );
-            request = await presentationService.RequestPasswordAsync();
-        }
-
-        return false;
+        return await jobSessionRunner.EnsurePasswordResolvedAsync(presenter);
     }
 
     public void Dispose()
     {
         jobRuntime.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    private async Task<bool> HandleSessionStartAsync(SingleBackupSessionResult result, string operationName, bool statusDialog)
+    {
+        if (result.Started)
+        {
+            return true;
+        }
+
+        LogSingleOperationStartFailure(result.Failure, operationName);
+        if (statusDialog)
+        {
+            await presenter.CompleteAsync(honorCompletionActions: false);
+        }
+        return false;
+    }
+
+    private void LogSingleOperationStartFailure(JobSessionStartFailure failure, string operationName)
+    {
+        switch (failure)
+        {
+            case JobSessionStartFailure.TaskRunning:
+                _logger.Error("Another task is running, so the {operationName} task will not be started.", operationName);
+                break;
+            case JobSessionStartFailure.DeviceNotReady:
+                _logger.Error("Device is not ready, so the {operationName} task will not be started.", operationName);
+                break;
+            case JobSessionStartFailure.PasswordRequired:
+                _logger.Error("Password request was cancelled, so the {operationName} task will not be started.", operationName);
+                break;
+        }
     }
 }

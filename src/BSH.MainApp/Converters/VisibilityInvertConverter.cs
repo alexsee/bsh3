@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace BSH.MainApp.Converters;
 
-internal sealed class VisibilityInvertConverter : IValueConverter
+public sealed class VisibilityInvertConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

@@ -11,6 +11,7 @@ using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Utils;
 
 namespace Brightbits.BSH.Engine;
@@ -480,6 +481,135 @@ public class QueryManager : IQueryManager
         return result;
     }
 
+    public async Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500)
+    {
+        var result = new List<FileTableRow>();
+
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return result;
+        }
+
+        using (var dbClient = dbClientFactory.CreateDbClient())
+        {
+            var parameters = new (string, object)[] {
+                ("versionID", version),
+                ("searchTerm", "%" + searchTerm + "%"),
+                ("limit", limit)
+            };
+
+            using var reader = await dbClient.ExecuteDataReaderAsync(
+                CommandType.Text,
+                "SELECT " +
+                "fileversiontable.fileStatus, " +
+                "fileversiontable.fileType, " +
+                "fileversiontable.fileDateModified, " +
+                "fileversiontable.fileDateCreated, " +
+                "fileversiontable.fileSize, " +
+                "fileversiontable.filePackage, " +
+                "fileversiontable.longfilename, " +
+                "filetable.fileName, " +
+                "filetable.filePath, " +
+                "versiontable.versionDate, " +
+                "filelink.versionID, " +
+                "filetable.fileID " +
+                "FROM " +
+                "filelink " +
+                "INNER JOIN fileversiontable On (filelink.fileversionID = fileversiontable.fileversionID) " +
+                "INNER JOIN filetable On (fileversiontable.fileID = filetable.fileID) " +
+                "INNER JOIN versiontable On (versiontable.versionID = fileversiontable.filePackage) " +
+                "WHERE filelink.versionID = @versionID " +
+                "AND (filetable.fileName LIKE @searchTerm OR filetable.filePath LIKE @searchTerm) " +
+                "ORDER BY filetable.filePath, filetable.fileName " +
+                "LIMIT @limit",
+                parameters);
+            while (await reader.ReadAsync())
+            {
+                result.Add(FileTableRow.FromReaderFile(reader));
+            }
+
+            await reader.CloseAsync();
+        }
+
+        return result;
+    }
+
+    public async Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath)
+    {
+        var files = await GetFilesByVersionAsync(version, filePath);
+        var file = files.Find(x => string.Equals(x.FileName, fileName, StringComparison.OrdinalIgnoreCase));
+        if (file == null)
+        {
+            return null;
+        }
+
+        return new FileDetails
+        {
+            Name = file.FileName,
+            RestorePath = await GetFullRestoreFilePathAsync(file.FileName, file.FilePath, version),
+            Type = GetFileTypeDisplayName(file.FileType),
+            Size = file.FileSize,
+            Created = file.FileDateCreated,
+            Modified = file.FileDateModified,
+            AvailableVersions = await GetAvailableVersionsForFileAsync(file.FileName, file.FilePath)
+        };
+    }
+
+    private async Task<string> GetFullRestoreFilePathAsync(string fileName, string filePath, string version)
+    {
+        var restoreFolder = await GetFullRestoreFolderAsync(filePath, version);
+        return string.IsNullOrEmpty(restoreFolder)
+            ? Path.Combine(GetPathWithoutSlashes(filePath), fileName)
+            : Path.Combine(restoreFolder, fileName);
+    }
+
+    private async Task<List<VersionDetails>> GetAvailableVersionsForFileAsync(string fileName, string filePath)
+    {
+        var result = new List<VersionDetails>();
+
+        using (var dbClient = dbClientFactory.CreateDbClient())
+        {
+            var parameters = new (string, object)[] {
+                ("fileName", fileName),
+                ("filePath", GetPathWithSlashes(filePath))
+            };
+
+            using var reader = await dbClient.ExecuteDataReaderAsync(
+                CommandType.Text,
+                "SELECT DISTINCT versiontable.* " +
+                "FROM versiontable " +
+                "INNER JOIN filelink ON filelink.versionID = versiontable.versionID " +
+                "INNER JOIN fileversiontable ON filelink.fileversionID = fileversiontable.fileversionID " +
+                "INNER JOIN filetable ON fileversiontable.fileID = filetable.fileID " +
+                "WHERE versiontable.versionStatus = 0 " +
+                "AND filetable.fileName = @fileName " +
+                "AND filetable.filePath = @filePath " +
+                "ORDER BY versiontable.versionID DESC",
+                parameters);
+
+            while (await reader.ReadAsync())
+            {
+                result.Add(VersionDetails.FromReader(reader));
+            }
+
+            await reader.CloseAsync();
+        }
+
+        return result;
+    }
+
+    private static string GetFileTypeDisplayName(string fileType)
+    {
+        return fileType switch
+        {
+            "1" => "Regular copy",
+            "2" or "4" => "Compressed",
+            "3" => "Stored copy",
+            "5" or "6" => "Encrypted",
+            _ => "Unknown"
+        };
+    }
+
     /// <summary>
     /// Returns a local file path if the file is directly accessable, otherwise null.
     /// </summary>
@@ -552,49 +682,62 @@ public class QueryManager : IQueryManager
         {
             if (await reader.ReadAsync())
             {
-                var fileType = reader.GetInt32("fileType");
-
-                if (fileType == BackupFileType.Local)
-                {
-                    result = GetFileNameFromDrive(FileTableRow.FromReaderFileVersion(reader));
-                }
-                else if (BackupFileType.IsKnown(fileType))
-                {
-                    temp = true;
-
-                    var localFilePath = Path.Combine(Path.GetTempPath(), reader.GetString("fileName"));
-                    var remoteFilePath = "";
-
-                    if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
-                    {
-                        remoteFilePath = reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
-                    }
-                    else
-                    {
-                        remoteFilePath = reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
-                    }
-
-                    if (BackupFileType.IsRegular(fileType))
-                    {
-                        storage.CopyFileFromStorage(localFilePath, remoteFilePath);
-                    }
-                    else if (BackupFileType.IsCompressed(fileType))
-                    {
-                        storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
-                    }
-                    else if (BackupFileType.IsEncrypted(fileType))
-                    {
-                        storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
-                    }
-
-                    result = localFilePath;
-                }
+                (result, temp) = ResolveFileFromStorage(reader, storage, password);
             }
 
             await reader.CloseAsync();
         }
 
         return (result, temp);
+    }
+
+    private (string result, bool temp) ResolveFileFromStorage(System.Data.Common.DbDataReader reader, IStorageProvider storage, string password)
+    {
+        var fileType = reader.GetInt32("fileType");
+        if (fileType == BackupFileType.Local)
+        {
+            return (GetFileNameFromDrive(FileTableRow.FromReaderFileVersion(reader)), false);
+        }
+
+        if (!BackupFileType.IsKnown(fileType))
+        {
+            return (null, false);
+        }
+
+        var localFilePath = Path.Combine(Path.GetTempPath(), reader.GetString("fileName"));
+        var remoteFilePath = BuildRemoteFilePath(reader);
+        CopyFileByType(storage, fileType, localFilePath, remoteFilePath, password);
+        return (localFilePath, true);
+    }
+
+    private static string BuildRemoteFilePath(System.Data.Common.DbDataReader reader)
+    {
+        if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
+        {
+            return reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
+        }
+
+        return reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
+    }
+
+    private static void CopyFileByType(IStorageProvider storage, int fileType, string localFilePath, string remoteFilePath, string password)
+    {
+        if (BackupFileType.IsRegular(fileType))
+        {
+            storage.CopyFileFromStorage(localFilePath, remoteFilePath);
+            return;
+        }
+
+        if (BackupFileType.IsCompressed(fileType))
+        {
+            storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
+            return;
+        }
+
+        if (BackupFileType.IsEncrypted(fileType))
+        {
+            storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
+        }
     }
 
     /// <summary>

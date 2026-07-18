@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
@@ -134,6 +136,67 @@ public class BackupTests
     }
 
     [Test]
+    public async Task TestIncrementalCreatesNewFileVersionForSameSizeEditWithinSameSecond()
+    {
+        var firstModified = new DateTime(2024, 1, 2, 3, 4, 5, 100, DateTimeKind.Local);
+        var secondModified = new DateTime(2024, 1, 2, 3, 4, 5, 900, DateTimeKind.Local);
+        var created = new DateTime(2024, 1, 2, 3, 0, 0, DateTimeKind.Local);
+
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
+            new List<FolderTableRow>(),
+            new List<FileTableRow>
+            {
+                new FileTableRow
+                {
+                    FileName = "test.txt",
+                    FilePath = "",
+                    FileRoot = "D:\\Meine Dokumente",
+                    FileSize = 1024,
+                    FileDateCreated = created,
+                    FileDateModified = firstModified,
+                }
+            });
+
+        var firstBackupJob = new BackupJob(new StorageMock(), dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = "D:\\Meine Dokumente",
+            Title = "Blub",
+            Description = "",
+        };
+
+        var token = new CancellationTokenSource().Token;
+        await firstBackupJob.BackupAsync(token);
+
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
+            new List<FolderTableRow>(),
+            new List<FileTableRow>
+            {
+                new FileTableRow
+                {
+                    FileName = "test.txt",
+                    FilePath = "",
+                    FileRoot = "D:\\Meine Dokumente",
+                    FileSize = 1024,
+                    FileDateCreated = created,
+                    FileDateModified = secondModified,
+                }
+            });
+
+        var secondBackupJob = new BackupJob(new StorageMock(), dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = "D:\\Meine Dokumente",
+            Title = "Blub",
+            Description = "",
+        };
+
+        await secondBackupJob.BackupAsync(token);
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(2));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileversionID FROM filelink WHERE versionID = 2")), Is.EqualTo(2));
+    }
+
+    [Test]
     public async Task TestCompressedFull()
     {
         // set compressed state
@@ -153,6 +216,65 @@ public class BackupTests
         // check version
         var version = await this.queryManager.GetLastBackupAsync();
         Assert.That(version.Id, Is.EqualTo("1"));
+    }
+
+    [Test]
+    public async Task TestUsesCompressedCopyWhenCompressionIsEnabled()
+    {
+        configurationManager.Compression = 1;
+
+        var fs = new StorageMock();
+        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+
+        var token = new CancellationTokenSource().Token;
+        await backupJob.BackupAsync(token);
+
+        Assert.That(fs.CopyFileToStorageCompressedCalls, Is.EqualTo(1));
+        Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task TestUsesEncryptedCopyWhenEncryptionIsEnabled()
+    {
+        configurationManager.Encrypt = 1;
+        configurationManager.EncryptPassMD5 = "cc03e747a6afbbcbf8be7668acfebee5";
+
+        var fs = new StorageMock();
+        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+        backupJob.Password = "test123";
+
+        var token = new CancellationTokenSource().Token;
+        await backupJob.BackupAsync(token);
+
+        Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(1));
+        Assert.That(fs.CopyFileToStorageCompressedCalls, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task TestUsesLongFilePathFallbackWhenPathIsTooLong()
+    {
+        var fs = new StorageMock(pathTooLong: true);
+        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+
+        var token = new CancellationTokenSource().Token;
+        await backupJob.BackupAsync(token);
+
+        Assert.That(fs.LastRemoteFile, Does.Contain("_LONGFILES_"));
+    }
+
+    [Test]
+    public async Task TestRetriesWithVssAfterIoException()
+    {
+        var vss = new VssClientMock(shouldCopy: true);
+        var fs = new StorageMock(throwIoOnFirstRegularCopy: true);
+        var backupJob = CreateBackupJobForSingleTempFile(fs, vss, ".txt");
+
+        var token = new CancellationTokenSource().Token;
+        await backupJob.BackupAsync(token);
+
+        Assert.That(vss.CopyCalls, Is.EqualTo(1));
+        Assert.That(fs.CopyFileToStorageCalls, Is.EqualTo(2));
+        Assert.That(backupJob.FileErrorList, Is.Empty);
     }
 
     [Test]
@@ -240,5 +362,46 @@ public class BackupTests
         // check version
         var version = await this.queryManager.GetLastBackupAsync();
         Assert.That(version, Is.Null);
+    }
+
+    private BackupJob CreateBackupJobForSingleTempFile(StorageMock storage, VssClientMock vss, string extension)
+    {
+        var filePath = CreateTempFile(extension);
+        var fileInfo = new FileInfo(filePath);
+
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
+            new List<FolderTableRow>(),
+            new List<FileTableRow>
+            {
+                new FileTableRow
+                {
+                    FileName = fileInfo.Name,
+                    FilePath = "",
+                    FileRoot = fileInfo.DirectoryName,
+                    FileSize = fileInfo.Length,
+                    FileDateCreated = fileInfo.CreationTime,
+                    FileDateModified = fileInfo.LastWriteTime,
+                }
+            });
+
+        var backupJob = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vss, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = fileInfo.DirectoryName,
+            Title = "Blub",
+            Description = "",
+        };
+
+        return backupJob;
+    }
+
+    private static string CreateTempFile(string extension)
+    {
+        var testFilesDir = Path.Combine(Environment.CurrentDirectory, "testfiles");
+        Directory.CreateDirectory(testFilesDir);
+
+        var testFile = Path.Combine(testFilesDir, $"{Guid.NewGuid()}{extension}");
+        var content = new string('a', 256);
+        File.WriteAllText(testFile, content);
+        return testFile;
     }
 }

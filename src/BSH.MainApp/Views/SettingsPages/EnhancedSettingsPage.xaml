@@ -30,6 +30,28 @@
             VerticalScrollBarVisibility="Auto"
             VerticalScrollMode="Auto">
             <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Application</TextBlock>
+                <toolkit:SettingsCard Header="Launch at Windows startup" Description="Start Backup Service Home when you sign in to Windows">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE7E8;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{Binding LaunchAtWindowsStartup, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard Header="Automatically check for updates" Description="Look for updates when the application starts">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE895;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{Binding AutomaticallyCheckForUpdates, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard Header="Download beta updates" Description="Include prerelease versions when checking for updates">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE945;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{Binding DownloadBetaUpdates, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
+
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Backupbrowser</TextBlock>
                 <toolkit:SettingsCard Header="Directory localization" Description="Show directory localization names if available">
                     <toolkit:SettingsCard.HeaderIcon>
