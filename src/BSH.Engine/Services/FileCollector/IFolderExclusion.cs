@@ -77,9 +77,17 @@ public class ReparsePointFolderExclusion() : IFolderExclusion
     public bool IsFolderFiltered(string root, DirectoryInfo directory) => (directory.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint;
 }
 
-public class SystemFolderExclusion() : IFolderExclusion
+public class SystemFolderExclusion(IConfigurationManager configurationManager) : IFolderExclusion
 {
-    public bool IsFolderFiltered(string root, DirectoryInfo directory) => (directory.Attributes & FileAttributes.System) == FileAttributes.System;
+    public bool IsFolderFiltered(string root, DirectoryInfo directory)
+    {
+        if (configurationManager.IncludeSystemFolders == "1")
+        {
+            return false;
+        }
+
+        return (directory.Attributes & FileAttributes.System) == FileAttributes.System;
+    }
 }
 
 public class TemporaryFolderExclusion() : IFolderExclusion

@@ -8,6 +8,7 @@
 			<RowDefinition />
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
 		<ListView Grid.Row="0"
@@ -22,7 +23,10 @@
 				   Text="{Binding ValidationErrorMessage}"
 				   Foreground="Red"
 				   TextWrapping="Wrap" />
-		<Grid Grid.Row="2">
+		<CheckBox Grid.Row="2"
+				  Content="Include folders marked as System (e.g. Nextcloud sync folders)"
+				  IsChecked="{Binding IncludeSystemFolders, Mode=TwoWay}" />
+		<Grid Grid.Row="3">
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
 				<Button Content="Add Folder" Command="{Binding BrowseFolderCommand}" />
 				<Button Content="Remove" Command="{Binding RemoveFolderCommand}" />
