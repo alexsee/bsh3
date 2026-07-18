@@ -196,25 +196,11 @@ public class BackupJob : Job
             // report progress
             _logger.Information("{numFiles} files and {numFolders} folders are collected for backup.", files.Count, emptyFolder.Count);
 
-            // rough free-space preflight before heavy copy work
             var freeSpaceBytes = storage.GetFreeSpace();
-            if (DiskSpacePreflight.ShouldAbortBackup(freeSpaceBytes, files.Select(f => f.FileSize)))
+            var estimatedBytes = DiskSpacePreflight.EstimateRequiredBytes(files.Select(f => f.FileSize));
+            if (DiskSpacePreflight.IsClearlyInsufficient(freeSpaceBytes, estimatedBytes))
             {
-                var estimatedBytes = DiskSpacePreflight.EstimateRequiredBytes(files.Select(f => f.FileSize));
-                _logger.Error(
-                    "Insufficient free space on backup device before copy. Estimated need ~{estimatedBytes} bytes, available {freeSpaceBytes} bytes. Aborting.",
-                    estimatedBytes,
-                    freeSpaceBytes);
-
-                ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_ERROR);
-                await RequestShowErrorInsufficientDiskSpaceAsync();
-
-                storage.DeleteDirectory(newVersionDate);
-                storage.Dispose();
-                dbClient.RollbackTransaction();
-                Win32Stuff.AllowSystemSleep();
-
-                ReportState(JobState.ERROR);
+                await AbortForInsufficientDiskSpaceAsync(dbClient, newVersionDate, estimatedBytes, freeSpaceBytes);
                 return;
             }
 
@@ -308,19 +294,9 @@ public class BackupJob : Job
                 // cancellation token requested?
                 if (token.IsCancellationRequested || cancel)
                 {
-                    // report progress
                     _logger.Information("Cancellation of backup job requested. Rollback all transfers.");
                     ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_TEXT);
-
-                    // undo
-                    storage.DeleteDirectory(newVersionDate);
-                    storage.Dispose();
-
-                    dbClient.RollbackTransaction();
-
-                    // standby
-                    Win32Stuff.AllowSystemSleep();
-
+                    RollbackIncompleteVersion(dbClient, newVersionDate);
                     ReportState(JobState.CANCELED);
                     return;
                 }
@@ -334,19 +310,9 @@ public class BackupJob : Job
                 // can we still write to device?
                 if (!storage.CanWriteToStorage())
                 {
-                    // report progress
                     _logger.Error("Cannot write to backup device. Rollback all transfers.");
                     ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_ERROR);
-
-                    // undo
-                    storage.DeleteDirectory(newVersionDate);
-                    storage.Dispose();
-
-                    dbClient.RollbackTransaction();
-
-                    // standby
-                    Win32Stuff.AllowSystemSleep();
-
+                    RollbackIncompleteVersion(dbClient, newVersionDate);
                     ReportExceptions(FileErrorList);
                     ReportState(JobState.ERROR);
                     return;
@@ -414,6 +380,31 @@ public class BackupJob : Job
         ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
 
         _logger.Information("Backup job finished.");
+    }
+
+    private async Task AbortForInsufficientDiskSpaceAsync(
+        DbClient dbClient,
+        string versionDate,
+        long estimatedBytes,
+        long freeSpaceBytes)
+    {
+        _logger.Error(
+            "Insufficient free space on backup device before copy. Estimated need ~{estimatedBytes} bytes, available {freeSpaceBytes} bytes. Aborting.",
+            estimatedBytes,
+            freeSpaceBytes);
+
+        ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_ERROR);
+        await RequestShowErrorInsufficientDiskSpaceAsync();
+        RollbackIncompleteVersion(dbClient, versionDate);
+        ReportState(JobState.ERROR);
+    }
+
+    private void RollbackIncompleteVersion(DbClient dbClient, string versionDate)
+    {
+        storage.DeleteDirectory(versionDate);
+        storage.Dispose();
+        dbClient.RollbackTransaction();
+        Win32Stuff.AllowSystemSleep();
     }
 
     private async Task ProcessEmptyFolders(DbClient dbClient, long newVersionId, List<FolderTableRow> emptyFolder)

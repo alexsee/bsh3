@@ -1,7 +1,6 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Collections.Generic;
 using Brightbits.BSH.Engine.Utils;
 using NUnit.Framework;
 
@@ -38,6 +37,14 @@ public class DiskSpacePreflightTests
     }
 
     [Test]
+    public void EstimateRequiredBytes_TreatsNegativeSlackAsZero()
+    {
+        var estimate = DiskSpacePreflight.EstimateRequiredBytes(new[] { 100d }, slackBytes: -5);
+
+        Assert.That(estimate, Is.EqualTo(100));
+    }
+
+    [Test]
     public void IsClearlyInsufficient_ReturnsFalse_WhenFreeSpaceUnknown()
     {
         Assert.That(DiskSpacePreflight.IsClearlyInsufficient(0, estimatedRequiredBytes: 1_000_000), Is.False);
@@ -56,26 +63,5 @@ public class DiskSpacePreflightTests
     {
         Assert.That(DiskSpacePreflight.IsClearlyInsufficient(4_999, estimatedRequiredBytes: 5_000), Is.True);
         Assert.That(DiskSpacePreflight.IsClearlyInsufficient(100, estimatedRequiredBytes: 1_000_000), Is.True);
-    }
-
-    [Test]
-    public void ShouldAbortBackup_CombinesEstimateAndFreeSpaceCheck()
-    {
-        var fileSizes = new List<double> { 8_000, 2_000 };
-
-        Assert.That(
-            DiskSpacePreflight.ShouldAbortBackup(freeSpaceBytes: 0, fileSizes, slackBytes: 100),
-            Is.False,
-            "Unknown free space must soft-skip");
-
-        Assert.That(
-            DiskSpacePreflight.ShouldAbortBackup(freeSpaceBytes: 50_000, fileSizes, slackBytes: 100),
-            Is.False,
-            "Enough free space must allow backup");
-
-        Assert.That(
-            DiskSpacePreflight.ShouldAbortBackup(freeSpaceBytes: 5_000, fileSizes, slackBytes: 100),
-            Is.True,
-            "Clearly insufficient free space must abort");
     }
 }
