@@ -23,7 +23,7 @@ public class ScheduledBackupService : IScheduledBackupService
     private readonly ISchedulerAdapterFactory schedulerAdapterFactory;
     private readonly ScheduleSettingsService scheduleSettingsService;
 
-    private ISchedulerAdapter schedulerService;
+    private ISchedulerAdapter? schedulerService;
 
     public ScheduledBackupService(
         IConfigurationManager configurationManager,

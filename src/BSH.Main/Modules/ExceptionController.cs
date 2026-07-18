@@ -21,7 +21,7 @@ static class ExceptionController
 
     private static void ShowFatalError(Exception exception)
     {
-        Log.Error(exception, "An unexpected error occurred {msg}.", exception.Message + "\r\n" + exception.StackTrace);
+        Log.Error(exception, "An unexpected error occurred {Msg}.", exception.Message + "\r\n" + exception.StackTrace);
 
         using var dlgException = new frmError();
         dlgException.txtError.Text = exception.Message + "\r\n" + exception.StackTrace;

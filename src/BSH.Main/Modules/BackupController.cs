@@ -119,7 +119,7 @@ public class BackupController : IDisposable
     /// <returns></returns>
     public async Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "")
     {
-        _logger.Debug("Backup task is started with title: {title}, description: {description}, statusDialog: {statusDialog}, fullBackup: {fullBackup}",
+        _logger.Debug("Backup task is started with title: {Title}, description: {Description}, statusDialog: {StatusDialog}, fullBackup: {FullBackup}",
             title, description, statusDialog, fullBackup);
 
         var result = await jobSessionRunner.RunSingleBackupAsync(title, description, presenter, statusDialog, fullBackup, sourceFolders);
@@ -148,7 +148,7 @@ public class BackupController : IDisposable
     /// <returns></returns>
     public async Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true)
     {
-        _logger.Debug("Restore task for version {version} and file \"{file}\" to \"{destination}\" started.",
+        _logger.Debug("Restore task for version {Version} and file \"{File}\" to \"{Destination}\" started.",
             version, file, destination);
 
         var result = await jobSessionRunner.RunSingleRestoreAsync(version, file, destination, presenter, statusDialog);
@@ -170,7 +170,7 @@ public class BackupController : IDisposable
     /// <returns></returns>
     public async Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true)
     {
-        _logger.Debug("Restore task for version {version} and {files} files to \"{destination}\" started.",
+        _logger.Debug("Restore task for version {Version} and {Files} files to \"{Destination}\" started.",
             version, files.Count, destination);
 
         var result = await jobSessionRunner.RunBatchRestoreAsync(version, files, destination, presenter, statusDialog);
@@ -190,7 +190,7 @@ public class BackupController : IDisposable
     /// <returns></returns>
     public async Task DeleteBackupAsync(string version, bool statusDialog = true)
     {
-        _logger.Debug("Delete task started for version {version}.", version);
+        _logger.Debug("Delete task started for version {Version}.", version);
 
         var result = await jobSessionRunner.RunSingleDeleteAsync(version, presenter, statusDialog);
         if (!await HandleSessionStartAsync(result, "delete", statusDialog))
@@ -209,7 +209,7 @@ public class BackupController : IDisposable
     /// <returns></returns>
     public async Task DeleteBackupsAsync(List<string> versions, bool statusDialog = true)
     {
-        _logger.Debug("Delete task started for {versions} versions.", versions.Count);
+        _logger.Debug("Delete task started for {Versions} versions.", versions.Count);
 
         var result = await jobSessionRunner.RunBatchDeleteAsync(versions, presenter, statusDialog);
         if (!await HandleSessionStartAsync(result, "delete", statusDialog))
@@ -295,13 +295,13 @@ public class BackupController : IDisposable
         switch (failure)
         {
             case JobSessionStartFailure.TaskRunning:
-                _logger.Error("Another task is running, so the {operationName} task will not be started.", operationName);
+                _logger.Error("Another task is running, so the {OperationName} task will not be started.", operationName);
                 break;
             case JobSessionStartFailure.DeviceNotReady:
-                _logger.Error("Device is not ready, so the {operationName} task will not be started.", operationName);
+                _logger.Error("Device is not ready, so the {OperationName} task will not be started.", operationName);
                 break;
             case JobSessionStartFailure.PasswordRequired:
-                _logger.Error("Password request was cancelled, so the {operationName} task will not be started.", operationName);
+                _logger.Error("Password request was cancelled, so the {OperationName} task will not be started.", operationName);
                 break;
         }
     }

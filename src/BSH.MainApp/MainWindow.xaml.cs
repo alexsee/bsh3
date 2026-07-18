@@ -37,7 +37,7 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
 
         foreach (var item in ViewModel.NavigationItems)
         {
-            if (pageService.GetPageType(item.Tag.ToString()) == ContentArea.Content?.GetType())
+            if (pageService.GetPageType(item.Tag?.ToString() ?? string.Empty) == ContentArea.Content?.GetType())
             {
                 ViewModel.CurrentPage = item;
                 return;

@@ -126,7 +126,7 @@ public sealed class JobRuntime : IDisposable
 
     public async Task<bool> CheckMediaAsync(ActionType action, bool silent = false)
     {
-        _logger.Debug("Media check requested by task {action}.", action);
+        _logger.Debug("Media check requested by task {Action}.", action);
 
         CancellationTokenSource cts;
         lock (cancellationTokenSync)

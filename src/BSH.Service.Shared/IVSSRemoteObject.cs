@@ -9,6 +9,6 @@ namespace BSH.Service.Shared
     {
         bool CopyFileWithVSS(string vssServiceFolder, string source, string destination);
 
-        Exception GetException();
+        Exception? GetException();
     }
 }

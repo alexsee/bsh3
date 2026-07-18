@@ -585,7 +585,7 @@ public class ConfigurationManager : IConfigurationManager
         showWaitOnMediaAutoBackups = "0";
     }
 
-    private async Task<object> LoadConfigurationValueAsync(DbClient dbClient, string propertyName)
+    private static async Task<object> LoadConfigurationValueAsync(DbClient dbClient, string propertyName)
     {
         var parameters = new (string, object)[]
         {

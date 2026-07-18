@@ -119,7 +119,7 @@ public class EditJob : Job
                             FileName = reader.GetString("fileName")
                         }, ex);
 
-                        _logger.Error(ex.InnerException, "File {fileName} could not be edited. {exception}", remoteFilePath, fileExceptionEntry);
+                        _logger.Error(ex.InnerException, "File {FileName} could not be edited. {Exception}", remoteFilePath, fileExceptionEntry);
                     }
                 }
 

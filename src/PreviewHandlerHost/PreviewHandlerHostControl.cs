@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using C4F.DevKit.PreviewHandler.PreviewHandlerFramework;
 
@@ -76,6 +77,7 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
             }
             catch
             {
+                // Unload can fail if the COM preview handler is already torn down.
             }
         }
 
@@ -104,15 +106,12 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
             RegistrationData data = PreviewHandlerRegistryAccessor.LoadRegistrationInformation();
             PreviewHandlerInfo handler = null;
 
-            foreach (ExtensionInfo ei in data.Extensions)
+            foreach (ExtensionInfo ei in data.Extensions.Where(ei => _filePath.ToUpper().EndsWith(ei.Extension.ToUpper())))
             {
-                if (_filePath.ToUpper().EndsWith(ei.Extension.ToUpper()))
+                handler = ei.Handler;
+                if (handler != null)
                 {
-                    handler = ei.Handler;
-                    if (handler != null)
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
             if (handler == null)
@@ -130,9 +129,9 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
                 _comInstance = Activator.CreateInstance(comType);
 
                 // Check if it is a stream or file handler
-                if (_comInstance is IInitializeWithFile)
+                if (_comInstance is IInitializeWithFile fileInitializer)
                 {
-                    ((IInitializeWithFile)_comInstance).Initialize(_filePath, 0);
+                    fileInitializer.Initialize(_filePath, 0);
                 }
                 else if (_comInstance is IInitializeWithStream)
                 {
@@ -143,7 +142,7 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
                     }
                     else
                     {
-                        throw new Exception("File not found");
+                        throw new FileNotFoundException("File not found", _filePath);
                     }
                 }
                 ((IPreviewHandler)_comInstance).SetWindow(this.Handle, ref r);

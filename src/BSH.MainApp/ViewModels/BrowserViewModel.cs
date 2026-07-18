@@ -401,7 +401,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         var (result, viewModel) = await presentationService.ShowEditBackupWindowAsync(existingBackupViewModel);
         if (result)
         {
-            await backupService.UpdateVersionAsync(CurrentVersion.Id, new VersionDetails { Title = viewModel.Title, Description = viewModel.Description });
+            await backupService.UpdateVersionAsync(CurrentVersion!.Id, new VersionDetails { Title = viewModel.Title, Description = viewModel.Description });
             await Refresh();
         }
     }

@@ -91,7 +91,7 @@ public class FileSystemStorage : Storage, IStorageProvider
 
     private async Task<bool> TryFindMovedMediumAsync()
     {
-        _logger.Information("Medium directory {directoryName} not found; searching for device with corresponding serial number.", backupFolder);
+        _logger.Information("Medium directory {DirectoryName} not found; searching for device with corresponding serial number.", backupFolder);
 
         if (string.IsNullOrEmpty(volumeSerialNumber))
         {
@@ -129,7 +129,7 @@ public class FileSystemStorage : Storage, IStorageProvider
                 return false;
             }
 
-            _logger.Information("Drive letter updated with the serial number {volumeSerialNumber} at {driveLetter}.",
+            _logger.Information("Drive letter updated with the serial number {VolumeSerialNumber} at {DriveLetter}.",
                 volumeSerialNumber, drive.RootDirectory.FullName);
 
             var newBackupFolder = drive.RootDirectory.FullName[..1] + configurationManager.BackupFolder[1..];

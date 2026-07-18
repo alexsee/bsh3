@@ -12,7 +12,7 @@ public partial class RequestFileOverwriteViewModel : ObservableObject
     public TaskCompletionSource<RequestOverwriteResult> TaskCompletionSource { get; } = new TaskCompletionSource<RequestOverwriteResult>();
 
     [ObservableProperty]
-    private string fileName;
+    private string fileName = string.Empty;
 
     [ObservableProperty]
     private double destinationFileSize;
