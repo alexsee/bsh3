@@ -1,12 +1,11 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Security.Cryptography;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Services;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
@@ -91,7 +90,7 @@ public class SetupService : ISetupService
                 ApplyLocalTarget(configuration.LocalBackupFolder, configuration.MediaVolumeSerial, createFolder: true);
                 break;
             case SetupTargetKind.Unc:
-                ApplyUncTarget(configuration.UncPath, configuration.UncUsername, configuration.UncPassword);
+                MediaTargetApplier.ApplyUncTarget(configurationManager, configuration.UncPath, configuration.UncUsername, configuration.UncPassword);
                 break;
             case SetupTargetKind.Ftp:
                 ApplyFtpTarget(configuration);
@@ -275,32 +274,6 @@ public class SetupService : ISetupService
             : mediaVolumeSerial;
         configurationManager.UNCUsername = "";
         configurationManager.UNCPassword = "";
-    }
-
-    private void ApplyUncTarget(string? uncPath, string? username, string? password)
-    {
-        if (string.IsNullOrWhiteSpace(uncPath))
-        {
-            throw new ArgumentException("UNC path is required.", nameof(uncPath));
-        }
-
-        var normalized = uncPath.Replace("//", @"\", StringComparison.Ordinal);
-        configurationManager.MediumType = MediaType.LocalDevice;
-        configurationManager.BackupFolder = normalized;
-        configurationManager.MediaVolumeSerial = "";
-
-        if (normalized.StartsWith(@"\\", StringComparison.Ordinal))
-        {
-            configurationManager.UNCUsername = username ?? "";
-            configurationManager.UNCPassword = string.IsNullOrEmpty(password)
-                ? ""
-                : Crypto.EncryptString(password, DataProtectionScope.LocalMachine);
-        }
-        else
-        {
-            configurationManager.UNCUsername = "";
-            configurationManager.UNCPassword = "";
-        }
     }
 
     private void ApplyFtpTarget(NewSetupConfiguration configuration)

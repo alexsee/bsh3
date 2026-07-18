@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Controls.UI;
 using BSH.Main.Properties;
@@ -682,6 +683,17 @@ public partial class ucConfig : IMainTabs
                 {
                     BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
                 }
+
+                BackupLogic.ConfigurationManager.UNCUsername = "";
+                BackupLogic.ConfigurationManager.UNCPassword = "";
+            }
+            else if (dlgChangeMedia.IsUncSelected)
+            {
+                MediaTargetApplier.ApplyUncTarget(
+                    BackupLogic.ConfigurationManager,
+                    dlgChangeMedia.UncPath,
+                    dlgChangeMedia.UncUsername,
+                    dlgChangeMedia.UncPassword);
             }
             else
             {

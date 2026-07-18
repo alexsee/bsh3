@@ -10,6 +10,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Services;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Storage;
@@ -97,13 +98,18 @@ public class FileSystemStorage : Storage, IStorage
             return false;
         }
 
-        var volumeSerial = Win32Stuff.GetVolumeSerial(backupFolder[..3]);
-        StoreSerialNumberIfMissing(volumeSerial);
-
-        if (HasSerialMismatch(volumeSerial))
+        // UNC paths have no meaningful drive-letter volume serial; [..3] would be wrong (e.g. "\\s").
+        var serialRoot = MediaTargetApplier.GetVolumeSerialRoot(backupFolder);
+        if (serialRoot is not null)
         {
-            _logger.Information("Storage device serial number is not equal to the stored id. We are not sure if that is the same device.");
-            return false;
+            var volumeSerial = Win32Stuff.GetVolumeSerial(serialRoot);
+            StoreSerialNumberIfMissing(volumeSerial);
+
+            if (HasSerialMismatch(volumeSerial))
+            {
+                _logger.Information("Storage device serial number is not equal to the stored id. We are not sure if that is the same device.");
+                return false;
+            }
         }
 
         return await IsValidStorage();

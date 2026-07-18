@@ -410,6 +410,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
         if (folderPath.StartsWith(@"\\", StringComparison.Ordinal))
         {
+            this.configurationManager.MediaVolumeSerial = "";
             return;
         }
 
