@@ -226,6 +226,17 @@ public class ConfigurationManager : IConfigurationManager
         }
     }
 
+    private string includeSystemFolders = "0";
+
+    public string IncludeSystemFolders
+    {
+        get => includeSystemFolders;
+        set
+        {
+            includeSystemFolders = value; SaveProperty(nameof(IncludeSystemFolders), value);
+        }
+    }
+
     private string freeSpace = "0";
 
     public string FreeSpace
@@ -546,6 +557,7 @@ public class ConfigurationManager : IConfigurationManager
         excludeFileBigger = "";
         excludeMask = "";
         excludeFile = "";
+        includeSystemFolders = "0";
         freeSpace = "0";
         remindSpace = "-1";
         doPastBackups = "0";

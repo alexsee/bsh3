@@ -36,6 +36,7 @@ namespace Brightbits.BSH.Main
             lstExcludeFolders = new ListBox();
             cmdDeleteFolders = new Button();
             cmdAddFolders = new Button();
+            chkIncludeSystemFolders = new CheckBox();
             cmdDeleteFile = new Button();
             cmdAddFile = new Button();
             lstExcludeFiles = new ListBox();
@@ -134,6 +135,12 @@ namespace Brightbits.BSH.Main
             cmdAddFolders.UseVisualStyleBackColor = true;
             cmdAddFolders.Click += cmdAddFolders_Click;
             // 
+            // chkIncludeSystemFolders
+            // 
+            resources.ApplyResources(chkIncludeSystemFolders, "chkIncludeSystemFolders");
+            chkIncludeSystemFolders.Name = "chkIncludeSystemFolders";
+            chkIncludeSystemFolders.UseVisualStyleBackColor = true;
+            // 
             // cmdDeleteFile
             // 
             resources.ApplyResources(cmdDeleteFile, "cmdDeleteFile");
@@ -184,7 +191,8 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(TableLayoutPanel1, "TableLayoutPanel1");
             TableLayoutPanel1.Controls.Add(lstExcludeFolders, 0, 0);
-            TableLayoutPanel1.Controls.Add(FlowLayoutPanel1, 0, 1);
+            TableLayoutPanel1.Controls.Add(chkIncludeSystemFolders, 0, 1);
+            TableLayoutPanel1.Controls.Add(FlowLayoutPanel1, 0, 2);
             TableLayoutPanel1.Name = "TableLayoutPanel1";
             // 
             // FlowLayoutPanel1
@@ -324,6 +332,7 @@ namespace Brightbits.BSH.Main
             TabControl1.ResumeLayout(false);
             TabPage1.ResumeLayout(false);
             TableLayoutPanel1.ResumeLayout(false);
+            TableLayoutPanel1.PerformLayout();
             FlowLayoutPanel1.ResumeLayout(false);
             TabPage2.ResumeLayout(false);
             TableLayoutPanel2.ResumeLayout(false);
@@ -347,6 +356,7 @@ namespace Brightbits.BSH.Main
         internal ListBox lstExcludeFolders;
         internal Button cmdDeleteFolders;
         internal Button cmdAddFolders;
+        internal CheckBox chkIncludeSystemFolders;
         internal Button cmdDeleteFile;
         internal Button cmdAddFile;
         internal ListBox lstExcludeFiles;
