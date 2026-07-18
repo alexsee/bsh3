@@ -134,7 +134,7 @@ public class DeleteTests
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filetable")), Is.EqualTo(0));
     }
 
-    private DeleteJob CreateDeleteJob(IStorage storage, string version)
+    private DeleteJob CreateDeleteJob(IStorageProvider storage, string version)
     {
         return new DeleteJob(
             storage,
@@ -148,7 +148,7 @@ public class DeleteTests
         };
     }
 
-    private DeleteSingleJob CreateDeleteSingleJob(IStorage storage)
+    private DeleteSingleJob CreateDeleteSingleJob(IStorageProvider storage)
     {
         return new DeleteSingleJob(
             storage,
@@ -183,7 +183,7 @@ public class DeleteTests
             $"INSERT INTO filelink (fileversionID, versionID) VALUES ({fileVersionId}, {versionId})");
     }
 
-    private sealed class RecordingDeleteStorage : IStorage
+    private sealed class RecordingDeleteStorage : IStorageProvider
     {
         private readonly bool failCheckMedium;
         private readonly bool throwOnDelete;

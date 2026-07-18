@@ -21,7 +21,7 @@ using Serilog.Extensions.Logging;
 
 namespace Brightbits.BSH.Engine.Storage;
 
-public class FtpStorage : Storage, IStorage
+public class FtpStorage : Storage, IStorageProvider
 {
     private static readonly ILogger _logger = Log.ForContext<FtpStorage>();
 

@@ -105,7 +105,7 @@ public class MaskFileExclusion(IConfigurationManager configurationManager) : IFi
 
         try
         {
-            _regexExcludeCache ??= new Regex(configurationManager.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline, TimeSpan.FromSeconds(10));
+            _regexExcludeCache ??= new Regex(configurationManager.ExcludeMask, RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(10));
 
             if (_regexExcludeCache.IsMatch(file.FileNamePath()))
             {
