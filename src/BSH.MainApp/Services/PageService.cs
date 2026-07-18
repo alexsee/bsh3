@@ -20,6 +20,7 @@ public class PageService : IPageService
         Configure<MainViewModel, MainPage>();
         Configure<BrowserViewModel, BrowserPage>();
         Configure<SettingsViewModel, SettingsPage>();
+        Configure<SetupViewModel, SetupPage>();
     }
 
     public Type GetPageType(string key)

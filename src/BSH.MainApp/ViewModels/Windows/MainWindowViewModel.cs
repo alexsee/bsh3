@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.ObjectModel;
-using System.Collections.Generic;
 using BSH.MainApp.Contracts.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -27,7 +26,10 @@ public partial class MainWindowViewModel : ObservableObject
         public const string ResetConfiguration = "Support.ResetConfiguration";
     }
 
-    public static IReadOnlyList<string> SupportActionTags { get; } =
+    public static IReadOnlyList<string> SupportActionTags
+    {
+        get;
+    } =
     [
         SupportActionKeys.About,
         SupportActionKeys.Help,
