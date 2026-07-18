@@ -256,19 +256,7 @@ public partial class frmMain
 
     private void BackupServiceHome3BeendenToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        NotificationController.Current.Shutdown();
-        BackupLogic.StopSystem();
-
-        PresentationController.Current.CloseBackupBrowserWindow();
-
-        try
-        {
-            Application.Exit();
-        }
-        catch
-        {
-            Environment.Exit(0);
-        }
+        AppLifecycle.Exit();
     }
 
     private void HilfeUndSupportToolStripMenuItem_Click(object sender, EventArgs e)

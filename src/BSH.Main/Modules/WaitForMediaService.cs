@@ -3,22 +3,19 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts.Services;
 
 namespace Brightbits.BSH.Main;
 
 public class WaitForMediaService
 {
-    private const int THREAD_SLEEP_SECONDS = 5000;
+    private const int PollIntervalMilliseconds = 5000;
 
-    private const int MAX_WAITING_SECONDS = 300000;
+    private const int MaxWaitingMilliseconds = 300000;
 
     private readonly IBackupService backupService;
 
     private readonly bool silent;
-
-    private readonly ActionType action;
 
     private readonly CancellationTokenSource cancellationTokenSource;
 
@@ -26,11 +23,10 @@ public class WaitForMediaService
 
     private long currentWaitingTime = 0L;
 
-    public WaitForMediaService(IBackupService backupService, bool silent, ActionType action, CancellationTokenSource cancellationTokenSource)
+    public WaitForMediaService(IBackupService backupService, bool silent, CancellationTokenSource cancellationTokenSource)
     {
         this.backupService = backupService;
         this.silent = silent;
-        this.action = action;
         this.cancellationTokenSource = cancellationTokenSource;
     }
 
@@ -56,10 +52,10 @@ public class WaitForMediaService
 
                     try
                     {
-                        await Task.Delay(THREAD_SLEEP_SECONDS);
-                        currentWaitingTime += THREAD_SLEEP_SECONDS;
+                        await Task.Delay(PollIntervalMilliseconds);
+                        currentWaitingTime += PollIntervalMilliseconds;
 
-                        if (silent && currentWaitingTime > MAX_WAITING_SECONDS)
+                        if (silent && currentWaitingTime > MaxWaitingMilliseconds)
                         {
                             break;
                         }

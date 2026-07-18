@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
@@ -27,8 +26,6 @@ namespace Brightbits.BSH.Main;
 public class BackupController : IDisposable
 {
     private readonly ILogger _logger = Log.ForContext<BackupController>();
-
-    private readonly IBackupService backupService;
 
     private readonly IConfigurationManager configurationManager;
 
@@ -60,7 +57,6 @@ public class BackupController : IDisposable
         ArgumentNullException.ThrowIfNull(waitForMediaAsync);
         ArgumentNullException.ThrowIfNull(requestPasswordAsync);
 
-        this.backupService = backupService;
         this.configurationManager = configurationManager;
         this.jobRuntime = new JobRuntime(
             backupService,
@@ -68,7 +64,7 @@ public class BackupController : IDisposable
             () => this.configurationManager.Medium == "1",
             waitForMediaAsync,
             requestPasswordAsync);
-        this.presenter = new WinFormsJobSessionPresenter(backupService, configurationManager);
+        this.presenter = new WinFormsJobSessionPresenter();
         IStoredPasswordAdapter storedPasswordAdapter = new WinFormsStoredPasswordAdapter();
         this.jobSessionRunner = new JobSessionRunner(
             backupService,
@@ -136,17 +132,7 @@ public class BackupController : IDisposable
 
         if (shutdownApp)
         {
-            NotificationController.Current.Shutdown();
-            BackupLogic.StopSystem();
-            try
-            {
-                Application.Exit();
-                Environment.Exit(0);
-            }
-            catch
-            {
-                Environment.Exit(0);
-            }
+            AppLifecycle.Exit(closeWindows: false);
         }
 
         return !result.Canceled;
@@ -289,7 +275,7 @@ public class BackupController : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private async Task<bool> HandleSessionStartAsync(SingleBackupSessionResult result, string operationName, bool statusDialog)
+    private async Task<bool> HandleSessionStartAsync(JobSessionResult result, string operationName, bool statusDialog)
     {
         if (result.Started)
         {

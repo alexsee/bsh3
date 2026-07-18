@@ -400,7 +400,7 @@ public class JobSessionRunnerTests
         public Task SetStableAsync(string version, bool stable) => Task.CompletedTask;
         public Task UpdateVersionAsync(string version, VersionDetails versionDetails) => Task.CompletedTask;
 
-        public Task StartBackup(string title, string description, ref IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false)
+        public Task StartBackup(string title, string description, IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false)
         {
             StartBackupCalls++;
             LastTitle = title;
@@ -411,7 +411,7 @@ public class JobSessionRunnerTests
             return OnStartBackup?.Invoke(jobReport, cancellationToken) ?? Task.CompletedTask;
         }
 
-        public Task StartDelete(string version, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
+        public Task StartDelete(string version, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
         {
             StartDeleteCalls++;
             LastVersion = version;
@@ -424,7 +424,7 @@ public class JobSessionRunnerTests
             return OnStartDelete?.Invoke(jobReport, cancellationToken) ?? Task.CompletedTask;
         }
 
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
+        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
         {
             StartDeleteSingleCalls++;
             LastFileFilter = fileFilter;
@@ -433,14 +433,14 @@ public class JobSessionRunnerTests
             return Task.CompletedTask;
         }
 
-        public Task StartEdit(ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
+        public Task StartEdit(IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
         {
             StartEditCalls++;
             LastSilent = silent;
             return Task.CompletedTask;
         }
 
-        public Task StartRestore(string version, string file, string destination, ref IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false)
+        public Task StartRestore(string version, string file, string destination, IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false)
         {
             StartRestoreCalls++;
             LastVersion = version;

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -244,6 +245,45 @@ public abstract class Job
         catch
         {
             // ignore exception
+        }
+    }
+
+    /// <summary>
+    /// Deletes a single file from the backup device via the storage provider.
+    /// </summary>
+    /// <exception cref="FileNotProcessedException"></exception>
+    protected void DeleteFileFromDevice(string fileName, string filePath, string longFileName, string versionDate, string fileType)
+    {
+        // determine remote file name
+        string remoteFile;
+        if ((fileType == "1" || fileType == "2" || fileType == "6") && !string.IsNullOrEmpty(longFileName))
+        {
+            remoteFile = Path.Combine(versionDate, "_LONGFILES_", longFileName);
+        }
+        else
+        {
+            remoteFile = Path.Combine(versionDate + filePath, fileName);
+        }
+
+        // delete file
+        try
+        {
+            if (fileType == "1" || fileType == "3")
+            {
+                storage.DeleteFileFromStorage(remoteFile);
+            }
+            else if (fileType == "2" || fileType == "4")
+            {
+                storage.DeleteFileFromStorageCompressed(remoteFile);
+            }
+            else if (fileType == "5" || fileType == "6")
+            {
+                storage.DeleteFileFromStorageEncrypted(remoteFile);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new FileNotProcessedException(ex);
         }
     }
 
