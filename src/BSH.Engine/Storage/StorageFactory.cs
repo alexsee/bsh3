@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Providers.Ports;
@@ -19,11 +18,11 @@ public class StorageFactory : IStorageFactory
 
     public IStorageProvider GetCurrentStorageProvider()
     {
-        if (configurationManager.MediumType != MediaType.FileTransferServer)
+        return configurationManager.MediumType switch
         {
-            return new FileSystemStorage(configurationManager);
-        }
-
-        return new FtpStorage(configurationManager);
+            MediaType.FileTransferServer => new FtpStorage(configurationManager),
+            MediaType.WebDav => new WebDavStorage(configurationManager),
+            _ => new FileSystemStorage(configurationManager),
+        };
     }
 }
