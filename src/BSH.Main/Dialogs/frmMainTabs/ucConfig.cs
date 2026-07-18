@@ -114,28 +114,20 @@ public partial class ucConfig : IMainTabs
         }
         else
         {
-            // directory
-            BackupLogic.ConfigurationManager.MediumType = MediaType.LocalDevice;
-
-            // UNC authentication
-            if (txtBackupPath.Text.StartsWith(@"\\"))
+            if (MediaTargetApplier.IsUncPath(txtBackupPath.Text))
             {
-                BackupLogic.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
-                BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(txtUNCPassword.Text, System.Security.Cryptography.DataProtectionScope.LocalMachine);
-                BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
+                MediaTargetApplier.ApplyUncTarget(
+                    BackupLogic.ConfigurationManager,
+                    txtBackupPath.Text,
+                    txtUNCUsername.Text,
+                    txtUNCPassword.Text);
             }
             else
             {
-                BackupLogic.ConfigurationManager.UNCUsername = "";
-                BackupLogic.ConfigurationManager.UNCPassword = "";
-
-                // MedienID speichern
-                BackupLogic.ConfigurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(txtBackupPath.Text[..1] + @":\");
-                if (BackupLogic.ConfigurationManager.MediaVolumeSerial == null ||
-                    BackupLogic.ConfigurationManager.MediaVolumeSerial == "0")
-                {
-                    BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
-                }
+                MediaTargetApplier.ApplyLocalTarget(
+                    BackupLogic.ConfigurationManager,
+                    txtBackupPath.Text,
+                    MediaTargetApplier.ResolveVolumeSerial(txtBackupPath.Text));
             }
         }
 
@@ -268,7 +260,7 @@ public partial class ucConfig : IMainTabs
         }
 
         // UNC authentication
-        if (txtBackupPath.Text.StartsWith('\\'))
+        if (MediaTargetApplier.IsUncPath(txtBackupPath.Text))
         {
             txtUNCUsername.Text = configurationManager.UNCUsername;
             txtUNCPassword.Text = Crypto.DecryptString(configurationManager.UNCPassword, System.Security.Cryptography.DataProtectionScope.LocalMachine);
@@ -667,44 +659,39 @@ public partial class ucConfig : IMainTabs
 
         using (var dlgChangeMedia = new frmChangeMedia())
         {
-            if (dlgChangeMedia.ShowDialog() != DialogResult.OK)
+            if (dlgChangeMedia.ShowDialog() != DialogResult.OK || dlgChangeMedia.Result is not { } media)
             {
                 dlgStatus.Close();
                 return;
             }
 
-            if (dlgChangeMedia.cboMedia.SelectedIndex == 0)
+            switch (media.Kind)
             {
-                // directory
-                BackupLogic.ConfigurationManager.MediumType = MediaType.LocalDevice;
-                BackupLogic.ConfigurationManager.BackupFolder = Convert.ToString(dlgChangeMedia.lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName;
-                BackupLogic.ConfigurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(BackupLogic.ConfigurationManager.BackupFolder[..1] + @":\");
-                if (BackupLogic.ConfigurationManager.MediaVolumeSerial == "0")
-                {
-                    BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
-                }
+                case ChangeMediaKind.LocalDevice:
+                    MediaTargetApplier.ApplyLocalTarget(
+                        BackupLogic.ConfigurationManager,
+                        media.LocalBackupFolder,
+                        MediaTargetApplier.ResolveVolumeSerial(media.LocalBackupFolder));
+                    break;
 
-                BackupLogic.ConfigurationManager.UNCUsername = "";
-                BackupLogic.ConfigurationManager.UNCPassword = "";
-            }
-            else if (dlgChangeMedia.IsUncSelected)
-            {
-                MediaTargetApplier.ApplyUncTarget(
-                    BackupLogic.ConfigurationManager,
-                    dlgChangeMedia.UncPath,
-                    dlgChangeMedia.UncUsername,
-                    dlgChangeMedia.UncPassword);
-            }
-            else
-            {
-                // FTP server
-                BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
-                BackupLogic.ConfigurationManager.FtpHost = dlgChangeMedia.txtFTPServer.Text;
-                BackupLogic.ConfigurationManager.FtpPort = dlgChangeMedia.txtFTPPort.Text;
-                BackupLogic.ConfigurationManager.FtpUser = dlgChangeMedia.txtFTPUsername.Text;
-                BackupLogic.ConfigurationManager.FtpPass = dlgChangeMedia.txtFTPPassword.Text;
-                BackupLogic.ConfigurationManager.FtpFolder = dlgChangeMedia.txtFTPPath.Text;
-                BackupLogic.ConfigurationManager.FtpCoding = Convert.ToString(dlgChangeMedia.cboFtpEncoding.SelectedItem);
+                case ChangeMediaKind.Unc:
+                    MediaTargetApplier.ApplyUncTarget(
+                        BackupLogic.ConfigurationManager,
+                        media.UncPath,
+                        media.UncUsername,
+                        media.UncPassword);
+                    break;
+
+                case ChangeMediaKind.Ftp:
+                    MediaTargetApplier.ApplyFtpTarget(
+                        BackupLogic.ConfigurationManager,
+                        media.FtpHost,
+                        media.FtpPort,
+                        media.FtpUsername,
+                        media.FtpPassword,
+                        media.FtpPath,
+                        media.FtpEncoding);
+                    break;
             }
         }
 
@@ -789,7 +776,7 @@ public partial class ucConfig : IMainTabs
 
     private void txtBackupPath_TextChanged(object sender, EventArgs e)
     {
-        plUNCAuthentication.Visible = txtBackupPath.Text.StartsWith(@"\\");
+        plUNCAuthentication.Visible = MediaTargetApplier.IsUncPath(txtBackupPath.Text);
     }
 
     private void lvSource_DragDrop(object sender, DragEventArgs e)

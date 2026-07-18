@@ -3,11 +3,10 @@
 
 using System;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Services;
+using BSH.Test.Fakes;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -81,6 +80,82 @@ public class MediaTargetApplierTests
             MediaTargetApplier.ApplyUncTarget(configuration, "   ", "user", "pass"));
     }
 
+    [Test]
+    public void ApplyUncTarget_ThrowsWhenPathIsNotUnc()
+    {
+        var configuration = new FakeConfigurationManager();
+
+        Assert.Throws<ArgumentException>(() =>
+            MediaTargetApplier.ApplyUncTarget(configuration, @"C:\Backups", "user", "pass"));
+    }
+
+    [Test]
+    public void ApplyLocalTarget_SetsFolderSerialAndClearsUncCredentials()
+    {
+        var configuration = new FakeConfigurationManager
+        {
+            MediumType = MediaType.FileTransferServer,
+            UNCUsername = "old-user",
+            UNCPassword = "old-password",
+            MediaVolumeSerial = "keep-me",
+        };
+
+        MediaTargetApplier.ApplyLocalTarget(configuration, @"D:\Backups\PC\User", "ABCDEF12");
+
+        Assert.That(configuration.MediumType, Is.EqualTo(MediaType.LocalDevice));
+        Assert.That(configuration.BackupFolder, Is.EqualTo(@"D:\Backups\PC\User"));
+        Assert.That(configuration.MediaVolumeSerial, Is.EqualTo("ABCDEF12"));
+        Assert.That(configuration.UNCUsername, Is.EqualTo(""));
+        Assert.That(configuration.UNCPassword, Is.EqualTo(""));
+    }
+
+    [Test]
+    public void ApplyLocalTarget_NormalizesZeroSerial()
+    {
+        var configuration = new FakeConfigurationManager();
+
+        MediaTargetApplier.ApplyLocalTarget(configuration, @"E:\Backups", "0");
+
+        Assert.That(configuration.MediaVolumeSerial, Is.EqualTo(""));
+    }
+
+    [Test]
+    public void ApplyFtpTarget_SetsFtpFieldsAndClearsLocalUncState()
+    {
+        var configuration = new FakeConfigurationManager
+        {
+            BackupFolder = @"C:\Backups",
+            MediaVolumeSerial = "123",
+            UNCUsername = "user",
+            UNCPassword = "pass",
+        };
+
+        MediaTargetApplier.ApplyFtpTarget(
+            configuration,
+            "ftp.example.com",
+            "2121",
+            "ftp-user",
+            "ftp-pass",
+            "/backups",
+            "UTF8",
+            encryptionMode: "0",
+            sslProtocols: "0");
+
+        Assert.That(configuration.MediumType, Is.EqualTo(MediaType.FileTransferServer));
+        Assert.That(configuration.BackupFolder, Is.EqualTo(""));
+        Assert.That(configuration.MediaVolumeSerial, Is.EqualTo(""));
+        Assert.That(configuration.UNCUsername, Is.EqualTo(""));
+        Assert.That(configuration.UNCPassword, Is.EqualTo(""));
+        Assert.That(configuration.FtpHost, Is.EqualTo("ftp.example.com"));
+        Assert.That(configuration.FtpPort, Is.EqualTo("2121"));
+        Assert.That(configuration.FtpUser, Is.EqualTo("ftp-user"));
+        Assert.That(configuration.FtpPass, Is.EqualTo("ftp-pass"));
+        Assert.That(configuration.FtpFolder, Is.EqualTo("/backups"));
+        Assert.That(configuration.FtpCoding, Is.EqualTo("UTF8"));
+        Assert.That(configuration.FtpEncryptionMode, Is.EqualTo("0"));
+        Assert.That(configuration.FtpSslProtocols, Is.EqualTo("0"));
+    }
+
     [TestCase(@"\\server\share\path", null)]
     [TestCase(@"C:\Backups\User", @"C:\")]
     [TestCase(@"D:\", @"D:\")]
@@ -90,53 +165,13 @@ public class MediaTargetApplierTests
         Assert.That(MediaTargetApplier.GetVolumeSerialRoot(path), Is.EqualTo(expected));
     }
 
-    private sealed class FakeConfigurationManager : IConfigurationManager
+    [Test]
+    public void BuildLocalBackupFolder_CombinesDriveRootMachineAndUser()
     {
-        public string AutoBackup { get; set; } = "";
-        public string BackupFolder { get; set; } = "";
-        public string BackupSize { get; set; } = "";
-        public int Compression { get; set; }
-        public string DbStatus { get; set; } = "";
-        public string DBVersion { get; set; } = "";
-        public string DeativateAutoBackupsWhenAkku { get; set; } = "";
-        public string DoPastBackups { get; set; } = "";
-        public int Encrypt { get; set; }
-        public string EncryptPassMD5 { get; set; } = "";
-        public string ExcludeCompression { get; set; } = "";
-        public string ExcludeFile { get; set; } = "";
-        public string ExcludeFileBigger { get; set; } = "";
-        public string ExcludeFileTypes { get; set; } = "";
-        public string ExcludeFolder { get; set; } = "";
-        public string ExcludeMask { get; set; } = "";
-        public string FreeSpace { get; set; } = "";
-        public string FtpCoding { get; set; } = "";
-        public string FtpEncryptionMode { get; set; } = "";
-        public string FtpFolder { get; set; } = "";
-        public string FtpHost { get; set; } = "";
-        public string FtpPass { get; set; } = "";
-        public string FtpPort { get; set; } = "";
-        public string FtpSslProtocols { get; set; } = "";
-        public string FtpUser { get; set; } = "";
-        public string InfoBackupDone { get; set; } = "";
-        public string IntervallAutoHourBackups { get; set; } = "";
-        public string IntervallDelete { get; set; } = "";
-        public string IsConfigured { get; set; } = "";
-        public string LastBackupDone { get; set; } = "";
-        public string LastVersionDate { get; set; } = "";
-        public string MediaVolumeSerial { get; set; } = "";
-        public string Medium { get; set; } = "";
-        public MediaType MediumType { get; set; }
-        public string OldBackupPrevent { get; set; } = "";
-        public string RemindAfterDays { get; set; } = "";
-        public string RemindSpace { get; set; } = "";
-        public string ScheduleFullBackup { get; set; } = "";
-        public string ShowLocalizedPath { get; set; } = "";
-        public string ShowWaitOnMediaAutoBackups { get; set; } = "";
-        public string SourceFolder { get; set; } = "";
-        public TaskType TaskType { get; set; }
-        public string UNCPassword { get; set; } = "";
-        public string UNCUsername { get; set; } = "";
+        var folder = MediaTargetApplier.BuildLocalBackupFolder(@"E:\");
 
-        public Task InitializeAsync() => Task.CompletedTask;
+        Assert.That(folder, Does.StartWith(@"E:\Backups\"));
+        Assert.That(folder, Does.Contain(Environment.MachineName));
+        Assert.That(folder, Does.EndWith(Environment.UserName).IgnoreCase);
     }
 }

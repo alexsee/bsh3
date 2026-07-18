@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
@@ -885,20 +886,7 @@ public partial class SetupViewModel : ObservableObject
 
     private static string ResolveVolumeSerial(string? driveRoot)
     {
-        if (string.IsNullOrWhiteSpace(driveRoot) || driveRoot.Length < 1)
-        {
-            return "";
-        }
-
-        try
-        {
-            var serial = Brightbits.BSH.Engine.Win32Stuff.GetVolumeSerial(driveRoot[..1] + @":\");
-            return string.IsNullOrEmpty(serial) || serial == "0" ? "" : serial;
-        }
-        catch
-        {
-            return "";
-        }
+        return MediaTargetApplier.ResolveVolumeSerial(driveRoot);
     }
 
     private async Task<string?> PickFolderAsync()

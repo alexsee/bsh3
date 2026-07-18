@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Main.Properties;
 
@@ -182,7 +183,15 @@ public partial class ucDoConfigure : IMainTabs
                 }
                 else
                 {
-                    txtUNCPath.Text = txtUNCPath.Text.Replace("//", @"\\");
+                    txtUNCPath.Text = txtUNCPath.Text.Replace('/', '\\');
+                    if (!MediaTargetApplier.IsUncPath(txtUNCPath.Text))
+                    {
+                        MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        iWizardStep -= 1;
+                        await ShowWizardStepAsync(iWizardStep);
+                        return;
+                    }
+
                     try
                     {
                         using var networkConnection = new NetworkConnection(txtUNCPath.Text, txtUNCUsername.Text, txtUNCPassword.Text);
@@ -240,45 +249,34 @@ public partial class ucDoConfigure : IMainTabs
                     if (tcSource.SelectedIndex == 0)
                     {
                         // directory
-                        configurationManager.MediumType = MediaType.LocalDevice;
-                        configurationManager.BackupFolder = Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName;
-                        configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(configurationManager.BackupFolder.Substring(0, 1) + @":\");
-                        if (configurationManager.MediaVolumeSerial == null || configurationManager.MediaVolumeSerial == "0")
-                        {
-                            configurationManager.MediaVolumeSerial = "";
-                        }
+                        var localFolder = Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName;
+                        MediaTargetApplier.ApplyLocalTarget(
+                            configurationManager,
+                            localFolder,
+                            MediaTargetApplier.ResolveVolumeSerial(localFolder));
                     }
                     else if (tcSource.SelectedIndex == 1)
                     {
                         // ftp server
-                        configurationManager.MediumType = MediaType.FileTransferServer;
-                        configurationManager.FtpHost = txtFTPServer.Text;
-                        configurationManager.FtpPort = txtFTPPort.Text;
-                        configurationManager.FtpUser = txtFTPUsername.Text;
-                        configurationManager.FtpPass = txtFTPPassword.Text;
-                        configurationManager.FtpFolder = txtFTPPath.Text;
-                        configurationManager.FtpCoding = Convert.ToString(cboFtpEncoding.SelectedItem);
-
-                        configurationManager.FtpEncryptionMode = chkFtpEncryption2.Checked ? "0" : "3";
-                        configurationManager.FtpSslProtocols = "0";
+                        MediaTargetApplier.ApplyFtpTarget(
+                            configurationManager,
+                            txtFTPServer.Text,
+                            txtFTPPort.Text,
+                            txtFTPUsername.Text,
+                            txtFTPPassword.Text,
+                            txtFTPPath.Text,
+                            Convert.ToString(cboFtpEncoding.SelectedItem),
+                            encryptionMode: chkFtpEncryption2.Checked ? "0" : "3",
+                            sslProtocols: "0");
                     }
                     else
                     {
                         // UNC directory
-                        configurationManager.MediumType = MediaType.LocalDevice;
-                        configurationManager.BackupFolder = txtUNCPath.Text;
-                        configurationManager.MediaVolumeSerial = "";
-
-                        if (txtUNCPath.Text.StartsWith(@"\\"))
-                        {
-                            BackupLogic.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
-                            BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(txtUNCPassword.Text, System.Security.Cryptography.DataProtectionScope.LocalMachine);
-                        }
-                        else
-                        {
-                            BackupLogic.ConfigurationManager.UNCUsername = "";
-                            BackupLogic.ConfigurationManager.UNCPassword = "";
-                        }
+                        MediaTargetApplier.ApplyUncTarget(
+                            configurationManager,
+                            txtUNCPath.Text,
+                            txtUNCUsername.Text,
+                            txtUNCPassword.Text);
                     }
 
                     var sourceFolders = string.Join("|", lvSourceFolders.Items.Cast<ListViewItem>().Select(x => x.Text));

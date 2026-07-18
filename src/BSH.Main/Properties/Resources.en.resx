@@ -240,6 +240,20 @@ FTP Server reported:</value>
   <data name="DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE" xml:space="preserve">
     <value>Success</value>
   </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Connection established successfully.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TEXT" xml:space="preserve">
+    <value>Invalid network path.
+
+Enter a UNC path in the form \\Server\Share.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TITLE" xml:space="preserve">
+    <value>Enter network path</value>
+  </data>
   <data name="DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT" xml:space="preserve">
     <value>No backup medium selected</value>
   </data>
