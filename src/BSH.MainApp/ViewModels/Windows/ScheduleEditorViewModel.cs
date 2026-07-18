@@ -16,7 +16,7 @@ public partial class ScheduleEditorViewModel : ObservableObject
 {
     private readonly ScheduleSettingsService scheduleSettingsService;
     private readonly IConfigurationManager configurationManager;
-    private readonly IScheduledBackupService scheduledBackupService;
+    private readonly IOrchestrationService orchestrationService;
 
     private ScheduleSettings settings = new();
 
@@ -144,11 +144,11 @@ public partial class ScheduleEditorViewModel : ObservableObject
     public ScheduleEditorViewModel(
         ScheduleSettingsService scheduleSettingsService,
         IConfigurationManager configurationManager,
-        IScheduledBackupService scheduledBackupService)
+        IOrchestrationService orchestrationService)
     {
         this.scheduleSettingsService = scheduleSettingsService;
         this.configurationManager = configurationManager;
-        this.scheduledBackupService = scheduledBackupService;
+        this.orchestrationService = orchestrationService;
     }
 
     public async Task InitializeAsync()
@@ -205,8 +205,7 @@ public partial class ScheduleEditorViewModel : ObservableObject
 
         if (configurationManager.TaskType == TaskType.Schedule)
         {
-            scheduledBackupService.Stop();
-            await scheduledBackupService.StartAsync();
+            await orchestrationService.RefreshAutomationAsync();
         }
 
         TaskCompletionSource.TrySetResult(true);

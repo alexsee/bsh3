@@ -106,6 +106,26 @@ public class OrchestrationService : IOrchestrationService
         statusService.SetSystemStatus(SystemStatus.DEACTIVATED);
     }
 
+    public async Task RefreshAutomationAsync()
+    {
+        if (configurationManager.DbStatus != "0")
+        {
+            return;
+        }
+
+        scheduledBackupService.Stop();
+        UpdatePowerStatusMonitoring();
+
+        if (ShouldPauseForBattery())
+        {
+            statusService.SetSystemStatus(SystemStatus.PAUSED_DUE_TO_BATTERY);
+            return;
+        }
+
+        statusService.SetSystemStatus(SystemStatus.ACTIVATED);
+        await scheduledBackupService.StartAsync();
+    }
+
     private void CheckForLastException()
     {
         if (!string.IsNullOrEmpty(configurationManager.LastVersionDate))
@@ -150,9 +170,15 @@ public class OrchestrationService : IOrchestrationService
             return;
         }
 
+        if (configurationManager.DbStatus != "0")
+        {
+            return;
+        }
+
         if (powerStatusService.IsRunningOnBattery)
         {
-            await StopAsync();
+            scheduledBackupService.Stop();
+            statusService.SetSystemStatus(SystemStatus.PAUSED_DUE_TO_BATTERY);
         }
         else
         {
