@@ -153,6 +153,18 @@
           "C4F.DevKit.PreviewHandler.PreviewHandlerFramework": "[3.9.0.3, )"
         }
       }
+    },
+    "net10.0-windows7.0/win-x64": {
+      "Stub.System.Data.SQLite.Core.NetStandard": {
+        "type": "Transitive",
+        "resolved": "1.0.119",
+        "contentHash": "dI7ngiCNgdm+n00nQvFTa+LbHvE9MIQXwMSLRzJI/KAJ7G1WmCachsvfE1CD6xvb3OXJvYYEfv3+S/LHyhN0Rg=="
+      },
+      "System.Management": {
+        "type": "Transitive",
+        "resolved": "10.0.1",
+        "contentHash": "/mywt9LtfYM+QbnIPPqdES/qWWU3tkorSDHPX99KYhCTtxdjGFmLcz7QwpAAeBKU0o+rZzEcpKZlrtEr1Xq39g=="
+      }
     }
   }
 }
