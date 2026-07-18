@@ -102,6 +102,15 @@ public partial class App : Application
             services.AddSingleton<ICompletionActionService, CompletionActionService>();
             services.AddSingleton<IJobService, JobService>();
             services.AddSingleton<IPresentationService, PresentationService>();
+            services.AddSingleton<IStartupLaunchAdapter, RegistryStartupLaunchAdapter>();
+            services.AddSingleton<IUpdateCheckAdapter, AutoUpdaterUpdateCheckAdapter>();
+            services.AddSingleton<IAppExtrasService>(sp => new AppExtrasService(
+                sp.GetRequiredService<ILocalSettingsService>(),
+                sp.GetRequiredService<IOrchestrationService>(),
+                sp.GetRequiredService<IStartupLaunchAdapter>(),
+                sp.GetRequiredService<IUpdateCheckAdapter>(),
+                () => Environment.ProcessPath ?? AppContext.BaseDirectory,
+                ExitApplication));
             services.AddSingleton<ISetupService, SetupService>();
             services.AddSingleton<SetupRouting>();
 
@@ -174,7 +183,39 @@ public partial class App : Application
 
         InitializeTrayIcon();
 
+        await ConfigureUpdaterAsync();
+        await App.GetService<IAppExtrasService>().MaybeCheckForUpdatesOnStartupAsync();
+
         await App.GetService<IActivationService>().ActivateAsync(args);
+    }
+
+    private static async Task ConfigureUpdaterAsync()
+    {
+        try
+        {
+            var appExtrasService = App.GetService<IAppExtrasService>();
+            var uniqueUserId = await appExtrasService.GetOrCreateUniqueUserIdAsync();
+            AutoUpdaterDotNET.AutoUpdater.HttpUserAgent =
+                $"Backup Service Home/{AppExtrasService.GetApplicationVersion()} {uniqueUserId}";
+            AutoUpdaterDotNET.AutoUpdater.TopMost = true;
+            AutoUpdaterDotNET.AutoUpdater.ApplicationExitEvent += OnAutoUpdaterApplicationExit;
+        }
+        catch
+        {
+            // Update configuration is best-effort.
+        }
+    }
+
+    private static void OnAutoUpdaterApplicationExit()
+    {
+        try
+        {
+            App.GetService<IAppExtrasService>().ExitApplicationAsync().GetAwaiter().GetResult();
+        }
+        catch
+        {
+            ExitApplication();
+        }
     }
 
     private void InitializeTrayIcon()
@@ -222,10 +263,19 @@ public partial class App : Application
         await App.GetService<IPresentationService>().ShowMainWindowAsync();
     }
 
-    private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    private async void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
-        TrayIcon?.Dispose();
-        Host.Dispose();
+        await App.GetService<IAppExtrasService>().ExitApplicationAsync();
+    }
+
+    private static void ExitApplication()
+    {
+        if (Current is App app)
+        {
+            app.TrayIcon?.Dispose();
+            app.Host.Dispose();
+        }
+
         Environment.Exit(0);
     }
 }

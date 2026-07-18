@@ -2,8 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Brightbits.BSH.Engine.Contracts;
-using BSH.MainApp.Models;
 using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Models;
 
 namespace BSH.MainApp.Services;
 

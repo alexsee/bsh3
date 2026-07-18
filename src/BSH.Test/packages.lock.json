@@ -41,6 +41,14 @@
           "Microsoft.Testing.Platform.MSBuild": "2.1.0"
         }
       },
+      "Autoupdater.NET.Official": {
+        "type": "Transitive",
+        "resolved": "1.9.2",
+        "contentHash": "wVB0YMk5Dyc2UMUb46t5TVvzipfgkNHtuKh04wp14k/32nY7wMTz8gSMgiaX9WAHesW60K6J8uGz5G8gyGkEPQ==",
+        "dependencies": {
+          "Microsoft.Web.WebView2": "1.0.2592.51"
+        }
+      },
       "CommunityToolkit.Common": {
         "type": "Transitive",
         "resolved": "8.2.1",
@@ -725,6 +733,7 @@
       "bsh.mainapp": {
         "type": "Project",
         "dependencies": {
+          "Autoupdater.NET.Official": "[1.9.2, )",
           "BSH.Engine": "[3.9.0.3, )",
           "CommunityToolkit.Mvvm": "[8.4.0, )",
           "CommunityToolkit.WinUI.Controls.SettingsControls": "[8.2.251219, )",

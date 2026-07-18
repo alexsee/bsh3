@@ -18,11 +18,14 @@ public partial class MainWindowViewModel : ObservableObject
         public const string Settings = "BSH.MainApp.ViewModels.SettingsViewModel";
     }
 
-    private static class SupportActionKeys
+    public static class SupportActionKeys
     {
         public const string About = "Support.About";
         public const string Help = "Support.Help";
         public const string EventLog = "Support.EventLog";
+        public const string CheckForUpdates = "Support.CheckForUpdates";
+        public const string ClearStoredPassword = "Support.ClearStoredPassword";
+        public const string ResetUniqueUserId = "Support.ResetUniqueUserId";
         public const string ResetConfiguration = "Support.ResetConfiguration";
     }
 
@@ -34,11 +37,15 @@ public partial class MainWindowViewModel : ObservableObject
         SupportActionKeys.About,
         SupportActionKeys.Help,
         SupportActionKeys.EventLog,
+        SupportActionKeys.CheckForUpdates,
+        SupportActionKeys.ClearStoredPassword,
+        SupportActionKeys.ResetUniqueUserId,
         SupportActionKeys.ResetConfiguration
     ];
 
     private readonly IPresentationService? presentationService;
     private readonly INavigationService? navigationService;
+    private readonly IAppExtrasService? appExtrasService;
 
     [ObservableProperty]
     private NavigationViewItem? currentPage;
@@ -49,10 +56,12 @@ public partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(
         IPresentationService? presentationService = null,
         INavigationService? navigationService = null,
+        IAppExtrasService? appExtrasService = null,
         bool buildNavigationItems = true)
     {
         this.presentationService = presentationService;
         this.navigationService = navigationService;
+        this.appExtrasService = appExtrasService;
 
         if (!buildNavigationItems)
         {
@@ -74,6 +83,9 @@ public partial class MainWindowViewModel : ObservableObject
                     new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.About, Icon = new FontIcon { Glyph = "\uE946" }, Content = "About Backup Service Home 3" },
                     new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.Help, Icon = new SymbolIcon(Symbol.Link), Content = "Help and Support" },
                     new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.EventLog, Icon = new SymbolIcon(Symbol.Document), Content = "Show Event Logs" },
+                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.CheckForUpdates, Icon = new SymbolIcon(Symbol.Sync), Content = "Check for Updates" },
+                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.ClearStoredPassword, Icon = new SymbolIcon(Symbol.Permissions), Content = "Clear Stored Password" },
+                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.ResetUniqueUserId, Icon = new SymbolIcon(Symbol.Contact), Content = "Reset Unique User Id" },
                     new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.ResetConfiguration, Icon = new SymbolIcon(Symbol.Delete), Content = "Reset Configuration" },
                 }
             }
@@ -122,6 +134,15 @@ public partial class MainWindowViewModel : ObservableObject
             case SupportActionKeys.EventLog:
                 _ = GetPresentationService().OpenCurrentEventLogAsync();
                 return true;
+            case SupportActionKeys.CheckForUpdates:
+                _ = GetAppExtrasService().CheckForUpdatesAsync();
+                return true;
+            case SupportActionKeys.ClearStoredPassword:
+                _ = GetAppExtrasService().ClearStoredPasswordAsync();
+                return true;
+            case SupportActionKeys.ResetUniqueUserId:
+                _ = GetAppExtrasService().ResetUniqueUserIdAsync();
+                return true;
             case SupportActionKeys.ResetConfiguration:
                 _ = GetPresentationService().ResetConfigurationAsync();
                 return true;
@@ -138,5 +159,10 @@ public partial class MainWindowViewModel : ObservableObject
     private INavigationService GetNavigationService()
     {
         return navigationService ?? App.GetService<INavigationService>();
+    }
+
+    private IAppExtrasService GetAppExtrasService()
+    {
+        return appExtrasService ?? App.GetService<IAppExtrasService>();
     }
 }
