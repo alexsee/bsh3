@@ -13,9 +13,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Windows.Storage.Pickers;
+using Microsoft.Windows.Storage.Pickers;
 using Windows.UI.Popups;
-using WinUIEx;
 
 namespace BSH.MainApp.ViewModels;
 
@@ -61,14 +60,11 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private async Task AddSourceFolder()
     {
-        var folderPicker = new FolderPicker
+        var folderPicker = new FolderPicker(App.MainWindow.AppWindow.Id)
         {
-            ViewMode = PickerViewMode.Thumbnail,
+            ViewMode = PickerViewMode.List,
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary
         };
-
-        var hwnd = App.MainWindow.GetWindowHandle();
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
 
         var folder = await folderPicker.PickSingleFolderAsync();
         if (folder != null)
@@ -272,9 +268,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     public async Task ChangeLocalPath()
     {
-        var folderPicker = new FolderPicker
+        var folderPicker = new FolderPicker(App.MainWindow.AppWindow.Id)
         {
-            ViewMode = PickerViewMode.Thumbnail,
+            ViewMode = PickerViewMode.List,
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary
         };
 

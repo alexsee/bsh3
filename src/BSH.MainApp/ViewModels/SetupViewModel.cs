@@ -11,9 +11,8 @@ using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
-using Windows.Storage.Pickers;
+using Microsoft.Windows.Storage.Pickers;
 using Windows.UI.Popups;
-using WinUIEx;
 
 namespace BSH.MainApp.ViewModels;
 
@@ -912,20 +911,10 @@ public partial class SetupViewModel : ObservableObject
                 return null;
             }
 
-            var folderPicker = new FolderPicker
+            var folderPicker = new FolderPicker(App.MainWindow.AppWindow.Id)
             {
                 SuggestedStartLocation = PickerLocationId.ComputerFolder
             };
-            folderPicker.FileTypeFilter.Add("*");
-
-            var hwnd = App.MainWindow.GetWindowHandle();
-            if (hwnd == IntPtr.Zero)
-            {
-                ValidationErrorMessage = "Unable to open the folder picker.";
-                return null;
-            }
-
-            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
 
             var folder = await folderPicker.PickSingleFolderAsync();
             return folder?.Path;
