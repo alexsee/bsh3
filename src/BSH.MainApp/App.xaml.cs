@@ -172,6 +172,8 @@ public partial class App : Application
         await App.GetService<IOrchestrationService>().InitializeAsync();
 
         InitializeTrayIcon();
+
+        await App.GetService<IActivationService>().ActivateAsync(args);
     }
 
     private void InitializeTrayIcon()

@@ -509,6 +509,8 @@ public class ConfigurationManager : IConfigurationManager
 
     public async Task InitializeAsync()
     {
+        ResetInMemoryDefaults();
+
         using var dbClient = dbClientFactory.CreateDbClient();
 
         foreach (var configEntry in GetType().GetProperties())
@@ -521,6 +523,54 @@ public class ConfigurationManager : IConfigurationManager
 
             configEntry.SetValue(this, result);
         }
+    }
+
+    private void ResetInMemoryDefaults()
+    {
+        taskType = "2";
+        sourceFolder = "";
+        backupFolder = "";
+        remindAfterDays = "7";
+        autoBackup = "";
+        medium = "1";
+        mediumType = "1";
+        lastBackupDone = "";
+        lastVersionDate = "";
+        oldBackupPrevent = "0";
+        compression = 0;
+        excludeCompression = ".zip|.rar|.7zip";
+        encrypt = 0;
+        encryptPassMd5 = "";
+        excludeFolder = "";
+        exludeFileTypes = "";
+        excludeFileBigger = "";
+        excludeMask = "";
+        excludeFile = "";
+        freeSpace = "0";
+        remindSpace = "-1";
+        doPastBackups = "0";
+        ftpHost = "";
+        ftpUser = "";
+        ftpPass = "";
+        ftpFolder = null;
+        ftpPort = "21";
+        ftpCoding = "ISO-8859-1";
+        ftpEncryptionMode = "3";
+        ftpSslProtocols = "0";
+        isConfigured = "0";
+        dbStatus = "0";
+        deactivateAutoBackupsWhenAkku = "1";
+        intervallDelete = "";
+        dbVersion = "";
+        showLocalizedPath = "1";
+        infoBackupDone = "0";
+        mediaVolumeSerial = "";
+        backupSize = "";
+        intervallAutoHourBackups = "24";
+        scheduleFullBackup = "";
+        uncUserName = "";
+        uncPassword = "";
+        showWaitOnMediaAutoBackups = "0";
     }
 
     private async Task<object> LoadConfigurationValueAsync(DbClient dbClient, string propertyName)

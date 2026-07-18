@@ -173,6 +173,9 @@ public partial class SetupViewModel : ObservableObject
     private Visibility welcomeVisibility = Visibility.Visible;
 
     [ObservableProperty]
+    private Visibility wizardChromeVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
     private Visibility sourcesVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
@@ -925,6 +928,7 @@ public partial class SetupViewModel : ObservableObject
     private void UpdateStepPresentation()
     {
         WelcomeVisibility = CurrentStep == SetupWizardStep.Welcome ? Visibility.Visible : Visibility.Collapsed;
+        WizardChromeVisibility = CurrentStep == SetupWizardStep.Welcome ? Visibility.Collapsed : Visibility.Visible;
         SourcesVisibility = CurrentStep == SetupWizardStep.Sources ? Visibility.Visible : Visibility.Collapsed;
         TargetVisibility = CurrentStep == SetupWizardStep.Target ? Visibility.Visible : Visibility.Collapsed;
         ModeVisibility = CurrentStep == SetupWizardStep.Mode ? Visibility.Visible : Visibility.Collapsed;
@@ -942,13 +946,13 @@ public partial class SetupViewModel : ObservableObject
 
         (Title, Description) = CurrentStep switch
         {
-            SetupWizardStep.Welcome => ("Welcome", "Create a new backup configuration or import an existing backup database."),
-            SetupWizardStep.Sources => ("Select source folders", "Choose the folders that should be included in your backups."),
+            SetupWizardStep.Welcome => ("", ""),
+            SetupWizardStep.Sources => ("Select source folders", "Documents is added by default (same as the classic setup). Add more folders or remove it if you prefer."),
             SetupWizardStep.Target => ("Select backup target", "Choose a local drive, network path, or FTP server."),
             SetupWizardStep.Mode => ("Choose backup mode", "Run backups automatically or start them manually."),
             SetupWizardStep.ImportMedia => ("Import backup", "Select the media, FTP server, or path that contains your backup database."),
             SetupWizardStep.ImportSelect => ("Select backup", "Choose which discovered backup database to import."),
-            SetupWizardStep.ImportRemap => ("Remap source folders", "Update source paths if folders moved after the original backup."),
+            SetupWizardStep.ImportRemap => ("Remap source folders", "Match each original path from the imported backup to where that folder lives on this PC."),
             SetupWizardStep.Progress => ("Working", "Please wait while the setup is applied."),
             _ => ("Setup", "")
         };

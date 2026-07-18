@@ -54,7 +54,7 @@ public class PresentationService : IPresentationService
 
     public async Task ShowMainWindowAsync()
     {
-        App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.MainViewModel");
+        App.GetService<SetupRouting>().NavigateForStartup();
         await App.GetService<IActivationService>().ActivateAsync(null);
     }
 
@@ -119,6 +119,8 @@ public class PresentationService : IPresentationService
         {
             return;
         }
+
+        await App.GetService<IOrchestrationService>().StopAsync(turnOff: true);
 
         DbClientFactory.ClosePool();
         DeleteDatabaseFiles(App.DatabaseFile);

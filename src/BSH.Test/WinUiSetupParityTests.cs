@@ -423,6 +423,48 @@ public class WinUiSetupParityTests
         Assert.That(navigation.LastClearNavigation, Is.True);
     }
 
+    [Test]
+    public void NavigateToSetupForcesFreshNavigationParameter()
+    {
+        var configuration = new TestConfigurationManager { IsConfigured = "0" };
+        var navigation = new TestNavigationService();
+        var routing = new SetupRouting(configuration, navigation);
+
+        routing.NavigateToSetup();
+        var firstParameter = navigation.LastParameter;
+        routing.NavigateToSetup();
+
+        Assert.That(navigation.LastPageKey, Does.Contain("SetupViewModel"));
+        Assert.That(navigation.LastParameter, Is.Not.Null);
+        Assert.That(navigation.LastParameter, Is.Not.EqualTo(firstParameter));
+    }
+
+    [Test]
+    public void BeginNewSetupAddsDocumentsAsDefaultSource()
+    {
+        var configuration = new TestConfigurationManager { IsConfigured = "0" };
+        var setupService = CreateSetupService(configuration);
+        var viewModel = new SetupViewModel(
+            configuration,
+            setupService,
+            new TestOrchestrationService(),
+            new TestJobService(),
+            new TestNavigationService(),
+            new TestPresentationService());
+
+        viewModel.BeginNewSetup();
+
+        var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        if (documents.Length > 2)
+        {
+            Assert.That(viewModel.Sources, Does.Contain(documents));
+        }
+        else
+        {
+            Assert.That(viewModel.Sources, Is.Empty);
+        }
+    }
+
     private static SetupService CreateSetupService(IConfigurationManager configuration)
     {
         return new SetupService(configuration, new TestQueryManager(), new TestDbClientFactory());
@@ -581,6 +623,7 @@ public class WinUiSetupParityTests
     {
         public string? LastPageKey { get; private set; }
         public bool LastClearNavigation { get; private set; }
+        public object? LastParameter { get; private set; }
 
         public Frame? Frame { get; set; }
         public bool CanGoBack => false;
@@ -593,6 +636,7 @@ public class WinUiSetupParityTests
         {
             LastPageKey = pageKey;
             LastClearNavigation = clearNavigation;
+            LastParameter = parameter;
             return true;
         }
     }

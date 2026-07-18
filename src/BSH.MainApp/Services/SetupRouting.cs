@@ -33,6 +33,7 @@ public class SetupRouting
 
     public void NavigateToSetup()
     {
-        navigationService.NavigateTo(typeof(SetupViewModel).FullName!, clearNavigation: true);
+        // Force a fresh SetupPage instance even if setup is already showing.
+        navigationService.NavigateTo(typeof(SetupViewModel).FullName!, parameter: Guid.NewGuid().ToString("N"), clearNavigation: true);
     }
 }
