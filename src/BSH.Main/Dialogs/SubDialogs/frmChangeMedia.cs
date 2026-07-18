@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine.Security;
@@ -18,68 +17,18 @@ public partial class frmChangeMedia
     private const int MediaIndexFtp = 1;
     private const int MediaIndexUnc = 2;
 
-    private Panel plUNC;
-    private TextBox txtUncPath;
-    private TextBox txtUncUsername;
-    private TextBox txtUncPassword;
-
     public frmChangeMedia()
     {
         InitializeComponent();
-        EnsureUncUi();
     }
 
     public bool IsUncSelected => cboMedia.SelectedIndex == MediaIndexUnc;
 
-    public string UncPath => txtUncPath?.Text?.Trim() ?? "";
+    public string UncPath => txtUncPath.Text?.Trim() ?? "";
 
-    public string UncUsername => txtUncUsername?.Text ?? "";
+    public string UncUsername => txtUncUsername.Text ?? "";
 
-    public string UncPassword => txtUncPassword?.Text ?? "";
-
-    private void EnsureUncUi()
-    {
-        var resources = new System.ComponentModel.ComponentResourceManager(typeof(frmChangeMedia));
-        if (cboMedia.Items.Count == 2)
-        {
-            cboMedia.Items.Add(resources.GetString("cboMedia.Items2") ?? "Netzwerkfreigabe (UNC)");
-        }
-
-        plUNC = new Panel
-        {
-            Location = plFTP.Location,
-            Size = plFTP.Size,
-            BackColor = Color.Transparent,
-            Visible = false,
-            Name = "plUNC",
-        };
-
-        var lblPath = new Label { Text = "Pfad:", AutoSize = true, Location = new Point(3, 18) };
-        txtUncPath = new TextBox { Location = new Point(120, 15), Width = Math.Max(120, plFTP.Width - 130), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right };
-
-        var lblUser = new Label { Text = "Benutzername:", AutoSize = true, Location = new Point(3, 55) };
-        txtUncUsername = new TextBox { Location = new Point(120, 52), Width = 180 };
-
-        var lblPass = new Label { Text = "Kennwort:", AutoSize = true, Location = new Point(3, 92) };
-        txtUncPassword = new TextBox
-        {
-            Location = new Point(120, 89),
-            Width = 180,
-            UseSystemPasswordChar = true,
-        };
-
-        var cmdCheck = new Button
-        {
-            Text = "Prüfen…",
-            Location = new Point(120, 130),
-            AutoSize = true,
-        };
-        cmdCheck.Click += (_, _) => ValidateUncTarget(showSuccessMessage: true);
-
-        plUNC.Controls.AddRange([lblPath, txtUncPath, lblUser, txtUncUsername, lblPass, txtUncPassword, cmdCheck]);
-        Controls.Add(plUNC);
-        plUNC.BringToFront();
-    }
+    public string UncPassword => txtUncPassword.Text ?? "";
 
     private void cboMedia_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -256,6 +205,11 @@ public partial class frmChangeMedia
     private void frmChangeMedia_Load(object sender, EventArgs e)
     {
         cboMedia.SelectedIndex = MediaIndexLocal;
+    }
+
+    private void cmdUncCheck_Click(object sender, EventArgs e)
+    {
+        ValidateUncTarget(showSuccessMessage: true);
     }
 
     private void cmdFTPCheck_Click(object sender, EventArgs e)
