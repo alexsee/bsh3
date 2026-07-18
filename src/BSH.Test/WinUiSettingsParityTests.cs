@@ -91,7 +91,7 @@ public class WinUiSettingsParityTests
         var oldPath = Path.Combine(root, "old");
         var newPath = Path.Combine(root, "new");
         Directory.CreateDirectory(oldPath);
-        File.WriteAllText(Path.Combine(oldPath, "backup.db"), "data");
+        await File.WriteAllTextAsync(Path.Combine(oldPath, "backup.db"), "data");
 
         try
         {

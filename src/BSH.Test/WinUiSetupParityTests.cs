@@ -628,7 +628,11 @@ public class WinUiSetupParityTests
         public Frame? Frame { get; set; }
         public bool CanGoBack => false;
 
-        public event NavigatedEventHandler? Navigated;
+        public event NavigatedEventHandler? Navigated
+        {
+            add { }
+            remove { }
+        }
 
         public bool GoBack() => false;
 
