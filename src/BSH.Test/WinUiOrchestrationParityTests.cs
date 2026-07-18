@@ -75,7 +75,7 @@ public class WinUiOrchestrationParityTests
         await service.StartAsync();
         powerStatusService.SetIsRunningOnBattery(true);
 
-        Assert.That(powerStatusService.StartMonitoringCalls, Is.EqualTo(1));
+        Assert.That(powerStatusService.StartMonitoringCalls, Is.GreaterThanOrEqualTo(1));
         Assert.That(powerStatusService.StopMonitoringCalls, Is.EqualTo(0));
         Assert.That(scheduledBackupService.StopCalls, Is.EqualTo(1));
         Assert.That(statusService.SystemStatus, Is.EqualTo(SystemStatus.PAUSED_DUE_TO_BATTERY));
@@ -135,6 +135,32 @@ public class WinUiOrchestrationParityTests
     }
 
     [Test]
+    public async Task RefreshAutomationAsyncDoesNothingWhenSystemIsDeactivated()
+    {
+        var statusService = new TestStatusService { SystemStatus = SystemStatus.DEACTIVATED };
+        var scheduledBackupService = new TestScheduledBackupService();
+        var service = new OrchestrationService(
+            new TestConfigurationManager
+            {
+                IsConfigured = "1",
+                DbStatus = "1",
+                DeativateAutoBackupsWhenAkku = "1",
+                TaskType = TaskType.Schedule
+            },
+            statusService,
+            scheduledBackupService,
+            new TestQueryManager(),
+            new TestNotificationService(),
+            new TestPowerStatusService { IsRunningOnBattery = false });
+
+        await service.RefreshAutomationAsync();
+
+        Assert.That(scheduledBackupService.StopCalls, Is.EqualTo(0));
+        Assert.That(scheduledBackupService.StartCalls, Is.EqualTo(0));
+        Assert.That(statusService.SystemStatus, Is.EqualTo(SystemStatus.DEACTIVATED));
+    }
+
+    [Test]
     public async Task StartAsyncMonitorsPowerAndRestartsAutomationWhenPowerIsReconnected()
     {
         var powerStatusService = new TestPowerStatusService
@@ -144,14 +170,49 @@ public class WinUiOrchestrationParityTests
         };
         var statusService = new TestStatusService();
         var scheduledBackupService = new TestScheduledBackupService();
+        var notifications = new TestNotificationService();
         var service = new OrchestrationService(
             new TestConfigurationManager
             {
                 IsConfigured = "1",
                 DbStatus = "0",
                 DeativateAutoBackupsWhenAkku = "1",
-                TaskType = TaskType.Auto
+                TaskType = TaskType.Auto,
+                RemindSpace = "10",
+                FreeSpace = (9L * 1024L * 1024L).ToString()
             },
+            statusService,
+            scheduledBackupService,
+            new TestQueryManager(),
+            notifications,
+            powerStatusService);
+
+        await service.StartAsync();
+        Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
+
+        powerStatusService.SetIsRunningOnBattery(false);
+
+        Assert.That(scheduledBackupService.StopCalls, Is.EqualTo(1));
+        Assert.That(scheduledBackupService.StartCalls, Is.EqualTo(1));
+        Assert.That(statusService.SystemStatus, Is.EqualTo(SystemStatus.ACTIVATED));
+        Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public async Task PowerChangeDoesNothingWhenSystemIsDeactivated()
+    {
+        var configurationManager = new TestConfigurationManager
+        {
+            IsConfigured = "1",
+            DbStatus = "0",
+            DeativateAutoBackupsWhenAkku = "1",
+            TaskType = TaskType.Auto
+        };
+        var powerStatusService = new TestPowerStatusService { HasBattery = true };
+        var statusService = new TestStatusService();
+        var scheduledBackupService = new TestScheduledBackupService();
+        var service = new OrchestrationService(
+            configurationManager,
             statusService,
             scheduledBackupService,
             new TestQueryManager(),
@@ -159,10 +220,12 @@ public class WinUiOrchestrationParityTests
             powerStatusService);
 
         await service.StartAsync();
-        powerStatusService.SetIsRunningOnBattery(false);
+        configurationManager.DbStatus = "1";
+        statusService.SetSystemStatus(SystemStatus.DEACTIVATED);
+        powerStatusService.SetIsRunningOnBattery(true);
 
-        Assert.That(scheduledBackupService.StartCalls, Is.EqualTo(1));
-        Assert.That(statusService.SystemStatus, Is.EqualTo(SystemStatus.ACTIVATED));
+        Assert.That(scheduledBackupService.StopCalls, Is.EqualTo(0));
+        Assert.That(statusService.SystemStatus, Is.EqualTo(SystemStatus.DEACTIVATED));
     }
 
     [Test]

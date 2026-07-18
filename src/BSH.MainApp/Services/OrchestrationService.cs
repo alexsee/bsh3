@@ -55,18 +55,7 @@ public class OrchestrationService : IOrchestrationService
                 configurationManager.DbStatus = "0";
             }
 
-            // report system start
-            statusService.SetSystemStatus(SystemStatus.ACTIVATED);
-            UpdatePowerStatusMonitoring();
-
-            if (ShouldPauseForBattery())
-            {
-                statusService.SetSystemStatus(SystemStatus.PAUSED_DUE_TO_BATTERY);
-            }
-            else
-            {
-                await scheduledBackupService.StartAsync();
-            }
+            await ApplyAutomationPolicyAsync(stopFirst: false);
 
             // check free space
             CheckFreeDiskSpaceNotification();
@@ -113,7 +102,16 @@ public class OrchestrationService : IOrchestrationService
             return;
         }
 
-        scheduledBackupService.Stop();
+        await ApplyAutomationPolicyAsync(stopFirst: true);
+    }
+
+    private async Task ApplyAutomationPolicyAsync(bool stopFirst)
+    {
+        if (stopFirst)
+        {
+            scheduledBackupService.Stop();
+        }
+
         UpdatePowerStatusMonitoring();
 
         if (ShouldPauseForBattery())
@@ -170,20 +168,7 @@ public class OrchestrationService : IOrchestrationService
             return;
         }
 
-        if (configurationManager.DbStatus != "0")
-        {
-            return;
-        }
-
-        if (powerStatusService.IsRunningOnBattery)
-        {
-            scheduledBackupService.Stop();
-            statusService.SetSystemStatus(SystemStatus.PAUSED_DUE_TO_BATTERY);
-        }
-        else
-        {
-            await StartAsync();
-        }
+        await RefreshAutomationAsync();
     }
 
     private void CheckFreeDiskSpaceNotification()
