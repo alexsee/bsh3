@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.ViewModels;
+using BSH.MainApp.Services;
 
 using Microsoft.UI.Xaml;
 
@@ -11,10 +11,12 @@ namespace BSH.MainApp.Activation;
 public class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
 {
     private readonly INavigationService _navigationService;
+    private readonly SetupRouting _setupRouting;
 
-    public DefaultActivationHandler(INavigationService navigationService)
+    public DefaultActivationHandler(INavigationService navigationService, SetupRouting setupRouting)
     {
         _navigationService = navigationService;
+        _setupRouting = setupRouting;
     }
 
     protected override bool CanHandleInternal(LaunchActivatedEventArgs args)
@@ -25,7 +27,7 @@ public class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventAr
 
     protected async override Task HandleInternalAsync(LaunchActivatedEventArgs args)
     {
-        _navigationService.NavigateTo(typeof(MainViewModel).FullName!, args.Arguments);
+        _setupRouting.NavigateForStartup(args.Arguments);
 
         await Task.CompletedTask;
     }

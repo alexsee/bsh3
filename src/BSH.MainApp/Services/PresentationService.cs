@@ -126,7 +126,7 @@ public class PresentationService : IPresentationService
         await App.GetService<IDbClientFactory>().InitializeAsync(App.DatabaseFile);
         await App.GetService<IConfigurationManager>().InitializeAsync();
         App.GetService<IStatusService>().Initialize();
-        App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.SettingsViewModel");
+        App.GetService<SetupRouting>().NavigateToSetup();
     }
 
     public async Task<(string? password, bool persist)> RequestPasswordAsync()
