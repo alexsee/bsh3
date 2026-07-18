@@ -35,10 +35,10 @@
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.4.1" />
 		<PackageReference Include="Humanizer.Core" Version="3.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="2.3.1" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="WinUIEx" Version="2.9.0" />
+		<PackageReference Include="WinUIEx" Version="2.9.2" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.251219" />
 	</ItemGroup>
 	<ItemGroup>

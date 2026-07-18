@@ -6,8 +6,8 @@ using System.Text.RegularExpressions;
 using Brightbits.BSH.Engine.Contracts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Windows.Storage.Pickers;
-using WinRT.Interop;
+using Microsoft.UI;
+using Microsoft.Windows.Storage.Pickers;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -120,7 +120,7 @@ public partial class FilterViewModel : ObservableObject
         get;
     }
 
-    public nint WindowHandle
+    public WindowId ParentWindowId
     {
         get; set;
     }
@@ -475,18 +475,16 @@ public partial class FilterViewModel : ObservableObject
 
     private async Task BrowseFolderAsync()
     {
-        if (WindowHandle == 0)
+        if (ParentWindowId.Value == 0)
         {
             return;
         }
 
-        var picker = new FolderPicker
+        var picker = new FolderPicker(ParentWindowId)
         {
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary
         };
-        picker.FileTypeFilter.Add("*");
 
-        InitializeWithWindow.Initialize(picker, WindowHandle);
         var folder = await picker.PickSingleFolderAsync();
         if (folder != null)
         {
@@ -496,18 +494,16 @@ public partial class FilterViewModel : ObservableObject
 
     private async Task BrowseFileAsync()
     {
-        if (WindowHandle == 0)
+        if (ParentWindowId.Value == 0)
         {
             return;
         }
 
-        var picker = new FileOpenPicker
+        var picker = new FileOpenPicker(ParentWindowId)
         {
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary
         };
-        picker.FileTypeFilter.Add("*");
 
-        InitializeWithWindow.Initialize(picker, WindowHandle);
         var files = await picker.PickMultipleFilesAsync();
         if (files == null || files.Count == 0)
         {

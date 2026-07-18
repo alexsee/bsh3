@@ -15,7 +15,7 @@ public sealed partial class FilterWindow : WindowEx
     public FilterWindow()
     {
         InitializeComponent();
-        ViewModel.WindowHandle = this.GetWindowHandle();
+        ViewModel.ParentWindowId = this.AppWindow.Id;
         ContentFrame.DataContext = ViewModel;
 
         FilterSelectorBar.SelectedItem = FilesItem;
