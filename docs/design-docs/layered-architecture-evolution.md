@@ -43,7 +43,7 @@ Responsibility:
 
 Current mapping:
 - `BSH.Engine/Utils/*`
-- parts of `BSH.Engine/Security/*`
+- `BSH.Engine/Utils/Security/*`
 - low-level OS wrappers like `Win32Stuff`
 
 Target rule:
@@ -55,9 +55,9 @@ Responsibility:
 - no I/O, no framework dependencies
 
 Current mapping:
-- `BSH.Engine/Models/*`
-- `BSH.Engine/ActionType.cs`, `BSH.Engine/TaskType.cs`, `BSH.Engine/Enums.cs`
-- operation result types (`JobState`, overwrite enums)
+- `BSH.Engine/Types/*`
+- `BSH.Engine/Types/{ActionType,TaskType,MediaType}.cs`
+- job reporting contracts (`IJobReport`, `JobState`, overwrite enums)
 
 Target rule:
 - stable type system shared across all other business layers
@@ -68,7 +68,7 @@ Responsibility:
 - no SQL/storage details
 
 Current mapping:
-- `IConfigurationManager`, `ConfigurationManager`
+- `IConfigurationManager`, `ConfigurationManager` under `BSH.Engine/Config`
 - shell settings wrappers in `BSH.MainApp.Services.LocalSettingsService`, WinForms `Settings`
 
 Target rule:
@@ -81,8 +81,9 @@ Responsibility:
 - query/read models and command/write repositories
 
 Current mapping:
-- `DbClient`, `DbClientFactory`, `DbMigrationService`
-- large query/write logic currently in `QueryManager` and partially in job classes
+- `Repo/Database` (`DbClient`, `DbClientFactory`, `DbMigrationService`)
+- repositories + `QueryManager`
+- reader mappers (`VersionDetailsMapper`, `FileTableRowMapper`)
 
 Target rule:
 - Repo owns SQL and transaction boundaries
@@ -94,8 +95,9 @@ Responsibility:
 - state transitions and business invariants
 
 Current mapping:
-- `BackupService`
-- substantial logic in `BackupJob`, `RestoreJob`, `DeleteJob`, `DeleteSingleJob`, `EditJob`
+- `Service/BackupService`
+- `Service/Jobs/{BackupJob,RestoreJob,DeleteJob,DeleteSingleJob,EditJob}`
+- `Service/FileCollector/*`, schedule policy/settings services
 
 Target rule:
 - Service depends on Types, Config, Repo, and Provider ports
@@ -140,7 +142,8 @@ Responsibility:
 - adapters to external systems: storage, scheduler, VSS service, OS notifications, media watching
 
 Current mapping:
-- `Storage/*`, `SchedulerService`, `VolumeShadowCopyService`, `UsbWatchService`
+- `Providers/Storage/*`, `Providers/Scheduler/*`, `Providers/Vss/*`, `Providers/Media/*`
+- ports under `Providers/Ports`
 - `BSH.Service` / `BSH.Service.Shared` for VSS IPC
 
 Target rule:
@@ -172,10 +175,16 @@ Transitional note:
 
 ## Migration plan (incremental)
 
-### Phase 1: Boundary declaration (no behavior change)
+### Phase 1: Boundary declaration (no behavior change) — DONE
 - Introduce folders/namespaces reflecting target layers inside `BSH.Engine`.
 - Add explicit interfaces for provider ports (`IStorageProvider`, `IVssClient`, `ISchedulerAdapter`, `IMediaWatcher`).
 - Move direct UI calls out of engine paths into status/event ports.
+- Keep Types free of Repo/SQL: reader factories live in Repo mappers (`VersionDetailsMapper`, `FileTableRowMapper`).
+
+Current Engine layout (namespace = folder):
+- `Types/`, `Config/`, `Repo/`, `Service/`, `Runtime/`, `Providers/{Ports,Storage,Scheduler,Media,Vss}/`, `Utils/`
+
+See also: `src/BSH.Engine/ARCHITECTURE.md`.
 
 Exit criteria:
 - Engine compiles with no UI-framework references.

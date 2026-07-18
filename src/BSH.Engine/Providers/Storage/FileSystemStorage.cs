@@ -1,0 +1,443 @@
+﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using System;
+using System.ComponentModel;
+using System.IO;
+using System.IO.Compression;
+using System.Threading.Tasks;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Types.Exceptions;
+using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Utils.Security;
+using Serilog;
+
+using Brightbits.BSH.Engine.Utils;
+namespace Brightbits.BSH.Engine.Providers.Storage;
+
+public class FileSystemStorage : Storage, IStorageProvider
+{
+    private static readonly ILogger _logger = Log.ForContext<FileSystemStorage>();
+
+    private readonly IConfigurationManager configurationManager;
+
+    private string backupFolder;
+
+    private readonly string volumeSerialNumber;
+
+    private readonly int currentStorageVersion;
+
+    private readonly bool networkStorage;
+
+    private readonly string networkUserName;
+
+    private readonly string networkPassword;
+
+    private NetworkConnection networkConnection;
+
+    public FileSystemStorage(IConfigurationManager configurationManager)
+    {
+        ArgumentNullException.ThrowIfNull(configurationManager);
+
+        this.configurationManager = configurationManager;
+        this.backupFolder = configurationManager.BackupFolder;
+        this.volumeSerialNumber = configurationManager.MediaVolumeSerial;
+        this.currentStorageVersion = int.Parse(configurationManager.OldBackupPrevent);
+        this.networkUserName = configurationManager.UNCUsername;
+        this.networkPassword = configurationManager.UNCPassword;
+
+        networkStorage = !string.IsNullOrEmpty(this.networkUserName);
+    }
+
+    public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
+
+    public async Task<bool> CheckMedium(bool quickCheck = false)
+    {
+        try
+        {
+            // connect to network
+            using var networkConn = new NetworkConnection(backupFolder, networkUserName, networkPassword);
+
+            if (Directory.Exists(backupFolder))
+            {
+                return await CheckExistingMediumAsync();
+            }
+
+            return await TryFindMovedMediumAsync();
+        }
+        catch (Win32Exception)
+        {
+            return false;
+        }
+    }
+
+    private async Task<bool> CheckExistingMediumAsync()
+    {
+        if (!CanWriteToStorage(backupFolder))
+        {
+            return false;
+        }
+
+        var volumeSerial = Win32Stuff.GetVolumeSerial(backupFolder[..3]);
+        StoreSerialNumberIfMissing(volumeSerial);
+
+        if (HasSerialMismatch(volumeSerial))
+        {
+            _logger.Information("Storage device serial number is not equal to the stored id. We are not sure if that is the same device.");
+            return false;
+        }
+
+        return await IsValidStorage();
+    }
+
+    private async Task<bool> TryFindMovedMediumAsync()
+    {
+        _logger.Information("Medium directory {DirectoryName} not found; searching for device with corresponding serial number.", backupFolder);
+
+        if (string.IsNullOrEmpty(volumeSerialNumber))
+        {
+            return false;
+        }
+
+        foreach (var drive in DriveInfo.GetDrives())
+        {
+            if (!IsCandidateBackupDrive(drive))
+            {
+                continue;
+            }
+
+            if (await TrySwitchBackupFolderToDriveAsync(drive))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsCandidateBackupDrive(DriveInfo drive)
+    {
+        return drive.DriveType == DriveType.Fixed || drive.DriveType == DriveType.Removable;
+    }
+
+    private async Task<bool> TrySwitchBackupFolderToDriveAsync(DriveInfo drive)
+    {
+        try
+        {
+            var volumeSerial = Win32Stuff.GetVolumeSerial(drive.RootDirectory.FullName[..3]);
+            if (string.IsNullOrEmpty(volumeSerial) || volumeSerial != volumeSerialNumber)
+            {
+                return false;
+            }
+
+            _logger.Information("Drive letter updated with the serial number {VolumeSerialNumber} at {DriveLetter}.",
+                volumeSerialNumber, drive.RootDirectory.FullName);
+
+            var newBackupFolder = drive.RootDirectory.FullName[..1] + configurationManager.BackupFolder[1..];
+            if (!Directory.Exists(newBackupFolder) || !CanWriteToStorage(newBackupFolder))
+            {
+                return false;
+            }
+
+            configurationManager.BackupFolder = newBackupFolder;
+            backupFolder = newBackupFolder;
+            return await IsValidStorage();
+        }
+        catch (DeviceContainsWrongStateException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            // could not access device, ignore that
+            return false;
+        }
+    }
+
+    private void StoreSerialNumberIfMissing(string volumeSerial)
+    {
+        if (string.IsNullOrEmpty(volumeSerialNumber) && volumeSerial != null)
+        {
+            configurationManager.MediaVolumeSerial = volumeSerial;
+        }
+    }
+
+    private bool HasSerialMismatch(string volumeSerial)
+    {
+        return !string.IsNullOrEmpty(volumeSerial) &&
+               !string.IsNullOrEmpty(volumeSerialNumber) &&
+               volumeSerial != volumeSerialNumber;
+    }
+
+    /// <summary>
+    /// Check if we can actually write to the storage
+    /// </summary>
+    /// <returns></returns>
+    public bool CanWriteToStorage()
+    {
+        return CanWriteToStorage(backupFolder);
+    }
+
+    /// <summary>
+    /// Check if we can actually write to the storage
+    /// </summary>
+    /// <returns></returns>
+    private static bool CanWriteToStorage(string folder)
+    {
+        try
+        {
+            var testFile = Path.Combine(folder, "bsh.writetest");
+            File.WriteAllText(testFile, DateTime.UtcNow.ToString());
+            File.Delete(testFile);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Backup device is not writable and throw an exception.");
+            return false;
+        }
+    }
+
+    private async Task<bool> IsValidStorage()
+    {
+        // check version file
+        var file = Path.Combine(backupFolder, "backup.bshv");
+
+        if (!File.Exists(file))
+        {
+            return true;
+        }
+
+        // read version file
+        var versionId = await File.ReadAllTextAsync(file);
+        if (string.IsNullOrEmpty(versionId))
+        {
+            return true;
+        }
+
+        // check version Id
+        if (int.TryParse(versionId, out var versionIdInt) && versionIdInt != currentStorageVersion)
+        {
+            throw new DeviceContainsWrongStateException();
+        }
+
+        return true;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        // Cleanup
+
+        // are we connecting to a network share?
+        DisconnectToNetwork();
+    }
+
+    public void Open()
+    {
+        // are we connecting to a network share?
+        ConnectToNetwork();
+
+        // create folder etc.
+        if (!Directory.Exists(backupFolder))
+        {
+            Directory.CreateDirectory(backupFolder);
+        }
+    }
+
+    private bool ConnectToNetwork()
+    {
+        if (networkConnection != null || !networkStorage)
+        {
+            return true;
+        }
+
+        try
+        {
+            networkConnection = new NetworkConnection(backupFolder, networkUserName, networkPassword);
+        }
+        catch
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void DisconnectToNetwork()
+    {
+        networkConnection?.Dispose();
+    }
+
+    public bool UploadDatabaseFile(string databaseFile)
+    {
+        File.Copy(databaseFile, Path.Combine(backupFolder, "backup.bshdb"), true);
+        return true;
+    }
+
+    public void UpdateStorageVersion(int versionId)
+    {
+        File.WriteAllText(Path.Combine(backupFolder, "backup.bshv"), versionId.ToString());
+    }
+
+    public bool CopyFileToStorage(string localFile, string remoteFile)
+    {
+        // create directory if not exists
+        var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
+
+        Directory.CreateDirectory(Path.GetDirectoryName(remoteFilePath));
+        File.Copy(GetLocalFileName(localFile), remoteFilePath);
+
+        return true;
+    }
+
+    public bool CopyFileToStorageCompressed(string localFile, string remoteFile)
+    {
+        // create directory if not exists
+        var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
+        Directory.CreateDirectory(Path.GetDirectoryName(remoteFilePath));
+
+        using var zipFile = ZipFile.Open(remoteFilePath + ".zip", ZipArchiveMode.Create);
+        zipFile.CreateEntryFromFile(GetLocalFileName(localFile), Path.GetFileName(localFile), CompressionLevel.Optimal);
+        return true;
+    }
+
+    public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password)
+    {
+        // create directory if not exists
+        var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".enc");
+        Directory.CreateDirectory(Path.GetDirectoryName(remoteFilePath));
+
+        var crypto = new Encryption();
+        if (!crypto.Encode(GetLocalFileName(localFile), remoteFilePath, password))
+        {
+            return false;
+        }
+
+        var file = new FileInfo(remoteFilePath);
+        return file.Length > 0;
+    }
+
+    public bool CopyFileFromStorage(string localFile, string remoteFile)
+    {
+        var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
+
+        // create directory if not exists
+        Directory.CreateDirectory(Path.GetDirectoryName(localFile));
+
+        File.Copy(remoteFilePath, GetLocalFileName(localFile), true);
+
+        return true;
+    }
+
+    public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
+    {
+        var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".zip");
+
+        // create directory if not exists
+        Directory.CreateDirectory(Path.GetDirectoryName(localFile));
+
+        using var zipFile = ZipFile.OpenRead(remoteFilePath);
+        zipFile.GetEntry(Path.GetFileName(localFile)).ExtractToFile(GetLocalFileName(localFile), true);
+
+        return true;
+    }
+
+    public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
+    {
+        var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".enc");
+
+        // create directory if not exists
+        Directory.CreateDirectory(Path.GetDirectoryName(localFile));
+
+        var crypto = new Encryption();
+        crypto.Decode(remoteFilePath, GetLocalFileName(localFile), password);
+
+        return true;
+    }
+
+    public bool DeleteFileFromStorage(string remoteFile)
+    {
+        var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
+
+        if (!File.Exists(remoteFilePath))
+        {
+            return true;
+        }
+
+        File.SetAttributes(remoteFilePath, FileAttributes.Normal);
+        File.Delete(remoteFilePath);
+
+        return true;
+    }
+
+    public bool DeleteFileFromStorageCompressed(string remoteFile)
+    {
+        return DeleteFileFromStorage(remoteFile + ".zip");
+    }
+
+    public bool DeleteFileFromStorageEncrypted(string remoteFile)
+    {
+        return DeleteFileFromStorage(remoteFile + ".enc");
+    }
+
+    public bool DeleteDirectory(string remoteDirectory)
+    {
+        try
+        {
+            Directory.Delete(Path.Combine(backupFolder, CleanRemoteFileName(remoteDirectory)), true);
+        }
+        catch
+        {
+            // ignore exception
+        }
+        return true;
+    }
+
+    public bool RenameDirectory(string remoteDirectorySource, string remoteDirectoryTarget)
+    {
+        Directory.Move(Path.Combine(backupFolder, CleanRemoteFileName(remoteDirectorySource)), Path.Combine(backupFolder, CleanRemoteFileName(remoteDirectoryTarget)));
+        return true;
+    }
+
+    public bool DecryptOnStorage(string remoteFile, string password)
+    {
+        var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".enc");
+        var remoteFilePathDecrypted = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
+
+        var crypto = new Encryption();
+        var result = crypto.Decode(remoteFilePath, remoteFilePathDecrypted, password);
+        File.Delete(remoteFilePath);
+
+        return result;
+    }
+
+    public bool IsPathTooLong(string path, bool compression, bool encryption)
+    {
+        if (compression || encryption)
+        {
+            return Path.Combine(backupFolder, path).Length + 4 > 255;
+        }
+
+        return Path.Combine(backupFolder, path).Length > 255;
+    }
+
+    public long GetFreeSpace()
+    {
+        try
+        {
+            var driveInfo = new DriveInfo(Path.GetPathRoot(backupFolder));
+            return driveInfo.AvailableFreeSpace;
+        }
+        catch (Exception)
+        {
+            return 0;
+        }
+    }
+}

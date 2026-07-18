@@ -3,9 +3,10 @@
 
 using System;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Service.Jobs;
 using Resources = BSH.Main.Properties.Resources;
 
+using Brightbits.BSH.Engine.Types;
 namespace Brightbits.BSH.Main;
 
 public partial class frmStatusBackup : IStatusReport

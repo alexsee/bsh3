@@ -8,12 +8,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Security;
-using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Repo.Database;
+using Brightbits.BSH.Engine.Utils.Security;
+using Brightbits.BSH.Engine.Providers.Storage;
 using Brightbits.BSH.Engine.Providers.Ports;
 using BSH.Main.Properties;
 
+using Brightbits.BSH.Engine.Types;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Repo;
+using Brightbits.BSH.Engine.Utils;
 namespace Brightbits.BSH.Main;
 
 public partial class ucDoConfigure : IMainTabs

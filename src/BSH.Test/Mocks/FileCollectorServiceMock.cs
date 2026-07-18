@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Models;
-using Brightbits.BSH.Engine.Services.FileCollector;
+using Brightbits.BSH.Engine.Service.Contracts;
+using Brightbits.BSH.Engine.Types;
+using Brightbits.BSH.Engine.Service.FileCollector;
 
 namespace BSH.Test.Mocks;
 public class FileCollectorServiceMock : IFileCollectorService

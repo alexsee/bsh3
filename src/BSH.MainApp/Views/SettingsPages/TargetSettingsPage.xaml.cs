@@ -5,6 +5,7 @@ using Brightbits.BSH.Engine;
 using BSH.MainApp.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
+using Brightbits.BSH.Engine.Types;
 namespace BSH.MainApp.Views.SettingsPages;
 
 public sealed partial class TargetSettingsPage : Page

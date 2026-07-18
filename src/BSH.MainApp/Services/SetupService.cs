@@ -3,14 +3,15 @@
 
 using System.Security.Cryptography;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Repo.Contracts;
+using Brightbits.BSH.Engine.Repo.Database;
+using Brightbits.BSH.Engine.Utils.Security;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 
+using Brightbits.BSH.Engine.Types;
 namespace BSH.MainApp.Services;
 
 public class SetupService : ISetupService

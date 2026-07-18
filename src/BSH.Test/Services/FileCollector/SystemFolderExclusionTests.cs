@@ -5,10 +5,10 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Services.FileCollector;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Repo.Contracts;
+using Brightbits.BSH.Engine.Repo.Database;
+using Brightbits.BSH.Engine.Service.FileCollector;
 using NUnit.Framework;
 
 namespace BSH.Test.Services.FileCollector;

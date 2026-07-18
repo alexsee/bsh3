@@ -3,8 +3,8 @@
 
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Service.Jobs;
+using Brightbits.BSH.Engine.Types;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Helpers;

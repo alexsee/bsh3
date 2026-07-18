@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Exceptions;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Service.Contracts;
+using Brightbits.BSH.Engine.Types.Exceptions;
+using Brightbits.BSH.Engine.Service.Jobs;
+using Brightbits.BSH.Engine.Types;
 using Brightbits.BSH.Engine.Runtime.Ports;
-using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Utils.Security;
 
 namespace Brightbits.BSH.Engine.Runtime;
 

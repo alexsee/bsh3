@@ -2,8 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.Generic;
-using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Service.Contracts;
+using Brightbits.BSH.Engine.Types;
 
 namespace BSH.Test.Mocks;
 public class FileCollectorServiceFactoryMock : IFileCollectorServiceFactory

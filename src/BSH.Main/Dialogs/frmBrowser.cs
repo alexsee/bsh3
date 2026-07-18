@@ -11,15 +11,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Brightbits.BSH.Controls.UI;
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Repo;
+using Brightbits.BSH.Engine.Repo.Database;
+using Brightbits.BSH.Engine.Service.Jobs;
+using Brightbits.BSH.Engine.Types;
+using Brightbits.BSH.Engine.Utils;
 using BSH.Main.Properties;
 using BSH.Main.Utils;
 using Humanizer;
 using Serilog;
-using static Brightbits.BSH.Engine.Win32Stuff;
+using static Brightbits.BSH.Engine.Utils.Win32Stuff;
 using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
@@ -1323,7 +1325,7 @@ public partial class frmBrowser : IStatusReport
         // fill folder list
         while (await reader.ReadAsync() && !bgrWorkSearch.CancellationPending)
         {
-            var file = FileTableRow.FromReaderFile(reader);
+            var file = FileTableRowMapper.FromReaderFile(reader);
 
             // add file
             var newEntry = new ListViewItem();

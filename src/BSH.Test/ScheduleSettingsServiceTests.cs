@@ -6,13 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Contracts.Repo;
-using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Repo.Contracts;
+using Brightbits.BSH.Engine.Repo.Database;
+using Brightbits.BSH.Engine.Types;
 using Brightbits.BSH.Engine.Repo;
-using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Service;
 using NUnit.Framework;
 
 namespace BSH.Test;

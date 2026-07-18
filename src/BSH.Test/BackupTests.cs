@@ -7,17 +7,16 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Contracts.Repo;
-using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Exceptions;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Repo.Contracts;
+using Brightbits.BSH.Engine.Service.Contracts;
+using Brightbits.BSH.Engine.Repo.Database;
+using Brightbits.BSH.Engine.Types.Exceptions;
+using Brightbits.BSH.Engine.Service.Jobs;
+using Brightbits.BSH.Engine.Types;
 using Brightbits.BSH.Engine.Repo;
-using Brightbits.BSH.Engine.Services;
-using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Service;
+using Brightbits.BSH.Engine.Providers.Storage;
 using BSH.Test.Mocks;
 using NUnit.Framework;
 
@@ -64,10 +63,10 @@ public class BackupTests
         queryManager = new QueryManager(dbClientFactory, configurationManager, storageFactory);
 
         fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
-            new System.Collections.Generic.List<Brightbits.BSH.Engine.Models.FolderTableRow>(),
-            new System.Collections.Generic.List<Brightbits.BSH.Engine.Models.FileTableRow>()
+            new System.Collections.Generic.List<Brightbits.BSH.Engine.Types.FolderTableRow>(),
+            new System.Collections.Generic.List<Brightbits.BSH.Engine.Types.FileTableRow>()
             {
-                new Brightbits.BSH.Engine.Models.FileTableRow()
+                new Brightbits.BSH.Engine.Types.FileTableRow()
                 {
                     FileName = "test.txt",
                     FilePath = "D:\\Meine Dokumente\\test.txt",

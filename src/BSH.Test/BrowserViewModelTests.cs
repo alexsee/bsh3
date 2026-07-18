@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Service.Contracts;
+using Brightbits.BSH.Engine.Service.Jobs;
+using Brightbits.BSH.Engine.Types;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.Services;
@@ -20,6 +20,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 
+using Brightbits.BSH.Engine.Repo;
+using Brightbits.BSH.Engine.Repo.Contracts;
 namespace BSH.Test;
 
 public class BrowserViewModelTests

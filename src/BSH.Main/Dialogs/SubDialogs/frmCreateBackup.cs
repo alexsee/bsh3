@@ -3,6 +3,7 @@
 
 using System;
 
+using Brightbits.BSH.Engine.Config;
 namespace Brightbits.BSH.Main;
 
 public partial class frmCreateBackup

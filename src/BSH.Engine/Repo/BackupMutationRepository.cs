@@ -4,9 +4,8 @@
 using System;
 using System.Data;
 using System.Threading.Tasks;
-using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Contracts.Repo;
-using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Repo.Contracts;
+using Brightbits.BSH.Engine.Repo.Database;
 
 namespace Brightbits.BSH.Engine.Repo;
 

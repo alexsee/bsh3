@@ -8,10 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Service.Jobs;
 using Humanizer;
 using Resources = BSH.Main.Properties.Resources;
 
+using Brightbits.BSH.Engine.Types;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Repo;
 namespace Brightbits.BSH.Main;
 
 public partial class ucOverview : IMainTabs, IStatusReport

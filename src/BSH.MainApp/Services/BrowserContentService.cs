@@ -1,12 +1,13 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Types;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.Utils;
 
+using Brightbits.BSH.Engine.Repo.Contracts;
 namespace BSH.MainApp.Services;
 
 public class BrowserContentService : IBrowserContentService

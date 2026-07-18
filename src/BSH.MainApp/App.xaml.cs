@@ -1,19 +1,19 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Contracts.Repo;
-using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Contracts.Storage;
-using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Providers.Media;
 using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Providers.Scheduler;
+using Brightbits.BSH.Engine.Providers.Storage;
+using Brightbits.BSH.Engine.Providers.Vss;
 using Brightbits.BSH.Engine.Repo;
+using Brightbits.BSH.Engine.Repo.Contracts;
+using Brightbits.BSH.Engine.Repo.Database;
 using Brightbits.BSH.Engine.Runtime.Ports;
-using Brightbits.BSH.Engine.Services;
-using Brightbits.BSH.Engine.Services.FileCollector;
-using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Service;
+using Brightbits.BSH.Engine.Service.Contracts;
+using Brightbits.BSH.Engine.Service.FileCollector;
 using BSH.MainApp.Activation;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Core.Contracts.Services;

@@ -3,7 +3,7 @@
 
 using System;
 using System.Windows.Forms;
-using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Providers.Storage;
 using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;

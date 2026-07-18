@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Brightbits.BSH.Engine.Runtime.Ports;
-using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Utils.Security;
 using BSH.MainApp.Contracts.Services;
 
 namespace BSH.MainApp.Services;

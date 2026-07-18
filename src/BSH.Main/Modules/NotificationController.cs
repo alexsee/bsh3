@@ -6,9 +6,10 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Service.Jobs;
 using BSH.Main.Properties;
 
+using Brightbits.BSH.Engine.Types;
 namespace Brightbits.BSH.Main;
 
 /// <summary>

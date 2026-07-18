@@ -3,9 +3,9 @@
 
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Security;
-using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Utils.Security;
+using Brightbits.BSH.Engine.Providers.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Helpers;
@@ -16,6 +16,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Storage.Pickers;
 using Windows.UI.Popups;
 
+using Brightbits.BSH.Engine.Types;
+using Brightbits.BSH.Engine.Repo.Contracts;
+using Brightbits.BSH.Engine.Utils;
 namespace BSH.MainApp.ViewModels;
 
 public enum ModeType

@@ -2,8 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Service.Jobs;
 using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
@@ -14,6 +14,8 @@ using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Microsoft.UI.Dispatching;
 
+using Brightbits.BSH.Engine.Types;
+using Brightbits.BSH.Engine.Repo.Contracts;
 namespace BSH.MainApp.ViewModels;
 
 public partial class MainViewModel : ObservableObject, INavigationAware, IStatusReport

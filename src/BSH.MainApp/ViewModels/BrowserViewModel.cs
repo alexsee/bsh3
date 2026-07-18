@@ -2,9 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.ObjectModel;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Service.Contracts;
+using Brightbits.BSH.Engine.Types;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
 using BSH.MainApp.Models;
@@ -12,6 +12,7 @@ using BSH.MainApp.ViewModels.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using Brightbits.BSH.Engine.Repo.Contracts;
 namespace BSH.MainApp.ViewModels;
 
 public partial class BrowserViewModel : ObservableObject, INavigationAware

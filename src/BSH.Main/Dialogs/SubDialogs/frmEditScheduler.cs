@@ -3,7 +3,7 @@
 
 using System;
 using System.Windows.Forms;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Types;
 using BSH.Main.Utils;
 using Resources = BSH.Main.Properties.Resources;
 

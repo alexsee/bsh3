@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using AutoUpdaterDotNET;
-using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Repo.Database;
 using BSH.Main.Properties;
 using Serilog;
 

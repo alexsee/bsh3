@@ -5,10 +5,12 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Repo.Contracts;
+using Brightbits.BSH.Engine.Repo.Database;
 using NUnit.Framework;
 
+using Brightbits.BSH.Engine.Types;
+using Brightbits.BSH.Engine.Config;
 namespace BSH.Test;
 public class ConfigurationManagerTests
 {

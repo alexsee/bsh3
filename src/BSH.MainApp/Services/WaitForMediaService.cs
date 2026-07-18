@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Service.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Windows;
 using CommunityToolkit.WinUI;
