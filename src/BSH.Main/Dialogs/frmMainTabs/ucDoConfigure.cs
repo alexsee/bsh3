@@ -11,6 +11,7 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Providers.Ports;
 using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;
@@ -480,7 +481,7 @@ public partial class ucDoConfigure : IMainTabs
                     {
                         // download backup database
                         DeleteCurrentDatabaseFile();
-                        using IStorage storage = new FtpStorage(
+                        using IStorageProvider storage = new FtpStorage(
                             txtFTPServer2.Text,
                             int.Parse(txtFTPPort2.Text),
                             txtFTPUser2.Text,

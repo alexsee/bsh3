@@ -96,23 +96,9 @@ static class Program
     private static void AutoUpdater_ApplicationExitEvent()
     {
         // close application
-        NotificationController.Current.Shutdown();
-        BackupLogic.StopSystem();
-        BackupLogic.BackupController?.Dispose();
         Settings.Default.StartParameters = Environment.CommandLine;
         Settings.Default.Save();
-
-        PresentationController.Current.CloseMainWindow();
-        PresentationController.Current.CloseBackupBrowserWindow();
-
-        try
-        {
-            Application.Exit();
-        }
-        catch
-        {
-            Environment.Exit(0);
-        }
+        AppLifecycle.Exit();
     }
 
     private static void ApplicationExit(object sender, EventArgs e)
@@ -157,14 +143,6 @@ static class Program
         if (!string.IsNullOrEmpty(opts.DatabaseFile) && System.IO.File.Exists(opts.DatabaseFile))
         {
             BackupLogic.DatabaseFile = opts.DatabaseFile;
-        }
-
-        // (deprecated)
-        if (opts.DeleteProtocol)
-        {
-            Application.Exit();
-            Environment.Exit(0);
-            return;
         }
     }
 

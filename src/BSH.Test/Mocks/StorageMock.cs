@@ -4,11 +4,10 @@
 using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Providers.Ports;
-using Brightbits.BSH.Engine.Storage;
 
 namespace BSH.Test.Mocks
 {
-    public class StorageMock : IStorage
+    public class StorageMock : IStorageProvider
     {
         private readonly bool failCheckMedium;
         private readonly bool failAllCopies;

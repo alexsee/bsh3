@@ -14,7 +14,7 @@ using Serilog;
 
 namespace Brightbits.BSH.Engine.Storage;
 
-public class FileSystemStorage : Storage, IStorage
+public class FileSystemStorage : Storage, IStorageProvider
 {
     private static readonly ILogger _logger = Log.ForContext<FileSystemStorage>();
 
@@ -46,26 +46,6 @@ public class FileSystemStorage : Storage, IStorage
         this.networkPassword = configurationManager.UNCPassword;
 
         networkStorage = !string.IsNullOrEmpty(this.networkUserName);
-    }
-
-    public FileSystemStorage(IConfigurationManager configurationManager,
-        string backupFolder,
-        string volumeSerialNumber,
-        int currentStorageVersion,
-        string networkUserName,
-        string networkPassword,
-        int compressionLevel)
-    {
-        ArgumentNullException.ThrowIfNull(configurationManager);
-
-        this.configurationManager = configurationManager;
-        this.backupFolder = backupFolder;
-        this.volumeSerialNumber = volumeSerialNumber;
-        this.currentStorageVersion = currentStorageVersion;
-        this.networkUserName = networkUserName;
-        this.networkPassword = networkPassword;
-
-        networkStorage = !string.IsNullOrEmpty(networkUserName);
     }
 
     public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;

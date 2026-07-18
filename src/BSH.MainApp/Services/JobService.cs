@@ -280,7 +280,7 @@ public class JobService : IJobService, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private async Task<bool> HandleSessionStartAsync(SingleBackupSessionResult result, string operationName, bool statusDialog)
+    private async Task<bool> HandleSessionStartAsync(JobSessionResult result, string operationName, bool statusDialog)
     {
         if (result.Started)
         {

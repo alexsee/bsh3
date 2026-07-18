@@ -19,12 +19,6 @@ public class Options
         get; set;
     }
 
-    [Option("deleteprotocol", Default = false)]
-    public bool DeleteProtocol
-    {
-        get; set;
-    }
-
     [Option("config")]
     public bool ShowConfig
     {
