@@ -354,6 +354,7 @@ public class WinUiOrchestrationParityTests
         public string ExcludeFileTypes { get; set; } = "";
         public string ExcludeFolder { get; set; } = "";
         public string ExcludeMask { get; set; } = "";
+        public string IncludeSystemFolders { get; set; } = "0";
         public string FreeSpace { get; set; } = "";
         public string FtpCoding { get; set; } = "";
         public string FtpEncryptionMode { get; set; } = "";
