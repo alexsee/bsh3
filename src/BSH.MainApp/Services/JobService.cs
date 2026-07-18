@@ -54,11 +54,12 @@ public class JobService : IJobService, IDisposable
         this.jobRuntime = new JobRuntime(
             backupService,
             () => this.statusService.IsTaskRunning(),
-            () => this.configurationManager.Medium == "1",
-            async (_, silent, cancellationTokenSource) =>
+            this.SelectMediaWaitMode,
+            async (_, waitMode, cancellationTokenSource) =>
             {
                 var waitForMediaService = this.waitForMediaServiceFactory();
-                return await waitForMediaService.ExecuteAsync(silent, cancellationTokenSource);
+                var suppressPrompt = waitMode == MediaWaitMode.SilentPolling;
+                return await waitForMediaService.ExecuteAsync(suppressPrompt, cancellationTokenSource);
             },
             this.RequestPassword);
         this.presenter = new WinUIJobSessionPresenter(this.presentationService, this.statusService, this.Cancel, this.completionActionService);
@@ -71,6 +72,21 @@ public class JobService : IJobService, IDisposable
             storedPasswordAdapter);
 
         GetNewCancellationToken();
+    }
+
+    private MediaWaitMode SelectMediaWaitMode(bool silent)
+    {
+        if (configurationManager.Medium != "1")
+        {
+            return MediaWaitMode.None;
+        }
+
+        if (!silent || configurationManager.ShowWaitOnMediaAutoBackups == "1")
+        {
+            return MediaWaitMode.PromptUser;
+        }
+
+        return MediaWaitMode.None;
     }
 
     /// <summary>

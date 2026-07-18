@@ -20,6 +20,7 @@ public class ScheduledBackupService : IScheduledBackupService
     private readonly IQueryManager queryManager;
     private readonly IScheduleRepository scheduleRepository;
     private readonly ISchedulerAdapterFactory schedulerAdapterFactory;
+    private readonly ScheduleSettingsService scheduleSettingsService;
 
     private ISchedulerAdapter schedulerService;
 
@@ -28,13 +29,15 @@ public class ScheduledBackupService : IScheduledBackupService
         IJobService jobService,
         IQueryManager queryManager,
         IScheduleRepository scheduleRepository,
-        ISchedulerAdapterFactory schedulerAdapterFactory)
+        ISchedulerAdapterFactory schedulerAdapterFactory,
+        ScheduleSettingsService scheduleSettingsService)
     {
         this.configurationManager = configurationManager;
         this.jobService = jobService;
         this.queryManager = queryManager;
         this.scheduleRepository = scheduleRepository;
         this.schedulerAdapterFactory = schedulerAdapterFactory;
+        this.scheduleSettingsService = scheduleSettingsService;
     }
 
     public async Task InitializeAsync()
@@ -122,66 +125,10 @@ public class ScheduledBackupService : IScheduledBackupService
             TaskContinuationOptions.None);
     }
 
-    private List<VersionDetails> GetAutomaticVersionsToDelete()
-    {
-        var listDelete = new List<VersionDetails>();
-        var listVersions = queryManager.GetVersions();
-        var hourlyBackupThreshold = int.TryParse(configurationManager.IntervallAutoHourBackups, out var threshold) && threshold > 0
-            ? threshold
-            : 24;
-
-        foreach (var version in listVersions)
-        {
-            // ignore fixed versions
-            if (version.Stable)
-            {
-                continue;
-            }
-
-            // keep hourly backups for the configured automatic-retention threshold
-            if (DateTime.Now.Subtract(version.CreationDate) <= new TimeSpan(hourlyBackupThreshold, 0, 0))
-            {
-                continue;
-            }
-
-            // version older than 1 month
-            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(DateTime.DaysInMonth(version.CreationDate.Year, version.CreationDate.Month), 0, 0, 0))
-            {
-                // keep if last backup of the week
-                if (listVersions.Any(x =>
-                    version.CreationDate != x.CreationDate &&
-                    version.CreationDate.Year == x.CreationDate.Year &&
-                    version.CreationDate.Month == x.CreationDate.Month &&
-                    version.CreationDate.Day - (int)version.CreationDate.DayOfWeek == x.CreationDate.Day - (int)x.CreationDate.DayOfWeek &&
-                    version.CreationDate.DayOfWeek < x.CreationDate.DayOfWeek)
-                    )
-                {
-                    listDelete.Add(version);
-                }
-            }
-            else
-            {
-                // keep if last backup on that day
-                if (listVersions.Any(x =>
-                    version.CreationDate != x.CreationDate &&
-                    version.CreationDate.Year == x.CreationDate.Year &&
-                    version.CreationDate.Month == x.CreationDate.Month &&
-                    version.CreationDate.Day == x.CreationDate.Day &&
-                    version.CreationDate.TimeOfDay < x.CreationDate.TimeOfDay)
-                    )
-                {
-                    listDelete.Add(version);
-                }
-            }
-        }
-
-        return listDelete;
-    }
-
     private async Task RemoveOldBackups()
     {
-        // get versions to clean
-        var listDelete = GetAutomaticVersionsToDelete();
+        var listDelete = scheduleSettingsService.LoadPolicy()
+            .GetAutomaticVersionsToDelete(queryManager.GetVersions(), DateTime.Now);
 
         // delete old versions
         foreach (var version in listDelete)
@@ -370,22 +317,11 @@ public class ScheduledBackupService : IScheduledBackupService
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        // Vollsicherung durchführen?
-        var fullBackupOption = false;
-        if (!string.IsNullOrEmpty(configurationManager.ScheduleFullBackup))
-        {
-            // Letzte Vollsicherung ermitteln
-            var Item = configurationManager.ScheduleFullBackup.Split('|');
-            if (Item[0] == "day")
-            {
-                var lastFullBackup = await queryManager.GetLastFullBackupAsync();
-                if (lastFullBackup != null)
-                {
-                    var Diff = DateTime.Now.Subtract(lastFullBackup.CreationDate);
-                    fullBackupOption = Diff.Days >= Convert.ToInt32(Item[1]);
-                }
-            }
-        }
+        var schedulePolicy = scheduleSettingsService.LoadPolicy();
+        var lastFullBackup = schedulePolicy.ScheduledFullBackupsEnabled
+            ? await queryManager.GetLastFullBackupAsync()
+            : null;
+        var fullBackupOption = schedulePolicy.ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
 
         // Backup durchführen
         var task = jobService.CreateBackupAsync("Automatische Sicherung", "", false, fullBackupOption);
@@ -411,59 +347,8 @@ public class ScheduledBackupService : IScheduledBackupService
 
         try
         {
-            if (configurationManager.IntervallDelete == "auto")
-            {
-                // automatic deletion
-                listDelete.AddRange(GetAutomaticVersionsToDelete());
-            }
-            else if (string.IsNullOrEmpty(configurationManager.IntervallDelete))
-            {
-                // don't delete anything
-            }
-            else
-            {
-                // custom intervals
-                var intervals = configurationManager.IntervallDelete.Split('|');
-                var listVersions = queryManager.GetVersions();
-
-                foreach (var version in listVersions)
-                {
-                    // ignore fixed versions
-                    if (version.Stable)
-                    {
-                        continue;
-                    }
-
-                    // Löschung
-                    switch (intervals[0] ?? "")
-                    {
-                        case "hour":
-                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0) && !listDelete.Contains(version))
-                            {
-                                listDelete.Add(version);
-                            }
-
-                            break;
-
-                        case "day":
-                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan(Convert.ToInt32(intervals[1]), 0, 0, 0) && !listDelete.Contains(version))
-                            {
-                                listDelete.Add(version);
-                            }
-
-                            break;
-
-                        case "week":
-
-                            if (DateTime.Now.Subtract(version.CreationDate) > new TimeSpan((int)Math.Round(Convert.ToDouble(intervals[1]) * 7d), 0, 0, 0) && !listDelete.Contains(version))
-                            {
-                                listDelete.Add(version);
-                            }
-
-                            break;
-                    }
-                }
-            }
+            listDelete.AddRange(scheduleSettingsService.LoadPolicy()
+                .GetVersionsToDelete(queryManager.GetVersions(), DateTime.Now));
         }
         catch (Exception ex)
         {
