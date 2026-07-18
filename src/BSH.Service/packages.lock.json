@@ -336,6 +336,26 @@
       "bsh.service.shared": {
         "type": "Project"
       }
+    },
+    "net10.0-windows7.0/win-x64": {
+      "AlphaVSS.Native.NetCore": {
+        "type": "Transitive",
+        "resolved": "2.0.3",
+        "contentHash": "hUJThzRUMfcNBjnCX6u0CvNj4wlyeAlB59hnP4IWgcsRrCXqEOcXriLekGy765JZTg4Re4iErA28j7OnbA08Wg=="
+      },
+      "System.Diagnostics.EventLog": {
+        "type": "Transitive",
+        "resolved": "10.0.9",
+        "contentHash": "s2PcxHK4IYQ6gmD3VSBkym9tWGkFisKjcjWBdl7a+n4Yy66ae4beJ1ZdjDp060SSll4W3Rt4H2LW87dWckv+QQ=="
+      },
+      "System.ServiceProcess.ServiceController": {
+        "type": "Transitive",
+        "resolved": "10.0.9",
+        "contentHash": "VaYklIT689DthcRzbqt3S8z3GkymiD+US+RLzMFfoPxNIyUxMpXT116cO6rVrKHSuwgdvb35HRKN/PmDmbL+3g==",
+        "dependencies": {
+          "System.Diagnostics.EventLog": "10.0.9"
+        }
+      }
     }
   }
 }
