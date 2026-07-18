@@ -3,18 +3,17 @@
 
 using System.Diagnostics;
 using System.Reflection;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
+using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Windows;
 using CommunityToolkit.WinUI;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Popups;
 using WinUIEx;
@@ -54,7 +53,7 @@ public class PresentationService : IPresentationService
 
     public async Task ShowMainWindowAsync()
     {
-        App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.MainViewModel");
+        App.GetService<SetupRouting>().NavigateForStartup();
         await App.GetService<IActivationService>().ActivateAsync(null);
     }
 
@@ -120,13 +119,15 @@ public class PresentationService : IPresentationService
             return;
         }
 
+        await App.GetService<IOrchestrationService>().StopAsync(turnOff: true);
+
         DbClientFactory.ClosePool();
         DeleteDatabaseFiles(App.DatabaseFile);
 
         await App.GetService<IDbClientFactory>().InitializeAsync(App.DatabaseFile);
         await App.GetService<IConfigurationManager>().InitializeAsync();
         App.GetService<IStatusService>().Initialize();
-        App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.SettingsViewModel");
+        App.GetService<SetupRouting>().NavigateToSetup();
     }
 
     public async Task<(string? password, bool persist)> RequestPasswordAsync()

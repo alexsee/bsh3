@@ -102,6 +102,8 @@ public partial class App : Application
             services.AddSingleton<ICompletionActionService, CompletionActionService>();
             services.AddSingleton<IJobService, JobService>();
             services.AddSingleton<IPresentationService, PresentationService>();
+            services.AddSingleton<ISetupService, SetupService>();
+            services.AddSingleton<SetupRouting>();
 
             // Engine Services
             services.AddSingleton<IConfigurationManager, ConfigurationManager>();
@@ -131,6 +133,8 @@ public partial class App : Application
             services.AddTransient<MainPage>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
+            services.AddTransient<SetupViewModel>();
+            services.AddTransient<SetupPage>();
 
             services.AddTransient<FilterViewModel>();
             services.AddTransient<ScheduleEditorViewModel>();
@@ -169,6 +173,8 @@ public partial class App : Application
         await App.GetService<IOrchestrationService>().InitializeAsync();
 
         InitializeTrayIcon();
+
+        await App.GetService<IActivationService>().ActivateAsync(args);
     }
 
     private void InitializeTrayIcon()

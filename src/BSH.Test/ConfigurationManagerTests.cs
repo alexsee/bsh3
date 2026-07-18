@@ -81,4 +81,25 @@ public class ConfigurationManagerTests
         Assert.That(configurationManager.Compression, Is.EqualTo(0));
         Assert.That(configurationManager.Encrypt, Is.EqualTo(0));
     }
+
+    [Test]
+    public async Task ReinitializeClearsStaleIsConfiguredWhenDatabaseIsRecreated()
+    {
+        var configurationManager = new ConfigurationManager(dbClientFactory);
+        await configurationManager.InitializeAsync();
+        configurationManager.IsConfigured = "1";
+        configurationManager.SourceFolder = @"C:\Users\alex\Documents";
+
+        DbClientFactory.ClosePool();
+        if (File.Exists("testdb_configurationmanager.db"))
+        {
+            File.Delete("testdb_configurationmanager.db");
+        }
+
+        await dbClientFactory.InitializeAsync(Path.Combine(Environment.CurrentDirectory, "testdb_configurationmanager.db"));
+        await configurationManager.InitializeAsync();
+
+        Assert.That(configurationManager.IsConfigured, Is.EqualTo("0"));
+        Assert.That(configurationManager.SourceFolder, Is.Empty);
+    }
 }
