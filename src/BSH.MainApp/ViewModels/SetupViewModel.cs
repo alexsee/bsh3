@@ -1002,9 +1002,18 @@ public partial class SetupViewModel : ObservableObject
 
 public sealed class SetupDriveItem
 {
-    public required string DisplayName { get; init; }
+    public required string DisplayName
+    {
+        get; init;
+    }
 
-    public required string RootPath { get; init; }
+    public required string RootPath
+    {
+        get; init;
+    }
 
-    public required DriveType DriveType { get; init; }
+    public required DriveType DriveType
+    {
+        get; init;
+    }
 }

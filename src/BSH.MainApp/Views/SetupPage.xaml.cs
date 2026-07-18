@@ -8,7 +8,10 @@ namespace BSH.MainApp.Views;
 
 public sealed partial class SetupPage : Page
 {
-    public SetupViewModel ViewModel { get; }
+    public SetupViewModel ViewModel
+    {
+        get;
+    }
 
     public SetupPage()
     {

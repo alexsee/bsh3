@@ -353,8 +353,14 @@ public class SetupService : ISetupService
             Changed = changed;
         }
 
-        public string Path { get; set; }
+        public string Path
+        {
+            get; set;
+        }
 
-        public bool Changed { get; set; }
+        public bool Changed
+        {
+            get; set;
+        }
     }
 }
