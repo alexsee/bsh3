@@ -196,6 +196,28 @@ public class BackupJob : Job
             // report progress
             _logger.Information("{numFiles} files and {numFolders} folders are collected for backup.", files.Count, emptyFolder.Count);
 
+            // rough free-space preflight before heavy copy work
+            var freeSpaceBytes = storage.GetFreeSpace();
+            if (DiskSpacePreflight.ShouldAbortBackup(freeSpaceBytes, files.Select(f => f.FileSize)))
+            {
+                var estimatedBytes = DiskSpacePreflight.EstimateRequiredBytes(files.Select(f => f.FileSize));
+                _logger.Error(
+                    "Insufficient free space on backup device before copy. Estimated need ~{estimatedBytes} bytes, available {freeSpaceBytes} bytes. Aborting.",
+                    estimatedBytes,
+                    freeSpaceBytes);
+
+                ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_ERROR);
+                await RequestShowErrorInsufficientDiskSpaceAsync();
+
+                storage.DeleteDirectory(newVersionDate);
+                storage.Dispose();
+                dbClient.RollbackTransaction();
+                Win32Stuff.AllowSystemSleep();
+
+                ReportState(JobState.ERROR);
+                return;
+            }
+
             ReportStatus(Resources.STATUS_BACKUP_COPY_SHORT, Resources.STATUS_BACKUP_COPY_TEXT);
             ReportProgress(files.Count, 0);
 
