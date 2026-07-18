@@ -25,17 +25,17 @@ jobs:
     environment: sonarcloud
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      with:
-        fetch-depth: 0
-        persist-credentials: false
-
     - name: Set up JDK 17
       uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5
       with:
         java-version: 17
         distribution: 'zulu'
+
+    - name: Checkout
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      with:
+        fetch-depth: 0
+        persist-credentials: false
 
     - name: Setup dotnet
       uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
@@ -44,36 +44,52 @@ jobs:
         cache: true
         cache-dependency-path: src/**/packages.lock.json
 
-    - name: Install SonarCloud scanner
+    - name: Cache SonarQube packages
+      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      with:
+        path: ~\.sonar\cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+
+    - name: Cache SonarQube scanner
+      id: cache-sonar-scanner
+      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      with:
+        path: .\.sonar\scanner
+        key: ${{ runner.os }}-sonar-scanner
+        restore-keys: ${{ runner.os }}-sonar-scanner
+
+    - name: Install SonarQube scanner
+      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      shell: pwsh
       run: |
-        dotnet tool install --global dotnet-sonarscanner
-        dotnet tool install --global dotnet-coverage
-    
-    - name: Start sonarcloud scanner
-      run: |
-        dotnet sonarscanner begin /k:"alexsee_bsh3" /o:"alexsee" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+        New-Item -Path .\.sonar\scanner -ItemType Directory
+        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+
+    - name: Install coverage tool
+      run: dotnet tool install --global dotnet-coverage
+
+    - name: Build and analyze
+      shell: pwsh
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      working-directory: ./src
-
-    - name: Restore dependencies
-      run: dotnet restore "Backup Service Home 3.sln" --locked-mode -a x64
-      working-directory: ./src
-
-    - name: Build application
       run: |
-        dotnet build "Backup Service Home 3.sln" --configuration Release --no-restore -p:Platform=x64
-      working-directory: ./src
+        # Fail fast and propagate errors to the runner
+        # https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_preference_variables?view=powershell-7.5
+        $ErrorActionPreference = "Stop"
+        $PSNativeCommandUseErrorActionPreference = $true
 
-    - name: Test application and collect coverage
-      run: |
-        dotnet-coverage collect 'dotnet test "Backup Service Home 3.sln" --configuration Release --no-build --no-restore -p:Platform=x64' -f xml -o 'coverage.xml'
-      working-directory: ./src
+        $scanner = Join-Path $env:GITHUB_WORKSPACE ".sonar\scanner\dotnet-sonarscanner"
 
-    - name: Finish the sonar cloud scanner
-      run: dotnet sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      working-directory: ./src
+        Push-Location src
+        try {
+          & $scanner begin /k:"alexsee_bsh3" /o:"alexsee" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+          dotnet restore "Backup Service Home 3.sln" --locked-mode -a x64
+          dotnet build "Backup Service Home 3.sln" --configuration Release --no-restore -p:Platform=x64
+          dotnet-coverage collect 'dotnet test "Backup Service Home 3.sln" --configuration Release --no-build --no-restore -p:Platform=x64' -f xml -o 'coverage.xml'
+          & $scanner end /d:sonar.token="$env:SONAR_TOKEN"
+        }
+        finally {
+          Pop-Location
+        }
