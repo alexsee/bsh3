@@ -299,8 +299,8 @@ public partial class ucDoConfigure : IMainTabs
                     // start backup
                     await BackupLogic.StartSystemAsync(true);
 
-                    // create first backup
-                    BackupLogic.BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_FIRST, "", false);
+                    // create first backup (fire-and-forget; balloon notifies the user)
+                    _ = BackupLogic.BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_FIRST, "", false);
                     NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_FIRST_RUN_TITLE, Resources.INFO_BACKUP_FIRST_RUN_TEXT, ToolTipIcon.Info);
                 }
 
