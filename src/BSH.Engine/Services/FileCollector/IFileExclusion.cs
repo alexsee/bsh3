@@ -38,7 +38,7 @@ public class PathFileExclusion(IConfigurationManager configurationManager) : IFi
         var excludeFolders = configurationManager.ExcludeFolder.Split('|');
         if (Array.Exists(excludeFolders, entry => ("\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\").StartsWith(entry + "\\", StringComparison.OrdinalIgnoreCase)))
         {
-            _logger.Debug("{fileName} was ignored due to file path filter.", file.FileNamePath());
+            _logger.Debug("{FileName} was ignored due to file path filter.", file.FileNamePath());
             return true;
         }
 
@@ -65,7 +65,7 @@ public class TypeFileExclusion(IConfigurationManager configurationManager) : IFi
 
             if (string.Equals("." + entry, fileExt, StringComparison.OrdinalIgnoreCase))
             {
-                _logger.Debug("{fileName} was ignored due to file extension filter.", file.FileNamePath());
+                _logger.Debug("{FileName} was ignored due to file extension filter.", file.FileNamePath());
                 return true;
             }
         }
@@ -83,7 +83,7 @@ public class SizeFileExclusion(IConfigurationManager configurationManager) : IFi
         // file size filter
         if (!string.IsNullOrEmpty(configurationManager.ExcludeFileBigger) && file.FileSize > long.Parse(configurationManager.ExcludeFileBigger))
         {
-            _logger.Debug("{fileName} was ignored due to file size filter.", file.FileNamePath());
+            _logger.Debug("{FileName} was ignored due to file size filter.", file.FileNamePath());
             return true;
         }
 
@@ -109,13 +109,13 @@ public class MaskFileExclusion(IConfigurationManager configurationManager) : IFi
 
             if (_regexExcludeCache.IsMatch(file.FileNamePath()))
             {
-                _logger.Debug("{fileName} was ignored due to regex filter.", file.FileNamePath());
+                _logger.Debug("{FileName} was ignored due to regex filter.", file.FileNamePath());
                 return true;
             }
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "{fileName} was not ignored due to error with regular expressions {expr}",
+            _logger.Error(ex, "{FileName} was not ignored due to error with regular expressions {Expr}",
                 file.FileNamePath(),
                 configurationManager.ExcludeMask);
             return false;
@@ -139,7 +139,7 @@ public class NameFileExclusion(IConfigurationManager configurationManager) : IFi
         var excludeFile = configurationManager.ExcludeFile.Split('|');
         if (Array.Exists(excludeFile, entry => file.FileNamePath().EndsWith(entry, StringComparison.OrdinalIgnoreCase)))
         {
-            _logger.Debug("{fileName} was ignored due to file name filter.", file.FileNamePath());
+            _logger.Debug("{FileName} was ignored due to file name filter.", file.FileNamePath());
             return true;
         }
 

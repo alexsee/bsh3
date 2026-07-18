@@ -11,7 +11,7 @@ static class ExceptionController
 {
     public static void HandleGlobalException(object sender, System.Threading.ThreadExceptionEventArgs e)
     {
-        Log.Error(e.Exception, "An unexpected error occurred {msg}.", e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString());
+        Log.Error(e.Exception, "An unexpected error occurred {Msg}.", e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString());
 
         using var dlgException = new frmError();
         dlgException.txtError.Text = e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString();
@@ -32,7 +32,7 @@ static class ExceptionController
     public static void HandleGlobalException(object sender, UnhandledExceptionEventArgs e)
     {
         var exception = (Exception)e.ExceptionObject;
-        Log.Error(exception, "An unexpected error occurred {msg}.", exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString());
+        Log.Error(exception, "An unexpected error occurred {Msg}.", exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString());
 
         using var dlgException = new frmError();
         dlgException.txtError.Text = exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString();
