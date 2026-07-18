@@ -1,6 +1,7 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Linq;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Utils;
 using NUnit.Framework;
@@ -64,5 +65,37 @@ public class BackupFileTypeTests
     {
         Assert.That(BackupFileType.IsKnown(0), Is.False);
         Assert.That(BackupFileType.IsKnown(99), Is.False);
+    }
+
+    [TestCase(BackupFileType.LocalEncrypted, BackupFileType.Local)]
+    [TestCase(BackupFileType.FtpEncrypted, BackupFileType.Ftp)]
+    [TestCase(BackupFileType.WebDavEncrypted, BackupFileType.WebDav)]
+    public void TryGetRegular_MapsEncryptedTypesToRegular(int encryptedType, int expectedRegular)
+    {
+        Assert.That(BackupFileType.TryGetRegular(encryptedType, out var regularType), Is.True);
+        Assert.That(regularType, Is.EqualTo(expectedRegular));
+    }
+
+    [TestCase(BackupFileType.WebDav)]
+    [TestCase(BackupFileType.WebDavCompressed)]
+    [TestCase(BackupFileType.WebDavEncrypted)]
+    public void GetDisplayName_ReturnsKnownNameForWebDavTypes(int fileType)
+    {
+        Assert.That(BackupFileType.GetDisplayName(fileType), Is.Not.EqualTo("Unknown"));
+    }
+
+    [Test]
+    public void GetRemapBatches_ForWebDav_IncludesFtpAndLocalSources()
+    {
+        var allSources = BackupFileType.GetRemapBatches(StorageProviderKind.WebDav)
+            .SelectMany(batch => batch.SourceTypes)
+            .ToHashSet();
+
+        Assert.That(allSources, Does.Contain(BackupFileType.Ftp));
+        Assert.That(allSources, Does.Contain(BackupFileType.FtpCompressed));
+        Assert.That(allSources, Does.Contain(BackupFileType.FtpEncrypted));
+        Assert.That(allSources, Does.Contain(BackupFileType.Local));
+        Assert.That(allSources, Does.Contain(BackupFileType.LocalCompressed));
+        Assert.That(allSources, Does.Contain(BackupFileType.LocalEncrypted));
     }
 }

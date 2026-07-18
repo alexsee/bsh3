@@ -256,32 +256,33 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand(CanExecute = nameof(CanExecuteCheckRemoteConnection))]
-    public async Task CheckFtpRemote()
+    public async Task CheckRemoteConnection()
     {
-        var profile = FtpStorage.CheckConnection(FtpRemoteHost, FtpRemotePort, FtpRemoteUser, FtpRemotePassword, FtpRemotePath, FtpRemoteEncoding);
-
-        if (profile)
+        var credentials = new RemoteStorageCredentials
         {
-            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Successful_Title".GetLocalized(), "MsgBox_Ftp_Successful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
-        }
-        else
-        {
-            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Unuccessful_Title".GetLocalized(), "MsgBox_Ftp_Unuccessful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
-        }
-    }
+            Host = FtpRemoteHost,
+            Port = FtpRemotePort,
+            UserName = FtpRemoteUser,
+            Password = FtpRemotePassword,
+            Folder = FtpRemotePath,
+            Encoding = FtpRemoteEncoding,
+            UseEncryption = !FtpRemoteEnforceUnencrypted
+        };
 
-    [RelayCommand(CanExecute = nameof(CanExecuteCheckRemoteConnection))]
-    public async Task CheckWebDavRemote()
-    {
-        var ok = WebDavStorage.CheckConnection(FtpRemoteHost, FtpRemotePort, FtpRemoteUser, FtpRemotePassword, FtpRemotePath);
+        var ok = StorageFactory.CheckRemoteConnection(SelectedMediaType, credentials);
+        var isWebDav = SelectedMediaType.IsWebDav();
+        var successTitle = isWebDav ? "MsgBox_WebDav_Successful_Title" : "MsgBox_Ftp_Successful_Title";
+        var successText = isWebDav ? "MsgBox_WebDav_Successful_Text" : "MsgBox_Ftp_Successful_Text";
+        var failureTitle = isWebDav ? "MsgBox_WebDav_Unuccessful_Title" : "MsgBox_Ftp_Unuccessful_Title";
+        var failureText = isWebDav ? "MsgBox_WebDav_Unuccessful_Text" : "MsgBox_Ftp_Unuccessful_Text";
 
         if (ok)
         {
-            await presentationController.ShowMessageBoxAsync("MsgBox_WebDav_Successful_Title".GetLocalized(), "MsgBox_WebDav_Successful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
+            await presentationController.ShowMessageBoxAsync(successTitle.GetLocalized(), successText.GetLocalized(), new List<IUICommand> { new UICommand("OK") });
         }
         else
         {
-            await presentationController.ShowMessageBoxAsync("MsgBox_WebDav_Unuccessful_Title".GetLocalized(), "MsgBox_WebDav_Unuccessful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
+            await presentationController.ShowMessageBoxAsync(failureTitle.GetLocalized(), failureText.GetLocalized(), new List<IUICommand> { new UICommand("OK") });
         }
     }
 
@@ -383,8 +384,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
         if (oldValue == null || oldValue == newValue) return;
         this.configurationManager.FtpHost = newValue;
-        CheckFtpRemoteCommand.NotifyCanExecuteChanged();
-        CheckWebDavRemoteCommand.NotifyCanExecuteChanged();
+        CheckRemoteConnectionCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnFtpRemotePortChanged(int oldValue, int newValue)
@@ -397,16 +397,14 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
         if (oldValue == null || oldValue == newValue) return;
         this.configurationManager.FtpUser = newValue;
-        CheckFtpRemoteCommand.NotifyCanExecuteChanged();
-        CheckWebDavRemoteCommand.NotifyCanExecuteChanged();
+        CheckRemoteConnectionCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnFtpRemotePasswordChanged(string? oldValue, string newValue)
     {
         if (oldValue == null || oldValue == newValue) return;
         this.configurationManager.FtpPass = newValue;
-        CheckFtpRemoteCommand.NotifyCanExecuteChanged();
-        CheckWebDavRemoteCommand.NotifyCanExecuteChanged();
+        CheckRemoteConnectionCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnFtpRemotePathChanged(string? oldValue, string newValue)

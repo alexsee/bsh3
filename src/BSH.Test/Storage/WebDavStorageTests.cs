@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Exceptions;
@@ -29,22 +28,56 @@ public class WebDavStorageTests
     }
 
     [Test]
-    public void CanWriteToStorage_ReturnsFalseBeforeOpenAndTrueAfterOpen()
+    public void CanWriteToStorage_ReturnsTrue_WhenWriteProbeSucceeds()
     {
-        using var storage = CreateStorage();
+        var handler = new TestHttpMessageHandler(request =>
+        {
+            var normalizedPath = NormalizeRequestPath(request);
 
-        Assert.That(storage.CanWriteToStorage(), Is.False);
+            if (request.Method.Method == "PUT" && normalizedPath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal))
+            {
+                return new HttpResponseMessage(HttpStatusCode.Created);
+            }
 
-        storage.Open();
+            if (request.Method.Method == "DELETE" && normalizedPath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal))
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent);
+            }
+
+            throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
+        });
+
+        using var storage = CreateStorage(handler);
 
         Assert.That(storage.CanWriteToStorage(), Is.True);
+        Assert.That(handler.Requests.Count(r => r.Method == "PUT"), Is.EqualTo(1));
+        Assert.That(handler.Requests.Count(r => r.Method == "DELETE"), Is.EqualTo(1));
+    }
+
+    [Test]
+    public void CanWriteToStorage_ReturnsFalse_WhenWriteProbeIsForbidden()
+    {
+        var handler = new TestHttpMessageHandler(request =>
+        {
+            var normalizedPath = NormalizeRequestPath(request);
+
+            if (request.Method.Method == "PUT" && normalizedPath.StartsWith("/folder/bsh.writetest.", StringComparison.Ordinal))
+            {
+                return new HttpResponseMessage(HttpStatusCode.Forbidden);
+            }
+
+            throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
+        });
+
+        using var storage = CreateStorage(handler);
+
+        Assert.That(storage.CanWriteToStorage(), Is.False);
+        Assert.That(handler.Requests.Count(r => r.Method == "PUT"), Is.EqualTo(1));
     }
 
     [Test]
     public void FileExists_ReturnsTrueWhenHeadSucceeds()
     {
-        using var storage = CreateStorage();
-
         var handler = new TestHttpMessageHandler(request =>
         {
             if (request.Method.Method == "HEAD" && NormalizeRequestPath(request) == "/folder/nested/file.txt")
@@ -55,7 +88,7 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+        using var storage = CreateStorage(handler);
 
         var exists = storage.FileExists("\\nested\\file.txt");
 
@@ -68,8 +101,6 @@ public class WebDavStorageTests
     [Test]
     public void FileExists_FallsBackToGetWhenHeadIsNotSupported()
     {
-        using var storage = CreateStorage();
-
         var handler = new TestHttpMessageHandler(request =>
         {
             if (request.Method.Method == "HEAD" && NormalizeRequestPath(request) == "/folder/file.txt")
@@ -85,7 +116,7 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+        using var storage = CreateStorage(handler);
 
         var exists = storage.FileExists("file.txt");
 
@@ -96,8 +127,6 @@ public class WebDavStorageTests
     [Test]
     public async Task CheckMedium_ThrowsDeviceContainsWrongState_WhenVersionMismatches()
     {
-        using var storage = CreateStorage(currentStorageVersion: 3);
-
         var handler = new TestHttpMessageHandler(request =>
         {
             var normalizedPath = NormalizeRequestPath(request);
@@ -128,12 +157,10 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        var originalTimeout = TimeSpan.FromSeconds(42);
-        var client = SetWebDavClient(storage, handler, originalTimeout);
+        using var storage = CreateStorage(handler, currentStorageVersion: 3);
 
         Assert.ThrowsAsync<DeviceContainsWrongStateException>(async () => await storage.CheckMedium());
 
-        Assert.That(client.Timeout, Is.EqualTo(originalTimeout));
         Assert.That(handler.Requests.Count(r => r.Method == "PROPFIND"), Is.EqualTo(1));
         Assert.That(handler.Requests.Count(r => r.Method == "PUT"), Is.EqualTo(1));
         Assert.That(handler.Requests.Count(r => r.Method == "DELETE"), Is.EqualTo(1));
@@ -143,8 +170,6 @@ public class WebDavStorageTests
     [Test]
     public async Task CheckMedium_ReturnsTrue_WhenDirectoryWriteAndVersionAreValid()
     {
-        using var storage = CreateStorage(currentStorageVersion: 3);
-
         var handler = new TestHttpMessageHandler(request =>
         {
             var normalizedPath = NormalizeRequestPath(request);
@@ -175,7 +200,7 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        SetWebDavClient(storage, handler, TimeSpan.FromSeconds(35));
+        using var storage = CreateStorage(handler, currentStorageVersion: 3);
 
         var result = await storage.CheckMedium(quickCheck: true);
 
@@ -185,8 +210,6 @@ public class WebDavStorageTests
     [Test]
     public void RenameDirectory_CreatesTargetParentAndSendsMoveWithDestinationHeader()
     {
-        using var storage = CreateStorage();
-
         var handler = new TestHttpMessageHandler(request =>
         {
             if (request.Method.Method == "PROPFIND" && NormalizeRequestPath(request) == "/folder/target folder")
@@ -207,7 +230,7 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+        using var storage = CreateStorage(handler);
 
         var renamed = storage.RenameDirectory("source/path", "target folder/new name");
 
@@ -222,7 +245,6 @@ public class WebDavStorageTests
     [Test]
     public void CopyFileToStorage_UploadsFileWithPut()
     {
-        using var storage = CreateStorage();
         var localFile = CreateTempFile("hello-webdav");
 
         try
@@ -237,7 +259,7 @@ public class WebDavStorageTests
                 throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
             });
 
-            SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+            using var storage = CreateStorage(handler);
 
             var uploaded = storage.CopyFileToStorage(localFile, "file.txt");
 
@@ -254,7 +276,6 @@ public class WebDavStorageTests
     [Test]
     public void CopyFileToStorage_CreatesNestedDirectoriesThenUploads()
     {
-        using var storage = CreateStorage();
         var localFile = CreateTempFile("nested-upload");
 
         try
@@ -281,7 +302,7 @@ public class WebDavStorageTests
                 throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
             });
 
-            SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+            using var storage = CreateStorage(handler);
 
             var uploaded = storage.CopyFileToStorage(localFile, "a\\b\\file.txt");
 
@@ -298,7 +319,6 @@ public class WebDavStorageTests
     [Test]
     public void CopyFileToStorage_ReturnsFalseWhenPutFails()
     {
-        using var storage = CreateStorage();
         var localFile = CreateTempFile("upload-fail");
 
         try
@@ -313,7 +333,7 @@ public class WebDavStorageTests
                 throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
             });
 
-            SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+            using var storage = CreateStorage(handler);
 
             Assert.That(storage.CopyFileToStorage(localFile, "file.txt"), Is.False);
         }
@@ -326,7 +346,6 @@ public class WebDavStorageTests
     [Test]
     public void CopyFileFromStorage_DownloadsFileContent()
     {
-        using var storage = CreateStorage();
         var localFile = Path.Combine(Path.GetTempPath(), "webdav-download-" + Guid.NewGuid().ToString("N") + ".txt");
 
         try
@@ -344,7 +363,7 @@ public class WebDavStorageTests
                 throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
             });
 
-            SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+            using var storage = CreateStorage(handler);
 
             var downloaded = storage.CopyFileFromStorage(localFile, "remote.txt");
 
@@ -364,7 +383,6 @@ public class WebDavStorageTests
     [Test]
     public void CopyFileFromStorage_ReturnsFalseWhenGetFails()
     {
-        using var storage = CreateStorage();
         var localFile = Path.Combine(Path.GetTempPath(), "webdav-download-fail-" + Guid.NewGuid().ToString("N") + ".txt");
 
         try
@@ -379,7 +397,7 @@ public class WebDavStorageTests
                 throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
             });
 
-            SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+            using var storage = CreateStorage(handler);
 
             Assert.That(storage.CopyFileFromStorage(localFile, "missing.txt"), Is.False);
             Assert.That(File.Exists(localFile), Is.False);
@@ -396,8 +414,6 @@ public class WebDavStorageTests
     [Test]
     public void DeleteFileFromStorage_SendsDeleteAndTreatsNotFoundAsSuccess()
     {
-        using var storage = CreateStorage();
-
         var handler = new TestHttpMessageHandler(request =>
         {
             if (request.Method.Method == "DELETE" && NormalizeRequestPath(request) == "/folder/gone.txt")
@@ -408,7 +424,7 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+        using var storage = CreateStorage(handler);
 
         Assert.That(storage.DeleteFileFromStorage("gone.txt"), Is.True);
         Assert.That(handler.Requests.Select(r => r.Method).ToArray(), Is.EqualTo(new[] { "DELETE" }));
@@ -417,8 +433,6 @@ public class WebDavStorageTests
     [Test]
     public void DeleteFileFromStorage_ReturnsFalseWhenDeleteFails()
     {
-        using var storage = CreateStorage();
-
         var handler = new TestHttpMessageHandler(request =>
         {
             if (request.Method.Method == "DELETE" && NormalizeRequestPath(request) == "/folder/locked.txt")
@@ -429,7 +443,7 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+        using var storage = CreateStorage(handler);
 
         Assert.That(storage.DeleteFileFromStorage("locked.txt"), Is.False);
     }
@@ -437,8 +451,6 @@ public class WebDavStorageTests
     [Test]
     public void DeleteFileFromStorageCompressed_AndEncrypted_AppendExpectedSuffixes()
     {
-        using var storage = CreateStorage();
-
         var handler = new TestHttpMessageHandler(request =>
         {
             var path = NormalizeRequestPath(request);
@@ -450,7 +462,7 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+        using var storage = CreateStorage(handler);
 
         Assert.That(storage.DeleteFileFromStorageCompressed("doc"), Is.True);
         Assert.That(storage.DeleteFileFromStorageEncrypted("doc"), Is.True);
@@ -468,14 +480,6 @@ public class WebDavStorageTests
     [Test]
     public void FileExists_DefaultsMissingSchemeToHttpsAndJoinsFolderPath()
     {
-        using var storage = new WebDavStorage(
-            serverAddress: "dav.example.com",
-            serverPort: 8443,
-            userName: "",
-            password: "",
-            folderPath: "folder",
-            currentStorageVersion: 1);
-
         var handler = new TestHttpMessageHandler(request =>
         {
             if (request.Method.Method == "HEAD")
@@ -486,7 +490,14 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+        using var storage = new WebDavStorage(
+            serverAddress: "dav.example.com",
+            serverPort: 8443,
+            userName: "",
+            password: "",
+            folderPath: "folder",
+            currentStorageVersion: 1,
+            messageHandler: handler);
 
         Assert.That(storage.FileExists("file.txt"), Is.True);
         Assert.That(handler.Requests[0].AbsoluteUri, Is.EqualTo("https://dav.example.com:8443/folder/file.txt"));
@@ -495,8 +506,6 @@ public class WebDavStorageTests
     [Test]
     public void FileExists_ReturnsFalseWhenHeadReportsNotFound()
     {
-        using var storage = CreateStorage();
-
         var handler = new TestHttpMessageHandler(request =>
         {
             if (request.Method.Method == "HEAD" && NormalizeRequestPath(request) == "/folder/missing.txt")
@@ -507,7 +516,7 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+        using var storage = CreateStorage(handler);
 
         Assert.That(storage.FileExists("missing.txt"), Is.False);
     }
@@ -515,8 +524,6 @@ public class WebDavStorageTests
     [Test]
     public async Task CheckMedium_ReturnsFalse_WhenFolderDoesNotExist()
     {
-        using var storage = CreateStorage();
-
         var handler = new TestHttpMessageHandler(request =>
         {
             if (request.Method.Method == "PROPFIND" && NormalizeRequestPath(request) == "/folder")
@@ -527,7 +534,7 @@ public class WebDavStorageTests
             throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
         });
 
-        SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+        using var storage = CreateStorage(handler);
 
         Assert.That(await storage.CheckMedium(quickCheck: true), Is.False);
     }
@@ -535,7 +542,6 @@ public class WebDavStorageTests
     [Test]
     public void UploadDatabaseFile_PutsBackupDatabaseAtFolderRoot()
     {
-        using var storage = CreateStorage();
         var localFile = CreateTempFile("db-content");
 
         try
@@ -550,7 +556,7 @@ public class WebDavStorageTests
                 throw new InvalidOperationException($"Unexpected request: {request.Method} {request.RequestUri}");
             });
 
-            SetWebDavClient(storage, handler, TimeSpan.FromSeconds(30));
+            using var storage = CreateStorage(handler);
 
             Assert.That(storage.UploadDatabaseFile(localFile), Is.True);
             Assert.That(handler.Requests[0].Path, Is.EqualTo("/folder/backup.bshdb"));
@@ -577,7 +583,7 @@ public class WebDavStorageTests
         return path;
     }
 
-    private static WebDavStorage CreateStorage(int currentStorageVersion = 1)
+    private static WebDavStorage CreateStorage(HttpMessageHandler handler = null, int currentStorageVersion = 1)
     {
         return new WebDavStorage(
             serverAddress: "https://dav.example.com",
@@ -585,21 +591,8 @@ public class WebDavStorageTests
             userName: "",
             password: "",
             folderPath: "folder",
-            currentStorageVersion: currentStorageVersion);
-    }
-
-    private static HttpClient SetWebDavClient(WebDavStorage storage, TestHttpMessageHandler handler, TimeSpan timeout)
-    {
-        var client = new HttpClient(handler)
-        {
-            Timeout = timeout
-        };
-
-        var field = typeof(WebDavStorage).GetField("webDavClient", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.That(field, Is.Not.Null);
-        field?.SetValue(storage, client);
-
-        return client;
+            currentStorageVersion: currentStorageVersion,
+            messageHandler: handler);
     }
 
     private static string NormalizeRequestPath(HttpRequestMessage request)

@@ -600,14 +600,7 @@ public class QueryManager : IQueryManager
 
     private static string GetFileTypeDisplayName(string fileType)
     {
-        return fileType switch
-        {
-            "1" => "Regular copy",
-            "2" or "4" => "Compressed",
-            "3" => "Stored copy",
-            "5" or "6" => "Encrypted",
-            _ => "Unknown"
-        };
+        return BackupFileType.GetDisplayName(fileType);
     }
 
     /// <summary>

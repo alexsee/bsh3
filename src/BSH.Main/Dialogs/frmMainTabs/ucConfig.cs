@@ -108,60 +108,49 @@ public partial class ucConfig : IMainTabs
         }
 
         // update backup storage
-        if (cboMedia.SelectedIndex == 1)
+        var mediaType = MediaTypeExtensions.FromMediaComboIndex(cboMedia.SelectedIndex);
+        var configurationManager = BackupLogic.ConfigurationManager;
+        var remoteCredentials = CreateRemoteCredentialsFromUi(mediaType);
+
+        if (mediaType.IsRemote())
         {
-            // FTP
-            BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
-        }
-        else if (cboMedia.SelectedIndex == 2)
-        {
-            // WebDAV
-            BackupLogic.ConfigurationManager.MediumType = MediaType.WebDav;
+            remoteCredentials.ApplyTo(configurationManager, mediaType);
         }
         else
         {
             // directory
-            BackupLogic.ConfigurationManager.MediumType = MediaType.LocalDevice;
+            configurationManager.MediumType = MediaType.LocalDevice;
+
+            // Persist remote form fields (legacy behavior when local is selected)
+            configurationManager.FtpHost = remoteCredentials.Host;
+            configurationManager.FtpPort = txtFTPPort.Text;
+            configurationManager.FtpUser = remoteCredentials.UserName;
+            configurationManager.FtpPass = remoteCredentials.Password;
+            configurationManager.FtpFolder = FtpStorage.GetFtpPath(txtFTPPath.Text);
+            configurationManager.FtpCoding = cboFtpEncoding.SelectedItem?.ToString();
+            configurationManager.FtpEncryptionMode = chkFtpEncryption.Checked ? "0" : "3";
+            configurationManager.FtpSslProtocols = "0";
 
             // UNC authentication
             if (txtBackupPath.Text.StartsWith(@"\\"))
             {
-                BackupLogic.ConfigurationManager.UNCUsername = txtUNCUsername.Text;
-                BackupLogic.ConfigurationManager.UNCPassword = Crypto.EncryptString(txtUNCPassword.Text, System.Security.Cryptography.DataProtectionScope.LocalMachine);
-                BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
+                configurationManager.UNCUsername = txtUNCUsername.Text;
+                configurationManager.UNCPassword = Crypto.EncryptString(txtUNCPassword.Text, System.Security.Cryptography.DataProtectionScope.LocalMachine);
+                configurationManager.MediaVolumeSerial = "";
             }
             else
             {
-                BackupLogic.ConfigurationManager.UNCUsername = "";
-                BackupLogic.ConfigurationManager.UNCPassword = "";
+                configurationManager.UNCUsername = "";
+                configurationManager.UNCPassword = "";
 
                 // MedienID speichern
-                BackupLogic.ConfigurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(txtBackupPath.Text[..1] + @":\");
-                if (BackupLogic.ConfigurationManager.MediaVolumeSerial == null ||
-                    BackupLogic.ConfigurationManager.MediaVolumeSerial == "0")
+                configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(txtBackupPath.Text[..1] + @":\");
+                if (configurationManager.MediaVolumeSerial == null ||
+                    configurationManager.MediaVolumeSerial == "0")
                 {
-                    BackupLogic.ConfigurationManager.MediaVolumeSerial = "";
+                    configurationManager.MediaVolumeSerial = "";
                 }
             }
-        }
-
-        var configurationManager = BackupLogic.ConfigurationManager;
-        configurationManager.FtpHost = txtFTPServer.Text;
-        configurationManager.FtpPort = txtFTPPort.Text;
-        configurationManager.FtpUser = txtFTPUsername.Text;
-        configurationManager.FtpPass = txtFTPPassword.Text;
-        configurationManager.FtpFolder = FtpStorage.GetFtpPath(txtFTPPath.Text);
-        configurationManager.FtpCoding = cboMedia.SelectedIndex == 2 ? "" : cboFtpEncoding.SelectedItem?.ToString();
-
-        if (cboMedia.SelectedIndex == 2 || chkFtpEncryption.Checked)
-        {
-            configurationManager.FtpEncryptionMode = "0";
-            configurationManager.FtpSslProtocols = "0";
-        }
-        else
-        {
-            configurationManager.FtpEncryptionMode = "3";
-            configurationManager.FtpSslProtocols = "0";
         }
 
         configurationManager.BackupFolder = txtBackupPath.Text;
@@ -237,26 +226,17 @@ public partial class ucConfig : IMainTabs
         cboMedia.Tag = "";
 
         // load backup storage
-        if (BackupLogic.ConfigurationManager.MediumType == MediaType.FileTransferServer)
+        var mediumType = BackupLogic.ConfigurationManager.MediumType;
+        cboMedia.SelectedIndex = mediumType.ToMediaComboIndex();
+
+        if (mediumType.IsRemote())
         {
-            // FTP
-            cboMedia.SelectedIndex = 1;
             plDevice.Visible = false;
             plFTP.Visible = true;
-            ApplyRemoteProtocolUi(useWebDav: false);
-        }
-        else if (BackupLogic.ConfigurationManager.MediumType == MediaType.WebDav)
-        {
-            // WebDAV
-            cboMedia.SelectedIndex = 2;
-            plDevice.Visible = false;
-            plFTP.Visible = true;
-            ApplyRemoteProtocolUi(useWebDav: true);
+            ApplyRemoteProtocolUi(mediumType);
         }
         else
         {
-            // directory
-            cboMedia.SelectedIndex = 0;
             plDevice.Visible = true;
             plFTP.Visible = false;
         }
@@ -269,7 +249,7 @@ public partial class ucConfig : IMainTabs
         var configurationManager = BackupLogic.ConfigurationManager;
         txtFTPServer.Text = configurationManager.FtpHost;
         txtFTPPort.Text = string.IsNullOrEmpty(configurationManager.FtpPort)
-            ? (configurationManager.MediumType == MediaType.WebDav ? "443" : "21")
+            ? mediumType.DefaultRemotePort().ToString()
             : configurationManager.FtpPort;
         txtFTPUsername.Text = configurationManager.FtpUser;
         txtFTPPassword.Text = configurationManager.FtpPass;
@@ -493,12 +473,11 @@ public partial class ucConfig : IMainTabs
     {
         try
         {
-            var useWebDav = cboMedia.SelectedIndex == 2;
-            txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
+            var mediaType = MediaTypeExtensions.FromMediaComboIndex(cboMedia.SelectedIndex);
+            var credentials = CreateRemoteCredentialsFromUi(mediaType);
+            txtFTPPath.Text = credentials.Folder;
 
-            var profile = useWebDav
-                ? WebDavStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text)
-                : FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            var profile = StorageFactory.CheckRemoteConnection(mediaType, credentials);
 
             if (profile)
             {
@@ -608,7 +587,8 @@ public partial class ucConfig : IMainTabs
             return;
         }
 
-        var warningText = selectedIndex == 0
+        var mediaType = MediaTypeExtensions.FromMediaComboIndex(selectedIndex);
+        var warningText = mediaType.IsLocal()
             ? Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_TEXT
             : Resources.DLG_UC_CONFIG_MSG_WARN_EXISTING_BACKUP_DELETION_FTP_TEXT;
 
@@ -626,7 +606,7 @@ public partial class ucConfig : IMainTabs
                 dlgStatus.Close();
             }
 
-            ApplyMediaSelection(selectedIndex);
+            ApplyMediaSelection(mediaType);
             previousMediaIndex = selectedIndex;
         }
         else
@@ -638,9 +618,9 @@ public partial class ucConfig : IMainTabs
         }
     }
 
-    private void ApplyMediaSelection(int selectedIndex)
+    private void ApplyMediaSelection(MediaType mediaType)
     {
-        if (selectedIndex == 0)
+        if (mediaType.IsLocal())
         {
             plDevice.Visible = true;
             plFTP.Visible = false;
@@ -649,26 +629,32 @@ public partial class ucConfig : IMainTabs
 
         plDevice.Visible = false;
         plFTP.Visible = true;
-        ApplyRemoteProtocolUi(useWebDav: selectedIndex == 2);
+        ApplyRemoteProtocolUi(mediaType);
     }
 
-    private void ApplyRemoteProtocolUi(bool useWebDav)
+    private void ApplyRemoteProtocolUi(MediaType mediaType)
     {
+        var useWebDav = mediaType.IsWebDav();
         cboFtpEncoding.Visible = !useWebDav;
         Label12.Visible = !useWebDav;
         chkFtpEncryption.Visible = !useWebDav;
 
-        if (useWebDav)
+        txtFTPPort.Text = mediaType.AdjustPortForProtocol(txtFTPPort.Text);
+    }
+
+    private RemoteStorageCredentials CreateRemoteCredentialsFromUi(MediaType mediaType)
+    {
+        return new RemoteStorageCredentials
         {
-            if (string.IsNullOrEmpty(txtFTPPort.Text) || txtFTPPort.Text == "21")
-            {
-                txtFTPPort.Text = "443";
-            }
-        }
-        else if (txtFTPPort.Text == "443")
-        {
-            txtFTPPort.Text = "21";
-        }
+            Host = txtFTPServer.Text,
+            Port = int.TryParse(txtFTPPort.Text, out var port) ? port : mediaType.DefaultRemotePort(),
+            UserName = txtFTPUsername.Text,
+            Password = txtFTPPassword.Text,
+            Folder = mediaType.IsFtp() ? FtpStorage.GetFtpPath(txtFTPPath.Text) : txtFTPPath.Text,
+            Encoding = cboFtpEncoding.SelectedItem?.ToString() ?? "ISO-8859-1",
+            // chkFtpEncryption = "force unencrypted connection"
+            UseEncryption = !chkFtpEncryption.Checked
+        };
     }
 
     private void cmdOK_Click(object sender, EventArgs e)
@@ -703,7 +689,8 @@ public partial class ucConfig : IMainTabs
                 return;
             }
 
-            if (dlgChangeMedia.cboMedia.SelectedIndex == 0)
+            var changeMediaType = MediaTypeExtensions.FromMediaComboIndex(dlgChangeMedia.cboMedia.SelectedIndex);
+            if (changeMediaType.IsLocal())
             {
                 // directory
                 BackupLogic.ConfigurationManager.MediumType = MediaType.LocalDevice;
@@ -717,14 +704,8 @@ public partial class ucConfig : IMainTabs
             else
             {
                 // FTP or WebDAV server
-                var useWebDav = dlgChangeMedia.cboMedia.SelectedIndex == 2;
-                BackupLogic.ConfigurationManager.MediumType = useWebDav ? MediaType.WebDav : MediaType.FileTransferServer;
-                BackupLogic.ConfigurationManager.FtpHost = dlgChangeMedia.txtFTPServer.Text;
-                BackupLogic.ConfigurationManager.FtpPort = dlgChangeMedia.txtFTPPort.Text;
-                BackupLogic.ConfigurationManager.FtpUser = dlgChangeMedia.txtFTPUsername.Text;
-                BackupLogic.ConfigurationManager.FtpPass = dlgChangeMedia.txtFTPPassword.Text;
-                BackupLogic.ConfigurationManager.FtpFolder = dlgChangeMedia.txtFTPPath.Text;
-                BackupLogic.ConfigurationManager.FtpCoding = useWebDav ? "" : Convert.ToString(dlgChangeMedia.cboFtpEncoding.SelectedItem);
+                var credentials = dlgChangeMedia.GetRemoteCredentials();
+                credentials.ApplyTo(BackupLogic.ConfigurationManager, changeMediaType);
             }
         }
 

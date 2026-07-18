@@ -163,29 +163,12 @@ public class EditJob : Job
     /// <param name="fileVersionId"></param>
     private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, long fileVersionId)
     {
-        if (fileType == BackupFileType.FtpEncrypted)
+        if (!BackupFileType.IsEncrypted(fileType) || !BackupFileType.TryGetRegular(fileType, out var regularType))
         {
-            // decrypt on device
-            storage.DecryptOnStorage(remoteFile, Password);
-
-            // modify entry
-            await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, BackupFileType.Ftp);
+            return;
         }
-        else if (fileType == BackupFileType.LocalEncrypted)
-        {
-            // decrypt on device
-            storage.DecryptOnStorage(remoteFile, Password);
 
-            // modify entry
-            await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, BackupFileType.Local);
-        }
-        else if (fileType == BackupFileType.WebDavEncrypted)
-        {
-            // decrypt on device
-            storage.DecryptOnStorage(remoteFile, Password);
-
-            // modify entry
-            await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, BackupFileType.WebDav);
-        }
+        storage.DecryptOnStorage(remoteFile, Password);
+        await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, regularType);
     }
 }

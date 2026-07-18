@@ -132,7 +132,7 @@
 
                                     <CheckBox Grid.Column="1" Grid.Row="4" Content="Enforce unencrypted connection" IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
 
-                                    <Button Grid.Column="1" Grid.Row="5" Content="Test connection" Command="{Binding CheckFtpRemoteCommand}" />
+                                    <Button Grid.Column="1" Grid.Row="5" Content="Test connection" Command="{Binding CheckRemoteConnectionCommand}" />
                                 </Grid>
 
                                 <!-- webdav server options -->
@@ -163,7 +163,7 @@
                                     <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="Path:" />
                                     <TextBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Text="{Binding FtpRemotePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                    <Button Grid.Column="1" Grid.Row="3" Content="Test connection" Command="{Binding CheckWebDavRemoteCommand}" />
+                                    <Button Grid.Column="1" Grid.Row="3" Content="Test connection" Command="{Binding CheckRemoteConnectionCommand}" />
                                 </Grid>
                             </Grid>
                         </toolkit:SettingsCard>

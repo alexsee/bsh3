@@ -6,7 +6,10 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Utils;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
@@ -245,29 +248,8 @@ public class SetupService : ISetupService
         configurationManager.TaskType = TaskType.Manual;
     }
 
-    public async Task ConvertFileTypesForLocalImportAsync()
-    {
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 7");
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 8");
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 9");
-    }
-
-    public async Task ConvertFileTypesForFtpImportAsync()
-    {
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
-    }
-
-    public async Task ConvertFileTypesForWebDavImportAsync()
-    {
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 7 WHERE fileType = 1");
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 8 WHERE fileType = 2");
-        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 9 WHERE fileType = 6");
-    }
+    public Task RemapFileTypesAsync(StorageProviderKind targetKind) =>
+        BackupFileType.RemapAllToAsync(dbClientFactory, targetKind);
 
     private void ApplyLocalTarget(string? backupFolder, string? mediaVolumeSerial, bool createFolder)
     {
@@ -318,27 +300,28 @@ public class SetupService : ISetupService
 
     private void ApplyFtpTarget(NewSetupConfiguration configuration)
     {
-        configurationManager.MediumType = MediaType.FileTransferServer;
-        configurationManager.BackupFolder = "";
-        configurationManager.FtpHost = configuration.FtpHost ?? "";
-        configurationManager.FtpPort = configuration.FtpPort ?? "21";
-        configurationManager.FtpUser = configuration.FtpUser ?? "";
-        configurationManager.FtpPass = configuration.FtpPassword ?? "";
-        configurationManager.FtpFolder = configuration.FtpFolder ?? "";
-        configurationManager.FtpCoding = configuration.FtpEncoding ?? "UTF8";
-        configurationManager.FtpEncryptionMode = configuration.FtpEnforceUnencrypted ? "0" : "3";
-        configurationManager.FtpSslProtocols = "0";
+        new RemoteStorageCredentials
+        {
+            Host = configuration.FtpHost ?? "",
+            Port = int.TryParse(configuration.FtpPort, out var port) ? port : MediaType.FileTransferServer.DefaultRemotePort(),
+            UserName = configuration.FtpUser ?? "",
+            Password = configuration.FtpPassword ?? "",
+            Folder = configuration.FtpFolder ?? "",
+            Encoding = configuration.FtpEncoding ?? "UTF8",
+            UseEncryption = !configuration.FtpEnforceUnencrypted
+        }.ApplyTo(configurationManager, MediaType.FileTransferServer);
     }
 
     private void ApplyWebDavTarget(NewSetupConfiguration configuration)
     {
-        configurationManager.MediumType = MediaType.WebDav;
-        configurationManager.BackupFolder = "";
-        configurationManager.FtpHost = configuration.FtpHost ?? "";
-        configurationManager.FtpPort = configuration.FtpPort ?? "443";
-        configurationManager.FtpUser = configuration.FtpUser ?? "";
-        configurationManager.FtpPass = configuration.FtpPassword ?? "";
-        configurationManager.FtpFolder = configuration.FtpFolder ?? "";
+        new RemoteStorageCredentials
+        {
+            Host = configuration.FtpHost ?? "",
+            Port = int.TryParse(configuration.FtpPort, out var port) ? port : MediaType.WebDav.DefaultRemotePort(),
+            UserName = configuration.FtpUser ?? "",
+            Password = configuration.FtpPassword ?? "",
+            Folder = configuration.FtpFolder ?? ""
+        }.ApplyTo(configurationManager, MediaType.WebDav);
     }
 
     private static string EscapeSql(string value)

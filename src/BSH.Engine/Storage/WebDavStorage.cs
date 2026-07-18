@@ -3,57 +3,45 @@
 
 using System;
 using System.IO;
-using System.IO.Compression;
-using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Providers.Ports;
-using Brightbits.BSH.Engine.Security;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Storage;
 
 public class WebDavStorage : Storage, IStorage
 {
-    private static readonly ILogger _logger = Log.ForContext<WebDavStorage>();
-
-    private static readonly HttpMethod PropFindMethod = new("PROPFIND");
-
-    private static readonly HttpMethod MkColMethod = new("MKCOL");
-
-    private static readonly HttpMethod MoveMethod = new("MOVE");
+    private static readonly ILogger Logger = Log.ForContext<WebDavStorage>();
 
     private readonly int currentStorageVersion;
-
     private readonly string serverAddress;
-
     private readonly int serverPort;
-
     private readonly string userName;
-
     private readonly string password;
-
     private readonly string folderPath;
+    private readonly HttpMessageHandler messageHandler;
 
-    private readonly string normalizedFolderPath;
-
-    private HttpClient webDavClient;
+    private WebDavClient webDavClient;
 
     public WebDavStorage(IConfigurationManager configurationManager)
+        : this(RemoteStorageCredentials.FromConfiguration(configurationManager),
+            int.TryParse(configurationManager.OldBackupPrevent, out var version) ? version : 0)
     {
-        ArgumentNullException.ThrowIfNull(configurationManager);
+    }
 
-        this.serverAddress = configurationManager.FtpHost;
-        this.serverPort = int.TryParse(configurationManager.FtpPort, out var parsedPort) ? parsedPort : -1;
-        this.userName = configurationManager.FtpUser;
-        this.password = configurationManager.FtpPass;
-        this.folderPath = configurationManager.FtpFolder;
-        this.normalizedFolderPath = NormalizeRemotePath(this.folderPath);
-        this.currentStorageVersion = int.Parse(configurationManager.OldBackupPrevent);
+    public WebDavStorage(RemoteStorageCredentials credentials, int currentStorageVersion)
+        : this(
+            credentials.Host,
+            credentials.Port,
+            credentials.UserName,
+            credentials.Password,
+            credentials.Folder,
+            currentStorageVersion)
+    {
     }
 
     public WebDavStorage(
@@ -62,32 +50,45 @@ public class WebDavStorage : Storage, IStorage
         string userName,
         string password,
         string folderPath,
-        int currentStorageVersion)
+        int currentStorageVersion,
+        HttpMessageHandler messageHandler = null)
     {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
         this.userName = userName;
         this.password = password;
         this.folderPath = folderPath;
-        this.normalizedFolderPath = NormalizeRemotePath(this.folderPath);
         this.currentStorageVersion = currentStorageVersion;
+        this.messageHandler = messageHandler;
     }
 
     public StorageProviderKind Kind => StorageProviderKind.WebDav;
 
     public static bool CheckConnection(string host, int port, string userName, string password, string folderPath)
     {
+        return CheckConnection(new RemoteStorageCredentials
+        {
+            Host = host,
+            Port = port,
+            UserName = userName,
+            Password = password,
+            Folder = folderPath
+        });
+    }
+
+    public static bool CheckConnection(RemoteStorageCredentials credentials)
+    {
         try
         {
-            using var storage = new WebDavStorage(host, port, userName, password, folderPath, currentStorageVersion: 0);
+            using var storage = new WebDavStorage(credentials, currentStorageVersion: 0);
             storage.Open();
 
             using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
-            return storage.DirectoryExistsAsync("", timeoutCts.Token).GetAwaiter().GetResult();
+            return storage.webDavClient.DirectoryExistsAsync("", timeoutCts.Token).GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Exception during WebDAV connection check.");
+            Logger.Error(ex, "Exception during WebDAV connection check.");
             return false;
         }
     }
@@ -101,24 +102,24 @@ public class WebDavStorage : Storage, IStorage
             using var timeoutCts = new CancellationTokenSource(quickCheck ? TimeSpan.FromSeconds(15) : TimeSpan.FromSeconds(60));
             var cancellationToken = timeoutCts.Token;
 
-            if (!await DirectoryExistsAsync("", cancellationToken))
+            if (!await webDavClient.DirectoryExistsAsync("", cancellationToken))
             {
-                _logger.Warning("WebDAV server does not have the specified folder.");
+                Logger.Warning("WebDAV server does not have the specified folder.");
                 return false;
             }
 
-            if (!await CanWriteToStorageAsync(cancellationToken))
+            if (!await webDavClient.CanWriteAsync(cancellationToken))
             {
-                _logger.Warning("WebDAV server is not writable.");
+                Logger.Warning("WebDAV server is not writable.");
                 return false;
             }
 
-            var versionContent = await ReadTextFileIfExistsAsync("backup.bshv", cancellationToken);
+            var versionContent = await webDavClient.ReadTextFileIfExistsAsync("backup.bshv", cancellationToken);
             if (!string.IsNullOrWhiteSpace(versionContent)
                 && int.TryParse(versionContent, out var storageVersion)
                 && storageVersion != currentStorageVersion)
             {
-                _logger.Warning("WebDAV server contains an inconsistent state. Version file contains a different version than the computers backup version.");
+                Logger.Warning("WebDAV server contains an inconsistent state. Version file contains a different version than the computers backup version.");
                 throw new DeviceContainsWrongStateException();
             }
 
@@ -130,74 +131,46 @@ public class WebDavStorage : Storage, IStorage
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Exception during connecting to WebDAV server.");
+            Logger.Error(ex, "Exception during connecting to WebDAV server.");
             return false;
         }
     }
 
     public bool CanWriteToStorage()
     {
-        return webDavClient != null;
+        try
+        {
+            Open();
+            return webDavClient.CanWriteAsync().GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Exception while probing WebDAV writability.");
+            return false;
+        }
     }
 
     public bool CopyFileToStorage(string localFile, string remoteFile)
     {
-        var remoteFilePath = NormalizeRemotePath(CleanRemoteFileName(remoteFile));
-        var directoryPath = GetDirectoryPath(remoteFilePath);
-
-        return EnsureRemoteDirectoryExists(directoryPath)
-            && UploadFileToStorage(GetLocalFileName(localFile), remoteFilePath);
+        var remoteFilePath = WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remoteFile));
+        return UploadFileToStorage(GetLocalFileName(localFile), remoteFilePath);
     }
 
     public bool CopyFileToStorageCompressed(string localFile, string remoteFile)
     {
-        var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) + ".zip";
-
-        try
-        {
-            using (var zipFile = ZipFile.Open(tmpFile, ZipArchiveMode.Create))
-            {
-                zipFile.CreateEntryFromFile(GetLocalFileName(localFile), Path.GetFileName(localFile), CompressionLevel.Optimal);
-            }
-
-            return CopyFileToStorage(tmpFile, remoteFile + ".zip");
-        }
-        finally
-        {
-            if (File.Exists(tmpFile))
-            {
-                File.Delete(tmpFile);
-            }
-        }
+        return RemoteStorageContent.CopyCompressed(
+            GetLocalFileName(localFile),
+            remoteFile,
+            (tmp, remote) => CopyFileToStorage(tmp, remote));
     }
 
     public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password)
     {
-        var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) + ".enc";
-
-        try
-        {
-            var crypto = new Encryption();
-            if (!crypto.Encode(GetLocalFileName(localFile), tmpFile, password))
-            {
-                return false;
-            }
-
-            var file = new FileInfo(tmpFile);
-            if (!file.Exists || file.Length == 0)
-            {
-                return false;
-            }
-
-            return CopyFileToStorage(tmpFile, remoteFile + ".enc");
-        }
-        finally
-        {
-            if (File.Exists(tmpFile))
-            {
-                File.Delete(tmpFile);
-            }
-        }
+        return RemoteStorageContent.CopyEncrypted(
+            GetLocalFileName(localFile),
+            remoteFile,
+            password,
+            (tmp, remote) => CopyFileToStorage(tmp, remote));
     }
 
     public bool CopyFileFromStorage(string localFile, string remoteFile)
@@ -208,17 +181,19 @@ public class WebDavStorage : Storage, IStorage
             Directory.CreateDirectory(directory);
         }
 
-        return DownloadFileFromStorage(NormalizeRemotePath(CleanRemoteFileName(remoteFile)), GetLocalFileName(localFile));
+        return DownloadFileFromStorage(
+            WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remoteFile)),
+            GetLocalFileName(localFile));
     }
 
     public bool FileExists(string remoteFile)
     {
-        var remoteFilePath = NormalizeRemotePath(CleanRemoteFileName(remoteFile));
+        var remoteFilePath = WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remoteFile));
 
         try
         {
             Open();
-            return FileExistsAsync(remoteFilePath).GetAwaiter().GetResult();
+            return webDavClient.FileExistsAsync(remoteFilePath).GetAwaiter().GetResult();
         }
         catch
         {
@@ -228,169 +203,87 @@ public class WebDavStorage : Storage, IStorage
 
     public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
     {
-        var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) + ".zip";
-
-        try
-        {
-            if (!DownloadFileFromStorage(NormalizeRemotePath(CleanRemoteFileName(remoteFile + ".zip")), tmpFile))
-            {
-                return false;
-            }
-
-            var directory = Path.GetDirectoryName(localFile);
-            if (!string.IsNullOrEmpty(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            using var zipFile = ZipFile.OpenRead(tmpFile);
-            zipFile.GetEntry(Path.GetFileName(localFile)).ExtractToFile(GetLocalFileName(localFile), true);
-
-            return true;
-        }
-        finally
-        {
-            if (File.Exists(tmpFile))
-            {
-                File.Delete(tmpFile);
-            }
-        }
+        return RemoteStorageContent.CopyFromCompressed(
+            GetLocalFileName(localFile),
+            remoteFile,
+            (local, remote) => DownloadFileFromStorage(
+                WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remote)),
+                local));
     }
 
     public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
     {
-        var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) + ".enc";
-
-        try
-        {
-            if (!DownloadFileFromStorage(NormalizeRemotePath(CleanRemoteFileName(remoteFile + ".enc")), tmpFile))
-            {
-                return false;
-            }
-
-            var directory = Path.GetDirectoryName(localFile);
-            if (!string.IsNullOrEmpty(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            var crypto = new Encryption();
-            return crypto.Decode(tmpFile, GetLocalFileName(localFile), password);
-        }
-        finally
-        {
-            if (File.Exists(tmpFile))
-            {
-                File.Delete(tmpFile);
-            }
-        }
+        return RemoteStorageContent.CopyFromEncrypted(
+            GetLocalFileName(localFile),
+            remoteFile,
+            password,
+            (local, remote) => DownloadFileFromStorage(
+                WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remote)),
+                local));
     }
 
     public bool DecryptOnStorage(string remoteFile, string password)
     {
-        var tmpFileEncrypted = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) + ".enc";
-        var tmpFileDecrypted = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-        try
-        {
-            if (!DownloadFileFromStorage(NormalizeRemotePath(CleanRemoteFileName(remoteFile + ".enc")), tmpFileEncrypted))
-            {
-                return false;
-            }
-
-            var crypto = new Encryption();
-            if (!crypto.Decode(tmpFileEncrypted, tmpFileDecrypted, password))
-            {
-                return false;
-            }
-
-            if (!UploadFileToStorage(tmpFileDecrypted, NormalizeRemotePath(CleanRemoteFileName(remoteFile))))
-            {
-                return false;
-            }
-
-            return DeleteFileFromStorageEncrypted(remoteFile);
-        }
-        finally
-        {
-            if (File.Exists(tmpFileEncrypted))
-            {
-                File.Delete(tmpFileEncrypted);
-            }
-
-            if (File.Exists(tmpFileDecrypted))
-            {
-                File.Delete(tmpFileDecrypted);
-            }
-        }
+        return RemoteStorageContent.DecryptOnStorage(
+            remoteFile,
+            password,
+            (local, remote) => DownloadFileFromStorage(
+                WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remote)),
+                local),
+            (local, remote) => UploadFileToStorage(
+                local,
+                WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remote))),
+            DeleteFileFromStorageEncrypted);
     }
 
     public bool DeleteFileFromStorage(string remoteFile)
     {
-        var remoteFilePath = NormalizeRemotePath(CleanRemoteFileName(remoteFile));
+        var remoteFilePath = WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remoteFile));
         return DeleteResource(remoteFilePath);
     }
 
-    public bool DeleteFileFromStorageCompressed(string remoteFile)
-    {
-        return DeleteFileFromStorage(remoteFile + ".zip");
-    }
+    public bool DeleteFileFromStorageCompressed(string remoteFile) =>
+        DeleteFileFromStorage(remoteFile + ".zip");
 
-    public bool DeleteFileFromStorageEncrypted(string remoteFile)
-    {
-        return DeleteFileFromStorage(remoteFile + ".enc");
-    }
+    public bool DeleteFileFromStorageEncrypted(string remoteFile) =>
+        DeleteFileFromStorage(remoteFile + ".enc");
 
-    public bool DeleteDirectory(string remoteDirectory)
-    {
-        return DeleteResource(NormalizeRemotePath(CleanRemoteFileName(remoteDirectory)));
-    }
+    public bool DeleteDirectory(string remoteDirectory) =>
+        DeleteResource(WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remoteDirectory)));
 
     public bool RenameDirectory(string remoteDirectorySource, string remoteDirectoryTarget)
     {
-        var sourcePath = NormalizeRemotePath(CleanRemoteFileName(remoteDirectorySource));
-        var targetPath = NormalizeRemotePath(CleanRemoteFileName(remoteDirectoryTarget));
+        var sourcePath = WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remoteDirectorySource));
+        var targetPath = WebDavClient.NormalizeRemotePath(CleanRemoteFileName(remoteDirectoryTarget));
 
-        if (!EnsureRemoteDirectoryExists(GetDirectoryPath(targetPath)))
+        if (!EnsureRemoteDirectoryExists(WebDavClient.GetDirectoryPath(targetPath)))
         {
             return false;
         }
 
-        return MoveDirectory(sourcePath, targetPath);
+        try
+        {
+            Open();
+            return webDavClient.MoveDirectoryAsync(sourcePath, targetPath).GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error moving directory on WebDAV storage.");
+            return false;
+        }
     }
 
-    public bool UploadDatabaseFile(string databaseFile)
-    {
-        return UploadFileToStorage(databaseFile, "backup.bshdb");
-    }
+    public bool UploadDatabaseFile(string databaseFile) =>
+        UploadFileToStorage(databaseFile, "backup.bshdb");
 
     public void UpdateStorageVersion(int versionId)
     {
-        var tmpFile = Path.Combine(Path.GetTempPath(), "backup.bshv");
-        File.WriteAllText(tmpFile, versionId.ToString());
-
-        try
-        {
-            UploadFileToStorage(tmpFile, "backup.bshv");
-        }
-        finally
-        {
-            if (File.Exists(tmpFile))
-            {
-                File.Delete(tmpFile);
-            }
-        }
+        RemoteStorageContent.WriteVersionFile(versionId, (local, remote) => UploadFileToStorage(local, remote));
     }
 
-    public bool IsPathTooLong(string path, bool compression, bool encryption)
-    {
-        return false;
-    }
+    public bool IsPathTooLong(string path, bool compression, bool encryption) => false;
 
-    public long GetFreeSpace()
-    {
-        return 0L;
-    }
+    public long GetFreeSpace() => 0L;
 
     public void Open()
     {
@@ -399,15 +292,14 @@ public class WebDavStorage : Storage, IStorage
             return;
         }
 
-        var handler = new HttpClientHandler();
-        if (!string.IsNullOrWhiteSpace(userName))
-        {
-            handler.Credentials = new NetworkCredential(userName, password);
-            handler.PreAuthenticate = true;
-        }
-
-        webDavClient = new HttpClient(handler, disposeHandler: true);
-        webDavClient.Timeout = TimeSpan.FromSeconds(60);
+        webDavClient = new WebDavClient(
+            serverAddress,
+            serverPort,
+            userName,
+            password,
+            folderPath,
+            messageHandler);
+        webDavClient.Open();
     }
 
     public void Dispose()
@@ -418,21 +310,13 @@ public class WebDavStorage : Storage, IStorage
 
     protected virtual void Dispose(bool disposing)
     {
-        webDavClient?.Dispose();
-    }
-
-    private async Task<bool> CanWriteToStorageAsync(CancellationToken cancellationToken = default)
-    {
-        var probeFileName = "bsh.writetest." + Guid.NewGuid().ToString("N");
-        var probeContent = Encoding.UTF8.GetBytes(DateTime.UtcNow.ToString("O"));
-
-        if (!await PutFileAsync(probeFileName, probeContent, cancellationToken))
+        if (!disposing)
         {
-            return false;
+            return;
         }
 
-        await DeleteResourceAsync(probeFileName, cancellationToken);
-        return true;
+        webDavClient?.Dispose();
+        webDavClient = null;
     }
 
     private bool UploadFileToStorage(string localFile, string remoteFile)
@@ -441,18 +325,18 @@ public class WebDavStorage : Storage, IStorage
         {
             Open();
 
-            var directoryPath = GetDirectoryPath(remoteFile);
+            var directoryPath = WebDavClient.GetDirectoryPath(remoteFile);
             if (!EnsureRemoteDirectoryExists(directoryPath))
             {
                 return false;
             }
 
             using var localFileStream = File.OpenRead(localFile);
-            return PutFileAsync(remoteFile, localFileStream).GetAwaiter().GetResult();
+            return webDavClient.PutFileAsync(remoteFile, localFileStream).GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error uploading file to WebDAV storage.");
+            Logger.Error(ex, "Error uploading file to WebDAV storage.");
             return false;
         }
     }
@@ -462,11 +346,11 @@ public class WebDavStorage : Storage, IStorage
         try
         {
             Open();
-            return DownloadFileAsync(remoteFile, localFile).GetAwaiter().GetResult();
+            return webDavClient.DownloadFileAsync(remoteFile, localFile).GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error downloading file from WebDAV storage.");
+            Logger.Error(ex, "Error downloading file from WebDAV storage.");
             return false;
         }
     }
@@ -476,36 +360,11 @@ public class WebDavStorage : Storage, IStorage
         try
         {
             Open();
-            return DeleteResourceAsync(remotePath).GetAwaiter().GetResult();
+            return webDavClient.DeleteResourceAsync(remotePath).GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error deleting resource from WebDAV storage.");
-            return false;
-        }
-    }
-
-    private bool MoveDirectory(string sourcePath, string targetPath)
-    {
-        try
-        {
-            Open();
-
-            if (!TryBuildUri(sourcePath, out var sourceUri) || !TryBuildUri(targetPath, out var targetUri))
-            {
-                return false;
-            }
-
-            using var request = new HttpRequestMessage(MoveMethod, sourceUri);
-            request.Headers.TryAddWithoutValidation("Destination", targetUri.AbsoluteUri);
-            request.Headers.TryAddWithoutValidation("Overwrite", "T");
-
-            using var response = webDavClient.Send(request);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error moving directory on WebDAV storage.");
+            Logger.Error(ex, "Error deleting resource from WebDAV storage.");
             return false;
         }
     }
@@ -515,315 +374,12 @@ public class WebDavStorage : Storage, IStorage
         try
         {
             Open();
-            return EnsureRemoteDirectoryExistsAsync(remoteDirectory).GetAwaiter().GetResult();
+            return webDavClient.EnsureRemoteDirectoryExistsAsync(remoteDirectory).GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error creating directory structure on WebDAV storage.");
+            Logger.Error(ex, "Error creating directory structure on WebDAV storage.");
             return false;
         }
-    }
-
-    private async Task<bool> EnsureRemoteDirectoryExistsAsync(string remoteDirectory)
-    {
-        var normalizedPath = NormalizeRemotePath(remoteDirectory);
-        if (string.IsNullOrWhiteSpace(normalizedPath))
-        {
-            return true;
-        }
-
-        var currentPath = "";
-        foreach (var segment in normalizedPath.Split('/', StringSplitOptions.RemoveEmptyEntries))
-        {
-            currentPath = string.IsNullOrEmpty(currentPath) ? segment : currentPath + "/" + segment;
-
-            if (await DirectoryExistsAsync(currentPath))
-            {
-                continue;
-            }
-
-            if (!await CreateDirectoryAsync(currentPath))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private async Task<bool> DirectoryExistsAsync(string relativeDirectory, CancellationToken cancellationToken = default)
-    {
-        if (!TryBuildUri(relativeDirectory, out var directoryUri))
-        {
-            return false;
-        }
-
-        using var request = new HttpRequestMessage(PropFindMethod, directoryUri);
-        request.Headers.TryAddWithoutValidation("Depth", "0");
-        request.Content = new StringContent("<?xml version=\"1.0\" encoding=\"utf-8\" ?><d:propfind xmlns:d=\"DAV:\"><d:prop><d:resourcetype/></d:prop></d:propfind>", Encoding.UTF8, "application/xml");
-
-        using var response = await webDavClient.SendAsync(request, cancellationToken);
-
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return false;
-        }
-
-        return response.StatusCode == HttpStatusCode.MultiStatus || response.IsSuccessStatusCode;
-    }
-
-    private async Task<bool> CreateDirectoryAsync(string relativeDirectory)
-    {
-        if (!TryBuildUri(relativeDirectory, out var directoryUri))
-        {
-            return false;
-        }
-
-        using var request = new HttpRequestMessage(MkColMethod, directoryUri);
-        using var response = await webDavClient.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
-        {
-            return true;
-        }
-
-        // some providers return 405 when the folder already exists
-        return response.StatusCode == HttpStatusCode.MethodNotAllowed;
-    }
-
-    private async Task<bool> PutFileAsync(string remoteFile, byte[] content, CancellationToken cancellationToken = default)
-    {
-        using var memoryStream = new MemoryStream(content);
-        return await PutFileAsync(remoteFile, memoryStream, cancellationToken);
-    }
-
-    private async Task<bool> PutFileAsync(string remoteFile, Stream sourceStream, CancellationToken cancellationToken = default)
-    {
-        if (!TryBuildUri(remoteFile, out var remoteFileUri))
-        {
-            return false;
-        }
-
-        using var request = new HttpRequestMessage(HttpMethod.Put, remoteFileUri);
-        request.Content = new StreamContent(sourceStream);
-        using var response = await webDavClient.SendAsync(request, cancellationToken);
-        return response.IsSuccessStatusCode;
-    }
-
-    private async Task<bool> DownloadFileAsync(string remoteFile, string localFile)
-    {
-        if (!TryBuildUri(remoteFile, out var remoteFileUri))
-        {
-            return false;
-        }
-
-        using var response = await webDavClient.GetAsync(remoteFileUri, HttpCompletionOption.ResponseHeadersRead);
-        if (!response.IsSuccessStatusCode)
-        {
-            return false;
-        }
-
-        await using var sourceStream = await response.Content.ReadAsStreamAsync();
-        await using var destinationStream = File.Create(localFile);
-        await sourceStream.CopyToAsync(destinationStream);
-
-        return true;
-    }
-
-    private async Task<bool> FileExistsAsync(string remoteFile)
-    {
-        if (!TryBuildUri(remoteFile, out var remoteFileUri))
-        {
-            return false;
-        }
-
-        using var headRequest = new HttpRequestMessage(HttpMethod.Head, remoteFileUri);
-        using var headResponse = await webDavClient.SendAsync(headRequest);
-
-        if (headResponse.StatusCode == HttpStatusCode.NotFound)
-        {
-            return false;
-        }
-
-        if (headResponse.IsSuccessStatusCode)
-        {
-            return true;
-        }
-
-        if (headResponse.StatusCode != HttpStatusCode.MethodNotAllowed
-            && headResponse.StatusCode != HttpStatusCode.NotImplemented)
-        {
-            return false;
-        }
-
-        // Fallback for servers that do not implement HEAD correctly.
-        using var getResponse = await webDavClient.GetAsync(remoteFileUri, HttpCompletionOption.ResponseHeadersRead);
-        if (getResponse.StatusCode == HttpStatusCode.NotFound)
-        {
-            return false;
-        }
-
-        return getResponse.IsSuccessStatusCode;
-    }
-
-    private async Task<bool> DeleteResourceAsync(string remotePath, CancellationToken cancellationToken = default)
-    {
-        if (!TryBuildUri(remotePath, out var resourceUri))
-        {
-            return false;
-        }
-
-        using var request = new HttpRequestMessage(HttpMethod.Delete, resourceUri);
-        using var response = await webDavClient.SendAsync(request, cancellationToken);
-
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return true;
-        }
-
-        return response.IsSuccessStatusCode;
-    }
-
-    private async Task<string> ReadTextFileIfExistsAsync(string remoteFile, CancellationToken cancellationToken = default)
-    {
-        if (!TryBuildUri(remoteFile, out var remoteFileUri))
-        {
-            return null;
-        }
-
-        using var response = await webDavClient.GetAsync(remoteFileUri, HttpCompletionOption.ResponseContentRead, cancellationToken);
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return null;
-        }
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-        return await response.Content.ReadAsStringAsync();
-    }
-
-    private bool TryBuildUri(string remotePath, out Uri targetUri)
-    {
-        targetUri = null;
-
-        if (!TryParseRootUri(out var rootUri, out var hostPath))
-        {
-            _logger.Warning("Invalid WebDAV host configuration: {host}", serverAddress);
-            return false;
-        }
-
-        var mergedPath = CombinePath(hostPath, normalizedFolderPath);
-        mergedPath = CombinePath(mergedPath, NormalizeRemotePath(remotePath));
-        var encodedPath = EncodePathSegments(mergedPath);
-
-        targetUri = string.IsNullOrEmpty(encodedPath)
-            ? rootUri
-            : new Uri(rootUri, encodedPath);
-
-        return true;
-    }
-
-    private bool TryParseRootUri(out Uri rootUri, out string hostPath)
-    {
-        rootUri = null;
-        hostPath = "";
-
-        if (string.IsNullOrWhiteSpace(serverAddress))
-        {
-            return false;
-        }
-
-        var host = serverAddress.Trim();
-        if (!host.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-            && !host.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-        {
-            host = "https://" + host;
-        }
-
-        if (!Uri.TryCreate(host, UriKind.Absolute, out var uri))
-        {
-            return false;
-        }
-
-        if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
-        {
-            return false;
-        }
-
-        var builder = new UriBuilder(uri)
-        {
-            Path = "/",
-            Query = ""
-        };
-
-        if (serverPort > 0 && uri.IsDefaultPort)
-        {
-            builder.Port = serverPort;
-        }
-
-        rootUri = builder.Uri;
-        hostPath = NormalizeRemotePath(Uri.UnescapeDataString(uri.AbsolutePath));
-
-        return true;
-    }
-
-    private static string NormalizeRemotePath(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            return "";
-        }
-
-        return path.Replace('\\', '/').Trim().Trim('/');
-    }
-
-    private static string GetDirectoryPath(string filePath)
-    {
-        var normalizedPath = NormalizeRemotePath(filePath);
-        if (string.IsNullOrEmpty(normalizedPath))
-        {
-            return "";
-        }
-
-        var lastIndex = normalizedPath.LastIndexOf('/');
-        return lastIndex < 0 ? "" : normalizedPath[..lastIndex];
-    }
-
-    private static string CombinePath(string path1, string path2)
-    {
-        var first = NormalizeRemotePath(path1);
-        var second = NormalizeRemotePath(path2);
-
-        if (string.IsNullOrEmpty(first))
-        {
-            return second;
-        }
-
-        if (string.IsNullOrEmpty(second))
-        {
-            return first;
-        }
-
-        return first + "/" + second;
-    }
-
-    private static string EncodePathSegments(string path)
-    {
-        var normalizedPath = NormalizeRemotePath(path);
-        if (string.IsNullOrEmpty(normalizedPath))
-        {
-            return "";
-        }
-
-        var segments = normalizedPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        for (var i = 0; i < segments.Length; i++)
-        {
-            segments[i] = Uri.EscapeDataString(segments[i]);
-        }
-
-        return string.Join("/", segments);
     }
 }
