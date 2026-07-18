@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using BSH.MainApp.Contracts.Services;
-using Microsoft.Win32;
 using Windows.System.Power;
 
 namespace BSH.MainApp.Services;
@@ -10,21 +9,17 @@ namespace BSH.MainApp.Services;
 public class PowerStatusService : IPowerStatusService
 {
     private bool isMonitoring;
-    private bool lastIsRunningOnBattery;
+    private bool hasPowerStatusSnapshot;
+    private bool hasBattery;
+    private bool isRunningOnBattery;
     private EventHandler? powerStatusChanged;
 
     public bool HasBattery
     {
         get
         {
-            try
-            {
-                return PowerManager.BatteryStatus != BatteryStatus.NotPresent;
-            }
-            catch
-            {
-                return false;
-            }
+            EnsurePowerStatusSnapshot();
+            return hasBattery;
         }
     }
 
@@ -32,14 +27,8 @@ public class PowerStatusService : IPowerStatusService
     {
         get
         {
-            try
-            {
-                return DetermineIsRunningOnBattery(PowerManager.BatteryStatus, PowerManager.PowerSupplyStatus);
-            }
-            catch
-            {
-                return false;
-            }
+            EnsurePowerStatusSnapshot();
+            return isRunningOnBattery;
         }
     }
 
@@ -50,13 +39,14 @@ public class PowerStatusService : IPowerStatusService
         this.powerStatusChanged -= powerStatusChanged;
         this.powerStatusChanged += powerStatusChanged;
 
-        if (isMonitoring || !HasBattery)
+        RefreshPowerStatus();
+        if (isMonitoring || !hasBattery)
         {
             return;
         }
 
-        lastIsRunningOnBattery = IsRunningOnBattery;
-        SystemEvents.PowerModeChanged += OnPowerModeChanged;
+        PowerManager.BatteryStatusChanged += OnPowerStatusChanged;
+        PowerManager.PowerSupplyStatusChanged += OnPowerStatusChanged;
         isMonitoring = true;
     }
 
@@ -70,7 +60,8 @@ public class PowerStatusService : IPowerStatusService
             return;
         }
 
-        SystemEvents.PowerModeChanged -= OnPowerModeChanged;
+        PowerManager.BatteryStatusChanged -= OnPowerStatusChanged;
+        PowerManager.PowerSupplyStatusChanged -= OnPowerStatusChanged;
         isMonitoring = false;
     }
 
@@ -86,15 +77,55 @@ public class PowerStatusService : IPowerStatusService
             powerSupplyStatus == PowerSupplyStatus.Inadequate;
     }
 
-    private void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
+    private void OnPowerStatusChanged(object? sender, object e)
     {
-        var isRunningOnBattery = IsRunningOnBattery;
-        if (lastIsRunningOnBattery == isRunningOnBattery)
+        if (!RefreshPowerStatus())
         {
             return;
         }
 
-        lastIsRunningOnBattery = isRunningOnBattery;
         powerStatusChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void EnsurePowerStatusSnapshot()
+    {
+        if (hasPowerStatusSnapshot)
+        {
+            return;
+        }
+
+        RefreshPowerStatus();
+    }
+
+    private bool RefreshPowerStatus()
+    {
+        try
+        {
+            var batteryStatus = PowerManager.BatteryStatus;
+            var powerSupplyStatus = PowerManager.PowerSupplyStatus;
+            var nextHasBattery = batteryStatus != BatteryStatus.NotPresent;
+            var nextIsRunningOnBattery = DetermineIsRunningOnBattery(
+                batteryStatus,
+                powerSupplyStatus);
+
+            var changed = hasPowerStatusSnapshot &&
+                (hasBattery != nextHasBattery || isRunningOnBattery != nextIsRunningOnBattery);
+
+            hasBattery = nextHasBattery;
+            isRunningOnBattery = nextIsRunningOnBattery;
+            hasPowerStatusSnapshot = true;
+
+            return changed;
+        }
+        catch
+        {
+            var changed = hasPowerStatusSnapshot && (hasBattery || isRunningOnBattery);
+
+            hasBattery = false;
+            isRunningOnBattery = false;
+            hasPowerStatusSnapshot = true;
+
+            return changed;
+        }
     }
 }
