@@ -33,6 +33,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IJobService jobService;
     private readonly IQueryManager queryManager;
     private readonly IBackupTargetService backupTargetService;
+    private readonly IOrchestrationService orchestrationService;
 
     #region Sources Settings
 
@@ -607,7 +608,14 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
         if (oldValue == newValue) return;
 
-        this.configurationManager.DeativateAutoBackupsWhenAkku = newValue ? "1" : "0";
+        var value = newValue ? "1" : "0";
+        if (configurationManager.DeativateAutoBackupsWhenAkku == value)
+        {
+            return;
+        }
+
+        configurationManager.DeativateAutoBackupsWhenAkku = value;
+        _ = orchestrationService.RefreshAutomationAsync();
     }
 
     partial void OnTaskTypeChanged(TaskType oldValue, TaskType newValue)
@@ -728,13 +736,15 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         IPresentationService presentationService,
         IJobService jobService,
         IQueryManager queryManager,
-        IBackupTargetService backupTargetService)
+        IBackupTargetService backupTargetService,
+        IOrchestrationService orchestrationService)
     {
         this.configurationManager = configurationManager;
         this.presentationController = presentationService;
         this.jobService = jobService;
         this.queryManager = queryManager;
         this.backupTargetService = backupTargetService;
+        this.orchestrationService = orchestrationService;
     }
 
     private static string DecryptConfigurationPassword(string password)

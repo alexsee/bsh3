@@ -55,18 +55,7 @@ public class OrchestrationService : IOrchestrationService
                 configurationManager.DbStatus = "0";
             }
 
-            // report system start
-            statusService.SetSystemStatus(SystemStatus.ACTIVATED);
-            UpdatePowerStatusMonitoring();
-
-            if (ShouldPauseForBattery())
-            {
-                statusService.SetSystemStatus(SystemStatus.PAUSED_DUE_TO_BATTERY);
-            }
-            else
-            {
-                await scheduledBackupService.StartAsync();
-            }
+            await ApplyAutomationPolicyAsync(stopFirst: false);
 
             // check free space
             CheckFreeDiskSpaceNotification();
@@ -104,6 +93,35 @@ public class OrchestrationService : IOrchestrationService
 
         // set status to deactivated
         statusService.SetSystemStatus(SystemStatus.DEACTIVATED);
+    }
+
+    public async Task RefreshAutomationAsync()
+    {
+        if (configurationManager.DbStatus != "0")
+        {
+            return;
+        }
+
+        await ApplyAutomationPolicyAsync(stopFirst: true);
+    }
+
+    private async Task ApplyAutomationPolicyAsync(bool stopFirst)
+    {
+        if (stopFirst)
+        {
+            scheduledBackupService.Stop();
+        }
+
+        UpdatePowerStatusMonitoring();
+
+        if (ShouldPauseForBattery())
+        {
+            statusService.SetSystemStatus(SystemStatus.PAUSED_DUE_TO_BATTERY);
+            return;
+        }
+
+        statusService.SetSystemStatus(SystemStatus.ACTIVATED);
+        await scheduledBackupService.StartAsync();
     }
 
     private void CheckForLastException()
@@ -150,14 +168,7 @@ public class OrchestrationService : IOrchestrationService
             return;
         }
 
-        if (powerStatusService.IsRunningOnBattery)
-        {
-            await StopAsync();
-        }
-        else
-        {
-            await StartAsync();
-        }
+        await RefreshAutomationAsync();
     }
 
     private void CheckFreeDiskSpaceNotification()
