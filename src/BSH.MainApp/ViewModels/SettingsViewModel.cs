@@ -33,6 +33,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IJobService jobService;
     private readonly IQueryManager queryManager;
     private readonly IBackupTargetService backupTargetService;
+    private readonly ISwitchStorageService switchStorageService;
     private readonly IOrchestrationService orchestrationService;
     private readonly IStartupLaunchAdapter startupLaunchAdapter;
     private readonly IUpdateService updateService;
@@ -456,6 +457,37 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
     }
 
+    [RelayCommand]
+    public async Task SwitchStorageAsync()
+    {
+        if (!await this.jobService.CheckMediaAsync(ActionType.Modify, true))
+        {
+            return;
+        }
+
+        this.switchStorageService.SyncDatabaseToCurrentMedium(App.DatabaseFile);
+
+        var selection = await this.presentationController.ShowSwitchStorageWindowAsync();
+        if (selection == null)
+        {
+            return;
+        }
+
+        if (selection.IsLocal)
+        {
+            await this.switchStorageService.SwitchToLocalAsync(
+                selection.DriveRoot!,
+                selection.MediaVolumeSerial,
+                App.DatabaseFile);
+        }
+        else if (selection.Ftp != null)
+        {
+            await this.switchStorageService.SwitchToFtpAsync(selection.Ftp, App.DatabaseFile);
+        }
+
+        InitTargetSettings();
+    }
+
     #endregion
 
     #region Options Settings
@@ -801,6 +833,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         IJobService jobService,
         IQueryManager queryManager,
         IBackupTargetService backupTargetService,
+        ISwitchStorageService switchStorageService,
         IOrchestrationService orchestrationService,
         IStartupLaunchAdapter startupLaunchAdapter,
         IUpdateService updateService)
@@ -810,6 +843,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.jobService = jobService;
         this.queryManager = queryManager;
         this.backupTargetService = backupTargetService;
+        this.switchStorageService = switchStorageService;
         this.orchestrationService = orchestrationService;
         this.startupLaunchAdapter = startupLaunchAdapter;
         this.updateService = updateService;
