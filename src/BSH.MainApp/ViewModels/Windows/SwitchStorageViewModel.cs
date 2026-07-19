@@ -2,7 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.ObjectModel;
-using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
@@ -15,6 +16,10 @@ namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class SwitchStorageViewModel : ObservableObject
 {
+    private const int MediumIndexLocal = 0;
+    private const int MediumIndexFtp = 1;
+    private const int MediumIndexUnc = 2;
+
     private readonly ISwitchStorageService switchStorageService;
     private string databaseFile = string.Empty;
 
@@ -34,7 +39,19 @@ public partial class SwitchStorageViewModel : ObservableObject
     private Visibility ftpTargetVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
+    private Visibility uncTargetVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
     private SetupDriveItem? selectedDrive;
+
+    [ObservableProperty]
+    private string uncPath = string.Empty;
+
+    [ObservableProperty]
+    private string uncUsername = string.Empty;
+
+    [ObservableProperty]
+    private string uncPassword = string.Empty;
 
     [ObservableProperty]
     private string ftpHost = string.Empty;
@@ -65,13 +82,11 @@ public partial class SwitchStorageViewModel : ObservableObject
         this.switchStorageService = switchStorageService;
     }
 
-    private bool IsLocalTarget => SelectedMediumIndex == 0;
-
     public void Initialize(string databaseFilePath)
     {
         databaseFile = databaseFilePath;
         RefreshDrives();
-        SelectedMediumIndex = 0;
+        SelectedMediumIndex = MediumIndexLocal;
         UpdateTargetVisibility();
     }
 
@@ -101,7 +116,7 @@ public partial class SwitchStorageViewModel : ObservableObject
     {
         ValidationErrorMessage = null;
 
-        if (IsLocalTarget)
+        if (SelectedMediumIndex == MediumIndexLocal)
         {
             if (SelectedDrive == null)
             {
@@ -117,8 +132,21 @@ public partial class SwitchStorageViewModel : ObservableObject
 
             await switchStorageService.SwitchToLocalAsync(
                 SelectedDrive.RootPath,
-                ResolveVolumeSerial(SelectedDrive.RootPath),
+                MediaTargetApplier.ResolveVolumeSerial(SelectedDrive.RootPath),
                 databaseFile);
+            TaskCompletionSource.TrySetResult(true);
+            return;
+        }
+
+        if (SelectedMediumIndex == MediumIndexUnc)
+        {
+            if (!TryValidateUnc(requireEmptyTarget: true, out var uncError))
+            {
+                ValidationErrorMessage = uncError;
+                return;
+            }
+
+            await switchStorageService.SwitchToUncAsync(CreateUncTarget(), databaseFile);
             TaskCompletionSource.TrySetResult(true);
             return;
         }
@@ -134,6 +162,15 @@ public partial class SwitchStorageViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void TestUncConnection()
+    {
+        ValidationErrorMessage = null;
+        ValidationErrorMessage = TryValidateUnc(requireEmptyTarget: false, out var error)
+            ? "Network connection successful."
+            : error;
+    }
+
+    [RelayCommand]
     private void TestFtpConnection()
     {
         ValidationErrorMessage = null;
@@ -146,6 +183,43 @@ public partial class SwitchStorageViewModel : ObservableObject
     private void Cancel()
     {
         TaskCompletionSource.TrySetResult(false);
+    }
+
+    private bool TryValidateUnc(bool requireEmptyTarget, out string? error)
+    {
+        error = null;
+
+        var path = (UncPath ?? "").Trim().Replace('/', '\\');
+        if (!MediaTargetApplier.IsUncPath(path))
+        {
+            error = "Enter a valid UNC path (for example \\\\server\\share).";
+            return false;
+        }
+
+        UncPath = path;
+
+        try
+        {
+            using var networkConnection = new NetworkConnection(path, UncUsername, UncPassword);
+            if (!Directory.Exists(path))
+            {
+                error = "The network path could not be reached.";
+                return false;
+            }
+
+            if (requireEmptyTarget && switchStorageService.UncTargetContainsBackupData(path))
+            {
+                error = "The selected medium already contains other backups and cannot be used for switching.";
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            error = "The network path could not be reached. " + ex.Message;
+            return false;
+        }
     }
 
     private bool TryOpenFtp(bool requireEmptyTarget, out string? error)
@@ -194,6 +268,14 @@ public partial class SwitchStorageViewModel : ObservableObject
         }
     }
 
+    private SwitchStorageUncTarget CreateUncTarget()
+    {
+        return new SwitchStorageUncTarget(
+            UncPath.Trim().Replace('/', '\\'),
+            UncUsername ?? "",
+            UncPassword ?? "");
+    }
+
     private SwitchStorageFtpTarget CreateFtpTarget()
     {
         return new SwitchStorageFtpTarget(
@@ -208,19 +290,9 @@ public partial class SwitchStorageViewModel : ObservableObject
 
     private void UpdateTargetVisibility()
     {
-        LocalTargetVisibility = SelectedMediumIndex == 0 ? Visibility.Visible : Visibility.Collapsed;
-        FtpTargetVisibility = SelectedMediumIndex == 1 ? Visibility.Visible : Visibility.Collapsed;
-    }
-
-    private static string ResolveVolumeSerial(string driveRoot)
-    {
-        if (string.IsNullOrWhiteSpace(driveRoot) || driveRoot.Length < 3)
-        {
-            return "";
-        }
-
-        var serial = Win32Stuff.GetVolumeSerial(driveRoot[..3]);
-        return string.IsNullOrEmpty(serial) || serial == "0" ? "" : serial;
+        LocalTargetVisibility = SelectedMediumIndex == MediumIndexLocal ? Visibility.Visible : Visibility.Collapsed;
+        FtpTargetVisibility = SelectedMediumIndex == MediumIndexFtp ? Visibility.Visible : Visibility.Collapsed;
+        UncTargetVisibility = SelectedMediumIndex == MediumIndexUnc ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private static string SafeVolumeLabel(DriveInfo drive)

@@ -3,6 +3,11 @@
 
 namespace BSH.MainApp.Models;
 
+public sealed record SwitchStorageUncTarget(
+    string Path,
+    string Username,
+    string Password);
+
 public sealed record SwitchStorageFtpTarget(
     string Host,
     string Port,

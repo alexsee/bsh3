@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
@@ -13,6 +14,7 @@ using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Security;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.Services;
@@ -135,6 +137,56 @@ public class SwitchStorageServiceTests
         await switchStorageService.SwitchToLocalAsync(driveRoot, "0", databasePath);
 
         Assert.That(configurationManager.MediaVolumeSerial, Is.EqualTo(""));
+    }
+
+    [Test]
+    public void UncTargetContainsBackupDataReturnsTrueWhenBackupDatabaseExists()
+    {
+        var uncPath = Path.Combine(tempRoot, "unc-share");
+        Directory.CreateDirectory(uncPath);
+        File.WriteAllText(Path.Combine(uncPath, "backup.bshdb"), "existing");
+
+        Assert.That(switchStorageService.UncTargetContainsBackupData(uncPath), Is.True);
+    }
+
+    [Test]
+    public void UncTargetContainsBackupDataReturnsFalseWhenTargetIsEmpty()
+    {
+        var uncPath = Path.Combine(tempRoot, "unc-empty");
+        Directory.CreateDirectory(uncPath);
+
+        Assert.That(switchStorageService.UncTargetContainsBackupData(uncPath), Is.False);
+    }
+
+    [Test]
+    public async Task SwitchToUncAsyncUpdatesConfigurationClearsHistoryAndSyncsDatabase()
+    {
+        await SeedBackupHistoryAsync();
+
+        configurationManager.MediaVolumeSerial = "OLDVOL";
+        configurationManager.UNCUsername = "old-user";
+        configurationManager.UNCPassword = "old-password";
+
+        var unc = new SwitchStorageUncTarget(
+            Path: @"\\fileserver\backups",
+            Username: @"domain\backup",
+            Password: "secret");
+
+        await switchStorageService.SwitchToUncAsync(unc, databasePath);
+
+        Assert.That(configurationManager.MediumType, Is.EqualTo(MediaType.LocalDevice));
+        Assert.That(configurationManager.BackupFolder, Is.EqualTo(@"\\fileserver\backups"));
+        Assert.That(configurationManager.MediaVolumeSerial, Is.EqualTo(""));
+        Assert.That(configurationManager.UNCUsername, Is.EqualTo(@"domain\backup"));
+        Assert.That(
+            Crypto.DecryptString(configurationManager.UNCPassword, DataProtectionScope.LocalMachine),
+            Is.EqualTo("secret"));
+
+        Assert.That(await CountAsync("versiontable"), Is.EqualTo(0));
+        Assert.That(await CountAsync("filelink"), Is.EqualTo(0));
+        Assert.That(await CountAsync("fileversiontable"), Is.EqualTo(0));
+
+        Assert.That(backupService.UpdatedDatabaseFiles, Is.EqualTo(new[] { databasePath }));
     }
 
     [Test]
