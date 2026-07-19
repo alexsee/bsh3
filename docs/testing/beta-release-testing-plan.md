@@ -4,13 +4,28 @@
 
 This plan defines how we get the WinUI app (`BSH.MainApp`) to a **robust beta** without compromising quality of a backup system customers rely on every day. It covers:
 
-1. Current automated coverage and gaps
-2. Easy unit/integration tests to add before/with beta
-3. A minimal, practical E2E layer (today: none)
+1. Current automated coverage and remaining gaps
+2. Unit/integration work already landed vs still open
+3. A minimal, practical E2E layer (today: none beyond headless engine integration)
 4. Manual / scenario QA for beta
 5. A safe launch strategy (gates, rollout, rollback)
 
 Companion design context: `docs/design-docs/job-system.md`, `src/ARCHITECTURE.md`.
+
+---
+
+## Progress (as of #569)
+
+Landed on `main` via [#569](https://github.com/alexsee/bsh3/pull/569):
+
+| Item | Location |
+|------|----------|
+| `RestoreJob` unit suite (`StorageMock`) | `src/BSH.Test/RestoreTests.cs` |
+| Extended restore-side `StorageMock` | `src/BSH.Test/Mocks/StorageMock.cs` |
+| Real-FS backup↔restore integration | `src/BSH.Test/Integration/FileSystemRestoreIntegrationTests.cs` (`[Category("Integration")]`) |
+| Release workflow test gate | `.github/workflows/dotnet-desktop-release.yml` (build + `dotnet test` before Inno Setup) |
+
+**Still open for beta readiness:** manual golden-path QA, packaging/shell decision, remaining P1 gaps (DB migrations, delete+restore, FTP/scheduler), optional UI E2E.
 
 ---
 
@@ -21,7 +36,7 @@ Companion design context: `docs/design-docs/job-system.md`, `src/ARCHITECTURE.md
 | Shared engine in `BSH.Engine` powers both shells | Engine regressions hit all users; prioritize engine tests |
 | WinUI (`BSH.MainApp`) is the current UI direction | Beta QA must exercise WinUI golden paths end-to-end |
 | Installer (`tools/setup/Setup.iss`) still launches **WinForms** `BSH.Main.exe` | Clarify which shell ships in beta; packaging mismatch is a release risk |
-| Storage: local FS + FTP; metadata in SQLite; VSS via `BSH.Service` | Real I/O, media, encryption, and VSS need scenario coverage beyond mocks |
+| Storage: local FS + FTP; metadata in SQLite; VSS via `BSH.Service` | Real I/O beyond local FS (FTP), media, and VSS still need scenario coverage |
 | Auto-update supports stable/beta feeds | Beta channel must be isolatable and roll-backable |
 
 **Decision needed before beta tagging:** Does beta ship WinUI as the installed entry point, WinForms with WinUI as optional/preview, or both? Test matrices below assume **WinUI is the beta UX under test**; adjust packaging gates accordingly.
@@ -32,13 +47,15 @@ Companion design context: `docs/design-docs/job-system.md`, `src/ARCHITECTURE.md
 
 **Project:** `src/BSH.Test` (NUnit only)  
 **CI:** `.github/workflows/dotnet-desktop-build.yml` runs `dotnet test` on PRs/main (Windows, x64, coverage + SonarCloud).  
-**Release workflow:** builds installer on tags; **does not re-run tests** (gap).
+**Release workflow:** `.github/workflows/dotnet-desktop-release.yml` now **builds and runs tests** before publish / Inno Setup (landed in #569).
 
-Roughly **~120 tests**. Strength by area:
+Strength by area:
 
 | Area | Coverage | Notes |
 |------|----------|-------|
 | `BackupJob` (full/incremental, cancel, compress, encrypt, long path, VSS retry mock) | Strong | Mostly `StorageMock` |
+| **`RestoreJob`** (routing, overwrite, cancel, medium fail, incremental links) | **Strong (unit)** | `RestoreTests` + `StorageMock` (#569) |
+| **`FileSystemStorage` backup↔restore** | **Strong (integration)** | Plain / compressed / encrypted / incremental (#569) |
 | File collector exclusions | Strong | Paths, types, size, masks, system folders |
 | `QueryManager` | Strong | Versions, search, restore path resolution |
 | Config / schedule policy / schedule settings | Moderate | Policy math + persistence |
@@ -46,12 +63,11 @@ Roughly **~120 tests**. Strength by area:
 | Disk space preflight helpers | Moderate | Pure logic |
 | `JobSessionRunner` / WinUI orchestration parity | Moderate | Preflight, battery pause, notifications |
 | Browser VM / update service | Thin | Favorites, feed preference |
-| **`RestoreJob`** | **Critical gap** | No dedicated restore suite |
-| **`FileSystemStorage` / `FTPStorage`** | **Gap** | Real I/O untested |
+| **`FTPStorage`** | **Gap** | Real I/O untested |
 | DB migrations | Gap | |
 | Quartz scheduler end-to-end | Gap | |
 | Real VSS / `BSH.Service` | Gap | Mock only |
-| WinUI UI / XAML / installer | **None** | No E2E |
+| WinUI UI / XAML / installer | **None** | No UI E2E |
 
 ---
 
@@ -59,18 +75,18 @@ Roughly **~120 tests**. Strength by area:
 
 ```
                  ┌─────────────────┐
-                 │ Manual / beta   │  Scenario QA + dogfood
+                 │ Manual / beta   │  Scenario QA + dogfood   ← next focus
                  │   field tests   │
                  ├─────────────────┤
-                 │ Smoke E2E       │  5–10 WinUI golden paths (new)
+                 │ Smoke E2E       │  Optional WinUI UI (none yet)
                  ├─────────────────┤
-                 │ Integration     │  Real FS storage + backup↔restore
+                 │ Integration     │  Real FS backup↔restore  ✅ landed
                  ├─────────────────┤
-                 │ Unit (engine)   │  Existing + RestoreJob + storage
+                 │ Unit (engine)   │  Backup + RestoreJob     ✅ landed
                  └─────────────────┘
 ```
 
-For a backup product, **integration tests that prove backup → restore bit-identity** are more valuable than broad UI automation. E2E should stay small and stable.
+For a backup product, **integration tests that prove backup → restore bit-identity** remain more valuable than broad UI automation. E2E should stay small and stable.
 
 ---
 
@@ -80,14 +96,14 @@ Before inviting customers:
 
 1. **Freeze a beta build pipeline**
    - Tag pattern already exists: `v*.*.*-beta*`
-   - Add a **test gate to the release workflow** (run `dotnet test` before Inno Setup); today release skips tests.
-2. **Pin shell + version**
+   - ~~Add a test gate to the release workflow~~ ✅ Landed in #569 (`dotnet test` before Inno Setup).
+2. **Pin shell + version** *(open)*
    - Document which EXE the beta installer starts.
    - Ensure beta update feed points only at beta tags.
-3. **Crash / diagnostic baseline**
+3. **Crash / diagnostic baseline** *(open)*
    - Serilog file location documented for support.
    - Known-good DB backup path: `%AppData%\Alexosoft\Backup Service Home 3\`.
-4. **Test data kit**
+4. **Test data kit** *(open)*
    - Small fixture tree: nested folders, empty folder, Unicode name, long path (>260), locked file (open in Notepad), large file (~500MB optional), junction/symlink if supported.
 5. **Exit criteria checklist** (see [Beta exit criteria](#beta-exit-criteria)).
 
@@ -95,32 +111,30 @@ Before inviting customers:
 
 ## Phase 1 — Easy automated wins (unit + integration)
 
-Prioritized by **customer risk × implementation ease**. Patterns already exist in `BackupTests` (temp SQLite + mocks) and should be reused.
+Prioritized by **customer risk × implementation ease**.
 
-### P0 — Must add before broad beta (high value, low–medium effort)
+### P0 — Must add before broad beta — ✅ done (#569)
+
+| Test | Type | Status | Location |
+|------|------|--------|----------|
+| Restore routing / fileType matrix | Unit (`StorageMock`) | ✅ | `RestoreTests` |
+| Restore after incremental (linked packages) | Unit | ✅ | `RestoreTests` |
+| Restore compressed / encrypted (API routing) | Unit | ✅ | `RestoreTests` |
+| Overwrite policies (`Ask` / `Overwrite` / `DontCopy`) | Unit | ✅ | `RestoreTests` |
+| Restore when medium unavailable | Unit | ✅ | `RestoreTests` |
+| Restore cancel mid-run | Unit | ✅ | `RestoreTests` |
+| Backup → restore content equality (plain / compress / encrypt / incremental) | Integration (`FileSystemStorage`) | ✅ | `Integration/FileSystemRestoreIntegrationTests` |
+| Release CI runs tests | Process | ✅ | `dotnet-desktop-release.yml` |
+
+### P1 — Strongly recommended for beta hardening *(remaining)*
 
 | Test | Type | Why | Approach |
 |------|------|-----|----------|
-| **Restore after full backup** | Integration-ish unit | Restore is the product promise; currently untested | Extend `BackupTests` setup: run backup with `StorageMock` or temp `FileSystemStorage`, then `RestoreJob` to a clean folder; assert file content + timestamps |
-| **Restore after incremental** | Same | Incremental linking is easy to get wrong | Backup v1 → change file → backup v2 → restore v1 and v2 separately |
-| **Restore compressed / encrypted** | Unit | `fileType` matrix (1/2/6 local, 3/4/5 FTP) | Mirror existing backup encryption/compression cases through restore |
-| **Overwrite policies** (`Ask` / `Overwrite` / `DontCopy`) | Unit | Conflict path is restore-specific | Drive `IJobReport.RequestOverwrite` mock responses |
-| **Restore when medium unavailable** | Unit | Must fail cleanly (`DeviceNotReadyException`) | Mirror backup medium-fail test |
-| **Restore cancel mid-run** | Unit | Cancellation semantics | Cancel token during multi-file restore |
-| **Release CI runs tests** | Process | Prevent shipping a broken beta tag | Add `dotnet test` step to `dotnet-desktop-release.yml` before publish |
-
-Suggested new file: `src/BSH.Test/RestoreTests.cs` (mirror `BackupTests` / `DeleteTests` structure).
-
-### P1 — Strongly recommended for beta hardening
-
-| Test | Type | Why | Approach |
-|------|------|-----|----------|
-| **`FileSystemStorage` round-trip** | Integration | Mocks hide path/`\\?\`/permission bugs | Temp directories; copy, compress, encrypt, decrypt, delete |
-| **Backup → restore on real FS** | Integration | End-to-end engine without UI | Temp source + temp backup medium + temp restore target |
 | **DB migration smoke** | Unit/integration | Schema upgrades break existing customers | Open fixture DBs at prior schema versions; assert `DbMigrationService` reaches current |
 | **Delete version then restore remaining** | Unit | Metadata/orphan cleanup | Backup 2 versions → delete one → restore other |
 | **Long-path restore** | Unit | Known debt (`_LONGFILES_` vs `_LONG_FILES_`) | Extend existing long-path backup case through restore |
 | **Disk space preflight → abort** | Unit + light orchestration | Avoid half-written backups | Already have helpers; add session-level abort assertion if missing |
+| Deeper `FileSystemStorage` API coverage (delete/rename/`\\?\`) | Integration | Beyond backup↔restore happy path | Extend integration category |
 
 ### P2 — Nice to have (post-beta or parallel)
 
@@ -140,19 +154,19 @@ Suggested new file: `src/BSH.Test/RestoreTests.cs` (mirror `BackupTests` / `Dele
 
 ---
 
-## Phase 2 — Basic E2E proposal (new)
+## Phase 2 — Basic E2E proposal
 
-Today there is **no** UI/E2E project. For beta, keep E2E **thin**: prove the shell can drive the engine for the golden path, not pixel-perfect UI.
+Headless engine golden paths for local FS backup↔restore are covered by the integration suite (#569). Remaining E2E gap is **WinUI shell / installer** automation.
 
 ### Recommended stack
 
-| Option | Pros | Cons | Recommendation |
-|--------|------|------|----------------|
-| **A. Engine “headless golden path” in `BSH.Test`** (no UI) | Fast, stable, CI-friendly | Doesn’t catch WinUI wiring bugs | **Do first** (Phase 1 P0/P1) |
-| **B. WinAppDriver / Appium Windows** against packaged WinUI | True UI E2E | Flaky, App SDK setup cost | **Optional Phase 2b** after A |
+| Option | Pros | Cons | Status |
+|--------|------|------|--------|
+| **A. Engine “headless golden path” in `BSH.Test`** (no UI) | Fast, stable, CI-friendly | Doesn’t catch WinUI wiring bugs | ✅ Done for local FS (`Integration/`) |
+| **B. WinAppDriver / Appium Windows** against packaged WinUI | True UI E2E | Flaky, App SDK setup cost | Optional next |
 | **C. Scripted smoke via public service APIs** (if exposed) | Medium fidelity | Needs test hooks | Use if UI automation slips |
 
-**Proposal for v1 E2E suite (5–8 cases):**
+**Proposal for UI / shell smoke (5–8 cases) — still open:**
 
 1. Fresh config → set source + local target → run backup → status FINISHED  
 2. Incremental backup after file change → new version appears in browser  
@@ -165,9 +179,14 @@ Today there is **no** UI/E2E project. For beta, keep E2E **thin**: prove the she
 
 **Where to put them:**
 
-- Short term: `BSH.Test/E2E/` or `BSH.Test/Integration/` with `[Category("Integration")]` and temp dirs under `%TEMP%\BSH.Test\...`
-- Filter in CI: always run unit; run integration on `main` + release tags (same Windows runner is fine if tests are fast & isolated)
-- Longer term: separate `BSH.E2E` project if WinAppDriver is adopted
+- Engine paths: `BSH.Test/Integration/` with `[Category("Integration")]` ✅  
+- UI paths (later): separate `BSH.E2E` + WinAppDriver if adopted  
+- Filter in CI:
+  ```powershell
+  dotnet test ... --filter "Category!=Integration"   # optional fast unit-only
+  dotnet test ... --filter "Category=Integration"    # integration
+  ```
+  Today PR/release CI runs the full suite (including Integration) on Windows.
 
 **Stability rules:**
 
@@ -180,7 +199,7 @@ Today there is **no** UI/E2E project. For beta, keep E2E **thin**: prove the she
 
 ## Phase 3 — Manual / beta scenario QA
 
-Automate what we can; **manually** validate what backups actually need in the wild.
+Automate what we can; **manually** validate what backups actually need in the wild. This is the **primary remaining work** before inviting customers.
 
 ### Golden path (every beta build)
 
@@ -219,7 +238,7 @@ Automate what we can; **manually** validate what backups actually need in the wi
 
 | Role | Responsibility |
 |------|----------------|
-| Dev | Phase 1 automated gaps; fix P0 bugs |
+| Dev | Remaining P1 automated gaps; fix P0 bugs |
 | QA / dogfooders | Phase 3 checklist on beta builds |
 | Maintainer | Tag gating, feed config, rollback decision |
 
@@ -231,16 +250,16 @@ Backup software fails loudly in customer trust. Launch beta as a **controlled ch
 
 ### Gate 1 — Engineering (block tag)
 
-- [ ] PR CI green (`dotnet-desktop-build`)  
-- [ ] **Release workflow runs the same test suite and fails the release on test failure**  
-- [ ] P0 restore tests merged and green  
+- [x] PR CI green (`dotnet-desktop-build`) — required ongoing  
+- [x] **Release workflow runs the test suite and fails the release on test failure** (#569)  
+- [x] P0 restore unit + FS integration tests merged and green (#569)  
 - [ ] No open P0 bugs on: data loss, restore failure, DB corruption, cancel leaving inconsistent state  
 
 ### Gate 2 — Internal dogfood (block public beta)
 
 - [ ] ≥3 internal machines on beta for several days of real schedules  
 - [ ] Golden path + risk scenarios signed off  
-- [ ] At least one full encrypted backup ↔ restore verified bit-for-bit on real FS  
+- [ ] At least one full encrypted backup ↔ restore verified bit-for-bit on real FS *(automated happy path exists; still dogfood on real media/USB)*  
 - [ ] Installer installs/starts intended shell; `BSH.Service` starts; VSS path smoke-tested  
 
 ### Gate 3 — Closed beta (limited customers)
@@ -272,27 +291,28 @@ These reduce blast radius even when tests miss something:
 1. Disable / unpublish beta feed item.  
 2. Publish last known-good build on the appropriate channel.  
 3. If DB schema migrated forward incompatibly: document “do not downgrade” or ship a forward-compatible stable; **never break restore of existing media**.  
-4. Hotfix notes: symptoms, who is affected, workaround (restore from last good version on medium).
+4. Hotfix notes: symptoms, who are affected, workaround (restore from last good version on medium).
 
 ---
 
 ## Suggested implementation order (concrete backlog)
 
-1. **Add `RestoreTests.cs`** — full, incremental, compress, encrypt, overwrite, cancel, medium fail.  
-2. **Add real-FS integration category** — backup → restore content equality.  
-3. **Wire `dotnet test` into release workflow** before Inno Setup.  
-4. **Manual golden-path checklist** executed on first `v*-beta*` build.  
-5. **Optional:** `[Category("Integration")]` filter docs in README/ARCHITECTURE test section.  
-6. **Optional later:** WinAppDriver smoke for setup wizard + one backup button.  
+1. ~~**Add `RestoreTests.cs`**~~ ✅ #569 — unit suite via `StorageMock`.  
+2. ~~**Add real-FS integration category**~~ ✅ #569 — `Integration/FileSystemRestoreIntegrationTests`.  
+3. ~~**Wire `dotnet test` into release workflow**~~ ✅ #569.  
+4. **Manual golden-path checklist** executed on first `v*-beta*` build. ← **next**  
+5. **P1 hardening:** DB migration smoke, delete+restore, long-path restore.  
+6. **Optional:** WinAppDriver smoke for setup wizard + one backup button.  
 
 ### Effort sketch (technical, not calendar)
 
-| Work item | Touch surface | Risk |
-|-----------|---------------|------|
-| RestoreTests | `BSH.Test` + existing mocks | Low; follows BackupTests |
-| FS integration | Temp dirs + `FileSystemStorage` | Medium; path/`\\?\` edge cases |
-| Release CI test step | One workflow YAML | Low |
-| WinAppDriver E2E | New project + CI image deps | High flake/setup cost |
+| Work item | Touch surface | Status / risk |
+|-----------|---------------|---------------|
+| RestoreTests | `BSH.Test` + `StorageMock` | ✅ Done |
+| FS integration | Temp dirs + `FileSystemStorage` | ✅ Done |
+| Release CI test step | Release workflow YAML | ✅ Done |
+| Manual / dogfood QA | Installer + real media | Open — highest remaining risk |
+| WinAppDriver E2E | New project + CI image deps | Optional; high flake/setup cost |
 
 ---
 
@@ -300,7 +320,7 @@ These reduce blast radius even when tests miss something:
 
 Ship / widen beta only when:
 
-1. Automated: P0 restore suite + existing suite green on the release tag build.  
+1. Automated: P0 restore suite + existing suite green on the release tag build. ✅ *(mechanism + tests landed; still required green on each tag)*  
 2. Manual: golden path + encrypted restore + cancel integrity + media-missing signed off on WinUI.  
 3. Ops: beta feed isolated; rollback path rehearsed once.  
 4. Product: shell packaging matches what testers install.  
@@ -312,10 +332,10 @@ Ship / widen beta only when:
 
 | Feature | Unit | Integration | E2E/Manual |
 |---------|------|-------------|------------|
-| Full/incremental backup | ✅ exists | Add FS | Manual large trees |
-| Restore | ❌ add P0 | Add FS round-trip | Golden path |
-| Compression/encryption | Partial | Round-trip | Manual password UX |
-| Delete version / file | Partial | After restore suite | Browser UX |
+| Full/incremental backup | ✅ | ✅ local FS (#569) | Manual large trees |
+| Restore | ✅ (#569) | ✅ local FS (#569) | Golden path / WinUI |
+| Compression/encryption | ✅ routing + ✅ FS round-trip | ✅ (#569) | Manual password UX |
+| Delete version / file | Partial | After delete+restore P1 | Browser UX |
 | Edit/decrypt | Thin | Optional | Manual |
 | Exclusions | ✅ | Spot-check | Manual |
 | Schedule + retention | Policy unit | Optional Quartz | Overnight dogfood |
@@ -332,7 +352,8 @@ Ship / widen beta only when:
 cd src
 dotnet test "BSH.Test\BSH.Test.csproj" -c Release -p:Platform=x64
 
-# After categories exist:
+# Optional filters:
+dotnet test "BSH.Test\BSH.Test.csproj" -c Release -p:Platform=x64 --filter "FullyQualifiedName~Restore"
 dotnet test "BSH.Test\BSH.Test.csproj" -c Release -p:Platform=x64 --filter "Category!=Integration"
 dotnet test "BSH.Test\BSH.Test.csproj" -c Release -p:Platform=x64 --filter "Category=Integration"
 ```
@@ -341,10 +362,13 @@ dotnet test "BSH.Test\BSH.Test.csproj" -c Release -p:Platform=x64 --filter "Cate
 
 | Path | Role |
 |------|------|
-| `src/BSH.Test/` | Existing NUnit suite |
-| `src/BSH.Engine/Jobs/RestoreJob.cs` | Highest automated gap |
+| `src/BSH.Test/` | NUnit suite |
+| `src/BSH.Test/RestoreTests.cs` | RestoreJob unit tests (`StorageMock`) |
+| `src/BSH.Test/Integration/FileSystemRestoreIntegrationTests.cs` | Real-FS backup↔restore |
+| `src/BSH.Test/Mocks/StorageMock.cs` | Shared backup/restore storage mock |
+| `src/BSH.Engine/Jobs/RestoreJob.cs` | Restore implementation |
 | `src/BSH.Engine/Storage/` | FS/FTP adapters |
 | `src/BSH.MainApp/` | WinUI shell under beta |
 | `.github/workflows/dotnet-desktop-build.yml` | PR test gate |
-| `.github/workflows/dotnet-desktop-release.yml` | Tag → installer (add tests) |
+| `.github/workflows/dotnet-desktop-release.yml` | Tag → test → installer |
 | `tools/setup/Setup.iss` | What customers actually install |
