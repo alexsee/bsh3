@@ -10,20 +10,94 @@ using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Security;
-using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Utils;
 using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;
 
 public partial class ucDoConfigure : IMainTabs
 {
+    private ComboBox cboRemoteProtocol;
+    private ComboBox cboRemoteProtocolImport;
+
     public ucDoConfigure()
     {
         InitializeComponent();
+        InitializeRemoteProtocolSelectors();
     }
 
     private string tmpFolderStore = "";
+
+    private void InitializeRemoteProtocolSelectors()
+    {
+        cboRemoteProtocol = CreateRemoteProtocolComboBox();
+        cboRemoteProtocol.Location = new System.Drawing.Point(194, 232);
+        cboRemoteProtocol.SelectedIndexChanged += (_, _) => ApplyRemoteProtocolUi(isImport: false);
+        TabPage2.Controls.Add(cboRemoteProtocol);
+
+        var protocolLabel = new Label
+        {
+            AutoSize = true,
+            Location = new System.Drawing.Point(24, 236),
+            Text = Resources.DLG_REMOTE_PROTOCOL_LABEL
+        };
+        TabPage2.Controls.Add(protocolLabel);
+
+        cboRemoteProtocolImport = CreateRemoteProtocolComboBox();
+        cboRemoteProtocolImport.Location = new System.Drawing.Point(194, 232);
+        cboRemoteProtocolImport.SelectedIndexChanged += (_, _) => ApplyRemoteProtocolUi(isImport: true);
+        TabPage4.Controls.Add(cboRemoteProtocolImport);
+
+        var protocolLabelImport = new Label
+        {
+            AutoSize = true,
+            Location = new System.Drawing.Point(27, 236),
+            Text = Resources.DLG_REMOTE_PROTOCOL_LABEL
+        };
+        TabPage4.Controls.Add(protocolLabelImport);
+
+        ApplyRemoteProtocolUi(isImport: false);
+        ApplyRemoteProtocolUi(isImport: true);
+    }
+
+    private static ComboBox CreateRemoteProtocolComboBox()
+    {
+        var comboBox = new ComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            FormattingEnabled = true,
+            Size = new System.Drawing.Size(200, 33)
+        };
+        comboBox.Items.Add(Resources.DLG_REMOTE_PROTOCOL_FTP);
+        comboBox.Items.Add(Resources.DLG_REMOTE_PROTOCOL_WEBDAV);
+        comboBox.SelectedIndex = 0;
+        return comboBox;
+    }
+
+    private MediaType GetSelectedRemoteMediaType(bool isImport = false)
+    {
+        // Protocol combo: 0 = FTP, 1 = WebDAV → media combo indices 1 and 2
+        var comboBox = isImport ? cboRemoteProtocolImport : cboRemoteProtocol;
+        return MediaTypeExtensions.FromMediaComboIndex(comboBox.SelectedIndex + 1);
+    }
+
+    private void ApplyRemoteProtocolUi(bool isImport)
+    {
+        var mediaType = GetSelectedRemoteMediaType(isImport);
+        var useWebDav = mediaType.IsWebDav();
+        var portBox = isImport ? txtFTPPort2 : txtFTPPort;
+        var encoding = isImport ? cboFtpEncoding2 : cboFtpEncoding;
+        var encodingLabel = isImport ? Label19 : Label18;
+        var encryption = isImport ? chkFtpEncryption2 : chkFtpEncryption;
+
+        encoding.Visible = !useWebDav;
+        encodingLabel.Visible = !useWebDav;
+        encryption.Visible = !useWebDav;
+
+        portBox.Text = mediaType.AdjustPortForProtocol(portBox.Text);
+    }
 
     #region  Implementation of IMainTabs 
     public void CloseTab()
@@ -155,15 +229,18 @@ public partial class ucDoConfigure : IMainTabs
                 }
                 else if (tcSource.SelectedIndex == 1)
                 {
-                    // check ftp credentials
+                    // check remote credentials (FTP/WebDAV)
                     try
                     {
-                        txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
+                        var mediaType = GetSelectedRemoteMediaType();
+                        var credentials = CreateRemoteCredentialsFromUi(mediaType, isImport: false);
+                        txtFTPPath.Text = credentials.Folder;
 
-                        var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
-                        if (!profile)
+                        var isRemoteConnectionValid = StorageFactory.CheckRemoteConnection(mediaType, credentials);
+
+                        if (!isRemoteConnectionValid)
                         {
-                            // directory not found
+                            // remote storage unavailable
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                             iWizardStep -= 1;
                             await ShowWizardStepAsync(iWizardStep);
@@ -181,6 +258,7 @@ public partial class ucDoConfigure : IMainTabs
                         return;
                     }
                 }
+
                 else
                 {
                     txtUNCPath.Text = txtUNCPath.Text.Replace("//", @"\\");
@@ -251,17 +329,10 @@ public partial class ucDoConfigure : IMainTabs
                     }
                     else if (tcSource.SelectedIndex == 1)
                     {
-                        // ftp server
-                        configurationManager.MediumType = MediaType.FileTransferServer;
-                        configurationManager.FtpHost = txtFTPServer.Text;
-                        configurationManager.FtpPort = txtFTPPort.Text;
-                        configurationManager.FtpUser = txtFTPUsername.Text;
-                        configurationManager.FtpPass = txtFTPPassword.Text;
-                        configurationManager.FtpFolder = txtFTPPath.Text;
-                        configurationManager.FtpCoding = Convert.ToString(cboFtpEncoding.SelectedItem);
-
-                        configurationManager.FtpEncryptionMode = chkFtpEncryption2.Checked ? "0" : "3";
-                        configurationManager.FtpSslProtocols = "0";
+                        // FTP or WebDAV server
+                        var mediaType = GetSelectedRemoteMediaType();
+                        var credentials = CreateRemoteCredentialsFromUi(mediaType, isImport: false);
+                        credentials.ApplyTo(configurationManager, mediaType);
                     }
                     else
                     {
@@ -407,36 +478,29 @@ public partial class ucDoConfigure : IMainTabs
                     cmdBack.Enabled = true;
                     cmdNext.Enabled = true;
 
-                    // check ftp server credentials
+                    // check remote server credentials
                     try
                     {
-                        txtFTPPath2.Text = FtpStorage.GetFtpPath(txtFTPPath2.Text);
+                        var mediaType = GetSelectedRemoteMediaType(isImport: true);
+                        var credentials = CreateRemoteCredentialsFromUi(mediaType, isImport: true);
+                        txtFTPPath2.Text = credentials.Folder;
 
-                        using (var storage = new FtpStorage(
-                            txtFTPServer2.Text,
-                            Convert.ToInt32(txtFTPPort2.Text),
-                            txtFTPUser2.Text,
-                            txtFTPPass2.Text,
-                            txtFTPPath2.Text,
-                            Convert.ToString(cboFtpEncoding2.SelectedItem),
-                            !chkFtpEncryption2.Checked,
-                            0))
+                        using var storage = StorageFactory.CreateRemote(mediaType, credentials);
+
+                        storage.Open();
+                        if (!storage.FileExists("backup.bshdb"))
                         {
-                            storage.Open();
-                            if (!storage.FileExists("backup.bshdb"))
-                            {
-                                MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                iWizardStep -= 1;
-                                await ShowWizardStepAsync(iWizardStep);
-                                return;
-                            }
+                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NO_BACKUP_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            iWizardStep -= 1;
+                            await ShowWizardStepAsync(iWizardStep);
+                            return;
                         }
 
                         MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_INFO_FTP_SUCCESS_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
                     {
-                        // ftp credentials wrong
+                        // remote credentials wrong
                         MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         iWizardStep -= 1;
                         await ShowWizardStepAsync(iWizardStep);
@@ -476,20 +540,16 @@ public partial class ucDoConfigure : IMainTabs
                 }
                 else if (tcStep5.SelectedIndex == 1)
                 {
-                    // ftp server
+                    // FTP or WebDAV server
                     try
                     {
                         // download backup database
                         DeleteCurrentDatabaseFile();
-                        using IStorageProvider storage = new FtpStorage(
-                            txtFTPServer2.Text,
-                            int.Parse(txtFTPPort2.Text),
-                            txtFTPUser2.Text,
-                            txtFTPPass2.Text,
-                            txtFTPPath2.Text,
-                            Convert.ToString(cboFtpEncoding2.SelectedItem),
-                            !chkFtpEncryption2.Checked,
-                            0);
+
+                        var mediaType = GetSelectedRemoteMediaType(isImport: true);
+                        var credentials = CreateRemoteCredentialsFromUi(mediaType, isImport: true);
+                        txtFTPPath2.Text = credentials.Folder;
+                        using IStorageProvider storage = StorageFactory.CreateRemote(mediaType, credentials);
                         storage.Open();
                         storage.CopyFileFromStorage(BackupLogic.DatabaseFile, "backup.bshdb");
                     }
@@ -528,25 +588,16 @@ public partial class ucDoConfigure : IMainTabs
                     BackupLogic.ConfigurationManager.BackupFolder = lvBackups.SelectedItems[0].Tag.ToString();
                     BackupLogic.ConfigurationManager.MediumType = MediaType.LocalDevice;
 
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
+                    await BackupFileType.RemapAllToAsync(BackupLogic.DbClientFactory, MediaType.LocalDevice.ToStorageProviderKind());
                 }
                 else if (tcStep5.SelectedIndex == 1)
                 {
-                    // refresh ftp credentials
-                    BackupLogic.ConfigurationManager.BackupFolder = "";
-                    BackupLogic.ConfigurationManager.FtpFolder = txtFTPPath2.Text;
-                    BackupLogic.ConfigurationManager.FtpHost = txtFTPServer2.Text;
-                    BackupLogic.ConfigurationManager.FtpPass = txtFTPPass2.Text;
-                    BackupLogic.ConfigurationManager.FtpPort = txtFTPPort2.Text;
-                    BackupLogic.ConfigurationManager.FtpUser = txtFTPUser2.Text;
-                    BackupLogic.ConfigurationManager.FtpCoding = Convert.ToString(cboFtpEncoding2.SelectedItem);
-                    BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
+                    // refresh remote credentials
+                    var mediaType = GetSelectedRemoteMediaType(isImport: true);
+                    var credentials = CreateRemoteCredentialsFromUi(mediaType, isImport: true);
+                    credentials.ApplyTo(BackupLogic.ConfigurationManager, mediaType);
 
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
+                    await BackupFileType.RemapAllToAsync(BackupLogic.DbClientFactory, mediaType.ToStorageProviderKind());
                 }
                 else
                 {
@@ -709,12 +760,15 @@ public partial class ucDoConfigure : IMainTabs
 
     private void cmdFTPCheck_Click(object sender, EventArgs e)
     {
-        // check ftp credentials
+        // check remote credentials (FTP/WebDAV)
         try
         {
-            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            var mediaType = GetSelectedRemoteMediaType();
+            var credentials = CreateRemoteCredentialsFromUi(mediaType, isImport: false);
+            txtFTPPath.Text = credentials.Folder;
+            var isRemoteConnectionValid = StorageFactory.CheckRemoteConnection(mediaType, credentials);
 
-            if (!profile)
+            if (!isRemoteConnectionValid)
             {
                 MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT, Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -789,6 +843,36 @@ public partial class ucDoConfigure : IMainTabs
             newEntry.Group = gGroup;
             newEntry.Tag = entry.RootDirectory.FullName;
         }
+    }
+
+    private RemoteStorageCredentials CreateRemoteCredentialsFromUi(MediaType mediaType, bool isImport)
+    {
+        if (isImport)
+        {
+            return new RemoteStorageCredentials
+            {
+                Host = txtFTPServer2.Text,
+                Port = int.TryParse(txtFTPPort2.Text, out var importPort) ? importPort : mediaType.DefaultRemotePort(),
+                UserName = txtFTPUser2.Text,
+                Password = txtFTPPass2.Text,
+                Folder = mediaType.IsFtp() ? FtpStorage.GetFtpPath(txtFTPPath2.Text) : txtFTPPath2.Text,
+                Encoding = cboFtpEncoding2.SelectedItem?.ToString() ?? "ISO-8859-1",
+                // chkFtpEncryption = "force unencrypted connection"
+                UseEncryption = !chkFtpEncryption2.Checked
+            };
+        }
+
+        return new RemoteStorageCredentials
+        {
+            Host = txtFTPServer.Text,
+            Port = int.TryParse(txtFTPPort.Text, out var port) ? port : mediaType.DefaultRemotePort(),
+            UserName = txtFTPUsername.Text,
+            Password = txtFTPPassword.Text,
+            Folder = mediaType.IsFtp() ? FtpStorage.GetFtpPath(txtFTPPath.Text) : txtFTPPath.Text,
+            Encoding = cboFtpEncoding.SelectedItem?.ToString() ?? "ISO-8859-1",
+            // chkFtpEncryption = "force unencrypted connection"
+            UseEncryption = !chkFtpEncryption.Checked
+        };
     }
 
     private void cmdChange_Click(object sender, EventArgs e)

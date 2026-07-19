@@ -7,5 +7,6 @@ public enum MediaType
 {
     Unset = 0,
     LocalDevice = 1,
+    WebDav = 2,
     FileTransferServer = 3
 }

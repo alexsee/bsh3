@@ -713,8 +713,8 @@ static class BackupLogic
             return;
         }
 
-        // only start, if local device
-        if (ConfigurationManager.MediumType != MediaType.FileTransferServer)
+        // only start for local/removable media (not FTP or WebDAV)
+        if (ConfigurationManager.MediumType == MediaType.LocalDevice)
         {
             dCWatcher = mediaWatcherFactory.Create();
             dCWatcher.StartWatching();

@@ -275,7 +275,7 @@ public partial class ucOverview : IMainTabs, IStatusReport
                 }
 
                 // backup device
-                if (BackupLogic.ConfigurationManager.MediumType != MediaType.FileTransferServer)
+                if (BackupLogic.ConfigurationManager.MediumType == MediaType.LocalDevice)
                 {
                     infoText.Append(Resources.DLG_UC_OVERVIEW_LBL_ON_TEXT);
                     if (BackupLogic.ConfigurationManager.BackupFolder.Substring(0, 1) == "\\")
@@ -300,6 +300,10 @@ public partial class ucOverview : IMainTabs, IStatusReport
                                 break;
                         }
                     }
+                }
+                else if (BackupLogic.ConfigurationManager.MediumType == MediaType.WebDav)
+                {
+                    infoText.Append(string.Format(Resources.DLG_UC_OVERVIEW_LBL_MEDIA_WEBDAV_BACKUP_TEXT, BackupLogic.ConfigurationManager.FtpHost));
                 }
                 else
                 {

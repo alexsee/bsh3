@@ -1455,6 +1455,42 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die  auf einem WebDAV Server ({0}). ähnelt.
+        /// </summary>
+        public static string DLG_UC_OVERVIEW_LBL_MEDIA_WEBDAV_BACKUP_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_UC_OVERVIEW_LBL_MEDIA_WEBDAV_BACKUP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Protokoll: ähnelt.
+        /// </summary>
+        public static string DLG_REMOTE_PROTOCOL_LABEL {
+            get {
+                return ResourceManager.GetString("DLG_REMOTE_PROTOCOL_LABEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die FTP ähnelt.
+        /// </summary>
+        public static string DLG_REMOTE_PROTOCOL_FTP {
+            get {
+                return ResourceManager.GetString("DLG_REMOTE_PROTOCOL_FTP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die WebDAV ähnelt.
+        /// </summary>
+        public static string DLG_REMOTE_PROTOCOL_WEBDAV {
+            get {
+                return ResourceManager.GetString("DLG_REMOTE_PROTOCOL_WEBDAV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  lokalen Datenträger ({0}). ähnelt.
         /// </summary>
         public static string DLG_UC_OVERVIEW_LBL_MEDIA_LOCAL_HDD_BACKUP_TEXT {

@@ -2,9 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
-using System.Data;
 using System.Globalization;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -104,7 +102,7 @@ public class DeleteSingleJob : Job
                             reader.GetString("filePath"),
                             reader.GetString("longfilename"),
                             reader.GetString("versionDate"),
-                            reader.GetInt32("fileType").ToString()
+                            reader.GetInt32("fileType")
                         );
                     }
                     catch (FileNotProcessedException ex)

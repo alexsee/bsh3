@@ -14,6 +14,7 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
+using Brightbits.BSH.Engine.Utils;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -162,21 +163,12 @@ public class EditJob : Job
     /// <param name="fileVersionId"></param>
     private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, long fileVersionId)
     {
-        if (fileType == 5)
+        if (!BackupFileType.IsEncrypted(fileType) || !BackupFileType.TryGetRegular(fileType, out var regularType))
         {
-            // decrypt on device
-            storage.DecryptOnStorage(remoteFile, Password);
-
-            // modify entry
-            await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, 3);
+            return;
         }
-        else if (fileType == 6)
-        {
-            // decrypt on device
-            storage.DecryptOnStorage(remoteFile, Password);
 
-            // modify entry
-            await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, 1);
-        }
+        storage.DecryptOnStorage(remoteFile, Password);
+        await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, regularType);
     }
 }

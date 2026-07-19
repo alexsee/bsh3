@@ -106,7 +106,7 @@ public class DeleteJob : Job
                         file["filePath"].ToString(),
                         file["longfilename"].ToString(),
                         file["versionDate"].ToString(),
-                        file["fileType"].ToString());
+                        Convert.ToInt32(file["fileType"]));
                 }
                 catch (Exception ex)
                 {

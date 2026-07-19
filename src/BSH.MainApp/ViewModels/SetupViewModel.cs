@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
@@ -51,6 +52,8 @@ public partial class SetupViewModel : ObservableObject
         FtpEncoding = "UTF8";
         ImportFtpPort = "21";
         ImportFtpEncoding = "UTF8";
+        WebDavPort = "443";
+        ImportWebDavPort = "443";
         SelectedTaskType = TaskType.Auto;
         SelectedTargetKind = SetupTargetKind.LocalDrive;
         SelectedImportSourceKind = SetupImportSourceKind.LocalMedia;
@@ -130,6 +133,21 @@ public partial class SetupViewModel : ObservableObject
     private bool ftpEnforceUnencrypted;
 
     [ObservableProperty]
+    private string webDavHost = "";
+
+    [ObservableProperty]
+    private string webDavPort = "443";
+
+    [ObservableProperty]
+    private string webDavUser = "";
+
+    [ObservableProperty]
+    private string webDavPassword = "";
+
+    [ObservableProperty]
+    private string webDavFolder = "";
+
+    [ObservableProperty]
     private TaskType selectedTaskType = TaskType.Auto;
 
     [ObservableProperty]
@@ -164,6 +182,21 @@ public partial class SetupViewModel : ObservableObject
 
     [ObservableProperty]
     private bool importFtpEnforceUnencrypted;
+
+    [ObservableProperty]
+    private string importWebDavHost = "";
+
+    [ObservableProperty]
+    private string importWebDavPort = "443";
+
+    [ObservableProperty]
+    private string importWebDavUser = "";
+
+    [ObservableProperty]
+    private string importWebDavPassword = "";
+
+    [ObservableProperty]
+    private string importWebDavFolder = "";
 
     [ObservableProperty]
     private SourceRemap? selectedSourceRemap;
@@ -211,10 +244,16 @@ public partial class SetupViewModel : ObservableObject
     private Visibility ftpTargetVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
+    private Visibility webDavTargetVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
     private Visibility localImportVisibility = Visibility.Visible;
 
     [ObservableProperty]
     private Visibility ftpImportVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
+    private Visibility webDavImportVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
     private Visibility explicitImportVisibility = Visibility.Collapsed;
@@ -617,37 +656,64 @@ public partial class SetupViewModel : ObservableObject
                 }
 
             case SetupTargetKind.Ftp:
-                try
-                {
-                    FtpFolder = FtpStorage.GetFtpPath(FtpFolder);
-                    if (!int.TryParse(FtpPort, out var port))
-                    {
-                        ValidationErrorMessage = "FTP port is invalid.";
-                        return false;
-                    }
+                FtpFolder = FtpStorage.GetFtpPath(FtpFolder);
+                return await ValidateRemoteTargetAsync(
+                    MediaType.FileTransferServer,
+                    BuildRemoteCredentials(
+                        MediaType.FileTransferServer,
+                        FtpHost,
+                        FtpPort,
+                        FtpUser,
+                        FtpPassword,
+                        FtpFolder,
+                        FtpEncoding,
+                        !FtpEnforceUnencrypted),
+                    "FTP");
 
-                    var ok = FtpStorage.CheckConnection(FtpHost, port, FtpUser, FtpPassword, FtpFolder, FtpEncoding);
-                    if (!ok)
-                    {
-                        ValidationErrorMessage = "The FTP directory was not found.";
-                        return false;
-                    }
-
-                    await presentationService.ShowMessageBoxAsync(
-                        "FTP connection successful",
-                        "The FTP connection was verified successfully.",
-                        [new UICommand("OK")]);
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    ValidationErrorMessage = "FTP connection failed. " + ex.Message;
-                    return false;
-                }
+            case SetupTargetKind.WebDav:
+                return await ValidateRemoteTargetAsync(
+                    MediaType.WebDav,
+                    BuildRemoteCredentials(
+                        MediaType.WebDav,
+                        WebDavHost,
+                        WebDavPort,
+                        WebDavUser,
+                        WebDavPassword,
+                        WebDavFolder),
+                    "WebDAV");
 
             default:
                 ValidationErrorMessage = "Select a backup target.";
                 return false;
+        }
+    }
+
+    private async Task<bool> ValidateRemoteTargetAsync(MediaType mediaType, RemoteStorageCredentials? credentials, string label)
+    {
+        if (credentials == null)
+        {
+            return false;
+        }
+
+        try
+        {
+            var ok = StorageFactory.CheckRemoteConnection(mediaType, credentials);
+            if (!ok)
+            {
+                ValidationErrorMessage = $"The {label} directory was not found.";
+                return false;
+            }
+
+            await presentationService.ShowMessageBoxAsync(
+                $"{label} connection successful",
+                $"The {label} connection was verified successfully.",
+                [new UICommand("OK")]);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ValidationErrorMessage = $"{label} connection failed. " + ex.Message;
+            return false;
         }
     }
 
@@ -683,7 +749,11 @@ public partial class SetupViewModel : ObservableObject
                 break;
 
             case SetupImportSourceKind.Ftp:
-                await ImportFromFtpAsync();
+                await ImportFromRemoteAsync(MediaType.FileTransferServer);
+                break;
+
+            case SetupImportSourceKind.WebDav:
+                await ImportFromRemoteAsync(MediaType.WebDav);
                 break;
         }
     }
@@ -721,7 +791,7 @@ public partial class SetupViewModel : ObservableObject
 
             if (sourceKind == SetupImportSourceKind.LocalMedia)
             {
-                await setupService.ConvertFileTypesForLocalImportAsync();
+                await setupService.RemapFileTypesAsync(StorageProviderKind.LocalFileSystem);
             }
 
             PrepareSourceRemapStep();
@@ -738,31 +808,48 @@ public partial class SetupViewModel : ObservableObject
         }
     }
 
-    private async Task ImportFromFtpAsync()
+    private async Task ImportFromRemoteAsync(MediaType mediaType)
     {
+        var label = mediaType.IsFtp() ? "FTP" : "WebDAV";
+
         try
         {
-            ImportFtpFolder = FtpStorage.GetFtpPath(ImportFtpFolder);
-            if (!int.TryParse(ImportFtpPort, out var port))
+            RemoteStorageCredentials? credentials;
+            if (mediaType.IsFtp())
             {
-                ValidationErrorMessage = "FTP port is invalid.";
+                ImportFtpFolder = FtpStorage.GetFtpPath(ImportFtpFolder);
+                credentials = BuildRemoteCredentials(
+                    mediaType,
+                    ImportFtpHost,
+                    ImportFtpPort,
+                    ImportFtpUser,
+                    ImportFtpPassword,
+                    ImportFtpFolder,
+                    ImportFtpEncoding,
+                    !ImportFtpEnforceUnencrypted);
+            }
+            else
+            {
+                credentials = BuildRemoteCredentials(
+                    mediaType,
+                    ImportWebDavHost,
+                    ImportWebDavPort,
+                    ImportWebDavUser,
+                    ImportWebDavPassword,
+                    ImportWebDavFolder);
+            }
+
+            if (credentials == null)
+            {
                 return;
             }
 
-            using (var storage = new FtpStorage(
-                ImportFtpHost,
-                port,
-                ImportFtpUser,
-                ImportFtpPassword,
-                ImportFtpFolder,
-                ImportFtpEncoding,
-                !ImportFtpEnforceUnencrypted,
-                0))
+            using (var storage = StorageFactory.CreateRemote(mediaType, credentials))
             {
                 storage.Open();
                 if (!storage.FileExists("backup.bshdb"))
                 {
-                    ValidationErrorMessage = "No backup database was found on the FTP server.";
+                    ValidationErrorMessage = $"No backup database was found on the {label} server.";
                     return;
                 }
             }
@@ -777,15 +864,7 @@ public partial class SetupViewModel : ObservableObject
             IsBusy = true;
 
             setupService.PrepareDatabaseReplacement(DatabaseFile);
-            using (var storage = new FtpStorage(
-                ImportFtpHost,
-                port,
-                ImportFtpUser,
-                ImportFtpPassword,
-                ImportFtpFolder,
-                ImportFtpEncoding,
-                !ImportFtpEnforceUnencrypted,
-                0))
+            using (var storage = StorageFactory.CreateRemote(mediaType, credentials))
             {
                 storage.Open();
                 storage.CopyFileFromStorage(DatabaseFile, "backup.bshdb");
@@ -793,28 +872,49 @@ public partial class SetupViewModel : ObservableObject
 
             await ReinitializeAfterImportAsync();
 
-            configurationManager.BackupFolder = "";
-            configurationManager.FtpFolder = ImportFtpFolder;
-            configurationManager.FtpHost = ImportFtpHost;
-            configurationManager.FtpPass = ImportFtpPassword;
-            configurationManager.FtpPort = ImportFtpPort;
-            configurationManager.FtpUser = ImportFtpUser;
-            configurationManager.FtpCoding = ImportFtpEncoding;
-            configurationManager.MediumType = MediaType.FileTransferServer;
-            await setupService.ConvertFileTypesForFtpImportAsync();
+            credentials.ApplyTo(configurationManager, mediaType);
+            await setupService.RemapFileTypesAsync(mediaType.ToStorageProviderKind());
 
             PrepareSourceRemapStep();
             CurrentStep = SetupWizardStep.ImportRemap;
         }
         catch (Exception ex)
         {
-            ValidationErrorMessage = "FTP import failed. " + ex.Message;
+            ValidationErrorMessage = $"{label} import failed. " + ex.Message;
             CurrentStep = SetupWizardStep.ImportMedia;
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    private RemoteStorageCredentials? BuildRemoteCredentials(
+        MediaType mediaType,
+        string host,
+        string portText,
+        string user,
+        string password,
+        string folder,
+        string encoding = "UTF8",
+        bool useEncryption = false)
+    {
+        if (!int.TryParse(portText, out var port))
+        {
+            ValidationErrorMessage = mediaType.IsFtp() ? "FTP port is invalid." : "WebDAV port is invalid.";
+            return null;
+        }
+
+        return new RemoteStorageCredentials
+        {
+            Host = host,
+            Port = port,
+            UserName = user,
+            Password = password,
+            Folder = folder,
+            Encoding = encoding,
+            UseEncryption = useEncryption
+        };
     }
 
     private void PrepareSourceRemapStep()
@@ -877,6 +977,17 @@ public partial class SetupViewModel : ObservableObject
                 FtpFolder = FtpFolder,
                 FtpEncoding = FtpEncoding,
                 FtpEnforceUnencrypted = FtpEnforceUnencrypted,
+                TaskType = SelectedTaskType
+            },
+            SetupTargetKind.WebDav => new NewSetupConfiguration
+            {
+                SourceFolders = Sources.ToList(),
+                TargetKind = SetupTargetKind.WebDav,
+                FtpHost = WebDavHost,
+                FtpPort = WebDavPort,
+                FtpUser = WebDavUser,
+                FtpPassword = WebDavPassword,
+                FtpFolder = WebDavFolder,
                 TaskType = SelectedTaskType
             },
             _ => null
@@ -951,7 +1062,7 @@ public partial class SetupViewModel : ObservableObject
             SetupWizardStep.Sources => ("Choose what to back up", "Select the folders on this PC that should be included in your backups. You can add more folders or remove ones you do not need."),
             SetupWizardStep.Target => ("Where should backups be stored?", "Pick one destination. Only the options for your choice appear below."),
             SetupWizardStep.Mode => ("Choose backup mode", "Run backups automatically or start them manually."),
-            SetupWizardStep.ImportMedia => ("Import backup", "Select the media, FTP server, or path that contains your backup database."),
+            SetupWizardStep.ImportMedia => ("Import backup", "Select the media, FTP/WebDAV server, or path that contains your backup database."),
             SetupWizardStep.ImportSelect => ("Select backup", "Choose which discovered backup database to import."),
             SetupWizardStep.ImportRemap => ("Remap source folders", "Match each original path from the imported backup to where that folder lives on this PC."),
             SetupWizardStep.Progress => ("Working", "Please wait while the setup is applied."),
@@ -967,12 +1078,14 @@ public partial class SetupViewModel : ObservableObject
         LocalTargetVisibility = SelectedTargetKind == SetupTargetKind.LocalDrive ? Visibility.Visible : Visibility.Collapsed;
         UncTargetVisibility = SelectedTargetKind == SetupTargetKind.Unc ? Visibility.Visible : Visibility.Collapsed;
         FtpTargetVisibility = SelectedTargetKind == SetupTargetKind.Ftp ? Visibility.Visible : Visibility.Collapsed;
+        WebDavTargetVisibility = SelectedTargetKind == SetupTargetKind.WebDav ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void UpdateImportSourceVisibility()
     {
         LocalImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.LocalMedia ? Visibility.Visible : Visibility.Collapsed;
         FtpImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.Ftp ? Visibility.Visible : Visibility.Collapsed;
+        WebDavImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.WebDav ? Visibility.Visible : Visibility.Collapsed;
         ExplicitImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.ExplicitPath ? Visibility.Visible : Visibility.Collapsed;
     }
 

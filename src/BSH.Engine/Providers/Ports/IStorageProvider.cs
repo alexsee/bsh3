@@ -24,6 +24,8 @@ public interface IStorageProvider : IDisposable
 
     bool CopyFileFromStorage(string localFile, string remoteFile);
 
+    bool FileExists(string remoteFile);
+
     bool CopyFileFromStorageCompressed(string localFile, string remoteFile);
 
     bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password);

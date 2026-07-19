@@ -3,6 +3,8 @@
 
 using System;
 using System.Windows.Forms;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Main.Properties;
 
@@ -17,22 +19,31 @@ public partial class frmChangeMedia
 
     private void cboMedia_SelectedIndexChanged(object sender, EventArgs e)
     {
-        switch (cboMedia.SelectedIndex)
+        var mediaType = MediaTypeExtensions.FromMediaComboIndex(cboMedia.SelectedIndex);
+
+        if (mediaType.IsLocal())
         {
-            case 0:
-                PopulateDrives();
+            PopulateDrives();
 
-                plDevice.Visible = true;
-                plFTP.Visible = false;
-
-                break;
-
-            case 1:
-                plDevice.Visible = false;
-                plFTP.Visible = true;
-
-                break;
+            plDevice.Visible = true;
+            plFTP.Visible = false;
         }
+        else if (mediaType.IsRemote())
+        {
+            plDevice.Visible = false;
+            plFTP.Visible = true;
+            ApplyRemoteProtocolUi(mediaType);
+        }
+    }
+
+    private void ApplyRemoteProtocolUi(MediaType mediaType)
+    {
+        var useWebDav = mediaType.IsWebDav();
+        cboFtpEncoding.Visible = !useWebDav;
+        Label10.Visible = !useWebDav;
+        chkFtpEncryption.Visible = !useWebDav;
+
+        txtFTPPort.Text = mediaType.AdjustPortForProtocol(txtFTPPort.Text);
     }
 
     private void PopulateDrives()
@@ -84,7 +95,9 @@ public partial class frmChangeMedia
     private void Button1_Click(object sender, EventArgs e)
     {
         // Wenigstens eine Option ist korrekt gewählt
-        if (cboMedia.SelectedIndex == 0)
+        var mediaType = MediaTypeExtensions.FromMediaComboIndex(cboMedia.SelectedIndex);
+
+        if (mediaType.IsLocal())
         {
             if (lvBackupDrive.SelectedItems.Count <= 0)
             {
@@ -99,20 +112,13 @@ public partial class frmChangeMedia
         }
         else
         {
-            // FTP testen
+            // Remote storage testen
             try
             {
-                txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
+                var credentials = CreateRemoteCredentialsFromUi(mediaType);
+                txtFTPPath.Text = credentials.Folder;
 
-                using (var storage = new FtpStorage(
-                    txtFTPServer.Text,
-                    int.Parse(txtFTPPort.Text),
-                    txtFTPUsername.Text,
-                    txtFTPPassword.Text,
-                    txtFTPPath.Text,
-                    cboFtpEncoding.SelectedItem.ToString(),
-                    !chkFtpEncryption.Checked,
-                    0))
+                using (IStorageProvider storage = StorageFactory.CreateRemote(mediaType, credentials))
                 {
                     storage.Open();
 
@@ -142,12 +148,14 @@ public partial class frmChangeMedia
 
     private void cmdFTPCheck_Click(object sender, EventArgs e)
     {
-        // FTP testen
+        // Remote storage testen
         try
         {
-            txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
+            var mediaType = MediaTypeExtensions.FromMediaComboIndex(cboMedia.SelectedIndex);
+            var credentials = CreateRemoteCredentialsFromUi(mediaType);
+            txtFTPPath.Text = credentials.Folder;
 
-            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, cboFtpEncoding.SelectedItem.ToString());
+            var profile = StorageFactory.CheckRemoteConnection(mediaType, credentials);
 
             if (!profile)
             {
@@ -162,5 +170,29 @@ public partial class frmChangeMedia
             // Verbindungdaten falsch
             MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+    }
+
+    private RemoteStorageCredentials CreateRemoteCredentialsFromUi(MediaType mediaType)
+    {
+        return new RemoteStorageCredentials
+        {
+            Host = txtFTPServer.Text,
+            Port = int.TryParse(txtFTPPort.Text, out var port) ? port : mediaType.DefaultRemotePort(),
+            UserName = txtFTPUsername.Text,
+            Password = txtFTPPassword.Text,
+            Folder = mediaType.IsFtp() ? FtpStorage.GetFtpPath(txtFTPPath.Text) : txtFTPPath.Text,
+            Encoding = cboFtpEncoding.SelectedItem?.ToString() ?? "ISO-8859-1",
+            // chkFtpEncryption = "force unencrypted connection"
+            UseEncryption = !chkFtpEncryption.Checked
+        };
+    }
+
+    /// <summary>
+    /// Builds remote credentials from the current form fields for the selected media type.
+    /// </summary>
+    public RemoteStorageCredentials GetRemoteCredentials()
+    {
+        var mediaType = MediaTypeExtensions.FromMediaComboIndex(cboMedia.SelectedIndex);
+        return CreateRemoteCredentialsFromUi(mediaType);
     }
 }

@@ -1,6 +1,7 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using Brightbits.BSH.Engine.Providers.Ports;
 using BSH.MainApp.Models;
 
 namespace BSH.MainApp.Contracts.Services;
@@ -29,7 +30,5 @@ public interface ISetupService
 
     Task RemapSourcesAsync(IReadOnlyList<SourceRemap> remaps);
 
-    Task ConvertFileTypesForLocalImportAsync();
-
-    Task ConvertFileTypesForFtpImportAsync();
+    Task RemapFileTypesAsync(StorageProviderKind targetKind);
 }

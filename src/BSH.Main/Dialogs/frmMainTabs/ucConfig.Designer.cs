@@ -483,7 +483,7 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(cboMedia, "cboMedia");
             cboMedia.DropDownStyle = ComboBoxStyle.DropDownList;
             cboMedia.FormattingEnabled = true;
-            cboMedia.Items.AddRange(new object[] { resources.GetString("cboMedia.Items"), resources.GetString("cboMedia.Items1") });
+            cboMedia.Items.AddRange(new object[] { resources.GetString("cboMedia.Items"), resources.GetString("cboMedia.Items1"), resources.GetString("cboMedia.Items2") });
             cboMedia.Name = "cboMedia";
             ToolTip1.SetToolTip(cboMedia, resources.GetString("cboMedia.ToolTip"));
             cboMedia.SelectedIndexChanged += cboMedia_SelectedIndexChanged;

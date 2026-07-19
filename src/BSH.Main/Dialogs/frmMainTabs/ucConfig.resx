@@ -1360,6 +1360,9 @@
   <data name="cboMedia.Items1" xml:space="preserve">
     <value>Server (FTP)</value>
   </data>
+  <data name="cboMedia.Items2" xml:space="preserve">
+    <value>Server (WebDAV)</value>
+  </data>
   <data name="cmdCloseExcludeCompress.Text" xml:space="preserve">
     <value>&amp;OK</value>
   </data>

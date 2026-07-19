@@ -177,6 +177,7 @@ public class EditTests
         public bool CopyFileToStorageCompressed(string localFile, string remoteFile) => true;
         public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password) => true;
         public bool CopyFileFromStorage(string localFile, string remoteFile) => true;
+        public bool FileExists(string remoteFile) => true;
         public bool CopyFileFromStorageCompressed(string localFile, string remoteFile) => true;
         public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password) => true;
 

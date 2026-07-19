@@ -335,6 +335,12 @@ public class FileSystemStorage : Storage, IStorageProvider
         return true;
     }
 
+    public bool FileExists(string remoteFile)
+    {
+        var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
+        return File.Exists(remoteFilePath);
+    }
+
     public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
     {
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".zip");

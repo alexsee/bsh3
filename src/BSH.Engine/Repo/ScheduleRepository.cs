@@ -41,7 +41,6 @@ public class ScheduleRepository : IScheduleRepository
 
         return int.TryParse(result.ToString(), out var count) && count > 0;
     }
-
     public async Task<IReadOnlyList<ScheduleEntry>> GetSchedulesAsync()
     {
         var result = new List<ScheduleEntry>();
