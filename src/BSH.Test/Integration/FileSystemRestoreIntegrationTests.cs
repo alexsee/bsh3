@@ -14,6 +14,7 @@ using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
+using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Test.Mocks;
@@ -131,7 +132,7 @@ public class FileSystemRestoreIntegrationTests
     public async Task BackupAndRestore_EncryptedContentMatches()
     {
         configurationManager.Encrypt = 1;
-        configurationManager.EncryptPassMD5 = Brightbits.BSH.Engine.Security.Hash.GetMD5Hash(Password);
+        configurationManager.EncryptPassMD5 = Hash.GetMD5Hash(Password);
         WriteSourceFile("secret.txt", SampleContent + "-encrypted");
 
         await RunBackupAsync(password: Password);
