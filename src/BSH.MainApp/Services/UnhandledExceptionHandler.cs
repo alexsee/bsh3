@@ -101,9 +101,9 @@ public sealed class UnhandledExceptionHandler
             "Unhandled_BodyIntro".GetLocalized() +
             Environment.NewLine +
             Environment.NewLine +
-            string.Format("Unhandled_MessageLabel".GetLocalized(), message) +
+            "Unhandled_MessageLabel".GetLocalized() + " " + message +
             Environment.NewLine +
-            string.Format("Unhandled_SourceLabel".GetLocalized(), source) +
+            "Unhandled_SourceLabel".GetLocalized() + " " + source +
             Environment.NewLine +
             Environment.NewLine +
             stackTrace;

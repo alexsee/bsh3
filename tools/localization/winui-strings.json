@@ -1776,12 +1776,12 @@
     "de": "Es ist ein unerwartetes Problem aufgetreten. Der Fehler wurde protokolliert."
   },
   "Unhandled_MessageLabel": {
-    "en": "Message: {0}",
-    "de": "Meldung: {0}"
+    "en": "Message:",
+    "de": "Meldung:"
   },
   "Unhandled_SourceLabel": {
-    "en": "Source: {0}",
-    "de": "Quelle: {0}"
+    "en": "Source:",
+    "de": "Quelle:"
   },
   "Unhandled_NoExceptionDetails": {
     "en": "An unexpected error occurred without exception details.",

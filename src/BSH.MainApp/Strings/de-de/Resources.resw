@@ -1380,7 +1380,7 @@ Version {0}</value>
     <value>Beenden</value>
   </data>
   <data name="Unhandled_MessageLabel" xml:space="preserve">
-    <value>Meldung: {0}</value>
+    <value>Meldung:</value>
   </data>
   <data name="Unhandled_NoExceptionDetails" xml:space="preserve">
     <value>Es ist ein unerwarteter Fehler ohne Ausnahmeinformationen aufgetreten.</value>
@@ -1392,7 +1392,7 @@ Version {0}</value>
     <value>(kein Stacktrace)</value>
   </data>
   <data name="Unhandled_SourceLabel" xml:space="preserve">
-    <value>Quelle: {0}</value>
+    <value>Quelle:</value>
   </data>
   <data name="Unhandled_Title" xml:space="preserve">
     <value>Unerwarteter Fehler</value>
