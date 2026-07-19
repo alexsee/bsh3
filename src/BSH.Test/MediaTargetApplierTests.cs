@@ -36,6 +36,9 @@ public class MediaTargetApplierTests
             MediaVolumeSerial = "1234567890",
             UNCUsername = "old-user",
             UNCPassword = "old-password",
+            FtpHost = "ftp.old",
+            FtpPass = "ftp-secret",
+            FtpFolder = "/old",
         };
 
         MediaTargetApplier.ApplyUncTarget(
@@ -51,6 +54,8 @@ public class MediaTargetApplierTests
         Assert.That(
             Crypto.DecryptString(configuration.UNCPassword, DataProtectionScope.LocalMachine),
             Is.EqualTo("secret"));
+        Assert.That(configuration.FtpHost, Is.EqualTo(""));
+        Assert.That(configuration.FtpPass, Is.EqualTo(""));
     }
 
     [Test]
@@ -98,6 +103,13 @@ public class MediaTargetApplierTests
             UNCUsername = "old-user",
             UNCPassword = "old-password",
             MediaVolumeSerial = "keep-me",
+            FtpHost = "ftp.old",
+            FtpUser = "ftp-user",
+            FtpPass = "ftp-pass",
+            FtpFolder = "/backups",
+            FtpCoding = "UTF8",
+            FtpEncryptionMode = "3",
+            FtpSslProtocols = "0",
         };
 
         MediaTargetApplier.ApplyLocalTarget(configuration, @"D:\Backups\PC\User", "ABCDEF12");
@@ -107,6 +119,13 @@ public class MediaTargetApplierTests
         Assert.That(configuration.MediaVolumeSerial, Is.EqualTo("ABCDEF12"));
         Assert.That(configuration.UNCUsername, Is.EqualTo(""));
         Assert.That(configuration.UNCPassword, Is.EqualTo(""));
+        Assert.That(configuration.FtpHost, Is.EqualTo(""));
+        Assert.That(configuration.FtpUser, Is.EqualTo(""));
+        Assert.That(configuration.FtpPass, Is.EqualTo(""));
+        Assert.That(configuration.FtpFolder, Is.EqualTo(""));
+        Assert.That(configuration.FtpCoding, Is.EqualTo(""));
+        Assert.That(configuration.FtpEncryptionMode, Is.EqualTo(""));
+        Assert.That(configuration.FtpSslProtocols, Is.EqualTo(""));
     }
 
     [Test]

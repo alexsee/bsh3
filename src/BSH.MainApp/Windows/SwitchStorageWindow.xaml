@@ -35,11 +35,9 @@
                 <ComboBox
                     Header="Medium type"
                     HorizontalAlignment="Stretch"
-                    SelectedIndex="{x:Bind ViewModel.SelectedMediumIndex, Mode=TwoWay}">
-                    <x:String>Local drive</x:String>
-                    <x:String>FTP server</x:String>
-                    <x:String>Network share</x:String>
-                </ComboBox>
+                    ItemsSource="{x:Bind ViewModel.MediumOptions}"
+                    SelectedItem="{x:Bind ViewModel.SelectedMedium, Mode=TwoWay}"
+                    DisplayMemberPath="DisplayName" />
 
                 <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">
                     <TextBlock FontWeight="SemiBold" Text="Select drive" />

@@ -665,32 +665,34 @@ public partial class ucConfig : IMainTabs
                 return;
             }
 
-            switch (media.Kind)
+            switch (media)
             {
-                case ChangeMediaKind.LocalDevice:
+                case ChangeMediaLocalSelection local:
                     MediaTargetApplier.ApplyLocalTarget(
                         BackupLogic.ConfigurationManager,
-                        media.LocalBackupFolder,
-                        MediaTargetApplier.ResolveVolumeSerial(media.LocalBackupFolder));
+                        local.BackupFolder,
+                        MediaTargetApplier.ResolveVolumeSerial(local.BackupFolder));
                     break;
 
-                case ChangeMediaKind.Unc:
+                case ChangeMediaUncSelection unc:
                     MediaTargetApplier.ApplyUncTarget(
                         BackupLogic.ConfigurationManager,
-                        media.UncPath,
-                        media.UncUsername,
-                        media.UncPassword);
+                        unc.Path,
+                        unc.Username,
+                        unc.Password);
                     break;
 
-                case ChangeMediaKind.Ftp:
+                case ChangeMediaFtpSelection ftp:
                     MediaTargetApplier.ApplyFtpTarget(
                         BackupLogic.ConfigurationManager,
-                        media.FtpHost,
-                        media.FtpPort,
-                        media.FtpUsername,
-                        media.FtpPassword,
-                        media.FtpPath,
-                        media.FtpEncoding);
+                        ftp.Host,
+                        ftp.Port,
+                        ftp.Username,
+                        ftp.Password,
+                        ftp.Path,
+                        ftp.Encoding,
+                        encryptionMode: ftp.EnforceUnencrypted ? "0" : "3",
+                        sslProtocols: "0");
                     break;
             }
         }

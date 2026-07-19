@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Main.Properties;
@@ -25,7 +24,7 @@ public partial class frmChangeMedia
     /// <summary>
     /// Set after a successful OK; null if the dialog was cancelled.
     /// </summary>
-    public ChangeMediaResult? Result { get; private set; }
+    public ChangeMediaSelection? Result { get; private set; }
 
     private void cboMedia_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -85,11 +84,12 @@ public partial class frmChangeMedia
 
     private void Button1_Click(object sender, EventArgs e)
     {
-        ChangeMediaResult? selection = cboMedia.SelectedIndex switch
+        ChangeMediaSelection? selection = cboMedia.SelectedIndex switch
         {
             MediaIndexLocal => TryBuildLocalResult(),
+            MediaIndexFtp => TryBuildFtpResult(),
             MediaIndexUnc => TryBuildUncResult(showSuccessMessage: false),
-            _ => TryBuildFtpResult(),
+            _ => null,
         };
 
         if (selection is null)
@@ -102,7 +102,7 @@ public partial class frmChangeMedia
         Close();
     }
 
-    private ChangeMediaResult? TryBuildLocalResult()
+    private ChangeMediaSelection? TryBuildLocalResult()
     {
         if (lvBackupDrive.SelectedItems.Count <= 0)
         {
@@ -112,68 +112,57 @@ public partial class frmChangeMedia
 
         var driveRoot = Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) ?? "";
         var backupFolder = MediaTargetApplier.BuildLocalBackupFolder(driveRoot);
-        if (File.Exists(Path.Combine(backupFolder, "backup.bshdb")))
+        if (File.Exists(Path.Combine(backupFolder, UncTargetProbe.BackupDatabaseFileName)))
         {
             MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
             return null;
         }
 
-        return new ChangeMediaResult
-        {
-            Kind = ChangeMediaKind.LocalDevice,
-            LocalBackupFolder = backupFolder,
-        };
+        return new ChangeMediaLocalSelection(backupFolder);
     }
 
-    private ChangeMediaResult? TryBuildUncResult(bool showSuccessMessage)
+    private ChangeMediaSelection? TryBuildUncResult(bool showSuccessMessage)
     {
-        var uncPath = txtUncPath.Text?.Trim() ?? "";
-        if (!MediaTargetApplier.IsUncPath(uncPath))
-        {
-            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TEXT, Resources.DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            return null;
-        }
+        // Confirm requires an empty medium; test-connection only checks reachability.
+        var probe = UncTargetProbe.Probe(
+            txtUncPath.Text,
+            txtUncUsername.Text,
+            txtUncPassword.Text,
+            requireEmptyTarget: !showSuccessMessage);
 
-        var path = uncPath.Replace('/', '\\');
-        var username = txtUncUsername.Text ?? "";
-        var password = txtUncPassword.Text ?? "";
-
-        try
+        switch (probe.Status)
         {
-            using var networkConnection = new NetworkConnection(path, username, password);
-            if (!Directory.Exists(path))
-            {
-                MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            case UncProbeStatus.InvalidPath:
+                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TEXT, Resources.DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return null;
-            }
 
-            if (File.Exists(Path.Combine(path, "backup.bshdb")))
-            {
+            case UncProbeStatus.Unreachable:
+                MessageBox.Show(
+                    Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT
+                    + (string.IsNullOrEmpty(probe.Detail) ? "" : Environment.NewLine + probe.Detail),
+                    Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return null;
+
+            case UncProbeStatus.ContainsBackupData:
                 MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
-            }
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT + Environment.NewLine + ex.Message, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return null;
         }
 
         if (showSuccessMessage)
         {
             MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT, Resources.DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return null;
         }
 
-        return new ChangeMediaResult
-        {
-            Kind = ChangeMediaKind.Unc,
-            UncPath = path,
-            UncUsername = username,
-            UncPassword = password,
-        };
+        return new ChangeMediaUncSelection(
+            probe.NormalizedPath,
+            txtUncUsername.Text ?? "",
+            txtUncPassword.Text ?? "");
     }
 
-    private ChangeMediaResult? TryBuildFtpResult()
+    private ChangeMediaSelection? TryBuildFtpResult()
     {
         try
         {
@@ -190,7 +179,7 @@ public partial class frmChangeMedia
                 0);
             storage.Open();
 
-            if (storage.FileExists("backup.bshdb"))
+            if (storage.FileExists(UncTargetProbe.BackupDatabaseFileName))
             {
                 MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
@@ -202,16 +191,14 @@ public partial class frmChangeMedia
             return null;
         }
 
-        return new ChangeMediaResult
-        {
-            Kind = ChangeMediaKind.Ftp,
-            FtpHost = txtFTPServer.Text,
-            FtpPort = txtFTPPort.Text,
-            FtpUsername = txtFTPUsername.Text,
-            FtpPassword = txtFTPPassword.Text,
-            FtpPath = txtFTPPath.Text,
-            FtpEncoding = Convert.ToString(cboFtpEncoding.SelectedItem) ?? "",
-        };
+        return new ChangeMediaFtpSelection(
+            txtFTPServer.Text,
+            txtFTPPort.Text,
+            txtFTPUsername.Text,
+            txtFTPPassword.Text,
+            txtFTPPath.Text,
+            Convert.ToString(cboFtpEncoding.SelectedItem) ?? "",
+            chkFtpEncryption.Checked);
     }
 
     private void frmChangeMedia_Load(object sender, EventArgs e)

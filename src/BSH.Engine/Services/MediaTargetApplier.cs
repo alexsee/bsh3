@@ -68,7 +68,7 @@ public static class MediaTargetApplier
     }
 
     /// <summary>
-    /// Sets BackupFolder + MediaVolumeSerial and clears UNC credentials (LocalDevice).
+    /// Sets BackupFolder + MediaVolumeSerial and clears UNC credentials and FTP fields (LocalDevice).
     /// </summary>
     public static void ApplyLocalTarget(
         IConfigurationManager configurationManager,
@@ -85,12 +85,12 @@ public static class MediaTargetApplier
         configurationManager.MediumType = MediaType.LocalDevice;
         configurationManager.BackupFolder = backupFolder;
         configurationManager.MediaVolumeSerial = NormalizeVolumeSerial(mediaVolumeSerial);
-        configurationManager.UNCUsername = "";
-        configurationManager.UNCPassword = "";
+        ClearUncCredentials(configurationManager);
+        ClearFtpFields(configurationManager);
     }
 
     /// <summary>
-    /// Sets BackupFolder + UNC credentials and clears MediaVolumeSerial (LocalDevice).
+    /// Sets BackupFolder + UNC credentials and clears MediaVolumeSerial and FTP fields (LocalDevice).
     /// </summary>
     public static void ApplyUncTarget(
         IConfigurationManager configurationManager,
@@ -118,6 +118,7 @@ public static class MediaTargetApplier
         configurationManager.UNCPassword = string.IsNullOrEmpty(password)
             ? ""
             : Crypto.EncryptString(password, DataProtectionScope.LocalMachine);
+        ClearFtpFields(configurationManager);
     }
 
     /// <summary>
@@ -139,8 +140,7 @@ public static class MediaTargetApplier
         configurationManager.MediumType = MediaType.FileTransferServer;
         configurationManager.BackupFolder = "";
         configurationManager.MediaVolumeSerial = "";
-        configurationManager.UNCUsername = "";
-        configurationManager.UNCPassword = "";
+        ClearUncCredentials(configurationManager);
         configurationManager.FtpHost = host ?? "";
         configurationManager.FtpPort = string.IsNullOrEmpty(port) ? "21" : port;
         configurationManager.FtpUser = user ?? "";
@@ -157,6 +157,24 @@ public static class MediaTargetApplier
         {
             configurationManager.FtpSslProtocols = sslProtocols;
         }
+    }
+
+    private static void ClearUncCredentials(IConfigurationManager configurationManager)
+    {
+        configurationManager.UNCUsername = "";
+        configurationManager.UNCPassword = "";
+    }
+
+    private static void ClearFtpFields(IConfigurationManager configurationManager)
+    {
+        configurationManager.FtpHost = "";
+        configurationManager.FtpPort = "";
+        configurationManager.FtpUser = "";
+        configurationManager.FtpPass = "";
+        configurationManager.FtpFolder = "";
+        configurationManager.FtpCoding = "";
+        configurationManager.FtpEncryptionMode = "";
+        configurationManager.FtpSslProtocols = "";
     }
 
     private static string NormalizeVolumeSerial(string? mediaVolumeSerial)

@@ -32,7 +32,7 @@ public sealed class SwitchStorageService : ISwitchStorageService
     public bool LocalTargetContainsBackupData(string driveRoot)
     {
         var backupFolder = setupService.BuildLocalBackupFolder(driveRoot);
-        return File.Exists(Path.Combine(backupFolder, "backup.bshdb"));
+        return File.Exists(Path.Combine(backupFolder, UncTargetProbe.BackupDatabaseFileName));
     }
 
     public bool UncTargetContainsBackupData(string uncPath)
@@ -40,7 +40,7 @@ public sealed class SwitchStorageService : ISwitchStorageService
         ArgumentException.ThrowIfNullOrWhiteSpace(uncPath);
 
         var normalized = uncPath.Replace('/', '\\');
-        return File.Exists(Path.Combine(normalized, "backup.bshdb"));
+        return File.Exists(Path.Combine(normalized, UncTargetProbe.BackupDatabaseFileName));
     }
 
     public void SyncDatabaseToCurrentMedium(string databaseFile)

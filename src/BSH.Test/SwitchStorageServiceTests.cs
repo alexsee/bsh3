@@ -166,6 +166,7 @@ public class SwitchStorageServiceTests
         configurationManager.MediaVolumeSerial = "OLDVOL";
         configurationManager.UNCUsername = "old-user";
         configurationManager.UNCPassword = "old-password";
+        configurationManager.FtpHost = "ftp.old";
 
         var unc = new SwitchStorageUncTarget(
             Path: @"\\fileserver\backups",
@@ -181,6 +182,7 @@ public class SwitchStorageServiceTests
         Assert.That(
             Crypto.DecryptString(configurationManager.UNCPassword, DataProtectionScope.LocalMachine),
             Is.EqualTo("secret"));
+        Assert.That(configurationManager.FtpHost, Is.EqualTo(""));
 
         Assert.That(await CountAsync("versiontable"), Is.EqualTo(0));
         Assert.That(await CountAsync("filelink"), Is.EqualTo(0));

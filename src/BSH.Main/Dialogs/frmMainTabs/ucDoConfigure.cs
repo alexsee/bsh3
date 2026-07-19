@@ -142,7 +142,9 @@ public partial class ucDoConfigure : IMainTabs
                     }
 
                     // directory is not empty?
-                    var BackupFolder = new DirectoryInfo(Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + '\\' + Environment.UserName);
+                    var BackupFolder = new DirectoryInfo(
+                        MediaTargetApplier.BuildLocalBackupFolder(
+                            Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) ?? ""));
 
                     if (BackupFolder.Exists)
                     {
@@ -185,7 +187,12 @@ public partial class ucDoConfigure : IMainTabs
                 else
                 {
                     txtUNCPath.Text = txtUNCPath.Text.Replace('/', '\\');
-                    if (!MediaTargetApplier.IsUncPath(txtUNCPath.Text))
+                    var uncProbe = UncTargetProbe.Probe(
+                        txtUNCPath.Text,
+                        txtUNCUsername.Text,
+                        txtUNCPassword.Text,
+                        requireEmptyTarget: false);
+                    if (uncProbe.Status != UncProbeStatus.Ok)
                     {
                         MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         iWizardStep -= 1;
@@ -193,26 +200,7 @@ public partial class ucDoConfigure : IMainTabs
                         return;
                     }
 
-                    try
-                    {
-                        using var networkConnection = new NetworkConnection(txtUNCPath.Text, txtUNCUsername.Text, txtUNCPassword.Text);
-                        if (!Directory.Exists(txtUNCPath.Text))
-                        {
-                            // network directory credentials exception
-                            MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            iWizardStep -= 1;
-                            await ShowWizardStepAsync(iWizardStep);
-                            return;
-                        }
-                    }
-                    catch
-                    {
-                        // credentials exception
-                        MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        iWizardStep -= 1;
-                        await ShowWizardStepAsync(iWizardStep);
-                        return;
-                    }
+                    txtUNCPath.Text = uncProbe.NormalizedPath;
                 }
 
                 // show controls
@@ -250,7 +238,8 @@ public partial class ucDoConfigure : IMainTabs
                     if (tcSource.SelectedIndex == 0)
                     {
                         // directory
-                        var localFolder = Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) + @"Backups\" + Environment.MachineName + @"\" + Environment.UserName;
+                        var localFolder = MediaTargetApplier.BuildLocalBackupFolder(
+                            Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) ?? "");
                         MediaTargetApplier.ApplyLocalTarget(
                             configurationManager,
                             localFolder,

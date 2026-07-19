@@ -85,14 +85,14 @@ public class SetupService : ISetupService
 
         switch (configuration.TargetKind)
         {
-            case SetupTargetKind.LocalDrive:
+            case MediaTargetKind.LocalDrive:
                 Directory.CreateDirectory(configuration.LocalBackupFolder!);
                 MediaTargetApplier.ApplyLocalTarget(configurationManager, configuration.LocalBackupFolder, configuration.MediaVolumeSerial);
                 break;
-            case SetupTargetKind.Unc:
+            case MediaTargetKind.Unc:
                 MediaTargetApplier.ApplyUncTarget(configurationManager, configuration.UncPath, configuration.UncUsername, configuration.UncPassword);
                 break;
-            case SetupTargetKind.Ftp:
+            case MediaTargetKind.Ftp:
                 MediaTargetApplier.ApplyFtpTarget(
                     configurationManager,
                     configuration.FtpHost,
