@@ -23,9 +23,11 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private readonly IBrowserContentService browserContentService;
     private readonly IBrowserDialogService browserDialogService;
     private readonly IBrowserPreviewService browserPreviewService;
+    private readonly IBrowserViewPreferencesService viewPreferencesService;
     private BrowserContentMode contentMode = BrowserContentMode.Folder;
     private long contentRequestId;
     private bool suppressSearchTermsChanged;
+    private bool suppressInfoPaneChanged;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
@@ -77,7 +79,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         IPresentationService presentationService,
         IBrowserContentService browserContentService,
         IBrowserDialogService browserDialogService,
-        IBrowserPreviewService browserPreviewService)
+        IBrowserPreviewService browserPreviewService,
+        IBrowserViewPreferencesService viewPreferencesService)
     {
         this.queryManager = queryManager;
         this.jobService = jobService;
@@ -86,6 +89,46 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         this.browserContentService = browserContentService;
         this.browserDialogService = browserDialogService;
         this.browserPreviewService = browserPreviewService;
+        this.viewPreferencesService = viewPreferencesService;
+    }
+
+    partial void OnToggleInfoPaneChanged(bool value)
+    {
+        if (suppressInfoPaneChanged)
+        {
+            return;
+        }
+
+        _ = PersistInfoPaneVisibleAsync(value);
+    }
+
+    public async Task LoadViewPreferencesAsync()
+    {
+        suppressInfoPaneChanged = true;
+        try
+        {
+            ToggleInfoPane = await viewPreferencesService.GetInfoPaneVisibleAsync();
+        }
+        catch
+        {
+            // Preference restore must not disrupt browsing; keep the default pane state.
+        }
+        finally
+        {
+            suppressInfoPaneChanged = false;
+        }
+    }
+
+    private async Task PersistInfoPaneVisibleAsync(bool value)
+    {
+        try
+        {
+            await viewPreferencesService.SetInfoPaneVisibleAsync(value);
+        }
+        catch
+        {
+            // Preference persistence must not disrupt browsing.
+        }
     }
 
     private bool CanUpFolder() => contentMode == BrowserContentMode.Folder && CurrentFolderPath.Count > 1;
@@ -614,6 +657,9 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     public async void OnNavigatedTo(object parameter)
     {
+        // Restore layout prefs in parallel so a slow/failed settings read cannot block browsing.
+        var preferencesTask = LoadViewPreferencesAsync();
+
         LoadVersions();
 
         if (Versions.Count > 0)
@@ -621,6 +667,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             CurrentVersion = Versions[0];
             await LoadVersion();
         }
+
+        await preferencesTask;
     }
 
     public void OnNavigatedFrom()

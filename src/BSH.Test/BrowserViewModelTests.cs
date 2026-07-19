@@ -131,6 +131,63 @@ public class BrowserViewModelTests
     }
 
     [Test]
+    public void ToggleInfoPaneDefaultsToHiddenWhenNoPreferenceSaved()
+    {
+        var viewModel = CreateViewModel();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.False);
+    }
+
+    [Test]
+    public async Task ToggleInfoPaneChangePersistsPreference()
+    {
+        var preferences = new BrowserViewPreferencesService(new MemoryLocalSettingsService());
+        var viewModel = CreateViewModel(viewPreferencesService: preferences);
+
+        viewModel.ToggleInfoPane = true;
+
+        Assert.That(await preferences.GetInfoPaneVisibleAsync(), Is.True);
+
+        viewModel.ToggleInfoPane = false;
+
+        Assert.That(await preferences.GetInfoPaneVisibleAsync(), Is.False);
+    }
+
+    [Test]
+    public async Task LoadViewPreferencesRestoresPersistedInfoPanePreference()
+    {
+        var settings = new MemoryLocalSettingsService();
+        await settings.SaveSettingAsync(BrowserViewPreferencesService.InfoPaneVisibleSettingsKey, true);
+        var preferences = new BrowserViewPreferencesService(settings);
+        var viewModel = CreateViewModel(viewPreferencesService: preferences);
+
+        await viewModel.LoadViewPreferencesAsync();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.True);
+    }
+
+    [Test]
+    public async Task LoadViewPreferencesLeavesDefaultWhenSettingsReadFails()
+    {
+        var viewModel = CreateViewModel(viewPreferencesService: new FailingBrowserViewPreferencesService());
+
+        await viewModel.LoadViewPreferencesAsync();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.False);
+    }
+
+    [Test]
+    public async Task ToggleInfoPaneChangeIgnoresPersistenceFailures()
+    {
+        var viewModel = CreateViewModel(viewPreferencesService: new FailingBrowserViewPreferencesService());
+
+        Assert.DoesNotThrow(() => viewModel.ToggleInfoPane = true);
+        await Task.Yield();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.True);
+    }
+
+    [Test]
     public async Task RestoreFileCommand_RestoresSelectedFileToOriginalPath()
     {
         var jobService = new BrowserJobService();
@@ -192,10 +249,12 @@ public class BrowserViewModelTests
         BrowserJobService? jobService = null,
         BrowserDialogService? browserDialogService = null,
         BrowserFavoritesService? favoritesService = null,
-        BrowserPreviewServiceFake? previewService = null)
+        BrowserPreviewServiceFake? previewService = null,
+        IBrowserViewPreferencesService? viewPreferencesService = null)
     {
         queryManager ??= new BrowserQueryManager();
         favoritesService ??= new BrowserFavoritesService(new MemoryLocalSettingsService());
+        viewPreferencesService ??= new BrowserViewPreferencesService(new MemoryLocalSettingsService());
 
         return new BrowserViewModel(
             queryManager,
@@ -204,7 +263,8 @@ public class BrowserViewModelTests
             new BrowserPresentationService(),
             new BrowserContentService(queryManager, favoritesService),
             browserDialogService ?? new BrowserDialogService(),
-            previewService ?? new BrowserPreviewServiceFake());
+            previewService ?? new BrowserPreviewServiceFake(),
+            viewPreferencesService);
     }
 
     private static VersionDetails Version(string id) => new()
@@ -382,5 +442,12 @@ public class BrowserViewModelTests
             settings[key] = value;
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class FailingBrowserViewPreferencesService : IBrowserViewPreferencesService
+    {
+        public Task<bool> GetInfoPaneVisibleAsync() => throw new InvalidOperationException("settings unavailable");
+
+        public Task SetInfoPaneVisibleAsync(bool visible) => throw new InvalidOperationException("settings unavailable");
     }
 }
