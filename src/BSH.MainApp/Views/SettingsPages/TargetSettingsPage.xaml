@@ -143,7 +143,7 @@
                     Header="Switch storage"
                     Description="Allows changing the backup medium to a new (empty) medium without losing the settings."
                     IsClickEnabled="True"
-                    IsEnabled="False">
+                    Command="{x:Bind ViewModel.SwitchStorageCommand}">
                     <toolkit:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE8CD;" />
                     </toolkit:SettingsCard.HeaderIcon>

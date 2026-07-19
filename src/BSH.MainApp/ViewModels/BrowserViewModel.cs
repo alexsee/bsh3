@@ -31,13 +31,17 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RestoreFileToCommand))]
     [NotifyCanExecuteChangedFor(nameof(RestoreAllCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RestoreAllToCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteMultipleBackupsCommand))]
     private VersionDetails? currentVersion;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RestoreFileToCommand))]
     [NotifyCanExecuteChangedFor(nameof(RestoreAllCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RestoreAllToCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowFilePreviewCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowFilePropertiesCommand))]
     [NotifyCanExecuteChangedFor(nameof(AddFolderToFavoritesCommand))]
@@ -268,32 +272,61 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
     private async Task RestoreFile()
     {
-        if (CurrentItem == null || CurrentVersion == null)
+        await RestoreSelectedAsync(destination: string.Empty);
+    }
+
+    [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
+    private async Task RestoreFileTo()
+    {
+        var destination = await browserDialogService.PickRestoreDestinationFolderAsync();
+        if (destination == null)
         {
             return;
         }
 
-        // restore file
-        if (CurrentItem.IsFile)
-        {
-            await jobService.RestoreBackupAsync(CurrentVersion.Id, CurrentItem.FullPath + CurrentItem.Name, "");
-        }
-        else
-        {
-            await jobService.RestoreBackupAsync(CurrentVersion.Id, CurrentItem.FullPath, "");
-        }
+        await RestoreSelectedAsync(destination);
     }
 
     [RelayCommand(CanExecute = nameof(CanRestoreAll))]
     private async Task RestoreAll()
     {
-        if (CurrentVersion == null || CurrentFolderPath[^1] == null)
+        await RestoreCurrentFolderAsync(destination: string.Empty);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanRestoreAll))]
+    private async Task RestoreAllTo()
+    {
+        var destination = await browserDialogService.PickRestoreDestinationFolderAsync();
+        if (destination == null)
         {
             return;
         }
 
-        // restore all
-        await jobService.RestoreBackupAsync(CurrentVersion.Id, CurrentFolderPath[^1].FullPath, "");
+        await RestoreCurrentFolderAsync(destination);
+    }
+
+    private async Task RestoreSelectedAsync(string destination)
+    {
+        if (CurrentItem == null || CurrentVersion == null)
+        {
+            return;
+        }
+
+        var path = CurrentItem.IsFile
+            ? CurrentItem.FullPath + CurrentItem.Name
+            : CurrentItem.FullPath;
+
+        await jobService.RestoreBackupAsync(CurrentVersion.Id, path, destination);
+    }
+
+    private async Task RestoreCurrentFolderAsync(string destination)
+    {
+        if (CurrentVersion == null || CurrentFolderPath.Count == 0 || CurrentFolderPath[^1] == null)
+        {
+            return;
+        }
+
+        await jobService.RestoreBackupAsync(CurrentVersion.Id, CurrentFolderPath[^1].FullPath, destination);
     }
 
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
@@ -611,6 +644,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         LoadFolderCommand.NotifyCanExecuteChanged();
         UpFolderCommand.NotifyCanExecuteChanged();
         RestoreAllCommand.NotifyCanExecuteChanged();
+        RestoreAllToCommand.NotifyCanExecuteChanged();
         AddFolderToFavoritesCommand.NotifyCanExecuteChanged();
         NavigateToPreviousVersionCommand.NotifyCanExecuteChanged();
         NavigateToNextVersionCommand.NotifyCanExecuteChanged();

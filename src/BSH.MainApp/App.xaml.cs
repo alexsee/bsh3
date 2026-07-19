@@ -98,6 +98,7 @@ public partial class App : Application
             services.AddSingleton<IBrowserPreviewService, BrowserPreviewService>();
             services.AddSingleton<ISmartPreviewHost, SmartPreviewHost>();
             services.AddSingleton<IBackupTargetService, BackupTargetService>();
+            services.AddSingleton<ISwitchStorageService, SwitchStorageService>();
             services.AddSingleton<IPowerStatusService, PowerStatusService>();
             services.AddTransient<IWaitForMediaService, WaitForMediaService>();
             services.AddSingleton<Func<IWaitForMediaService>>(x => () => x.GetRequiredService<IWaitForMediaService>());
@@ -145,6 +146,7 @@ public partial class App : Application
 
             services.AddTransient<FilterViewModel>();
             services.AddTransient<ScheduleEditorViewModel>();
+            services.AddTransient<SwitchStorageViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

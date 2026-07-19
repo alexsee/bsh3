@@ -12,4 +12,10 @@ public interface IBrowserDialogService
     Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item);
     Task ShowFileDetailsAsync(FileDetails fileDetails);
     Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite);
+
+    /// <summary>
+    /// Opens a folder picker for an alternate restore destination.
+    /// Returns the selected path, or null if the user cancels or an error was already shown.
+    /// </summary>
+    Task<string?> PickRestoreDestinationFolderAsync();
 }

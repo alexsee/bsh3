@@ -33,6 +33,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IJobService jobService;
     private readonly IQueryManager queryManager;
     private readonly IBackupTargetService backupTargetService;
+    private readonly ISwitchStorageService switchStorageService;
     private readonly IOrchestrationService orchestrationService;
     private readonly IStartupLaunchAdapter startupLaunchAdapter;
     private readonly IUpdateService updateService;
@@ -225,14 +226,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.FtpRemotePath = this.configurationManager.FtpFolder;
         this.FtpRemoteEncoding = this.configurationManager.FtpCoding;
 
-        if (this.configurationManager.FtpEncryptionMode == "3")
-        {
-            this.FtpRemoteEnforceUnencrypted = true;
-        }
-        else
-        {
-            this.FtpRemoteEnforceUnencrypted = false;
-        }
+        // FtpStorage treats mode "3" as encrypted (AutoConnect); anything else is plain FTP.
+        this.FtpRemoteEnforceUnencrypted = this.configurationManager.FtpEncryptionMode != "3";
     }
 
     public static string GetMediaTypeDisplayName(MediaType mediaType)
@@ -400,7 +395,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     partial void OnFtpRemoteEnforceUnencryptedChanged(bool oldValue, bool newValue)
     {
         if (oldValue == newValue) return;
-        this.configurationManager.FtpEncryptionMode = newValue ? "3" : "0";
+        this.configurationManager.FtpEncryptionMode = newValue ? "0" : "3";
     }
 
     public void UseLocalPath(string folderPath)
@@ -454,6 +449,24 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             IsBackupTargetChangeEnabled = true;
             BackupTargetMoveProgressVisibility = Visibility.Collapsed;
         }
+    }
+
+    [RelayCommand]
+    public async Task SwitchStorageAsync()
+    {
+        if (!await this.jobService.CheckMediaAsync(ActionType.Modify, true))
+        {
+            return;
+        }
+
+        this.switchStorageService.SyncDatabaseToCurrentMedium(App.DatabaseFile);
+
+        if (!await this.presentationController.ShowSwitchStorageWindowAsync())
+        {
+            return;
+        }
+
+        InitTargetSettings();
     }
 
     #endregion
@@ -801,6 +814,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         IJobService jobService,
         IQueryManager queryManager,
         IBackupTargetService backupTargetService,
+        ISwitchStorageService switchStorageService,
         IOrchestrationService orchestrationService,
         IStartupLaunchAdapter startupLaunchAdapter,
         IUpdateService updateService)
@@ -810,6 +824,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.jobService = jobService;
         this.queryManager = queryManager;
         this.backupTargetService = backupTargetService;
+        this.switchStorageService = switchStorageService;
         this.orchestrationService = orchestrationService;
         this.startupLaunchAdapter = startupLaunchAdapter;
         this.updateService = updateService;
