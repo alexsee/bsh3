@@ -97,6 +97,47 @@ public class DeleteTests
     }
 
     [Test]
+    public async Task TestDeleteRoutesWebDavFileTypesIncludingLongFiles()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await SeedVersionAsync(1, versionDate);
+        await SeedFileForVersionAsync(1, 1, 1, "plain.txt", @"\docs\", 7, "");
+        await SeedFileForVersionAsync(2, 2, 1, "compressed.txt", @"\docs\", 8, "");
+        await SeedFileForVersionAsync(3, 3, 1, "encrypted-long.txt", @"\docs\", 9, "webdav-long-file-name");
+
+        var storage = new RecordingDeleteStorage();
+        var deleteJob = CreateDeleteJob(storage, "1");
+
+        await deleteJob.DeleteAsync();
+
+        Assert.That(storage.DeletedPlain, Has.Count.EqualTo(1));
+        Assert.That(storage.DeletedCompressed, Has.Count.EqualTo(1));
+        Assert.That(storage.DeletedEncrypted, Has.Count.EqualTo(1));
+
+        Assert.That(storage.DeletedPlain[0], Is.EqualTo(Path.Combine(versionDate + @"\docs\", "plain.txt")));
+        Assert.That(storage.DeletedCompressed[0], Is.EqualTo(Path.Combine(versionDate + @"\docs\", "compressed.txt")));
+        Assert.That(storage.DeletedEncrypted[0], Is.EqualTo(Path.Combine(versionDate, "_LONGFILES_", "webdav-long-file-name")));
+    }
+
+    [Test]
+    public async Task TestDeleteSingleRoutesFtpAndWebDavLongFiles()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await SeedVersionAsync(1, versionDate);
+        await SeedFileForVersionAsync(1, 1, 1, "ftp-long.txt", @"\docs\", 5, "ftp-long-file-name");
+        await SeedFileForVersionAsync(2, 2, 1, "webdav-long.txt", @"\docs\", 9, "webdav-long-file-name");
+
+        var storage = new RecordingDeleteStorage();
+        var deleteJob = CreateDeleteSingleJob(storage);
+
+        await deleteJob.DeleteSingleAsync(string.Empty, @"\docs\%");
+
+        Assert.That(storage.DeletedEncrypted, Has.Count.EqualTo(2));
+        Assert.That(storage.DeletedEncrypted, Does.Contain(Path.Combine(versionDate, "_LONGFILES_", "ftp-long-file-name")));
+        Assert.That(storage.DeletedEncrypted, Does.Contain(Path.Combine(versionDate, "_LONGFILES_", "webdav-long-file-name")));
+    }
+
+    [Test]
     public async Task TestDeleteCollectsFileErrorsAndContinues()
     {
         const string versionDate = "01-01-2021 00-00-00";
@@ -134,7 +175,7 @@ public class DeleteTests
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filetable")), Is.EqualTo(0));
     }
 
-    private DeleteJob CreateDeleteJob(IStorage storage, string version)
+    private DeleteJob CreateDeleteJob(IStorageProvider storage, string version)
     {
         return new DeleteJob(
             storage,
@@ -148,7 +189,7 @@ public class DeleteTests
         };
     }
 
-    private DeleteSingleJob CreateDeleteSingleJob(IStorage storage)
+    private DeleteSingleJob CreateDeleteSingleJob(IStorageProvider storage)
     {
         return new DeleteSingleJob(
             storage,
@@ -183,7 +224,7 @@ public class DeleteTests
             $"INSERT INTO filelink (fileversionID, versionID) VALUES ({fileVersionId}, {versionId})");
     }
 
-    private sealed class RecordingDeleteStorage : IStorage
+    private sealed class RecordingDeleteStorage : IStorageProvider
     {
         private readonly bool failCheckMedium;
         private readonly bool throwOnDelete;

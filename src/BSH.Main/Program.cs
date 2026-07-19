@@ -96,23 +96,9 @@ static class Program
     private static void AutoUpdater_ApplicationExitEvent()
     {
         // close application
-        NotificationController.Current.Shutdown();
-        BackupLogic.StopSystem();
-        BackupLogic.BackupController?.Dispose();
         Settings.Default.StartParameters = Environment.CommandLine;
         Settings.Default.Save();
-
-        PresentationController.Current.CloseMainWindow();
-        PresentationController.Current.CloseBackupBrowserWindow();
-
-        try
-        {
-            Application.Exit();
-        }
-        catch
-        {
-            Environment.Exit(0);
-        }
+        AppLifecycle.Exit();
     }
 
     private static void ApplicationExit(object sender, EventArgs e)
@@ -159,7 +145,7 @@ static class Program
             BackupLogic.DatabaseFile = opts.DatabaseFile;
         }
 
-        // (deprecated)
+        // Kept for the legacy uninstaller, which still passes --deleteprotocol during upgrades.
         if (opts.DeleteProtocol)
         {
             Application.Exit();
@@ -206,8 +192,8 @@ static class Program
             Task.Run(BackupLogic.CommandAutoDelete).GetAwaiter().GetResult();
         }
 
-        // create manual backup
-        BackupLogic.BackupController.CreateBackupAsync(opts.Title, opts.Description, true, shutdownPC: opts.ShutdownPC, shutdownApp: opts.ShutdownApp);
+        // create manual backup (runs while Application.Run keeps the process alive)
+        _ = BackupLogic.BackupController.CreateBackupAsync(opts.Title, opts.Description, true, shutdownPC: opts.ShutdownPC, shutdownApp: opts.ShutdownApp);
 
         return 0;
     }

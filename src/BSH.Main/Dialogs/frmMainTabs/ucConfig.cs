@@ -542,7 +542,7 @@ public partial class ucConfig : IMainTabs
 
             Enabled = false;
 
-            var task = BackupLogic.BackupService.StartEdit(ref statusWindowReport, new CancellationTokenSource().Token, true);
+            var task = BackupLogic.BackupService.StartEdit(statusWindowReport, new CancellationTokenSource().Token, true);
             await task.ConfigureAwait(true);
             statusWindow.Close();
 

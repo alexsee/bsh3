@@ -26,10 +26,10 @@ namespace BSH.Service.VSS
         bool ComponentMode = false;
 
         /// <summary>A reference to the VSS context.</summary>
-        IVssBackupComponents _backup;
+        IVssBackupComponents _backup = null!;
 
         /// <summary>Some persistent context for the current snapshot.</summary>
-        Snapshot _snap;
+        Snapshot? _snap;
 
         /// <summary>
         /// Constructs a VssBackup object and initializes some of the necessary
@@ -70,11 +70,7 @@ namespace BSH.Service.VSS
                 _snap = null;
             }
 
-            if (_backup != null)
-            {
-                _backup.Dispose();
-                _backup = null;
-            }
+            _backup.Dispose();
         }
 
         /// <summary>
@@ -137,7 +133,9 @@ namespace BSH.Service.VSS
             // Now we use our helper class to add the appropriate volume to the
             // shadow copy set.
             _snap = new Snapshot(_backup);
-            _snap.AddVolume(Path.GetPathRoot(fullPath));
+            var volumeRoot = Path.GetPathRoot(fullPath)
+                ?? throw new ArgumentException($"Could not determine volume root for '{fullPath}'.", nameof(fullPath));
+            _snap.AddVolume(volumeRoot);
         }
 
         /// <summary>
@@ -240,6 +238,11 @@ namespace BSH.Service.VSS
             // It's now time to create the snapshot.  Each writer will have to
             // freeze its I/O to the selected volumes for up to 10 seconds
             // while this process takes place.
+            if (_snap == null)
+            {
+                throw new InvalidOperationException("VSS snapshot has not been created.");
+            }
+
             _snap.Copy();
         }
 
@@ -279,14 +282,22 @@ namespace BSH.Service.VSS
         /// <returns>A full path to the same file on the snapshot.</returns>
         public string GetSnapshotPath(string localPath)
         {
+            if (_snap == null)
+            {
+                throw new InvalidOperationException("VSS snapshot has not been set up. Call Setup() first.");
+            }
+
             Trace.TraceInformation("New volume: " + _snap.Root);
 
             // This bit replaces the file's normal root information with root
             // info from our new shadow copy.
             if (Path.IsPathRooted(localPath))
             {
-                string root = Path.GetPathRoot(localPath);
-                localPath = localPath.Replace(root, String.Empty);
+                string? root = Path.GetPathRoot(localPath);
+                if (root != null)
+                {
+                    localPath = localPath.Replace(root, string.Empty);
+                }
             }
             string slash = Path.DirectorySeparatorChar.ToString();
             if (!_snap.Root.EndsWith(slash) && !localPath.StartsWith(slash))

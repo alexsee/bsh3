@@ -4,14 +4,14 @@
 using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
 
 namespace Brightbits.BSH.Engine.Services;
 
-public class SchedulerService : ISchedulerService
+public class SchedulerService : ISchedulerAdapter
 {
     private IScheduler scheduler;
 

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
 using BSH.Main.Properties;
@@ -370,8 +371,8 @@ public partial class ucDoConfigure : IMainTabs
                     // start backup
                     await BackupLogic.StartSystemAsync(true);
 
-                    // create first backup
-                    BackupLogic.BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_FIRST, "", false);
+                    // create first backup (fire-and-forget; balloon notifies the user)
+                    _ = BackupLogic.BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_FIRST, "", false);
                     NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_FIRST_RUN_TITLE, Resources.INFO_BACKUP_FIRST_RUN_TEXT, ToolTipIcon.Info);
                 }
 
@@ -548,8 +549,7 @@ public partial class ucDoConfigure : IMainTabs
                         var mediaType = GetSelectedRemoteMediaType(isImport: true);
                         var credentials = CreateRemoteCredentialsFromUi(mediaType, isImport: true);
                         txtFTPPath2.Text = credentials.Folder;
-                        using IStorage storage = StorageFactory.CreateRemote(mediaType, credentials);
-
+                        using IStorageProvider storage = StorageFactory.CreateRemote(mediaType, credentials);
                         storage.Open();
                         storage.CopyFileFromStorage(BackupLogic.DatabaseFile, "backup.bshdb");
                     }

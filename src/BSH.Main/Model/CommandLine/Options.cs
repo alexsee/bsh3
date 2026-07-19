@@ -19,6 +19,7 @@ public class Options
         get; set;
     }
 
+    // Kept for the legacy uninstaller, which still passes --deleteprotocol during upgrades.
     [Option("deleteprotocol", Default = false)]
     public bool DeleteProtocol
     {

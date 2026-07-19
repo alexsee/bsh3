@@ -30,7 +30,7 @@ public class StorageFactory : IStorageFactory
     /// <summary>
     /// Creates a remote storage provider from credentials (FTP or WebDAV).
     /// </summary>
-    public static IStorage CreateRemote(MediaType mediaType, RemoteStorageCredentials credentials, int currentStorageVersion = 0)
+    public static IStorageProvider CreateRemote(MediaType mediaType, RemoteStorageCredentials credentials, int currentStorageVersion = 0)
     {
         ArgumentNullException.ThrowIfNull(credentials);
 

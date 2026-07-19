@@ -8,7 +8,6 @@ using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using BSH.Main.Properties;
-using Serilog;
 
 namespace Brightbits.BSH.Main;
 
@@ -170,22 +169,7 @@ public class NotificationController : IStatusReport
 
     private void eventMainContextExit(object sender, EventArgs e)
     {
-        systemTrayIcon.Visible = false;
-        BackupLogic.StopSystem();
-
-        PresentationController.Current.CloseMainWindow();
-        PresentationController.Current.CloseBackupBrowserWindow();
-
-        Log.Information("Backup Service Home stopped");
-
-        try
-        {
-            Application.Exit();
-        }
-        catch
-        {
-            Environment.Exit(0);
-        }
+        AppLifecycle.Exit();
     }
 
     public void ReportAction(ActionType action, bool silent)

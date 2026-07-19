@@ -13,7 +13,7 @@ using Serilog;
 
 namespace Brightbits.BSH.Engine.Storage;
 
-public class WebDavStorage : Storage, IStorage
+public class WebDavStorage : Storage, IStorageProvider
 {
     private static readonly ILogger Logger = Log.ForContext<WebDavStorage>();
 

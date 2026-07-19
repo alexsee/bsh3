@@ -29,13 +29,13 @@ public class XCopy
         new XCopy().CopyInternal(source, destination, overwrite, nobuffering, null);
     }
 
-    public static void Copy(string source, string destination, bool overwrite, bool nobuffering, EventHandler<ProgressChangedEventArgs> handler)
+    public static void Copy(string source, string destination, bool overwrite, bool nobuffering, EventHandler<ProgressChangedEventArgs>? handler)
     {
         new XCopy().CopyInternal(source, destination, overwrite, nobuffering, handler);
     }
 
-    private event EventHandler Completed;
-    private event EventHandler<ProgressChangedEventArgs> ProgressChanged;
+    private event EventHandler? Completed;
+    private event EventHandler<ProgressChangedEventArgs>? ProgressChanged;
 
     private int IsCancelled;
     private int FilePercentCompleted;
@@ -45,7 +45,7 @@ public class XCopy
         IsCancelled = 0;
     }
 
-    private void CopyInternal(string source, string destination, bool overwrite, bool nobuffering, EventHandler<ProgressChangedEventArgs> handler)
+    private void CopyInternal(string source, string destination, bool overwrite, bool nobuffering, EventHandler<ProgressChangedEventArgs>? handler)
     {
         try
         {

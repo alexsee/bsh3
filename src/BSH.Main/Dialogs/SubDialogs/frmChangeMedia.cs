@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Main.Properties;
 
@@ -117,7 +118,7 @@ public partial class frmChangeMedia
                 var credentials = CreateRemoteCredentialsFromUi(mediaType);
                 txtFTPPath.Text = credentials.Folder;
 
-                using (IStorage storage = StorageFactory.CreateRemote(mediaType, credentials))
+                using (IStorageProvider storage = StorageFactory.CreateRemote(mediaType, credentials))
                 {
                     storage.Open();
 

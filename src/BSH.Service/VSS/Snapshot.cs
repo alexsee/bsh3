@@ -11,7 +11,7 @@ namespace BSH.Service.VSS
         readonly IVssBackupComponents _backup;
 
         /// <summary>Metadata about this object's snapshot.</summary>
-        VssSnapshotProperties _props;
+        VssSnapshotProperties? _props;
 
         /// <summary>Identifier for the overall shadow copy.</summary>
         Guid _set_id;

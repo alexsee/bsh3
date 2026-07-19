@@ -1,38 +1,52 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Providers.Ports;
-using Brightbits.BSH.Engine.Storage;
 
 namespace BSH.Test.Mocks
 {
-    public class StorageMock : IStorage
+    public class StorageMock : IStorageProvider
     {
         private readonly bool failCheckMedium;
         private readonly bool failAllCopies;
         private readonly bool pathTooLong;
         private readonly bool throwIoOnFirstRegularCopy;
+        private readonly string throwOnRemoteContaining;
+        private readonly CancellationTokenSource cancelOnCopy;
         private int regularCopyAttempts;
 
         public StorageMock(
             bool failCheckMedium = false,
             bool failAllCopies = false,
             bool pathTooLong = false,
-            bool throwIoOnFirstRegularCopy = false)
+            bool throwIoOnFirstRegularCopy = false,
+            string throwOnRemoteContaining = null,
+            CancellationTokenSource cancelOnCopy = null)
         {
             this.failCheckMedium = failCheckMedium;
             this.failAllCopies = failAllCopies;
             this.pathTooLong = pathTooLong;
             this.throwIoOnFirstRegularCopy = throwIoOnFirstRegularCopy;
+            this.throwOnRemoteContaining = throwOnRemoteContaining;
+            this.cancelOnCopy = cancelOnCopy;
         }
 
         public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
         public int CopyFileToStorageCalls { get; private set; }
         public int CopyFileToStorageCompressedCalls { get; private set; }
         public int CopyFileToStorageEncryptedCalls { get; private set; }
+        public int CopyFileFromStorageCalls { get; private set; }
+        public int CopyFileFromStorageCompressedCalls { get; private set; }
+        public int CopyFileFromStorageEncryptedCalls { get; private set; }
         public string LastRemoteFile { get; private set; }
+        public List<string> CopiedFromStorageRemoteFiles { get; } = [];
+        public List<string> CopiedFromStorageCompressedRemoteFiles { get; } = [];
+        public List<string> CopiedFromStorageEncryptedRemoteFiles { get; } = [];
 
         public bool CanWriteToStorage()
         {
@@ -46,7 +60,10 @@ namespace BSH.Test.Mocks
 
         public bool CopyFileFromStorage(string localFile, string remoteFile)
         {
-            return !failAllCopies;
+            return RecordCopyFromStorage(
+                CopiedFromStorageRemoteFiles,
+                () => CopyFileFromStorageCalls++,
+                remoteFile);
         }
 
         public bool FileExists(string remoteFile)
@@ -56,12 +73,18 @@ namespace BSH.Test.Mocks
 
         public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
         {
-            return !failAllCopies;
+            return RecordCopyFromStorage(
+                CopiedFromStorageCompressedRemoteFiles,
+                () => CopyFileFromStorageCompressedCalls++,
+                remoteFile);
         }
 
         public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
         {
-            return !failAllCopies;
+            return RecordCopyFromStorage(
+                CopiedFromStorageEncryptedRemoteFiles,
+                () => CopyFileFromStorageEncryptedCalls++,
+                remoteFile);
         }
 
         public bool CopyFileToStorage(string localFile, string remoteFile)
@@ -147,6 +170,21 @@ namespace BSH.Test.Mocks
         public bool UploadDatabaseFile(string databaseFile)
         {
             return true;
+        }
+
+        private bool RecordCopyFromStorage(List<string> remoteFiles, Action incrementCalls, string remoteFile)
+        {
+            if (!string.IsNullOrEmpty(throwOnRemoteContaining) &&
+                remoteFile.Contains(throwOnRemoteContaining, StringComparison.Ordinal))
+            {
+                throw new IOException("Simulated restore failure");
+            }
+
+            cancelOnCopy?.Cancel();
+            incrementCalls();
+            LastRemoteFile = remoteFile;
+            remoteFiles.Add(remoteFile);
+            return !failAllCopies;
         }
     }
 }

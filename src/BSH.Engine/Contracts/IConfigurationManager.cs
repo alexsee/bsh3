@@ -87,6 +87,11 @@ public interface IConfigurationManager
         get;
         set;
     }
+    string IncludeSystemFolders
+    {
+        get;
+        set;
+    }
     string FreeSpace
     {
         get;

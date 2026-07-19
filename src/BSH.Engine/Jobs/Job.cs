@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -11,6 +12,7 @@ using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Utils;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -244,6 +246,39 @@ public abstract class Job
         catch
         {
             // ignore exception
+        }
+    }
+
+    /// <summary>
+    /// Deletes a single file from the backup device via the storage provider.
+    /// </summary>
+    /// <exception cref="FileNotProcessedException"></exception>
+    protected void DeleteFileFromDevice(string fileName, string filePath, string longFileName, string versionDate, int fileType)
+    {
+        // determine remote file name
+        var remoteFile = !string.IsNullOrEmpty(longFileName)
+            ? Path.Combine(versionDate, "_LONGFILES_", longFileName)
+            : Path.Combine(versionDate + filePath, fileName);
+
+        // delete file
+        try
+        {
+            if (BackupFileType.IsRegular(fileType))
+            {
+                storage.DeleteFileFromStorage(remoteFile);
+            }
+            else if (BackupFileType.IsCompressed(fileType))
+            {
+                storage.DeleteFileFromStorageCompressed(remoteFile);
+            }
+            else if (BackupFileType.IsEncrypted(fileType))
+            {
+                storage.DeleteFileFromStorageEncrypted(remoteFile);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new FileNotProcessedException(ex);
         }
     }
 

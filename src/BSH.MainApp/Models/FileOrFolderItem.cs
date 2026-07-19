@@ -12,12 +12,12 @@ public class FileOrFolderItem : INotifyPropertyChanged
     public string FileNameOnDrive
     {
         get; set;
-    }
+    } = string.Empty;
 
     public string Name
     {
         get; set;
-    }
+    } = string.Empty;
 
     public string DisplayName
     {
@@ -27,7 +27,7 @@ public class FileOrFolderItem : INotifyPropertyChanged
     public string FullPath
     {
         get; set;
-    }
+    } = string.Empty;
 
     public DateTime FileDateModified
     {
@@ -61,8 +61,8 @@ public class FileOrFolderItem : INotifyPropertyChanged
         set;
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    public event PropertyChangedEventHandler? PropertyChanged;
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

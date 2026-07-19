@@ -154,7 +154,7 @@ public class RestoreJob : Job
             }
 
             // refresh status
-            _logger.Information("{countFiles} files will be restored.", countFiles);
+            _logger.Information("{CountFiles} files will be restored.", countFiles);
             ReportStatus(Resources.STATUS_RESTORE_COPY_SHORT, Resources.STATUS_RESTORE_COPY_TEXT);
             ReportProgress(countFiles, 0);
 
@@ -189,14 +189,14 @@ public class RestoreJob : Job
                     try
                     {
                         await CopyFileFromDevice(storage, reader, fileDest);
-                        _logger.Information("File {fileName} restored successfully.", filePath + fileName);
+                        _logger.Information("File {FileName} restored successfully.", filePath + fileName);
                     }
                     catch (Exception ex)
                     {
                         var fileExceptionEntry = AddFileErrorToList(new FileTableRow() { FilePath = filePath, FileName = fileName }, ex);
 
                         // file could not be not restored
-                        _logger.Error(ex.InnerException, "File {fileName} could not be restored due to exception. {exception}", filePath + fileName, fileExceptionEntry);
+                        _logger.Error(ex.InnerException, "File {FileName} could not be restored due to exception. {Exception}", filePath + fileName, fileExceptionEntry);
                     }
 
                     // cancellation token requested?

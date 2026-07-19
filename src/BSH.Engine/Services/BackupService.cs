@@ -137,35 +137,15 @@ public class BackupService : IBackupService
     /// <summary>
     /// Starts a backup job with the given parameters.
     /// </summary>
-    /// <param name="title"></param>
-    /// <param name="description"></param>
-    /// <param name="jobReport"></param>
-    /// <param name="fullBackup"></param>
-    /// <param name="sources"></param>
     public Task StartBackup(
         string title,
         string description,
-        ref IJobReport jobReport,
+        IJobReport jobReport,
         CancellationToken cancellationToken,
         bool fullBackup = false,
         string sources = "",
         bool silent = false)
     {
-        ArgumentNullException.ThrowIfNull(jobReport);
-
-        // check if password is set
-        if (configurationManager.Encrypt == 1 && (password == null || password.Length == 0))
-        {
-            throw new PasswordRequiredException();
-        }
-
-        // check if we have a running task
-        if (currentTask != null && currentTask.Status == TaskStatus.Running)
-        {
-            return Task.FromResult<object>(null);
-        }
-
-        // create new backup job
         var backupJob = new BackupJob(storageFactory.GetCurrentStorageProvider(),
             dbClientFactory,
             queryManager,
@@ -184,55 +164,21 @@ public class BackupService : IBackupService
             Password = password
         };
 
-        backupJob.AddObserver(jobReport);
-
-        // start backup
-        jobReport.ReportAction(ActionType.Backup, silent);
-
-        currentTask = Task.Run(async () => await backupJob.BackupAsync(cancellationToken), cancellationToken);
-
-        // error handling
-        currentTask.ContinueWith(t =>
-        {
-            _logger.Error(t.Exception, "Exception during backup job.");
-            backupJob.ReportState(JobState.ERROR);
-        }, TaskContinuationOptions.OnlyOnFaulted);
-
-        return currentTask;
+        return StartJob(jobReport, ActionType.Backup, backupJob, () => backupJob.BackupAsync(cancellationToken), cancellationToken, silent, requirePassword: true);
     }
 
     /// <summary>
     /// Starts a restore job with the given parameters.
     /// </summary>
-    /// <param name="version"></param>
-    /// <param name="file"></param>
-    /// <param name="destination"></param>
-    /// <param name="jobReport"></param>
-    /// <param name="overwrite"></param>
     public Task StartRestore(
         string version,
         string file,
         string destination,
-        ref IJobReport jobReport,
+        IJobReport jobReport,
         CancellationToken cancellationToken,
         FileOverwrite overwrite = FileOverwrite.Ask,
         bool silent = false)
     {
-        ArgumentNullException.ThrowIfNull(jobReport);
-
-        // check if we have a running task
-        if (currentTask != null && currentTask.Status == TaskStatus.Running)
-        {
-            return Task.FromResult<object>(null);
-        }
-
-        // check if password is set
-        if (configurationManager.Encrypt == 1 && (password == null || password.Length == 0))
-        {
-            throw new PasswordRequiredException();
-        }
-
-        // create new restore job
         var restoreJob = new RestoreJob(storageFactory.GetCurrentStorageProvider(),
             dbClientFactory,
             queryManager,
@@ -246,43 +192,18 @@ public class BackupService : IBackupService
             Password = password
         };
 
-        restoreJob.AddObserver(jobReport);
-
-        // run restore
-        jobReport.ReportAction(ActionType.Restore, silent);
-
-        currentTask = Task.Run(async () => await restoreJob.RestoreAsync(cancellationToken), cancellationToken);
-
-        // error handling
-        currentTask.ContinueWith(t =>
-        {
-            _logger.Error(t.Exception, "Exception during restore job.");
-            restoreJob.ReportState(JobState.ERROR);
-        }, TaskContinuationOptions.OnlyOnFaulted);
-
-        return currentTask;
+        return StartJob(jobReport, ActionType.Restore, restoreJob, () => restoreJob.RestoreAsync(cancellationToken), cancellationToken, silent, requirePassword: true);
     }
 
     /// <summary>
     /// Starts a deletion job for the given version.
     /// </summary>
-    /// <param name="version"></param>
-    /// <param name="jobReport"></param>
     public Task StartDelete(
         string version,
-        ref IJobReport jobReport,
+        IJobReport jobReport,
         CancellationToken cancellationToken,
         bool silent = false)
     {
-        ArgumentNullException.ThrowIfNull(jobReport);
-
-        // check if we have a running task
-        if (currentTask != null && currentTask.Status == TaskStatus.Running)
-        {
-            return Task.FromResult<object>(null);
-        }
-
-        // create deletion job
         var deleteJob = new DeleteJob(storageFactory.GetCurrentStorageProvider(),
             dbClientFactory,
             queryManager,
@@ -294,45 +215,19 @@ public class BackupService : IBackupService
             Version = version
         };
 
-        deleteJob.AddObserver(jobReport);
-
-        // run delete
-        jobReport.ReportAction(ActionType.Delete, silent);
-
-        currentTask = Task.Run(deleteJob.DeleteAsync, cancellationToken);
-
-        // error handling
-        currentTask.ContinueWith(t =>
-        {
-            _logger.Error(t.Exception, "Exception during delete job.");
-            deleteJob.ReportState(JobState.ERROR);
-        }, TaskContinuationOptions.OnlyOnFaulted);
-
-        return currentTask;
+        return StartJob(jobReport, ActionType.Delete, deleteJob, deleteJob.DeleteAsync, cancellationToken, silent);
     }
 
     /// <summary>
     /// Starts a new single deletion job given the file or path filter.
     /// </summary>
-    /// <param name="fileFilter"></param>
-    /// <param name="pathFilter"></param>
-    /// <param name="jobReport"></param>
     public Task StartDeleteSingle(
         string fileFilter,
         string pathFilter,
-        ref IJobReport jobReport,
+        IJobReport jobReport,
         CancellationToken cancellationToken,
         bool silent = false)
     {
-        ArgumentNullException.ThrowIfNull(jobReport);
-
-        // check if we have a running task
-        if (currentTask != null && currentTask.Status == TaskStatus.Running)
-        {
-            return Task.FromResult<object>(null);
-        }
-
-        // create deletion job
         var deleteJob = new DeleteSingleJob(storageFactory.GetCurrentStorageProvider(),
             dbClientFactory,
             queryManager,
@@ -340,47 +235,17 @@ public class BackupService : IBackupService
             versionQueryRepository,
             backupMutationRepository);
 
-        deleteJob.AddObserver(jobReport);
-
-        // run delete
-        jobReport.ReportAction(ActionType.Delete, silent);
-
-        currentTask = Task.Run(async () => await deleteJob.DeleteSingleAsync(fileFilter, pathFilter), cancellationToken);
-
-        // error handling
-        currentTask.ContinueWith(t =>
-        {
-            _logger.Error(t.Exception, "Exception during delete job.");
-            deleteJob.ReportState(JobState.ERROR);
-        }, TaskContinuationOptions.OnlyOnFaulted);
-
-        return currentTask;
+        return StartJob(jobReport, ActionType.Delete, deleteJob, () => deleteJob.DeleteSingleAsync(fileFilter, pathFilter), cancellationToken, silent);
     }
 
     /// <summary>
     /// Starts a new edit job.
     /// </summary>
-    /// <param name="jobReport"></param>
     public Task StartEdit(
-        ref IJobReport jobReport,
+        IJobReport jobReport,
         CancellationToken cancellationToken,
         bool silent = false)
     {
-        ArgumentNullException.ThrowIfNull(jobReport);
-
-        // check if we have a running task
-        if (currentTask != null && currentTask.Status == TaskStatus.Running)
-        {
-            return Task.FromResult<object>(null);
-        }
-
-        // check if password is set
-        if (configurationManager.Encrypt == 1 && (password == null || password.Length == 0))
-        {
-            throw new PasswordRequiredException();
-        }
-
-        // create edit job
         var editJob = new EditJob(storageFactory.GetCurrentStorageProvider(),
             dbClientFactory,
             queryManager,
@@ -391,18 +256,40 @@ public class BackupService : IBackupService
             Password = password
         };
 
-        editJob.AddObserver(jobReport);
+        return StartJob(jobReport, ActionType.Modify, editJob, editJob.EditAsync, cancellationToken, silent, requirePassword: true);
+    }
 
-        // run edit
-        jobReport.ReportAction(ActionType.Modify, silent);
+    private Task StartJob(
+        IJobReport jobReport,
+        ActionType actionType,
+        Job job,
+        Func<Task> runAsync,
+        CancellationToken cancellationToken,
+        bool silent,
+        bool requirePassword = false)
+    {
+        ArgumentNullException.ThrowIfNull(jobReport);
+        ArgumentNullException.ThrowIfNull(job);
+        ArgumentNullException.ThrowIfNull(runAsync);
 
-        currentTask = Task.Run(editJob.EditAsync, cancellationToken);
+        if (requirePassword && configurationManager.Encrypt == 1 && (password == null || password.Length == 0))
+        {
+            throw new PasswordRequiredException();
+        }
 
-        // error handling
+        if (currentTask != null && currentTask.Status == TaskStatus.Running)
+        {
+            return Task.FromResult<object>(null);
+        }
+
+        job.AddObserver(jobReport);
+        jobReport.ReportAction(actionType, silent);
+
+        currentTask = Task.Run(runAsync, cancellationToken);
         currentTask.ContinueWith(t =>
         {
-            _logger.Error(t.Exception, "Exception during edit job.");
-            editJob.ReportState(JobState.ERROR);
+            _logger.Error(t.Exception, "Exception during {action} job.", actionType);
+            job.ReportState(JobState.ERROR);
         }, TaskContinuationOptions.OnlyOnFaulted);
 
         return currentTask;
@@ -411,8 +298,6 @@ public class BackupService : IBackupService
     /// <summary>
     /// Sets the stable state of a backup.
     /// </summary>
-    /// <param name="version"></param>
-    /// <param name="stable"></param>
     public async Task SetStableAsync(string version, bool stable)
     {
         await backupMutationRepository.SetVersionStableAsync(version, stable);
@@ -421,10 +306,6 @@ public class BackupService : IBackupService
     /// <summary>
     /// Edits the details of a version.
     /// </summary>
-    /// <param name="version">The ID of the version to edit</param>
-    /// <param name="versionDetails">The new details for the version</param>
-    /// <exception cref="ArgumentNullException">Thrown when versionDetails is null</exception>
-    /// <exception cref="ArgumentException">Thrown when version is not a valid identifier</exception>
     public async Task UpdateVersionAsync(string version, VersionDetails versionDetails)
     {
         ArgumentNullException.ThrowIfNull(versionDetails);

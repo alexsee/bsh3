@@ -33,13 +33,13 @@ public class PathFolderExclusion(IConfigurationManager configurationManager) : I
             // check if source folder (for drive backup)
             if (("\\" + Path.GetFileName(directory.FullName) + "\\").StartsWith(entry + "\\", StringComparison.OrdinalIgnoreCase))
             {
-                _logger.Debug("{folderName} was ignored due to root folder path filter.", directory.FullName);
+                _logger.Debug("{FolderName} was ignored due to root folder path filter.", directory.FullName);
                 return true;
             }
 
             if (("\\" + Path.Combine(Path.GetFileName(root), IOUtils.GetRelativeFolder(directory.FullName, root)) + "\\").StartsWith(entry + "\\", StringComparison.OrdinalIgnoreCase))
             {
-                _logger.Debug("{folderName} was ignored due to folder path filter.", directory.FullName);
+                _logger.Debug("{FolderName} was ignored due to folder path filter.", directory.FullName);
                 return true;
             }
         }
@@ -60,11 +60,11 @@ public class MaskFolderExclusion(IConfigurationManager configurationManager) : I
             return false;
         }
 
-        _regexExcludeCache ??= new Regex(configurationManager.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline, TimeSpan.FromSeconds(10));
+        _regexExcludeCache ??= new Regex(configurationManager.ExcludeMask, RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(10));
 
         if (_regexExcludeCache.IsMatch(directory.FullName))
         {
-            _logger.Debug("{folderName} was ignored due to regex path filter.", directory.FullName);
+            _logger.Debug("{FolderName} was ignored due to regex path filter.", directory.FullName);
             return true;
         }
 
@@ -77,9 +77,17 @@ public class ReparsePointFolderExclusion() : IFolderExclusion
     public bool IsFolderFiltered(string root, DirectoryInfo directory) => (directory.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint;
 }
 
-public class SystemFolderExclusion() : IFolderExclusion
+public class SystemFolderExclusion(IConfigurationManager configurationManager) : IFolderExclusion
 {
-    public bool IsFolderFiltered(string root, DirectoryInfo directory) => (directory.Attributes & FileAttributes.System) == FileAttributes.System;
+    public bool IsFolderFiltered(string root, DirectoryInfo directory)
+    {
+        if (configurationManager.IncludeSystemFolders == "1")
+        {
+            return false;
+        }
+
+        return (directory.Attributes & FileAttributes.System) == FileAttributes.System;
+    }
 }
 
 public class TemporaryFolderExclusion() : IFolderExclusion

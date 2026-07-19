@@ -185,7 +185,7 @@ public class BackupJob : Job
                 fileCollector.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
                 fileCollector.FolderExclusionHandlers.Add(new MaskFolderExclusion(configurationManager));
                 fileCollector.FolderExclusionHandlers.Add(new ReparsePointFolderExclusion());
-                fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion());
+                fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion(configurationManager));
                 fileCollector.FolderExclusionHandlers.Add(new TemporaryFolderExclusion());
 
                 var filesList = fileCollector.GetLocalFileList(folderEntry, true);
@@ -194,7 +194,15 @@ public class BackupJob : Job
             }
 
             // report progress
-            _logger.Information("{numFiles} files and {numFolders} folders are collected for backup.", files.Count, emptyFolder.Count);
+            _logger.Information("{NumFiles} files and {NumFolders} folders are collected for backup.", files.Count, emptyFolder.Count);
+
+            var freeSpaceBytes = storage.GetFreeSpace();
+            var estimatedBytes = DiskSpacePreflight.EstimateRequiredBytes(files.Select(f => f.FileSize));
+            if (DiskSpacePreflight.IsClearlyInsufficient(freeSpaceBytes, estimatedBytes))
+            {
+                await AbortForInsufficientDiskSpaceAsync(dbClient, newVersionDate, estimatedBytes, freeSpaceBytes);
+                return;
+            }
 
             ReportStatus(Resources.STATUS_BACKUP_COPY_SHORT, Resources.STATUS_BACKUP_COPY_TEXT);
             ReportProgress(files.Count, 0);
@@ -254,11 +262,11 @@ public class BackupJob : Job
                         await SaveJunctionAsync(file, dbClient);
 
                         // backup file
-                        _logger.Debug("Copy file {fileName} to backup device.", file.FileNamePath());
+                        _logger.Debug("Copy file {FileName} to backup device.", file.FileNamePath());
 
                         if (await CopyFileToDeviceAsync(storage, file, newVersionId, newVersionDate, dbClient))
                         {
-                            _logger.Debug("{fileName} backed up successfully.", file.FileNamePath());
+                            _logger.Debug("{FileName} backed up successfully.", file.FileNamePath());
 
                             newFiles = true;
                         }
@@ -267,7 +275,7 @@ public class BackupJob : Job
                 catch (FileNotProcessedException ex)
                 {
                     var fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
-                    _logger.Error(ex.InnerException, "File {fileName} could not be backuped. {exception}", file.FileNamePath(), fileExceptionEntry);
+                    _logger.Error(ex.InnerException, "File {FileName} could not be backuped. {Exception}", file.FileNamePath(), fileExceptionEntry);
 
                     if (ex.RequestCancel)
                     {
@@ -280,25 +288,15 @@ public class BackupJob : Job
                 catch (Exception ex)
                 {
                     var fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
-                    _logger.Error(ex.InnerException, "File {fileName} could not be backuped. {exception}", file.FileNamePath(), fileExceptionEntry);
+                    _logger.Error(ex.InnerException, "File {FileName} could not be backuped. {Exception}", file.FileNamePath(), fileExceptionEntry);
                 }
 
                 // cancellation token requested?
                 if (token.IsCancellationRequested || cancel)
                 {
-                    // report progress
                     _logger.Information("Cancellation of backup job requested. Rollback all transfers.");
                     ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_TEXT);
-
-                    // undo
-                    storage.DeleteDirectory(newVersionDate);
-                    storage.Dispose();
-
-                    dbClient.RollbackTransaction();
-
-                    // standby
-                    Win32Stuff.AllowSystemSleep();
-
+                    RollbackIncompleteVersion(dbClient, newVersionDate);
                     ReportState(JobState.CANCELED);
                     return;
                 }
@@ -307,24 +305,14 @@ public class BackupJob : Job
             // report exceptions during job
             if (FileErrorList.Count > 0)
             {
-                _logger.Error("{numFiles} files could not be copied to device.", FileErrorList.Count);
+                _logger.Error("{NumFiles} files could not be copied to device.", FileErrorList.Count);
 
                 // can we still write to device?
                 if (!storage.CanWriteToStorage())
                 {
-                    // report progress
                     _logger.Error("Cannot write to backup device. Rollback all transfers.");
                     ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_ERROR);
-
-                    // undo
-                    storage.DeleteDirectory(newVersionDate);
-                    storage.Dispose();
-
-                    dbClient.RollbackTransaction();
-
-                    // standby
-                    Win32Stuff.AllowSystemSleep();
-
+                    RollbackIncompleteVersion(dbClient, newVersionDate);
                     ReportExceptions(FileErrorList);
                     ReportState(JobState.ERROR);
                     return;
@@ -394,6 +382,31 @@ public class BackupJob : Job
         _logger.Information("Backup job finished.");
     }
 
+    private async Task AbortForInsufficientDiskSpaceAsync(
+        DbClient dbClient,
+        string versionDate,
+        long estimatedBytes,
+        long freeSpaceBytes)
+    {
+        _logger.Error(
+            "Insufficient free space on backup device before copy. Estimated need ~{EstimatedBytes} bytes, available {FreeSpaceBytes} bytes. Aborting.",
+            estimatedBytes,
+            freeSpaceBytes);
+
+        ReportStatus(Resources.STATUS_CANCELLED_SHORT, Resources.STATUS_CANCELLED_ERROR);
+        await RequestShowErrorInsufficientDiskSpaceAsync();
+        RollbackIncompleteVersion(dbClient, versionDate);
+        ReportState(JobState.ERROR);
+    }
+
+    private void RollbackIncompleteVersion(DbClient dbClient, string versionDate)
+    {
+        storage.DeleteDirectory(versionDate);
+        storage.Dispose();
+        dbClient.RollbackTransaction();
+        Win32Stuff.AllowSystemSleep();
+    }
+
     private async Task ProcessEmptyFolders(DbClient dbClient, long newVersionId, List<FolderTableRow> emptyFolder)
     {
         foreach (var folder in emptyFolder)
@@ -410,9 +423,15 @@ public class BackupJob : Job
     /// </summary>
     /// <param name="selectedFolders">List of source folders.</param>
     /// <returns></returns>
-    private static List<string> GetSourceFolders(string[] selectedFolders)
+    private List<string> GetSourceFolders(string[] selectedFolders)
     {
         var folderList = new List<string>();
+        IFolderExclusion[] driveRootExclusions =
+        [
+            new ReparsePointFolderExclusion(),
+            new SystemFolderExclusion(configurationManager),
+            new TemporaryFolderExclusion()
+        ];
 
         foreach (var folder in selectedFolders)
         {
@@ -424,25 +443,21 @@ public class BackupJob : Job
             }
 
             // entire drive
-            var subFolders = Directory.GetDirectories(folder);
-
-            foreach (var subFolder in subFolders)
+            foreach (var subFolder in Directory.GetDirectories(folder))
             {
                 try
                 {
                     var folderInfo = new DirectoryInfo(subFolder);
-
-                    // check if the folder is not a system folder
-                    if ((folderInfo.Attributes & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint &&
-                        (folderInfo.Attributes & FileAttributes.System) != FileAttributes.System &&
-                        (folderInfo.Attributes & FileAttributes.Temporary) != FileAttributes.Temporary)
+                    if (driveRootExclusions.Any(exclusion => exclusion.IsFolderFiltered(folder, folderInfo)))
                     {
-                        folderList.Add(subFolder);
+                        continue;
                     }
+
+                    folderList.Add(subFolder);
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex, "Could not obtain directory information for {dir}; directory will be ignored.", subFolder);
+                    _logger.Error(ex, "Could not obtain directory information for {Dir}; directory will be ignored.", subFolder);
                 }
             }
         }
@@ -510,7 +525,7 @@ public class BackupJob : Job
         }
         catch (IOException ex)
         {
-            _logger.Warning(ex, "Could not copy file {localFileName} due to IO error.", localFileName);
+            _logger.Warning(ex, "Could not copy file {LocalFileName} due to IO error.", localFileName);
 
             // file does not exist anymore?
             if (ex.GetType() == typeof(DirectoryNotFoundException) || ex.GetType() == typeof(FileNotFoundException))
@@ -534,7 +549,7 @@ public class BackupJob : Job
         }
         catch (Exception ex)
         {
-            _logger.Warning(ex, "Could not copy file {localFileName} via regular file copy.", localFileName);
+            _logger.Warning(ex, "Could not copy file {LocalFileName} via regular file copy.", localFileName);
 
             // already second attempt or other non-fixable error
             if (normalCopy || useVss)
@@ -561,7 +576,7 @@ public class BackupJob : Job
     {
         try
         {
-            _logger.Information("File {fileName} will be attempted to backup via Volume Shadow Copy Service.", localFileName);
+            _logger.Information("File {FileName} will be attempted to backup via Volume Shadow Copy Service.", localFileName);
 
             var vssTempFile = Path.Combine(Path.GetTempPath(), file.FileName);
             if (vssClient.CopyFile(localFileName, vssTempFile) && File.Exists(vssTempFile))
@@ -570,7 +585,7 @@ public class BackupJob : Job
             }
 
             TryDeleteFile(vssTempFile);
-            _logger.Warning("File {fileName} could not be copied via Volume Shadow Copy Service.", localFileName);
+            _logger.Warning("File {FileName} could not be copied via Volume Shadow Copy Service.", localFileName);
             throw new FileNotProcessedException();
         }
         catch (Exception ex)
@@ -606,7 +621,7 @@ public class BackupJob : Job
         return configurationManager.Encrypt == 1 && !normalCopy && file.FileSize > 0;
     }
 
-    private string EnsureSupportedRemotePath(
+    private static string EnsureSupportedRemotePath(
         IStorageProvider storage,
         string remoteFileName,
         string localFileName,
@@ -623,7 +638,7 @@ public class BackupJob : Job
         }
 
         longFileName = Guid.NewGuid() + Path.GetExtension(localFileName);
-        _logger.Debug("{fileName} path is too long to be copied, it will be renamed instead to {longFile}.", file.FileNamePath(), longFileName);
+        _logger.Debug("{FileName} path is too long to be copied, it will be renamed instead to {LongFile}.", file.FileNamePath(), longFileName);
         return Path.Combine(newVersionDate, "_LONGFILES_", longFileName);
     }
 
