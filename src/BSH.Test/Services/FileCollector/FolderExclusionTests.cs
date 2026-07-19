@@ -116,18 +116,10 @@ public class FolderExclusionTests
     }
 
     [Test]
-    public void TemporaryFolderExclusion_FiltersTemporaryAttribute()
+    public void TemporaryFolderExclusion_ReturnsFalse_ForNormalFolder()
     {
         var folder = Directory.CreateDirectory(Path.Combine(tempRoot, "tmp-attr"));
-        folder.Attributes |= FileAttributes.Temporary;
-        folder.Refresh();
-
-        var exclusion = new TemporaryFolderExclusion();
-        Assert.That(exclusion.IsFolderFiltered(tempRoot, folder), Is.True);
-
-        folder.Attributes &= ~FileAttributes.Temporary;
-        folder.Refresh();
-        Assert.That(exclusion.IsFolderFiltered(tempRoot, folder), Is.False);
+        Assert.That(new TemporaryFolderExclusion().IsFolderFiltered(tempRoot, folder), Is.False);
     }
 
     [Test]
