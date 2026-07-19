@@ -47,6 +47,114 @@ jobs:
       run: dotnet restore "Backup Service Home 3.sln" --locked-mode -a x64
       working-directory: ./src
 
+    - name: Install Windows App Runtime for tests
+      shell: pwsh
+      working-directory: ./src
+      run: |
+        $ErrorActionPreference = "Stop"
+        $PSNativeCommandUseErrorActionPreference = $true
+
+        # WinUI tests run inside testhost.exe. Register the exact Windows App
+        # Runtime version restored from the NuGet lock file before loading them.
+        $lockFile = Get-Content "BSH.MainApp\packages.lock.json" -Raw |
+          ConvertFrom-Json
+
+        $runtimeVersions = @(
+          $lockFile.dependencies.PSObject.Properties.Value |
+            ForEach-Object {
+              $runtimeDependency =
+                $_.PSObject.Properties["Microsoft.WindowsAppSDK.Runtime"]
+
+              if ($runtimeDependency) {
+                $runtimeDependency.Value.resolved
+              }
+            } |
+            Sort-Object -Unique
+        )
+
+        if ($runtimeVersions.Count -ne 1) {
+          throw "Expected exactly one Microsoft.WindowsAppSDK.Runtime version, found: $($runtimeVersions -join ', ')"
+        }
+
+        $runtimeMsixPath = Join-Path $env:USERPROFILE `
+          ".nuget\packages\microsoft.windowsappsdk.runtime\$($runtimeVersions[0])\tools\MSIX\win10-x64"
+
+        $inventoryPath = Join-Path $runtimeMsixPath "MSIX.inventory"
+
+        if (-not (Test-Path $inventoryPath)) {
+          throw "Windows App Runtime package inventory was not found at $inventoryPath"
+        }
+
+        $runtimePackages = @{}
+
+        foreach ($inventoryEntry in Get-Content $inventoryPath) {
+          $packageFile, $packageFullName = $inventoryEntry -split "=", 2
+          $runtimePackages[$packageFile] = $packageFullName
+        }
+
+        $frameworkPackage = @(
+          $runtimePackages.Keys |
+            Where-Object {
+              $_ -match '^Microsoft\.WindowsAppRuntime\.\d+\.msix$'
+            }
+        )
+
+        $installOrder = @(
+          $frameworkPackage
+          @(
+            $runtimePackages.Keys |
+              Where-Object { $_ -match '\.Main\.\d+\.msix$' }
+          )
+          @(
+            $runtimePackages.Keys |
+              Where-Object { $_ -match '\.Singleton\.\d+\.msix$' }
+          )
+          @(
+            $runtimePackages.Keys |
+              Where-Object { $_ -match '\.DDLM\.\d+\.msix$' }
+          )
+        )
+
+        if ($installOrder.Count -ne $runtimePackages.Count) {
+          throw "Could not determine a safe installation order for every Windows App Runtime package."
+        }
+
+        $installedPackages = @(
+          Get-AppxPackage |
+            Select-Object -ExpandProperty PackageFullName
+        )
+
+        foreach ($packageFile in $installOrder) {
+          if ($installedPackages -contains $runtimePackages[$packageFile]) {
+            continue
+          }
+
+          Add-AppxPackage -Path (Join-Path $runtimeMsixPath $packageFile)
+        }
+
+    - name: Build and test
+      shell: pwsh
+      working-directory: ./src
+      run: |
+        $ErrorActionPreference = "Stop"
+        $PSNativeCommandUseErrorActionPreference = $true
+
+        dotnet build "Backup Service Home 3.sln" `
+          --configuration Release `
+          --no-restore `
+          -p:Platform=x64
+
+        # Fail the release before packaging if the suite is red.
+        dotnet test "$env:Test_Project_Path" `
+          --configuration Release `
+          --no-build `
+          --no-restore `
+          -p:Platform=x64 `
+          --blame-hang `
+          --blame-hang-timeout 2m
+      env:
+        Test_Project_Path: BSH.Test\BSH.Test.csproj
+
     - name: Build the application
       run: |
         dotnet publish -c Release -o ../output -a x64 --self-contained --no-restore /p:Version=$env:BUILD_VERSION /p:FileVersion=$env:INFO_VERSION
