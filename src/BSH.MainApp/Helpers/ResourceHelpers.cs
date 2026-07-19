@@ -9,9 +9,38 @@ namespace BSH.MainApp.Helpers;
 [MarkupExtensionReturnType(ReturnType = typeof(string))]
 public sealed class ResourceString : MarkupExtension
 {
-    private static readonly ResourceLoader ResourceLoader = new();
+    private static readonly Lazy<ResourceLoader?> ResourceLoader = new(CreateResourceLoader);
 
     public string Name { get; set; } = string.Empty;
 
-    protected override object ProvideValue() => ResourceLoader.GetString(Name);
+    protected override object ProvideValue()
+    {
+        try
+        {
+            var loader = ResourceLoader.Value;
+            if (loader is null)
+            {
+                return Name;
+            }
+
+            var value = loader.GetString(Name);
+            return string.IsNullOrEmpty(value) ? Name : value;
+        }
+        catch
+        {
+            return Name;
+        }
+    }
+
+    private static ResourceLoader? CreateResourceLoader()
+    {
+        try
+        {
+            return new ResourceLoader();
+        }
+        catch
+        {
+            return null;
+        }
+    }
 }

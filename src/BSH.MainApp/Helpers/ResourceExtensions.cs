@@ -7,7 +7,37 @@ namespace BSH.MainApp.Helpers;
 
 public static class ResourceExtensions
 {
-    private static readonly ResourceLoader _resourceLoader = new();
+    private static readonly Lazy<ResourceLoader?> ResourceLoader = new(CreateResourceLoader);
 
-    public static string GetLocalized(this string resourceKey) => _resourceLoader.GetString(resourceKey);
+    public static string GetLocalized(this string resourceKey)
+    {
+        try
+        {
+            var loader = ResourceLoader.Value;
+            if (loader is null)
+            {
+                return resourceKey;
+            }
+
+            var value = loader.GetString(resourceKey);
+            return string.IsNullOrEmpty(value) ? resourceKey : value;
+        }
+        catch
+        {
+            // Unit tests and other hosts may not have WinAppSDK PRI resources available.
+            return resourceKey;
+        }
+    }
+
+    private static ResourceLoader? CreateResourceLoader()
+    {
+        try
+        {
+            return new ResourceLoader();
+        }
+        catch
+        {
+            return null;
+        }
+    }
 }
