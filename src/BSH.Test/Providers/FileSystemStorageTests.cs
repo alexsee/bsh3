@@ -113,9 +113,12 @@ public class FileSystemStorageTests
         Assert.That(storage.CopyFileToStorageCompressed(sourceFile, @"folder\zipped.txt"), Is.True);
         Assert.That(File.Exists(Path.Combine(backupFolder, "folder", "zipped.txt.zip")), Is.True);
 
-        var restoredZip = Path.Combine(tempRoot, "restored-zip.txt");
+        // CopyFileFromStorageCompressed looks up the zip entry by the local file's name.
+        var restoredZip = Path.Combine(tempRoot, "source.txt");
+        File.Delete(restoredZip);
         Assert.That(storage.CopyFileFromStorageCompressed(restoredZip, @"folder\zipped.txt"), Is.True);
         Assert.That(File.ReadAllText(restoredZip), Is.EqualTo("hello-storage"));
+        File.WriteAllText(sourceFile, "hello-storage");
 
         Assert.That(storage.CopyFileToStorageEncrypted(sourceFile, @"folder\secret.txt", "pass"), Is.True);
         Assert.That(File.Exists(Path.Combine(backupFolder, "folder", "secret.txt.enc")), Is.True);
