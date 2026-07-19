@@ -166,13 +166,34 @@ public class BrowserViewModelTests
         Assert.That(viewModel.ToggleInfoPane, Is.True);
     }
 
+    [Test]
+    public async Task LoadViewPreferencesLeavesDefaultWhenSettingsReadFails()
+    {
+        var viewModel = CreateViewModel(viewPreferencesService: new FailingBrowserViewPreferencesService());
+
+        await viewModel.LoadViewPreferencesAsync();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.False);
+    }
+
+    [Test]
+    public async Task ToggleInfoPaneChangeIgnoresPersistenceFailures()
+    {
+        var viewModel = CreateViewModel(viewPreferencesService: new FailingBrowserViewPreferencesService());
+
+        Assert.DoesNotThrow(() => viewModel.ToggleInfoPane = true);
+        await Task.Yield();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.True);
+    }
+
     private static BrowserViewModel CreateViewModel(
         BrowserQueryManager? queryManager = null,
         BrowserJobService? jobService = null,
         BrowserDialogService? browserDialogService = null,
         BrowserFavoritesService? favoritesService = null,
         BrowserPreviewServiceFake? previewService = null,
-        BrowserViewPreferencesService? viewPreferencesService = null)
+        IBrowserViewPreferencesService? viewPreferencesService = null)
     {
         queryManager ??= new BrowserQueryManager();
         favoritesService ??= new BrowserFavoritesService(new MemoryLocalSettingsService());
@@ -341,5 +362,12 @@ public class BrowserViewModelTests
             settings[key] = value;
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class FailingBrowserViewPreferencesService : IBrowserViewPreferencesService
+    {
+        public Task<bool> GetInfoPaneVisibleAsync() => throw new InvalidOperationException("settings unavailable");
+
+        public Task SetInfoPaneVisibleAsync(bool visible) => throw new InvalidOperationException("settings unavailable");
     }
 }

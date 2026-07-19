@@ -10,6 +10,7 @@ public class BrowserViewPreferencesService : IBrowserViewPreferencesService
     public const string InfoPaneVisibleSettingsKey = "BrowserInfoPaneVisible";
 
     private readonly ILocalSettingsService localSettingsService;
+    private readonly SemaphoreSlim writeGate = new(1, 1);
 
     public BrowserViewPreferencesService(ILocalSettingsService localSettingsService)
     {
@@ -21,8 +22,16 @@ public class BrowserViewPreferencesService : IBrowserViewPreferencesService
         return await localSettingsService.ReadSettingAsync<bool?>(InfoPaneVisibleSettingsKey) ?? false;
     }
 
-    public Task SetInfoPaneVisibleAsync(bool visible)
+    public async Task SetInfoPaneVisibleAsync(bool visible)
     {
-        return localSettingsService.SaveSettingAsync(InfoPaneVisibleSettingsKey, visible);
+        await writeGate.WaitAsync();
+        try
+        {
+            await localSettingsService.SaveSettingAsync(InfoPaneVisibleSettingsKey, visible);
+        }
+        finally
+        {
+            writeGate.Release();
+        }
     }
 }

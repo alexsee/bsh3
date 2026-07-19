@@ -95,7 +95,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        _ = viewPreferencesService.SetInfoPaneVisibleAsync(value);
+        _ = PersistInfoPaneVisibleAsync(value);
     }
 
     public async Task LoadViewPreferencesAsync()
@@ -105,9 +105,25 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         {
             ToggleInfoPane = await viewPreferencesService.GetInfoPaneVisibleAsync();
         }
+        catch
+        {
+            // Preference restore must not disrupt browsing; keep the default pane state.
+        }
         finally
         {
             suppressInfoPaneChanged = false;
+        }
+    }
+
+    private async Task PersistInfoPaneVisibleAsync(bool value)
+    {
+        try
+        {
+            await viewPreferencesService.SetInfoPaneVisibleAsync(value);
+        }
+        catch
+        {
+            // Preference persistence must not disrupt browsing.
         }
     }
 
@@ -607,7 +623,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     public async void OnNavigatedTo(object parameter)
     {
-        await LoadViewPreferencesAsync();
+        // Restore layout prefs in parallel so a slow/failed settings read cannot block browsing.
+        var preferencesTask = LoadViewPreferencesAsync();
 
         LoadVersions();
 
@@ -616,6 +633,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             CurrentVersion = Versions[0];
             await LoadVersion();
         }
+
+        await preferencesTask;
     }
 
     public void OnNavigatedFrom()
