@@ -80,6 +80,7 @@ public partial class ScheduleEditorViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowDatePicker))]
     [NotifyPropertyChangedFor(nameof(ShowWeeklyDayPicker))]
     [NotifyPropertyChangedFor(nameof(ShowMonthlyDayPicker))]
+    [NotifyPropertyChangedFor(nameof(ShowScheduleDayOrDatePicker))]
     [NotifyPropertyChangedFor(nameof(TimeHeader))]
     [NotifyPropertyChangedFor(nameof(AddScheduleHelpText))]
     private ScheduleEntryKind selectedScheduleKind = ScheduleEntryKind.Daily;
@@ -101,6 +102,8 @@ public partial class ScheduleEditorViewModel : ObservableObject
     private ScheduleEditorEntryViewModel? selectedEntry;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowRetentionIntervalControls))]
+    [NotifyPropertyChangedFor(nameof(ShowAutomaticHourlyThreshold))]
     private ScheduleRetentionMode retentionMode = ScheduleRetentionMode.None;
 
     [ObservableProperty]
@@ -113,6 +116,7 @@ public partial class ScheduleEditorViewModel : ObservableObject
     private int automaticHourlyBackupThreshold = 24;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowFullBackupDays))]
     private bool enableScheduledFullBackups;
 
     [ObservableProperty]
@@ -121,11 +125,26 @@ public partial class ScheduleEditorViewModel : ObservableObject
     [ObservableProperty]
     private bool performMissedBackupsLater;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowEmptyScheduleState))]
+    private bool hasEntries;
+
     public bool ShowDatePicker => SelectedScheduleKind == ScheduleEntryKind.Once;
 
     public bool ShowWeeklyDayPicker => SelectedScheduleKind == ScheduleEntryKind.Weekly;
 
     public bool ShowMonthlyDayPicker => SelectedScheduleKind == ScheduleEntryKind.Monthly;
+
+    public bool ShowScheduleDayOrDatePicker =>
+        ShowDatePicker || ShowWeeklyDayPicker || ShowMonthlyDayPicker;
+
+    public bool ShowRetentionIntervalControls => RetentionMode == ScheduleRetentionMode.Interval;
+
+    public bool ShowAutomaticHourlyThreshold => RetentionMode == ScheduleRetentionMode.Automatic;
+
+    public bool ShowFullBackupDays => EnableScheduledFullBackups;
+
+    public bool ShowEmptyScheduleState => !HasEntries;
 
     public string TimeHeader => SelectedScheduleKind == ScheduleEntryKind.Hourly
         ? "Minute"
@@ -226,5 +245,7 @@ public partial class ScheduleEditorViewModel : ObservableObject
         {
             Entries.Add(new ScheduleEditorEntryViewModel(entry));
         }
+
+        HasEntries = Entries.Count > 0;
     }
 }

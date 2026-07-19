@@ -475,10 +475,13 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(DisableEncryptionCommand))]
+    [NotifyPropertyChangedFor(nameof(IsCompressionMode))]
     private ModeType modeType = ModeType.Unset;
 
     [ObservableProperty]
     private bool waitForDevice;
+
+    public bool IsCompressionMode => ModeType == ModeType.Compression;
 
     private void InitOptionsSettings()
     {
@@ -608,10 +611,14 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     #region Mode Settings
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ShowScheduleEditorWindowCommand))]
+    [NotifyPropertyChangedFor(nameof(IsScheduleMode))]
     private TaskType taskType = TaskType.Unset;
 
     [ObservableProperty]
     private bool stopBackupWhenBatteryMode;
+
+    public bool IsScheduleMode => TaskType == TaskType.Schedule;
 
     private void InitModeSettings()
     {
@@ -641,11 +648,13 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.configurationManager.TaskType = newValue;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanShowScheduleEditorWindow))]
     private async Task ShowScheduleEditorWindow()
     {
         await this.presentationController.ShowScheduleEditorWindowAsync();
     }
+
+    private bool CanShowScheduleEditorWindow() => TaskType == TaskType.Schedule;
 
     #endregion
 

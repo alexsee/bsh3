@@ -14,7 +14,11 @@ namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class StatusViewModel : ObservableObject, IStatusReport
 {
+    private static readonly TimeSpan UiRefreshInterval = TimeSpan.FromMilliseconds(100);
+
     private readonly DispatcherQueue? dispatcherQueue;
+    private DateTime lastProgressRefresh = DateTime.MinValue;
+    private DateTime lastFileRefresh = DateTime.MinValue;
 
     [ObservableProperty]
     private string statusTitle = "";
@@ -26,13 +30,25 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
     private string currentFileText = "";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsProgressIndeterminate))]
+    [NotifyPropertyChangedFor(nameof(ProgressMaximum))]
+    [NotifyPropertyChangedFor(nameof(ProgressFilesText))]
     private int totalProgress = 100;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ProgressFilesText))]
     private int currentProgress = 0;
 
     [ObservableProperty]
     private int selectedCompletionActionIndex = 0;
+
+    public bool IsProgressIndeterminate => TotalProgress <= 0;
+
+    public int ProgressMaximum => TotalProgress > 0 ? TotalProgress : 1;
+
+    public string ProgressFilesText => TotalProgress > 0
+        ? $"{CurrentProgress} of {TotalProgress} files"
+        : "Preparing…";
 
     public TaskCompleteAction SelectedCompletionAction => SelectedCompletionActionIndex switch
     {
@@ -60,6 +76,7 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
     {
         // not used
     }
+
     public void ReportSystemStatus(SystemStatus systemStatus)
     {
         // not used
@@ -67,6 +84,12 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
 
     public void ReportFileProgress(string file)
     {
+        if (DateTime.Now - lastFileRefresh < UiRefreshInterval)
+        {
+            return;
+        }
+
+        lastFileRefresh = DateTime.Now;
         UpdateOnUiThread(() =>
         {
             CurrentFileText = file;
@@ -75,6 +98,12 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
 
     public void ReportProgress(int total, int current)
     {
+        if (DateTime.Now - lastProgressRefresh < UiRefreshInterval)
+        {
+            return;
+        }
+
+        lastProgressRefresh = DateTime.Now;
         UpdateOnUiThread(() =>
         {
             TotalProgress = total;

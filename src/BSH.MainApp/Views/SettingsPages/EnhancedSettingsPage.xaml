@@ -8,91 +8,101 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
-    Background="White">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Page.Resources>
-        <x:Double x:Key="SettingsCardSpacing">3</x:Double>
+    <ScrollViewer Style="{StaticResource SettingsPageScrollViewerStyle}">
+        <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="Application" />
 
-        <Style
-            x:Key="SettingsSectionHeaderTextBlockStyle"
-            BasedOn="{StaticResource BodyStrongTextBlockStyle}"
-            TargetType="TextBlock">
-            <Style.Setters>
-                <Setter Property="Margin" Value="1,29,0,5" />
-            </Style.Setters>
-        </Style>
-    </Page.Resources>
+            <toolkit:SettingsCard
+                Header="Launch at Windows startup"
+                Description="Start Backup Service Home when you sign in.">
+                <toolkit:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xE7E8;" />
+                </toolkit:SettingsCard.HeaderIcon>
+                <ToggleSwitch IsOn="{Binding LaunchAtWindowsStartup, Mode=TwoWay}" />
+            </toolkit:SettingsCard>
 
-    <Grid>
-        <ScrollViewer
-            Padding="20,0,20,0"
-            IsTabStop="False"
-            VerticalScrollBarVisibility="Auto"
-            VerticalScrollMode="Auto">
-            <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Application</TextBlock>
-                <toolkit:SettingsCard Header="Launch at Windows startup" Description="Start Backup Service Home when you sign in to Windows">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE7E8;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding LaunchAtWindowsStartup, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
+            <toolkit:SettingsCard
+                Header="Automatically check for updates"
+                Description="Look for updates when the application starts.">
+                <toolkit:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xE895;" />
+                </toolkit:SettingsCard.HeaderIcon>
+                <ToggleSwitch IsOn="{Binding AutomaticallyCheckForUpdates, Mode=TwoWay}" />
+            </toolkit:SettingsCard>
 
-                <toolkit:SettingsCard Header="Automatically check for updates" Description="Look for updates when the application starts">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE895;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding AutomaticallyCheckForUpdates, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
+            <toolkit:SettingsCard
+                Header="Download beta updates"
+                Description="Include prerelease versions when checking for updates.">
+                <toolkit:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xE945;" />
+                </toolkit:SettingsCard.HeaderIcon>
+                <ToggleSwitch IsOn="{Binding DownloadBetaUpdates, Mode=TwoWay}" />
+            </toolkit:SettingsCard>
 
-                <toolkit:SettingsCard Header="Download beta updates" Description="Include prerelease versions when checking for updates">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE945;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding DownloadBetaUpdates, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
+            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="Backup browser" />
 
-                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Backupbrowser</TextBlock>
-                <toolkit:SettingsCard Header="Directory localization" Description="Show directory localization names if available">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xF2B7;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding EnableDirectoryLocalization, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
+            <toolkit:SettingsCard
+                Header="Directory localization"
+                Description="Show localized folder names when available.">
+                <toolkit:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xF2B7;" />
+                </toolkit:SettingsCard.HeaderIcon>
+                <ToggleSwitch IsOn="{Binding EnableDirectoryLocalization, Mode=TwoWay}" />
+            </toolkit:SettingsCard>
 
-                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Notifications</TextBlock>
-                <toolkit:SettingsExpander Header="Low diskspace" Description="Show notification if less diskspace is available">
-                    <ToggleSwitch IsOn="{Binding EnableNotificationWhenDiskspaceLow, Mode=TwoWay}" />
-                    <toolkit:SettingsExpander.Items>
-                        <toolkit:SettingsCard Header="Diskspace lower than">
-                            <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
-                                <NumberBox Minimum="1" Value="{Binding NotificationWhenDiskspaceLow, Mode=TwoWay}" />
-                                <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="MB" />
-                            </StackPanel>
-                        </toolkit:SettingsCard>
-                    </toolkit:SettingsExpander.Items>
-                </toolkit:SettingsExpander>
+            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="Notifications" />
 
-                <toolkit:SettingsCard Header="Backup completed" Description="Show notification if backup is completed">
-                    <ToggleSwitch IsOn="{Binding EnableNotificationWhenBackupFinished, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
+            <toolkit:SettingsExpander
+                Header="Low disk space"
+                Description="Notify when free space drops below a threshold."
+                IsExpanded="{Binding EnableNotificationWhenDiskspaceLow, Mode=OneWay}">
+                <ToggleSwitch IsOn="{Binding EnableNotificationWhenDiskspaceLow, Mode=TwoWay}" />
+                <toolkit:SettingsExpander.Items>
+                    <toolkit:SettingsCard Header="Warn when below">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <NumberBox
+                                Minimum="1"
+                                SpinButtonPlacementMode="Compact"
+                                Value="{Binding NotificationWhenDiskspaceLow, Mode=TwoWay}"
+                                IsEnabled="{Binding EnableNotificationWhenDiskspaceLow}" />
+                            <TextBlock VerticalAlignment="Center" Text="MB" />
+                        </StackPanel>
+                    </toolkit:SettingsCard>
+                </toolkit:SettingsExpander.Items>
+            </toolkit:SettingsExpander>
 
-                <toolkit:SettingsCard Header="Storage device" Description="Show notification to request storage device if not available">
-                    <ToggleSwitch IsOn="{Binding EnableNotificationWhenBackupDeviceNotReady, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
+            <toolkit:SettingsCard
+                Header="Backup completed"
+                Description="Notify when a backup finishes.">
+                <ToggleSwitch IsOn="{Binding EnableNotificationWhenBackupFinished, Mode=TwoWay}" />
+            </toolkit:SettingsCard>
 
-                <toolkit:SettingsExpander Header="Backup outdated" Description="Show notification if backup is outdated">
-                    <ToggleSwitch IsOn="{Binding EnableNotificationWhenBackupOutdated, Mode=TwoWay}" />
-                    <toolkit:SettingsExpander.Items>
-                        <toolkit:SettingsCard Header="Backup is outdated when older than">
-                            <StackPanel Orientation="Horizontal" Margin="30,0,0,0">
-                                <NumberBox Minimum="1" Value="{Binding NotificationWhenBackupOutdated, Mode=TwoWay}" />
-                                <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="Days" />
-                            </StackPanel>
-                        </toolkit:SettingsCard>
-                    </toolkit:SettingsExpander.Items>
-                </toolkit:SettingsExpander>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+            <toolkit:SettingsCard
+                Header="Storage device"
+                Description="Notify when the backup target is not available.">
+                <ToggleSwitch IsOn="{Binding EnableNotificationWhenBackupDeviceNotReady, Mode=TwoWay}" />
+            </toolkit:SettingsCard>
+
+            <toolkit:SettingsExpander
+                Header="Backup outdated"
+                Description="Notify when the latest backup is older than a threshold."
+                IsExpanded="{Binding EnableNotificationWhenBackupOutdated, Mode=OneWay}">
+                <ToggleSwitch IsOn="{Binding EnableNotificationWhenBackupOutdated, Mode=TwoWay}" />
+                <toolkit:SettingsExpander.Items>
+                    <toolkit:SettingsCard Header="Warn when older than">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <NumberBox
+                                Minimum="1"
+                                SpinButtonPlacementMode="Compact"
+                                Value="{Binding NotificationWhenBackupOutdated, Mode=TwoWay}"
+                                IsEnabled="{Binding EnableNotificationWhenBackupOutdated}" />
+                            <TextBlock VerticalAlignment="Center" Text="Days" />
+                        </StackPanel>
+                    </toolkit:SettingsCard>
+                </toolkit:SettingsExpander.Items>
+            </toolkit:SettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
 </Page>

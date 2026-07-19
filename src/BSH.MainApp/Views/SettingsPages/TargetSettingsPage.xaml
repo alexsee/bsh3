@@ -5,150 +5,130 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
+    xmlns:engine="using:Brightbits.BSH.Engine"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
-    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls" xmlns:engine="using:Brightbits.BSH.Engine"
-    Background="White">
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Page.Resources>
-        <x:Double x:Key="SettingsCardSpacing">3</x:Double>
+    <ScrollViewer Style="{StaticResource SettingsPageScrollViewerStyle}">
+        <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+            <toolkit:SettingsExpander
+                Header="Storage device"
+                Description="Where backup data is stored."
+                IsExpanded="True">
+                <toolkit:SettingsExpander.HeaderIcon>
+                    <FontIcon Glyph="&#xE8CE;" />
+                </toolkit:SettingsExpander.HeaderIcon>
 
-        <Style
-        x:Key="SettingsSectionHeaderTextBlockStyle"
-        BasedOn="{StaticResource BodyStrongTextBlockStyle}"
-        TargetType="TextBlock">
-            <Style.Setters>
-                <Setter Property="Margin" Value="1,29,0,5" />
-            </Style.Setters>
-        </Style>
-    </Page.Resources>
+                <ComboBox
+                    x:Name="MediaTypeComboBox"
+                    MinWidth="260"
+                    Header="Backup storage"
+                    ItemsSource="{Binding MediaTypes}"
+                    SelectedItem="{Binding SelectedMediaType, Mode=OneWay}"
+                    SelectionChanged="MediaTypeComboBox_SelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="engine:MediaType">
+                            <TextBlock Text="{x:Bind viewmodels:SettingsViewModel.GetMediaTypeDisplayName((engine:MediaType))}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
 
-    <Grid>
-        <ScrollViewer
-        Padding="20,0,20,0"
-        IsTabStop="False"
-        VerticalScrollBarVisibility="Auto"
-        VerticalScrollMode="Auto">
-            <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                <toolkit:SettingsExpander Header="Storage device" Description="Select the device to store the backup on." IsExpanded="True">
-                    <toolkit:SettingsExpander.HeaderIcon>
-                        <FontIcon Glyph="&#xE8CE;" />
-                    </toolkit:SettingsExpander.HeaderIcon>
+                <toolkit:SettingsExpander.Items>
+                    <!-- Local path -->
+                    <toolkit:SettingsCard
+                        Header="Storage path"
+                        Visibility="{Binding LocalDeviceVisibility}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBox
+                                MinWidth="280"
+                                MaxWidth="420"
+                                IsReadOnly="True"
+                                Text="{Binding LocalDevicePath}" />
+                            <ProgressRing
+                                Width="20"
+                                Height="20"
+                                IsActive="{Binding IsMovingBackupTarget, Mode=OneWay}"
+                                Visibility="{Binding BackupTargetMoveProgressVisibility, Mode=OneWay}" />
+                            <Button
+                                Content="Change"
+                                Command="{x:Bind ViewModel.ChangeLocalPathCommand}"
+                                IsEnabled="{Binding IsBackupTargetChangeEnabled, Mode=OneWay}" />
+                        </StackPanel>
+                    </toolkit:SettingsCard>
 
-                    <!-- target type selection -->
-                    <StackPanel Orientation="Horizontal" Spacing="20">
-                        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Text="Backup storage:" />
-                        <ComboBox x:Name="MediaTypeComboBox"
-                            VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="300"
-                            ItemsSource="{Binding MediaTypes}"
-                            SelectedItem="{Binding SelectedMediaType, Mode=OneWay}"
-                            SelectionChanged="MediaTypeComboBox_SelectionChanged">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="engine:MediaType">
-                                    <TextBlock Text="{x:Bind viewmodels:SettingsViewModel.GetMediaTypeDisplayName((engine:MediaType))}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
+                    <toolkit:SettingsCard
+                        Header="Network username"
+                        Description="Optional credentials for UNC paths."
+                        Visibility="{Binding LocalDeviceVisibility}">
+                        <TextBox
+                            MinWidth="220"
+                            Text="{Binding LocalUNCUser, Mode=TwoWay}" />
+                    </toolkit:SettingsCard>
+
+                    <toolkit:SettingsCard
+                        Header="Network password"
+                        Visibility="{Binding LocalDeviceVisibility}">
+                        <PasswordBox
+                            MinWidth="220"
+                            Password="{Binding LocalUNCPassword, Mode=TwoWay}" />
+                    </toolkit:SettingsCard>
+
+                    <!-- FTP -->
+                    <toolkit:SettingsCard Header="Server" Visibility="{Binding FtpRemoteVisibility}">
+                        <TextBox MinWidth="220" Text="{Binding FtpRemoteHost}" />
+                    </toolkit:SettingsCard>
+
+                    <toolkit:SettingsCard Header="Port" Visibility="{Binding FtpRemoteVisibility}">
+                        <NumberBox MinWidth="120" Value="{Binding FtpRemotePort}" />
+                    </toolkit:SettingsCard>
+
+                    <toolkit:SettingsCard Header="Username" Visibility="{Binding FtpRemoteVisibility}">
+                        <TextBox MinWidth="220" Text="{Binding FtpRemoteUser}" />
+                    </toolkit:SettingsCard>
+
+                    <toolkit:SettingsCard Header="Password" Visibility="{Binding FtpRemoteVisibility}">
+                        <PasswordBox MinWidth="220" Password="{Binding FtpRemotePassword}" />
+                    </toolkit:SettingsCard>
+
+                    <toolkit:SettingsCard Header="Path" Visibility="{Binding FtpRemoteVisibility}">
+                        <TextBox MinWidth="280" Text="{Binding FtpRemotePath}" />
+                    </toolkit:SettingsCard>
+
+                    <toolkit:SettingsCard Header="Encoding" Visibility="{Binding FtpRemoteVisibility}">
+                        <ComboBox
+                            MinWidth="160"
+                            SelectedValue="{Binding FtpRemoteEncoding, Mode=TwoWay}">
+                            <x:String>ISO-8859-1</x:String>
+                            <x:String>UTF8</x:String>
                         </ComboBox>
-                    </StackPanel>
+                    </toolkit:SettingsCard>
 
-                    <toolkit:SettingsExpander.Items>
-                        <toolkit:SettingsCard
-                            ContentAlignment="Vertical"
-                            HorizontalContentAlignment="Stretch">
-                            <Grid ColumnSpacing="20" RowSpacing="20">
-                                <!-- local file system options -->
-                                <StackPanel Visibility="{Binding LocalDeviceVisibility}">
-                                    <Grid ColumnSpacing="20">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="200" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
+                    <toolkit:SettingsCard
+                        Header="Unencrypted connection"
+                        Description="Force plain FTP instead of FTPS."
+                        Visibility="{Binding FtpRemoteVisibility}">
+                        <ToggleSwitch IsOn="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
+                    </toolkit:SettingsCard>
 
-                                        <TextBlock Grid.Column="0" Text="Storage path:" />
-                                        <TextBox Grid.Column="1" Text="{Binding LocalDevicePath}" IsReadOnly="True" />
-                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
-                                            <ProgressRing Width="20"
-                                                          Height="20"
-                                                          IsActive="{Binding IsMovingBackupTarget, Mode=OneWay}"
-                                                          Visibility="{Binding BackupTargetMoveProgressVisibility, Mode=OneWay}" />
-                                            <Button Content="Change"
-                                                    Command="{x:Bind ViewModel.ChangeLocalPathCommand}"
-                                                    IsEnabled="{Binding IsBackupTargetChangeEnabled, Mode=OneWay}" />
-                                        </StackPanel>
-                                    </Grid>
+                    <toolkit:SettingsCard
+                        Header="Connection test"
+                        Visibility="{Binding FtpRemoteVisibility}">
+                        <Button Content="Test connection" Command="{Binding CheckFtpRemoteCommand}" />
+                    </toolkit:SettingsCard>
+                </toolkit:SettingsExpander.Items>
+            </toolkit:SettingsExpander>
 
-                                    <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Network authentication</TextBlock>
-                                    <Grid ColumnSpacing="20">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="200" />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition Width="200" />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">Username:</TextBlock>
-                                        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding LocalUNCUser, Mode=TwoWay}"></TextBox>
-
-                                        <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0">Password:</TextBlock>
-                                        <PasswordBox Grid.Column="3" Grid.Row="0" Password="{Binding LocalUNCPassword, Mode=TwoWay}"></PasswordBox>
-                                    </Grid>
-                                </StackPanel>
-
-                                <!-- ftp server options -->
-                                <Grid RowSpacing="10" ColumnSpacing="20" Visibility="{Binding FtpRemoteVisibility}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="200" />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="200" />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Text="Server:" />
-                                    <TextBox Grid.Column="1" Text="{Binding FtpRemoteHost}" />
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0" Text="Port:" />
-                                    <NumberBox Grid.Column="3" Grid.Row="0" Value="{Binding FtpRemotePort}" />
-
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Text="Username:" />
-                                    <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding FtpRemoteUser}" />
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Text="Password:" />
-                                    <PasswordBox Grid.Column="3" Grid.Row="1" Password="{Binding FtpRemotePassword}" />
-
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="Path:" />
-                                    <TextBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2"  Text="{Binding FtpRemotePath}" />
-
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="Encoding:" />
-                                    <ComboBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch" SelectedValue="{Binding FtpRemoteEncoding, Mode=TwoWay}">
-                                        <x:String>ISO-8859-1</x:String>
-                                        <x:String>UTF8</x:String>
-                                    </ComboBox>
-
-                                    <CheckBox Grid.Column="1" Grid.Row="4" Content="Enforce unencrypted connection" IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
-
-                                    <Button Grid.Column="1" Grid.Row="5" Content="Test connection" Command="{Binding CheckFtpRemoteCommand}" />
-                                </Grid>
-                            </Grid>
-                        </toolkit:SettingsCard>
-                    </toolkit:SettingsExpander.Items>
-                </toolkit:SettingsExpander>
-
-                <toolkit:SettingsCard
-                    Header="Switch storage"
-                    Description="Allows changing the backup medium to a new (empty) medium without losing the settings."
-                    IsClickEnabled="True"
-                    Command="{x:Bind ViewModel.SwitchStorageCommand}">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE8CD;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                </toolkit:SettingsCard>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+            <toolkit:SettingsCard
+                Header="Switch storage"
+                Description="Move to a new empty medium without losing settings."
+                IsClickEnabled="True"
+                Command="{x:Bind ViewModel.SwitchStorageCommand}">
+                <toolkit:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xE8CD;" />
+                </toolkit:SettingsCard.HeaderIcon>
+            </toolkit:SettingsCard>
+        </StackPanel>
+    </ScrollViewer>
 </Page>

@@ -10,88 +10,78 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
-    Background="White">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <x:Double x:Key="SettingsCardSpacing">3</x:Double>
-
-        <Style
-            x:Key="SettingsSectionHeaderTextBlockStyle"
-            BasedOn="{StaticResource BodyStrongTextBlockStyle}"
-            TargetType="TextBlock">
-            <Style.Setters>
-                <Setter Property="Margin" Value="1,29,0,5" />
-            </Style.Setters>
-        </Style>
-
         <converters:EnumComparisonConverter x:Key="EnumComparisonConverter" />
-
         <engine:TaskType x:Key="TaskType_Auto">Auto</engine:TaskType>
         <engine:TaskType x:Key="TaskType_Schedule">Schedule</engine:TaskType>
         <engine:TaskType x:Key="TaskType_Manual">Manual</engine:TaskType>
     </Page.Resources>
 
-    <Grid>
-        <ScrollViewer
-            Padding="20,0,20,0"
-            IsTabStop="False"
-            VerticalScrollBarVisibility="Auto"
-            VerticalScrollMode="Auto">
-            <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                <toolkit:SettingsExpander Header="Backup mode" Description="Specify the automation of backups" IsExpanded="True">
-                    <toolkit:SettingsExpander.HeaderIcon>
-                        <FontIcon Glyph="&#xE787;" />
-                    </toolkit:SettingsExpander.HeaderIcon>
-                    <toolkit:SettingsExpander.Items>
-                        <toolkit:SettingsCard>
-                            <toolkit:SettingsCard.Header>
-                                <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                                    <RadioButton IsChecked="{Binding TaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Auto}}">
-                                        Full automatic backups (recommended)
-                                    </RadioButton>
-                                    <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords">
-                                    The full automatic backup model backups your files hourly. These backups are available for 24 hours. Afterwards, daily backups are available for 30 days. Then, weekly backups are available as long as enough disk space is available.
-                                    </TextBlock>
-                                </StackPanel>
-                            </toolkit:SettingsCard.Header>
-                        </toolkit:SettingsCard>
+    <ScrollViewer Style="{StaticResource SettingsPageScrollViewerStyle}">
+        <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+            <toolkit:SettingsExpander
+                Header="Backup mode"
+                Description="How backups are started."
+                IsExpanded="True">
+                <toolkit:SettingsExpander.HeaderIcon>
+                    <FontIcon Glyph="&#xE787;" />
+                </toolkit:SettingsExpander.HeaderIcon>
+                <toolkit:SettingsExpander.Items>
+                    <toolkit:SettingsCard>
+                        <toolkit:SettingsCard.Header>
+                            <StackPanel Margin="-12,0,0,0" Spacing="2">
+                                <RadioButton IsChecked="{Binding TaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Auto}}">
+                                    Full automatic (recommended)
+                                </RadioButton>
+                                <TextBlock Style="{StaticResource SettingsRadioDescriptionStyle}">
+                                    Hourly for 24 hours, then daily for 30 days, then weekly while space remains.
+                                </TextBlock>
+                            </StackPanel>
+                        </toolkit:SettingsCard.Header>
+                    </toolkit:SettingsCard>
 
-                        <toolkit:SettingsCard>
-                            <toolkit:SettingsCard.Header>
-                                <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                                    <RadioButton IsChecked="{Binding TaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Schedule}}">
-                                        Scheduled backups
-                                    </RadioButton>
-                                    <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords">
-                                        You define when backups should be performed and how long these should stay available.
-                                    </TextBlock>
-                                </StackPanel>
-                            </toolkit:SettingsCard.Header>
-                            <Button Command="{x:Bind ViewModel.ShowScheduleEditorWindowCommand}" Content="Set schedule" />
-                        </toolkit:SettingsCard>
+                    <toolkit:SettingsCard>
+                        <toolkit:SettingsCard.Header>
+                            <StackPanel Margin="-12,0,0,0" Spacing="2">
+                                <RadioButton IsChecked="{Binding TaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Schedule}}">
+                                    Scheduled
+                                </RadioButton>
+                                <TextBlock Style="{StaticResource SettingsRadioDescriptionStyle}">
+                                    You choose the times and retention.
+                                </TextBlock>
+                            </StackPanel>
+                        </toolkit:SettingsCard.Header>
+                        <Button
+                            Command="{x:Bind ViewModel.ShowScheduleEditorWindowCommand}"
+                            Content="Set schedule"
+                            IsEnabled="{x:Bind ViewModel.IsScheduleMode, Mode=OneWay}" />
+                    </toolkit:SettingsCard>
 
-                        <toolkit:SettingsCard>
-                            <toolkit:SettingsCard.Header>
-                                <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                                    <RadioButton IsChecked="{Binding TaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Manual}}">
-                                        Manual backups
-                                    </RadioButton>
-                                    <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords">
-                                        Backups are not executed automatically, but you manually start the backup.
-                                    </TextBlock>
-                                </StackPanel>
-                            </toolkit:SettingsCard.Header>
-                        </toolkit:SettingsCard>
-                    </toolkit:SettingsExpander.Items>
-                </toolkit:SettingsExpander>
+                    <toolkit:SettingsCard>
+                        <toolkit:SettingsCard.Header>
+                            <StackPanel Margin="-12,0,0,0" Spacing="2">
+                                <RadioButton IsChecked="{Binding TaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Manual}}">
+                                    Manual
+                                </RadioButton>
+                                <TextBlock Style="{StaticResource SettingsRadioDescriptionStyle}">
+                                    Start backups yourself when needed.
+                                </TextBlock>
+                            </StackPanel>
+                        </toolkit:SettingsCard.Header>
+                    </toolkit:SettingsCard>
+                </toolkit:SettingsExpander.Items>
+            </toolkit:SettingsExpander>
 
-                <toolkit:SettingsCard Header="Battery saver mode" Description="Stops automatic and scheduled backups when device is in battery mode">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE865;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding StopBackupWhenBatteryMode, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+            <toolkit:SettingsCard
+                Header="Battery saver"
+                Description="Pause automatic and scheduled backups on battery power.">
+                <toolkit:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xE865;" />
+                </toolkit:SettingsCard.HeaderIcon>
+                <ToggleSwitch IsOn="{Binding StopBackupWhenBatteryMode, Mode=TwoWay}" />
+            </toolkit:SettingsCard>
+        </StackPanel>
+    </ScrollViewer>
 </Page>
