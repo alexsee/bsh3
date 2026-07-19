@@ -5,11 +5,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:Brightbits.BSH.Engine.Models"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels.Windows"
     xmlns:winex="using:WinUIEx"
-    Title="Schedule"
-    Width="920"
-    Height="720"
+    Title="Backup schedule"
+    Width="880"
+    Height="760"
     IsAlwaysOnTop="True"
     IsMaximizable="False"
     IsMinimizable="False"
@@ -17,232 +18,420 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" d:DataContext="{d:DesignInstance Type=viewmodels:ScheduleEditorViewModel}">
+        <Grid.Resources>
+            <models:ScheduleEntryKind x:Key="ScheduleKind_Once">Once</models:ScheduleEntryKind>
+            <models:ScheduleEntryKind x:Key="ScheduleKind_Hourly">Hourly</models:ScheduleEntryKind>
+            <models:ScheduleEntryKind x:Key="ScheduleKind_Daily">Daily</models:ScheduleEntryKind>
+            <models:ScheduleEntryKind x:Key="ScheduleKind_Weekly">Weekly</models:ScheduleEntryKind>
+            <models:ScheduleEntryKind x:Key="ScheduleKind_Monthly">Monthly</models:ScheduleEntryKind>
+
+            <models:ScheduleRetentionMode x:Key="RetentionMode_None">None</models:ScheduleRetentionMode>
+            <models:ScheduleRetentionMode x:Key="RetentionMode_Automatic">Automatic</models:ScheduleRetentionMode>
+            <models:ScheduleRetentionMode x:Key="RetentionMode_Interval">Interval</models:ScheduleRetentionMode>
+
+            <models:ScheduleRetentionIntervalUnit x:Key="RetentionUnit_Hour">Hour</models:ScheduleRetentionIntervalUnit>
+            <models:ScheduleRetentionIntervalUnit x:Key="RetentionUnit_Day">Day</models:ScheduleRetentionIntervalUnit>
+            <models:ScheduleRetentionIntervalUnit x:Key="RetentionUnit_Week">Week</models:ScheduleRetentionIntervalUnit>
+        </Grid.Resources>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ScrollViewer Grid.Row="0" Padding="28,24,28,20" VerticalScrollBarVisibility="Auto">
-            <Grid MaxWidth="980" HorizontalAlignment="Center" RowSpacing="20">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-                <StackPanel Grid.Row="0" Spacing="4">
-                    <TextBlock FontSize="26" FontWeight="SemiBold" Text="Schedule" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Text="Create schedule entries and choose how scheduled backups are retained."
-                        TextWrapping="WrapWholeWords" />
-                </StackPanel>
+        <ScrollViewer
+            Grid.Row="0"
+            Padding="28,24,28,20"
+            VerticalScrollBarVisibility="Auto">
+            <StackPanel MaxWidth="920" HorizontalAlignment="Stretch" Spacing="18">
+                <Grid ColumnSpacing="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border
+                        Width="44"
+                        Height="44"
+                        VerticalAlignment="Top"
+                        Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                        CornerRadius="12">
+                        <FontIcon
+                            FontSize="20"
+                            Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                            Glyph="&#xE787;" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Spacing="3">
+                        <TextBlock
+                            FontSize="26"
+                            FontWeight="SemiBold"
+                            Text="Backup schedule" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Choose when backups run. You can add more than one time."
+                            TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+                </Grid>
 
                 <Border
-                    Grid.Row="1"
-                    Padding="18"
+                    Padding="20"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8">
-                    <Grid RowSpacing="16">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="220" />
-                        </Grid.RowDefinitions>
-
-                        <Grid Grid.Row="0" ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Spacing="2">
-                                <TextBlock FontWeight="SemiBold" Text="Backup times" />
-                                <TextBlock
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="Add one-time or recurring backup entries."
-                                    TextWrapping="WrapWholeWords" />
-                            </StackPanel>
-                            <CommandBar
-                                Grid.Column="1"
-                                Background="Transparent"
-                                DefaultLabelPosition="Right"
-                                IsOpen="False">
-                                <AppBarButton
-                                    Command="{Binding DeleteScheduleCommand}"
-                                    Icon="Delete"
-                                    Label="Delete" />
-                            </CommandBar>
-                        </Grid>
-
-                        <StackPanel Grid.Row="1" Spacing="8">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <ComboBox
-                                    Header="Repeat"
-                                    ItemsSource="{Binding ScheduleKinds}"
-                                    SelectedItem="{Binding SelectedScheduleKind, Mode=TwoWay}"
-                                    Width="170" />
-                                <DatePicker
-                                    Header="Date"
-                                    Date="{Binding StartDate, Mode=TwoWay}"
-                                    Visibility="{x:Bind ViewModel.ShowDatePicker, Mode=OneWay}"
-                                    Width="240" />
-                                <ComboBox
-                                    Header="Day"
-                                    ItemsSource="{Binding WeeklyDays}"
-                                    SelectedItem="{Binding SelectedWeeklyDay, Mode=TwoWay}"
-                                    Visibility="{x:Bind ViewModel.ShowWeeklyDayPicker, Mode=OneWay}"
-                                    Width="160" />
-                                <NumberBox
-                                    Header="Day of month"
-                                    Minimum="1"
-                                    Maximum="31"
-                                    SpinButtonPlacementMode="Inline"
-                                    Value="{Binding SelectedMonthlyDay, Mode=TwoWay}"
-                                    Visibility="{x:Bind ViewModel.ShowMonthlyDayPicker, Mode=OneWay}"
-                                    Width="160" />
-                                <TimePicker
-                                    Header="{x:Bind ViewModel.TimeHeader, Mode=OneWay}"
-                                    Time="{Binding StartTime, Mode=TwoWay}"
-                                    Width="200" />
-                                <Button
-                                    MinWidth="78"
-                                    Margin="0,28,0,0"
-                                    Command="{Binding AddScheduleCommand}"
-                                    Style="{StaticResource AccentButtonStyle}">
-                                    Add
-                                </Button>
-                            </StackPanel>
+                    CornerRadius="10">
+                    <StackPanel Spacing="18">
+                        <StackPanel Spacing="3">
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="SemiBold"
+                                Text="When should a backup run?" />
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="{x:Bind ViewModel.AddScheduleHelpText, Mode=OneWay}"
+                                Text="Pick a frequency, then add it to your schedule."
                                 TextWrapping="WrapWholeWords" />
                         </StackPanel>
 
-                        <Grid Grid.Row="2" Padding="12,0" ColumnSpacing="16">
+                        <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="180" />
+                                <ColumnDefinition Width="210" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock
-                                FontWeight="SemiBold"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Repeat" />
-                            <TextBlock
+
+                            <ComboBox
+                                Header="Frequency"
+                                SelectedValue="{Binding SelectedScheduleKind, Mode=TwoWay}"
+                                SelectedValuePath="Tag">
+                                <ComboBoxItem Content="Once" Tag="{StaticResource ScheduleKind_Once}" />
+                                <ComboBoxItem Content="Every hour" Tag="{StaticResource ScheduleKind_Hourly}" />
+                                <ComboBoxItem Content="Every day" Tag="{StaticResource ScheduleKind_Daily}" />
+                                <ComboBoxItem Content="Every week" Tag="{StaticResource ScheduleKind_Weekly}" />
+                                <ComboBoxItem Content="Every month" Tag="{StaticResource ScheduleKind_Monthly}" />
+                            </ComboBox>
+
+                            <StackPanel
                                 Grid.Column="1"
-                                FontWeight="SemiBold"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Date / time" />
+                                Orientation="Horizontal"
+                                Spacing="10"
+                                Visibility="{x:Bind ViewModel.ShowDatePicker, Mode=OneWay}">
+                                <DatePicker
+                                    Width="220"
+                                    Date="{Binding StartDate, Mode=TwoWay}"
+                                    Header="Date" />
+                                <TimePicker
+                                    Width="170"
+                                    Header="Time"
+                                    Time="{Binding StartTime, Mode=TwoWay}" />
+                            </StackPanel>
+
+                            <NumberBox
+                                Grid.Column="1"
+                                Width="250"
+                                HorizontalAlignment="Left"
+                                Header="Minutes past the hour"
+                                Maximum="59"
+                                Minimum="0"
+                                SpinButtonPlacementMode="Inline"
+                                Value="{Binding SelectedHourlyMinute, Mode=TwoWay}"
+                                Visibility="{x:Bind ViewModel.ShowHourlyMinutePicker, Mode=OneWay}" />
+
+                            <TimePicker
+                                Grid.Column="1"
+                                Width="210"
+                                HorizontalAlignment="Left"
+                                Header="Time"
+                                Time="{Binding StartTime, Mode=TwoWay}"
+                                Visibility="{x:Bind ViewModel.ShowDailyTimePicker, Mode=OneWay}" />
+
+                            <StackPanel
+                                Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="10"
+                                Visibility="{x:Bind ViewModel.ShowWeeklyDayPicker, Mode=OneWay}">
+                                <ComboBox
+                                    Width="190"
+                                    Header="Day of the week"
+                                    ItemsSource="{Binding WeeklyDays}"
+                                    SelectedItem="{Binding SelectedWeeklyDay, Mode=TwoWay}" />
+                                <TimePicker
+                                    Width="170"
+                                    Header="Time"
+                                    Time="{Binding StartTime, Mode=TwoWay}" />
+                            </StackPanel>
+
+                            <StackPanel
+                                Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="10"
+                                Visibility="{x:Bind ViewModel.ShowMonthlyDayPicker, Mode=OneWay}">
+                                <NumberBox
+                                    Width="190"
+                                    Header="Day of the month"
+                                    Maximum="31"
+                                    Minimum="1"
+                                    SpinButtonPlacementMode="Inline"
+                                    Value="{Binding SelectedMonthlyDay, Mode=TwoWay}" />
+                                <TimePicker
+                                    Width="170"
+                                    Header="Time"
+                                    Time="{Binding StartTime, Mode=TwoWay}" />
+                            </StackPanel>
+
+                            <Button
+                                Grid.Column="2"
+                                MinWidth="94"
+                                Margin="0,28,0,0"
+                                Command="{Binding AddScheduleCommand}"
+                                Content="Add time"
+                                Style="{StaticResource AccentButtonStyle}" />
                         </Grid>
 
+                        <Border
+                            Padding="12,10"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="7">
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <FontIcon
+                                    FontSize="15"
+                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    Glyph="&#xE823;" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    FontWeight="SemiBold"
+                                    Text="{x:Bind ViewModel.NewScheduleSummary, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords" />
+                            </Grid>
+                        </Border>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                Text="Your backup times" />
+                            <TextBlock
+                                Grid.Row="1"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="Each saved time runs independently." />
+                        </Grid>
+
+                        <Border
+                            Padding="18"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="8"
+                            Visibility="{x:Bind ViewModel.HasNoEntries, Mode=OneWay}">
+                            <StackPanel HorizontalAlignment="Center" Spacing="5">
+                                <FontIcon
+                                    FontSize="24"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Glyph="&#xE787;" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                    Text="No backup times yet" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="Add a time above to create your first schedule."
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                        </Border>
+
                         <ListView
-                            Grid.Row="3"
+                            MaxHeight="250"
+                            Background="Transparent"
                             ItemsSource="{Binding Entries}"
-                            SelectedItem="{Binding SelectedEntry, Mode=TwoWay}"
-                            SelectionMode="Single">
+                            SelectionMode="None"
+                            Visibility="{x:Bind ViewModel.HasEntries, Mode=OneWay}">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Margin" Value="0,0,0,6" />
+                                    <Setter Property="Padding" Value="0" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="viewmodels:ScheduleEditorEntryViewModel">
-                                    <Grid MinHeight="42" Padding="12,6" ColumnSpacing="16">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="180" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock VerticalAlignment="Center" Text="{x:Bind RepeatText}" />
-                                        <TextBlock
-                                            Grid.Column="1"
-                                            VerticalAlignment="Center"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="{x:Bind ScheduleText}" />
-                                    </Grid>
+                                    <Border
+                                        Padding="14,10"
+                                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1,1,1,1"
+                                        CornerRadius="8">
+                                        <Grid ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="4" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Border
+                                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                                CornerRadius="2" />
+                                            <FontIcon
+                                                Grid.Column="1"
+                                                Width="30"
+                                                VerticalAlignment="Center"
+                                                FontSize="17"
+                                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                                Glyph="&#xE823;" />
+                                            <StackPanel
+                                                Grid.Column="2"
+                                                VerticalAlignment="Center"
+                                                Spacing="1">
+                                                <TextBlock
+                                                    FontWeight="SemiBold"
+                                                    Text="{x:Bind SummaryText}" />
+                                                <TextBlock
+                                                    FontSize="12"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="{x:Bind RepeatText}" />
+                                            </StackPanel>
+                                            <Button
+                                                Grid.Column="3"
+                                                Width="36"
+                                                Height="36"
+                                                Padding="0"
+                                                AutomationProperties.Name="Remove this backup time"
+                                                Click="DeleteSchedule_Click"
+                                                ToolTipService.ToolTip="Remove this backup time">
+                                                <FontIcon FontSize="15" Glyph="&#xE74D;" />
+                                            </Button>
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                    </Grid>
+                    </StackPanel>
                 </Border>
 
-                <Grid Grid.Row="2" ColumnSpacing="16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Border
-                        Padding="18"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8">
-                        <StackPanel Spacing="12">
-                            <StackPanel Spacing="2">
-                                <TextBlock FontWeight="SemiBold" Text="Retention" />
-                                <TextBlock
+                <Border
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10">
+                    <Expander IsExpanded="False">
+                        <Expander.Header>
+                            <Grid Padding="4,2" ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <FontIcon
+                                    Width="32"
+                                    VerticalAlignment="Center"
+                                    FontSize="18"
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="Choose how long scheduled backup versions stay available."
-                                    TextWrapping="WrapWholeWords" />
-                            </StackPanel>
+                                    Glyph="&#xE713;" />
+                                <StackPanel Grid.Column="1" Spacing="2">
+                                    <TextBlock FontWeight="SemiBold" Text="Advanced schedule options" />
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Retention, full backups, and missed backups"
+                                        TextWrapping="WrapWholeWords" />
+                                </StackPanel>
+                            </Grid>
+                        </Expander.Header>
 
-                            <ComboBox
-                                Header="Mode"
-                                Width="240"
-                                HorizontalAlignment="Left"
-                                ItemsSource="{Binding RetentionModes}"
-                                SelectedItem="{Binding RetentionMode, Mode=TwoWay}" />
+                        <StackPanel Padding="16,6,16,18" Spacing="20">
+                            <Grid ColumnSpacing="24">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <NumberBox
-                                    Header="Delete interval"
-                                    Minimum="1"
-                                    SpinButtonPlacementMode="Inline"
-                                    Value="{Binding RetentionInterval, Mode=TwoWay}"
-                                    Width="150" />
-                                <ComboBox
-                                    Header="Unit"
-                                    Width="150"
-                                    ItemsSource="{Binding RetentionIntervalUnits}"
-                                    SelectedItem="{Binding RetentionIntervalUnit, Mode=TwoWay}" />
-                            </StackPanel>
+                                <StackPanel Spacing="10">
+                                    <TextBlock FontWeight="SemiBold" Text="Backup retention" />
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Choose when older scheduled backups are removed. Protected backups are always kept."
+                                        TextWrapping="WrapWholeWords" />
+                                    <ComboBox
+                                        Header="Keep backups"
+                                        SelectedValue="{Binding RetentionMode, Mode=TwoWay}"
+                                        SelectedValuePath="Tag">
+                                        <ComboBoxItem Content="Until I delete them" Tag="{StaticResource RetentionMode_None}" />
+                                        <ComboBoxItem Content="Automatically reduce older backups" Tag="{StaticResource RetentionMode_Automatic}" />
+                                        <ComboBoxItem Content="For a fixed amount of time" Tag="{StaticResource RetentionMode_Interval}" />
+                                    </ComboBox>
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{x:Bind ViewModel.RetentionHelpText, Mode=OneWay}"
+                                        TextWrapping="WrapWholeWords" />
 
-                            <NumberBox
-                                Header="Hourly backup threshold"
-                                Minimum="1"
-                                SpinButtonPlacementMode="Inline"
-                                Value="{Binding AutomaticHourlyBackupThreshold, Mode=TwoWay}"
-                                Width="190" />
+                                    <NumberBox
+                                        Width="220"
+                                        HorizontalAlignment="Left"
+                                        Header="Keep every backup for (hours)"
+                                        Minimum="1"
+                                        SpinButtonPlacementMode="Inline"
+                                        Value="{Binding AutomaticHourlyBackupThreshold, Mode=TwoWay}"
+                                        Visibility="{x:Bind ViewModel.ShowAutomaticRetentionSettings, Mode=OneWay}" />
+
+                                    <StackPanel
+                                        Orientation="Horizontal"
+                                        Spacing="10"
+                                        Visibility="{x:Bind ViewModel.ShowIntervalRetentionSettings, Mode=OneWay}">
+                                        <NumberBox
+                                            Width="130"
+                                            Header="Duration"
+                                            Minimum="1"
+                                            SpinButtonPlacementMode="Inline"
+                                            Value="{Binding RetentionInterval, Mode=TwoWay}" />
+                                        <ComboBox
+                                            Width="150"
+                                            Header="Unit"
+                                            SelectedValue="{Binding RetentionIntervalUnit, Mode=TwoWay}"
+                                            SelectedValuePath="Tag">
+                                            <ComboBoxItem Content="Hours" Tag="{StaticResource RetentionUnit_Hour}" />
+                                            <ComboBoxItem Content="Days" Tag="{StaticResource RetentionUnit_Day}" />
+                                            <ComboBoxItem Content="Weeks" Tag="{StaticResource RetentionUnit_Week}" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Spacing="18">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock FontWeight="SemiBold" Text="Full backups" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="Periodically create a complete backup instead of only storing changes."
+                                            TextWrapping="WrapWholeWords" />
+                                        <ToggleSwitch
+                                            Header="Create full backups on a schedule"
+                                            IsOn="{Binding EnableScheduledFullBackups, Mode=TwoWay}" />
+                                        <NumberBox
+                                            Width="210"
+                                            HorizontalAlignment="Left"
+                                            Header="Days between full backups"
+                                            Minimum="1"
+                                            SpinButtonPlacementMode="Inline"
+                                            Value="{Binding ScheduledFullBackupDays, Mode=TwoWay}"
+                                            Visibility="{x:Bind ViewModel.EnableScheduledFullBackups, Mode=OneWay}" />
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="10">
+                                        <TextBlock FontWeight="SemiBold" Text="Missed backups" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="If the computer was off, run a missed backup after it becomes available again."
+                                            TextWrapping="WrapWholeWords" />
+                                        <ToggleSwitch
+                                            Header="Run missed backups later"
+                                            IsOn="{Binding PerformMissedBackupsLater, Mode=TwoWay}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
-                    </Border>
-
-                    <Border
-                        Grid.Column="1"
-                        Padding="18"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8">
-                        <StackPanel Spacing="12">
-                            <StackPanel Spacing="2">
-                                <TextBlock FontWeight="SemiBold" Text="Full backups" />
-                                <TextBlock
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="Control scheduled full backups and missed backup handling."
-                                    TextWrapping="WrapWholeWords" />
-                            </StackPanel>
-
-                            <ToggleSwitch Header="Create full backup after an interval" IsOn="{Binding EnableScheduledFullBackups, Mode=TwoWay}" />
-
-                            <NumberBox
-                                Header="Days between full backups"
-                                Minimum="1"
-                                SpinButtonPlacementMode="Inline"
-                                Value="{Binding ScheduledFullBackupDays, Mode=TwoWay}"
-                                Width="190" />
-
-                            <ToggleSwitch Header="Perform missed scheduled backups later" IsOn="{Binding PerformMissedBackupsLater, Mode=TwoWay}" />
-                        </StackPanel>
-                    </Border>
-                </Grid>
-            </Grid>
+                    </Expander>
+                </Border>
+            </StackPanel>
         </ScrollViewer>
 
         <Grid
@@ -251,15 +440,17 @@
             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="0,1,0,0">
-            <Grid MaxWidth="980" HorizontalAlignment="Stretch">
-                <StackPanel
-                    HorizontalAlignment="Right"
-                    Orientation="Horizontal"
-                    Spacing="10">
-                    <Button Command="{Binding CancelCommand}">Cancel</Button>
-                    <Button Command="{Binding SaveCommand}" Style="{StaticResource AccentButtonStyle}">Save</Button>
-                </StackPanel>
-            </Grid>
+            <StackPanel
+                MaxWidth="920"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="10">
+                <Button Command="{Binding CancelCommand}" Content="Cancel" />
+                <Button
+                    Command="{Binding SaveCommand}"
+                    Content="Save schedule"
+                    Style="{StaticResource AccentButtonStyle}" />
+            </StackPanel>
         </Grid>
     </Grid>
 </winex:WindowEx>

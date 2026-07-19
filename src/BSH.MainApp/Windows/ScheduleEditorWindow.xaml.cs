@@ -46,4 +46,12 @@ public sealed partial class ScheduleEditorWindow : WindowEx
         closeRequested = true;
         ViewModel.TaskCompletionSource.TrySetResult(false);
     }
+
+    private void DeleteSchedule_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { DataContext: ScheduleEditorEntryViewModel entry })
+        {
+            ViewModel.DeleteScheduleCommand.Execute(entry);
+        }
+    }
 }

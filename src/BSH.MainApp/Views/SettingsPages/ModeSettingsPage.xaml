@@ -10,7 +10,7 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
-    Background="White">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
         <x:Double x:Key="SettingsCardSpacing">3</x:Double>
@@ -67,7 +67,9 @@
                                     </TextBlock>
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
-                            <Button Command="{x:Bind ViewModel.ShowScheduleEditorWindowCommand}" Content="Set schedule" />
+                            <Button
+                                Command="{x:Bind ViewModel.ShowScheduleEditorWindowCommand}"
+                                Content="Configure schedule" />
                         </toolkit:SettingsCard>
 
                         <toolkit:SettingsCard>
