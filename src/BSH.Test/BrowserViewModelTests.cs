@@ -104,11 +104,38 @@ public class BrowserViewModelTests
         Assert.That(queryManager.GetVersionsCallCount, Is.GreaterThanOrEqualTo(1));
     }
 
+    [Test]
+    public void ShowFilePreviewCommand_IsEnabledOnlyForFileSelections()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.CurrentVersion = Version("2");
+
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "docs", FullPath = @"\source\docs\", IsFile = false };
+        Assert.That(viewModel.ShowFilePreviewCommand.CanExecute(null), Is.False);
+
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+        Assert.That(viewModel.ShowFilePreviewCommand.CanExecute(null), Is.True);
+    }
+
+    [Test]
+    public async Task ShowFilePreviewCommand_DelegatesToPreviewServiceForSelectedFile()
+    {
+        var previewService = new BrowserPreviewServiceFake();
+        var viewModel = CreateViewModel(previewService: previewService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+        await viewModel.ShowFilePreviewCommand.ExecuteAsync(null);
+
+        Assert.That(previewService.PreviewCalls.Single(), Is.EqualTo(("2", "report.txt", @"\source\docs\")));
+    }
+
     private static BrowserViewModel CreateViewModel(
         BrowserQueryManager? queryManager = null,
         BrowserJobService? jobService = null,
         BrowserDialogService? browserDialogService = null,
-        BrowserFavoritesService? favoritesService = null)
+        BrowserFavoritesService? favoritesService = null,
+        BrowserPreviewServiceFake? previewService = null)
     {
         queryManager ??= new BrowserQueryManager();
         favoritesService ??= new BrowserFavoritesService(new MemoryLocalSettingsService());
@@ -119,7 +146,8 @@ public class BrowserViewModelTests
             new BrowserBackupService(),
             new BrowserPresentationService(),
             new BrowserContentService(queryManager, favoritesService),
-            browserDialogService ?? new BrowserDialogService());
+            browserDialogService ?? new BrowserDialogService(),
+            previewService ?? new BrowserPreviewServiceFake());
     }
 
     private static VersionDetails Version(string id) => new()
@@ -218,6 +246,17 @@ public class BrowserViewModelTests
         public Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions) { MultiDeletePromptedVersions = versions.Select(x => x.Id).ToList(); return Task.FromResult(VersionsSelectedForDelete ?? []); }
         public Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite) => Task.FromResult<string?>(favorite.Name);
         public Task ShowFileDetailsAsync(FileDetails fileDetails) => Task.CompletedTask;
+    }
+
+    private sealed class BrowserPreviewServiceFake : IBrowserPreviewService
+    {
+        public List<(string VersionId, string FileName, string FilePath)> PreviewCalls { get; } = [];
+
+        public Task PreviewFileAsync(string versionId, string fileName, string filePath)
+        {
+            PreviewCalls.Add((versionId, fileName, filePath));
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class BrowserPresentationService : IPresentationService

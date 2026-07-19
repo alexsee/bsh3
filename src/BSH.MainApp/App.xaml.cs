@@ -94,6 +94,8 @@ public partial class App : Application
             services.AddSingleton<IBrowserFavoritesService, BrowserFavoritesService>();
             services.AddSingleton<IBrowserContentService, BrowserContentService>();
             services.AddSingleton<IBrowserDialogService, BrowserDialogService>();
+            services.AddSingleton<IBrowserPreviewService, BrowserPreviewService>();
+            services.AddSingleton<ISmartPreviewHost, SmartPreviewHost>();
             services.AddSingleton<IBackupTargetService, BackupTargetService>();
             services.AddSingleton<IPowerStatusService, PowerStatusService>();
             services.AddTransient<IWaitForMediaService, WaitForMediaService>();

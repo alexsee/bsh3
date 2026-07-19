@@ -232,7 +232,7 @@
                             LabelPosition="Collapsed"
                             Width="Auto"
                             MinWidth="40"
-                            Visibility="Collapsed" />
+                            ToolTipService.ToolTip="Quick preview" />
                             <AppBarButton 
                             Command="{x:Bind ViewModel.ShowFilePropertiesCommand}" 
                             Label="Properties"
