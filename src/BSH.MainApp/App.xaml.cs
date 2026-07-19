@@ -70,6 +70,9 @@ public partial class App : Application
     public App()
     {
         // Match WinForms default culture: German UI with English satellite resources.
+        var germanCulture = new System.Globalization.CultureInfo("de-DE");
+        System.Globalization.CultureInfo.DefaultThreadCurrentCulture = germanCulture;
+        System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = germanCulture;
         Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "de-DE";
 
         InitializeComponent();

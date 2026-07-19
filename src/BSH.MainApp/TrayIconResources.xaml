@@ -46,7 +46,7 @@
     <tb:TaskbarIcon
         x:Key="TrayIcon"
         Visibility="Visible"
-        ToolTipText="ToolTip"
+        ToolTipText="{helpers:ResourceString Name=AppDisplayName}"
         ContextMenuMode="SecondWindow"
         LeftClickCommand="{StaticResource ShowMainWindowCommand}"
         NoLeftClickDelay="True"
