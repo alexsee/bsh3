@@ -8,7 +8,7 @@
     xmlns:converters="using:BSH.MainApp.Converters"
     xmlns:models="using:BSH.MainApp.Models"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:engine="using:Brightbits.BSH.Engine.Models"
+    xmlns:engine="using:Brightbits.BSH.Engine.Types"
     mc:Ignorable="d">
 
     <Page.Resources>
