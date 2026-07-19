@@ -7,6 +7,7 @@ using BSH.MainApp.Models;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.Storage.Pickers;
 using Windows.UI.Popups;
 
 namespace BSH.MainApp.Services;
@@ -117,6 +118,41 @@ public class BrowserDialogService : IBrowserDialogService
 
             await dialog.ShowAsync();
         });
+    }
+
+    public async Task<string?> PickRestoreDestinationFolderAsync()
+    {
+        // Cannot show dialogs or pickers without a live XamlRoot; treat as cancel.
+        if (App.MainWindow?.Content == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+            {
+                var folderPicker = new FolderPicker(App.MainWindow.AppWindow.Id)
+                {
+                    SuggestedStartLocation = PickerLocationId.ComputerFolder
+                };
+
+                var folder = await folderPicker.PickSingleFolderAsync();
+                return folder?.Path;
+            });
+        }
+        catch (Exception ex)
+        {
+            if (App.MainWindow?.Content != null)
+            {
+                await presentationService.ShowMessageBoxAsync(
+                    "Restore destination",
+                    "Unable to open the folder picker. " + ex.Message,
+                    [new UICommand("OK")]);
+            }
+
+            return null;
+        }
     }
 
     private static Grid BuildFileDetailsContent(FileDetails fileDetails)
