@@ -197,7 +197,7 @@ public class BackupJob : Job
             _logger.Information("{NumFiles} files and {NumFolders} folders are collected for backup.", files.Count, emptyFolder.Count);
 
             var freeSpaceBytes = storage.GetFreeSpace();
-            var estimatedBytes = DiskSpacePreflight.EstimateRequiredBytes(files.Select(f => f.FileSize));
+            var estimatedBytes = await EstimateRequiredCopyBytesAsync(dbClient, files);
             if (DiskSpacePreflight.IsClearlyInsufficient(freeSpaceBytes, estimatedBytes))
             {
                 await AbortForInsufficientDiskSpaceAsync(dbClient, newVersionDate, estimatedBytes, freeSpaceBytes);
@@ -397,6 +397,39 @@ public class BackupJob : Job
         await RequestShowErrorInsufficientDiskSpaceAsync();
         RollbackIncompleteVersion(dbClient, versionDate);
         ReportState(JobState.ERROR);
+    }
+
+    /// <summary>
+    /// Estimates bytes that will be written for this backup. Incremental runs only
+    /// count files without a matching existing version; unchanged files are link-only.
+    /// </summary>
+    private async Task<long> EstimateRequiredCopyBytesAsync(DbClient dbClient, List<FileTableRow> files)
+    {
+        if (FullBackup)
+        {
+            return DiskSpacePreflight.EstimateRequiredBytes(files.Select(file => file.FileSize));
+        }
+
+        var copyCandidates = new List<(double FileSize, bool HasMatchingVersion)>(files.Count);
+        foreach (var file in files)
+        {
+            var filePath = "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\";
+            var fileId = await backupMutationRepository.GetFileIdAsync(dbClient, file.FileName, filePath);
+            if (!fileId.HasValue)
+            {
+                copyCandidates.Add((file.FileSize, HasMatchingVersion: false));
+                continue;
+            }
+
+            var fileVersionId = await backupMutationRepository.GetMatchingFileVersionIdAsync(
+                dbClient,
+                fileId.Value,
+                file.FileSize,
+                file.FileDateModified);
+            copyCandidates.Add((file.FileSize, HasMatchingVersion: fileVersionId.HasValue));
+        }
+
+        return DiskSpacePreflight.EstimateRequiredCopyBytes(fullBackup: false, copyCandidates);
     }
 
     private void RollbackIncompleteVersion(DbClient dbClient, string versionDate)
