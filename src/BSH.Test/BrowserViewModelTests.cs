@@ -15,6 +15,7 @@ using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -130,12 +131,107 @@ public class BrowserViewModelTests
         Assert.That(previewService.PreviewCalls.Single(), Is.EqualTo(("2", "report.txt", @"\source\docs\")));
     }
 
+    [Test]
+    public async Task RestoreFileCommand_RestoresSelectedFileToOriginalPath()
+    {
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+        await viewModel.RestoreFileCommand.ExecuteAsync(null);
+
+        Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\report.txt", "")));
+    }
+
+    [Test]
+    public async Task RestoreFileToCommand_PassesChosenDestinationFolder()
+    {
+        var destination = Path.Combine(Path.GetTempPath(), "bsh-restore-dest-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(destination);
+        try
+        {
+            var dialogService = new BrowserDialogService { DestinationFolder = destination };
+            var jobService = new BrowserJobService();
+            var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
+            viewModel.CurrentVersion = Version("2");
+            viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+            await viewModel.RestoreFileToCommand.ExecuteAsync(null);
+
+            Assert.That(dialogService.DestinationPickerPrompted, Is.True);
+            Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\report.txt", destination)));
+        }
+        finally
+        {
+            Directory.Delete(destination, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task RestoreFileToCommand_CancelsWhenDestinationPickerIsCancelled()
+    {
+        var dialogService = new BrowserDialogService { DestinationFolder = null };
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+        await viewModel.RestoreFileToCommand.ExecuteAsync(null);
+
+        Assert.That(dialogService.DestinationPickerPrompted, Is.True);
+        Assert.That(jobService.RestoreCalls, Is.Empty);
+    }
+
+    [Test]
+    public async Task RestoreFileToCommand_ShowsErrorAndSkipsRestoreForInaccessibleDestination()
+    {
+        var inaccessiblePath = Path.Combine(Path.GetTempPath(), "bsh-missing-restore-" + Guid.NewGuid().ToString("N"));
+        var dialogService = new BrowserDialogService { DestinationFolder = inaccessiblePath };
+        var presentationService = new BrowserPresentationService();
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService, presentationService: presentationService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+        await viewModel.RestoreFileToCommand.ExecuteAsync(null);
+
+        Assert.That(jobService.RestoreCalls, Is.Empty);
+        Assert.That(presentationService.MessageBoxes.Count, Is.EqualTo(1));
+        Assert.That(presentationService.MessageBoxes[0].Title, Is.EqualTo("Restore destination"));
+        Assert.That(presentationService.MessageBoxes[0].Content, Does.Contain(inaccessiblePath));
+    }
+
+    [Test]
+    public async Task RestoreAllToCommand_PassesChosenDestinationForCurrentFolder()
+    {
+        var destination = Path.Combine(Path.GetTempPath(), "bsh-restore-all-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(destination);
+        try
+        {
+            var dialogService = new BrowserDialogService { DestinationFolder = destination };
+            var jobService = new BrowserJobService();
+            var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
+            viewModel.CurrentVersion = Version("2");
+            viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = @"\source\docs\", IsFile = false });
+
+            await viewModel.RestoreAllToCommand.ExecuteAsync(null);
+
+            Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\", destination)));
+        }
+        finally
+        {
+            Directory.Delete(destination, recursive: true);
+        }
+    }
+
     private static BrowserViewModel CreateViewModel(
         BrowserQueryManager? queryManager = null,
         BrowserJobService? jobService = null,
         BrowserDialogService? browserDialogService = null,
         BrowserFavoritesService? favoritesService = null,
-        BrowserPreviewServiceFake? previewService = null)
+        BrowserPreviewServiceFake? previewService = null,
+        BrowserPresentationService? presentationService = null)
     {
         queryManager ??= new BrowserQueryManager();
         favoritesService ??= new BrowserFavoritesService(new MemoryLocalSettingsService());
@@ -144,7 +240,7 @@ public class BrowserViewModelTests
             queryManager,
             jobService ?? new BrowserJobService(),
             new BrowserBackupService(),
-            new BrowserPresentationService(),
+            presentationService ?? new BrowserPresentationService(),
             new BrowserContentService(queryManager, favoritesService),
             browserDialogService ?? new BrowserDialogService(),
             previewService ?? new BrowserPreviewServiceFake());
@@ -205,6 +301,7 @@ public class BrowserViewModelTests
     {
         public List<(string FileFilter, string FolderFilter)> DeleteSingleCalls { get; } = [];
         public List<List<string>> DeleteBackupsCalls { get; } = [];
+        public List<(string Version, string File, string Destination)> RestoreCalls { get; } = [];
         public bool IsCancellationRequested => false;
         public void Cancel() { }
         public Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(true);
@@ -214,8 +311,22 @@ public class BrowserViewModelTests
         public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true) { DeleteSingleCalls.Add((fileFilter, folderFilter)); return Task.CompletedTask; }
         public CancellationToken GetNewCancellationToken() => CancellationToken.None;
         public Task<bool> RequestPassword() => Task.FromResult(true);
-        public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true) => Task.CompletedTask;
-        public Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true) => Task.CompletedTask;
+        public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true)
+        {
+            foreach (var file in files)
+            {
+                RestoreCalls.Add((version, file, destination));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true)
+        {
+            RestoreCalls.Add((version, file, destination));
+            return Task.CompletedTask;
+        }
+
         public Task ModifyBackupAsync(bool statusDialog = true) => Task.CompletedTask;
     }
 
@@ -241,11 +352,18 @@ public class BrowserViewModelTests
         public bool SelectedContentDeletePrompted { get; private set; }
         public IReadOnlyList<string>? VersionsSelectedForDelete { get; set; }
         public IReadOnlyList<string> MultiDeletePromptedVersions { get; private set; } = [];
+        public string? DestinationFolder { get; set; }
+        public bool DestinationPickerPrompted { get; private set; }
 
         public Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item) { SelectedContentDeletePrompted = true; return Task.FromResult(ConfirmSelectedContentDelete); }
         public Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions) { MultiDeletePromptedVersions = versions.Select(x => x.Id).ToList(); return Task.FromResult(VersionsSelectedForDelete ?? []); }
         public Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite) => Task.FromResult<string?>(favorite.Name);
         public Task ShowFileDetailsAsync(FileDetails fileDetails) => Task.CompletedTask;
+        public Task<string?> PickRestoreDestinationFolderAsync()
+        {
+            DestinationPickerPrompted = true;
+            return Task.FromResult(DestinationFolder);
+        }
     }
 
     private sealed class BrowserPreviewServiceFake : IBrowserPreviewService
@@ -261,6 +379,8 @@ public class BrowserViewModelTests
 
     private sealed class BrowserPresentationService : IPresentationService
     {
+        public List<(string Title, string Content)> MessageBoxes { get; } = [];
+
         public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
         public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
@@ -278,7 +398,12 @@ public class BrowserViewModelTests
         public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
         public Task ShowMainWindowAsync() => Task.CompletedTask;
         public Task ShowStatusWindowAsync() => Task.CompletedTask;
-        public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.None);
+        public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
+        {
+            MessageBoxes.Add((title, content));
+            return Task.FromResult(ContentDialogResult.None);
+        }
+
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
         public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
         public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
