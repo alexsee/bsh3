@@ -22,6 +22,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private readonly IPresentationService presentationService;
     private readonly IBrowserContentService browserContentService;
     private readonly IBrowserDialogService browserDialogService;
+    private readonly IBrowserPreviewService browserPreviewService;
     private BrowserContentMode contentMode = BrowserContentMode.Folder;
     private long contentRequestId;
     private bool suppressSearchTermsChanged;
@@ -71,7 +72,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         IBackupService backupService,
         IPresentationService presentationService,
         IBrowserContentService browserContentService,
-        IBrowserDialogService browserDialogService)
+        IBrowserDialogService browserDialogService,
+        IBrowserPreviewService browserPreviewService)
     {
         this.queryManager = queryManager;
         this.jobService = jobService;
@@ -79,6 +81,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         this.presentationService = presentationService;
         this.browserContentService = browserContentService;
         this.browserDialogService = browserDialogService;
+        this.browserPreviewService = browserPreviewService;
     }
 
     private bool CanUpFolder() => contentMode == BrowserContentMode.Folder && CurrentFolderPath.Count > 1;
@@ -268,7 +271,12 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
     private async Task ShowFilePreview()
     {
-        throw new NotImplementedException();
+        if (CurrentItem == null || CurrentVersion == null)
+        {
+            return;
+        }
+
+        await browserPreviewService.PreviewFileAsync(CurrentVersion.Id, CurrentItem.Name, CurrentItem.FullPath);
     }
 
     [RelayCommand(CanExecute = nameof(CanAddFolderToFavorites))]
