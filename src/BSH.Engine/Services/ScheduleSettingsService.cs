@@ -42,13 +42,17 @@ public sealed class ScheduleSettingsService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        await scheduleRepository.ReplaceSchedulesAsync(settings.Entries);
+        // Persist retention/full-backup/missed-backup config before replacing schedule
+        // rows so a later schedule-table failure cannot leave new entries paired with
+        // stale destructive policy settings (#535).
         configurationManager.IntervallDelete = BuildRetentionConfig(settings);
         configurationManager.IntervallAutoHourBackups = Math.Max(1, settings.AutomaticHourlyBackupThreshold).ToString(CultureInfo.InvariantCulture);
         configurationManager.ScheduleFullBackup = settings.EnableScheduledFullBackups
             ? "day|" + Math.Max(1, settings.ScheduledFullBackupDays).ToString(CultureInfo.InvariantCulture)
             : string.Empty;
         configurationManager.DoPastBackups = settings.PerformMissedBackupsLater ? "1" : "0";
+
+        await scheduleRepository.ReplaceSchedulesAsync(settings.Entries);
     }
 
     private void LoadRetention(ScheduleSettings settings)
