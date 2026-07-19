@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Models;
 
@@ -16,16 +15,13 @@ public sealed class ScheduleSettingsService
 {
     private readonly IConfigurationManager configurationManager;
     private readonly IScheduleRepository scheduleRepository;
-    private readonly IDbClientFactory dbClientFactory;
 
     public ScheduleSettingsService(
         IConfigurationManager configurationManager,
-        IScheduleRepository scheduleRepository,
-        IDbClientFactory dbClientFactory)
+        IScheduleRepository scheduleRepository)
     {
         this.configurationManager = configurationManager;
         this.scheduleRepository = scheduleRepository;
-        this.dbClientFactory = dbClientFactory;
     }
 
     public async Task<ScheduleSettings> LoadAsync()
@@ -46,38 +42,17 @@ public sealed class ScheduleSettingsService
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var configUpdates = BuildConfigUpdates(settings);
+        // Persist retention/full-backup/missed-backup config before replacing schedule
+        // rows so a later schedule-table failure cannot leave new entries paired with
+        // stale destructive policy settings (#535).
+        configurationManager.IntervallDelete = BuildRetentionConfig(settings);
+        configurationManager.IntervallAutoHourBackups = Math.Max(1, settings.AutomaticHourlyBackupThreshold).ToString(CultureInfo.InvariantCulture);
+        configurationManager.ScheduleFullBackup = settings.EnableScheduledFullBackups
+            ? "day|" + Math.Max(1, settings.ScheduledFullBackupDays).ToString(CultureInfo.InvariantCulture)
+            : string.Empty;
+        configurationManager.DoPastBackups = settings.PerformMissedBackupsLater ? "1" : "0";
 
-        using var dbClient = dbClientFactory.CreateDbClient();
-        dbClient.BeginTransaction();
-
-        try
-        {
-            await scheduleRepository.ReplaceSchedulesAsync(dbClient, settings.Entries);
-            configurationManager.PersistProperties(dbClient, configUpdates);
-            dbClient.CommitTransaction();
-        }
-        catch
-        {
-            dbClient.RollbackTransaction();
-            throw;
-        }
-
-        // Apply in-memory config only after the shared transaction commits successfully.
-        configurationManager.ApplyLocalProperties(configUpdates);
-    }
-
-    private static IReadOnlyList<(string Property, string Value)> BuildConfigUpdates(ScheduleSettings settings)
-    {
-        return
-        [
-            (nameof(IConfigurationManager.IntervallDelete), BuildRetentionConfig(settings)),
-            (nameof(IConfigurationManager.IntervallAutoHourBackups), Math.Max(1, settings.AutomaticHourlyBackupThreshold).ToString(CultureInfo.InvariantCulture)),
-            (nameof(IConfigurationManager.ScheduleFullBackup), settings.EnableScheduledFullBackups
-                ? "day|" + Math.Max(1, settings.ScheduledFullBackupDays).ToString(CultureInfo.InvariantCulture)
-                : string.Empty),
-            (nameof(IConfigurationManager.DoPastBackups), settings.PerformMissedBackupsLater ? "1" : "0"),
-        ];
+        await scheduleRepository.ReplaceSchedulesAsync(settings.Entries);
     }
 
     private void LoadRetention(ScheduleSettings settings)

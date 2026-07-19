@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -70,35 +69,28 @@ public class ScheduleRepository : IScheduleRepository
 
         try
         {
-            await ReplaceSchedulesAsync(dbClient, schedules);
+            await dbClient.ExecuteNonQueryAsync("DELETE FROM schedule");
+
+            foreach (var schedule in schedules)
+            {
+                var parameters = new (string, object)[]
+                {
+                    ("timType", schedule.Type),
+                    ("timDate", schedule.Date.ToString("dd.MM.yyyy HH:mm:ss"))
+                };
+
+                await dbClient.ExecuteNonQueryAsync(
+                    CommandType.Text,
+                    "INSERT INTO schedule ( timType, timDate) VALUES ( @timType, @timDate )",
+                    parameters);
+            }
+
             dbClient.CommitTransaction();
         }
         catch
         {
             dbClient.RollbackTransaction();
             throw;
-        }
-    }
-
-    public async Task ReplaceSchedulesAsync(DbClient dbClient, IEnumerable<ScheduleEntry> schedules)
-    {
-        ArgumentNullException.ThrowIfNull(dbClient);
-        ArgumentNullException.ThrowIfNull(schedules);
-
-        await dbClient.ExecuteNonQueryAsync("DELETE FROM schedule");
-
-        foreach (var schedule in schedules)
-        {
-            var parameters = new (string, object)[]
-            {
-                ("timType", schedule.Type),
-                ("timDate", schedule.Date.ToString("dd.MM.yyyy HH:mm:ss"))
-            };
-
-            await dbClient.ExecuteNonQueryAsync(
-                CommandType.Text,
-                "INSERT INTO schedule ( timType, timDate) VALUES ( @timType, @timDate )",
-                parameters);
         }
     }
 }
