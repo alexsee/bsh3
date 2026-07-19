@@ -5,8 +5,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Service.Jobs;
+using Brightbits.BSH.Engine.Types;
 using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;

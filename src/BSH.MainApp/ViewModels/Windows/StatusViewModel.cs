@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Service.Jobs;
 using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
 
+using Brightbits.BSH.Engine.Types;
 namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class StatusViewModel : ObservableObject, IStatusReport

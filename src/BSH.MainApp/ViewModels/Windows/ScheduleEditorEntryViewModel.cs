@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Globalization;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Types;
 
 namespace BSH.MainApp.ViewModels.Windows;
 

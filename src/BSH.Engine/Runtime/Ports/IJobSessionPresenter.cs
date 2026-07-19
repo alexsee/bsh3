@@ -4,8 +4,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Service.Jobs;
 
+using Brightbits.BSH.Engine.Types;
 namespace Brightbits.BSH.Engine.Runtime.Ports;
 
 /// <summary>

@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Brightbits.BSH.Engine.Models;
-using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Types;
+using Brightbits.BSH.Engine.Service;
 using NUnit.Framework;
 
 namespace BSH.Test;

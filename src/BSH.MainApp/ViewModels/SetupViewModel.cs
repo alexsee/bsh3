@@ -3,9 +3,9 @@
 
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Repo.Contracts;
+using Brightbits.BSH.Engine.Providers.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,6 +14,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.Storage.Pickers;
 using Windows.UI.Popups;
 
+using Brightbits.BSH.Engine.Types;
+using Brightbits.BSH.Engine.Utils;
 namespace BSH.MainApp.ViewModels;
 
 public partial class SetupViewModel : ObservableObject
@@ -600,7 +602,7 @@ public partial class SetupViewModel : ObservableObject
 
                     try
                     {
-                        using var connection = new Brightbits.BSH.Engine.Security.NetworkConnection(path, UncUsername, UncPassword);
+                        using var connection = new Brightbits.BSH.Engine.Utils.Security.NetworkConnection(path, UncUsername, UncPassword);
                         if (!Directory.Exists(path))
                         {
                             ValidationErrorMessage = "The network path could not be reached.";
@@ -892,7 +894,7 @@ public partial class SetupViewModel : ObservableObject
 
         try
         {
-            var serial = Brightbits.BSH.Engine.Win32Stuff.GetVolumeSerial(driveRoot[..1] + @":\");
+            var serial = Brightbits.BSH.Engine.Utils.Win32Stuff.GetVolumeSerial(driveRoot[..1] + @":\");
             return string.IsNullOrEmpty(serial) || serial == "0" ? "" : serial;
         }
         catch

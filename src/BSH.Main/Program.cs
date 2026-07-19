@@ -11,6 +11,7 @@ using BSH.Main.Properties;
 using CommandLine;
 using Serilog;
 
+using Brightbits.BSH.Engine.Config;
 namespace Brightbits.BSH.Main;
 
 static class Program

@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:BSH.MainApp.Converters"
-    xmlns:engine="using:Brightbits.BSH.Engine"
+    xmlns:engine="using:Brightbits.BSH.Engine.Types"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"

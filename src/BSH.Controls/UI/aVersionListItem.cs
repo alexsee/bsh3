@@ -15,7 +15,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Types;
 
 namespace Brightbits.BSH.Main
 {

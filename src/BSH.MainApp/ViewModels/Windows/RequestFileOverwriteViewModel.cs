@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Service.Jobs;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using Brightbits.BSH.Engine.Types;
 namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class RequestFileOverwriteViewModel : ObservableObject

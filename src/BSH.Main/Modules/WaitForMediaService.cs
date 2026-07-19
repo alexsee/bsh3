@@ -3,7 +3,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Service.Contracts;
 
 namespace Brightbits.BSH.Main;
 

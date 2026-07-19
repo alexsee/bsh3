@@ -2,13 +2,14 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Service.Contracts;
 using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
 using Serilog;
 
+using Brightbits.BSH.Engine.Types;
 namespace BSH.MainApp.Services;
 
 public class JobService : IJobService, IDisposable

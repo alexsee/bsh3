@@ -7,12 +7,13 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Exceptions;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Types.Exceptions;
+using Brightbits.BSH.Engine.Service.Jobs;
+using Brightbits.BSH.Engine.Types;
 using Humanizer;
 using Resources = BSH.Main.Properties.Resources;
 
+using Brightbits.BSH.Engine.Config;
 namespace Brightbits.BSH.Main;
 
 public class StatusController : IJobReport

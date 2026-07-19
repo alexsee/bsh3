@@ -5,10 +5,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Exceptions;
+using Brightbits.BSH.Engine.Service.Contracts;
+using Brightbits.BSH.Engine.Types.Exceptions;
 using Serilog;
 
+using Brightbits.BSH.Engine.Types;
 namespace Brightbits.BSH.Engine.Runtime;
 
 public sealed class JobRuntime : IDisposable

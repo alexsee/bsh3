@@ -6,9 +6,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Types;
 using BSH.Main.Properties;
 
+using Brightbits.BSH.Engine.Repo;
 namespace Brightbits.BSH.Main;
 
 public partial class frmFileProperties

@@ -3,9 +3,9 @@
 
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Models;
-using Brightbits.BSH.Engine.Services;
+using Brightbits.BSH.Engine.Config;
+using Brightbits.BSH.Engine.Types;
+using Brightbits.BSH.Engine.Service;
 using BSH.MainApp.Contracts.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;

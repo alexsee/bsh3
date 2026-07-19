@@ -35,7 +35,7 @@ Responsibilities:
 - coordinate UI affordances (status window, overwrite prompts, exception dialogs)
 
 ### 2) Engine service layer (shared)
-- `Brightbits.BSH.Engine.Services.BackupService` is the single entrypoint for all job types.
+- `Brightbits.BSH.Engine.Service.BackupService` is the single entrypoint for all job types.
 - It constructs concrete job objects (`BackupJob`, `RestoreJob`, `DeleteJob`, `DeleteSingleJob`, `EditJob`) and attaches an `IJobReport` observer.
 
 Responsibilities:
@@ -44,8 +44,9 @@ Responsibilities:
 - dispatch operation intent (`ActionType`) to observers
 
 ### 3) Job execution layer (shared)
-- Base class: `Brightbits.BSH.Engine.Jobs.Job`
+- Base class: `Brightbits.BSH.Engine.Service.Jobs.Job`
 - Concrete jobs: `BackupJob`, `RestoreJob`, `DeleteJob`, `DeleteSingleJob`, `EditJob`
+- Job reporting contracts/enums live in `Brightbits.BSH.Engine.Types` (`IJobReport`, `JobState`, overwrite types).
 
 Responsibilities:
 - perform operation-specific workflow
@@ -53,9 +54,9 @@ Responsibilities:
 - apply common post-processing: update free space, upload database file, surface exceptions
 
 ### 4) Infrastructure boundaries
-- DB boundary: `IDbClientFactory` / `DbClient` (`System.Data.SQLite`).
-- Storage boundary: `IStorage` implementations (`FileSystemStorage`, `FtpStorage`) via `StorageFactory`.
-- Optional VSS boundary: `VolumeShadowCopyService` -> named pipe RPC (`IVSSRemoteObject`) -> `BSH.Service`.
+- DB boundary: `IDbClientFactory` / `DbClient` in `Brightbits.BSH.Engine.Repo.Database`.
+- Storage boundary: `IStorageProvider` implementations (`FileSystemStorage`, `FtpStorage`) via `IStorageFactory` / `Providers.Storage`.
+- Optional VSS boundary: `IVssClient` (`Providers.Vss`) -> named pipe RPC (`IVSSRemoteObject`) -> `BSH.Service`.
 
 ## Core contracts and state model
 

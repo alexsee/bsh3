@@ -9,7 +9,7 @@
     xmlns:controls="using:BSH.MainApp.Controls"
     xmlns:models="using:BSH.MainApp.Models"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
-    xmlns:engine="using:Brightbits.BSH.Engine"
+    xmlns:engine="using:Brightbits.BSH.Engine.Types"
     d:DataContext="{d:DesignInstance Type=viewmodels:SetupViewModel}"
     Background="White"
     mc:Ignorable="d">

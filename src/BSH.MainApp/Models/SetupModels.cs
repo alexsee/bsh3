@@ -3,6 +3,7 @@
 
 using Brightbits.BSH.Engine;
 
+using Brightbits.BSH.Engine.Types;
 namespace BSH.MainApp.Models;
 
 public enum SetupTargetKind

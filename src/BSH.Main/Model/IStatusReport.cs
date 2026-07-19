@@ -2,8 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Service.Jobs;
 
+using Brightbits.BSH.Engine.Types;
 namespace Brightbits.BSH.Main;
 
 public interface IStatusReport

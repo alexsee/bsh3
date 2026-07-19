@@ -7,7 +7,7 @@
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
-    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls" xmlns:engine="using:Brightbits.BSH.Engine"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls" xmlns:engine="using:Brightbits.BSH.Engine.Types"
     Background="White">
 
     <Page.Resources>

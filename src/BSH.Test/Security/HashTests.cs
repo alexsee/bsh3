@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Utils.Security;
 using NUnit.Framework;
 
 namespace BSH.Test.Security;

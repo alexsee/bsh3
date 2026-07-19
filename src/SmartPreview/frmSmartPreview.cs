@@ -6,8 +6,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Humanizer;
-using static Brightbits.BSH.Engine.Win32Stuff;
+using static Brightbits.BSH.Engine.Utils.Win32Stuff;
 
+using Brightbits.BSH.Engine.Utils;
 namespace SmartPreview;
 
 public partial class frmSmartPreview

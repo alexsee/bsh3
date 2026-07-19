@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using BSH.Controls.UI;
 using Resources = BSH.Main.Properties.Resources;
 
+using Brightbits.BSH.Engine.Config;
 namespace Brightbits.BSH.Main;
 
 public partial class frmFilter
