@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
     xmlns:converters="using:BSH.MainApp.Converters"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
     Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
     mc:Ignorable="d">
@@ -24,7 +25,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold">Overview</TextBlock>
+            <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Nav_Overview}" />
 
             <Grid Grid.Row="1" Margin="0, 20, 0, 0">
                 <Grid.ColumnDefinitions>
@@ -36,8 +37,8 @@
                     <TextBlock HorizontalAlignment="Center" FontSize="40" FontFamily="Segoe MDL2 Assets">&#xE8FB;</TextBlock>
 
                     <ToggleSwitch Margin="30,20,0,0" x:Name="tsSystem" OnContent="" OffContent=""></ToggleSwitch>
-                    <TextBlock HorizontalAlignment="Center" Visibility="{x:Bind tsSystem.IsOn, Mode=OneWay}">On</TextBlock>
-                    <TextBlock HorizontalAlignment="Center" Visibility="{x:Bind tsSystem.IsOn, Mode=OneWay}">Off</TextBlock>
+                    <TextBlock HorizontalAlignment="Center" Visibility="{x:Bind tsSystem.IsOn, Mode=OneWay}" Text="{helpers:ResourceString Name=MainView_On}" />
+                    <TextBlock HorizontalAlignment="Center" Visibility="{x:Bind tsSystem.IsOn, Mode=OneWay}" Text="{helpers:ResourceString Name=MainView_Off}" />
                 </StackPanel>
 
                 <Grid Grid.Column="1" RowSpacing="15" Margin="0">
@@ -58,13 +59,13 @@
                     <TextBlock Grid.Column="0" Grid.ColumnSpan="2" FontSize="18" x:Name="tbBigStatus"
                                Text="{x:Bind ViewModel.SystemStatusText, Mode=OneWay}" />
 
-                    <TextBlock Grid.Column="0" Grid.Row="1">Available:</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="1" Text="{helpers:ResourceString Name=MainView_Available}" />
                     <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind ViewModel.AvailableDiskSpace, Mode=OneWay}">653 GB</TextBlock>
 
-                    <TextBlock Grid.Column="0" Grid.Row="2">Diskspace full expected on:</TextBlock>
-                    <TextBlock Grid.Column="1" Grid.Row="2" x:Name="tbDiskspaceFullyFilled">currently unpredictable</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="2" Text="{helpers:ResourceString Name=MainView_DiskspaceFullExpected}" />
+                    <TextBlock Grid.Column="1" Grid.Row="2" x:Name="tbDiskspaceFullyFilled" Text="{helpers:ResourceString Name=MainView_DiskspaceUnpredictable}" />
 
-                    <TextBlock Grid.Column="0" Grid.Row="3">Last Backup:</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="3" Text="{helpers:ResourceString Name=MainView_LastBackup}" />
                     <TextBlock Grid.Column="1" Grid.Row="3" Text="{x:Bind ViewModel.LastBackupDate, Mode=OneWay}">Today, 13:00</TextBlock>
 
                     <TextBlock Grid.Column="0"
@@ -74,7 +75,7 @@
                                Text="{x:Bind ViewModel.ScheduleWarningText, Mode=OneWay}"
                                Visibility="{x:Bind ViewModel.ScheduleWarningVisible, Mode=OneWay}" />
 
-                    <TextBlock Grid.Column="0" Grid.Row="5">Backup mode:</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="5" Text="{helpers:ResourceString Name=MainView_BackupMode}" />
                     <TextBlock Grid.Column="1" Grid.Row="5" Text="{x:Bind ViewModel.BackupMode, Mode=OneWay}">Automatic Backup</TextBlock>
                 </Grid>
             </Grid>
@@ -92,7 +93,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.TotalFilesBackuped, Mode=OneWay}" FontSize="24"></TextBlock>
-                    <TextBlock Grid.Row="1">Files</TextBlock>
+                    <TextBlock Grid.Row="1" Text="{helpers:ResourceString Name=MainView_Files}" />
                 </Grid>
 
                 <Border Grid.Column="1" BorderBrush="LightGray" BorderThickness="1,0,0,0" Padding="20,0,20,0">
@@ -102,7 +103,7 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.TotalBackups, Mode=OneWay}" FontSize="24"></TextBlock>
-                        <TextBlock Grid.Row="1">Backups</TextBlock>
+                        <TextBlock Grid.Row="1" Text="{helpers:ResourceString Name=MainView_Backups}" />
                     </Grid>
                 </Border>
 
@@ -113,7 +114,7 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.TotalFileSize, Mode=OneWay}" FontSize="24"></TextBlock>
-                        <TextBlock Grid.Row="1">Total size backuped</TextBlock>
+                        <TextBlock Grid.Row="1" Text="{helpers:ResourceString Name=MainView_TotalSizeBackuped}" />
                     </Grid>
                 </Border>
             </Grid>
@@ -127,14 +128,14 @@
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <FontIcon FontSize="18" FontFamily="Segoe MDL2 Assets" Glyph="&#xE787;" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                <TextBlock Margin="10,0,10,0" VerticalAlignment="Center">Next Backup:</TextBlock>
+                <TextBlock Margin="10,0,10,0" VerticalAlignment="Center" Text="{helpers:ResourceString Name=MainView_NextBackup}" />
                 <TextBlock FontWeight="Bold" VerticalAlignment="Center" Text="{x:Bind ViewModel.NextBackupDate, Mode=OneWay}" />
             </StackPanel>
 
             <Button Grid.Column="1" Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.StartManualBackupCommand}">
                 <StackPanel Orientation="Horizontal">
                     <FontIcon FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE74E;" Margin="0,0,10,0"/>
-                    <TextBlock>Start Backup</TextBlock>
+                    <TextBlock Text="{helpers:ResourceString Name=MainView_StartBackup}" />
                 </StackPanel>
             </Button>
         </Grid>
@@ -158,7 +159,7 @@
 
             <Button Grid.Column="2" Style="{StaticResource AccentButtonStyle}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock>Cancel</TextBlock>
+                    <TextBlock Text="{helpers:ResourceString Name=MainView_Cancel}" />
                 </StackPanel>
             </Button>
         </Grid>

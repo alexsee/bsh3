@@ -10,6 +10,7 @@
     xmlns:models="using:BSH.MainApp.Models"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
     xmlns:engine="using:Brightbits.BSH.Engine"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     d:DataContext="{d:DesignInstance Type=viewmodels:SetupViewModel}"
     Background="White"
     mc:Ignorable="d">
@@ -61,14 +62,14 @@
                             FontSize="32"
                             FontWeight="SemiBold"
                             TextAlignment="Center"
-                            Text="Set up Backup Service Home" />
+                            Text="{helpers:ResourceString Name=Setup_Hero_Title}" />
                         <TextBlock
                             Margin="0,14,0,32"
                             FontSize="15"
                             Opacity="0.72"
                             TextAlignment="Center"
                             TextWrapping="WrapWholeWords"
-                            Text="Protect your files in a few steps. Choose how you want to begin." />
+                            Text="{helpers:ResourceString Name=Setup_Hero_Subtitle}" />
 
                         <Border
                             Padding="20,18"
@@ -89,11 +90,11 @@
                                     Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                     VerticalAlignment="Top" />
                                 <StackPanel Grid.Column="1" Spacing="6">
-                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="Start a new backup setup" />
+                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_NewSetup_Title}" />
                                     <TextBlock
                                         Opacity="0.75"
                                         TextWrapping="WrapWholeWords"
-                                        Text="Recommended for first-time use. Pick the folders to protect, choose where backups are stored, and decide whether backups run automatically." />
+                                        Text="{helpers:ResourceString Name=Setup_NewSetup_Description}" />
                                 </StackPanel>
                                 <Button
                                     Grid.Column="2"
@@ -101,7 +102,7 @@
                                     VerticalAlignment="Center"
                                     Style="{StaticResource AccentButtonStyle}"
                                     Command="{x:Bind ViewModel.StartNewSetupCommand}"
-                                    Content="Continue" />
+                                    Content="{helpers:ResourceString Name=Setup_NewSetup_Continue}" />
                             </Grid>
                         </Border>
 
@@ -123,18 +124,18 @@
                                     Glyph="&#xE8B5;"
                                     VerticalAlignment="Top" />
                                 <StackPanel Grid.Column="1" Spacing="6">
-                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="Import an existing backup" />
+                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Import_Title}" />
                                     <TextBlock
                                         Opacity="0.75"
                                         TextWrapping="WrapWholeWords"
-                                        Text="Already have a Backup Service Home database on a drive, network share, or FTP server? Import it and remap source folders if paths changed." />
+                                        Text="{helpers:ResourceString Name=Setup_Import_Description}" />
                                 </StackPanel>
                                 <Button
                                     Grid.Column="2"
                                     MinWidth="120"
                                     VerticalAlignment="Center"
                                     Command="{x:Bind ViewModel.StartImportCommand}"
-                                    Content="Import" />
+                                    Content="{helpers:ResourceString Name=Setup_Import_Button}" />
                             </Grid>
                         </Border>
                     </StackPanel>
@@ -156,7 +157,7 @@
                             Command="{x:Bind ViewModel.AddSourceFolderCommand}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <FontIcon Glyph="&#xE710;" FontSize="16" />
-                                <TextBlock Text="Add a folder to back up" VerticalAlignment="Center" />
+                                <TextBlock Text="{helpers:ResourceString Name=Setup_Sources_AddFolder}" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
 
@@ -170,7 +171,7 @@
                             Margin="0,8,0,0"
                             HorizontalAlignment="Left"
                             Command="{x:Bind ViewModel.RemoveSourceFolderCommand}"
-                            Content="Remove selected folder" />
+                            Content="{helpers:ResourceString Name=Setup_Sources_RemoveSelected}" />
                     </Grid>
 
                     <!-- Target -->
@@ -180,22 +181,22 @@
                             HorizontalAlignment="Center"
                             Spacing="12">
                             <controls:SetupOptionCard
-                                Title="This PC or drive"
-                                Description="Disk, USB, or mapped drive"
+                                Title="{helpers:ResourceString Name=Setup_Target_Local_Title}"
+                                Description="{helpers:ResourceString Name=Setup_Target_Local_Description}"
                                 Glyph="&#xEDA2;"
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Local}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
                                 CommandParameter="{StaticResource Target_Local}" />
                             <controls:SetupOptionCard
-                                Title="Network share"
-                                Description="UNC path like \\server\share"
+                                Title="{helpers:ResourceString Name=Setup_Target_Unc_Title}"
+                                Description="{helpers:ResourceString Name=Setup_Target_Unc_Description}"
                                 Glyph="&#xE968;"
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Unc}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
                                 CommandParameter="{StaticResource Target_Unc}" />
                             <controls:SetupOptionCard
-                                Title="FTP server"
-                                Description="Remote host and login"
+                                Title="{helpers:ResourceString Name=Setup_Target_Ftp_Title}"
+                                Description="{helpers:ResourceString Name=Setup_Target_Ftp_Description}"
                                 Glyph="&#xE839;"
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Ftp}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
@@ -203,49 +204,49 @@
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">
-                            <TextBlock FontWeight="SemiBold" Text="Select the drive for your backups" />
+                            <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Target_SelectDrive}" />
                             <TextBlock Opacity="0.72" TextWrapping="WrapWholeWords"
-                                       Text="Backups will be stored under Backups\ComputerName\UserName on the drive you choose." />
+                                       Text="{helpers:ResourceString Name=Setup_Target_DriveHint}" />
                             <ListView
                                 Height="160"
                                 ItemsSource="{x:Bind ViewModel.AvailableDrives, Mode=OneWay}"
                                 SelectedItem="{x:Bind ViewModel.SelectedDrive, Mode=TwoWay}"
                                 DisplayMemberPath="DisplayName" />
-                            <Button Command="{x:Bind ViewModel.RefreshDrivesCommand}" Content="Refresh drives" HorizontalAlignment="Left" />
+                            <Button Command="{x:Bind ViewModel.RefreshDrivesCommand}" Content="{helpers:ResourceString Name=Setup_Target_RefreshDrives}" HorizontalAlignment="Left" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.UncTargetVisibility, Mode=OneWay}">
-                            <TextBlock FontWeight="SemiBold" Text="Enter the network share" />
-                            <TextBox Header="Network path (for example \\server\backups)" Text="{x:Bind ViewModel.UncPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBox Header="Username (optional)" Text="{x:Bind ViewModel.UncUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <PasswordBox Header="Password (optional)" Password="{Binding UncPassword, Mode=TwoWay}" />
+                            <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Target_EnterNetworkShare}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_NetworkPath}" Text="{x:Bind ViewModel.UncPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_UsernameOptional}" Text="{x:Bind ViewModel.UncUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <PasswordBox Header="{helpers:ResourceString Name=Setup_Target_PasswordOptional}" Password="{Binding UncPassword, Mode=TwoWay}" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.FtpTargetVisibility, Mode=OneWay}">
-                            <TextBlock FontWeight="SemiBold" Text="Enter your FTP server details" />
-                            <TextBox Header="FTP host" Text="{x:Bind ViewModel.FtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBox Header="FTP port" Text="{x:Bind ViewModel.FtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBox Header="FTP user" Text="{x:Bind ViewModel.FtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <PasswordBox Header="FTP password" Password="{Binding FtpPassword, Mode=TwoWay}" />
-                            <TextBox Header="FTP folder" Text="{x:Bind ViewModel.FtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBox Header="FTP encoding" Text="{x:Bind ViewModel.FtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <CheckBox Content="Enforce unencrypted FTP" IsChecked="{x:Bind ViewModel.FtpEnforceUnencrypted, Mode=TwoWay}" />
+                            <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Target_EnterFtpDetails}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpHost}" Text="{x:Bind ViewModel.FtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpPort}" Text="{x:Bind ViewModel.FtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpUser}" Text="{x:Bind ViewModel.FtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <PasswordBox Header="{helpers:ResourceString Name=Setup_Target_FtpPassword}" Password="{Binding FtpPassword, Mode=TwoWay}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpFolder}" Text="{x:Bind ViewModel.FtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpEncoding}" Text="{x:Bind ViewModel.FtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <CheckBox Content="{helpers:ResourceString Name=Setup_Target_EnforceUnencryptedFtp}" IsChecked="{x:Bind ViewModel.FtpEnforceUnencrypted, Mode=TwoWay}" />
                         </StackPanel>
                     </StackPanel>
 
                     <!-- Mode -->
                     <StackPanel Spacing="24" Visibility="{x:Bind ViewModel.ModeVisibility, Mode=OneWay}">
                         <StackPanel Spacing="8">
-                            <RadioButton Content="Automatic backups"
+                            <RadioButton Content="{helpers:ResourceString Name=Setup_Mode_Automatic}"
                                          IsChecked="{Binding SelectedTaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Auto}}" />
                             <TextBlock Margin="28,0,0,0" Opacity="0.75" TextWrapping="WrapWholeWords"
-                                       Text="The system starts immediately and creates the first backup." />
+                                       Text="{helpers:ResourceString Name=Setup_Mode_AutomaticDescription}" />
                         </StackPanel>
                         <StackPanel Spacing="8">
-                            <RadioButton Content="Manual backups"
+                            <RadioButton Content="{helpers:ResourceString Name=Setup_Mode_Manual}"
                                          IsChecked="{Binding SelectedTaskType, Mode=TwoWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource TaskType_Manual}}" />
                             <TextBlock Margin="28,0,0,0" Opacity="0.75" TextWrapping="WrapWholeWords"
-                                       Text="Open settings after setup so you can refine the configuration before the first backup." />
+                                       Text="{helpers:ResourceString Name=Setup_Mode_ManualDescription}" />
                         </StackPanel>
                     </StackPanel>
 
@@ -256,22 +257,22 @@
                             HorizontalAlignment="Center"
                             Spacing="12">
                             <controls:SetupOptionCard
-                                Title="This PC or drive"
-                                Description="Browse a drive for backups"
+                                Title="{helpers:ResourceString Name=Setup_Target_Local_Title}"
+                                Description="{helpers:ResourceString Name=Setup_Import_Local_Description}"
                                 Glyph="&#xEDA2;"
                                 IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Local}}"
                                 Command="{x:Bind ViewModel.SelectImportSourceCommand}"
                                 CommandParameter="{StaticResource Import_Local}" />
                             <controls:SetupOptionCard
-                                Title="FTP server"
-                                Description="Remote host and login"
+                                Title="{helpers:ResourceString Name=Setup_Target_Ftp_Title}"
+                                Description="{helpers:ResourceString Name=Setup_Target_Ftp_Description}"
                                 Glyph="&#xE839;"
                                 IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Ftp}}"
                                 Command="{x:Bind ViewModel.SelectImportSourceCommand}"
                                 CommandParameter="{StaticResource Import_Ftp}" />
                             <controls:SetupOptionCard
-                                Title="Folder path"
-                                Description="Folder with backup.bshdb"
+                                Title="{helpers:ResourceString Name=Setup_Import_FolderPath_Title}"
+                                Description="{helpers:ResourceString Name=Setup_Import_FolderPath_Description}"
                                 Glyph="&#xE8B7;"
                                 IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Path}}"
                                 Command="{x:Bind ViewModel.SelectImportSourceCommand}"
@@ -279,30 +280,30 @@
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalImportVisibility, Mode=OneWay}">
-                            <TextBlock FontWeight="SemiBold" Text="Select the drive that contains your backup" />
+                            <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Import_SelectDrive}" />
                             <ListView
                                 Height="160"
                                 ItemsSource="{x:Bind ViewModel.AvailableDrives, Mode=OneWay}"
                                 SelectedItem="{x:Bind ViewModel.SelectedImportDrive, Mode=TwoWay}"
                                 DisplayMemberPath="DisplayName" />
-                            <Button Command="{x:Bind ViewModel.RefreshDrivesCommand}" Content="Refresh drives" HorizontalAlignment="Left" />
+                            <Button Command="{x:Bind ViewModel.RefreshDrivesCommand}" Content="{helpers:ResourceString Name=Setup_Target_RefreshDrives}" HorizontalAlignment="Left" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.ExplicitImportVisibility, Mode=OneWay}">
-                            <TextBlock FontWeight="SemiBold" Text="Choose the folder that contains backup.bshdb" />
-                            <TextBox Header="Folder path" Text="{x:Bind ViewModel.ExplicitImportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <Button Command="{x:Bind ViewModel.BrowseExplicitImportPathCommand}" Content="Browse..." HorizontalAlignment="Left" />
+                            <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Import_ChooseFolder}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Import_FolderPath_Title}" Text="{x:Bind ViewModel.ExplicitImportPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button Command="{x:Bind ViewModel.BrowseExplicitImportPathCommand}" Content="{helpers:ResourceString Name=MsgBox_Browse}" HorizontalAlignment="Left" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.FtpImportVisibility, Mode=OneWay}">
-                            <TextBlock FontWeight="SemiBold" Text="Enter your FTP server details" />
-                            <TextBox Header="FTP host" Text="{x:Bind ViewModel.ImportFtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBox Header="FTP port" Text="{x:Bind ViewModel.ImportFtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBox Header="FTP user" Text="{x:Bind ViewModel.ImportFtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <PasswordBox Header="FTP password" Password="{Binding ImportFtpPassword, Mode=TwoWay}" />
-                            <TextBox Header="FTP folder" Text="{x:Bind ViewModel.ImportFtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBox Header="FTP encoding" Text="{x:Bind ViewModel.ImportFtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <CheckBox Content="Enforce unencrypted FTP" IsChecked="{x:Bind ViewModel.ImportFtpEnforceUnencrypted, Mode=TwoWay}" />
+                            <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Target_EnterFtpDetails}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpHost}" Text="{x:Bind ViewModel.ImportFtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpPort}" Text="{x:Bind ViewModel.ImportFtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpUser}" Text="{x:Bind ViewModel.ImportFtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <PasswordBox Header="{helpers:ResourceString Name=Setup_Target_FtpPassword}" Password="{Binding ImportFtpPassword, Mode=TwoWay}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpFolder}" Text="{x:Bind ViewModel.ImportFtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpEncoding}" Text="{x:Bind ViewModel.ImportFtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <CheckBox Content="{helpers:ResourceString Name=Setup_Target_EnforceUnencryptedFtp}" IsChecked="{x:Bind ViewModel.ImportFtpEnforceUnencrypted, Mode=TwoWay}" />
                         </StackPanel>
                     </StackPanel>
 
@@ -331,8 +332,8 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" FontWeight="SemiBold" Text="Original path" />
-                            <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="Path on this PC" />
+                            <TextBlock Grid.Column="0" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Import_OriginalPath}" />
+                            <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Import_PathOnThisPc}" />
                         </Grid>
 
                         <ListView
@@ -373,7 +374,7 @@
                             Margin="0,8,0,0"
                             HorizontalAlignment="Left"
                             Command="{x:Bind ViewModel.RemapSelectedSourceCommand}"
-                            Content="Change path on this PC" />
+                            Content="{helpers:ResourceString Name=Setup_Import_ChangePath}" />
                     </Grid>
 
                     <!-- Progress -->
@@ -383,7 +384,7 @@
                         Spacing="16"
                         Visibility="{x:Bind ViewModel.ProgressVisibility, Mode=OneWay}">
                         <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" Width="48" Height="48" />
-                        <TextBlock Text="Applying setup..." HorizontalAlignment="Center" />
+                        <TextBlock Text="{helpers:ResourceString Name=Setup_Progress_Applying}" HorizontalAlignment="Center" />
                     </StackPanel>
                 </Grid>
             </ScrollViewer>
@@ -417,14 +418,14 @@
                     Grid.Column="1"
                     MinWidth="100"
                     Command="{x:Bind ViewModel.GoBackCommand}"
-                    Content="Back"
+                    Content="{helpers:ResourceString Name=MsgBox_Back}"
                     Visibility="{x:Bind ViewModel.BackButtonVisibility, Mode=OneWay}" />
                 <Button
                     Grid.Column="2"
                     MinWidth="100"
                     Style="{StaticResource AccentButtonStyle}"
                     Command="{x:Bind ViewModel.GoNextCommand}"
-                    Content="Next"
+                    Content="{helpers:ResourceString Name=MsgBox_Next}"
                     Visibility="{x:Bind ViewModel.NextButtonVisibility, Mode=OneWay}" />
             </Grid>
         </Grid>

@@ -6,8 +6,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:winex="using:WinUIEx"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels.Windows"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     mc:Ignorable="d"
-    Title="Exclude items"
+    Title="{helpers:ResourceString Name=Filter_Title}"
     Height="650"
     Width="850"
     IsResizable="True"
@@ -28,18 +29,18 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Spacing="8">
-                <TextBlock FontSize="24" FontWeight="SemiBold">Exclude files and folders</TextBlock>
-                <TextBlock>Exclude files, folders, file types and based on regular expressions. Select the files and folders you want to exclude in backups.</TextBlock>
+                <TextBlock FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Filter_Heading}" />
+                <TextBlock Text="{helpers:ResourceString Name=Filter_Description}" />
             </StackPanel>
 
             <SelectorBar x:Name="FilterSelectorBar"
                          Grid.Row="1"
                          SelectionChanged="FilterSelectorBar_SelectionChanged">
-                <SelectorBarItem x:Name="FilesItem" Text="Files" />
-                <SelectorBarItem x:Name="FoldersItem" Text="Folders" />
-                <SelectorBarItem x:Name="FileTypesItem" Text="File types" />
-                <SelectorBarItem x:Name="MaxFileSizeItem" Text="Max file size" />
-                <SelectorBarItem x:Name="RegexItem" Text="Regular expressions" />
+                <SelectorBarItem x:Name="FilesItem" Text="{helpers:ResourceString Name=Filter_Tab_Files}" />
+                <SelectorBarItem x:Name="FoldersItem" Text="{helpers:ResourceString Name=Filter_Tab_Folders}" />
+                <SelectorBarItem x:Name="FileTypesItem" Text="{helpers:ResourceString Name=Filter_Tab_FileTypes}" />
+                <SelectorBarItem x:Name="MaxFileSizeItem" Text="{helpers:ResourceString Name=Filter_Tab_MaxFileSize}" />
+                <SelectorBarItem x:Name="RegexItem" Text="{helpers:ResourceString Name=Filter_Tab_Regex}" />
             </SelectorBar>
 
             <Frame x:Name="ContentFrame" Grid.Row="2" Margin="0,12,0,0" />
@@ -47,8 +48,8 @@
 
         <Grid Grid.Row="1" Background="#fafafa" Padding="30,10" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Command="{x:Bind ViewModel.CancelCommand}">Cancel</Button>
-                <Button Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}">Save</Button>
+                <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
+                <Button Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" Content="{helpers:ResourceString Name=MsgBox_Save}" />
             </StackPanel>
         </Grid>
     </Grid>

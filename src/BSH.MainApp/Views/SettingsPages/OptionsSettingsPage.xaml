@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:BSH.MainApp.Converters"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
@@ -37,7 +38,7 @@
             VerticalScrollBarVisibility="Auto"
             VerticalScrollMode="Auto">
             <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                <toolkit:SettingsExpander Header="Storage options" Description="Specify how the backup should be stored." IsExpanded="True">
+                <toolkit:SettingsExpander Header="{helpers:ResourceString Name=Settings_Options_StorageOptions}" Description="{helpers:ResourceString Name=Settings_Options_StorageOptionsDescription}" IsExpanded="True">
                     <toolkit:SettingsExpander.HeaderIcon>
                         <FontIcon Glyph="&#xF8A6;" />
                     </toolkit:SettingsExpander.HeaderIcon>
@@ -47,9 +48,8 @@
                                 <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
                                     <RadioButton x:Name="RegularCopyRadioButton"
                                                  IsChecked="{Binding ModeType, Mode=OneWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_RegularCopy}}"
-                                                 Checked="ModeTypeRadioButton_Checked">
-                                        No compression or encryption
-                                    </RadioButton>
+                                                 Checked="ModeTypeRadioButton_Checked"
+                                                 Content="{helpers:ResourceString Name=Settings_Options_NoCompressionOrEncryption}" />
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
                         </toolkit:SettingsCard>
@@ -59,12 +59,10 @@
                                 <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
                                     <RadioButton x:Name="CompressionRadioButton"
                                                  IsChecked="{Binding ModeType, Mode=OneWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Compression}}"
-                                                 Checked="ModeTypeRadioButton_Checked">
-                                        Compress backups
-                                    </RadioButton>
-                                    <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords">
-                                        (requires more computation power; slower backups)
-                                    </TextBlock>
+                                                 Checked="ModeTypeRadioButton_Checked"
+                                                 Content="{helpers:ResourceString Name=Settings_Options_Compress}" />
+                                    <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords"
+                                               Text="{helpers:ResourceString Name=Settings_Options_RequiresMorePower}" />
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
                             <StackPanel Spacing="8">
@@ -72,7 +70,7 @@
                                           ItemsSource="{Binding CompressionExclusions}"
                                           SelectedItem="{Binding SelectedCompressionExclusion, Mode=TwoWay}">
                                     <ListView.Header>
-                                        <TextBlock FontWeight="SemiBold">Excluded extensions</TextBlock>
+                                        <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Settings_Options_ExcludedExtensions}" />
                                     </ListView.Header>
                                 </ListView>
                                 <Grid ColumnSpacing="8">
@@ -81,14 +79,14 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox PlaceholderText="Extension"
+                                    <TextBox PlaceholderText="{helpers:ResourceString Name=Settings_Options_Extension}"
                                              Text="{Binding CompressionExclusionInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <Button Grid.Column="1"
-                                            Content="Add"
+                                            Content="{helpers:ResourceString Name=MsgBox_Add}"
                                             Command="{Binding AddCompressionExclusionCommand}"
                                             CommandParameter="{Binding CompressionExclusionInputText}" />
                                     <Button Grid.Column="2"
-                                            Content="Remove"
+                                            Content="{helpers:ResourceString Name=MsgBox_Remove}"
                                             Command="{Binding RemoveCompressionExclusionCommand}" />
                                 </Grid>
                             </StackPanel>
@@ -99,23 +97,21 @@
                                 <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
                                     <RadioButton x:Name="EncryptionRadioButton"
                                                  IsChecked="{Binding ModeType, Mode=OneWay, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}"
-                                                 Checked="ModeTypeRadioButton_Checked">
-                                        Encrypt backups
-                                    </RadioButton>
-                                    <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords">
-                                        (requires more computation power; slower backups)
-                                    </TextBlock>
-                                    <TextBlock Margin="29,10,0,0" TextWrapping="WrapWholeWords" Text="To protect the backup from unauthorized access, it can be encrypted. You will then be asked for your password at each session. The encryption cannot be applied retroactively." />
+                                                 Checked="ModeTypeRadioButton_Checked"
+                                                 Content="{helpers:ResourceString Name=Settings_Options_Encrypt}" />
+                                    <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords"
+                                               Text="{helpers:ResourceString Name=Settings_Options_RequiresMorePower}" />
+                                    <TextBlock Margin="29,10,0,0" TextWrapping="WrapWholeWords" Text="{helpers:ResourceString Name=Settings_Options_EncryptionHint}" />
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
                             <ContentControl IsEnabled="{Binding ModeType, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource ModeType_Encryption}}">
-                                <Button Content="Turn off" Command="{x:Bind ViewModel.DisableEncryptionCommand}" />
+                                <Button Content="{helpers:ResourceString Name=Settings_Options_TurnOff}" Command="{x:Bind ViewModel.DisableEncryptionCommand}" />
                             </ContentControl>
                         </toolkit:SettingsCard>
                     </toolkit:SettingsExpander.Items>
                 </toolkit:SettingsExpander>
 
-                <toolkit:SettingsCard Header="Storage device behavior" Description="Wait for storage device if not available">
+                <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Options_StorageDeviceBehavior}" Description="{helpers:ResourceString Name=Settings_Options_WaitForDevice}">
                     <toolkit:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xEDA2;" />
                     </toolkit:SettingsCard.HeaderIcon>

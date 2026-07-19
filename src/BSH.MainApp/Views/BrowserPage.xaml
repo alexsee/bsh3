@@ -92,9 +92,9 @@
     <Grid Background="White">
         <Grid Visibility="{x:Bind ViewModel.HasVersions, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}">
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
-                <TextBlock HorizontalTextAlignment="Center" Style="{StaticResource HeaderTextBlockStyle}">There are currently no backups!</TextBlock>
-                <TextBlock HorizontalTextAlignment="Center" Style="{StaticResource BodyTextStyle}">Start creating backups to browse them here.</TextBlock>
-                <Button HorizontalAlignment="Center" Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.GoHomeCommand}">Go Home</Button>
+                <TextBlock HorizontalTextAlignment="Center" Style="{StaticResource HeaderTextBlockStyle}" Text="{helpers:ResourceString Name=Browser_Empty_Title}" />
+                <TextBlock HorizontalTextAlignment="Center" Style="{StaticResource BodyTextStyle}" Text="{helpers:ResourceString Name=Browser_Empty_Text}" />
+                <Button HorizontalAlignment="Center" Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.GoHomeCommand}" Content="{helpers:ResourceString Name=Browser_Empty_GoHome}" />
             </StackPanel>
         </Grid>
 
@@ -147,7 +147,7 @@
                 </Grid>
 
                 <!-- search box -->
-                <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="Search" Text="{x:Bind ViewModel.SearchTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox x:Name="tbSearchBox" Grid.Column="2" PlaceholderText="{helpers:ResourceString Name=Browser_Search}" Text="{x:Bind ViewModel.SearchTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
 
 
@@ -162,7 +162,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- favorites -->
-                        <TextBlock Grid.Row="0" Text="Favorites" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
+                        <TextBlock Grid.Row="0" Text="{helpers:ResourceString Name=Browser_Favorites}" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
                         <ListView Margin="8,0,12,0" SelectedItem="{x:Bind ViewModel.CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{x:Bind ViewModel.Favorites, Mode=TwoWay}" ItemTemplate="{StaticResource FavoriteTemplate}">
                             <i:Interaction.Behaviors>
                                 <i:EventTriggerBehavior EventName="SelectionChanged">
@@ -171,14 +171,14 @@
                             </i:Interaction.Behaviors>
                             <ListView.ContextFlyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RenameFavoriteCommand}" Text="Rename" />
-                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RemoveFavoriteCommand}" Text="Remove" />
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RenameFavoriteCommand}" Text="{helpers:ResourceString Name=Browser_Rename}" />
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RemoveFavoriteCommand}" Text="{helpers:ResourceString Name=Browser_Remove}" />
                                 </MenuFlyout>
                             </ListView.ContextFlyout>
                         </ListView>
 
                         <!-- backup list -->
-                        <TextBlock Grid.Row="2" Text="Backups" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
+                        <TextBlock Grid.Row="2" Text="{helpers:ResourceString Name=Browser_Backups}" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
                         <ListView 
                         Grid.Row="3" 
                         Margin="8,0,12,0"
@@ -223,19 +223,19 @@
                             <AppBarButton 
                             Command="{x:Bind ViewModel.RestoreFileCommand}" 
                             Icon="Copy" 
-                            Label="Restore" />
+                            Label="{helpers:ResourceString Name=Browser_Restore}" />
                             <AppBarSeparator />
                             <AppBarButton 
                             Command="{x:Bind ViewModel.ShowFilePreviewCommand}" 
                             Icon="Preview"
-                            Label="Quick preview"
+                            Label="{helpers:ResourceString Name=Browser_QuickPreview}"
                             LabelPosition="Collapsed"
                             Width="Auto"
                             MinWidth="40"
-                            ToolTipService.ToolTip="Quick preview" />
+                            ToolTipService.ToolTip="{helpers:ResourceString Name=Browser_QuickPreview}" />
                             <AppBarButton 
                             Command="{x:Bind ViewModel.ShowFilePropertiesCommand}" 
-                            Label="Properties"
+                            Label="{helpers:ResourceString Name=Browser_Properties}"
                             LabelPosition="Collapsed"
                             Width="Auto"
                             MinWidth="40"
@@ -250,7 +250,7 @@
 			            Grid.Column="1"
 			            DefaultLabelPosition="Right">
                             <AppBarToggleButton
-                            Label="Preview pane"
+                            Label="{helpers:ResourceString Name=Browser_PreviewPane}"
                             LabelPosition="Collapsed"
                             Icon="OpenPane"
                             Width="Auto"
@@ -258,20 +258,20 @@
                             IsChecked="{x:Bind ViewModel.ToggleInfoPane, Mode=TwoWay}" />
                             <AppBarButton 
                             Icon="More" 
-                            Label="Organize"
+                            Label="{helpers:ResourceString Name=Browser_Organize}"
                             LabelPosition="Collapsed"
                             Width="Auto"
                             MinWidth="40">
                                 <AppBarButton.Flyout>
                                     <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllCommand}" Text="Restore all"/>
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Text="Add to folder favorites"/>
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteSelectedContentCommand}" Icon="Delete" Text="Delete selected from all backups"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllCommand}" Text="{helpers:ResourceString Name=Browser_RestoreAll}"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Text="{helpers:ResourceString Name=Browser_AddToFolderFavorites}"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteSelectedContentCommand}" Icon="Delete" Text="{helpers:ResourceString Name=Browser_DeleteSelectedFromAllBackups}"/>
                                         <MenuFlyoutSeparator />
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.EditBackupCommand}" Icon="Edit" Text="Edit backup" />
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupCommand}" Icon="Delete" Text="Delete backup"/>
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteMultipleBackupsCommand}" Icon="Delete" Text="Delete multiple backups"/>
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.LockBackupCommand}" Text="Lock/unlock backup" />
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.EditBackupCommand}" Icon="Edit" Text="{helpers:ResourceString Name=Browser_EditBackup}" />
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupCommand}" Icon="Delete" Text="{helpers:ResourceString Name=Browser_DeleteBackup}"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteMultipleBackupsCommand}" Icon="Delete" Text="{helpers:ResourceString Name=Browser_DeleteMultipleBackups}"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.LockBackupCommand}" Text="{helpers:ResourceString Name=Browser_LockUnlockBackup}" />
                                     </MenuFlyout>
                                 </AppBarButton.Flyout>
                             </AppBarButton>
@@ -296,9 +296,9 @@
                                             <ColumnDefinition Width="200"/>
                                             <ColumnDefinition Width="100"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Name" Style="{ThemeResource CaptionTextBlockStyle}"/>
-                                        <TextBlock Grid.Column="1" Text="Last modified" Style="{ThemeResource CaptionTextBlockStyle}"/>
-                                        <TextBlock Grid.Column="2" Text="Size" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                                        <TextBlock Text="{helpers:ResourceString Name=Browser_Column_Name}" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                                        <TextBlock Grid.Column="1" Text="{helpers:ResourceString Name=Browser_Column_LastModified}" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                                        <TextBlock Grid.Column="2" Text="{helpers:ResourceString Name=Browser_Column_Size}" Style="{ThemeResource CaptionTextBlockStyle}"/>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.HeaderTemplate>
@@ -342,13 +342,13 @@
 
                             <TextBlock HorizontalAlignment="Center" FontWeight="Bold" Text="{x:Bind ViewModel.CurrentItem.Name, Mode=OneWay}" />
 
-                            <TextBlock Style="{StaticResource InfoPaneTitleStyle}">Path</TextBlock>
+                            <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Text="{helpers:ResourceString Name=Browser_Column_Path}" />
                             <TextBlock Text="{x:Bind ViewModel.CurrentItem.FullPath, Mode=OneWay}" TextWrapping="Wrap" />
 
-                            <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}">Date created</TextBlock>
+                            <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Text="{helpers:ResourceString Name=Browser_Column_DateCreated}" />
                             <TextBlock Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Text="{x:Bind ViewModel.CurrentItem.FileDateCreated, Mode=OneWay}" />
 
-                            <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}">Last modified</TextBlock>
+                            <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Text="{helpers:ResourceString Name=Browser_Column_LastModified}" />
                             <TextBlock Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Text="{x:Bind ViewModel.CurrentItem.FileDateModified, Mode=OneWay}" />
                         </StackPanel>
                     </Grid>
