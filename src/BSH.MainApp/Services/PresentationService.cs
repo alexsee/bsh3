@@ -10,6 +10,7 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Windows;
@@ -81,9 +82,9 @@ public class PresentationService : IPresentationService
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
 
         await ShowMessageBoxAsync(
-            "About Backup Service Home 3",
-            $"Backup Service Home 3{Environment.NewLine}Version {version}",
-            [new UICommand("OK")]);
+            "Support_About".GetLocalized(),
+            string.Format("Support_About_Text".GetLocalized(), version),
+            [new UICommand("MsgBox_OK".GetLocalized())]);
     }
 
     public Task OpenHelpSupportAsync()
@@ -108,9 +109,9 @@ public class PresentationService : IPresentationService
     public async Task ResetConfigurationAsync()
     {
         var result = await ShowMessageBoxAsync(
-            "Reset Configuration",
-            "This deletes the current configuration and backup database. Do you want to continue?",
-            [new UICommand("Yes"), new UICommand("No")],
+            "Support_ResetConfiguration_Title".GetLocalized(),
+            "Support_ResetConfiguration_Text".GetLocalized(),
+            [new UICommand("MsgBox_Yes".GetLocalized()), new UICommand("MsgBox_No".GetLocalized())],
             defaultCommandIndex: 0,
             cancelCommandIndex: 1);
 
@@ -159,9 +160,9 @@ public class PresentationService : IPresentationService
     public async Task ShowErrorInsufficientDiskSpaceAsync()
     {
         await ShowMessageBoxAsync(
-            "Insufficient Storage Space on Backup Medium",
-            "The backup medium does not have enough free space for this operation.",
-            [new UICommand("OK")]);
+            "Status_InsufficientSpace_Title".GetLocalized(),
+            "Status_InsufficientSpace_Text".GetLocalized(),
+            [new UICommand("MsgBox_OK".GetLocalized())]);
     }
 
     public async Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files)
@@ -182,9 +183,9 @@ public class PresentationService : IPresentationService
             var dialog = new ContentDialog
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
-                Title = "Files could not be copied",
+                Title = "Status_FilesNotCopied_Title".GetLocalized(),
                 Content = list,
-                PrimaryButtonText = "OK"
+                PrimaryButtonText = "MsgBox_OK".GetLocalized()
             };
 
             await dialog.ShowAsync();
@@ -212,7 +213,7 @@ public class PresentationService : IPresentationService
 
     public async Task<bool> ShowDeleteBackupWindowAsync()
     {
-        var messageBoxResult = await ShowMessageBoxAsync("Delete Backup", "Are you sure you want to delete this backup?", new List<IUICommand> { new UICommand("Yes"), new UICommand("No") });
+        var messageBoxResult = await ShowMessageBoxAsync("Browser_DeleteBackup_Title".GetLocalized(), "Browser_DeleteBackup_Confirm".GetLocalized(), new List<IUICommand> { new UICommand("MsgBox_Yes".GetLocalized()), new UICommand("MsgBox_No".GetLocalized()) });
         return messageBoxResult == ContentDialogResult.Primary;
     }
 
@@ -242,7 +243,7 @@ public class PresentationService : IPresentationService
         uint defaultCommandIndex,
         uint cancelCommandIndex)
     {
-        IUICommand defaultCommand = new UICommand("OK");
+        IUICommand defaultCommand = new UICommand("MsgBox_OK".GetLocalized());
         IUICommand? cancelCommand = null;
 
         if (commands == null)

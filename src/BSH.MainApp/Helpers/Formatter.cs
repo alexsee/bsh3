@@ -9,21 +9,21 @@ public static class Formatter
     {
         if (date == DateTime.MaxValue)
         {
-            return "Nie";
+            return "Formatter_Never".GetLocalized();
         }
 
         string formattedDate;
         if (date.Date == DateTime.Today)
         {
-            formattedDate = "Heute " + date.ToShortTimeString();
+            formattedDate = string.Format("Formatter_Today".GetLocalized(), date.ToShortTimeString());
         }
         else if (date.AddDays(1d) == DateTime.Today)
         {
-            formattedDate = "Gestern " + date.ToShortTimeString();
+            formattedDate = string.Format("Formatter_Yesterday".GetLocalized(), date.ToShortTimeString());
         }
         else
         {
-            formattedDate = date.Date.ToString("dd. MMMM yyyy ") + date.ToShortTimeString();
+            formattedDate = date.Date.ToString("Formatter_DatePrefix".GetLocalized()) + date.ToShortTimeString();
         }
 
         return formattedDate;

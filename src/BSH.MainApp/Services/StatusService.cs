@@ -8,6 +8,7 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 
 namespace BSH.MainApp.Services;
@@ -116,11 +117,11 @@ public class StatusService : IJobReport, IStatusService
 
         if (jobState == JobState.FINISHED)
         {
-            ShowNotification("Backup successful", "Planned backup was performed successfully.");
+            ShowNotification("INFO_BACKUP_SUCCESSFUL_TITLE".GetLocalized(), "INFO_BACKUP_SUCCESSFUL_TEXT".GetLocalized());
         }
         else if (jobState == JobState.ERROR)
         {
-            ShowNotification("Backup with errors finished", "The planned backup was ended with problems. Click here for more information.");
+            ShowNotification("INFO_BACKUP_UNSUCCESSFUL_TITLE".GetLocalized(), "INFO_BACKUP_UNSUCCESSFUL_TEXT".GetLocalized());
         }
     }
 

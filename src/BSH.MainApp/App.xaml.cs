@@ -18,6 +18,7 @@ using BSH.MainApp.Activation;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Core.Contracts.Services;
 using BSH.MainApp.Core.Services;
+using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using BSH.MainApp.Notifications;
 using BSH.MainApp.Services;
@@ -68,6 +69,9 @@ public partial class App : Application
 
     public App()
     {
+        // Match WinForms default culture: German UI with English satellite resources.
+        Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "de-DE";
+
         InitializeComponent();
 
         Host = Microsoft.Extensions.Hosting.Host.
@@ -224,7 +228,7 @@ public partial class App : Application
 
     private async void StartManualBackupCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
-        await App.GetService<IJobService>().CreateBackupAsync("Manual backup", "", true);
+        await App.GetService<IJobService>().CreateBackupAsync("CreateBackup_Title_Manual".GetLocalized(), "", true);
     }
 
     private async void startManualBackupExtendedCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
@@ -232,7 +236,7 @@ public partial class App : Application
         var (result, backup) = await App.GetService<IPresentationService>().ShowCreateBackupWindowAsync();
         if (result)
         {
-            await App.GetService<IJobService>().CreateBackupAsync(backup.Title ?? "Manual backup", backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);
+            await App.GetService<IJobService>().CreateBackupAsync(backup.Title ?? "CreateBackup_Title_Manual".GetLocalized(), backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);
         }
     }
 

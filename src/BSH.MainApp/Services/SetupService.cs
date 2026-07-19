@@ -41,13 +41,13 @@ public class SetupService : ISetupService
 
         if (!PathRules.TryNormalizeFolderPath(folderPath, out var fullPath))
         {
-            error = "Selected source folder path is invalid.";
+            error = "Settings_Sources_InvalidPath".GetLocalized();
             return false;
         }
 
         if (PathRules.IsDriveRoot(fullPath))
         {
-            error = "Selecting a drive root is risky. Choose a specific folder instead.";
+            error = "Settings_Sources_DriveRootRisky".GetLocalized();
             return false;
         }
 
@@ -58,7 +58,7 @@ public class SetupService : ISetupService
                 folderName,
                 StringComparison.OrdinalIgnoreCase)))
         {
-            error = "A source folder with the same name is already configured.";
+            error = "Settings_Sources_SameName".GetLocalized();
             return false;
         }
 
@@ -153,7 +153,7 @@ public class SetupService : ISetupService
 
         if (string.IsNullOrWhiteSpace(originalPath) || string.IsNullOrWhiteSpace(newPath))
         {
-            error = "Source path cannot be empty.";
+            error = "Setup_Validation_SourcePathEmpty".GetLocalized();
             return false;
         }
 
@@ -170,7 +170,7 @@ public class SetupService : ISetupService
             return true;
         }
 
-        error = "Cannot change the directory because the folder name does not match.";
+        error = "Setup_Validation_FolderNameMismatch".GetLocalized();
         return false;
     }
 

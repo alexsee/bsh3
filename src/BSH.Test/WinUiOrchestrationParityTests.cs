@@ -15,6 +15,7 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime;
 using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using BSH.MainApp.Services;
 using Microsoft.UI.Xaml.Controls;
@@ -250,7 +251,7 @@ public class WinUiOrchestrationParityTests
         await service.StartAsync();
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain("Not enough disk space"));
+        Assert.That(notifications.Payloads[0], Does.Contain("INFO_NO_DISKSPACE_LEFT_TITLE".GetLocalized()));
     }
 
     [Test]
@@ -278,12 +279,12 @@ public class WinUiOrchestrationParityTests
         await service.StartAsync();
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain("Backup outdated"));
+        Assert.That(notifications.Payloads[0], Does.Contain("INFO_BACKUP_OLD_TITLE".GetLocalized()));
     }
 
-    [TestCase(JobState.FINISHED, "Backup successful")]
-    [TestCase(JobState.ERROR, "Backup with errors finished")]
-    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitle)
+    [TestCase(JobState.FINISHED, "INFO_BACKUP_SUCCESSFUL_TITLE")]
+    [TestCase(JobState.ERROR, "INFO_BACKUP_UNSUCCESSFUL_TITLE")]
+    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitleKey)
     {
         var notifications = new TestNotificationService();
         var configurationManager = new TestConfigurationManager
@@ -299,7 +300,7 @@ public class WinUiOrchestrationParityTests
         statusService.ReportState(state);
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain(expectedTitle));
+        Assert.That(notifications.Payloads[0], Does.Contain(expectedTitleKey.GetLocalized()));
     }
 
     [Test]

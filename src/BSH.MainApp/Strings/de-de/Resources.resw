@@ -51,879 +51,879 @@
     <value>&lt;toast launch="action=ToastClick"&gt;
   &lt;visual&gt;
     &lt;binding template="ToastGeneric"&gt;
-      &lt;text&gt;App Notification&lt;/text&gt;
+      &lt;text&gt;App-Benachrichtigung&lt;/text&gt;
       &lt;text&gt;&lt;/text&gt;
       &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
     &lt;/binding&gt;
   &lt;/visual&gt;
   &lt;actions&gt;
-    &lt;action content="Settings" arguments="action=Settings"/&gt;
+    &lt;action content="Einstellungen" arguments="action=Settings"/&gt;
   &lt;/actions&gt;
 &lt;/toast&gt;</value>
   </data>
   <data name="ApplicationUpdate_UpToDate_Text" xml:space="preserve">
-    <value>You are already using the latest version.</value>
+    <value>Sie verwenden bereits die neueste Version.</value>
   </data>
   <data name="Browser_AddToFolderFavorites" xml:space="preserve">
-    <value>Add to folder favorites</value>
+    <value>Zu Ordnerfavoriten hinzufügen</value>
   </data>
   <data name="Browser_Backups" xml:space="preserve">
-    <value>Backups</value>
+    <value>Sicherungen</value>
   </data>
   <data name="Browser_Column_DateCreated" xml:space="preserve">
-    <value>Date created</value>
+    <value>Erstellungsdatum</value>
   </data>
   <data name="Browser_Column_LastModified" xml:space="preserve">
-    <value>Last modified</value>
+    <value>Zuletzt geändert</value>
   </data>
   <data name="Browser_Column_Name" xml:space="preserve">
     <value>Name</value>
   </data>
   <data name="Browser_Column_Path" xml:space="preserve">
-    <value>Path</value>
+    <value>Pfad</value>
   </data>
   <data name="Browser_Column_Size" xml:space="preserve">
-    <value>Size</value>
+    <value>Größe</value>
   </data>
   <data name="Browser_DeleteBackup" xml:space="preserve">
-    <value>Delete backup</value>
+    <value>Sicherung löschen</value>
   </data>
   <data name="Browser_DeleteBackup_Confirm" xml:space="preserve">
-    <value>Are you sure you want to delete this backup?</value>
+    <value>Sind Sie sicher, dass Sie diese Sicherung löschen möchten?</value>
   </data>
   <data name="Browser_DeleteBackup_Title" xml:space="preserve">
-    <value>Delete Backup</value>
+    <value>Sicherung löschen</value>
   </data>
   <data name="Browser_DeleteBackups_Confirm" xml:space="preserve">
-    <value>Are you sure you want to delete the selected backups?</value>
+    <value>Sind Sie sicher, dass Sie die ausgewählten Sicherungen löschen möchten?</value>
   </data>
   <data name="Browser_DeleteBackups_Title" xml:space="preserve">
-    <value>Delete backups</value>
+    <value>Sicherungen löschen</value>
   </data>
   <data name="Browser_DeleteFromAll_Confirm" xml:space="preserve">
-    <value>Are you sure you want to delete this {0} from all backups?</value>
+    <value>Sind Sie sicher, dass Sie diese(n) {0} aus allen Sicherungen löschen möchten?</value>
   </data>
   <data name="Browser_DeleteFromAll_File" xml:space="preserve">
-    <value>file</value>
+    <value>Datei</value>
   </data>
   <data name="Browser_DeleteFromAll_Folder" xml:space="preserve">
-    <value>folder</value>
+    <value>Ordner</value>
   </data>
   <data name="Browser_DeleteFromAll_Title" xml:space="preserve">
-    <value>Delete from all backups</value>
+    <value>Aus allen Sicherungen löschen</value>
   </data>
   <data name="Browser_DeleteMultipleBackups" xml:space="preserve">
-    <value>Delete multiple backups</value>
+    <value>Mehrere Sicherungen löschen</value>
   </data>
   <data name="Browser_DeleteSelectedFromAllBackups" xml:space="preserve">
-    <value>Delete selected from all backups</value>
+    <value>Auswahl aus allen Sicherungen löschen</value>
   </data>
   <data name="Browser_EditBackup" xml:space="preserve">
-    <value>Edit backup</value>
+    <value>Sicherung bearbeiten</value>
   </data>
   <data name="Browser_Empty_GoHome" xml:space="preserve">
-    <value>Go Home</value>
+    <value>Zur Übersicht</value>
   </data>
   <data name="Browser_Empty_Text" xml:space="preserve">
-    <value>Start creating backups to browse them here.</value>
+    <value>Erstellen Sie Sicherungen, um sie hier zu durchsuchen.</value>
   </data>
   <data name="Browser_Empty_Title" xml:space="preserve">
-    <value>There are currently no backups!</value>
+    <value>Es sind derzeit keine Sicherungen vorhanden!</value>
   </data>
   <data name="Browser_Favorites" xml:space="preserve">
-    <value>Favorites</value>
+    <value>Favoriten</value>
   </data>
   <data name="Browser_FeatureNotAvailable_Text" xml:space="preserve">
-    <value>Feature is currently not available.
+    <value>Die Funktion ist derzeit nicht verfügbar.
 
-This feature is currently not available because the quick preview could not be found. Reinstall Backup Service Home to resolve the problem.</value>
+Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefunden werden konnte. Installieren Sie Backup Service Home erneut, um das Problem zu beheben.</value>
   </data>
   <data name="Browser_FeatureNotAvailable_Title" xml:space="preserve">
-    <value>Feature not available</value>
+    <value>Funktion nicht verfügbar</value>
   </data>
   <data name="Browser_FileDetails_AvailableVersions" xml:space="preserve">
-    <value>Available versions</value>
+    <value>Verfügbare Versionen</value>
   </data>
   <data name="Browser_FileDetails_Created" xml:space="preserve">
-    <value>Created</value>
+    <value>Erstellt</value>
   </data>
   <data name="Browser_FileDetails_Modified" xml:space="preserve">
-    <value>Modified</value>
+    <value>Geändert</value>
   </data>
   <data name="Browser_FileDetails_RestorePath" xml:space="preserve">
-    <value>Restore path</value>
+    <value>Wiederherstellungspfad</value>
   </data>
   <data name="Browser_FileDetails_SizeBytes" xml:space="preserve">
-    <value>{0} bytes</value>
+    <value>{0} Bytes</value>
   </data>
   <data name="Browser_FileDetails_Type" xml:space="preserve">
-    <value>Type</value>
+    <value>Typ</value>
   </data>
   <data name="Browser_LockUnlockBackup" xml:space="preserve">
-    <value>Lock/unlock backup</value>
+    <value>Sicherung sperren/entsperren</value>
   </data>
   <data name="Browser_Organize" xml:space="preserve">
-    <value>Organize</value>
+    <value>Organisieren</value>
   </data>
   <data name="Browser_PreviewPane" xml:space="preserve">
-    <value>Preview pane</value>
+    <value>Vorschaufenster</value>
   </data>
   <data name="Browser_Properties" xml:space="preserve">
-    <value>Properties</value>
+    <value>Eigenschaften</value>
   </data>
   <data name="Browser_QuickPreview" xml:space="preserve">
-    <value>Quick preview</value>
+    <value>Schnellvorschau</value>
   </data>
   <data name="Browser_Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>Entfernen</value>
   </data>
   <data name="Browser_Rename" xml:space="preserve">
-    <value>Rename</value>
+    <value>Umbenennen</value>
   </data>
   <data name="Browser_RenameFavorite_Title" xml:space="preserve">
-    <value>Rename favorite</value>
+    <value>Favorit umbenennen</value>
   </data>
   <data name="Browser_Restore" xml:space="preserve">
-    <value>Restore</value>
+    <value>Wiederherstellen</value>
   </data>
   <data name="Browser_RestoreAll" xml:space="preserve">
-    <value>Restore all</value>
+    <value>Alles wiederherstellen</value>
   </data>
   <data name="Browser_Search" xml:space="preserve">
-    <value>Search</value>
+    <value>Suchen</value>
   </data>
   <data name="Browser_Title.Text" xml:space="preserve">
     <value>Browser</value>
   </data>
   <data name="CreateBackup_CreateButton" xml:space="preserve">
-    <value>Create Backup</value>
+    <value>Sicherung erstellen</value>
   </data>
   <data name="CreateBackup_DescriptionLabel" xml:space="preserve">
-    <value>Description</value>
+    <value>Beschreibung</value>
   </data>
   <data name="CreateBackup_DescriptionLabelColon" xml:space="preserve">
-    <value>Description:</value>
+    <value>Beschreibung:</value>
   </data>
   <data name="CreateBackup_FullBackup" xml:space="preserve">
-    <value>Create full backup</value>
+    <value>Vollständige Sicherung erstellen</value>
   </data>
   <data name="CreateBackup_Help_Description" xml:space="preserve">
-    <value>Enter a description for your backup</value>
+    <value>Geben Sie eine Beschreibung für Ihre Sicherung ein</value>
   </data>
   <data name="CreateBackup_Help_Title" xml:space="preserve">
-    <value>Enter the title for your backup</value>
+    <value>Geben Sie den Titel für Ihre Sicherung ein</value>
   </data>
   <data name="CreateBackup_ShutdownAfter" xml:space="preserve">
-    <value>Shutdown computer after completion</value>
+    <value>Computer nach Abschluss herunterfahren</value>
   </data>
   <data name="CreateBackup_Title" xml:space="preserve">
-    <value>Create Backup</value>
+    <value>Sicherung erstellen</value>
   </data>
   <data name="CreateBackup_TitleLabel" xml:space="preserve">
-    <value>Title:</value>
+    <value>Titel:</value>
   </data>
   <data name="CreateBackup_Title_Automatic" xml:space="preserve">
-    <value>Automatic Backup</value>
+    <value>Automatisches Backup</value>
   </data>
   <data name="CreateBackup_Title_First" xml:space="preserve">
-    <value>First backup</value>
+    <value>Erste Sicherung</value>
   </data>
   <data name="CreateBackup_Title_Manual" xml:space="preserve">
-    <value>Manual backup</value>
+    <value>Manuelle Sicherung</value>
   </data>
   <data name="CreateBackup_Title_Scheduled" xml:space="preserve">
-    <value>Automatic backup</value>
+    <value>Automatische Sicherung</value>
   </data>
   <data name="DATETIME_FORMAT" xml:space="preserve">
-    <value>dd. MMM yyyy hh:mm</value>
+    <value>dd. MMM yyyy HH:mm</value>
   </data>
   <data name="EditBackup_Title" xml:space="preserve">
-    <value>Edit Backup</value>
+    <value>Sicherung bearbeiten</value>
   </data>
   <data name="EditBackup_WindowTitle" xml:space="preserve">
-    <value>Create Backup</value>
+    <value>Sicherung erstellen</value>
   </data>
   <data name="Filter_AddFiles" xml:space="preserve">
-    <value>Add File(s)</value>
+    <value>Datei(en) hinzufügen</value>
   </data>
   <data name="Filter_AddFolder" xml:space="preserve">
-    <value>Add Folder</value>
+    <value>Ordner hinzufügen</value>
   </data>
   <data name="Filter_Column_Extension" xml:space="preserve">
-    <value>Extension</value>
+    <value>Erweiterung</value>
   </data>
   <data name="Filter_Column_File" xml:space="preserve">
-    <value>File</value>
+    <value>Datei</value>
   </data>
   <data name="Filter_Column_Folder" xml:space="preserve">
-    <value>Folder</value>
+    <value>Ordner</value>
   </data>
   <data name="Filter_Column_Pattern" xml:space="preserve">
-    <value>Pattern</value>
+    <value>Muster</value>
   </data>
   <data name="Filter_Description" xml:space="preserve">
-    <value>Exclude files, folders, file types and based on regular expressions. Select the files and folders you want to exclude in backups.</value>
+    <value>Schließen Sie Dateien, Ordner, Dateitypen und anhand regulärer Ausdrücke aus. Wählen Sie die Dateien und Ordner aus, die Sie von Sicherungen ausschließen möchten.</value>
   </data>
   <data name="Filter_EnterExtension" xml:space="preserve">
-    <value>Enter extension (without dot)</value>
+    <value>Erweiterung eingeben (ohne Punkt)</value>
   </data>
   <data name="Filter_EnterRegex" xml:space="preserve">
-    <value>Enter regular expression</value>
+    <value>Regulären Ausdruck eingeben</value>
   </data>
   <data name="Filter_ExcludeLargerThan" xml:space="preserve">
-    <value>Exclude files larger than this size</value>
+    <value>Dateien größer als diese Größe ausschließen</value>
   </data>
   <data name="Filter_FileNotInSources" xml:space="preserve">
-    <value>Selected file is not within the configured source folders.</value>
+    <value>Die ausgewählte Datei liegt nicht in den konfigurierten Quellordnern.</value>
   </data>
   <data name="Filter_FolderNotInSources" xml:space="preserve">
-    <value>Selected folder is not within the configured source folders.</value>
+    <value>Der ausgewählte Ordner liegt nicht in den konfigurierten Quellordnern.</value>
   </data>
   <data name="Filter_Heading" xml:space="preserve">
-    <value>Exclude files and folders</value>
+    <value>Dateien und Ordner ausschließen</value>
   </data>
   <data name="Filter_IncludeSystemFolders" xml:space="preserve">
-    <value>Include folders marked as System (e.g. Nextcloud sync folders)</value>
+    <value>Als System markierte Ordner einbeziehen (z. B. Nextcloud-Sync-Ordner)</value>
   </data>
   <data name="Filter_InvalidRegex" xml:space="preserve">
-    <value>Invalid regular expression. Fix the pattern before saving it.</value>
+    <value>Ungültiger regulärer Ausdruck. Korrigieren Sie das Muster, bevor Sie es speichern.</value>
   </data>
   <data name="Filter_MaximumFileSize" xml:space="preserve">
-    <value>Maximum file size</value>
+    <value>Maximale Dateigröße</value>
   </data>
   <data name="Filter_Tab_FileTypes" xml:space="preserve">
-    <value>File types</value>
+    <value>Dateitypen</value>
   </data>
   <data name="Filter_Tab_Files" xml:space="preserve">
-    <value>Files</value>
+    <value>Dateien</value>
   </data>
   <data name="Filter_Tab_Folders" xml:space="preserve">
-    <value>Folders</value>
+    <value>Ordner</value>
   </data>
   <data name="Filter_Tab_MaxFileSize" xml:space="preserve">
-    <value>Max file size</value>
+    <value>Max. Dateigröße</value>
   </data>
   <data name="Filter_Tab_Regex" xml:space="preserve">
-    <value>Regular expressions</value>
+    <value>Reguläre Ausdrücke</value>
   </data>
   <data name="Filter_Title" xml:space="preserve">
-    <value>Exclude items</value>
+    <value>Elemente ausschließen</value>
   </data>
   <data name="Formatter_DatePrefix" xml:space="preserve">
     <value>dd. MMMM yyyy </value>
   </data>
   <data name="Formatter_Never" xml:space="preserve">
-    <value>Never</value>
+    <value>Nie</value>
   </data>
   <data name="Formatter_Today" xml:space="preserve">
-    <value>Today {0}</value>
+    <value>Heute {0}</value>
   </data>
   <data name="Formatter_Yesterday" xml:space="preserve">
-    <value>Yesterday {0}</value>
+    <value>Gestern {0}</value>
   </data>
   <data name="INFO_BACKUP_OLD_TEXT" xml:space="preserve">
-    <value>Your last data backup is already {0} days old. Perform a data backup to ensure your current files are backed up.</value>
+    <value>Ihre letzte Datensicherung liegt bereits {0} Tage zurück. Führen Sie eine Datensicherung aus, damit Ihre aktuellen Dateien gesichert sind.</value>
   </data>
   <data name="INFO_BACKUP_OLD_TITLE" xml:space="preserve">
-    <value>Backup outdated</value>
+    <value>Datensicherung veraltet</value>
   </data>
   <data name="INFO_BACKUP_SUCCESSFUL_TEXT" xml:space="preserve">
-    <value>Planned backup was performed successfully.</value>
+    <value>Die geplante Sicherung wurde erfolgreich abgeschlossen.</value>
   </data>
   <data name="INFO_BACKUP_SUCCESSFUL_TITLE" xml:space="preserve">
-    <value>Backup successful</value>
+    <value>Datensicherung erfolgreich</value>
   </data>
   <data name="INFO_BACKUP_UNSUCCESSFUL_TEXT" xml:space="preserve">
-    <value>The planned backup was ended with problems. Click here for more information.</value>
+    <value>Die geplante Datensicherung wurde mit Problemen beendet. Klicken Sie hier für mehr Informationen.</value>
   </data>
   <data name="INFO_BACKUP_UNSUCCESSFUL_TITLE" xml:space="preserve">
-    <value>Backup with errors finished</value>
+    <value>Datensicherung mit Problemen beendet</value>
   </data>
   <data name="INFO_NO_DISKSPACE_LEFT_TEXT" xml:space="preserve">
-    <value>There is not enough storage space left on the backup medium. Delete backups or switch to a new medium.</value>
+    <value>Auf dem Backupmedium ist nicht mehr genug Speicherplatz vorhanden. Löschen Sie Datensicherungen oder wechseln Sie das Medium.</value>
   </data>
   <data name="INFO_NO_DISKSPACE_LEFT_TITLE" xml:space="preserve">
-    <value>Not enough disk space.</value>
+    <value>Nicht genug Speicherplatz.</value>
   </data>
   <data name="MSG_BACKUP_DEVICE_NOT_READY_TEXT" xml:space="preserve">
-    <value>The backup medium is currently unavailable, which is why the backup is being interrupted.</value>
+    <value>Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Sicherung abgebrochen wird.</value>
   </data>
   <data name="MSG_BACKUP_DEVICE_NOT_READY_TITLE" xml:space="preserve">
-    <value>Backup medium not available.</value>
+    <value>Sicherungsmedium nicht bereit</value>
   </data>
   <data name="MSG_NO_UPDATE_FOUND_TEXT" xml:space="preserve">
-    <value>You are on the latest version of Backup Service Home 3. No updates were found.</value>
+    <value>Sie sind auf der neusten Version von Backup Service Home 3. Es wurden keine Aktualisierungen gefunden.</value>
   </data>
   <data name="MSG_NO_UPDATE_FOUND_TITLE" xml:space="preserve">
-    <value>No updates found</value>
+    <value>Keine Aktualisierungen gefunden</value>
   </data>
   <data name="MSG_PASSWORD_WRONG_TEXT" xml:space="preserve">
-    <value>The given password is wrong.</value>
+    <value>Das angegebene Kennwort ist falsch.</value>
   </data>
   <data name="MSG_PASSWORD_WRONG_TITLE" xml:space="preserve">
-    <value>Password wrong</value>
+    <value>Kennwort falsch</value>
   </data>
   <data name="MSG_TASK_RUNNING_TEXT" xml:space="preserve">
-    <value>A different backup task is currently running, which is why this backup will be interrupted.</value>
+    <value>Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Sicherung abgebrochen wird.</value>
   </data>
   <data name="MSG_TASK_RUNNING_TITLE" xml:space="preserve">
-    <value>Other task in progress</value>
+    <value>Andere Sicherungsaufgabe in Bearbeitung</value>
   </data>
   <data name="MainView_Available" xml:space="preserve">
-    <value>Available:</value>
+    <value>Verfügbar:</value>
   </data>
   <data name="MainView_BackupMode" xml:space="preserve">
-    <value>Backup mode:</value>
+    <value>Sicherungsmodus:</value>
   </data>
   <data name="MainView_BackupMode_Automatic" xml:space="preserve">
-    <value>Automatic backups</value>
+    <value>Automatische Sicherungen</value>
   </data>
   <data name="MainView_BackupMode_Manual" xml:space="preserve">
-    <value>Manual backups</value>
+    <value>Manuelle Sicherungen</value>
   </data>
   <data name="MainView_BackupMode_Scheduled" xml:space="preserve">
-    <value>Scheduled backups</value>
+    <value>Zeitplanbasierte Sicherungen</value>
   </data>
   <data name="MainView_Backups" xml:space="preserve">
-    <value>Backups</value>
+    <value>Sicherungen</value>
   </data>
   <data name="MainView_BtnCreateBackup_Title" xml:space="preserve">
-    <value>Manual backup</value>
+    <value>Manuelle Sicherung</value>
   </data>
   <data name="MainView_Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Abbrechen</value>
   </data>
   <data name="MainView_DiskspaceFullExpected" xml:space="preserve">
-    <value>Diskspace full expected on:</value>
+    <value>Voraussichtlich voll am:</value>
   </data>
   <data name="MainView_DiskspaceUnpredictable" xml:space="preserve">
-    <value>currently unpredictable</value>
+    <value>noch nicht vorhersehbar</value>
   </data>
   <data name="MainView_Files" xml:space="preserve">
-    <value>Files</value>
+    <value>Dateien</value>
   </data>
   <data name="MainView_LastBackup" xml:space="preserve">
-    <value>Last Backup:</value>
+    <value>Letzte Sicherung:</value>
   </data>
   <data name="MainView_NextBackup" xml:space="preserve">
-    <value>Next Backup:</value>
+    <value>Nächste Sicherung:</value>
   </data>
   <data name="MainView_NonePlanned" xml:space="preserve">
-    <value>None planned</value>
+    <value>keines geplant</value>
   </data>
   <data name="MainView_Off" xml:space="preserve">
-    <value>Off</value>
+    <value>Aus</value>
   </data>
   <data name="MainView_On" xml:space="preserve">
-    <value>On</value>
+    <value>Ein</value>
   </data>
   <data name="MainView_ScheduleWarning_NoEntries" xml:space="preserve">
-    <value>Scheduled backups are enabled but no schedule is set.</value>
+    <value>Für geplante Sicherungen ist kein Zeitplan eingerichtet.</value>
   </data>
   <data name="MainView_StartBackup" xml:space="preserve">
-    <value>Start Backup</value>
+    <value>Sicherung starten</value>
   </data>
   <data name="MainView_SystemStatus_BatteryPaused" xml:space="preserve">
-    <value>Battery operation. No backups are being performed.</value>
+    <value>Batteriebetrieb. Es werden keine Sicherungen durchgeführt.</value>
   </data>
   <data name="MainView_SystemStatus_Deactivated" xml:space="preserve">
-    <value>Automatic backup is deactivated.</value>
+    <value>Automatische Sicherung ist deaktiviert.</value>
   </data>
   <data name="MainView_SystemStatus_NotConfigured" xml:space="preserve">
-    <value>Backup Service Home is not configured yet.</value>
+    <value>Backup Service Home ist noch nicht konfiguriert.</value>
   </data>
   <data name="MainView_SystemStatus_Running" xml:space="preserve">
-    <value>Backup Service Home is running normally.</value>
+    <value>Backup Service Home wird ordnungsgemäß ausgeführt.</value>
   </data>
   <data name="MainView_TotalSizeBackuped" xml:space="preserve">
-    <value>Total size backuped</value>
+    <value>Gesamtgröße gesichert</value>
   </data>
   <data name="Main_Title.Text" xml:space="preserve">
-    <value>Main</value>
+    <value>Übersicht</value>
   </data>
   <data name="MediaType_FileTransferServer" xml:space="preserve">
     <value>File Transfer Protocol (FTP)</value>
   </data>
   <data name="MediaType_LocalDevice" xml:space="preserve">
-    <value>Local Device</value>
+    <value>Lokales Gerät</value>
   </data>
   <data name="MsgBox_Add" xml:space="preserve">
-    <value>Add</value>
+    <value>Hinzufügen</value>
   </data>
   <data name="MsgBox_Back" xml:space="preserve">
-    <value>Back</value>
+    <value>Zurück</value>
   </data>
   <data name="MsgBox_Browse" xml:space="preserve">
-    <value>Browse...</value>
+    <value>Durchsuchen...</value>
   </data>
   <data name="MsgBox_Cancel" xml:space="preserve">
-    <value>&amp;Cancel</value>
+    <value>&amp;Abbrechen</value>
   </data>
   <data name="MsgBox_Change" xml:space="preserve">
-    <value>Change</value>
+    <value>Ändern</value>
   </data>
   <data name="MsgBox_Close" xml:space="preserve">
-    <value>Close</value>
+    <value>Schließen</value>
   </data>
   <data name="MsgBox_Delete" xml:space="preserve">
-    <value>Delete</value>
+    <value>Löschen</value>
   </data>
   <data name="MsgBox_Ftp_Successful_Text" xml:space="preserve">
-    <value>The connection test to the specified FTP server was successful.</value>
+    <value>Die Verbindung zum angegebenen FTP-Server konnte erfolgreich getestet werden.</value>
   </data>
   <data name="MsgBox_Ftp_Successful_Title" xml:space="preserve">
-    <value>Connection to FTP Server successful</value>
+    <value>Verbindung zum FTP-Server erfolgreich</value>
   </data>
   <data name="MsgBox_Ftp_Unuccessful_Text" xml:space="preserve">
-    <value>The connection test to the specified FTP server was unsuccessful.</value>
+    <value>Die Verbindung zum angegebenen FTP-Server konnte nicht hergestellt werden.</value>
   </data>
   <data name="MsgBox_Ftp_Unuccessful_Title" xml:space="preserve">
-    <value>Connection to FTP Server unsuccessful</value>
+    <value>Verbindung zum FTP-Server nicht erfolgreich</value>
   </data>
   <data name="MsgBox_LocalPath_Change_Move" xml:space="preserve">
-    <value>&amp;Move</value>
+    <value>&amp;Verschieben</value>
   </data>
   <data name="MsgBox_LocalPath_Change_Text" xml:space="preserve">
-    <value>You can decide to either use or move the location of the backups:
+    <value>Sie können den Speicherort der Sicherungen entweder übernehmen oder verschieben:
 
-Use: You already moved the path to the backups or the paths have changed.
-Move: You want to move the backups to a different path and want BSH to move the files.</value>
+Übernehmen: Sie haben den Pfad der Sicherungen bereits verschoben oder die Pfade haben sich geändert.
+Verschieben: Sie möchten die Sicherungen an einen anderen Pfad verschieben und BSH soll die Dateien verschieben.</value>
   </data>
   <data name="MsgBox_LocalPath_Change_Title" xml:space="preserve">
-    <value>Change local path</value>
+    <value>Lokalen Pfad ändern</value>
   </data>
   <data name="MsgBox_LocalPath_Change_Use" xml:space="preserve">
-    <value>&amp;Use</value>
+    <value>&amp;Übernehmen</value>
   </data>
   <data name="MsgBox_MediaType_Change_Text" xml:space="preserve">
-    <value>Existing backups will be deleted.
+    <value>Vorhandene Sicherungen werden gelöscht.
 
-If you decide to switch the media type, all existing backups will be deleted. Switching the backup device type is not supported.
+Wenn Sie den Medientyp wechseln, werden alle vorhandenen Sicherungen gelöscht. Ein Wechsel des Sicherungsgerätetyps wird nicht unterstützt.
 
-Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
+Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   </data>
   <data name="MsgBox_MediaType_Change_Title" xml:space="preserve">
-    <value>Existing backups deletion</value>
+    <value>Vorhandene Sicherungen werden gelöscht</value>
   </data>
   <data name="MsgBox_Next" xml:space="preserve">
-    <value>Next</value>
+    <value>Weiter</value>
   </data>
   <data name="MsgBox_No" xml:space="preserve">
-    <value>&amp;No</value>
+    <value>&amp;Nein</value>
   </data>
   <data name="MsgBox_OK" xml:space="preserve">
     <value>OK</value>
   </data>
   <data name="MsgBox_Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>Entfernen</value>
   </data>
   <data name="MsgBox_Rename" xml:space="preserve">
-    <value>Rename</value>
+    <value>Umbenennen</value>
   </data>
   <data name="MsgBox_Save" xml:space="preserve">
-    <value>Save</value>
+    <value>Speichern</value>
   </data>
   <data name="MsgBox_Yes" xml:space="preserve">
-    <value>&amp;Yes</value>
+    <value>&amp;Ja</value>
   </data>
   <data name="Nav_BackupBrowser" xml:space="preserve">
-    <value>Backup browser</value>
+    <value>Backupbrowser</value>
   </data>
   <data name="Nav_ExtrasAndSupport" xml:space="preserve">
-    <value>Extras and Support</value>
+    <value>Extras und Support</value>
   </data>
   <data name="Nav_Overview" xml:space="preserve">
-    <value>Overview</value>
+    <value>Übersicht</value>
   </data>
   <data name="Overwrite_AlreadyExists" xml:space="preserve">
-    <value>There is already a file with the same name at this location.</value>
+    <value>An diesem Speicherort ist bereits eine Datei mit demselben Namen vorhanden.</value>
   </data>
   <data name="Overwrite_ApplyForAll" xml:space="preserve">
-    <value>Apply for all conflicts</value>
+    <value>Für alle Konflikte übernehmen</value>
   </data>
   <data name="Overwrite_LastModified" xml:space="preserve">
-    <value>Last modified:</value>
+    <value>Zuletzt geändert:</value>
   </data>
   <data name="Overwrite_ReplaceDescription" xml:space="preserve">
-    <value>Replace file in the destination folder with the file from backup:</value>
+    <value>Datei im Zielordner durch die Datei aus der Sicherung ersetzen:</value>
   </data>
   <data name="Overwrite_ReplaceHeader" xml:space="preserve">
-    <value>Replace the file in the destination</value>
+    <value>Datei im Ziel ersetzen</value>
   </data>
   <data name="Overwrite_Size" xml:space="preserve">
-    <value>Size:</value>
+    <value>Größe:</value>
   </data>
   <data name="Overwrite_SkipHeader" xml:space="preserve">
-    <value>Skip the file</value>
+    <value>Datei überspringen</value>
   </data>
   <data name="Overwrite_Title" xml:space="preserve">
-    <value>Overwrite or Skip Files</value>
+    <value>Dateien überschreiben oder überspringen</value>
   </data>
   <data name="Password_Description" xml:space="preserve">
-    <value>Backup Service Home requires you to enter your password to continue the process. Once entered, you will not be asked for it again during this session.</value>
+    <value>Backup Service Home erfordert die Eingabe Ihres Kennworts, um den Vorgang fortzusetzen. Nach der Eingabe werden Sie in dieser Sitzung nicht erneut danach gefragt.</value>
   </data>
   <data name="Password_Label" xml:space="preserve">
-    <value>Password:</value>
+    <value>Kennwort:</value>
   </data>
   <data name="Password_Remember" xml:space="preserve">
-    <value>Remember password</value>
+    <value>Kennwort merken</value>
   </data>
   <data name="Password_Required_Text" xml:space="preserve">
-    <value>A password is required to access this backup.</value>
+    <value>Zum Zugriff auf diese Sicherung ist ein Kennwort erforderlich.</value>
   </data>
   <data name="Password_Required_Title" xml:space="preserve">
-    <value>Password required</value>
+    <value>Kennwort erforderlich</value>
   </data>
   <data name="Password_Title" xml:space="preserve">
-    <value>Password required</value>
+    <value>Kennwort erforderlich</value>
   </data>
   <data name="Schedule_BackupTimes" xml:space="preserve">
-    <value>Backup times</value>
+    <value>Sicherungszeiten</value>
   </data>
   <data name="Schedule_BackupTimesDescription" xml:space="preserve">
-    <value>Add one-time or recurring backup entries.</value>
+    <value>Fügen Sie einmalige oder wiederkehrende Sicherungseinträge hinzu.</value>
   </data>
   <data name="Schedule_CreateFullBackupAfterInterval" xml:space="preserve">
-    <value>Create full backup after an interval</value>
+    <value>Vollständige Sicherung nach einem Intervall erstellen</value>
   </data>
   <data name="Schedule_Date" xml:space="preserve">
-    <value>Date</value>
+    <value>Datum</value>
   </data>
   <data name="Schedule_DateTime" xml:space="preserve">
-    <value>Date / time</value>
+    <value>Datum / Uhrzeit</value>
   </data>
   <data name="Schedule_Day" xml:space="preserve">
-    <value>Day</value>
+    <value>Tag</value>
   </data>
   <data name="Schedule_DayOfMonth" xml:space="preserve">
-    <value>Day of month</value>
+    <value>Tag des Monats</value>
   </data>
   <data name="Schedule_DaysBetweenFullBackups" xml:space="preserve">
-    <value>Days between full backups</value>
+    <value>Tage zwischen vollständigen Sicherungen</value>
   </data>
   <data name="Schedule_Delete" xml:space="preserve">
-    <value>Delete</value>
+    <value>Löschen</value>
   </data>
   <data name="Schedule_DeleteInterval" xml:space="preserve">
-    <value>Delete interval</value>
+    <value>Löschintervall</value>
   </data>
   <data name="Schedule_FullBackups" xml:space="preserve">
-    <value>Full backups</value>
+    <value>Vollständige Sicherungen</value>
   </data>
   <data name="Schedule_FullBackupsDescription" xml:space="preserve">
-    <value>Control scheduled full backups and missed backup handling.</value>
+    <value>Steuern Sie geplante vollständige Sicherungen und den Umgang mit verpassten Sicherungen.</value>
   </data>
   <data name="Schedule_Help_Daily" xml:space="preserve">
-    <value>Run every day at the selected time.</value>
+    <value>Jeden Tag zur ausgewählten Uhrzeit ausführen.</value>
   </data>
   <data name="Schedule_Help_Hourly" xml:space="preserve">
-    <value>Run every hour at the selected minute.</value>
+    <value>Jede Stunde zur ausgewählten Minute ausführen.</value>
   </data>
   <data name="Schedule_Help_Monthly" xml:space="preserve">
-    <value>Run every month on the selected day and time.</value>
+    <value>Jeden Monat am ausgewählten Tag und zur ausgewählten Uhrzeit ausführen.</value>
   </data>
   <data name="Schedule_Help_Once" xml:space="preserve">
-    <value>Run once on the selected date and time.</value>
+    <value>Einmalig am ausgewählten Datum und zur ausgewählten Uhrzeit ausführen.</value>
   </data>
   <data name="Schedule_Help_Weekly" xml:space="preserve">
-    <value>Run every week on the selected day and time.</value>
+    <value>Jede Woche am ausgewählten Tag und zur ausgewählten Uhrzeit ausführen.</value>
   </data>
   <data name="Schedule_HourlyBackupThreshold" xml:space="preserve">
-    <value>Hourly backup threshold</value>
+    <value>Schwellenwert für stündliche Sicherungen</value>
   </data>
   <data name="Schedule_Kind_Daily" xml:space="preserve">
-    <value>Daily</value>
+    <value>Täglich</value>
   </data>
   <data name="Schedule_Kind_Hourly" xml:space="preserve">
-    <value>Hourly</value>
+    <value>Stündlich</value>
   </data>
   <data name="Schedule_Kind_Monthly" xml:space="preserve">
-    <value>Monthly</value>
+    <value>Monatlich</value>
   </data>
   <data name="Schedule_Kind_Once" xml:space="preserve">
-    <value>Once</value>
+    <value>Einmalig</value>
   </data>
   <data name="Schedule_Kind_Unknown" xml:space="preserve">
-    <value>Unknown</value>
+    <value>Unbekannt</value>
   </data>
   <data name="Schedule_Kind_Weekly" xml:space="preserve">
-    <value>Weekly</value>
+    <value>Wöchentlich</value>
   </data>
   <data name="Schedule_Minute" xml:space="preserve">
     <value>Minute</value>
   </data>
   <data name="Schedule_Mode" xml:space="preserve">
-    <value>Mode</value>
+    <value>Modus</value>
   </data>
   <data name="Schedule_PerformMissedLater" xml:space="preserve">
-    <value>Perform missed scheduled backups later</value>
+    <value>Verpasste geplante Sicherungen später ausführen</value>
   </data>
   <data name="Schedule_Repeat" xml:space="preserve">
-    <value>Repeat</value>
+    <value>Wiederholen</value>
   </data>
   <data name="Schedule_Retention" xml:space="preserve">
-    <value>Retention</value>
+    <value>Aufbewahrung</value>
   </data>
   <data name="Schedule_RetentionDescription" xml:space="preserve">
-    <value>Choose how long scheduled backup versions stay available.</value>
+    <value>Legen Sie fest, wie lange geplante Sicherungsversionen verfügbar bleiben.</value>
   </data>
   <data name="Schedule_RetentionMode_Automatic" xml:space="preserve">
-    <value>Automatic</value>
+    <value>Automatisch</value>
   </data>
   <data name="Schedule_RetentionMode_Interval" xml:space="preserve">
-    <value>Interval</value>
+    <value>Intervall</value>
   </data>
   <data name="Schedule_RetentionMode_None" xml:space="preserve">
-    <value>None</value>
+    <value>Keine</value>
   </data>
   <data name="Schedule_RetentionUnit_Day" xml:space="preserve">
-    <value>Day</value>
+    <value>Tag</value>
   </data>
   <data name="Schedule_RetentionUnit_Hour" xml:space="preserve">
-    <value>Hour</value>
+    <value>Stunde</value>
   </data>
   <data name="Schedule_RetentionUnit_Week" xml:space="preserve">
-    <value>Week</value>
+    <value>Woche</value>
   </data>
   <data name="Schedule_Subtitle" xml:space="preserve">
-    <value>Create schedule entries and choose how scheduled backups are retained.</value>
+    <value>Erstellen Sie Zeitplaneinträge und legen Sie fest, wie geplante Sicherungen aufbewahrt werden.</value>
   </data>
   <data name="Schedule_Text_AtMinute" xml:space="preserve">
-    <value>At minute {0}</value>
+    <value>Zur Minute {0}</value>
   </data>
   <data name="Schedule_Text_DayOfMonth" xml:space="preserve">
-    <value>Day {0}, {1}</value>
+    <value>Tag {0}, {1}</value>
   </data>
   <data name="Schedule_Time" xml:space="preserve">
-    <value>Time</value>
+    <value>Uhrzeit</value>
   </data>
   <data name="Schedule_Title" xml:space="preserve">
-    <value>Schedule</value>
+    <value>Zeitplan</value>
   </data>
   <data name="Schedule_Unit" xml:space="preserve">
-    <value>Unit</value>
+    <value>Einheit</value>
   </data>
   <data name="Settings_Enhanced_AccessDenied_Text" xml:space="preserve">
-    <value>Windows startup could not be changed. Check your permissions and try again.</value>
+    <value>Der Windows-Autostart konnte nicht geändert werden. Prüfen Sie Ihre Berechtigungen und versuchen Sie es erneut.</value>
   </data>
   <data name="Settings_Enhanced_AccessDenied_Title" xml:space="preserve">
-    <value>Access denied</value>
+    <value>Zugriff verweigert</value>
   </data>
   <data name="Settings_Enhanced_Application" xml:space="preserve">
-    <value>Application</value>
+    <value>Anwendung</value>
   </data>
   <data name="Settings_Enhanced_AutoCheckUpdates" xml:space="preserve">
-    <value>Automatically check for updates</value>
+    <value>Automatisch nach Aktualisierungen suchen</value>
   </data>
   <data name="Settings_Enhanced_AutoCheckUpdatesDescription" xml:space="preserve">
-    <value>Look for updates when the application starts</value>
+    <value>Beim Start der Anwendung nach Aktualisierungen suchen</value>
   </data>
   <data name="Settings_Enhanced_BackupCompleted" xml:space="preserve">
-    <value>Backup completed</value>
+    <value>Sicherung abgeschlossen</value>
   </data>
   <data name="Settings_Enhanced_BackupCompletedDescription" xml:space="preserve">
-    <value>Show notification if backup is completed</value>
+    <value>Benachrichtigung anzeigen, wenn die Sicherung abgeschlossen ist</value>
   </data>
   <data name="Settings_Enhanced_BackupOutdated" xml:space="preserve">
-    <value>Backup outdated</value>
+    <value>Sicherung veraltet</value>
   </data>
   <data name="Settings_Enhanced_BackupOutdatedDescription" xml:space="preserve">
-    <value>Show notification if backup is outdated</value>
+    <value>Benachrichtigung anzeigen, wenn die Sicherung veraltet ist</value>
   </data>
   <data name="Settings_Enhanced_BackupOutdatedWhen" xml:space="preserve">
-    <value>Backup is outdated when older than</value>
+    <value>Sicherung ist veraltet, wenn älter als</value>
   </data>
   <data name="Settings_Enhanced_Backupbrowser" xml:space="preserve">
     <value>Backupbrowser</value>
   </data>
   <data name="Settings_Enhanced_Days" xml:space="preserve">
-    <value>Days</value>
+    <value>Tage</value>
   </data>
   <data name="Settings_Enhanced_DirectoryLocalization" xml:space="preserve">
-    <value>Directory localization</value>
+    <value>Verzeichnislokalisierung</value>
   </data>
   <data name="Settings_Enhanced_DirectoryLocalizationDescription" xml:space="preserve">
-    <value>Show directory localization names if available</value>
+    <value>Lokalisierte Verzeichnisnamen anzeigen, falls verfügbar</value>
   </data>
   <data name="Settings_Enhanced_DiskspaceLowerThan" xml:space="preserve">
-    <value>Diskspace lower than</value>
+    <value>Speicherplatz niedriger als</value>
   </data>
   <data name="Settings_Enhanced_DownloadBeta" xml:space="preserve">
-    <value>Download beta updates</value>
+    <value>Beta-Aktualisierungen herunterladen</value>
   </data>
   <data name="Settings_Enhanced_DownloadBetaDescription" xml:space="preserve">
-    <value>Include prerelease versions when checking for updates</value>
+    <value>Vorabversionen bei der Suche nach Aktualisierungen einbeziehen</value>
   </data>
   <data name="Settings_Enhanced_LaunchAtStartup" xml:space="preserve">
-    <value>Launch at Windows startup</value>
+    <value>Beim Windows-Start starten</value>
   </data>
   <data name="Settings_Enhanced_LaunchAtStartupDescription" xml:space="preserve">
-    <value>Start Backup Service Home when you sign in to Windows</value>
+    <value>Backup Service Home starten, wenn Sie sich bei Windows anmelden</value>
   </data>
   <data name="Settings_Enhanced_LowDiskspace" xml:space="preserve">
-    <value>Low diskspace</value>
+    <value>Wenig Speicherplatz</value>
   </data>
   <data name="Settings_Enhanced_LowDiskspaceDescription" xml:space="preserve">
-    <value>Show notification if less diskspace is available</value>
+    <value>Benachrichtigung anzeigen, wenn wenig Speicherplatz verfügbar ist</value>
   </data>
   <data name="Settings_Enhanced_MB" xml:space="preserve">
     <value>MB</value>
   </data>
   <data name="Settings_Enhanced_Notifications" xml:space="preserve">
-    <value>Notifications</value>
+    <value>Benachrichtigungen</value>
   </data>
   <data name="Settings_Enhanced_StorageDeviceNotify" xml:space="preserve">
-    <value>Storage device</value>
+    <value>Speichermedium</value>
   </data>
   <data name="Settings_Enhanced_StorageDeviceNotifyDescription" xml:space="preserve">
-    <value>Show notification to request storage device if not available</value>
+    <value>Benachrichtigung anzeigen, um das Speichermedium anzufordern, falls nicht verfügbar</value>
   </data>
   <data name="Settings_Mode_BackupMode" xml:space="preserve">
-    <value>Backup mode</value>
+    <value>Sicherungsmodus</value>
   </data>
   <data name="Settings_Mode_BackupModeDescription" xml:space="preserve">
-    <value>Specify the automation of backups</value>
+    <value>Legen Sie die Automatisierung der Sicherungen fest</value>
   </data>
   <data name="Settings_Mode_BatterySaver" xml:space="preserve">
-    <value>Battery saver mode</value>
+    <value>Energiesparmodus</value>
   </data>
   <data name="Settings_Mode_BatterySaverDescription" xml:space="preserve">
-    <value>Stops automatic and scheduled backups when device is in battery mode</value>
+    <value>Stoppt automatische und geplante Sicherungen, wenn das Gerät im Batteriebetrieb ist</value>
   </data>
   <data name="Settings_Mode_FullAutomatic" xml:space="preserve">
-    <value>Full automatic backups (recommended)</value>
+    <value>Vollautomatische Sicherungen (empfohlen)</value>
   </data>
   <data name="Settings_Mode_FullAutomaticDescription" xml:space="preserve">
-    <value>The full automatic backup model backups your files hourly. These backups are available for 24 hours. Afterwards, daily backups are available for 30 days. Then, weekly backups are available as long as enough disk space is available.</value>
+    <value>Das vollautomatische Sicherungsmodell sichert Ihre Dateien stündlich. Diese Sicherungen sind 24 Stunden verfügbar. Anschließend sind tägliche Sicherungen 30 Tage verfügbar. Danach sind wöchentliche Sicherungen verfügbar, solange ausreichend Speicherplatz vorhanden ist.</value>
   </data>
   <data name="Settings_Mode_Manual" xml:space="preserve">
-    <value>Manual backups</value>
+    <value>Manuelle Sicherungen</value>
   </data>
   <data name="Settings_Mode_ManualDescription" xml:space="preserve">
-    <value>Backups are not executed automatically, but you manually start the backup.</value>
+    <value>Sicherungen werden nicht automatisch ausgeführt, sondern Sie starten die Sicherung manuell.</value>
   </data>
   <data name="Settings_Mode_Scheduled" xml:space="preserve">
-    <value>Scheduled backups</value>
+    <value>Zeitplanbasierte Sicherungen</value>
   </data>
   <data name="Settings_Mode_ScheduledDescription" xml:space="preserve">
-    <value>You define when backups should be performed and how long these should stay available.</value>
+    <value>Sie legen fest, wann Sicherungen durchgeführt werden und wie lange diese verfügbar bleiben sollen.</value>
   </data>
   <data name="Settings_Mode_SetSchedule" xml:space="preserve">
-    <value>Set schedule</value>
+    <value>Zeitplan festlegen</value>
   </data>
   <data name="Settings_Nav_Automation" xml:space="preserve">
-    <value>Automation</value>
+    <value>Automatisierung</value>
   </data>
   <data name="Settings_Nav_BackupOptions" xml:space="preserve">
-    <value>Backup Options</value>
+    <value>Sicherungsoptionen</value>
   </data>
   <data name="Settings_Nav_BackupTarget" xml:space="preserve">
-    <value>Backup Target</value>
+    <value>Sicherungsziel</value>
   </data>
   <data name="Settings_Nav_Behavior" xml:space="preserve">
-    <value>Behavior</value>
+    <value>Verhalten</value>
   </data>
   <data name="Settings_Nav_Sources" xml:space="preserve">
-    <value>Sources</value>
+    <value>Quellen</value>
   </data>
   <data name="Settings_Options_Compress" xml:space="preserve">
-    <value>Compress backups</value>
+    <value>Sicherungen komprimieren</value>
   </data>
   <data name="Settings_Options_Encrypt" xml:space="preserve">
-    <value>Encrypt backups</value>
+    <value>Sicherungen verschlüsseln</value>
   </data>
   <data name="Settings_Options_EncryptionHint" xml:space="preserve">
-    <value>To protect the backup from unauthorized access, it can be encrypted. You will then be asked for your password at each session. The encryption cannot be applied retroactively.</value>
+    <value>Zum Schutz vor unbefugtem Zugriff kann die Sicherung verschlüsselt werden. Sie werden dann in jeder Sitzung nach Ihrem Kennwort gefragt. Die Verschlüsselung kann nicht nachträglich angewendet werden.</value>
   </data>
   <data name="Settings_Options_ExcludedExtensions" xml:space="preserve">
-    <value>Excluded extensions</value>
+    <value>Ausgeschlossene Erweiterungen</value>
   </data>
   <data name="Settings_Options_Extension" xml:space="preserve">
-    <value>Extension</value>
+    <value>Erweiterung</value>
   </data>
   <data name="Settings_Options_NoCompressionOrEncryption" xml:space="preserve">
-    <value>No compression or encryption</value>
+    <value>Keine Komprimierung oder Verschlüsselung</value>
   </data>
   <data name="Settings_Options_RequiresMorePower" xml:space="preserve">
-    <value>(requires more computation power; slower backups)</value>
+    <value>(erfordert mehr Rechenleistung; langsamere Sicherungen)</value>
   </data>
   <data name="Settings_Options_StorageDeviceBehavior" xml:space="preserve">
-    <value>Storage device behavior</value>
+    <value>Verhalten des Speichermediums</value>
   </data>
   <data name="Settings_Options_StorageOptions" xml:space="preserve">
-    <value>Storage options</value>
+    <value>Speicheroptionen</value>
   </data>
   <data name="Settings_Options_StorageOptionsDescription" xml:space="preserve">
-    <value>Specify how the backup should be stored.</value>
+    <value>Legen Sie fest, wie die Sicherung gespeichert werden soll.</value>
   </data>
   <data name="Settings_Options_TurnOff" xml:space="preserve">
-    <value>Turn off</value>
+    <value>Ausschalten</value>
   </data>
   <data name="Settings_Options_WaitForDevice" xml:space="preserve">
-    <value>Wait for storage device if not available</value>
+    <value>Auf Speichermedium warten, falls nicht verfügbar</value>
   </data>
   <data name="Settings_Sources_AddDirectory" xml:space="preserve">
-    <value>Add Directory</value>
+    <value>Verzeichnis hinzufügen</value>
   </data>
   <data name="Settings_Sources_Delete" xml:space="preserve">
-    <value>Delete</value>
+    <value>Löschen</value>
   </data>
   <data name="Settings_Sources_Description" xml:space="preserve">
-    <value>Select the directories to be included in the backup.</value>
+    <value>Wählen Sie die Verzeichnisse aus, die in die Sicherung einbezogen werden sollen.</value>
   </data>
   <data name="Settings_Sources_Directory" xml:space="preserve">
-    <value>Directory</value>
+    <value>Verzeichnis</value>
   </data>
   <data name="Settings_Sources_DriveRootRisky" xml:space="preserve">
-    <value>Selecting a drive root is risky. Choose a specific folder instead.</value>
+    <value>Die Auswahl eines Laufwerksstamms ist riskant. Wählen Sie stattdessen einen bestimmten Ordner.</value>
   </data>
   <data name="Settings_Sources_ExcludeDescription" xml:space="preserve">
-    <value>Exclude single files and folder, or define custom rules for exclusion.</value>
+    <value>Schließen Sie einzelne Dateien und Ordner aus oder definieren Sie eigene Ausschlussregeln.</value>
   </data>
   <data name="Settings_Sources_ExcludeHeader" xml:space="preserve">
-    <value>Exclude files and folders</value>
+    <value>Dateien und Ordner ausschließen</value>
   </data>
   <data name="Settings_Sources_Header" xml:space="preserve">
-    <value>Source directories</value>
+    <value>Quellverzeichnisse</value>
   </data>
   <data name="Settings_Sources_InvalidPath" xml:space="preserve">
-    <value>Selected source folder path is invalid.</value>
+    <value>Der ausgewählte Quellordnerpfad ist ungültig.</value>
   </data>
   <data name="Settings_Sources_SameName" xml:space="preserve">
-    <value>A source folder with the same name is already configured.</value>
+    <value>Ein Quellordner mit demselben Namen ist bereits konfiguriert.</value>
   </data>
   <data name="Settings_Target_BackupStorage" xml:space="preserve">
-    <value>Backup storage:</value>
+    <value>Sicherungsspeicher:</value>
   </data>
   <data name="Settings_Target_Change" xml:space="preserve">
-    <value>Change</value>
+    <value>Ändern</value>
   </data>
   <data name="Settings_Target_DriveRootNotSupported" xml:space="preserve">
-    <value>Selecting a drive root as backup target is not supported. Choose a specific folder instead.</value>
+    <value>Die Auswahl eines Laufwerksstamms als Sicherungsziel wird nicht unterstützt. Wählen Sie stattdessen einen bestimmten Ordner.</value>
   </data>
   <data name="Settings_Target_Encoding" xml:space="preserve">
-    <value>Encoding:</value>
+    <value>Kodierung:</value>
   </data>
   <data name="Settings_Target_EnforceUnencrypted" xml:space="preserve">
-    <value>Enforce unencrypted connection</value>
+    <value>Unverschlüsselte Verbindung erzwingen</value>
   </data>
   <data name="Settings_Target_FolderNotEmpty" xml:space="preserve">
-    <value>The selected target folder already contains files.</value>
+    <value>Der ausgewählte Zielordner enthält bereits Dateien.</value>
   </data>
   <data name="Settings_Target_MoveFailed_Text" xml:space="preserve">
-    <value>The backup data could not be moved.</value>
+    <value>Die Sicherungsdaten konnten nicht verschoben werden.</value>
   </data>
   <data name="Settings_Target_MoveFailed_Title" xml:space="preserve">
-    <value>Could not move backup data</value>
+    <value>Sicherungsdaten konnten nicht verschoben werden</value>
   </data>
   <data name="Settings_Target_NetworkAuthentication" xml:space="preserve">
-    <value>Network authentication</value>
+    <value>Netzwerkauthentifizierung</value>
   </data>
   <data name="Settings_Target_Password" xml:space="preserve">
-    <value>Password:</value>
+    <value>Kennwort:</value>
   </data>
   <data name="Settings_Target_Path" xml:space="preserve">
-    <value>Path:</value>
+    <value>Pfad:</value>
   </data>
   <data name="Settings_Target_Port" xml:space="preserve">
     <value>Port:</value>
@@ -932,374 +932,374 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
     <value>Server:</value>
   </data>
   <data name="Settings_Target_StorageDevice" xml:space="preserve">
-    <value>Storage device</value>
+    <value>Speichermedium</value>
   </data>
   <data name="Settings_Target_StorageDeviceDescription" xml:space="preserve">
-    <value>Select the device to store the backup on.</value>
+    <value>Wählen Sie das Gerät aus, auf dem die Sicherung gespeichert werden soll.</value>
   </data>
   <data name="Settings_Target_StoragePath" xml:space="preserve">
-    <value>Storage path:</value>
+    <value>Speicherpfad:</value>
   </data>
   <data name="Settings_Target_SwitchStorage" xml:space="preserve">
-    <value>Switch storage</value>
+    <value>Speicher wechseln</value>
   </data>
   <data name="Settings_Target_SwitchStorageDescription" xml:space="preserve">
-    <value>Allows changing the backup medium to a new (empty) medium without losing the settings.</value>
+    <value>Ermöglicht den Wechsel des Sicherungsmediums auf ein neues (leeres) Medium, ohne die Einstellungen zu verlieren.</value>
   </data>
   <data name="Settings_Target_TestConnection" xml:space="preserve">
-    <value>Test connection</value>
+    <value>Verbindung testen</value>
   </data>
   <data name="Settings_Target_Username" xml:space="preserve">
-    <value>Username:</value>
+    <value>Benutzername:</value>
   </data>
   <data name="Settings_Title" xml:space="preserve">
-    <value>Settings</value>
+    <value>Einstellungen</value>
   </data>
   <data name="Setup_FirstBackup_Title" xml:space="preserve">
-    <value>First backup</value>
+    <value>Erste Sicherung</value>
   </data>
   <data name="Setup_FtpConnectionSuccessful_Text" xml:space="preserve">
-    <value>The FTP connection was verified successfully.</value>
+    <value>Die FTP-Verbindung wurde erfolgreich überprüft.</value>
   </data>
   <data name="Setup_FtpConnectionSuccessful_Title" xml:space="preserve">
-    <value>FTP connection successful</value>
+    <value>FTP-Verbindung erfolgreich</value>
   </data>
   <data name="Setup_Hero_Subtitle" xml:space="preserve">
-    <value>Protect your files in a few steps. Choose how you want to begin.</value>
+    <value>Schützen Sie Ihre Dateien in wenigen Schritten. Wählen Sie, wie Sie beginnen möchten.</value>
   </data>
   <data name="Setup_Hero_Title" xml:space="preserve">
-    <value>Set up Backup Service Home</value>
+    <value>Backup Service Home einrichten</value>
   </data>
   <data name="Setup_Import_Button" xml:space="preserve">
-    <value>Import</value>
+    <value>Importieren</value>
   </data>
   <data name="Setup_Import_ChangePath" xml:space="preserve">
-    <value>Change path on this PC</value>
+    <value>Pfad auf diesem PC ändern</value>
   </data>
   <data name="Setup_Import_ChooseFolder" xml:space="preserve">
-    <value>Choose the folder that contains backup.bshdb</value>
+    <value>Wählen Sie den Ordner mit backup.bshdb</value>
   </data>
   <data name="Setup_Import_Description" xml:space="preserve">
-    <value>Already have a Backup Service Home database on a drive, network share, or FTP server? Import it and remap source folders if paths changed.</value>
+    <value>Haben Sie bereits eine Backup-Service-Home-Datenbank auf einem Laufwerk, einer Netzwerkfreigabe oder einem FTP-Server? Importieren Sie sie und ordnen Sie Quellordner neu zu, falls sich Pfade geändert haben.</value>
   </data>
   <data name="Setup_Import_FolderPath_Description" xml:space="preserve">
-    <value>Folder with backup.bshdb</value>
+    <value>Ordner mit backup.bshdb</value>
   </data>
   <data name="Setup_Import_FolderPath_Title" xml:space="preserve">
-    <value>Folder path</value>
+    <value>Ordnerpfad</value>
   </data>
   <data name="Setup_Import_Local_Description" xml:space="preserve">
-    <value>Browse a drive for backups</value>
+    <value>Laufwerk nach Sicherungen durchsuchen</value>
   </data>
   <data name="Setup_Import_OriginalPath" xml:space="preserve">
-    <value>Original path</value>
+    <value>Originalpfad</value>
   </data>
   <data name="Setup_Import_PathOnThisPc" xml:space="preserve">
-    <value>Path on this PC</value>
+    <value>Pfad auf diesem PC</value>
   </data>
   <data name="Setup_Import_SelectDrive" xml:space="preserve">
-    <value>Select the drive that contains your backup</value>
+    <value>Wählen Sie das Laufwerk mit Ihrer Sicherung</value>
   </data>
   <data name="Setup_Import_Title" xml:space="preserve">
-    <value>Import an existing backup</value>
+    <value>Vorhandene Sicherung importieren</value>
   </data>
   <data name="Setup_Mode_Automatic" xml:space="preserve">
-    <value>Automatic backups</value>
+    <value>Automatische Sicherungen</value>
   </data>
   <data name="Setup_Mode_AutomaticDescription" xml:space="preserve">
-    <value>The system starts immediately and creates the first backup.</value>
+    <value>Das System startet sofort und erstellt die erste Sicherung.</value>
   </data>
   <data name="Setup_Mode_Manual" xml:space="preserve">
-    <value>Manual backups</value>
+    <value>Manuelle Sicherungen</value>
   </data>
   <data name="Setup_Mode_ManualDescription" xml:space="preserve">
-    <value>Open settings after setup so you can refine the configuration before the first backup.</value>
+    <value>Öffnen Sie nach der Einrichtung die Einstellungen, um die Konfiguration vor der ersten Sicherung anzupassen.</value>
   </data>
   <data name="Setup_NewSetup_Continue" xml:space="preserve">
-    <value>Continue</value>
+    <value>Weiter</value>
   </data>
   <data name="Setup_NewSetup_Description" xml:space="preserve">
-    <value>Recommended for first-time use. Pick the folders to protect, choose where backups are stored, and decide whether backups run automatically.</value>
+    <value>Empfohlen für die erste Nutzung. Wählen Sie die zu schützenden Ordner, den Speicherort der Sicherungen und ob Sicherungen automatisch ausgeführt werden.</value>
   </data>
   <data name="Setup_NewSetup_Title" xml:space="preserve">
-    <value>Start a new backup setup</value>
+    <value>Neue Sicherungseinrichtung starten</value>
   </data>
   <data name="Setup_Progress_Applying" xml:space="preserve">
-    <value>Applying setup...</value>
+    <value>Einrichtung wird angewendet...</value>
   </data>
   <data name="Setup_ReplaceDatabase_Text" xml:space="preserve">
-    <value>Importing replaces the current configuration and backup database. Do you want to continue?</value>
+    <value>Beim Importieren werden die aktuelle Konfiguration und die Sicherungsdatenbank ersetzt. Möchten Sie fortfahren?</value>
   </data>
   <data name="Setup_ReplaceDatabase_Title" xml:space="preserve">
-    <value>Replace current database</value>
+    <value>Aktuelle Datenbank ersetzen</value>
   </data>
   <data name="Setup_Sources_AddFolder" xml:space="preserve">
-    <value>Add a folder to back up</value>
+    <value>Ordner zur Sicherung hinzufügen</value>
   </data>
   <data name="Setup_Sources_RemoveSelected" xml:space="preserve">
-    <value>Remove selected folder</value>
+    <value>Ausgewählten Ordner entfernen</value>
   </data>
   <data name="Setup_Step_Default_Title" xml:space="preserve">
-    <value>Setup</value>
+    <value>Einrichtung</value>
   </data>
   <data name="Setup_Step_ImportMedia_Description" xml:space="preserve">
-    <value>Select the media, FTP server, or path that contains your backup database.</value>
+    <value>Wählen Sie das Medium, den FTP-Server oder den Pfad mit Ihrer Sicherungsdatenbank.</value>
   </data>
   <data name="Setup_Step_ImportMedia_Title" xml:space="preserve">
-    <value>Import backup</value>
+    <value>Sicherung importieren</value>
   </data>
   <data name="Setup_Step_ImportRemap_Description" xml:space="preserve">
-    <value>Match each original path from the imported backup to where that folder lives on this PC.</value>
+    <value>Ordnen Sie jeden Originalpfad aus der importierten Sicherung dem Ordner auf diesem PC zu.</value>
   </data>
   <data name="Setup_Step_ImportRemap_Title" xml:space="preserve">
-    <value>Remap source folders</value>
+    <value>Quellordner neu zuordnen</value>
   </data>
   <data name="Setup_Step_ImportSelect_Description" xml:space="preserve">
-    <value>Choose which discovered backup database to import.</value>
+    <value>Wählen Sie, welche gefundene Sicherungsdatenbank importiert werden soll.</value>
   </data>
   <data name="Setup_Step_ImportSelect_Title" xml:space="preserve">
-    <value>Select backup</value>
+    <value>Sicherung wählen</value>
   </data>
   <data name="Setup_Step_Mode_Description" xml:space="preserve">
-    <value>Run backups automatically or start them manually.</value>
+    <value>Führen Sie Sicherungen automatisch aus oder starten Sie sie manuell.</value>
   </data>
   <data name="Setup_Step_Mode_Title" xml:space="preserve">
-    <value>Choose backup mode</value>
+    <value>Sicherungsmodus wählen</value>
   </data>
   <data name="Setup_Step_Progress_Description" xml:space="preserve">
-    <value>Please wait while the setup is applied.</value>
+    <value>Bitte warten Sie, während die Einrichtung angewendet wird.</value>
   </data>
   <data name="Setup_Step_Progress_Title" xml:space="preserve">
-    <value>Working</value>
+    <value>Bitte warten</value>
   </data>
   <data name="Setup_Step_Sources_Description" xml:space="preserve">
-    <value>Select the folders on this PC that should be included in your backups. You can add more folders or remove ones you do not need.</value>
+    <value>Wählen Sie die Ordner auf diesem PC aus, die in Ihre Sicherungen einbezogen werden sollen. Sie können weitere Ordner hinzufügen oder nicht benötigte entfernen.</value>
   </data>
   <data name="Setup_Step_Sources_Title" xml:space="preserve">
-    <value>Choose what to back up</value>
+    <value>Auswählen, was gesichert werden soll</value>
   </data>
   <data name="Setup_Step_Target_Description" xml:space="preserve">
-    <value>Pick one destination. Only the options for your choice appear below.</value>
+    <value>Wählen Sie ein Ziel. Unten erscheinen nur die Optionen für Ihre Auswahl.</value>
   </data>
   <data name="Setup_Step_Target_Title" xml:space="preserve">
-    <value>Where should backups be stored?</value>
+    <value>Wo sollen Sicherungen gespeichert werden?</value>
   </data>
   <data name="Setup_Target_DriveHint" xml:space="preserve">
-    <value>Backups will be stored under Backups\ComputerName\UserName on the drive you choose.</value>
+    <value>Sicherungen werden unter Backups\ComputerName\UserName auf dem gewählten Laufwerk gespeichert.</value>
   </data>
   <data name="Setup_Target_EnforceUnencryptedFtp" xml:space="preserve">
-    <value>Enforce unencrypted FTP</value>
+    <value>Unverschlüsseltes FTP erzwingen</value>
   </data>
   <data name="Setup_Target_EnterFtpDetails" xml:space="preserve">
-    <value>Enter your FTP server details</value>
+    <value>FTP-Serverdetails eingeben</value>
   </data>
   <data name="Setup_Target_EnterNetworkShare" xml:space="preserve">
-    <value>Enter the network share</value>
+    <value>Netzwerkfreigabe eingeben</value>
   </data>
   <data name="Setup_Target_FtpEncoding" xml:space="preserve">
-    <value>FTP encoding</value>
+    <value>FTP-Kodierung</value>
   </data>
   <data name="Setup_Target_FtpFolder" xml:space="preserve">
-    <value>FTP folder</value>
+    <value>FTP-Ordner</value>
   </data>
   <data name="Setup_Target_FtpHost" xml:space="preserve">
-    <value>FTP host</value>
+    <value>FTP-Host</value>
   </data>
   <data name="Setup_Target_FtpPassword" xml:space="preserve">
-    <value>FTP password</value>
+    <value>FTP-Kennwort</value>
   </data>
   <data name="Setup_Target_FtpPort" xml:space="preserve">
-    <value>FTP port</value>
+    <value>FTP-Port</value>
   </data>
   <data name="Setup_Target_FtpUser" xml:space="preserve">
-    <value>FTP user</value>
+    <value>FTP-Benutzer</value>
   </data>
   <data name="Setup_Target_Ftp_Description" xml:space="preserve">
-    <value>Remote host and login</value>
+    <value>Remote-Host und Anmeldung</value>
   </data>
   <data name="Setup_Target_Ftp_Title" xml:space="preserve">
-    <value>FTP server</value>
+    <value>FTP-Server</value>
   </data>
   <data name="Setup_Target_Local_Description" xml:space="preserve">
-    <value>Disk, USB, or mapped drive</value>
+    <value>Festplatte, USB oder zugeordnetes Laufwerk</value>
   </data>
   <data name="Setup_Target_Local_Title" xml:space="preserve">
-    <value>This PC or drive</value>
+    <value>Dieser PC oder dieses Laufwerk</value>
   </data>
   <data name="Setup_Target_NetworkPath" xml:space="preserve">
-    <value>Network path (for example \\server\backups)</value>
+    <value>Netzwerkpfad (zum Beispiel \\server\backups)</value>
   </data>
   <data name="Setup_Target_PasswordOptional" xml:space="preserve">
-    <value>Password (optional)</value>
+    <value>Kennwort (optional)</value>
   </data>
   <data name="Setup_Target_RefreshDrives" xml:space="preserve">
-    <value>Refresh drives</value>
+    <value>Laufwerke aktualisieren</value>
   </data>
   <data name="Setup_Target_SelectDrive" xml:space="preserve">
-    <value>Select the drive for your backups</value>
+    <value>Wählen Sie das Laufwerk für Ihre Sicherungen</value>
   </data>
   <data name="Setup_Target_Unc_Description" xml:space="preserve">
-    <value>UNC path like \\server\share</value>
+    <value>UNC-Pfad wie \\server\share</value>
   </data>
   <data name="Setup_Target_Unc_Title" xml:space="preserve">
-    <value>Network share</value>
+    <value>Netzwerkfreigabe</value>
   </data>
   <data name="Setup_Target_UsernameOptional" xml:space="preserve">
-    <value>Username (optional)</value>
+    <value>Benutzername (optional)</value>
   </data>
   <data name="Setup_Validation_AddAtLeastOneSource" xml:space="preserve">
-    <value>Add at least one source folder.</value>
+    <value>Fügen Sie mindestens einen Quellordner hinzu.</value>
   </data>
   <data name="Setup_Validation_EnterNetworkPath" xml:space="preserve">
-    <value>Enter a network path.</value>
+    <value>Geben Sie einen Netzwerkpfad ein.</value>
   </data>
   <data name="Setup_Validation_FirstBackupFailed" xml:space="preserve">
-    <value>Setup was saved, but the first backup could not be started.</value>
+    <value>Die Einrichtung wurde gespeichert, aber die erste Sicherung konnte nicht gestartet werden.</value>
   </data>
   <data name="Setup_Validation_FolderNameMismatch" xml:space="preserve">
-    <value>Cannot change the directory because the folder name does not match.</value>
+    <value>Das Verzeichnis kann nicht geändert werden, da der Ordnername nicht übereinstimmt.</value>
   </data>
   <data name="Setup_Validation_FolderPickerFailed" xml:space="preserve">
-    <value>Unable to open the folder picker. {0}</value>
+    <value>Der Ordnerauswahldialog konnte nicht geöffnet werden. {0}</value>
   </data>
   <data name="Setup_Validation_FtpConnectionFailed" xml:space="preserve">
-    <value>FTP connection failed. {0}</value>
+    <value>FTP-Verbindung fehlgeschlagen. {0}</value>
   </data>
   <data name="Setup_Validation_FtpDirectoryNotFound" xml:space="preserve">
-    <value>The FTP directory was not found.</value>
+    <value>Das FTP-Verzeichnis wurde nicht gefunden.</value>
   </data>
   <data name="Setup_Validation_FtpImportFailed" xml:space="preserve">
-    <value>FTP import failed. {0}</value>
+    <value>FTP-Import fehlgeschlagen. {0}</value>
   </data>
   <data name="Setup_Validation_FtpPortInvalid" xml:space="preserve">
-    <value>FTP port is invalid.</value>
+    <value>FTP-Port ist ungültig.</value>
   </data>
   <data name="Setup_Validation_NetworkUnreachable" xml:space="preserve">
-    <value>The network path could not be reached.</value>
+    <value>Der Netzwerkpfad konnte nicht erreicht werden.</value>
   </data>
   <data name="Setup_Validation_NetworkUnreachableWithError" xml:space="preserve">
-    <value>The network path could not be reached. {0}</value>
+    <value>Der Netzwerkpfad konnte nicht erreicht werden. {0}</value>
   </data>
   <data name="Setup_Validation_NoDatabaseAtPath" xml:space="preserve">
-    <value>No backup database was found at the selected path.</value>
+    <value>Am ausgewählten Pfad wurde keine Sicherungsdatenbank gefunden.</value>
   </data>
   <data name="Setup_Validation_NoDatabaseOnFtp" xml:space="preserve">
-    <value>No backup database was found on the FTP server.</value>
+    <value>Auf dem FTP-Server wurde keine Sicherungsdatenbank gefunden.</value>
   </data>
   <data name="Setup_Validation_SelectBackupTarget" xml:space="preserve">
-    <value>Select a backup target.</value>
+    <value>Wählen Sie ein Sicherungsziel.</value>
   </data>
   <data name="Setup_Validation_SelectBackupToImport" xml:space="preserve">
-    <value>Select a backup to import.</value>
+    <value>Wählen Sie eine zu importierende Sicherung.</value>
   </data>
   <data name="Setup_Validation_SelectDeviceWithBackups" xml:space="preserve">
-    <value>Select a device that contains backups.</value>
+    <value>Wählen Sie ein Gerät, das Sicherungen enthält.</value>
   </data>
   <data name="Setup_Validation_SelectSourceToRemap" xml:space="preserve">
-    <value>Select a source folder to remap.</value>
+    <value>Wählen Sie einen Quellordner zur Neuordnung.</value>
   </data>
   <data name="Setup_Validation_SelectTargetDrive" xml:space="preserve">
-    <value>Select a backup target drive.</value>
+    <value>Wählen Sie ein Sicherungsziellaufwerk.</value>
   </data>
   <data name="Setup_Validation_SourcePathEmpty" xml:space="preserve">
-    <value>Source path cannot be empty.</value>
+    <value>Der Quellpfad darf nicht leer sein.</value>
   </data>
   <data name="Setup_Validation_TargetContainsBackup" xml:space="preserve">
-    <value>The selected target already contains a backup for this computer and user.</value>
+    <value>Das ausgewählte Ziel enthält bereits eine Sicherung für diesen Computer und Benutzer.</value>
   </data>
   <data name="Setup_Validation_WindowNotReady" xml:space="preserve">
-    <value>The main window is not ready for folder selection.</value>
+    <value>Das Hauptfenster ist für die Ordnerauswahl nicht bereit.</value>
   </data>
   <data name="Setup_Welcome_Description" xml:space="preserve">
-    <value>Choose how you want to get started.</value>
+    <value>Wählen Sie, wie Sie beginnen möchten.</value>
   </data>
   <data name="Setup_Welcome_Title" xml:space="preserve">
-    <value>Welcome</value>
+    <value>Willkommen</value>
   </data>
   <data name="Status_AfterCompletion" xml:space="preserve">
-    <value>After completion</value>
+    <value>Nach Abschluss</value>
   </data>
   <data name="Status_Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Abbrechen</value>
   </data>
   <data name="Status_FilesNotCopied_Title" xml:space="preserve">
-    <value>Files could not be copied</value>
+    <value>Dateien konnten nicht kopiert werden</value>
   </data>
   <data name="Status_FilesProcessed" xml:space="preserve">
-    <value>files processed</value>
+    <value>Dateien verarbeitet</value>
   </data>
   <data name="Status_Hibernate" xml:space="preserve">
-    <value>Hibernate</value>
+    <value>Ruhezustand</value>
   </data>
   <data name="Status_InsufficientSpace_Text" xml:space="preserve">
-    <value>The backup medium does not have enough free space for this operation.</value>
+    <value>Das Sicherungsmedium verfügt nicht über ausreichend freien Speicherplatz für diesen Vorgang.</value>
   </data>
   <data name="Status_InsufficientSpace_Title" xml:space="preserve">
-    <value>Insufficient Storage Space on Backup Medium</value>
+    <value>Nicht genügend Speicherplatz auf dem Sicherungsmedium</value>
   </data>
   <data name="Status_NoAction" xml:space="preserve">
-    <value>No action</value>
+    <value>Keine Aktion</value>
   </data>
   <data name="Status_Shutdown" xml:space="preserve">
-    <value>Shutdown</value>
+    <value>Herunterfahren</value>
   </data>
   <data name="Support_About" xml:space="preserve">
-    <value>About Backup Service Home 3</value>
+    <value>Über Backup Service Home 3</value>
   </data>
   <data name="Support_About_Text" xml:space="preserve">
     <value>Backup Service Home 3
 Version {0}</value>
   </data>
   <data name="Support_CheckForUpdates" xml:space="preserve">
-    <value>Check for Updates</value>
+    <value>Nach Aktualisierungen suchen</value>
   </data>
   <data name="Support_ClearStoredPassword" xml:space="preserve">
-    <value>Clear Stored Password</value>
+    <value>Gespeichertes Kennwort löschen</value>
   </data>
   <data name="Support_EventLog" xml:space="preserve">
-    <value>Show Event Logs</value>
+    <value>Ereignisprotokolle anzeigen</value>
   </data>
   <data name="Support_Help" xml:space="preserve">
-    <value>Help and Support</value>
+    <value>Hilfe und Support</value>
   </data>
   <data name="Support_ResetConfiguration" xml:space="preserve">
-    <value>Reset Configuration</value>
+    <value>Konfiguration zurücksetzen</value>
   </data>
   <data name="Support_ResetConfiguration_Text" xml:space="preserve">
-    <value>This deletes the current configuration and backup database. Do you want to continue?</value>
+    <value>Dadurch werden die aktuelle Konfiguration und die Sicherungsdatenbank gelöscht. Möchten Sie fortfahren?</value>
   </data>
   <data name="Support_ResetConfiguration_Title" xml:space="preserve">
-    <value>Reset Configuration</value>
+    <value>Konfiguration zurücksetzen</value>
   </data>
   <data name="Support_ResetUniqueUserId" xml:space="preserve">
-    <value>Reset Unique User Id</value>
+    <value>Eindeutige Benutzer-ID zurücksetzen</value>
   </data>
   <data name="Tray_Exit" xml:space="preserve">
-    <value>Exit Backup Service Home</value>
+    <value>Backup Service Home beenden</value>
   </data>
   <data name="Tray_ShowBackupBrowser" xml:space="preserve">
-    <value>Show Backup Browser</value>
+    <value>Backupbrowser anzeigen</value>
   </data>
   <data name="Tray_StartManualBackup" xml:space="preserve">
-    <value>Start Manual Backup</value>
+    <value>Manuelle Sicherung starten</value>
   </data>
   <data name="Tray_StartManualBackupWithSettings" xml:space="preserve">
-    <value>Start Manual Backup (+ Settings)</value>
+    <value>Manuelle Sicherung starten (+ Optionen)</value>
   </data>
   <data name="Tray_StatusAndConfiguration" xml:space="preserve">
-    <value>Status and Configuration</value>
+    <value>Status und Konfigurieren</value>
   </data>
   <data name="WaitForMedium_Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Abbrechen</value>
   </data>
   <data name="WaitForMedium_Heading" xml:space="preserve">
-    <value>Backup Service Home is waiting for medium...</value>
+    <value>Backup Service Home wartet auf das Medium...</value>
   </data>
   <data name="WaitForMedium_Text" xml:space="preserve">
-    <value>Backup Service Home 3 is waiting for the backup medium to continue with the planned action. Connect this medium to your computer now.
-The medium will be automatically detected.</value>
+    <value>Backup Service Home 3 wartet auf das Sicherungsmedium, um die geplante Aktion fortzusetzen. Verbinden Sie dieses Medium jetzt mit Ihrem Computer.
+Das Medium wird automatisch erkannt.</value>
   </data>
   <data name="WaitForMedium_Title" xml:space="preserve">
-    <value>Backup Service Home is waiting for medium</value>
+    <value>Backup Service Home wartet auf das Medium</value>
   </data>
 </root>

@@ -1,0 +1,1654 @@
+{
+  "AppDisplayName": {
+    "en": "Backup Service Home",
+    "de": "Backup Service Home"
+  },
+  "AppDescription": {
+    "en": "BSH.MainApp",
+    "de": "BSH.MainApp"
+  },
+  "Main_Title.Text": {
+    "en": "Main",
+    "de": "Übersicht"
+  },
+  "AppNotificationSamplePayload": {
+    "en": "<toast launch=\"action=ToastClick\">\n  <visual>\n    <binding template=\"ToastGeneric\">\n      <text>App Notification</text>\n      <text></text>\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\n    </binding>\n  </visual>\n  <actions>\n    <action content=\"Settings\" arguments=\"action=Settings\"/>\n  </actions>\n</toast>",
+    "de": "<toast launch=\"action=ToastClick\">\n  <visual>\n    <binding template=\"ToastGeneric\">\n      <text>App-Benachrichtigung</text>\n      <text></text>\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\n    </binding>\n  </visual>\n  <actions>\n    <action content=\"Einstellungen\" arguments=\"action=Settings\"/>\n  </actions>\n</toast>"
+  },
+  "Browser_Title.Text": {
+    "en": "Browser",
+    "de": "Browser"
+  },
+  "MainView_BackupMode_Automatic": {
+    "en": "Automatic backups",
+    "de": "Automatische Sicherungen"
+  },
+  "MainView_BtnCreateBackup_Title": {
+    "en": "Manual backup",
+    "de": "Manuelle Sicherung"
+  },
+  "MainView_BackupMode_Manual": {
+    "en": "Manual backups",
+    "de": "Manuelle Sicherungen"
+  },
+  "MainView_BackupMode_Scheduled": {
+    "en": "Scheduled backups",
+    "de": "Zeitplanbasierte Sicherungen"
+  },
+  "MainView_ScheduleWarning_NoEntries": {
+    "en": "Scheduled backups are enabled but no schedule is set.",
+    "de": "Für geplante Sicherungen ist kein Zeitplan eingerichtet."
+  },
+  "MainView_SystemStatus_Running": {
+    "en": "Backup Service Home is running normally.",
+    "de": "Backup Service Home wird ordnungsgemäß ausgeführt."
+  },
+  "MainView_SystemStatus_BatteryPaused": {
+    "en": "Battery operation. No backups are being performed.",
+    "de": "Batteriebetrieb. Es werden keine Sicherungen durchgeführt."
+  },
+  "MainView_SystemStatus_Deactivated": {
+    "en": "Automatic backup is deactivated.",
+    "de": "Automatische Sicherung ist deaktiviert."
+  },
+  "MainView_SystemStatus_NotConfigured": {
+    "en": "Backup Service Home is not configured yet.",
+    "de": "Backup Service Home ist noch nicht konfiguriert."
+  },
+  "DATETIME_FORMAT": {
+    "en": "dd. MMM yyyy hh:mm",
+    "de": "dd. MMM yyyy HH:mm"
+  },
+  "MediaType_FileTransferServer": {
+    "en": "File Transfer Protocol (FTP)",
+    "de": "File Transfer Protocol (FTP)"
+  },
+  "MediaType_LocalDevice": {
+    "en": "Local Device",
+    "de": "Lokales Gerät"
+  },
+  "MsgBox_Ftp_Successful_Text": {
+    "en": "The connection test to the specified FTP server was successful.",
+    "de": "Die Verbindung zum angegebenen FTP-Server konnte erfolgreich getestet werden."
+  },
+  "MsgBox_Ftp_Successful_Title": {
+    "en": "Connection to FTP Server successful",
+    "de": "Verbindung zum FTP-Server erfolgreich"
+  },
+  "MsgBox_Ftp_Unuccessful_Text": {
+    "en": "The connection test to the specified FTP server was unsuccessful.",
+    "de": "Die Verbindung zum angegebenen FTP-Server konnte nicht hergestellt werden."
+  },
+  "MsgBox_Ftp_Unuccessful_Title": {
+    "en": "Connection to FTP Server unsuccessful",
+    "de": "Verbindung zum FTP-Server nicht erfolgreich"
+  },
+  "MsgBox_MediaType_Change_Text": {
+    "en": "Existing backups will be deleted.\n\nIf you decide to switch the media type, all existing backups will be deleted. Switching the backup device type is not supported.\n\nDo you want to contine (ALL BACKUPS WILL BE DELETED)?",
+    "de": "Vorhandene Sicherungen werden gelöscht.\n\nWenn Sie den Medientyp wechseln, werden alle vorhandenen Sicherungen gelöscht. Ein Wechsel des Sicherungsgerätetyps wird nicht unterstützt.\n\nMöchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?"
+  },
+  "MsgBox_MediaType_Change_Title": {
+    "en": "Existing backups deletion",
+    "de": "Vorhandene Sicherungen werden gelöscht"
+  },
+  "MsgBox_No": {
+    "en": "&No",
+    "de": "&Nein"
+  },
+  "MsgBox_Yes": {
+    "en": "&Yes",
+    "de": "&Ja"
+  },
+  "MsgBox_Cancel": {
+    "en": "&Cancel",
+    "de": "&Abbrechen"
+  },
+  "MsgBox_LocalPath_Change_Move": {
+    "en": "&Move",
+    "de": "&Verschieben"
+  },
+  "MsgBox_LocalPath_Change_Text": {
+    "en": "You can decide to either use or move the location of the backups:\n\nUse: You already moved the path to the backups or the paths have changed.\nMove: You want to move the backups to a different path and want BSH to move the files.",
+    "de": "Sie können den Speicherort der Sicherungen entweder übernehmen oder verschieben:\n\nÜbernehmen: Sie haben den Pfad der Sicherungen bereits verschoben oder die Pfade haben sich geändert.\nVerschieben: Sie möchten die Sicherungen an einen anderen Pfad verschieben und BSH soll die Dateien verschieben."
+  },
+  "MsgBox_LocalPath_Change_Title": {
+    "en": "Change local path",
+    "de": "Lokalen Pfad ändern"
+  },
+  "MsgBox_LocalPath_Change_Use": {
+    "en": "&Use",
+    "de": "&Übernehmen"
+  },
+  "MSG_TASK_RUNNING_TITLE": {
+    "en": "Other task in progress",
+    "de": "Andere Sicherungsaufgabe in Bearbeitung"
+  },
+  "MSG_TASK_RUNNING_TEXT": {
+    "en": "A different backup task is currently running, which is why this backup will be interrupted.",
+    "de": "Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Sicherung abgebrochen wird."
+  },
+  "MSG_BACKUP_DEVICE_NOT_READY_TITLE": {
+    "en": "Backup medium not available.",
+    "de": "Sicherungsmedium nicht bereit"
+  },
+  "MSG_BACKUP_DEVICE_NOT_READY_TEXT": {
+    "en": "The backup medium is currently unavailable, which is why the backup is being interrupted.",
+    "de": "Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Sicherung abgebrochen wird."
+  },
+  "MSG_PASSWORD_WRONG_TITLE": {
+    "en": "Password wrong",
+    "de": "Kennwort falsch"
+  },
+  "MSG_PASSWORD_WRONG_TEXT": {
+    "en": "The given password is wrong.",
+    "de": "Das angegebene Kennwort ist falsch."
+  },
+  "MSG_NO_UPDATE_FOUND_TITLE": {
+    "en": "No updates found",
+    "de": "Keine Aktualisierungen gefunden"
+  },
+  "MSG_NO_UPDATE_FOUND_TEXT": {
+    "en": "You are on the latest version of Backup Service Home 3. No updates were found.",
+    "de": "Sie sind auf der neusten Version von Backup Service Home 3. Es wurden keine Aktualisierungen gefunden."
+  },
+  "MsgBox_OK": {
+    "en": "OK",
+    "de": "OK"
+  },
+  "MsgBox_Close": {
+    "en": "Close",
+    "de": "Schließen"
+  },
+  "MsgBox_Delete": {
+    "en": "Delete",
+    "de": "Löschen"
+  },
+  "MsgBox_Rename": {
+    "en": "Rename",
+    "de": "Umbenennen"
+  },
+  "MsgBox_Save": {
+    "en": "Save",
+    "de": "Speichern"
+  },
+  "MsgBox_Add": {
+    "en": "Add",
+    "de": "Hinzufügen"
+  },
+  "MsgBox_Remove": {
+    "en": "Remove",
+    "de": "Entfernen"
+  },
+  "MsgBox_Change": {
+    "en": "Change",
+    "de": "Ändern"
+  },
+  "MsgBox_Back": {
+    "en": "Back",
+    "de": "Zurück"
+  },
+  "MsgBox_Next": {
+    "en": "Next",
+    "de": "Weiter"
+  },
+  "MsgBox_Browse": {
+    "en": "Browse...",
+    "de": "Durchsuchen..."
+  },
+  "Nav_Overview": {
+    "en": "Overview",
+    "de": "Übersicht"
+  },
+  "Nav_BackupBrowser": {
+    "en": "Backup browser",
+    "de": "Backupbrowser"
+  },
+  "Nav_ExtrasAndSupport": {
+    "en": "Extras and Support",
+    "de": "Extras und Support"
+  },
+  "Support_About": {
+    "en": "About Backup Service Home 3",
+    "de": "Über Backup Service Home 3"
+  },
+  "Support_Help": {
+    "en": "Help and Support",
+    "de": "Hilfe und Support"
+  },
+  "Support_EventLog": {
+    "en": "Show Event Logs",
+    "de": "Ereignisprotokolle anzeigen"
+  },
+  "Support_CheckForUpdates": {
+    "en": "Check for Updates",
+    "de": "Nach Aktualisierungen suchen"
+  },
+  "Support_ClearStoredPassword": {
+    "en": "Clear Stored Password",
+    "de": "Gespeichertes Kennwort löschen"
+  },
+  "Support_ResetUniqueUserId": {
+    "en": "Reset Unique User Id",
+    "de": "Eindeutige Benutzer-ID zurücksetzen"
+  },
+  "Support_ResetConfiguration": {
+    "en": "Reset Configuration",
+    "de": "Konfiguration zurücksetzen"
+  },
+  "Support_About_Text": {
+    "en": "Backup Service Home 3\nVersion {0}",
+    "de": "Backup Service Home 3\nVersion {0}"
+  },
+  "Support_ResetConfiguration_Title": {
+    "en": "Reset Configuration",
+    "de": "Konfiguration zurücksetzen"
+  },
+  "Support_ResetConfiguration_Text": {
+    "en": "This deletes the current configuration and backup database. Do you want to continue?",
+    "de": "Dadurch werden die aktuelle Konfiguration und die Sicherungsdatenbank gelöscht. Möchten Sie fortfahren?"
+  },
+  "Tray_ShowBackupBrowser": {
+    "en": "Show Backup Browser",
+    "de": "Backupbrowser anzeigen"
+  },
+  "Tray_StatusAndConfiguration": {
+    "en": "Status and Configuration",
+    "de": "Status und Konfigurieren"
+  },
+  "Tray_StartManualBackup": {
+    "en": "Start Manual Backup",
+    "de": "Manuelle Sicherung starten"
+  },
+  "Tray_StartManualBackupWithSettings": {
+    "en": "Start Manual Backup (+ Settings)",
+    "de": "Manuelle Sicherung starten (+ Optionen)"
+  },
+  "Tray_Exit": {
+    "en": "Exit Backup Service Home",
+    "de": "Backup Service Home beenden"
+  },
+  "MainView_On": {
+    "en": "On",
+    "de": "Ein"
+  },
+  "MainView_Off": {
+    "en": "Off",
+    "de": "Aus"
+  },
+  "MainView_Available": {
+    "en": "Available:",
+    "de": "Verfügbar:"
+  },
+  "MainView_DiskspaceFullExpected": {
+    "en": "Diskspace full expected on:",
+    "de": "Voraussichtlich voll am:"
+  },
+  "MainView_DiskspaceUnpredictable": {
+    "en": "currently unpredictable",
+    "de": "noch nicht vorhersehbar"
+  },
+  "MainView_LastBackup": {
+    "en": "Last Backup:",
+    "de": "Letzte Sicherung:"
+  },
+  "MainView_BackupMode": {
+    "en": "Backup mode:",
+    "de": "Sicherungsmodus:"
+  },
+  "MainView_Files": {
+    "en": "Files",
+    "de": "Dateien"
+  },
+  "MainView_Backups": {
+    "en": "Backups",
+    "de": "Sicherungen"
+  },
+  "MainView_TotalSizeBackuped": {
+    "en": "Total size backuped",
+    "de": "Gesamtgröße gesichert"
+  },
+  "MainView_NextBackup": {
+    "en": "Next Backup:",
+    "de": "Nächste Sicherung:"
+  },
+  "MainView_StartBackup": {
+    "en": "Start Backup",
+    "de": "Sicherung starten"
+  },
+  "MainView_Cancel": {
+    "en": "Cancel",
+    "de": "Abbrechen"
+  },
+  "MainView_NonePlanned": {
+    "en": "None planned",
+    "de": "keines geplant"
+  },
+  "Browser_Search": {
+    "en": "Search",
+    "de": "Suchen"
+  },
+  "Browser_Favorites": {
+    "en": "Favorites",
+    "de": "Favoriten"
+  },
+  "Browser_Rename": {
+    "en": "Rename",
+    "de": "Umbenennen"
+  },
+  "Browser_Remove": {
+    "en": "Remove",
+    "de": "Entfernen"
+  },
+  "Browser_Backups": {
+    "en": "Backups",
+    "de": "Sicherungen"
+  },
+  "Browser_Restore": {
+    "en": "Restore",
+    "de": "Wiederherstellen"
+  },
+  "Browser_QuickPreview": {
+    "en": "Quick preview",
+    "de": "Schnellvorschau"
+  },
+  "Browser_Properties": {
+    "en": "Properties",
+    "de": "Eigenschaften"
+  },
+  "Browser_PreviewPane": {
+    "en": "Preview pane",
+    "de": "Vorschaufenster"
+  },
+  "Browser_Organize": {
+    "en": "Organize",
+    "de": "Organisieren"
+  },
+  "Browser_RestoreAll": {
+    "en": "Restore all",
+    "de": "Alles wiederherstellen"
+  },
+  "Browser_AddToFolderFavorites": {
+    "en": "Add to folder favorites",
+    "de": "Zu Ordnerfavoriten hinzufügen"
+  },
+  "Browser_DeleteSelectedFromAllBackups": {
+    "en": "Delete selected from all backups",
+    "de": "Auswahl aus allen Sicherungen löschen"
+  },
+  "Browser_EditBackup": {
+    "en": "Edit backup",
+    "de": "Sicherung bearbeiten"
+  },
+  "Browser_DeleteBackup": {
+    "en": "Delete backup",
+    "de": "Sicherung löschen"
+  },
+  "Browser_DeleteMultipleBackups": {
+    "en": "Delete multiple backups",
+    "de": "Mehrere Sicherungen löschen"
+  },
+  "Browser_LockUnlockBackup": {
+    "en": "Lock/unlock backup",
+    "de": "Sicherung sperren/entsperren"
+  },
+  "Browser_Column_Name": {
+    "en": "Name",
+    "de": "Name"
+  },
+  "Browser_Column_LastModified": {
+    "en": "Last modified",
+    "de": "Zuletzt geändert"
+  },
+  "Browser_Column_Size": {
+    "en": "Size",
+    "de": "Größe"
+  },
+  "Browser_Column_Path": {
+    "en": "Path",
+    "de": "Pfad"
+  },
+  "Browser_Column_DateCreated": {
+    "en": "Date created",
+    "de": "Erstellungsdatum"
+  },
+  "Browser_Empty_Title": {
+    "en": "There are currently no backups!",
+    "de": "Es sind derzeit keine Sicherungen vorhanden!"
+  },
+  "Browser_Empty_Text": {
+    "en": "Start creating backups to browse them here.",
+    "de": "Erstellen Sie Sicherungen, um sie hier zu durchsuchen."
+  },
+  "Browser_Empty_GoHome": {
+    "en": "Go Home",
+    "de": "Zur Übersicht"
+  },
+  "Browser_DeleteBackups_Title": {
+    "en": "Delete backups",
+    "de": "Sicherungen löschen"
+  },
+  "Browser_DeleteBackups_Confirm": {
+    "en": "Are you sure you want to delete the selected backups?",
+    "de": "Sind Sie sicher, dass Sie die ausgewählten Sicherungen löschen möchten?"
+  },
+  "Browser_DeleteFromAll_Title": {
+    "en": "Delete from all backups",
+    "de": "Aus allen Sicherungen löschen"
+  },
+  "Browser_DeleteFromAll_Confirm": {
+    "en": "Are you sure you want to delete this {0} from all backups?",
+    "de": "Sind Sie sicher, dass Sie diese(n) {0} aus allen Sicherungen löschen möchten?"
+  },
+  "Browser_DeleteFromAll_File": {
+    "en": "file",
+    "de": "Datei"
+  },
+  "Browser_DeleteFromAll_Folder": {
+    "en": "folder",
+    "de": "Ordner"
+  },
+  "Browser_RenameFavorite_Title": {
+    "en": "Rename favorite",
+    "de": "Favorit umbenennen"
+  },
+  "Browser_FileDetails_RestorePath": {
+    "en": "Restore path",
+    "de": "Wiederherstellungspfad"
+  },
+  "Browser_FileDetails_Type": {
+    "en": "Type",
+    "de": "Typ"
+  },
+  "Browser_FileDetails_SizeBytes": {
+    "en": "{0} bytes",
+    "de": "{0} Bytes"
+  },
+  "Browser_FileDetails_Created": {
+    "en": "Created",
+    "de": "Erstellt"
+  },
+  "Browser_FileDetails_Modified": {
+    "en": "Modified",
+    "de": "Geändert"
+  },
+  "Browser_FileDetails_AvailableVersions": {
+    "en": "Available versions",
+    "de": "Verfügbare Versionen"
+  },
+  "Browser_FeatureNotAvailable_Title": {
+    "en": "Feature not available",
+    "de": "Funktion nicht verfügbar"
+  },
+  "Browser_FeatureNotAvailable_Text": {
+    "en": "Feature is currently not available.\n\nThis feature is currently not available because the quick preview could not be found. Reinstall Backup Service Home to resolve the problem.",
+    "de": "Die Funktion ist derzeit nicht verfügbar.\n\nDiese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefunden werden konnte. Installieren Sie Backup Service Home erneut, um das Problem zu beheben."
+  },
+  "Browser_DeleteBackup_Title": {
+    "en": "Delete Backup",
+    "de": "Sicherung löschen"
+  },
+  "Browser_DeleteBackup_Confirm": {
+    "en": "Are you sure you want to delete this backup?",
+    "de": "Sind Sie sicher, dass Sie diese Sicherung löschen möchten?"
+  },
+  "Settings_Title": {
+    "en": "Settings",
+    "de": "Einstellungen"
+  },
+  "Settings_Nav_Sources": {
+    "en": "Sources",
+    "de": "Quellen"
+  },
+  "Settings_Nav_BackupTarget": {
+    "en": "Backup Target",
+    "de": "Sicherungsziel"
+  },
+  "Settings_Nav_Automation": {
+    "en": "Automation",
+    "de": "Automatisierung"
+  },
+  "Settings_Nav_BackupOptions": {
+    "en": "Backup Options",
+    "de": "Sicherungsoptionen"
+  },
+  "Settings_Nav_Behavior": {
+    "en": "Behavior",
+    "de": "Verhalten"
+  },
+  "Settings_Sources_Header": {
+    "en": "Source directories",
+    "de": "Quellverzeichnisse"
+  },
+  "Settings_Sources_Description": {
+    "en": "Select the directories to be included in the backup.",
+    "de": "Wählen Sie die Verzeichnisse aus, die in die Sicherung einbezogen werden sollen."
+  },
+  "Settings_Sources_AddDirectory": {
+    "en": "Add Directory",
+    "de": "Verzeichnis hinzufügen"
+  },
+  "Settings_Sources_Delete": {
+    "en": "Delete",
+    "de": "Löschen"
+  },
+  "Settings_Sources_Directory": {
+    "en": "Directory",
+    "de": "Verzeichnis"
+  },
+  "Settings_Sources_ExcludeHeader": {
+    "en": "Exclude files and folders",
+    "de": "Dateien und Ordner ausschließen"
+  },
+  "Settings_Sources_ExcludeDescription": {
+    "en": "Exclude single files and folder, or define custom rules for exclusion.",
+    "de": "Schließen Sie einzelne Dateien und Ordner aus oder definieren Sie eigene Ausschlussregeln."
+  },
+  "Settings_Sources_InvalidPath": {
+    "en": "Selected source folder path is invalid.",
+    "de": "Der ausgewählte Quellordnerpfad ist ungültig."
+  },
+  "Settings_Sources_DriveRootRisky": {
+    "en": "Selecting a drive root is risky. Choose a specific folder instead.",
+    "de": "Die Auswahl eines Laufwerksstamms ist riskant. Wählen Sie stattdessen einen bestimmten Ordner."
+  },
+  "Settings_Sources_SameName": {
+    "en": "A source folder with the same name is already configured.",
+    "de": "Ein Quellordner mit demselben Namen ist bereits konfiguriert."
+  },
+  "Settings_Target_StorageDevice": {
+    "en": "Storage device",
+    "de": "Speichermedium"
+  },
+  "Settings_Target_StorageDeviceDescription": {
+    "en": "Select the device to store the backup on.",
+    "de": "Wählen Sie das Gerät aus, auf dem die Sicherung gespeichert werden soll."
+  },
+  "Settings_Target_BackupStorage": {
+    "en": "Backup storage:",
+    "de": "Sicherungsspeicher:"
+  },
+  "Settings_Target_StoragePath": {
+    "en": "Storage path:",
+    "de": "Speicherpfad:"
+  },
+  "Settings_Target_Change": {
+    "en": "Change",
+    "de": "Ändern"
+  },
+  "Settings_Target_Server": {
+    "en": "Server:",
+    "de": "Server:"
+  },
+  "Settings_Target_Port": {
+    "en": "Port:",
+    "de": "Port:"
+  },
+  "Settings_Target_Username": {
+    "en": "Username:",
+    "de": "Benutzername:"
+  },
+  "Settings_Target_Password": {
+    "en": "Password:",
+    "de": "Kennwort:"
+  },
+  "Settings_Target_Path": {
+    "en": "Path:",
+    "de": "Pfad:"
+  },
+  "Settings_Target_Encoding": {
+    "en": "Encoding:",
+    "de": "Kodierung:"
+  },
+  "Settings_Target_EnforceUnencrypted": {
+    "en": "Enforce unencrypted connection",
+    "de": "Unverschlüsselte Verbindung erzwingen"
+  },
+  "Settings_Target_TestConnection": {
+    "en": "Test connection",
+    "de": "Verbindung testen"
+  },
+  "Settings_Target_SwitchStorage": {
+    "en": "Switch storage",
+    "de": "Speicher wechseln"
+  },
+  "Settings_Target_SwitchStorageDescription": {
+    "en": "Allows changing the backup medium to a new (empty) medium without losing the settings.",
+    "de": "Ermöglicht den Wechsel des Sicherungsmediums auf ein neues (leeres) Medium, ohne die Einstellungen zu verlieren."
+  },
+  "Settings_Target_NetworkAuthentication": {
+    "en": "Network authentication",
+    "de": "Netzwerkauthentifizierung"
+  },
+  "Settings_Target_MoveFailed_Title": {
+    "en": "Could not move backup data",
+    "de": "Sicherungsdaten konnten nicht verschoben werden"
+  },
+  "Settings_Target_MoveFailed_Text": {
+    "en": "The backup data could not be moved.",
+    "de": "Die Sicherungsdaten konnten nicht verschoben werden."
+  },
+  "Settings_Target_DriveRootNotSupported": {
+    "en": "Selecting a drive root as backup target is not supported. Choose a specific folder instead.",
+    "de": "Die Auswahl eines Laufwerksstamms als Sicherungsziel wird nicht unterstützt. Wählen Sie stattdessen einen bestimmten Ordner."
+  },
+  "Settings_Target_FolderNotEmpty": {
+    "en": "The selected target folder already contains files.",
+    "de": "Der ausgewählte Zielordner enthält bereits Dateien."
+  },
+  "Settings_Mode_BackupMode": {
+    "en": "Backup mode",
+    "de": "Sicherungsmodus"
+  },
+  "Settings_Mode_BackupModeDescription": {
+    "en": "Specify the automation of backups",
+    "de": "Legen Sie die Automatisierung der Sicherungen fest"
+  },
+  "Settings_Mode_SetSchedule": {
+    "en": "Set schedule",
+    "de": "Zeitplan festlegen"
+  },
+  "Settings_Mode_BatterySaver": {
+    "en": "Battery saver mode",
+    "de": "Energiesparmodus"
+  },
+  "Settings_Mode_BatterySaverDescription": {
+    "en": "Stops automatic and scheduled backups when device is in battery mode",
+    "de": "Stoppt automatische und geplante Sicherungen, wenn das Gerät im Batteriebetrieb ist"
+  },
+  "Settings_Mode_FullAutomatic": {
+    "en": "Full automatic backups (recommended)",
+    "de": "Vollautomatische Sicherungen (empfohlen)"
+  },
+  "Settings_Mode_FullAutomaticDescription": {
+    "en": "The full automatic backup model backups your files hourly. These backups are available for 24 hours. Afterwards, daily backups are available for 30 days. Then, weekly backups are available as long as enough disk space is available.",
+    "de": "Das vollautomatische Sicherungsmodell sichert Ihre Dateien stündlich. Diese Sicherungen sind 24 Stunden verfügbar. Anschließend sind tägliche Sicherungen 30 Tage verfügbar. Danach sind wöchentliche Sicherungen verfügbar, solange ausreichend Speicherplatz vorhanden ist."
+  },
+  "Settings_Mode_Scheduled": {
+    "en": "Scheduled backups",
+    "de": "Zeitplanbasierte Sicherungen"
+  },
+  "Settings_Mode_ScheduledDescription": {
+    "en": "You define when backups should be performed and how long these should stay available.",
+    "de": "Sie legen fest, wann Sicherungen durchgeführt werden und wie lange diese verfügbar bleiben sollen."
+  },
+  "Settings_Mode_Manual": {
+    "en": "Manual backups",
+    "de": "Manuelle Sicherungen"
+  },
+  "Settings_Mode_ManualDescription": {
+    "en": "Backups are not executed automatically, but you manually start the backup.",
+    "de": "Sicherungen werden nicht automatisch ausgeführt, sondern Sie starten die Sicherung manuell."
+  },
+  "Settings_Options_StorageOptions": {
+    "en": "Storage options",
+    "de": "Speicheroptionen"
+  },
+  "Settings_Options_StorageOptionsDescription": {
+    "en": "Specify how the backup should be stored.",
+    "de": "Legen Sie fest, wie die Sicherung gespeichert werden soll."
+  },
+  "Settings_Options_Extension": {
+    "en": "Extension",
+    "de": "Erweiterung"
+  },
+  "Settings_Options_EncryptionHint": {
+    "en": "To protect the backup from unauthorized access, it can be encrypted. You will then be asked for your password at each session. The encryption cannot be applied retroactively.",
+    "de": "Zum Schutz vor unbefugtem Zugriff kann die Sicherung verschlüsselt werden. Sie werden dann in jeder Sitzung nach Ihrem Kennwort gefragt. Die Verschlüsselung kann nicht nachträglich angewendet werden."
+  },
+  "Settings_Options_TurnOff": {
+    "en": "Turn off",
+    "de": "Ausschalten"
+  },
+  "Settings_Options_StorageDeviceBehavior": {
+    "en": "Storage device behavior",
+    "de": "Verhalten des Speichermediums"
+  },
+  "Settings_Options_WaitForDevice": {
+    "en": "Wait for storage device if not available",
+    "de": "Auf Speichermedium warten, falls nicht verfügbar"
+  },
+  "Settings_Options_NoCompressionOrEncryption": {
+    "en": "No compression or encryption",
+    "de": "Keine Komprimierung oder Verschlüsselung"
+  },
+  "Settings_Options_Compress": {
+    "en": "Compress backups",
+    "de": "Sicherungen komprimieren"
+  },
+  "Settings_Options_Encrypt": {
+    "en": "Encrypt backups",
+    "de": "Sicherungen verschlüsseln"
+  },
+  "Settings_Options_RequiresMorePower": {
+    "en": "(requires more computation power; slower backups)",
+    "de": "(erfordert mehr Rechenleistung; langsamere Sicherungen)"
+  },
+  "Settings_Options_ExcludedExtensions": {
+    "en": "Excluded extensions",
+    "de": "Ausgeschlossene Erweiterungen"
+  },
+  "Settings_Enhanced_Application": {
+    "en": "Application",
+    "de": "Anwendung"
+  },
+  "Settings_Enhanced_Backupbrowser": {
+    "en": "Backupbrowser",
+    "de": "Backupbrowser"
+  },
+  "Settings_Enhanced_Notifications": {
+    "en": "Notifications",
+    "de": "Benachrichtigungen"
+  },
+  "Settings_Enhanced_LaunchAtStartup": {
+    "en": "Launch at Windows startup",
+    "de": "Beim Windows-Start starten"
+  },
+  "Settings_Enhanced_LaunchAtStartupDescription": {
+    "en": "Start Backup Service Home when you sign in to Windows",
+    "de": "Backup Service Home starten, wenn Sie sich bei Windows anmelden"
+  },
+  "Settings_Enhanced_AutoCheckUpdates": {
+    "en": "Automatically check for updates",
+    "de": "Automatisch nach Aktualisierungen suchen"
+  },
+  "Settings_Enhanced_AutoCheckUpdatesDescription": {
+    "en": "Look for updates when the application starts",
+    "de": "Beim Start der Anwendung nach Aktualisierungen suchen"
+  },
+  "Settings_Enhanced_DownloadBeta": {
+    "en": "Download beta updates",
+    "de": "Beta-Aktualisierungen herunterladen"
+  },
+  "Settings_Enhanced_DownloadBetaDescription": {
+    "en": "Include prerelease versions when checking for updates",
+    "de": "Vorabversionen bei der Suche nach Aktualisierungen einbeziehen"
+  },
+  "Settings_Enhanced_DirectoryLocalization": {
+    "en": "Directory localization",
+    "de": "Verzeichnislokalisierung"
+  },
+  "Settings_Enhanced_DirectoryLocalizationDescription": {
+    "en": "Show directory localization names if available",
+    "de": "Lokalisierte Verzeichnisnamen anzeigen, falls verfügbar"
+  },
+  "Settings_Enhanced_LowDiskspace": {
+    "en": "Low diskspace",
+    "de": "Wenig Speicherplatz"
+  },
+  "Settings_Enhanced_LowDiskspaceDescription": {
+    "en": "Show notification if less diskspace is available",
+    "de": "Benachrichtigung anzeigen, wenn wenig Speicherplatz verfügbar ist"
+  },
+  "Settings_Enhanced_DiskspaceLowerThan": {
+    "en": "Diskspace lower than",
+    "de": "Speicherplatz niedriger als"
+  },
+  "Settings_Enhanced_MB": {
+    "en": "MB",
+    "de": "MB"
+  },
+  "Settings_Enhanced_BackupCompleted": {
+    "en": "Backup completed",
+    "de": "Sicherung abgeschlossen"
+  },
+  "Settings_Enhanced_BackupCompletedDescription": {
+    "en": "Show notification if backup is completed",
+    "de": "Benachrichtigung anzeigen, wenn die Sicherung abgeschlossen ist"
+  },
+  "Settings_Enhanced_StorageDeviceNotify": {
+    "en": "Storage device",
+    "de": "Speichermedium"
+  },
+  "Settings_Enhanced_StorageDeviceNotifyDescription": {
+    "en": "Show notification to request storage device if not available",
+    "de": "Benachrichtigung anzeigen, um das Speichermedium anzufordern, falls nicht verfügbar"
+  },
+  "Settings_Enhanced_BackupOutdated": {
+    "en": "Backup outdated",
+    "de": "Sicherung veraltet"
+  },
+  "Settings_Enhanced_BackupOutdatedDescription": {
+    "en": "Show notification if backup is outdated",
+    "de": "Benachrichtigung anzeigen, wenn die Sicherung veraltet ist"
+  },
+  "Settings_Enhanced_BackupOutdatedWhen": {
+    "en": "Backup is outdated when older than",
+    "de": "Sicherung ist veraltet, wenn älter als"
+  },
+  "Settings_Enhanced_Days": {
+    "en": "Days",
+    "de": "Tage"
+  },
+  "Settings_Enhanced_AccessDenied_Title": {
+    "en": "Access denied",
+    "de": "Zugriff verweigert"
+  },
+  "Settings_Enhanced_AccessDenied_Text": {
+    "en": "Windows startup could not be changed. Check your permissions and try again.",
+    "de": "Der Windows-Autostart konnte nicht geändert werden. Prüfen Sie Ihre Berechtigungen und versuchen Sie es erneut."
+  },
+  "Setup_Welcome_Title": {
+    "en": "Welcome",
+    "de": "Willkommen"
+  },
+  "Setup_Welcome_Description": {
+    "en": "Choose how you want to get started.",
+    "de": "Wählen Sie, wie Sie beginnen möchten."
+  },
+  "Setup_Hero_Title": {
+    "en": "Set up Backup Service Home",
+    "de": "Backup Service Home einrichten"
+  },
+  "Setup_Hero_Subtitle": {
+    "en": "Protect your files in a few steps. Choose how you want to begin.",
+    "de": "Schützen Sie Ihre Dateien in wenigen Schritten. Wählen Sie, wie Sie beginnen möchten."
+  },
+  "Setup_NewSetup_Title": {
+    "en": "Start a new backup setup",
+    "de": "Neue Sicherungseinrichtung starten"
+  },
+  "Setup_NewSetup_Description": {
+    "en": "Recommended for first-time use. Pick the folders to protect, choose where backups are stored, and decide whether backups run automatically.",
+    "de": "Empfohlen für die erste Nutzung. Wählen Sie die zu schützenden Ordner, den Speicherort der Sicherungen und ob Sicherungen automatisch ausgeführt werden."
+  },
+  "Setup_NewSetup_Continue": {
+    "en": "Continue",
+    "de": "Weiter"
+  },
+  "Setup_Import_Title": {
+    "en": "Import an existing backup",
+    "de": "Vorhandene Sicherung importieren"
+  },
+  "Setup_Import_Description": {
+    "en": "Already have a Backup Service Home database on a drive, network share, or FTP server? Import it and remap source folders if paths changed.",
+    "de": "Haben Sie bereits eine Backup-Service-Home-Datenbank auf einem Laufwerk, einer Netzwerkfreigabe oder einem FTP-Server? Importieren Sie sie und ordnen Sie Quellordner neu zu, falls sich Pfade geändert haben."
+  },
+  "Setup_Import_Button": {
+    "en": "Import",
+    "de": "Importieren"
+  },
+  "Setup_Sources_AddFolder": {
+    "en": "Add a folder to back up",
+    "de": "Ordner zur Sicherung hinzufügen"
+  },
+  "Setup_Sources_RemoveSelected": {
+    "en": "Remove selected folder",
+    "de": "Ausgewählten Ordner entfernen"
+  },
+  "Setup_Target_Local_Title": {
+    "en": "This PC or drive",
+    "de": "Dieser PC oder dieses Laufwerk"
+  },
+  "Setup_Target_Local_Description": {
+    "en": "Disk, USB, or mapped drive",
+    "de": "Festplatte, USB oder zugeordnetes Laufwerk"
+  },
+  "Setup_Target_Unc_Title": {
+    "en": "Network share",
+    "de": "Netzwerkfreigabe"
+  },
+  "Setup_Target_Unc_Description": {
+    "en": "UNC path like \\\\server\\share",
+    "de": "UNC-Pfad wie \\\\server\\share"
+  },
+  "Setup_Target_Ftp_Title": {
+    "en": "FTP server",
+    "de": "FTP-Server"
+  },
+  "Setup_Target_Ftp_Description": {
+    "en": "Remote host and login",
+    "de": "Remote-Host und Anmeldung"
+  },
+  "Setup_Target_SelectDrive": {
+    "en": "Select the drive for your backups",
+    "de": "Wählen Sie das Laufwerk für Ihre Sicherungen"
+  },
+  "Setup_Target_DriveHint": {
+    "en": "Backups will be stored under Backups\\ComputerName\\UserName on the drive you choose.",
+    "de": "Sicherungen werden unter Backups\\ComputerName\\UserName auf dem gewählten Laufwerk gespeichert."
+  },
+  "Setup_Target_RefreshDrives": {
+    "en": "Refresh drives",
+    "de": "Laufwerke aktualisieren"
+  },
+  "Setup_Target_EnterNetworkShare": {
+    "en": "Enter the network share",
+    "de": "Netzwerkfreigabe eingeben"
+  },
+  "Setup_Target_NetworkPath": {
+    "en": "Network path (for example \\\\server\\backups)",
+    "de": "Netzwerkpfad (zum Beispiel \\\\server\\backups)"
+  },
+  "Setup_Target_UsernameOptional": {
+    "en": "Username (optional)",
+    "de": "Benutzername (optional)"
+  },
+  "Setup_Target_PasswordOptional": {
+    "en": "Password (optional)",
+    "de": "Kennwort (optional)"
+  },
+  "Setup_Target_EnterFtpDetails": {
+    "en": "Enter your FTP server details",
+    "de": "FTP-Serverdetails eingeben"
+  },
+  "Setup_Target_FtpHost": {
+    "en": "FTP host",
+    "de": "FTP-Host"
+  },
+  "Setup_Target_FtpPort": {
+    "en": "FTP port",
+    "de": "FTP-Port"
+  },
+  "Setup_Target_FtpUser": {
+    "en": "FTP user",
+    "de": "FTP-Benutzer"
+  },
+  "Setup_Target_FtpPassword": {
+    "en": "FTP password",
+    "de": "FTP-Kennwort"
+  },
+  "Setup_Target_FtpFolder": {
+    "en": "FTP folder",
+    "de": "FTP-Ordner"
+  },
+  "Setup_Target_FtpEncoding": {
+    "en": "FTP encoding",
+    "de": "FTP-Kodierung"
+  },
+  "Setup_Target_EnforceUnencryptedFtp": {
+    "en": "Enforce unencrypted FTP",
+    "de": "Unverschlüsseltes FTP erzwingen"
+  },
+  "Setup_Mode_Automatic": {
+    "en": "Automatic backups",
+    "de": "Automatische Sicherungen"
+  },
+  "Setup_Mode_AutomaticDescription": {
+    "en": "The system starts immediately and creates the first backup.",
+    "de": "Das System startet sofort und erstellt die erste Sicherung."
+  },
+  "Setup_Mode_Manual": {
+    "en": "Manual backups",
+    "de": "Manuelle Sicherungen"
+  },
+  "Setup_Mode_ManualDescription": {
+    "en": "Open settings after setup so you can refine the configuration before the first backup.",
+    "de": "Öffnen Sie nach der Einrichtung die Einstellungen, um die Konfiguration vor der ersten Sicherung anzupassen."
+  },
+  "Setup_Import_Local_Description": {
+    "en": "Browse a drive for backups",
+    "de": "Laufwerk nach Sicherungen durchsuchen"
+  },
+  "Setup_Import_FolderPath_Title": {
+    "en": "Folder path",
+    "de": "Ordnerpfad"
+  },
+  "Setup_Import_FolderPath_Description": {
+    "en": "Folder with backup.bshdb",
+    "de": "Ordner mit backup.bshdb"
+  },
+  "Setup_Import_SelectDrive": {
+    "en": "Select the drive that contains your backup",
+    "de": "Wählen Sie das Laufwerk mit Ihrer Sicherung"
+  },
+  "Setup_Import_ChooseFolder": {
+    "en": "Choose the folder that contains backup.bshdb",
+    "de": "Wählen Sie den Ordner mit backup.bshdb"
+  },
+  "Setup_Import_OriginalPath": {
+    "en": "Original path",
+    "de": "Originalpfad"
+  },
+  "Setup_Import_PathOnThisPc": {
+    "en": "Path on this PC",
+    "de": "Pfad auf diesem PC"
+  },
+  "Setup_Import_ChangePath": {
+    "en": "Change path on this PC",
+    "de": "Pfad auf diesem PC ändern"
+  },
+  "Setup_Progress_Applying": {
+    "en": "Applying setup...",
+    "de": "Einrichtung wird angewendet..."
+  },
+  "Setup_Step_Sources_Title": {
+    "en": "Choose what to back up",
+    "de": "Auswählen, was gesichert werden soll"
+  },
+  "Setup_Step_Sources_Description": {
+    "en": "Select the folders on this PC that should be included in your backups. You can add more folders or remove ones you do not need.",
+    "de": "Wählen Sie die Ordner auf diesem PC aus, die in Ihre Sicherungen einbezogen werden sollen. Sie können weitere Ordner hinzufügen oder nicht benötigte entfernen."
+  },
+  "Setup_Step_Target_Title": {
+    "en": "Where should backups be stored?",
+    "de": "Wo sollen Sicherungen gespeichert werden?"
+  },
+  "Setup_Step_Target_Description": {
+    "en": "Pick one destination. Only the options for your choice appear below.",
+    "de": "Wählen Sie ein Ziel. Unten erscheinen nur die Optionen für Ihre Auswahl."
+  },
+  "Setup_Step_Mode_Title": {
+    "en": "Choose backup mode",
+    "de": "Sicherungsmodus wählen"
+  },
+  "Setup_Step_Mode_Description": {
+    "en": "Run backups automatically or start them manually.",
+    "de": "Führen Sie Sicherungen automatisch aus oder starten Sie sie manuell."
+  },
+  "Setup_Step_ImportMedia_Title": {
+    "en": "Import backup",
+    "de": "Sicherung importieren"
+  },
+  "Setup_Step_ImportMedia_Description": {
+    "en": "Select the media, FTP server, or path that contains your backup database.",
+    "de": "Wählen Sie das Medium, den FTP-Server oder den Pfad mit Ihrer Sicherungsdatenbank."
+  },
+  "Setup_Step_ImportSelect_Title": {
+    "en": "Select backup",
+    "de": "Sicherung wählen"
+  },
+  "Setup_Step_ImportSelect_Description": {
+    "en": "Choose which discovered backup database to import.",
+    "de": "Wählen Sie, welche gefundene Sicherungsdatenbank importiert werden soll."
+  },
+  "Setup_Step_ImportRemap_Title": {
+    "en": "Remap source folders",
+    "de": "Quellordner neu zuordnen"
+  },
+  "Setup_Step_ImportRemap_Description": {
+    "en": "Match each original path from the imported backup to where that folder lives on this PC.",
+    "de": "Ordnen Sie jeden Originalpfad aus der importierten Sicherung dem Ordner auf diesem PC zu."
+  },
+  "Setup_Step_Progress_Title": {
+    "en": "Working",
+    "de": "Bitte warten"
+  },
+  "Setup_Step_Progress_Description": {
+    "en": "Please wait while the setup is applied.",
+    "de": "Bitte warten Sie, während die Einrichtung angewendet wird."
+  },
+  "Setup_Step_Default_Title": {
+    "en": "Setup",
+    "de": "Einrichtung"
+  },
+  "Setup_Validation_SelectSourceToRemap": {
+    "en": "Select a source folder to remap.",
+    "de": "Wählen Sie einen Quellordner zur Neuordnung."
+  },
+  "Setup_Validation_AddAtLeastOneSource": {
+    "en": "Add at least one source folder.",
+    "de": "Fügen Sie mindestens einen Quellordner hinzu."
+  },
+  "Setup_Validation_SelectTargetDrive": {
+    "en": "Select a backup target drive.",
+    "de": "Wählen Sie ein Sicherungsziellaufwerk."
+  },
+  "Setup_Validation_TargetContainsBackup": {
+    "en": "The selected target already contains a backup for this computer and user.",
+    "de": "Das ausgewählte Ziel enthält bereits eine Sicherung für diesen Computer und Benutzer."
+  },
+  "Setup_Validation_FirstBackupFailed": {
+    "en": "Setup was saved, but the first backup could not be started.",
+    "de": "Die Einrichtung wurde gespeichert, aber die erste Sicherung konnte nicht gestartet werden."
+  },
+  "Setup_Validation_EnterNetworkPath": {
+    "en": "Enter a network path.",
+    "de": "Geben Sie einen Netzwerkpfad ein."
+  },
+  "Setup_Validation_NetworkUnreachable": {
+    "en": "The network path could not be reached.",
+    "de": "Der Netzwerkpfad konnte nicht erreicht werden."
+  },
+  "Setup_Validation_NetworkUnreachableWithError": {
+    "en": "The network path could not be reached. {0}",
+    "de": "Der Netzwerkpfad konnte nicht erreicht werden. {0}"
+  },
+  "Setup_Validation_FtpPortInvalid": {
+    "en": "FTP port is invalid.",
+    "de": "FTP-Port ist ungültig."
+  },
+  "Setup_Validation_FtpDirectoryNotFound": {
+    "en": "The FTP directory was not found.",
+    "de": "Das FTP-Verzeichnis wurde nicht gefunden."
+  },
+  "Setup_Validation_FtpConnectionFailed": {
+    "en": "FTP connection failed. {0}",
+    "de": "FTP-Verbindung fehlgeschlagen. {0}"
+  },
+  "Setup_Validation_SelectBackupTarget": {
+    "en": "Select a backup target.",
+    "de": "Wählen Sie ein Sicherungsziel."
+  },
+  "Setup_Validation_SelectDeviceWithBackups": {
+    "en": "Select a device that contains backups.",
+    "de": "Wählen Sie ein Gerät, das Sicherungen enthält."
+  },
+  "Setup_Validation_NoDatabaseAtPath": {
+    "en": "No backup database was found at the selected path.",
+    "de": "Am ausgewählten Pfad wurde keine Sicherungsdatenbank gefunden."
+  },
+  "Setup_Validation_SelectBackupToImport": {
+    "en": "Select a backup to import.",
+    "de": "Wählen Sie eine zu importierende Sicherung."
+  },
+  "Setup_Validation_NoDatabaseOnFtp": {
+    "en": "No backup database was found on the FTP server.",
+    "de": "Auf dem FTP-Server wurde keine Sicherungsdatenbank gefunden."
+  },
+  "Setup_Validation_FtpImportFailed": {
+    "en": "FTP import failed. {0}",
+    "de": "FTP-Import fehlgeschlagen. {0}"
+  },
+  "Setup_Validation_WindowNotReady": {
+    "en": "The main window is not ready for folder selection.",
+    "de": "Das Hauptfenster ist für die Ordnerauswahl nicht bereit."
+  },
+  "Setup_Validation_FolderPickerFailed": {
+    "en": "Unable to open the folder picker. {0}",
+    "de": "Der Ordnerauswahldialog konnte nicht geöffnet werden. {0}"
+  },
+  "Setup_Validation_SourcePathEmpty": {
+    "en": "Source path cannot be empty.",
+    "de": "Der Quellpfad darf nicht leer sein."
+  },
+  "Setup_Validation_FolderNameMismatch": {
+    "en": "Cannot change the directory because the folder name does not match.",
+    "de": "Das Verzeichnis kann nicht geändert werden, da der Ordnername nicht übereinstimmt."
+  },
+  "Setup_FtpConnectionSuccessful_Title": {
+    "en": "FTP connection successful",
+    "de": "FTP-Verbindung erfolgreich"
+  },
+  "Setup_FtpConnectionSuccessful_Text": {
+    "en": "The FTP connection was verified successfully.",
+    "de": "Die FTP-Verbindung wurde erfolgreich überprüft."
+  },
+  "Setup_ReplaceDatabase_Title": {
+    "en": "Replace current database",
+    "de": "Aktuelle Datenbank ersetzen"
+  },
+  "Setup_ReplaceDatabase_Text": {
+    "en": "Importing replaces the current configuration and backup database. Do you want to continue?",
+    "de": "Beim Importieren werden die aktuelle Konfiguration und die Sicherungsdatenbank ersetzt. Möchten Sie fortfahren?"
+  },
+  "Setup_FirstBackup_Title": {
+    "en": "First backup",
+    "de": "Erste Sicherung"
+  },
+  "Schedule_Title": {
+    "en": "Schedule",
+    "de": "Zeitplan"
+  },
+  "Schedule_Subtitle": {
+    "en": "Create schedule entries and choose how scheduled backups are retained.",
+    "de": "Erstellen Sie Zeitplaneinträge und legen Sie fest, wie geplante Sicherungen aufbewahrt werden."
+  },
+  "Schedule_BackupTimes": {
+    "en": "Backup times",
+    "de": "Sicherungszeiten"
+  },
+  "Schedule_BackupTimesDescription": {
+    "en": "Add one-time or recurring backup entries.",
+    "de": "Fügen Sie einmalige oder wiederkehrende Sicherungseinträge hinzu."
+  },
+  "Schedule_Delete": {
+    "en": "Delete",
+    "de": "Löschen"
+  },
+  "Schedule_Repeat": {
+    "en": "Repeat",
+    "de": "Wiederholen"
+  },
+  "Schedule_Date": {
+    "en": "Date",
+    "de": "Datum"
+  },
+  "Schedule_Day": {
+    "en": "Day",
+    "de": "Tag"
+  },
+  "Schedule_DayOfMonth": {
+    "en": "Day of month",
+    "de": "Tag des Monats"
+  },
+  "Schedule_DateTime": {
+    "en": "Date / time",
+    "de": "Datum / Uhrzeit"
+  },
+  "Schedule_Minute": {
+    "en": "Minute",
+    "de": "Minute"
+  },
+  "Schedule_Time": {
+    "en": "Time",
+    "de": "Uhrzeit"
+  },
+  "Schedule_Retention": {
+    "en": "Retention",
+    "de": "Aufbewahrung"
+  },
+  "Schedule_RetentionDescription": {
+    "en": "Choose how long scheduled backup versions stay available.",
+    "de": "Legen Sie fest, wie lange geplante Sicherungsversionen verfügbar bleiben."
+  },
+  "Schedule_Mode": {
+    "en": "Mode",
+    "de": "Modus"
+  },
+  "Schedule_DeleteInterval": {
+    "en": "Delete interval",
+    "de": "Löschintervall"
+  },
+  "Schedule_Unit": {
+    "en": "Unit",
+    "de": "Einheit"
+  },
+  "Schedule_HourlyBackupThreshold": {
+    "en": "Hourly backup threshold",
+    "de": "Schwellenwert für stündliche Sicherungen"
+  },
+  "Schedule_FullBackups": {
+    "en": "Full backups",
+    "de": "Vollständige Sicherungen"
+  },
+  "Schedule_FullBackupsDescription": {
+    "en": "Control scheduled full backups and missed backup handling.",
+    "de": "Steuern Sie geplante vollständige Sicherungen und den Umgang mit verpassten Sicherungen."
+  },
+  "Schedule_CreateFullBackupAfterInterval": {
+    "en": "Create full backup after an interval",
+    "de": "Vollständige Sicherung nach einem Intervall erstellen"
+  },
+  "Schedule_DaysBetweenFullBackups": {
+    "en": "Days between full backups",
+    "de": "Tage zwischen vollständigen Sicherungen"
+  },
+  "Schedule_PerformMissedLater": {
+    "en": "Perform missed scheduled backups later",
+    "de": "Verpasste geplante Sicherungen später ausführen"
+  },
+  "Schedule_Help_Once": {
+    "en": "Run once on the selected date and time.",
+    "de": "Einmalig am ausgewählten Datum und zur ausgewählten Uhrzeit ausführen."
+  },
+  "Schedule_Help_Hourly": {
+    "en": "Run every hour at the selected minute.",
+    "de": "Jede Stunde zur ausgewählten Minute ausführen."
+  },
+  "Schedule_Help_Daily": {
+    "en": "Run every day at the selected time.",
+    "de": "Jeden Tag zur ausgewählten Uhrzeit ausführen."
+  },
+  "Schedule_Help_Weekly": {
+    "en": "Run every week on the selected day and time.",
+    "de": "Jede Woche am ausgewählten Tag und zur ausgewählten Uhrzeit ausführen."
+  },
+  "Schedule_Help_Monthly": {
+    "en": "Run every month on the selected day and time.",
+    "de": "Jeden Monat am ausgewählten Tag und zur ausgewählten Uhrzeit ausführen."
+  },
+  "Schedule_Kind_Once": {
+    "en": "Once",
+    "de": "Einmalig"
+  },
+  "Schedule_Kind_Hourly": {
+    "en": "Hourly",
+    "de": "Stündlich"
+  },
+  "Schedule_Kind_Daily": {
+    "en": "Daily",
+    "de": "Täglich"
+  },
+  "Schedule_Kind_Weekly": {
+    "en": "Weekly",
+    "de": "Wöchentlich"
+  },
+  "Schedule_Kind_Monthly": {
+    "en": "Monthly",
+    "de": "Monatlich"
+  },
+  "Schedule_Kind_Unknown": {
+    "en": "Unknown",
+    "de": "Unbekannt"
+  },
+  "Schedule_Text_AtMinute": {
+    "en": "At minute {0}",
+    "de": "Zur Minute {0}"
+  },
+  "Schedule_Text_DayOfMonth": {
+    "en": "Day {0}, {1}",
+    "de": "Tag {0}, {1}"
+  },
+  "Schedule_RetentionMode_None": {
+    "en": "None",
+    "de": "Keine"
+  },
+  "Schedule_RetentionMode_Automatic": {
+    "en": "Automatic",
+    "de": "Automatisch"
+  },
+  "Schedule_RetentionMode_Interval": {
+    "en": "Interval",
+    "de": "Intervall"
+  },
+  "Schedule_RetentionUnit_Hour": {
+    "en": "Hour",
+    "de": "Stunde"
+  },
+  "Schedule_RetentionUnit_Day": {
+    "en": "Day",
+    "de": "Tag"
+  },
+  "Schedule_RetentionUnit_Week": {
+    "en": "Week",
+    "de": "Woche"
+  },
+  "Filter_Title": {
+    "en": "Exclude items",
+    "de": "Elemente ausschließen"
+  },
+  "Filter_Heading": {
+    "en": "Exclude files and folders",
+    "de": "Dateien und Ordner ausschließen"
+  },
+  "Filter_Description": {
+    "en": "Exclude files, folders, file types and based on regular expressions. Select the files and folders you want to exclude in backups.",
+    "de": "Schließen Sie Dateien, Ordner, Dateitypen und anhand regulärer Ausdrücke aus. Wählen Sie die Dateien und Ordner aus, die Sie von Sicherungen ausschließen möchten."
+  },
+  "Filter_Tab_Files": {
+    "en": "Files",
+    "de": "Dateien"
+  },
+  "Filter_Tab_Folders": {
+    "en": "Folders",
+    "de": "Ordner"
+  },
+  "Filter_Tab_FileTypes": {
+    "en": "File types",
+    "de": "Dateitypen"
+  },
+  "Filter_Tab_MaxFileSize": {
+    "en": "Max file size",
+    "de": "Max. Dateigröße"
+  },
+  "Filter_Tab_Regex": {
+    "en": "Regular expressions",
+    "de": "Reguläre Ausdrücke"
+  },
+  "Filter_AddFiles": {
+    "en": "Add File(s)",
+    "de": "Datei(en) hinzufügen"
+  },
+  "Filter_AddFolder": {
+    "en": "Add Folder",
+    "de": "Ordner hinzufügen"
+  },
+  "Filter_Column_File": {
+    "en": "File",
+    "de": "Datei"
+  },
+  "Filter_Column_Folder": {
+    "en": "Folder",
+    "de": "Ordner"
+  },
+  "Filter_Column_Extension": {
+    "en": "Extension",
+    "de": "Erweiterung"
+  },
+  "Filter_Column_Pattern": {
+    "en": "Pattern",
+    "de": "Muster"
+  },
+  "Filter_EnterExtension": {
+    "en": "Enter extension (without dot)",
+    "de": "Erweiterung eingeben (ohne Punkt)"
+  },
+  "Filter_EnterRegex": {
+    "en": "Enter regular expression",
+    "de": "Regulären Ausdruck eingeben"
+  },
+  "Filter_IncludeSystemFolders": {
+    "en": "Include folders marked as System (e.g. Nextcloud sync folders)",
+    "de": "Als System markierte Ordner einbeziehen (z. B. Nextcloud-Sync-Ordner)"
+  },
+  "Filter_ExcludeLargerThan": {
+    "en": "Exclude files larger than this size",
+    "de": "Dateien größer als diese Größe ausschließen"
+  },
+  "Filter_MaximumFileSize": {
+    "en": "Maximum file size",
+    "de": "Maximale Dateigröße"
+  },
+  "Filter_FolderNotInSources": {
+    "en": "Selected folder is not within the configured source folders.",
+    "de": "Der ausgewählte Ordner liegt nicht in den konfigurierten Quellordnern."
+  },
+  "Filter_FileNotInSources": {
+    "en": "Selected file is not within the configured source folders.",
+    "de": "Die ausgewählte Datei liegt nicht in den konfigurierten Quellordnern."
+  },
+  "Filter_InvalidRegex": {
+    "en": "Invalid regular expression. Fix the pattern before saving it.",
+    "de": "Ungültiger regulärer Ausdruck. Korrigieren Sie das Muster, bevor Sie es speichern."
+  },
+  "Status_FilesProcessed": {
+    "en": "files processed",
+    "de": "Dateien verarbeitet"
+  },
+  "Status_AfterCompletion": {
+    "en": "After completion",
+    "de": "Nach Abschluss"
+  },
+  "Status_NoAction": {
+    "en": "No action",
+    "de": "Keine Aktion"
+  },
+  "Status_Shutdown": {
+    "en": "Shutdown",
+    "de": "Herunterfahren"
+  },
+  "Status_Hibernate": {
+    "en": "Hibernate",
+    "de": "Ruhezustand"
+  },
+  "Status_Cancel": {
+    "en": "Cancel",
+    "de": "Abbrechen"
+  },
+  "Status_InsufficientSpace_Title": {
+    "en": "Insufficient Storage Space on Backup Medium",
+    "de": "Nicht genügend Speicherplatz auf dem Sicherungsmedium"
+  },
+  "Status_InsufficientSpace_Text": {
+    "en": "The backup medium does not have enough free space for this operation.",
+    "de": "Das Sicherungsmedium verfügt nicht über ausreichend freien Speicherplatz für diesen Vorgang."
+  },
+  "Status_FilesNotCopied_Title": {
+    "en": "Files could not be copied",
+    "de": "Dateien konnten nicht kopiert werden"
+  },
+  "Password_Title": {
+    "en": "Password required",
+    "de": "Kennwort erforderlich"
+  },
+  "Password_Description": {
+    "en": "Backup Service Home requires you to enter your password to continue the process. Once entered, you will not be asked for it again during this session.",
+    "de": "Backup Service Home erfordert die Eingabe Ihres Kennworts, um den Vorgang fortzusetzen. Nach der Eingabe werden Sie in dieser Sitzung nicht erneut danach gefragt."
+  },
+  "Password_Label": {
+    "en": "Password:",
+    "de": "Kennwort:"
+  },
+  "Password_Remember": {
+    "en": "Remember password",
+    "de": "Kennwort merken"
+  },
+  "Password_Required_Title": {
+    "en": "Password required",
+    "de": "Kennwort erforderlich"
+  },
+  "Password_Required_Text": {
+    "en": "A password is required to access this backup.",
+    "de": "Zum Zugriff auf diese Sicherung ist ein Kennwort erforderlich."
+  },
+  "Overwrite_Title": {
+    "en": "Overwrite or Skip Files",
+    "de": "Dateien überschreiben oder überspringen"
+  },
+  "Overwrite_AlreadyExists": {
+    "en": "There is already a file with the same name at this location.",
+    "de": "An diesem Speicherort ist bereits eine Datei mit demselben Namen vorhanden."
+  },
+  "Overwrite_ReplaceHeader": {
+    "en": "Replace the file in the destination",
+    "de": "Datei im Ziel ersetzen"
+  },
+  "Overwrite_SkipHeader": {
+    "en": "Skip the file",
+    "de": "Datei überspringen"
+  },
+  "Overwrite_ReplaceDescription": {
+    "en": "Replace file in the destination folder with the file from backup:",
+    "de": "Datei im Zielordner durch die Datei aus der Sicherung ersetzen:"
+  },
+  "Overwrite_Size": {
+    "en": "Size:",
+    "de": "Größe:"
+  },
+  "Overwrite_LastModified": {
+    "en": "Last modified:",
+    "de": "Zuletzt geändert:"
+  },
+  "Overwrite_ApplyForAll": {
+    "en": "Apply for all conflicts",
+    "de": "Für alle Konflikte übernehmen"
+  },
+  "WaitForMedium_Title": {
+    "en": "Backup Service Home is waiting for medium",
+    "de": "Backup Service Home wartet auf das Medium"
+  },
+  "WaitForMedium_Heading": {
+    "en": "Backup Service Home is waiting for medium...",
+    "de": "Backup Service Home wartet auf das Medium..."
+  },
+  "WaitForMedium_Text": {
+    "en": "Backup Service Home 3 is waiting for the backup medium to continue with the planned action. Connect this medium to your computer now.\nThe medium will be automatically detected.",
+    "de": "Backup Service Home 3 wartet auf das Sicherungsmedium, um die geplante Aktion fortzusetzen. Verbinden Sie dieses Medium jetzt mit Ihrem Computer.\nDas Medium wird automatisch erkannt."
+  },
+  "WaitForMedium_Cancel": {
+    "en": "Cancel",
+    "de": "Abbrechen"
+  },
+  "CreateBackup_Title": {
+    "en": "Create Backup",
+    "de": "Sicherung erstellen"
+  },
+  "CreateBackup_TitleLabel": {
+    "en": "Title:",
+    "de": "Titel:"
+  },
+  "CreateBackup_DescriptionLabel": {
+    "en": "Description",
+    "de": "Beschreibung"
+  },
+  "CreateBackup_DescriptionLabelColon": {
+    "en": "Description:",
+    "de": "Beschreibung:"
+  },
+  "CreateBackup_FullBackup": {
+    "en": "Create full backup",
+    "de": "Vollständige Sicherung erstellen"
+  },
+  "CreateBackup_ShutdownAfter": {
+    "en": "Shutdown computer after completion",
+    "de": "Computer nach Abschluss herunterfahren"
+  },
+  "CreateBackup_CreateButton": {
+    "en": "Create Backup",
+    "de": "Sicherung erstellen"
+  },
+  "CreateBackup_Title_Automatic": {
+    "en": "Automatic Backup",
+    "de": "Automatisches Backup"
+  },
+  "CreateBackup_Title_Scheduled": {
+    "en": "Automatic backup",
+    "de": "Automatische Sicherung"
+  },
+  "CreateBackup_Title_Manual": {
+    "en": "Manual backup",
+    "de": "Manuelle Sicherung"
+  },
+  "CreateBackup_Title_First": {
+    "en": "First backup",
+    "de": "Erste Sicherung"
+  },
+  "CreateBackup_Help_Title": {
+    "en": "Enter the title for your backup",
+    "de": "Geben Sie den Titel für Ihre Sicherung ein"
+  },
+  "CreateBackup_Help_Description": {
+    "en": "Enter a description for your backup",
+    "de": "Geben Sie eine Beschreibung für Ihre Sicherung ein"
+  },
+  "EditBackup_Title": {
+    "en": "Edit Backup",
+    "de": "Sicherung bearbeiten"
+  },
+  "EditBackup_WindowTitle": {
+    "en": "Create Backup",
+    "de": "Sicherung erstellen"
+  },
+  "INFO_BACKUP_SUCCESSFUL_TITLE": {
+    "en": "Backup successful",
+    "de": "Datensicherung erfolgreich"
+  },
+  "INFO_BACKUP_SUCCESSFUL_TEXT": {
+    "en": "Planned backup was performed successfully.",
+    "de": "Die geplante Sicherung wurde erfolgreich abgeschlossen."
+  },
+  "INFO_BACKUP_UNSUCCESSFUL_TITLE": {
+    "en": "Backup with errors finished",
+    "de": "Datensicherung mit Problemen beendet"
+  },
+  "INFO_BACKUP_UNSUCCESSFUL_TEXT": {
+    "en": "The planned backup was ended with problems. Click here for more information.",
+    "de": "Die geplante Datensicherung wurde mit Problemen beendet. Klicken Sie hier für mehr Informationen."
+  },
+  "INFO_NO_DISKSPACE_LEFT_TITLE": {
+    "en": "Not enough disk space.",
+    "de": "Nicht genug Speicherplatz."
+  },
+  "INFO_NO_DISKSPACE_LEFT_TEXT": {
+    "en": "There is not enough storage space left on the backup medium. Delete backups or switch to a new medium.",
+    "de": "Auf dem Backupmedium ist nicht mehr genug Speicherplatz vorhanden. Löschen Sie Datensicherungen oder wechseln Sie das Medium."
+  },
+  "INFO_BACKUP_OLD_TITLE": {
+    "en": "Backup outdated",
+    "de": "Datensicherung veraltet"
+  },
+  "INFO_BACKUP_OLD_TEXT": {
+    "en": "Your last data backup is already {0} days old. Perform a data backup to ensure your current files are backed up.",
+    "de": "Ihre letzte Datensicherung liegt bereits {0} Tage zurück. Führen Sie eine Datensicherung aus, damit Ihre aktuellen Dateien gesichert sind."
+  },
+  "Formatter_Today": {
+    "en": "Today {0}",
+    "de": "Heute {0}"
+  },
+  "Formatter_Yesterday": {
+    "en": "Yesterday {0}",
+    "de": "Gestern {0}"
+  },
+  "Formatter_Never": {
+    "en": "Never",
+    "de": "Nie"
+  },
+  "Formatter_DatePrefix": {
+    "en": "dd. MMMM yyyy ",
+    "de": "dd. MMMM yyyy "
+  },
+  "ApplicationUpdate_UpToDate_Text": {
+    "en": "You are already using the latest version.",
+    "de": "Sie verwenden bereits die neueste Version."
+  }
+}

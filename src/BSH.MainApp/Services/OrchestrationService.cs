@@ -3,6 +3,7 @@
 
 using Brightbits.BSH.Engine.Contracts;
 using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 
 namespace BSH.MainApp.Services;
@@ -184,8 +185,8 @@ public class OrchestrationService : IOrchestrationService
         if (freeBytes < reminderMegabytes * 1024L * 1024L)
         {
             appNotificationService.Show(ToastNotificationPayload.Create(
-                "Not enough disk space.",
-                "There is not enough storage space left on the backup medium. Delete backups or switch to a new medium."));
+                "INFO_NO_DISKSPACE_LEFT_TITLE".GetLocalized(),
+                "INFO_NO_DISKSPACE_LEFT_TEXT".GetLocalized()));
         }
     }
 
@@ -206,7 +207,7 @@ public class OrchestrationService : IOrchestrationService
 
         var days = DateTime.Now.Subtract(lastBackup.CreationDate).Days;
         appNotificationService.Show(ToastNotificationPayload.Create(
-            "Backup outdated",
-            $"Your last data backup is already {days} days old. Perform a data backup to ensure your current files are backed up."));
+            "INFO_BACKUP_OLD_TITLE".GetLocalized(),
+            string.Format("INFO_BACKUP_OLD_TEXT".GetLocalized(), days)));
     }
 }

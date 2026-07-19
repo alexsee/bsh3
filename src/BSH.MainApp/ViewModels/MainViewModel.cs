@@ -130,7 +130,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         }
         else
         {
-            NextBackupDate = "None planned";
+            NextBackupDate = "MainView_NonePlanned".GetLocalized();
             BackupMode = "MainView_BackupMode_Manual".GetLocalized();
         }
 
@@ -162,7 +162,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         var (result, backup) = await this.presentationService.ShowCreateBackupWindowAsync();
         if (result)
         {
-            await jobService.CreateBackupAsync(backup.Title ?? "Manual backup", backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);
+            await jobService.CreateBackupAsync(backup.Title ?? "CreateBackup_Title_Manual".GetLocalized(), backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);
         }
     }
 

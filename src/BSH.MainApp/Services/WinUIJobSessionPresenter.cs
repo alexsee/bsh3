@@ -101,8 +101,8 @@ public sealed class WinUIJobSessionPresenter : IJobSessionPresenter
     public Task ShowErrorPasswordRequiredAsync()
     {
         return presentationService.ShowMessageBoxAsync(
-            "Password required",
-            "A password is required to access this backup.",
+            "Password_Required_Title".GetLocalized(),
+            "Password_Required_Text".GetLocalized(),
             null);
     }
 

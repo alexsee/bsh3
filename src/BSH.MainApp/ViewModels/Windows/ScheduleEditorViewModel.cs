@@ -7,6 +7,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services;
 using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -128,16 +129,16 @@ public partial class ScheduleEditorViewModel : ObservableObject
     public bool ShowMonthlyDayPicker => SelectedScheduleKind == ScheduleEntryKind.Monthly;
 
     public string TimeHeader => SelectedScheduleKind == ScheduleEntryKind.Hourly
-        ? "Minute"
-        : "Time";
+        ? "Schedule_Minute".GetLocalized()
+        : "Schedule_Time".GetLocalized();
 
     public string AddScheduleHelpText => SelectedScheduleKind switch
     {
-        ScheduleEntryKind.Once => "Run once on the selected date and time.",
-        ScheduleEntryKind.Hourly => "Run every hour at the selected minute.",
-        ScheduleEntryKind.Daily => "Run every day at the selected time.",
-        ScheduleEntryKind.Weekly => "Run every week on the selected day and time.",
-        ScheduleEntryKind.Monthly => "Run every month on the selected day and time.",
+        ScheduleEntryKind.Once => "Schedule_Help_Once".GetLocalized(),
+        ScheduleEntryKind.Hourly => "Schedule_Help_Hourly".GetLocalized(),
+        ScheduleEntryKind.Daily => "Schedule_Help_Daily".GetLocalized(),
+        ScheduleEntryKind.Weekly => "Schedule_Help_Weekly".GetLocalized(),
+        ScheduleEntryKind.Monthly => "Schedule_Help_Monthly".GetLocalized(),
         _ => string.Empty,
     };
 
