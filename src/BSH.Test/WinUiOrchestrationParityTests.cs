@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
@@ -251,6 +250,7 @@ public class WinUiOrchestrationParityTests
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
         Assert.That(notifications.Payloads[0], Does.Contain("Not enough disk space"));
+        Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=settings\""));
     }
 
     [Test]
@@ -279,11 +279,12 @@ public class WinUiOrchestrationParityTests
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
         Assert.That(notifications.Payloads[0], Does.Contain("Backup outdated"));
+        Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=overview\""));
     }
 
-    [TestCase(JobState.FINISHED, "Backup successful")]
-    [TestCase(JobState.ERROR, "Backup with errors finished")]
-    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitle)
+    [TestCase(JobState.FINISHED, "Backup successful", "action=overview")]
+    [TestCase(JobState.ERROR, "Backup with errors finished", "action=backupResult")]
+    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitle, string expectedLaunch)
     {
         var notifications = new TestNotificationService();
         var configurationManager = new TestConfigurationManager
@@ -300,6 +301,7 @@ public class WinUiOrchestrationParityTests
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
         Assert.That(notifications.Payloads[0], Does.Contain(expectedTitle));
+        Assert.That(notifications.Payloads[0], Does.Contain($"launch=\"{expectedLaunch}\""));
     }
 
     [Test]
@@ -470,7 +472,7 @@ public class WinUiOrchestrationParityTests
         public List<string> Payloads { get; } = new();
 
         public void Initialize() { }
-        public NameValueCollection ParseArguments(string arguments) => new();
+        public void Activate(string? arguments) { }
         public bool Show(string payload)
         {
             Payloads.Add(payload);
