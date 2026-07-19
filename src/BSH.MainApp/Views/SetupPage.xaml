@@ -185,21 +185,21 @@
                                 Glyph="&#xEDA2;"
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Local}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
-                                CommandParameter="{StaticResource Target_Local}" />
+                                CommandParameter="{converters:EnumValue Type=models:SetupTargetKind, Member=LocalDrive}" />
                             <controls:SetupOptionCard
                                 Title="Network share"
                                 Description="UNC path like \\server\share"
                                 Glyph="&#xE968;"
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Unc}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
-                                CommandParameter="{StaticResource Target_Unc}" />
+                                CommandParameter="{converters:EnumValue Type=models:SetupTargetKind, Member=Unc}" />
                             <controls:SetupOptionCard
                                 Title="FTP server"
                                 Description="Remote host and login"
                                 Glyph="&#xE839;"
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Ftp}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
-                                CommandParameter="{StaticResource Target_Ftp}" />
+                                CommandParameter="{converters:EnumValue Type=models:SetupTargetKind, Member=Ftp}" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">
@@ -261,21 +261,21 @@
                                 Glyph="&#xEDA2;"
                                 IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Local}}"
                                 Command="{x:Bind ViewModel.SelectImportSourceCommand}"
-                                CommandParameter="{StaticResource Import_Local}" />
+                                CommandParameter="{converters:EnumValue Type=models:SetupImportSourceKind, Member=LocalMedia}" />
                             <controls:SetupOptionCard
                                 Title="FTP server"
                                 Description="Remote host and login"
                                 Glyph="&#xE839;"
                                 IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Ftp}}"
                                 Command="{x:Bind ViewModel.SelectImportSourceCommand}"
-                                CommandParameter="{StaticResource Import_Ftp}" />
+                                CommandParameter="{converters:EnumValue Type=models:SetupImportSourceKind, Member=Ftp}" />
                             <controls:SetupOptionCard
                                 Title="Folder path"
                                 Description="Folder with backup.bshdb"
                                 Glyph="&#xE8B7;"
                                 IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Path}}"
                                 Command="{x:Bind ViewModel.SelectImportSourceCommand}"
-                                CommandParameter="{StaticResource Import_Path}" />
+                                CommandParameter="{converters:EnumValue Type=models:SetupImportSourceKind, Member=ExplicitPath}" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalImportVisibility, Mode=OneWay}">
