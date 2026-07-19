@@ -1,10 +1,10 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Services;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 
@@ -32,7 +32,15 @@ public sealed class SwitchStorageService : ISwitchStorageService
     public bool LocalTargetContainsBackupData(string driveRoot)
     {
         var backupFolder = setupService.BuildLocalBackupFolder(driveRoot);
-        return File.Exists(Path.Combine(backupFolder, "backup.bshdb"));
+        return File.Exists(Path.Combine(backupFolder, UncTargetProbe.BackupDatabaseFileName));
+    }
+
+    public bool UncTargetContainsBackupData(string uncPath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(uncPath);
+
+        var normalized = uncPath.Replace('/', '\\');
+        return File.Exists(Path.Combine(normalized, UncTargetProbe.BackupDatabaseFileName));
     }
 
     public void SyncDatabaseToCurrentMedium(string databaseFile)
@@ -47,14 +55,18 @@ public sealed class SwitchStorageService : ISwitchStorageService
         ArgumentException.ThrowIfNullOrWhiteSpace(databaseFile);
 
         var backupFolder = setupService.BuildLocalBackupFolder(driveRoot);
+        MediaTargetApplier.ApplyLocalTarget(configurationManager, backupFolder, mediaVolumeSerial);
 
-        configurationManager.MediumType = MediaType.LocalDevice;
-        configurationManager.BackupFolder = backupFolder;
-        configurationManager.MediaVolumeSerial = string.IsNullOrEmpty(mediaVolumeSerial) || mediaVolumeSerial == "0"
-            ? ""
-            : mediaVolumeSerial;
-        configurationManager.UNCUsername = "";
-        configurationManager.UNCPassword = "";
+        await ClearBackupHistoryAsync();
+        SyncDatabaseToCurrentMedium(databaseFile);
+    }
+
+    public async Task SwitchToUncAsync(SwitchStorageUncTarget unc, string databaseFile)
+    {
+        ArgumentNullException.ThrowIfNull(unc);
+        ArgumentException.ThrowIfNullOrWhiteSpace(databaseFile);
+
+        MediaTargetApplier.ApplyUncTarget(configurationManager, unc.Path, unc.Username, unc.Password);
 
         await ClearBackupHistoryAsync();
         SyncDatabaseToCurrentMedium(databaseFile);
@@ -65,16 +77,16 @@ public sealed class SwitchStorageService : ISwitchStorageService
         ArgumentNullException.ThrowIfNull(ftp);
         ArgumentException.ThrowIfNullOrWhiteSpace(databaseFile);
 
-        configurationManager.MediumType = MediaType.FileTransferServer;
-        configurationManager.BackupFolder = "";
-        configurationManager.FtpHost = ftp.Host ?? "";
-        configurationManager.FtpPort = string.IsNullOrWhiteSpace(ftp.Port) ? "21" : ftp.Port;
-        configurationManager.FtpUser = ftp.User ?? "";
-        configurationManager.FtpPass = ftp.Password ?? "";
-        configurationManager.FtpFolder = ftp.Folder ?? "";
-        configurationManager.FtpCoding = string.IsNullOrWhiteSpace(ftp.Encoding) ? "UTF8" : ftp.Encoding;
-        configurationManager.FtpEncryptionMode = ftp.EnforceUnencrypted ? "0" : "3";
-        configurationManager.FtpSslProtocols = "0";
+        MediaTargetApplier.ApplyFtpTarget(
+            configurationManager,
+            ftp.Host,
+            ftp.Port,
+            ftp.User,
+            ftp.Password,
+            ftp.Folder,
+            string.IsNullOrWhiteSpace(ftp.Encoding) ? "UTF8" : ftp.Encoding,
+            encryptionMode: ftp.EnforceUnencrypted ? "0" : "3",
+            sslProtocols: "0");
 
         await ClearBackupHistoryAsync();
         SyncDatabaseToCurrentMedium(databaseFile);

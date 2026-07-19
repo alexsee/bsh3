@@ -2,7 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.IO;
 using System.Windows.Forms;
+using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Main.Properties;
 
@@ -10,61 +12,60 @@ namespace Brightbits.BSH.Main;
 
 public partial class frmChangeMedia
 {
+    private const int MediaIndexLocal = 0;
+    private const int MediaIndexFtp = 1;
+    private const int MediaIndexUnc = 2;
+
     public frmChangeMedia()
     {
         InitializeComponent();
     }
 
+    /// <summary>
+    /// Set after a successful OK; null if the dialog was cancelled.
+    /// </summary>
+    public ChangeMediaSelection? Result { get; private set; }
+
     private void cboMedia_SelectedIndexChanged(object sender, EventArgs e)
     {
-        switch (cboMedia.SelectedIndex)
+        var index = cboMedia.SelectedIndex;
+        plDevice.Visible = index == MediaIndexLocal;
+        plFTP.Visible = index == MediaIndexFtp;
+        plUNC.Visible = index == MediaIndexUnc;
+
+        if (index == MediaIndexLocal)
         {
-            case 0:
-                PopulateDrives();
-
-                plDevice.Visible = true;
-                plFTP.Visible = false;
-
-                break;
-
-            case 1:
-                plDevice.Visible = false;
-                plFTP.Visible = true;
-
-                break;
+            PopulateDrives();
         }
     }
 
     private void PopulateDrives()
     {
-        // Laufwerke hinzufügen
-        var drives = System.IO.DriveInfo.GetDrives();
+        var drives = DriveInfo.GetDrives();
         lvBackupDrive.Items.Clear();
 
         foreach (var entry in drives)
         {
-            // Bereit?
             if (!entry.IsReady)
             {
                 continue;
             }
 
-            // Bild
             var iImageKey = 2;
             var gGroup = lvBackupDrive.Groups[0];
-            if (entry.DriveType == System.IO.DriveType.Fixed)
+            if (entry.DriveType == DriveType.Fixed)
             {
                 iImageKey = 2;
                 gGroup = lvBackupDrive.Groups[0];
             }
 
-            if (entry.DriveType == System.IO.DriveType.Removable)
+            if (entry.DriveType == DriveType.Removable)
             {
                 iImageKey = 3;
                 gGroup = lvBackupDrive.Groups[1];
             }
 
-            if (entry.DriveType == System.IO.DriveType.Network)
+            if (entry.DriveType == DriveType.Network)
             {
                 iImageKey = 1;
                 gGroup = lvBackupDrive.Groups[2];
@@ -83,66 +84,135 @@ public partial class frmChangeMedia
 
     private void Button1_Click(object sender, EventArgs e)
     {
-        // Wenigstens eine Option ist korrekt gewählt
-        if (cboMedia.SelectedIndex == 0)
+        ChangeMediaSelection? selection = cboMedia.SelectedIndex switch
         {
-            if (lvBackupDrive.SelectedItems.Count <= 0)
-            {
-                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT, Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            else if (System.IO.File.Exists(lvBackupDrive.SelectedItems[0].Tag.ToString() + @"Backups\" + Environment.MachineName + '\\' + Environment.UserName + @"\backup.bshdb"))
-            {
-                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-        }
-        else
+            MediaIndexLocal => TryBuildLocalResult(),
+            MediaIndexFtp => TryBuildFtpResult(),
+            MediaIndexUnc => TryBuildUncResult(showSuccessMessage: false),
+            _ => null,
+        };
+
+        if (selection is null)
         {
-            // FTP testen
-            try
-            {
-                txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
-
-                using (var storage = new FtpStorage(
-                    txtFTPServer.Text,
-                    int.Parse(txtFTPPort.Text),
-                    txtFTPUsername.Text,
-                    txtFTPPassword.Text,
-                    txtFTPPath.Text,
-                    cboFtpEncoding.SelectedItem.ToString(),
-                    !chkFtpEncryption.Checked,
-                    0))
-                {
-                    storage.Open();
-
-                    if (storage.FileExists("backup.bshdb"))
-                    {
-                        MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Verbindungdaten falsch
-                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            return;
         }
 
+        Result = selection;
         DialogResult = DialogResult.OK;
         Close();
     }
 
+    private ChangeMediaSelection? TryBuildLocalResult()
+    {
+        if (lvBackupDrive.SelectedItems.Count <= 0)
+        {
+            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT, Resources.DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return null;
+        }
+
+        var driveRoot = Convert.ToString(lvBackupDrive.SelectedItems[0].Tag) ?? "";
+        var backupFolder = MediaTargetApplier.BuildLocalBackupFolder(driveRoot);
+        if (File.Exists(Path.Combine(backupFolder, UncTargetProbe.BackupDatabaseFileName)))
+        {
+            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return null;
+        }
+
+        return new ChangeMediaLocalSelection(backupFolder);
+    }
+
+    private ChangeMediaSelection? TryBuildUncResult(bool showSuccessMessage)
+    {
+        // Confirm requires an empty medium; test-connection only checks reachability.
+        var probe = UncTargetProbe.Probe(
+            txtUncPath.Text,
+            txtUncUsername.Text,
+            txtUncPassword.Text,
+            requireEmptyTarget: !showSuccessMessage);
+
+        switch (probe.Status)
+        {
+            case UncProbeStatus.InvalidPath:
+                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TEXT, Resources.DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return null;
+
+            case UncProbeStatus.Unreachable:
+                MessageBox.Show(
+                    Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TEXT
+                    + (string.IsNullOrEmpty(probe.Detail) ? "" : Environment.NewLine + probe.Detail),
+                    Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_NETWORK_UNSUCCESSFUL_TITLE,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return null;
+
+            case UncProbeStatus.ContainsBackupData:
+                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+        }
+
+        if (showSuccessMessage)
+        {
+            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT, Resources.DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return null;
+        }
+
+        return new ChangeMediaUncSelection(
+            probe.NormalizedPath,
+            txtUncUsername.Text ?? "",
+            txtUncPassword.Text ?? "");
+    }
+
+    private ChangeMediaSelection? TryBuildFtpResult()
+    {
+        try
+        {
+            txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
+
+            using var storage = new FtpStorage(
+                txtFTPServer.Text,
+                int.Parse(txtFTPPort.Text),
+                txtFTPUsername.Text,
+                txtFTPPassword.Text,
+                txtFTPPath.Text,
+                cboFtpEncoding.SelectedItem.ToString(),
+                !chkFtpEncryption.Checked,
+                0);
+            storage.Open();
+
+            if (storage.FileExists(UncTargetProbe.BackupDatabaseFileName))
+            {
+                MessageBox.Show(Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TEXT, Resources.DLG_CHANGE_MEDIA_TARGET_CONTAINS_DATA_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message, Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return null;
+        }
+
+        return new ChangeMediaFtpSelection(
+            txtFTPServer.Text,
+            txtFTPPort.Text,
+            txtFTPUsername.Text,
+            txtFTPPassword.Text,
+            txtFTPPath.Text,
+            Convert.ToString(cboFtpEncoding.SelectedItem) ?? "",
+            chkFtpEncryption.Checked);
+    }
+
     private void frmChangeMedia_Load(object sender, EventArgs e)
     {
-        cboMedia.SelectedIndex = 0;
+        cboMedia.SelectedIndex = MediaIndexLocal;
+    }
+
+    private void cmdUncCheck_Click(object sender, EventArgs e)
+    {
+        TryBuildUncResult(showSuccessMessage: true);
     }
 
     private void cmdFTPCheck_Click(object sender, EventArgs e)
     {
-        // FTP testen
         try
         {
             txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
@@ -155,12 +225,11 @@ public partial class frmChangeMedia
                 return;
             }
 
-            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT, Resources.DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT, Resources.DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-            // Verbindungdaten falsch
-            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message.ToString(), Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT + ex.Message, Resources.DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

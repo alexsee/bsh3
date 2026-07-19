@@ -174,6 +174,9 @@
   <data name="cboMedia.Items1" xml:space="preserve">
     <value>Server (FTP)</value>
   </data>
+  <data name="cboMedia.Items2" xml:space="preserve">
+    <value>Netzwerkfreigabe (UNC)</value>
+  </data>
   <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
@@ -653,7 +656,7 @@
     <value>Wechseln des Backupmediums</value>
   </data>
   <data name="&gt;&gt;plDevice.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>8</value>
   </data>
   <data name="&gt;&gt;txtFTPPort.Parent" xml:space="preserve">
     <value>plFTP</value>
@@ -955,7 +958,7 @@
     <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;plFTP.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>7</value>
   </data>
   <data name="&gt;&gt;cmdRefresh.Name" xml:space="preserve">
     <value>cmdRefresh</value>
@@ -1192,6 +1195,222 @@ Schließen Sie nun das neue (leere) Sicherungsmedium an den Computer an und wäh
   </data>
   <data name="Label3.Size" type="System.Drawing.Size, System.Drawing">
     <value>788, 116</value>
+  </data>
+  <data name="plUNC.Location" type="System.Drawing.Point, System.Drawing">
+    <value>28, 266</value>
+  </data>
+  <data name="plUNC.Size" type="System.Drawing.Size, System.Drawing">
+    <value>879, 236</value>
+  </data>
+  <data name="plUNC.TabIndex" type="System.Int32, mscorlib">
+    <value>100</value>
+  </data>
+  <data name="plUNC.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="plUNC.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;plUNC.Name" xml:space="preserve">
+    <value>plUNC</value>
+  </data>
+  <data name="&gt;&gt;plUNC.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;plUNC.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;plUNC.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="lblUncPath.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblUncPath.Location" type="System.Drawing.Point, System.Drawing">
+    <value>45, 26</value>
+  </data>
+  <data name="lblUncPath.Size" type="System.Drawing.Size, System.Drawing">
+    <value>55, 28</value>
+  </data>
+  <data name="lblUncPath.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="lblUncPath.Text" xml:space="preserve">
+    <value>Pfad:</value>
+  </data>
+  <data name="lblUncPath.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;lblUncPath.Name" xml:space="preserve">
+    <value>lblUncPath</value>
+  </data>
+  <data name="&gt;&gt;lblUncPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblUncPath.Parent" xml:space="preserve">
+    <value>plUNC</value>
+  </data>
+  <data name="&gt;&gt;lblUncPath.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="txtUncPath.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 21</value>
+  </data>
+  <data name="txtUncPath.Size" type="System.Drawing.Size, System.Drawing">
+    <value>478, 33</value>
+  </data>
+  <data name="txtUncPath.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="txtUncPath.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtUncPath.Name" xml:space="preserve">
+    <value>txtUncPath</value>
+  </data>
+  <data name="&gt;&gt;txtUncPath.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtUncPath.Parent" xml:space="preserve">
+    <value>plUNC</value>
+  </data>
+  <data name="&gt;&gt;txtUncPath.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="lblUncUsername.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblUncUsername.Location" type="System.Drawing.Point, System.Drawing">
+    <value>45, 70</value>
+  </data>
+  <data name="lblUncUsername.Size" type="System.Drawing.Size, System.Drawing">
+    <value>140, 28</value>
+  </data>
+  <data name="lblUncUsername.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="lblUncUsername.Text" xml:space="preserve">
+    <value>Benutzername:</value>
+  </data>
+  <data name="lblUncUsername.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;lblUncUsername.Name" xml:space="preserve">
+    <value>lblUncUsername</value>
+  </data>
+  <data name="&gt;&gt;lblUncUsername.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblUncUsername.Parent" xml:space="preserve">
+    <value>plUNC</value>
+  </data>
+  <data name="&gt;&gt;lblUncUsername.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="txtUncUsername.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 66</value>
+  </data>
+  <data name="txtUncUsername.Size" type="System.Drawing.Size, System.Drawing">
+    <value>478, 33</value>
+  </data>
+  <data name="txtUncUsername.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="txtUncUsername.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtUncUsername.Name" xml:space="preserve">
+    <value>txtUncUsername</value>
+  </data>
+  <data name="&gt;&gt;txtUncUsername.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtUncUsername.Parent" xml:space="preserve">
+    <value>plUNC</value>
+  </data>
+  <data name="&gt;&gt;txtUncUsername.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="lblUncPassword.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblUncPassword.Location" type="System.Drawing.Point, System.Drawing">
+    <value>45, 114</value>
+  </data>
+  <data name="lblUncPassword.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 28</value>
+  </data>
+  <data name="lblUncPassword.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="lblUncPassword.Text" xml:space="preserve">
+    <value>Kennwort:</value>
+  </data>
+  <data name="lblUncPassword.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
+  </data>
+  <data name="&gt;&gt;lblUncPassword.Name" xml:space="preserve">
+    <value>lblUncPassword</value>
+  </data>
+  <data name="&gt;&gt;lblUncPassword.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblUncPassword.Parent" xml:space="preserve">
+    <value>plUNC</value>
+  </data>
+  <data name="&gt;&gt;lblUncPassword.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="txtUncPassword.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 110</value>
+  </data>
+  <data name="txtUncPassword.Size" type="System.Drawing.Size, System.Drawing">
+    <value>478, 33</value>
+  </data>
+  <data name="txtUncPassword.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="txtUncPassword.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;txtUncPassword.Name" xml:space="preserve">
+    <value>txtUncPassword</value>
+  </data>
+  <data name="&gt;&gt;txtUncPassword.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtUncPassword.Parent" xml:space="preserve">
+    <value>plUNC</value>
+  </data>
+  <data name="&gt;&gt;txtUncPassword.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="cmdUncCheck.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 154</value>
+  </data>
+  <data name="cmdUncCheck.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 38</value>
+  </data>
+  <data name="cmdUncCheck.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="cmdUncCheck.Text" xml:space="preserve">
+    <value>Prüfen…</value>
+  </data>
+  <data name="cmdUncCheck.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="&gt;&gt;cmdUncCheck.Name" xml:space="preserve">
+    <value>cmdUncCheck</value>
+  </data>
+  <data name="&gt;&gt;cmdUncCheck.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdUncCheck.Parent" xml:space="preserve">
+    <value>plUNC</value>
+  </data>
+  <data name="&gt;&gt;cmdUncCheck.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <metadata name="$this.Language" type="System.Globalization.CultureInfo, System.Private.CoreLib, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
     <value>en</value>

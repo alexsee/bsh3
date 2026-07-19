@@ -59,10 +59,19 @@ namespace Brightbits.BSH.Main
             Label6 = new Label();
             txtFTPServer = new TextBox();
             Label9 = new Label();
+            plUNC = new Panel();
+            cmdUncCheck = new Button();
+            txtUncPassword = new TextBox();
+            lblUncPassword = new Label();
+            txtUncUsername = new TextBox();
+            lblUncUsername = new Label();
+            txtUncPath = new TextBox();
+            lblUncPath = new Label();
             Panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)PictureBox1).BeginInit();
             plDevice.SuspendLayout();
             plFTP.SuspendLayout();
+            plUNC.SuspendLayout();
             SuspendLayout();
             // 
             // Panel1
@@ -117,7 +126,7 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(cboMedia, "cboMedia");
             cboMedia.DropDownStyle = ComboBoxStyle.DropDownList;
             cboMedia.FormattingEnabled = true;
-            cboMedia.Items.AddRange(new object[] { resources.GetString("cboMedia.Items"), resources.GetString("cboMedia.Items1") });
+            cboMedia.Items.AddRange(new object[] { resources.GetString("cboMedia.Items"), resources.GetString("cboMedia.Items1"), resources.GetString("cboMedia.Items2") });
             cboMedia.Name = "cboMedia";
             cboMedia.SelectedIndexChanged += cboMedia_SelectedIndexChanged;
             // 
@@ -266,6 +275,57 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(Label9, "Label9");
             Label9.Name = "Label9";
             // 
+            // plUNC
+            // 
+            resources.ApplyResources(plUNC, "plUNC");
+            plUNC.BackColor = System.Drawing.Color.Transparent;
+            plUNC.Controls.Add(cmdUncCheck);
+            plUNC.Controls.Add(txtUncPassword);
+            plUNC.Controls.Add(lblUncPassword);
+            plUNC.Controls.Add(txtUncUsername);
+            plUNC.Controls.Add(lblUncUsername);
+            plUNC.Controls.Add(txtUncPath);
+            plUNC.Controls.Add(lblUncPath);
+            plUNC.Name = "plUNC";
+            // 
+            // cmdUncCheck
+            // 
+            resources.ApplyResources(cmdUncCheck, "cmdUncCheck");
+            cmdUncCheck.Name = "cmdUncCheck";
+            cmdUncCheck.UseVisualStyleBackColor = true;
+            cmdUncCheck.Click += cmdUncCheck_Click;
+            // 
+            // txtUncPassword
+            // 
+            resources.ApplyResources(txtUncPassword, "txtUncPassword");
+            txtUncPassword.Name = "txtUncPassword";
+            txtUncPassword.UseSystemPasswordChar = true;
+            // 
+            // lblUncPassword
+            // 
+            resources.ApplyResources(lblUncPassword, "lblUncPassword");
+            lblUncPassword.Name = "lblUncPassword";
+            // 
+            // txtUncUsername
+            // 
+            resources.ApplyResources(txtUncUsername, "txtUncUsername");
+            txtUncUsername.Name = "txtUncUsername";
+            // 
+            // lblUncUsername
+            // 
+            resources.ApplyResources(lblUncUsername, "lblUncUsername");
+            lblUncUsername.Name = "lblUncUsername";
+            // 
+            // txtUncPath
+            // 
+            resources.ApplyResources(txtUncPath, "txtUncPath");
+            txtUncPath.Name = "txtUncPath";
+            // 
+            // lblUncPath
+            // 
+            resources.ApplyResources(lblUncPath, "lblUncPath");
+            lblUncPath.Name = "lblUncPath";
+            // 
             // frmChangeMedia
             // 
             resources.ApplyResources(this, "$this");
@@ -277,6 +337,7 @@ namespace Brightbits.BSH.Main
             Controls.Add(PictureBox1);
             Controls.Add(Label2);
             Controls.Add(Panel1);
+            Controls.Add(plUNC);
             Controls.Add(plFTP);
             Controls.Add(plDevice);
             FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -289,6 +350,8 @@ namespace Brightbits.BSH.Main
             plDevice.ResumeLayout(false);
             plFTP.ResumeLayout(false);
             plFTP.PerformLayout();
+            plUNC.ResumeLayout(false);
+            plUNC.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -304,6 +367,7 @@ namespace Brightbits.BSH.Main
         internal Label Label4;
         internal Panel plDevice;
         internal Panel plFTP;
+        internal Panel plUNC;
         internal Button cmdFTPCheck;
         internal TextBox txtFTPPort;
         internal Label Label8;
@@ -322,5 +386,12 @@ namespace Brightbits.BSH.Main
         internal ComboBox cboFtpEncoding;
         internal Label Label10;
         private CheckBox chkFtpEncryption;
+        internal Button cmdUncCheck;
+        internal TextBox txtUncPassword;
+        internal Label lblUncPassword;
+        internal TextBox txtUncUsername;
+        internal Label lblUncUsername;
+        internal TextBox txtUncPath;
+        internal Label lblUncPath;
     }
 }

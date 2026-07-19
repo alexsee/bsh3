@@ -271,6 +271,20 @@ FTP Server meldete: </value>
   <data name="DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE" xml:space="preserve">
     <value>Erfolgreich</value>
   </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Die Verbindung konnte erfolgreich aufgebaut werden.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Erfolgreich</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TEXT" xml:space="preserve">
+    <value>Kein gültiger Netzwerkpfad.
+
+Geben Sie einen UNC-Pfad im Format \\Server\Freigabe ein.</value>
+  </data>
+  <data name="DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TITLE" xml:space="preserve">
+    <value>Netzwerkpfad eingeben</value>
+  </data>
   <data name="DLG_CHANGE_MEDIA_NO_TARGET_SELECTED_TEXT" xml:space="preserve">
     <value>Kein Sicherungsmedium ausgewählt.
 

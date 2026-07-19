@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
@@ -52,7 +53,7 @@ public partial class SetupViewModel : ObservableObject
         ImportFtpPort = "21";
         ImportFtpEncoding = "UTF8";
         SelectedTaskType = TaskType.Auto;
-        SelectedTargetKind = SetupTargetKind.LocalDrive;
+        SelectedTargetKind = MediaTargetKind.LocalDrive;
         SelectedImportSourceKind = SetupImportSourceKind.LocalMedia;
         CurrentStep = SetupWizardStep.Welcome;
     }
@@ -91,7 +92,7 @@ public partial class SetupViewModel : ObservableObject
     private string? selectedSource;
 
     [ObservableProperty]
-    private SetupTargetKind selectedTargetKind;
+    private MediaTargetKind selectedTargetKind;
 
     [ObservableProperty]
     private SetupDriveItem? selectedDrive;
@@ -232,7 +233,7 @@ public partial class SetupViewModel : ObservableObject
         SelectedDriveRoot = value?.RootPath;
     }
 
-    partial void OnSelectedTargetKindChanged(SetupTargetKind value)
+    partial void OnSelectedTargetKindChanged(MediaTargetKind value)
     {
         UpdateTargetVisibility();
     }
@@ -324,7 +325,7 @@ public partial class SetupViewModel : ObservableObject
             return false;
         }
 
-        if (SelectedTargetKind == SetupTargetKind.LocalDrive)
+        if (SelectedTargetKind == MediaTargetKind.LocalDrive)
         {
             if (string.IsNullOrWhiteSpace(configuration.LocalBackupFolder))
             {
@@ -408,7 +409,7 @@ public partial class SetupViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SelectTarget(SetupTargetKind kind)
+    private void SelectTarget(MediaTargetKind kind)
     {
         SelectedTargetKind = kind;
     }
@@ -573,7 +574,7 @@ public partial class SetupViewModel : ObservableObject
     {
         switch (SelectedTargetKind)
         {
-            case SetupTargetKind.LocalDrive:
+            case MediaTargetKind.LocalDrive:
                 if (string.IsNullOrWhiteSpace(SelectedDriveRoot))
                 {
                     ValidationErrorMessage = "Select a backup target drive.";
@@ -589,34 +590,28 @@ public partial class SetupViewModel : ObservableObject
 
                 return true;
 
-            case SetupTargetKind.Unc:
+            case MediaTargetKind.Unc:
                 {
-                    var path = UncPath.Replace("//", @"\", StringComparison.Ordinal);
-                    if (string.IsNullOrWhiteSpace(path))
+                    var probe = UncTargetProbe.Probe(UncPath, UncUsername, UncPassword, requireEmptyTarget: false);
+                    if (probe.Status == UncProbeStatus.Ok)
+                    {
+                        UncPath = probe.NormalizedPath;
+                        return true;
+                    }
+
+                    if (probe.Status == UncProbeStatus.InvalidPath)
                     {
                         ValidationErrorMessage = "Enter a network path.";
                         return false;
                     }
 
-                    try
-                    {
-                        using var connection = new Brightbits.BSH.Engine.Security.NetworkConnection(path, UncUsername, UncPassword);
-                        if (!Directory.Exists(path))
-                        {
-                            ValidationErrorMessage = "The network path could not be reached.";
-                            return false;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        ValidationErrorMessage = "The network path could not be reached. " + ex.Message;
-                        return false;
-                    }
-
-                    return true;
+                    ValidationErrorMessage = string.IsNullOrEmpty(probe.Detail)
+                        ? "The network path could not be reached."
+                        : "The network path could not be reached. " + probe.Detail;
+                    return false;
                 }
 
-            case SetupTargetKind.Ftp:
+            case MediaTargetKind.Ftp:
                 try
                 {
                     FtpFolder = FtpStorage.GetFtpPath(FtpFolder);
@@ -847,29 +842,29 @@ public partial class SetupViewModel : ObservableObject
     {
         return SelectedTargetKind switch
         {
-            SetupTargetKind.LocalDrive => new NewSetupConfiguration
+            MediaTargetKind.LocalDrive => new NewSetupConfiguration
             {
                 SourceFolders = Sources.ToList(),
-                TargetKind = SetupTargetKind.LocalDrive,
+                TargetKind = MediaTargetKind.LocalDrive,
                 LocalBackupFolder = string.IsNullOrWhiteSpace(SelectedDriveRoot)
                     ? null
                     : setupService.BuildLocalBackupFolder(SelectedDriveRoot),
                 MediaVolumeSerial = ResolveVolumeSerial(SelectedDriveRoot),
                 TaskType = SelectedTaskType
             },
-            SetupTargetKind.Unc => new NewSetupConfiguration
+            MediaTargetKind.Unc => new NewSetupConfiguration
             {
                 SourceFolders = Sources.ToList(),
-                TargetKind = SetupTargetKind.Unc,
+                TargetKind = MediaTargetKind.Unc,
                 UncPath = UncPath,
                 UncUsername = UncUsername,
                 UncPassword = UncPassword,
                 TaskType = SelectedTaskType
             },
-            SetupTargetKind.Ftp => new NewSetupConfiguration
+            MediaTargetKind.Ftp => new NewSetupConfiguration
             {
                 SourceFolders = Sources.ToList(),
-                TargetKind = SetupTargetKind.Ftp,
+                TargetKind = MediaTargetKind.Ftp,
                 FtpHost = FtpHost,
                 FtpPort = FtpPort,
                 FtpUser = FtpUser,
@@ -885,20 +880,7 @@ public partial class SetupViewModel : ObservableObject
 
     private static string ResolveVolumeSerial(string? driveRoot)
     {
-        if (string.IsNullOrWhiteSpace(driveRoot) || driveRoot.Length < 1)
-        {
-            return "";
-        }
-
-        try
-        {
-            var serial = Brightbits.BSH.Engine.Win32Stuff.GetVolumeSerial(driveRoot[..1] + @":\");
-            return string.IsNullOrEmpty(serial) || serial == "0" ? "" : serial;
-        }
-        catch
-        {
-            return "";
-        }
+        return MediaTargetApplier.ResolveVolumeSerial(driveRoot);
     }
 
     private async Task<string?> PickFolderAsync()
@@ -964,9 +946,9 @@ public partial class SetupViewModel : ObservableObject
 
     private void UpdateTargetVisibility()
     {
-        LocalTargetVisibility = SelectedTargetKind == SetupTargetKind.LocalDrive ? Visibility.Visible : Visibility.Collapsed;
-        UncTargetVisibility = SelectedTargetKind == SetupTargetKind.Unc ? Visibility.Visible : Visibility.Collapsed;
-        FtpTargetVisibility = SelectedTargetKind == SetupTargetKind.Ftp ? Visibility.Visible : Visibility.Collapsed;
+        LocalTargetVisibility = SelectedTargetKind == MediaTargetKind.LocalDrive ? Visibility.Visible : Visibility.Collapsed;
+        UncTargetVisibility = SelectedTargetKind == MediaTargetKind.Unc ? Visibility.Visible : Visibility.Collapsed;
+        FtpTargetVisibility = SelectedTargetKind == MediaTargetKind.Ftp ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void UpdateImportSourceVisibility()
