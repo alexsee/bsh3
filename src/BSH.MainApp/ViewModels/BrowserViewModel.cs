@@ -11,7 +11,6 @@ using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Windows.UI.Popups;
 
 namespace BSH.MainApp.ViewModels;
 
@@ -230,36 +229,42 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
     private async Task RestoreFile()
     {
-        await RestoreSelectedAsync(chooseDestination: false);
+        await RestoreSelectedAsync(destination: string.Empty);
     }
 
     [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
     private async Task RestoreFileTo()
     {
-        await RestoreSelectedAsync(chooseDestination: true);
+        var destination = await browserDialogService.PickRestoreDestinationFolderAsync();
+        if (destination == null)
+        {
+            return;
+        }
+
+        await RestoreSelectedAsync(destination);
     }
 
     [RelayCommand(CanExecute = nameof(CanRestoreAll))]
     private async Task RestoreAll()
     {
-        await RestoreCurrentFolderAsync(chooseDestination: false);
+        await RestoreCurrentFolderAsync(destination: string.Empty);
     }
 
     [RelayCommand(CanExecute = nameof(CanRestoreAll))]
     private async Task RestoreAllTo()
     {
-        await RestoreCurrentFolderAsync(chooseDestination: true);
-    }
-
-    private async Task RestoreSelectedAsync(bool chooseDestination)
-    {
-        if (CurrentItem == null || CurrentVersion == null)
+        var destination = await browserDialogService.PickRestoreDestinationFolderAsync();
+        if (destination == null)
         {
             return;
         }
 
-        var destination = await ResolveRestoreDestinationAsync(chooseDestination);
-        if (destination == null)
+        await RestoreCurrentFolderAsync(destination);
+    }
+
+    private async Task RestoreSelectedAsync(string destination)
+    {
+        if (CurrentItem == null || CurrentVersion == null)
         {
             return;
         }
@@ -271,88 +276,14 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         await jobService.RestoreBackupAsync(CurrentVersion.Id, path, destination);
     }
 
-    private async Task RestoreCurrentFolderAsync(bool chooseDestination)
+    private async Task RestoreCurrentFolderAsync(string destination)
     {
         if (CurrentVersion == null || CurrentFolderPath.Count == 0 || CurrentFolderPath[^1] == null)
         {
             return;
         }
 
-        var destination = await ResolveRestoreDestinationAsync(chooseDestination);
-        if (destination == null)
-        {
-            return;
-        }
-
         await jobService.RestoreBackupAsync(CurrentVersion.Id, CurrentFolderPath[^1].FullPath, destination);
-    }
-
-    private async Task<string?> ResolveRestoreDestinationAsync(bool chooseDestination)
-    {
-        if (!chooseDestination)
-        {
-            return string.Empty;
-        }
-
-        var destination = await browserDialogService.PickRestoreDestinationFolderAsync();
-        if (destination == null)
-        {
-            return null;
-        }
-
-        if (!TryValidateRestoreDestination(destination, out var errorMessage))
-        {
-            await presentationService.ShowMessageBoxAsync(
-                "Restore destination",
-                errorMessage,
-                [new UICommand("OK")]);
-            return null;
-        }
-
-        return destination;
-    }
-
-    private static bool TryValidateRestoreDestination(string destination, out string errorMessage)
-    {
-        if (string.IsNullOrWhiteSpace(destination))
-        {
-            errorMessage = "Please choose a valid restore destination folder.";
-            return false;
-        }
-
-        try
-        {
-            var fullPath = Path.GetFullPath(destination);
-            if (!Directory.Exists(fullPath))
-            {
-                errorMessage = $"The restore destination folder does not exist or is not accessible:{Environment.NewLine}{fullPath}";
-                return false;
-            }
-
-            // Probe write access with a temporary file. Creation failure means inaccessible;
-            // cleanup failures are ignored so antivirus/indexer locks do not block restore.
-            var probePath = Path.Combine(fullPath, $".bsh-restore-probe-{Guid.NewGuid():N}.tmp");
-            using (File.Create(probePath))
-            {
-            }
-
-            try
-            {
-                File.Delete(probePath);
-            }
-            catch
-            {
-                // Ignore cleanup failures after a successful write probe.
-            }
-
-            errorMessage = string.Empty;
-            return true;
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"The restore destination folder is not accessible:{Environment.NewLine}{destination}{Environment.NewLine}{Environment.NewLine}{ex.Message}";
-            return false;
-        }
     }
 
     [RelayCommand(CanExecute = nameof(HasFileSelected))]

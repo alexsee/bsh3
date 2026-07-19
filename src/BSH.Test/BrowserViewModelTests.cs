@@ -15,7 +15,6 @@ using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -147,25 +146,16 @@ public class BrowserViewModelTests
     [Test]
     public async Task RestoreFileToCommand_PassesChosenDestinationFolder()
     {
-        var destination = Path.Combine(Path.GetTempPath(), "bsh-restore-dest-" + Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(destination);
-        try
-        {
-            var dialogService = new BrowserDialogService { DestinationFolder = destination };
-            var jobService = new BrowserJobService();
-            var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
-            viewModel.CurrentVersion = Version("2");
-            viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+        var dialogService = new BrowserDialogService { DestinationFolder = @"D:\RestoreHere" };
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
 
-            await viewModel.RestoreFileToCommand.ExecuteAsync(null);
+        await viewModel.RestoreFileToCommand.ExecuteAsync(null);
 
-            Assert.That(dialogService.DestinationPickerPrompted, Is.True);
-            Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\report.txt", destination)));
-        }
-        finally
-        {
-            Directory.Delete(destination, recursive: true);
-        }
+        Assert.That(dialogService.DestinationPickerPrompted, Is.True);
+        Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\report.txt", @"D:\RestoreHere")));
     }
 
     [Test]
@@ -184,45 +174,17 @@ public class BrowserViewModelTests
     }
 
     [Test]
-    public async Task RestoreFileToCommand_ShowsErrorAndSkipsRestoreForInaccessibleDestination()
-    {
-        var inaccessiblePath = Path.Combine(Path.GetTempPath(), "bsh-missing-restore-" + Guid.NewGuid().ToString("N"));
-        var dialogService = new BrowserDialogService { DestinationFolder = inaccessiblePath };
-        var presentationService = new BrowserPresentationService();
-        var jobService = new BrowserJobService();
-        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService, presentationService: presentationService);
-        viewModel.CurrentVersion = Version("2");
-        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
-
-        await viewModel.RestoreFileToCommand.ExecuteAsync(null);
-
-        Assert.That(jobService.RestoreCalls, Is.Empty);
-        Assert.That(presentationService.MessageBoxes.Count, Is.EqualTo(1));
-        Assert.That(presentationService.MessageBoxes[0].Title, Is.EqualTo("Restore destination"));
-        Assert.That(presentationService.MessageBoxes[0].Content, Does.Contain(inaccessiblePath));
-    }
-
-    [Test]
     public async Task RestoreAllToCommand_PassesChosenDestinationForCurrentFolder()
     {
-        var destination = Path.Combine(Path.GetTempPath(), "bsh-restore-all-" + Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(destination);
-        try
-        {
-            var dialogService = new BrowserDialogService { DestinationFolder = destination };
-            var jobService = new BrowserJobService();
-            var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
-            viewModel.CurrentVersion = Version("2");
-            viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = @"\source\docs\", IsFile = false });
+        var dialogService = new BrowserDialogService { DestinationFolder = @"D:\RestoreHere" };
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = @"\source\docs\", IsFile = false });
 
-            await viewModel.RestoreAllToCommand.ExecuteAsync(null);
+        await viewModel.RestoreAllToCommand.ExecuteAsync(null);
 
-            Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\", destination)));
-        }
-        finally
-        {
-            Directory.Delete(destination, recursive: true);
-        }
+        Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\", @"D:\RestoreHere")));
     }
 
     private static BrowserViewModel CreateViewModel(
@@ -230,8 +192,7 @@ public class BrowserViewModelTests
         BrowserJobService? jobService = null,
         BrowserDialogService? browserDialogService = null,
         BrowserFavoritesService? favoritesService = null,
-        BrowserPreviewServiceFake? previewService = null,
-        BrowserPresentationService? presentationService = null)
+        BrowserPreviewServiceFake? previewService = null)
     {
         queryManager ??= new BrowserQueryManager();
         favoritesService ??= new BrowserFavoritesService(new MemoryLocalSettingsService());
@@ -240,7 +201,7 @@ public class BrowserViewModelTests
             queryManager,
             jobService ?? new BrowserJobService(),
             new BrowserBackupService(),
-            presentationService ?? new BrowserPresentationService(),
+            new BrowserPresentationService(),
             new BrowserContentService(queryManager, favoritesService),
             browserDialogService ?? new BrowserDialogService(),
             previewService ?? new BrowserPreviewServiceFake());
