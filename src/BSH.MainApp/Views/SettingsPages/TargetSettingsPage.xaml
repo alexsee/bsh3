@@ -144,7 +144,7 @@
                     Header="{helpers:ResourceString Name=Settings_Target_SwitchStorage}"
                     Description="{helpers:ResourceString Name=Settings_Target_SwitchStorageDescription}"
                     IsClickEnabled="True"
-                    IsEnabled="False">
+                    Command="{x:Bind ViewModel.SwitchStorageCommand}">
                     <toolkit:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE8CD;" />
                     </toolkit:SettingsCard.HeaderIcon>

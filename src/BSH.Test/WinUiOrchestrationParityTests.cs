@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
@@ -252,6 +251,7 @@ public class WinUiOrchestrationParityTests
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
         Assert.That(notifications.Payloads[0], Does.Contain("INFO_NO_DISKSPACE_LEFT_TITLE".GetLocalized()));
+        Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=settings\""));
     }
 
     [Test]
@@ -280,11 +280,12 @@ public class WinUiOrchestrationParityTests
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
         Assert.That(notifications.Payloads[0], Does.Contain("INFO_BACKUP_OLD_TITLE".GetLocalized()));
+        Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=overview\""));
     }
 
-    [TestCase(JobState.FINISHED, "INFO_BACKUP_SUCCESSFUL_TITLE")]
-    [TestCase(JobState.ERROR, "INFO_BACKUP_UNSUCCESSFUL_TITLE")]
-    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitleKey)
+    [TestCase(JobState.FINISHED, "INFO_BACKUP_SUCCESSFUL_TITLE", "action=overview")]
+    [TestCase(JobState.ERROR, "INFO_BACKUP_UNSUCCESSFUL_TITLE", "action=backupResult")]
+    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitleKey, string expectedLaunch)
     {
         var notifications = new TestNotificationService();
         var configurationManager = new TestConfigurationManager
@@ -301,6 +302,7 @@ public class WinUiOrchestrationParityTests
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
         Assert.That(notifications.Payloads[0], Does.Contain(expectedTitleKey.GetLocalized()));
+        Assert.That(notifications.Payloads[0], Does.Contain($"launch=\"{expectedLaunch}\""));
     }
 
     [Test]
@@ -471,7 +473,7 @@ public class WinUiOrchestrationParityTests
         public List<string> Payloads { get; } = new();
 
         public void Initialize() { }
-        public NameValueCollection ParseArguments(string arguments) => new();
+        public void Activate(string? arguments) { }
         public bool Show(string payload)
         {
             Payloads.Add(payload);
@@ -549,5 +551,6 @@ public class WinUiOrchestrationParityTests
         public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.None);
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
         public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
+        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 }

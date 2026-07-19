@@ -117,11 +117,17 @@ public class StatusService : IJobReport, IStatusService
 
         if (jobState == JobState.FINISHED)
         {
-            ShowNotification("INFO_BACKUP_SUCCESSFUL_TITLE".GetLocalized(), "INFO_BACKUP_SUCCESSFUL_TEXT".GetLocalized());
+            ShowNotification(
+                "INFO_BACKUP_SUCCESSFUL_TITLE".GetLocalized(),
+                "INFO_BACKUP_SUCCESSFUL_TEXT".GetLocalized(),
+                ToastNotificationActivation.ActionOverview);
         }
         else if (jobState == JobState.ERROR)
         {
-            ShowNotification("INFO_BACKUP_UNSUCCESSFUL_TITLE".GetLocalized(), "INFO_BACKUP_UNSUCCESSFUL_TEXT".GetLocalized());
+            ShowNotification(
+                "INFO_BACKUP_UNSUCCESSFUL_TITLE".GetLocalized(),
+                "INFO_BACKUP_UNSUCCESSFUL_TEXT".GetLocalized(),
+                ToastNotificationActivation.ActionBackupResult);
         }
     }
 
@@ -201,8 +207,8 @@ public class StatusService : IJobReport, IStatusService
         await this.presentationService.ShowErrorInsufficientDiskSpaceAsync();
     }
 
-    private void ShowNotification(string title, string text)
+    private void ShowNotification(string title, string text, string action)
     {
-        appNotificationService?.Show(ToastNotificationPayload.Create(title, text));
+        appNotificationService?.Show(ToastNotificationPayload.Create(title, text, action));
     }
 }

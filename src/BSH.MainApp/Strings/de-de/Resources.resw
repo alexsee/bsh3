@@ -189,6 +189,18 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="Browser_RestoreAll" xml:space="preserve">
     <value>Alles wiederherstellen</value>
   </data>
+  <data name="Browser_RestoreAllTo" xml:space="preserve">
+    <value>Alles wiederherstellen nach…</value>
+  </data>
+  <data name="Browser_RestoreDestination_PickerFailed" xml:space="preserve">
+    <value>Der Ordnerauswahldialog konnte nicht geöffnet werden. {0}</value>
+  </data>
+  <data name="Browser_RestoreDestination_Title" xml:space="preserve">
+    <value>Wiederherstellungsziel</value>
+  </data>
+  <data name="Browser_RestoreTo" xml:space="preserve">
+    <value>Wiederherstellen nach…</value>
+  </data>
   <data name="Browser_Search" xml:space="preserve">
     <value>Suchen</value>
   </data>
@@ -1274,6 +1286,75 @@ Version {0}</value>
   <data name="Support_ResetUniqueUserId" xml:space="preserve">
     <value>Eindeutige Benutzer-ID zurücksetzen</value>
   </data>
+  <data name="SwitchStorage_Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="SwitchStorage_Confirm" xml:space="preserve">
+    <value>Wechseln</value>
+  </data>
+  <data name="SwitchStorage_Description" xml:space="preserve">
+    <value>Wählen Sie ein neues leeres Sicherungsmedium. Bestehende Einstellungen bleiben erhalten, aber der Sicherungshistorie auf diesem PC wird geleert.</value>
+  </data>
+  <data name="SwitchStorage_EnforceUnencrypted" xml:space="preserve">
+    <value>Unverschlüsselte Verbindung erzwingen</value>
+  </data>
+  <data name="SwitchStorage_FtpConnectionFailed" xml:space="preserve">
+    <value>FTP-Verbindung fehlgeschlagen: {0}</value>
+  </data>
+  <data name="SwitchStorage_FtpConnectionSuccessful" xml:space="preserve">
+    <value>FTP-Verbindung erfolgreich.</value>
+  </data>
+  <data name="SwitchStorage_FtpEncoding" xml:space="preserve">
+    <value>Kodierung</value>
+  </data>
+  <data name="SwitchStorage_FtpHost" xml:space="preserve">
+    <value>Host</value>
+  </data>
+  <data name="SwitchStorage_FtpHostUserRequired" xml:space="preserve">
+    <value>Geben Sie FTP-Host und Benutzername ein.</value>
+  </data>
+  <data name="SwitchStorage_FtpPassword" xml:space="preserve">
+    <value>Kennwort</value>
+  </data>
+  <data name="SwitchStorage_FtpPath" xml:space="preserve">
+    <value>Pfad</value>
+  </data>
+  <data name="SwitchStorage_FtpPort" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="SwitchStorage_FtpPortInvalid" xml:space="preserve">
+    <value>FTP-Port ist ungültig.</value>
+  </data>
+  <data name="SwitchStorage_FtpServer" xml:space="preserve">
+    <value>FTP-Server</value>
+  </data>
+  <data name="SwitchStorage_FtpUsername" xml:space="preserve">
+    <value>Benutzername</value>
+  </data>
+  <data name="SwitchStorage_LocalDrive" xml:space="preserve">
+    <value>Lokales Laufwerk</value>
+  </data>
+  <data name="SwitchStorage_MediumNotEmpty" xml:space="preserve">
+    <value>Das ausgewählte Medium enthält bereits andere Sicherungen und kann nicht zum Wechseln verwendet werden.</value>
+  </data>
+  <data name="SwitchStorage_MediumType" xml:space="preserve">
+    <value>Medientyp</value>
+  </data>
+  <data name="SwitchStorage_RefreshDrives" xml:space="preserve">
+    <value>Laufwerke aktualisieren</value>
+  </data>
+  <data name="SwitchStorage_SelectDrive" xml:space="preserve">
+    <value>Laufwerk auswählen</value>
+  </data>
+  <data name="SwitchStorage_SelectDriveRequired" xml:space="preserve">
+    <value>Wählen Sie ein Laufwerk für das neue Sicherungsmedium.</value>
+  </data>
+  <data name="SwitchStorage_TestConnection" xml:space="preserve">
+    <value>Verbindung testen</value>
+  </data>
+  <data name="SwitchStorage_Title" xml:space="preserve">
+    <value>Speicher wechseln</value>
+  </data>
   <data name="Tray_Exit" xml:space="preserve">
     <value>Backup Service Home beenden</value>
   </data>
@@ -1288,6 +1369,36 @@ Version {0}</value>
   </data>
   <data name="Tray_StatusAndConfiguration" xml:space="preserve">
     <value>Status und Konfigurieren</value>
+  </data>
+  <data name="Unhandled_BodyIntro" xml:space="preserve">
+    <value>Es ist ein unerwartetes Problem aufgetreten. Der Fehler wurde protokolliert.</value>
+  </data>
+  <data name="Unhandled_Continue" xml:space="preserve">
+    <value>Fortsetzen</value>
+  </data>
+  <data name="Unhandled_Exit" xml:space="preserve">
+    <value>Beenden</value>
+  </data>
+  <data name="Unhandled_MessageLabel" xml:space="preserve">
+    <value>Meldung: {0}</value>
+  </data>
+  <data name="Unhandled_NoExceptionDetails" xml:space="preserve">
+    <value>Es ist ein unerwarteter Fehler ohne Ausnahmeinformationen aufgetreten.</value>
+  </data>
+  <data name="Unhandled_NoMessage" xml:space="preserve">
+    <value>(keine Meldung)</value>
+  </data>
+  <data name="Unhandled_NoStackTrace" xml:space="preserve">
+    <value>(kein Stacktrace)</value>
+  </data>
+  <data name="Unhandled_SourceLabel" xml:space="preserve">
+    <value>Quelle: {0}</value>
+  </data>
+  <data name="Unhandled_Title" xml:space="preserve">
+    <value>Unerwarteter Fehler</value>
+  </data>
+  <data name="Unhandled_Unknown" xml:space="preserve">
+    <value>(unbekannt)</value>
   </data>
   <data name="WaitForMedium_Cancel" xml:space="preserve">
     <value>Abbrechen</value>

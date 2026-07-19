@@ -1650,5 +1650,153 @@
   "ApplicationUpdate_UpToDate_Text": {
     "en": "You are already using the latest version.",
     "de": "Sie verwenden bereits die neueste Version."
+  },
+  "Browser_RestoreTo": {
+    "en": "Restore to…",
+    "de": "Wiederherstellen nach…"
+  },
+  "Browser_RestoreAllTo": {
+    "en": "Restore all to…",
+    "de": "Alles wiederherstellen nach…"
+  },
+  "Browser_RestoreDestination_Title": {
+    "en": "Restore destination",
+    "de": "Wiederherstellungsziel"
+  },
+  "Browser_RestoreDestination_PickerFailed": {
+    "en": "Unable to open the folder picker. {0}",
+    "de": "Der Ordnerauswahldialog konnte nicht geöffnet werden. {0}"
+  },
+  "SwitchStorage_Title": {
+    "en": "Switch storage",
+    "de": "Speicher wechseln"
+  },
+  "SwitchStorage_Description": {
+    "en": "Choose a new empty backup medium. Existing settings are kept, but backup history on this PC is cleared.",
+    "de": "Wählen Sie ein neues leeres Sicherungsmedium. Bestehende Einstellungen bleiben erhalten, aber der Sicherungshistorie auf diesem PC wird geleert."
+  },
+  "SwitchStorage_MediumType": {
+    "en": "Medium type",
+    "de": "Medientyp"
+  },
+  "SwitchStorage_LocalDrive": {
+    "en": "Local drive",
+    "de": "Lokales Laufwerk"
+  },
+  "SwitchStorage_FtpServer": {
+    "en": "FTP server",
+    "de": "FTP-Server"
+  },
+  "SwitchStorage_SelectDrive": {
+    "en": "Select drive",
+    "de": "Laufwerk auswählen"
+  },
+  "SwitchStorage_RefreshDrives": {
+    "en": "Refresh drives",
+    "de": "Laufwerke aktualisieren"
+  },
+  "SwitchStorage_FtpHost": {
+    "en": "Host",
+    "de": "Host"
+  },
+  "SwitchStorage_FtpPort": {
+    "en": "Port",
+    "de": "Port"
+  },
+  "SwitchStorage_FtpUsername": {
+    "en": "Username",
+    "de": "Benutzername"
+  },
+  "SwitchStorage_FtpPassword": {
+    "en": "Password",
+    "de": "Kennwort"
+  },
+  "SwitchStorage_FtpPath": {
+    "en": "Path",
+    "de": "Pfad"
+  },
+  "SwitchStorage_FtpEncoding": {
+    "en": "Encoding",
+    "de": "Kodierung"
+  },
+  "SwitchStorage_EnforceUnencrypted": {
+    "en": "Enforce unencrypted connection",
+    "de": "Unverschlüsselte Verbindung erzwingen"
+  },
+  "SwitchStorage_TestConnection": {
+    "en": "Test connection",
+    "de": "Verbindung testen"
+  },
+  "SwitchStorage_Cancel": {
+    "en": "Cancel",
+    "de": "Abbrechen"
+  },
+  "SwitchStorage_Confirm": {
+    "en": "Switch",
+    "de": "Wechseln"
+  },
+  "SwitchStorage_SelectDriveRequired": {
+    "en": "Select a drive for the new backup medium.",
+    "de": "Wählen Sie ein Laufwerk für das neue Sicherungsmedium."
+  },
+  "SwitchStorage_MediumNotEmpty": {
+    "en": "The selected medium already contains other backups and cannot be used for switching.",
+    "de": "Das ausgewählte Medium enthält bereits andere Sicherungen und kann nicht zum Wechseln verwendet werden."
+  },
+  "SwitchStorage_FtpHostUserRequired": {
+    "en": "Enter FTP host and username.",
+    "de": "Geben Sie FTP-Host und Benutzername ein."
+  },
+  "SwitchStorage_FtpPortInvalid": {
+    "en": "FTP port is invalid.",
+    "de": "FTP-Port ist ungültig."
+  },
+  "SwitchStorage_FtpConnectionSuccessful": {
+    "en": "FTP connection successful.",
+    "de": "FTP-Verbindung erfolgreich."
+  },
+  "SwitchStorage_FtpConnectionFailed": {
+    "en": "FTP connection failed: {0}",
+    "de": "FTP-Verbindung fehlgeschlagen: {0}"
+  },
+  "Unhandled_Title": {
+    "en": "Unexpected error",
+    "de": "Unerwarteter Fehler"
+  },
+  "Unhandled_Continue": {
+    "en": "Continue",
+    "de": "Fortsetzen"
+  },
+  "Unhandled_Exit": {
+    "en": "Exit",
+    "de": "Beenden"
+  },
+  "Unhandled_BodyIntro": {
+    "en": "An unexpected problem occurred. The error has been logged.",
+    "de": "Es ist ein unerwartetes Problem aufgetreten. Der Fehler wurde protokolliert."
+  },
+  "Unhandled_MessageLabel": {
+    "en": "Message: {0}",
+    "de": "Meldung: {0}"
+  },
+  "Unhandled_SourceLabel": {
+    "en": "Source: {0}",
+    "de": "Quelle: {0}"
+  },
+  "Unhandled_NoExceptionDetails": {
+    "en": "An unexpected error occurred without exception details.",
+    "de": "Es ist ein unerwarteter Fehler ohne Ausnahmeinformationen aufgetreten."
+  },
+  "Unhandled_Unknown": {
+    "en": "(unknown)",
+    "de": "(unbekannt)"
+  },
+  "Unhandled_NoMessage": {
+    "en": "(no message)",
+    "de": "(keine Meldung)"
+  },
+  "Unhandled_NoStackTrace": {
+    "en": "(no stack trace)",
+    "de": "(kein Stacktrace)"
   }
 }

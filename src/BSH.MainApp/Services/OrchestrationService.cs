@@ -186,7 +186,8 @@ public class OrchestrationService : IOrchestrationService
         {
             appNotificationService.Show(ToastNotificationPayload.Create(
                 "INFO_NO_DISKSPACE_LEFT_TITLE".GetLocalized(),
-                "INFO_NO_DISKSPACE_LEFT_TEXT".GetLocalized()));
+                "INFO_NO_DISKSPACE_LEFT_TEXT".GetLocalized(),
+                ToastNotificationActivation.ActionSettings));
         }
     }
 
@@ -208,6 +209,7 @@ public class OrchestrationService : IOrchestrationService
         var days = DateTime.Now.Subtract(lastBackup.CreationDate).Days;
         appNotificationService.Show(ToastNotificationPayload.Create(
             "INFO_BACKUP_OLD_TITLE".GetLocalized(),
-            string.Format("INFO_BACKUP_OLD_TEXT".GetLocalized(), days)));
+            string.Format("INFO_BACKUP_OLD_TEXT".GetLocalized(), days),
+            ToastNotificationActivation.ActionOverview));
     }
 }

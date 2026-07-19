@@ -224,6 +224,10 @@
                             Command="{x:Bind ViewModel.RestoreFileCommand}" 
                             Icon="Copy" 
                             Label="{helpers:ResourceString Name=Browser_Restore}" />
+                            <AppBarButton 
+                            Command="{x:Bind ViewModel.RestoreFileToCommand}" 
+                            Icon="Folder" 
+                            Label="{helpers:ResourceString Name=Browser_RestoreTo}" />
                             <AppBarSeparator />
                             <AppBarButton 
                             Command="{x:Bind ViewModel.ShowFilePreviewCommand}" 
@@ -265,6 +269,7 @@
                                 <AppBarButton.Flyout>
                                     <MenuFlyout Placement="BottomEdgeAlignedRight">
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllCommand}" Text="{helpers:ResourceString Name=Browser_RestoreAll}"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllToCommand}" Text="{helpers:ResourceString Name=Browser_RestoreAllTo}"/>
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Text="{helpers:ResourceString Name=Browser_AddToFolderFavorites}"/>
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteSelectedContentCommand}" Icon="Delete" Text="{helpers:ResourceString Name=Browser_DeleteSelectedFromAllBackups}"/>
                                         <MenuFlyoutSeparator />
