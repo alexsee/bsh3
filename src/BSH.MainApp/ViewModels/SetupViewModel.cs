@@ -408,15 +408,21 @@ public partial class SetupViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SelectTarget(SetupTargetKind kind)
+    private void SelectTarget(object? parameter)
     {
-        SelectedTargetKind = kind;
+        if (TryConvertEnum(parameter, out SetupTargetKind kind))
+        {
+            SelectedTargetKind = kind;
+        }
     }
 
     [RelayCommand]
-    private void SelectImportSource(SetupImportSourceKind kind)
+    private void SelectImportSource(object? parameter)
     {
-        SelectedImportSourceKind = kind;
+        if (TryConvertEnum(parameter, out SetupImportSourceKind kind))
+        {
+            SelectedImportSourceKind = kind;
+        }
     }
 
     [RelayCommand]
@@ -974,6 +980,26 @@ public partial class SetupViewModel : ObservableObject
         LocalImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.LocalMedia ? Visibility.Visible : Visibility.Collapsed;
         FtpImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.Ftp ? Visibility.Visible : Visibility.Collapsed;
         ExplicitImportVisibility = SelectedImportSourceKind == SetupImportSourceKind.ExplicitPath ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    /// <summary>
+    /// WinUI boxes enum CommandParameter values as Int32 when they flow through object DPs.
+    /// </summary>
+    private static bool TryConvertEnum<TEnum>(object? parameter, out TEnum value)
+        where TEnum : struct, Enum
+    {
+        switch (parameter)
+        {
+            case TEnum typed:
+                value = typed;
+                return true;
+            case int intValue when Enum.IsDefined(typeof(TEnum), intValue):
+                value = (TEnum)Enum.ToObject(typeof(TEnum), intValue);
+                return true;
+            default:
+                value = default;
+                return false;
+        }
     }
 
     private static string SafeVolumeLabel(DriveInfo drive)
