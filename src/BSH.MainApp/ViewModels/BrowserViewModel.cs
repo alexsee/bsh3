@@ -312,9 +312,12 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
+        // RestoreJob treats a path as a single file when Path.GetFileName is non-empty.
+        // Browser folder FullPaths are slash-stripped (e.g. "source\docs"), so folder
+        // restores must be normalized to "\source\docs\" like WinForms.
         var path = CurrentItem.IsFile
             ? CurrentItem.FullPath + CurrentItem.Name
-            : CurrentItem.FullPath;
+            : ToFolderRestorePath(CurrentItem.FullPath);
 
         await jobService.RestoreBackupAsync(CurrentVersion.Id, path, destination);
     }
@@ -326,7 +329,25 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        await jobService.RestoreBackupAsync(CurrentVersion.Id, CurrentFolderPath[^1].FullPath, destination);
+        await jobService.RestoreBackupAsync(
+            CurrentVersion.Id,
+            ToFolderRestorePath(CurrentFolderPath[^1].FullPath),
+            destination);
+    }
+
+    /// <summary>
+    /// Formats a browser folder path for RestoreJob folder-mode restores.
+    /// </summary>
+    private static string ToFolderRestorePath(string path)
+    {
+        path ??= string.Empty;
+        path = path.Trim('\\');
+        if (string.IsNullOrEmpty(path))
+        {
+            return "\\";
+        }
+
+        return "\\" + path + "\\";
     }
 
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
