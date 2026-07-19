@@ -83,7 +83,7 @@ jobs:
 
         Push-Location src
         try {
-          & $scanner begin /k:"alexsee_bsh3" /o:"alexsee" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+          & $scanner begin /k:"alexsee_bsh3" /o:"alexsee" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml /d:sonar.coverage.exclusions="**/Providers/Storage/FTPStorage.cs,**/Providers/Scheduler/**,**/Providers/Media/**,**/Providers/Vss/**,**/Utils/Security/Network.cs"
 
           dotnet restore "Backup Service Home 3.sln" --locked-mode -a x64
 
