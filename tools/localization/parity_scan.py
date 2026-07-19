@@ -17,6 +17,7 @@ EN = MAINAPP / "Strings" / "en-us" / "Resources.resw"
 DE = MAINAPP / "Strings" / "de-de" / "Resources.resw"
 
 GETLOCALIZED = re.compile(r'"([^"]+)"\.GetLocalized\(\)')
+GETLOCALIZED_STATIC = re.compile(r'ResourceExtensions\.GetLocalized\("([^"]+)"\)')
 RESOURCESTRING = re.compile(r'ResourceString\s+Name\s*=\s*(?:"([^"]+)"|([A-Za-z0-9_\.]+))')
 PLACEHOLDER = re.compile(r'\{(\d+)')
 
@@ -57,6 +58,8 @@ def main() -> int:
     de = load_keys(DE)
 
     getlocalized = collect(MAINAPP, ".cs", GETLOCALIZED)
+    for key, files in collect(MAINAPP, ".cs", GETLOCALIZED_STATIC).items():
+        getlocalized.setdefault(key, []).extend(files)
     resourcestring = collect(MAINAPP, ".xaml", RESOURCESTRING)
 
     problems = 0
@@ -114,13 +117,14 @@ def main() -> int:
     print("PLACEHOLDER CHECK (string.Format on GetLocalized keys)")
     print("=" * 70)
     fmt_pattern = re.compile(
-        r'string\.Format\(\s*"([^"]+)"\.GetLocalized\(\)\s*((?:,[^;]*?)?)\)', re.DOTALL)
+        r'string\.Format\(\s*(?:"([^"]+)"\.GetLocalized\(\)|ResourceExtensions\.GetLocalized\("([^"]+)"\))\s*((?:,[^;]*?)?)\)',
+        re.DOTALL)
     fmt_issues = 0
     for p in iter_files(MAINAPP, ".cs"):
         text = p.read_text(encoding="utf-8", errors="ignore")
         for m in fmt_pattern.finditer(text):
-            key = m.group(1)
-            args = m.group(2)
+            key = m.group(1) or m.group(2)
+            args = m.group(3)
             # count comma-separated args (rough)
             argcount = 0
             depth = 0

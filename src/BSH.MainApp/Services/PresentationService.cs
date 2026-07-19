@@ -82,9 +82,9 @@ public class PresentationService : IPresentationService
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
 
         await ShowMessageBoxAsync(
-            "Support_About".GetLocalized(),
-            string.Format("Support_About_Text".GetLocalized(), version),
-            [new UICommand("MsgBox_OK".GetLocalized())]);
+            ResourceExtensions.GetLocalized("Support_About"),
+            string.Format(ResourceExtensions.GetLocalized("Support_About_Text"), version),
+            [new UICommand(ResourceExtensions.GetLocalized("MsgBox_OK"))]);
     }
 
     public Task OpenHelpSupportAsync()
@@ -109,9 +109,9 @@ public class PresentationService : IPresentationService
     public async Task ResetConfigurationAsync()
     {
         var result = await ShowMessageBoxAsync(
-            "Support_ResetConfiguration_Title".GetLocalized(),
-            "Support_ResetConfiguration_Text".GetLocalized(),
-            [new UICommand("MsgBox_Yes".GetLocalized()), new UICommand("MsgBox_No".GetLocalized())],
+            ResourceExtensions.GetLocalized("Support_ResetConfiguration_Title"),
+            ResourceExtensions.GetLocalized("Support_ResetConfiguration_Text"),
+            [new UICommand(ResourceExtensions.GetLocalized("MsgBox_Yes")), new UICommand(ResourceExtensions.GetLocalized("MsgBox_No"))],
             defaultCommandIndex: 0,
             cancelCommandIndex: 1);
 
@@ -160,9 +160,9 @@ public class PresentationService : IPresentationService
     public async Task ShowErrorInsufficientDiskSpaceAsync()
     {
         await ShowMessageBoxAsync(
-            "Status_InsufficientSpace_Title".GetLocalized(),
-            "Status_InsufficientSpace_Text".GetLocalized(),
-            [new UICommand("MsgBox_OK".GetLocalized())]);
+            ResourceExtensions.GetLocalized("Status_InsufficientSpace_Title"),
+            ResourceExtensions.GetLocalized("Status_InsufficientSpace_Text"),
+            [new UICommand(ResourceExtensions.GetLocalized("MsgBox_OK"))]);
     }
 
     public async Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files)
@@ -183,9 +183,9 @@ public class PresentationService : IPresentationService
             var dialog = new ContentDialog
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
-                Title = "Status_FilesNotCopied_Title".GetLocalized(),
+                Title = ResourceExtensions.GetLocalized("Status_FilesNotCopied_Title"),
                 Content = list,
-                PrimaryButtonText = "MsgBox_OK".GetLocalized()
+                PrimaryButtonText = ResourceExtensions.GetLocalized("MsgBox_OK")
             };
 
             await dialog.ShowAsync();
@@ -213,7 +213,7 @@ public class PresentationService : IPresentationService
 
     public async Task<bool> ShowDeleteBackupWindowAsync()
     {
-        var messageBoxResult = await ShowMessageBoxAsync("Browser_DeleteBackup_Title".GetLocalized(), "Browser_DeleteBackup_Confirm".GetLocalized(), new List<IUICommand> { new UICommand("MsgBox_Yes".GetLocalized()), new UICommand("MsgBox_No".GetLocalized()) });
+        var messageBoxResult = await ShowMessageBoxAsync(ResourceExtensions.GetLocalized("Browser_DeleteBackup_Title"), ResourceExtensions.GetLocalized("Browser_DeleteBackup_Confirm"), new List<IUICommand> { new UICommand(ResourceExtensions.GetLocalized("MsgBox_Yes")), new UICommand(ResourceExtensions.GetLocalized("MsgBox_No")) });
         return messageBoxResult == ContentDialogResult.Primary;
     }
 
@@ -243,7 +243,7 @@ public class PresentationService : IPresentationService
         uint defaultCommandIndex,
         uint cancelCommandIndex)
     {
-        IUICommand defaultCommand = new UICommand("MsgBox_OK".GetLocalized());
+        IUICommand defaultCommand = new UICommand(ResourceExtensions.GetLocalized("MsgBox_OK"));
         IUICommand? cancelCommand = null;
 
         if (commands == null)

@@ -196,8 +196,30 @@ public class WinUiResourceParityTests
 
     private static List<string> DiscoverGetLocalizedKeys(string mainAppRoot)
     {
-        var pattern = new Regex("\"([^\"]+)\"\\.GetLocalized\\(\\)", RegexOptions.Compiled);
-        return DiscoverKeysFromSources(mainAppRoot, "*.cs", pattern);
+        var extensionPattern = new Regex("\"([^\"]+)\"\\.GetLocalized\\(\\)", RegexOptions.Compiled);
+        var staticPattern = new Regex("ResourceExtensions\\.GetLocalized\\(\"([^\"]+)\"\\)", RegexOptions.Compiled);
+        var keys = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var file in Directory.EnumerateFiles(mainAppRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            if (file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase)
+                || file.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var text = File.ReadAllText(file);
+            foreach (Match match in extensionPattern.Matches(text))
+            {
+                keys.Add(match.Groups[1].Value);
+            }
+
+            foreach (Match match in staticPattern.Matches(text))
+            {
+                keys.Add(match.Groups[1].Value);
+            }
+        }
+
+        return keys.OrderBy(x => x).ToList();
     }
 
     private static List<string> DiscoverResourceStringKeys(string mainAppRoot)
