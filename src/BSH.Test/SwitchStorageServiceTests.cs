@@ -29,6 +29,7 @@ public class SwitchStorageServiceTests
     private IDbClientFactory dbClientFactory;
     private IConfigurationManager configurationManager;
     private RecordingBackupService backupService;
+    private PathOnlySetupService setupService;
     private ISwitchStorageService switchStorageService;
 
     [SetUp]
@@ -62,7 +63,8 @@ public class SwitchStorageServiceTests
         configurationManager.FtpCoding = "UTF8";
 
         backupService = new RecordingBackupService();
-        switchStorageService = new SwitchStorageService(configurationManager, dbClientFactory, backupService);
+        setupService = new PathOnlySetupService();
+        switchStorageService = new SwitchStorageService(configurationManager, dbClientFactory, backupService, setupService);
     }
 
     [TearDown]
@@ -84,22 +86,10 @@ public class SwitchStorageServiceTests
     }
 
     [Test]
-    public void BuildLocalBackupFolderUsesMachineAndUserUnderBackups()
-    {
-        var driveRoot = Path.Combine(tempRoot, "E") + Path.DirectorySeparatorChar;
-
-        var folder = switchStorageService.BuildLocalBackupFolder(driveRoot);
-
-        Assert.That(
-            folder,
-            Is.EqualTo(Path.Combine(driveRoot, "Backups", Environment.MachineName, Environment.UserName)));
-    }
-
-    [Test]
     public void LocalTargetContainsBackupDataReturnsTrueWhenBackupDatabaseExists()
     {
         var driveRoot = Path.Combine(tempRoot, "F") + Path.DirectorySeparatorChar;
-        var backupFolder = switchStorageService.BuildLocalBackupFolder(driveRoot);
+        var backupFolder = setupService.BuildLocalBackupFolder(driveRoot);
         Directory.CreateDirectory(backupFolder);
         File.WriteAllText(Path.Combine(backupFolder, "backup.bshdb"), "existing");
 
@@ -120,7 +110,7 @@ public class SwitchStorageServiceTests
         await SeedBackupHistoryAsync();
 
         var driveRoot = Path.Combine(tempRoot, "H") + Path.DirectorySeparatorChar;
-        var expectedFolder = switchStorageService.BuildLocalBackupFolder(driveRoot);
+        var expectedFolder = setupService.BuildLocalBackupFolder(driveRoot);
 
         await switchStorageService.SwitchToLocalAsync(driveRoot, "NEVol", databasePath);
 
@@ -207,6 +197,31 @@ public class SwitchStorageServiceTests
     {
         using var dbClient = dbClientFactory.CreateDbClient();
         return Convert.ToInt32(await dbClient.ExecuteScalarAsync($"SELECT COUNT(*) FROM {tableName}"));
+    }
+
+    /// <summary>
+    /// Mirrors SetupService.BuildLocalBackupFolder without pulling in unused setup dependencies.
+    /// </summary>
+    private sealed class PathOnlySetupService : ISetupService
+    {
+        public string BuildLocalBackupFolder(string driveRoot)
+        {
+            var root = driveRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+            return Path.Combine(root, "Backups", Environment.MachineName, Environment.UserName);
+        }
+
+        public string? GetDefaultSourceFolder() => throw new NotSupportedException();
+        public bool TryAddSourceFolder(IList<string> sources, string folderPath, out string? error) => throw new NotSupportedException();
+        public bool IsLocalBackupFolderAvailable(string backupFolder) => throw new NotSupportedException();
+        public void ApplyNewConfiguration(NewSetupConfiguration configuration) => throw new NotSupportedException();
+        public IReadOnlyList<DiscoveredBackup> DiscoverBackupsOnDrive(string driveRoot) => throw new NotSupportedException();
+        public bool BackupDatabaseExists(string folderPath) => throw new NotSupportedException();
+        public bool CanRemapSourcePath(string originalPath, string newPath, out string? error) => throw new NotSupportedException();
+        public void ReplaceDatabaseWithCopy(string sourceDatabasePath, string destinationDatabasePath) => throw new NotSupportedException();
+        public void PrepareDatabaseReplacement(string destinationDatabasePath) => throw new NotSupportedException();
+        public Task RemapSourcesAsync(IReadOnlyList<SourceRemap> remaps) => throw new NotSupportedException();
+        public Task ConvertFileTypesForLocalImportAsync() => throw new NotSupportedException();
+        public Task ConvertFileTypesForFtpImportAsync() => throw new NotSupportedException();
     }
 
     private sealed class RecordingBackupService : IBackupService

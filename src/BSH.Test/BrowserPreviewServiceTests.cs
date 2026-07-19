@@ -303,6 +303,6 @@ public class BrowserPreviewServiceTests
 
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
         public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
-        public Task<SwitchStorageSelection?> ShowSwitchStorageWindowAsync() => Task.FromResult<SwitchStorageSelection?>(null);
+        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 }

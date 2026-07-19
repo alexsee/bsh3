@@ -6,6 +6,7 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
+using BSH.MainApp.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
@@ -15,10 +16,11 @@ namespace BSH.MainApp.ViewModels.Windows;
 public partial class SwitchStorageViewModel : ObservableObject
 {
     private readonly ISwitchStorageService switchStorageService;
+    private string databaseFile = string.Empty;
 
-    public TaskCompletionSource<SwitchStorageSelection?> TaskCompletionSource { get; } = new();
+    public TaskCompletionSource<bool> TaskCompletionSource { get; } = new();
 
-    public ObservableCollection<SwitchStorageDriveItem> AvailableDrives { get; } = new();
+    public ObservableCollection<SetupDriveItem> AvailableDrives { get; } = new();
 
     public IReadOnlyList<string> FtpEncodings { get; } = ["ISO-8859-1", "UTF8"];
 
@@ -32,7 +34,7 @@ public partial class SwitchStorageViewModel : ObservableObject
     private Visibility ftpTargetVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
-    private SwitchStorageDriveItem? selectedDrive;
+    private SetupDriveItem? selectedDrive;
 
     [ObservableProperty]
     private string ftpHost = string.Empty;
@@ -63,10 +65,11 @@ public partial class SwitchStorageViewModel : ObservableObject
         this.switchStorageService = switchStorageService;
     }
 
-    public bool IsLocalTarget => SelectedMediumIndex == 0;
+    private bool IsLocalTarget => SelectedMediumIndex == 0;
 
-    public void Initialize()
+    public void Initialize(string databaseFilePath)
     {
+        databaseFile = databaseFilePath;
         RefreshDrives();
         SelectedMediumIndex = 0;
         UpdateTargetVisibility();
@@ -84,7 +87,7 @@ public partial class SwitchStorageViewModel : ObservableObject
         AvailableDrives.Clear();
         foreach (var drive in DriveInfo.GetDrives().Where(drive => drive.IsReady))
         {
-            AvailableDrives.Add(new SwitchStorageDriveItem
+            AvailableDrives.Add(new SetupDriveItem
             {
                 DisplayName = $"{drive.Name} ({SafeVolumeLabel(drive)})",
                 RootPath = drive.RootDirectory.FullName,
@@ -94,7 +97,7 @@ public partial class SwitchStorageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Confirm()
+    private async Task ConfirmAsync()
     {
         ValidationErrorMessage = null;
 
@@ -112,84 +115,53 @@ public partial class SwitchStorageViewModel : ObservableObject
                 return;
             }
 
-            TaskCompletionSource.TrySetResult(new SwitchStorageSelection
-            {
-                IsLocal = true,
-                DriveRoot = SelectedDrive.RootPath,
-                MediaVolumeSerial = ResolveVolumeSerial(SelectedDrive.RootPath)
-            });
+            await switchStorageService.SwitchToLocalAsync(
+                SelectedDrive.RootPath,
+                ResolveVolumeSerial(SelectedDrive.RootPath),
+                databaseFile);
+            TaskCompletionSource.TrySetResult(true);
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(FtpHost) || string.IsNullOrWhiteSpace(FtpUser))
+        if (!TryOpenFtp(requireEmptyTarget: true, out var error))
         {
-            ValidationErrorMessage = "Enter FTP host and username.";
+            ValidationErrorMessage = error;
             return;
         }
 
-        if (!int.TryParse(FtpPort, out var port))
-        {
-            ValidationErrorMessage = "FTP port is invalid.";
-            return;
-        }
-
-        try
-        {
-            var folder = FtpStorage.GetFtpPath(FtpFolder);
-            FtpFolder = folder;
-
-            using var storage = new FtpStorage(
-                FtpHost,
-                port,
-                FtpUser,
-                FtpPassword,
-                folder,
-                string.IsNullOrWhiteSpace(FtpEncoding) ? "UTF8" : FtpEncoding,
-                !FtpEnforceUnencrypted,
-                0);
-            storage.Open();
-
-            if (storage.FileExists("backup.bshdb"))
-            {
-                ValidationErrorMessage = "The selected medium already contains other backups and cannot be used for switching.";
-                return;
-            }
-        }
-        catch (Exception ex)
-        {
-            ValidationErrorMessage = "FTP connection failed: " + ex.Message;
-            return;
-        }
-
-        TaskCompletionSource.TrySetResult(new SwitchStorageSelection
-        {
-            IsLocal = false,
-            Ftp = new SwitchStorageFtpTarget(
-                FtpHost,
-                string.IsNullOrWhiteSpace(FtpPort) ? "21" : FtpPort,
-                FtpUser,
-                FtpPassword,
-                FtpFolder,
-                string.IsNullOrWhiteSpace(FtpEncoding) ? "UTF8" : FtpEncoding,
-                FtpEnforceUnencrypted)
-        });
+        await switchStorageService.SwitchToFtpAsync(CreateFtpTarget(), databaseFile);
+        TaskCompletionSource.TrySetResult(true);
     }
 
     [RelayCommand]
     private void TestFtpConnection()
     {
         ValidationErrorMessage = null;
+        ValidationErrorMessage = TryOpenFtp(requireEmptyTarget: false, out var error)
+            ? "FTP connection successful."
+            : error;
+    }
+
+    [RelayCommand]
+    private void Cancel()
+    {
+        TaskCompletionSource.TrySetResult(false);
+    }
+
+    private bool TryOpenFtp(bool requireEmptyTarget, out string? error)
+    {
+        error = null;
 
         if (string.IsNullOrWhiteSpace(FtpHost) || string.IsNullOrWhiteSpace(FtpUser))
         {
-            ValidationErrorMessage = "Enter FTP host and username.";
-            return;
+            error = "Enter FTP host and username.";
+            return false;
         }
 
         if (!int.TryParse(FtpPort, out var port))
         {
-            ValidationErrorMessage = "FTP port is invalid.";
-            return;
+            error = "FTP port is invalid.";
+            return false;
         }
 
         try
@@ -207,18 +179,31 @@ public partial class SwitchStorageViewModel : ObservableObject
                 0);
             storage.Open();
 
-            ValidationErrorMessage = "FTP connection successful.";
+            if (requireEmptyTarget && storage.FileExists("backup.bshdb"))
+            {
+                error = "The selected medium already contains other backups and cannot be used for switching.";
+                return false;
+            }
+
+            return true;
         }
         catch (Exception ex)
         {
-            ValidationErrorMessage = "FTP connection failed: " + ex.Message;
+            error = "FTP connection failed: " + ex.Message;
+            return false;
         }
     }
 
-    [RelayCommand]
-    private void Cancel()
+    private SwitchStorageFtpTarget CreateFtpTarget()
     {
-        TaskCompletionSource.TrySetResult(null);
+        return new SwitchStorageFtpTarget(
+            FtpHost,
+            string.IsNullOrWhiteSpace(FtpPort) ? "21" : FtpPort,
+            FtpUser,
+            FtpPassword,
+            FtpFolder,
+            string.IsNullOrWhiteSpace(FtpEncoding) ? "UTF8" : FtpEncoding,
+            FtpEnforceUnencrypted);
     }
 
     private void UpdateTargetVisibility()

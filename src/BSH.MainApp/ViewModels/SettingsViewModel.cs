@@ -467,22 +467,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
         this.switchStorageService.SyncDatabaseToCurrentMedium(App.DatabaseFile);
 
-        var selection = await this.presentationController.ShowSwitchStorageWindowAsync();
-        if (selection == null)
+        if (!await this.presentationController.ShowSwitchStorageWindowAsync())
         {
             return;
-        }
-
-        if (selection.IsLocal)
-        {
-            await this.switchStorageService.SwitchToLocalAsync(
-                selection.DriveRoot!,
-                selection.MediaVolumeSerial,
-                App.DatabaseFile);
-        }
-        else if (selection.Ftp != null)
-        {
-            await this.switchStorageService.SwitchToFtpAsync(selection.Ftp, App.DatabaseFile);
         }
 
         InitTargetSettings();

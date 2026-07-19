@@ -15,29 +15,23 @@ public sealed class SwitchStorageService : ISwitchStorageService
     private readonly IConfigurationManager configurationManager;
     private readonly IDbClientFactory dbClientFactory;
     private readonly IBackupService backupService;
+    private readonly ISetupService setupService;
 
     public SwitchStorageService(
         IConfigurationManager configurationManager,
         IDbClientFactory dbClientFactory,
-        IBackupService backupService)
+        IBackupService backupService,
+        ISetupService setupService)
     {
         this.configurationManager = configurationManager;
         this.dbClientFactory = dbClientFactory;
         this.backupService = backupService;
-    }
-
-    public string BuildLocalBackupFolder(string driveRoot)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(driveRoot);
-
-        var root = driveRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-            + Path.DirectorySeparatorChar;
-        return Path.Combine(root, "Backups", Environment.MachineName, Environment.UserName);
+        this.setupService = setupService;
     }
 
     public bool LocalTargetContainsBackupData(string driveRoot)
     {
-        var backupFolder = BuildLocalBackupFolder(driveRoot);
+        var backupFolder = setupService.BuildLocalBackupFolder(driveRoot);
         return File.Exists(Path.Combine(backupFolder, "backup.bshdb"));
     }
 
@@ -52,7 +46,7 @@ public sealed class SwitchStorageService : ISwitchStorageService
         ArgumentException.ThrowIfNullOrWhiteSpace(driveRoot);
         ArgumentException.ThrowIfNullOrWhiteSpace(databaseFile);
 
-        var backupFolder = BuildLocalBackupFolder(driveRoot);
+        var backupFolder = setupService.BuildLocalBackupFolder(driveRoot);
 
         configurationManager.MediumType = MediaType.LocalDevice;
         configurationManager.BackupFolder = backupFolder;

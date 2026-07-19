@@ -20,9 +20,9 @@ public sealed partial class SwitchStorageWindow : WindowEx
         Closed += OnClosed;
     }
 
-    public async Task<Models.SwitchStorageSelection?> ShowDialogAsync()
+    public async Task<bool> ShowDialogAsync(string databaseFile)
     {
-        ViewModel.Initialize();
+        ViewModel.Initialize(databaseFile);
 
         Activate();
         this.CenterOnScreen();
@@ -39,6 +39,6 @@ public sealed partial class SwitchStorageWindow : WindowEx
     private void OnClosed(object sender, WindowEventArgs args)
     {
         closeRequested = true;
-        ViewModel.TaskCompletionSource.TrySetResult(null);
+        ViewModel.TaskCompletionSource.TrySetResult(false);
     }
 }

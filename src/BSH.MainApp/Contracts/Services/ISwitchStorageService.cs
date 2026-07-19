@@ -7,8 +7,6 @@ namespace BSH.MainApp.Contracts.Services;
 
 public interface ISwitchStorageService
 {
-    string BuildLocalBackupFolder(string driveRoot);
-
     bool LocalTargetContainsBackupData(string driveRoot);
 
     void SyncDatabaseToCurrentMedium(string databaseFile);

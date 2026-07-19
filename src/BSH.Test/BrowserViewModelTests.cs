@@ -281,7 +281,7 @@ public class BrowserViewModelTests
         public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.None);
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
         public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
-        public Task<SwitchStorageSelection?> ShowSwitchStorageWindowAsync() => Task.FromResult<SwitchStorageSelection?>(null);
+        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 
     private sealed class MemoryLocalSettingsService : ILocalSettingsService
