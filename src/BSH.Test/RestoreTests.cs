@@ -18,13 +18,25 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Storage;
+using BSH.Test.Mocks;
 using NUnit.Framework;
 
 namespace BSH.Test;
 
+/// <summary>
+/// Unit tests for <see cref="RestoreJob"/> using <see cref="StorageMock"/>.
+/// Content round-trips against real storage live in Integration tests.
+/// </summary>
 public class RestoreTests
 {
     private const string TestDbName = "testdb_restore.db";
+
+    /// <summary>
+    /// Synthetic destination used by most tests. RestoreJob may attempt
+    /// Directory.CreateDirectory / timestamp updates; those failures are ignored.
+    /// No files are written by StorageMock.
+    /// </summary>
+    private const string SyntheticDestination = @"Z:\BSH.Test.Restore";
 
     private IDbClientFactory dbClientFactory;
     private IConfigurationManager configurationManager;
@@ -71,7 +83,7 @@ public class RestoreTests
     [Test]
     public void TestFailMedium()
     {
-        var storage = new RecordingRestoreStorage(failCheckMedium: true);
+        var storage = new StorageMock(failCheckMedium: true);
         var restoreJob = CreateRestoreJob(storage);
 
         Assert.ThrowsAsync<DeviceNotReadyException>(async () => await restoreJob.RestoreAsync(CancellationToken.None));
@@ -86,21 +98,20 @@ public class RestoreTests
         await SeedFileForVersionAsync(2, 2, 1, "compressed.txt", @"\docs\", 2, "");
         await SeedFileForVersionAsync(3, 3, 1, "encrypted-long.txt", @"\docs\", 6, "very-long-file-name");
 
-        var destination = CreateTempDestination();
-        var storage = new RecordingRestoreStorage();
-        var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\");
+        var storage = new StorageMock();
+        var restoreJob = CreateRestoreJob(storage, file: @"\");
         restoreJob.Password = "test123";
 
         await restoreJob.RestoreAsync(CancellationToken.None);
 
         Assert.That(restoreJob.FileErrorList, Is.Empty);
-        Assert.That(storage.CopiedPlain, Has.Count.EqualTo(1));
-        Assert.That(storage.CopiedCompressed, Has.Count.EqualTo(1));
-        Assert.That(storage.CopiedEncrypted, Has.Count.EqualTo(1));
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
+        Assert.That(storage.CopyFileFromStorageCompressedCalls, Is.EqualTo(1));
+        Assert.That(storage.CopyFileFromStorageEncryptedCalls, Is.EqualTo(1));
 
-        Assert.That(storage.CopiedPlain[0].RemoteFile, Is.EqualTo(versionDate + @"\docs\" + "plain.txt"));
-        Assert.That(storage.CopiedCompressed[0].RemoteFile, Is.EqualTo(versionDate + @"\docs\" + "compressed.txt"));
-        Assert.That(storage.CopiedEncrypted[0].RemoteFile, Is.EqualTo(Path.Combine(versionDate, "_LONGFILES_", "very-long-file-name")));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[0], Is.EqualTo(versionDate + @"\docs\" + "plain.txt"));
+        Assert.That(storage.CopiedFromStorageCompressedRemoteFiles[0], Is.EqualTo(versionDate + @"\docs\" + "compressed.txt"));
+        Assert.That(storage.CopiedFromStorageEncryptedRemoteFiles[0], Is.EqualTo(Path.Combine(versionDate, "_LONGFILES_", "very-long-file-name")));
     }
 
     [Test]
@@ -111,14 +122,14 @@ public class RestoreTests
         await SeedFileForVersionAsync(1, 1, 1, "plain.txt", @"\docs\", 1, "");
         await SeedFileForVersionAsync(2, 2, 1, "other.txt", @"\docs\", 1, "");
 
-        var destination = CreateTempDestination();
-        var storage = new RecordingRestoreStorage();
-        var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\docs\plain.txt");
+        var storage = new StorageMock();
+        var restoreJob = CreateRestoreJob(storage, file: @"\docs\plain.txt");
 
         await restoreJob.RestoreAsync(CancellationToken.None);
 
-        Assert.That(storage.CopiedPlain, Has.Count.EqualTo(1));
-        Assert.That(storage.CopiedPlain[0].RemoteFile, Does.Contain("plain.txt"));
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[0], Does.Contain("plain.txt"));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[0], Does.Not.Contain("other.txt"));
     }
 
     [Test]
@@ -128,39 +139,32 @@ public class RestoreTests
         await SeedVersionAsync(1, versionDate);
         await SeedFileForVersionAsync(1, 1, 1, "plain.txt", @"\docs\", 1, "");
 
-        var destination = CreateTempDestination();
-        Directory.CreateDirectory(destination);
-        var existingPath = Path.Combine(destination, "plain.txt");
-        File.WriteAllText(existingPath, "local-content");
+        // RestoreJob gates overwrite on File.Exists — only local touch needed for this path.
+        var destination = CreateExistingDestinationFile("plain.txt");
 
-        var storage = new RecordingRestoreStorage();
+        var storage = new StorageMock();
         var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.DontCopy);
 
         await restoreJob.RestoreAsync(CancellationToken.None);
 
-        Assert.That(storage.CopiedPlain, Is.Empty);
-        Assert.That(File.ReadAllText(existingPath), Is.EqualTo("local-content"));
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(0));
     }
 
     [Test]
-    public async Task TestOverwritePolicyReplacesExistingFile()
+    public async Task TestOverwritePolicyCopiesWhenExistingFilePresent()
     {
         const string versionDate = "01-01-2021 00-00-00";
         await SeedVersionAsync(1, versionDate);
         await SeedFileForVersionAsync(1, 1, 1, "plain.txt", @"\docs\", 1, "");
 
-        var destination = CreateTempDestination();
-        Directory.CreateDirectory(destination);
-        var existingPath = Path.Combine(destination, "plain.txt");
-        File.WriteAllText(existingPath, "local-content");
+        var destination = CreateExistingDestinationFile("plain.txt");
 
-        var storage = new RecordingRestoreStorage(writeRestoredContent: "restored-content");
+        var storage = new StorageMock();
         var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Overwrite);
 
         await restoreJob.RestoreAsync(CancellationToken.None);
 
-        Assert.That(storage.CopiedPlain, Has.Count.EqualTo(1));
-        Assert.That(File.ReadAllText(existingPath), Is.EqualTo("restored-content"));
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
     }
 
     [Test]
@@ -170,12 +174,9 @@ public class RestoreTests
         await SeedVersionAsync(1, versionDate);
         await SeedFileForVersionAsync(1, 1, 1, "plain.txt", @"\docs\", 1, "");
 
-        var destination = CreateTempDestination();
-        Directory.CreateDirectory(destination);
-        var existingPath = Path.Combine(destination, "plain.txt");
-        File.WriteAllText(existingPath, "local-content");
+        var destination = CreateExistingDestinationFile("plain.txt");
 
-        var storage = new RecordingRestoreStorage();
+        var storage = new StorageMock();
         var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
         var observer = new JobReportStub { OverwriteResult = RequestOverwriteResult.NoOverwrite };
         restoreJob.AddObserver(observer);
@@ -183,8 +184,7 @@ public class RestoreTests
         await restoreJob.RestoreAsync(CancellationToken.None);
 
         Assert.That(observer.RequestOverwriteCalls, Is.EqualTo(1));
-        Assert.That(storage.CopiedPlain, Is.Empty);
-        Assert.That(File.ReadAllText(existingPath), Is.EqualTo("local-content"));
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(0));
     }
 
     [Test]
@@ -194,10 +194,9 @@ public class RestoreTests
         await SeedVersionAsync(1, versionDate);
         await SeedFileForVersionAsync(1, 1, 1, "plain.txt", @"\docs\", 1, "");
 
-        var destination = CreateTempDestination();
         using var cts = new CancellationTokenSource();
-        var storage = new RecordingRestoreStorage(cancelOnCopy: cts);
-        var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\");
+        var storage = new StorageMock(cancelOnCopy: cts);
+        var restoreJob = CreateRestoreJob(storage, file: @"\");
         var observer = new JobReportStub();
         restoreJob.AddObserver(observer);
 
@@ -215,17 +214,16 @@ public class RestoreTests
         await SeedFileForVersionAsync(1, 1, 1, "fails.txt", @"\docs\", 1, "");
         await SeedFileForVersionAsync(2, 2, 1, "ok.txt", @"\docs\", 1, "");
 
-        var destination = CreateTempDestination();
-        var storage = new RecordingRestoreStorage(throwOnRemoteContaining: "fails.txt");
-        var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\");
+        var storage = new StorageMock(throwOnRemoteContaining: "fails.txt");
+        var restoreJob = CreateRestoreJob(storage, file: @"\");
         var observer = new JobReportStub();
         restoreJob.AddObserver(observer);
 
         await restoreJob.RestoreAsync(CancellationToken.None);
 
         Assert.That(restoreJob.FileErrorList.Count, Is.EqualTo(1));
-        Assert.That(storage.CopiedPlain, Has.Count.EqualTo(1));
-        Assert.That(storage.CopiedPlain[0].RemoteFile, Does.Contain("ok.txt"));
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[0], Does.Contain("ok.txt"));
         Assert.That(observer.ReportedStates, Does.Contain(JobState.ERROR));
     }
 
@@ -246,24 +244,23 @@ public class RestoreTests
         await dbClientFactory.ExecuteNonQueryAsync(
             "INSERT INTO filelink (fileversionID, versionID) VALUES (2, 2)");
 
-        var destination = CreateTempDestination();
-        var storage = new RecordingRestoreStorage();
+        var storage = new StorageMock();
 
-        var restoreV1 = CreateRestoreJob(storage, version: 1, destination: destination, file: @"\");
+        var restoreV1 = CreateRestoreJob(storage, version: 1, file: @"\");
         await restoreV1.RestoreAsync(CancellationToken.None);
 
-        var restoreV2 = CreateRestoreJob(storage, version: 2, destination: destination, file: @"\", overwrite: FileOverwrite.Overwrite);
+        var restoreV2 = CreateRestoreJob(storage, version: 2, file: @"\", overwrite: FileOverwrite.Overwrite);
         await restoreV2.RestoreAsync(CancellationToken.None);
 
-        Assert.That(storage.CopiedPlain, Has.Count.EqualTo(2));
-        Assert.That(storage.CopiedPlain[0].RemoteFile, Is.EqualTo(versionDate1 + @"\docs\" + "doc.txt"));
-        Assert.That(storage.CopiedPlain[1].RemoteFile, Is.EqualTo(versionDate2 + @"\docs\" + "doc.txt"));
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(2));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[0], Is.EqualTo(versionDate1 + @"\docs\" + "doc.txt"));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[1], Is.EqualTo(versionDate2 + @"\docs\" + "doc.txt"));
     }
 
     private RestoreJob CreateRestoreJob(
         IStorageProvider storage,
         int version = 1,
-        string destination = null,
+        string destination = SyntheticDestination,
         string file = @"\",
         FileOverwrite overwrite = FileOverwrite.Overwrite)
     {
@@ -305,11 +302,15 @@ public class RestoreTests
             $"INSERT INTO filelink (fileversionID, versionID) VALUES ({fileVersionId}, {versionId})");
     }
 
-    private static string CreateTempDestination()
+    /// <summary>
+    /// Creates a real destination file only where RestoreJob checks File.Exists for overwrite policy.
+    /// </summary>
+    private static string CreateExistingDestinationFile(string fileName)
     {
-        var path = Path.Combine(Path.GetTempPath(), "BSH.Test", "restore-" + Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(path);
-        return path;
+        var destination = Path.Combine(Path.GetTempPath(), "BSH.Test", "restore-unit-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(destination);
+        File.WriteAllText(Path.Combine(destination, fileName), "existing");
+        return destination;
     }
 
     private sealed class JobReportStub : IJobReport
@@ -330,99 +331,6 @@ public class RestoreTests
         {
             RequestOverwriteCalls++;
             return Task.FromResult(OverwriteResult);
-        }
-    }
-
-    private sealed class RecordingRestoreStorage : IStorageProvider
-    {
-        private readonly bool failCheckMedium;
-        private readonly string throwOnRemoteContaining;
-        private readonly string writeRestoredContent;
-        private readonly CancellationTokenSource cancelOnCopy;
-
-        public RecordingRestoreStorage(
-            bool failCheckMedium = false,
-            string throwOnRemoteContaining = null,
-            string writeRestoredContent = null,
-            CancellationTokenSource cancelOnCopy = null)
-        {
-            this.failCheckMedium = failCheckMedium;
-            this.throwOnRemoteContaining = throwOnRemoteContaining;
-            this.writeRestoredContent = writeRestoredContent;
-            this.cancelOnCopy = cancelOnCopy;
-        }
-
-        public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
-        public List<(string LocalFile, string RemoteFile)> CopiedPlain { get; } = [];
-        public List<(string LocalFile, string RemoteFile)> CopiedCompressed { get; } = [];
-        public List<(string LocalFile, string RemoteFile, string Password)> CopiedEncrypted { get; } = [];
-
-        public Task<bool> CheckMedium(bool quickCheck = false) => Task.FromResult(!failCheckMedium);
-        public void Open() { }
-        public bool CanWriteToStorage() => true;
-        public bool CopyFileToStorage(string localFile, string remoteFile) => true;
-        public bool CopyFileToStorageCompressed(string localFile, string remoteFile) => true;
-        public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password) => true;
-        public bool DecryptOnStorage(string remoteFile, string password) => true;
-        public bool DeleteFileFromStorage(string remoteFile) => true;
-        public bool DeleteFileFromStorageCompressed(string remoteFile) => true;
-        public bool DeleteFileFromStorageEncrypted(string remoteFile) => true;
-        public bool DeleteDirectory(string remoteDirectory) => true;
-        public bool RenameDirectory(string remoteDirectorySource, string remoteDirectoryTarget) => true;
-        public bool UploadDatabaseFile(string databaseFile) => true;
-        public void UpdateStorageVersion(int versionId) { }
-        public bool IsPathTooLong(string path, bool compression, bool encryption) => false;
-        public long GetFreeSpace() => 0;
-        public void Dispose() { }
-
-        public bool CopyFileFromStorage(string localFile, string remoteFile)
-        {
-            return CopyFromStorage(CopiedPlain, localFile, remoteFile);
-        }
-
-        public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
-        {
-            return CopyFromStorage(CopiedCompressed, localFile, remoteFile);
-        }
-
-        public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
-        {
-            if (!string.IsNullOrEmpty(throwOnRemoteContaining) && remoteFile.Contains(throwOnRemoteContaining, StringComparison.Ordinal))
-            {
-                throw new IOException("Simulated restore failure");
-            }
-
-            cancelOnCopy?.Cancel();
-            WriteRestoredContentIfRequested(localFile);
-            CopiedEncrypted.Add((localFile, remoteFile, password));
-            return true;
-        }
-
-        private bool CopyFromStorage(
-            List<(string LocalFile, string RemoteFile)> target,
-            string localFile,
-            string remoteFile)
-        {
-            if (!string.IsNullOrEmpty(throwOnRemoteContaining) && remoteFile.Contains(throwOnRemoteContaining, StringComparison.Ordinal))
-            {
-                throw new IOException("Simulated restore failure");
-            }
-
-            cancelOnCopy?.Cancel();
-            WriteRestoredContentIfRequested(localFile);
-            target.Add((localFile, remoteFile));
-            return true;
-        }
-
-        private void WriteRestoredContentIfRequested(string localFile)
-        {
-            if (writeRestoredContent == null)
-            {
-                return;
-            }
-
-            Directory.CreateDirectory(Path.GetDirectoryName(localFile)!);
-            File.WriteAllText(localFile, writeRestoredContent);
         }
     }
 }
