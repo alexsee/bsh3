@@ -7,7 +7,7 @@ using Brightbits.BSH.Engine.Types;
 
 namespace Brightbits.BSH.Engine.Repo;
 
-internal static class VersionDetailsMapper
+public static class VersionDetailsMapper
 {
     public static VersionDetails FromReader(IDataReader reader)
     {
