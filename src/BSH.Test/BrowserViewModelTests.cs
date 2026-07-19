@@ -340,8 +340,6 @@ public class BrowserViewModelTests
 
     private sealed class BrowserPresentationService : IPresentationService
     {
-        public List<(string Title, string Content)> MessageBoxes { get; } = [];
-
         public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
         public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
@@ -359,12 +357,7 @@ public class BrowserViewModelTests
         public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
         public Task ShowMainWindowAsync() => Task.CompletedTask;
         public Task ShowStatusWindowAsync() => Task.CompletedTask;
-        public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
-        {
-            MessageBoxes.Add((title, content));
-            return Task.FromResult(ContentDialogResult.None);
-        }
-
+        public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.None);
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
         public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
         public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
