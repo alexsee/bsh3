@@ -92,6 +92,7 @@ public partial class App : Application
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IStatusService, StatusService>();
             services.AddSingleton<IBrowserFavoritesService, BrowserFavoritesService>();
+            services.AddSingleton<IBrowserViewPreferencesService, BrowserViewPreferencesService>();
             services.AddSingleton<IBrowserContentService, BrowserContentService>();
             services.AddSingleton<IBrowserDialogService, BrowserDialogService>();
             services.AddSingleton<IBrowserPreviewService, BrowserPreviewService>();

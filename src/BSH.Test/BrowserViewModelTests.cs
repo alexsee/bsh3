@@ -130,15 +130,53 @@ public class BrowserViewModelTests
         Assert.That(previewService.PreviewCalls.Single(), Is.EqualTo(("2", "report.txt", @"\source\docs\")));
     }
 
+    [Test]
+    public void ToggleInfoPaneDefaultsToHiddenWhenNoPreferenceSaved()
+    {
+        var viewModel = CreateViewModel();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.False);
+    }
+
+    [Test]
+    public async Task ToggleInfoPaneChangePersistsPreference()
+    {
+        var preferences = new BrowserViewPreferencesService(new MemoryLocalSettingsService());
+        var viewModel = CreateViewModel(viewPreferencesService: preferences);
+
+        viewModel.ToggleInfoPane = true;
+
+        Assert.That(await preferences.GetInfoPaneVisibleAsync(), Is.True);
+
+        viewModel.ToggleInfoPane = false;
+
+        Assert.That(await preferences.GetInfoPaneVisibleAsync(), Is.False);
+    }
+
+    [Test]
+    public async Task LoadViewPreferencesRestoresPersistedInfoPanePreference()
+    {
+        var settings = new MemoryLocalSettingsService();
+        await settings.SaveSettingAsync(BrowserViewPreferencesService.InfoPaneVisibleSettingsKey, true);
+        var preferences = new BrowserViewPreferencesService(settings);
+        var viewModel = CreateViewModel(viewPreferencesService: preferences);
+
+        await viewModel.LoadViewPreferencesAsync();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.True);
+    }
+
     private static BrowserViewModel CreateViewModel(
         BrowserQueryManager? queryManager = null,
         BrowserJobService? jobService = null,
         BrowserDialogService? browserDialogService = null,
         BrowserFavoritesService? favoritesService = null,
-        BrowserPreviewServiceFake? previewService = null)
+        BrowserPreviewServiceFake? previewService = null,
+        BrowserViewPreferencesService? viewPreferencesService = null)
     {
         queryManager ??= new BrowserQueryManager();
         favoritesService ??= new BrowserFavoritesService(new MemoryLocalSettingsService());
+        viewPreferencesService ??= new BrowserViewPreferencesService(new MemoryLocalSettingsService());
 
         return new BrowserViewModel(
             queryManager,
@@ -147,7 +185,8 @@ public class BrowserViewModelTests
             new BrowserPresentationService(),
             new BrowserContentService(queryManager, favoritesService),
             browserDialogService ?? new BrowserDialogService(),
-            previewService ?? new BrowserPreviewServiceFake());
+            previewService ?? new BrowserPreviewServiceFake(),
+            viewPreferencesService);
     }
 
     private static VersionDetails Version(string id) => new()

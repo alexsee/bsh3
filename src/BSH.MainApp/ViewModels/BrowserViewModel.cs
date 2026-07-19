@@ -23,9 +23,11 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private readonly IBrowserContentService browserContentService;
     private readonly IBrowserDialogService browserDialogService;
     private readonly IBrowserPreviewService browserPreviewService;
+    private readonly IBrowserViewPreferencesService viewPreferencesService;
     private BrowserContentMode contentMode = BrowserContentMode.Folder;
     private long contentRequestId;
     private bool suppressSearchTermsChanged;
+    private bool suppressInfoPaneChanged;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
@@ -73,7 +75,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         IPresentationService presentationService,
         IBrowserContentService browserContentService,
         IBrowserDialogService browserDialogService,
-        IBrowserPreviewService browserPreviewService)
+        IBrowserPreviewService browserPreviewService,
+        IBrowserViewPreferencesService viewPreferencesService)
     {
         this.queryManager = queryManager;
         this.jobService = jobService;
@@ -82,6 +85,30 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         this.browserContentService = browserContentService;
         this.browserDialogService = browserDialogService;
         this.browserPreviewService = browserPreviewService;
+        this.viewPreferencesService = viewPreferencesService;
+    }
+
+    partial void OnToggleInfoPaneChanged(bool value)
+    {
+        if (suppressInfoPaneChanged)
+        {
+            return;
+        }
+
+        _ = viewPreferencesService.SetInfoPaneVisibleAsync(value);
+    }
+
+    public async Task LoadViewPreferencesAsync()
+    {
+        suppressInfoPaneChanged = true;
+        try
+        {
+            ToggleInfoPane = await viewPreferencesService.GetInfoPaneVisibleAsync();
+        }
+        finally
+        {
+            suppressInfoPaneChanged = false;
+        }
     }
 
     private bool CanUpFolder() => contentMode == BrowserContentMode.Folder && CurrentFolderPath.Count > 1;
@@ -580,6 +607,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     public async void OnNavigatedTo(object parameter)
     {
+        await LoadViewPreferencesAsync();
+
         LoadVersions();
 
         if (Versions.Count > 0)
