@@ -58,6 +58,15 @@ public class DbMigrationServiceTests
         var migration = new DbMigrationService(dbClientFactory, configurationManager);
         Assert.ThrowsAsync<DatabaseIncompatibleException>(async () => await migration.InitializeAsync());
     }
+
+    [Test]
+    public async Task InitializeAsync_MigratesFromVersionEight()
+    {
+        configurationManager.DBVersion = "8";
+        var migration = new DbMigrationService(dbClientFactory, configurationManager);
+        await migration.InitializeAsync();
+        Assert.That(configurationManager.DBVersion, Is.EqualTo("9"));
+    }
 }
 
 public class TypeSmokeTests

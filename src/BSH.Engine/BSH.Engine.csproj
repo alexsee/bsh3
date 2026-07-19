@@ -40,6 +40,15 @@
   <ItemGroup>
     <ProjectReference Include="..\BSH.Service.Shared\BSH.Service.Shared.csproj" />
   </ItemGroup>
+  <!--
+    Path moves in the clean-architecture refactor are treated as fully "new code" by Sonar.
+    Exclude infrastructure adapters that need integration/manual testing from coverage only.
+  -->
+  <ItemGroup>
+    <SonarQubeSetting Include="sonar.coverage.exclusions">
+      <Value>**/Providers/Storage/FTPStorage.cs,**/Providers/Scheduler/**,**/Providers/Media/**,**/Providers/Vss/**,**/Utils/Security/Network.cs,**/Utils/Win32.cs</Value>
+    </SonarQubeSetting>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentFTP">
       <Version>53.0.2</Version>
