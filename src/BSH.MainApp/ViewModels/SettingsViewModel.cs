@@ -226,14 +226,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.FtpRemotePath = this.configurationManager.FtpFolder;
         this.FtpRemoteEncoding = this.configurationManager.FtpCoding;
 
-        if (this.configurationManager.FtpEncryptionMode == "3")
-        {
-            this.FtpRemoteEnforceUnencrypted = true;
-        }
-        else
-        {
-            this.FtpRemoteEnforceUnencrypted = false;
-        }
+        // FtpStorage treats mode "3" as encrypted (AutoConnect); anything else is plain FTP.
+        this.FtpRemoteEnforceUnencrypted = this.configurationManager.FtpEncryptionMode != "3";
     }
 
     public static string GetMediaTypeDisplayName(MediaType mediaType)
@@ -401,7 +395,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     partial void OnFtpRemoteEnforceUnencryptedChanged(bool oldValue, bool newValue)
     {
         if (oldValue == newValue) return;
-        this.configurationManager.FtpEncryptionMode = newValue ? "3" : "0";
+        this.configurationManager.FtpEncryptionMode = newValue ? "0" : "3";
     }
 
     public void UseLocalPath(string folderPath)
