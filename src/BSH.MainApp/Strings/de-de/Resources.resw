@@ -457,7 +457,7 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
     <value>Durchsuchen...</value>
   </data>
   <data name="MsgBox_Cancel" xml:space="preserve">
-    <value>&amp;Abbrechen</value>
+    <value>Abbrechen</value>
   </data>
   <data name="MsgBox_Change" xml:space="preserve">
     <value>Ändern</value>
@@ -481,7 +481,7 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
     <value>Verbindung zum FTP-Server nicht erfolgreich</value>
   </data>
   <data name="MsgBox_LocalPath_Change_Move" xml:space="preserve">
-    <value>&amp;Verschieben</value>
+    <value>Verschieben</value>
   </data>
   <data name="MsgBox_LocalPath_Change_Text" xml:space="preserve">
     <value>Sie können den Speicherort der Sicherungen entweder übernehmen oder verschieben:
@@ -493,7 +493,7 @@ Verschieben: Sie möchten die Sicherungen an einen anderen Pfad verschieben und 
     <value>Lokalen Pfad ändern</value>
   </data>
   <data name="MsgBox_LocalPath_Change_Use" xml:space="preserve">
-    <value>&amp;Übernehmen</value>
+    <value>Übernehmen</value>
   </data>
   <data name="MsgBox_MediaType_Change_Text" xml:space="preserve">
     <value>Vorhandene Sicherungen werden gelöscht.
@@ -509,7 +509,7 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
     <value>Weiter</value>
   </data>
   <data name="MsgBox_No" xml:space="preserve">
-    <value>&amp;Nein</value>
+    <value>Nein</value>
   </data>
   <data name="MsgBox_OK" xml:space="preserve">
     <value>OK</value>
@@ -524,7 +524,7 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
     <value>Speichern</value>
   </data>
   <data name="MsgBox_Yes" xml:space="preserve">
-    <value>&amp;Ja</value>
+    <value>Ja</value>
   </data>
   <data name="Nav_BackupBrowser" xml:space="preserve">
     <value>Backupbrowser</value>

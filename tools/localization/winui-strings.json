@@ -92,20 +92,20 @@
     "de": "Vorhandene Sicherungen werden gelöscht"
   },
   "MsgBox_No": {
-    "en": "&No",
-    "de": "&Nein"
+    "en": "No",
+    "de": "Nein"
   },
   "MsgBox_Yes": {
-    "en": "&Yes",
-    "de": "&Ja"
+    "en": "Yes",
+    "de": "Ja"
   },
   "MsgBox_Cancel": {
-    "en": "&Cancel",
-    "de": "&Abbrechen"
+    "en": "Cancel",
+    "de": "Abbrechen"
   },
   "MsgBox_LocalPath_Change_Move": {
-    "en": "&Move",
-    "de": "&Verschieben"
+    "en": "Move",
+    "de": "Verschieben"
   },
   "MsgBox_LocalPath_Change_Text": {
     "en": "You can decide to either use or move the location of the backups:\n\nUse: You already moved the path to the backups or the paths have changed.\nMove: You want to move the backups to a different path and want BSH to move the files.",
@@ -116,8 +116,8 @@
     "de": "Lokalen Pfad ändern"
   },
   "MsgBox_LocalPath_Change_Use": {
-    "en": "&Use",
-    "de": "&Übernehmen"
+    "en": "Use",
+    "de": "Übernehmen"
   },
   "MSG_TASK_RUNNING_TITLE": {
     "en": "Other task in progress",

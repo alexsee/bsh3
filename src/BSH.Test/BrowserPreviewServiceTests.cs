@@ -93,7 +93,7 @@ public class BrowserPreviewServiceTests
 
         Assert.That(presentation.MessageBoxes, Has.Count.EqualTo(1));
         Assert.That(presentation.MessageBoxes[0].Title, Is.EqualTo("Browser_FeatureNotAvailable_Title".GetLocalized()));
-        Assert.That(presentation.MessageBoxes[0].Content, Does.Contain("not available"));
+        Assert.That(presentation.MessageBoxes[0].Content, Is.EqualTo("Browser_FeatureNotAvailable_Text".GetLocalized()));
     }
 
     [Test]
