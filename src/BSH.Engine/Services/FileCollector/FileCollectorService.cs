@@ -100,13 +100,13 @@ public class FileCollectorService : IFileCollectorService
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning(ex, "Directory {directory} could not be accessed.", folder);
+                    Log.Warning(ex, "Directory {Directory} could not be accessed.", folder);
                 }
             }
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, "Directory {directory} could not be accessed.", root);
+            Log.Warning(ex, "Directory {Directory} could not be accessed.", root);
         }
     }
 }

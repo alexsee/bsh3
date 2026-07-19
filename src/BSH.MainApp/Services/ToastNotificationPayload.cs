@@ -7,10 +7,12 @@ namespace BSH.MainApp.Services;
 
 internal static class ToastNotificationPayload
 {
-    public static string Create(string title, string text)
+    public static string Create(string title, string text, string action)
     {
+        var launch = SecurityElement.Escape($"action={action}");
+
         return $"""
-            <toast>
+            <toast launch="{launch}">
                 <visual>
                     <binding template="ToastGeneric">
                         <text>{SecurityElement.Escape(title)}</text>

@@ -24,9 +24,9 @@ public enum JobSessionStartFailure
 }
 
 /// <summary>
-/// Represents the outcome of running a single-backup job session.
+/// Represents the outcome of running a job session.
 /// </summary>
-public readonly struct SingleBackupSessionResult
+public readonly struct JobSessionResult
 {
     /// <summary>
     /// Gets a value indicating whether the job session was prepared and started.
@@ -76,7 +76,7 @@ public sealed class JobSessionRunner
     /// <summary>
     /// Runs a single-backup session with full error handling and user dialogs.
     /// </summary>
-    public async Task<SingleBackupSessionResult> RunSingleBackupAsync(
+    public async Task<JobSessionResult> RunSingleBackupAsync(
         string title,
         string description,
         IJobSessionPresenter presenter,
@@ -91,14 +91,14 @@ public sealed class JobSessionRunner
             requirePassword: true,
             async (jobReport, cancellationToken) =>
             {
-                await backupService.StartBackup(title, description, ref jobReport, cancellationToken, fullBackup, sourceFolders, !statusDialog);
+                await backupService.StartBackup(title, description, jobReport, cancellationToken, fullBackup, sourceFolders, !statusDialog);
             });
     }
 
     /// <summary>
     /// Runs a single restore session with shared session preparation and error handling.
     /// </summary>
-    public async Task<SingleBackupSessionResult> RunSingleRestoreAsync(
+    public async Task<JobSessionResult> RunSingleRestoreAsync(
         string version,
         string file,
         string destination,
@@ -113,7 +113,7 @@ public sealed class JobSessionRunner
             requirePassword: true,
             async (jobReport, cancellationToken) =>
             {
-                await backupService.StartRestore(version, file, destination, ref jobReport, cancellationToken, overwrite, !statusDialog);
+                await backupService.StartRestore(version, file, destination, jobReport, cancellationToken, overwrite, !statusDialog);
             });
     }
 
@@ -121,7 +121,7 @@ public sealed class JobSessionRunner
     /// Runs a batch restore session with shared lifecycle orchestration, overwrite carry-forward,
     /// exception aggregation, and final-state reporting.
     /// </summary>
-    public async Task<SingleBackupSessionResult> RunBatchRestoreAsync(
+    public async Task<JobSessionResult> RunBatchRestoreAsync(
         string version,
         IReadOnlyList<string> files,
         string destination,
@@ -141,7 +141,7 @@ public sealed class JobSessionRunner
             async (jobReport, cancellationToken, index) =>
             {
                 var file = files[index];
-                await backupService.StartRestore(version, file, destination, ref jobReport, cancellationToken, overwrite, !statusDialog);
+                await backupService.StartRestore(version, file, destination, jobReport, cancellationToken, overwrite, !statusDialog);
                 overwrite = presenter.ResolveBatchOverwriteChoice(overwrite);
             });
     }
@@ -149,7 +149,7 @@ public sealed class JobSessionRunner
     /// <summary>
     /// Runs a single delete session with shared session preparation and error handling.
     /// </summary>
-    public async Task<SingleBackupSessionResult> RunSingleDeleteAsync(
+    public async Task<JobSessionResult> RunSingleDeleteAsync(
         string version,
         IJobSessionPresenter presenter,
         bool statusDialog = true)
@@ -161,7 +161,7 @@ public sealed class JobSessionRunner
             requirePassword: false,
             async (jobReport, cancellationToken) =>
             {
-                await backupService.StartDelete(version, ref jobReport, cancellationToken, !statusDialog);
+                await backupService.StartDelete(version, jobReport, cancellationToken, !statusDialog);
             });
     }
 
@@ -169,7 +169,7 @@ public sealed class JobSessionRunner
     /// Runs a batch delete session with shared lifecycle orchestration, exception aggregation,
     /// and final-state reporting.
     /// </summary>
-    public async Task<SingleBackupSessionResult> RunBatchDeleteAsync(
+    public async Task<JobSessionResult> RunBatchDeleteAsync(
         IReadOnlyList<string> versions,
         IJobSessionPresenter presenter,
         bool statusDialog = true)
@@ -185,14 +185,14 @@ public sealed class JobSessionRunner
             async (jobReport, cancellationToken, index) =>
             {
                 var version = versions[index];
-                await backupService.StartDelete(version, ref jobReport, cancellationToken, !statusDialog);
+                await backupService.StartDelete(version, jobReport, cancellationToken, !statusDialog);
             });
     }
 
     /// <summary>
     /// Runs a single delete-single-file session with shared session preparation and error handling.
     /// </summary>
-    public async Task<SingleBackupSessionResult> RunSingleDeleteSingleAsync(
+    public async Task<JobSessionResult> RunSingleDeleteSingleAsync(
         string fileFilter,
         string pathFilter,
         IJobSessionPresenter presenter,
@@ -205,14 +205,14 @@ public sealed class JobSessionRunner
             requirePassword: false,
             async (jobReport, cancellationToken) =>
             {
-                await backupService.StartDeleteSingle(fileFilter, pathFilter, ref jobReport, cancellationToken, !statusDialog);
+                await backupService.StartDeleteSingle(fileFilter, pathFilter, jobReport, cancellationToken, !statusDialog);
             });
     }
 
     /// <summary>
     /// Runs a single modify session with shared session preparation and error handling.
     /// </summary>
-    public async Task<SingleBackupSessionResult> RunSingleModifyAsync(
+    public async Task<JobSessionResult> RunSingleModifyAsync(
         IJobSessionPresenter presenter,
         bool statusDialog = true)
     {
@@ -223,11 +223,11 @@ public sealed class JobSessionRunner
             requirePassword: true,
             async (jobReport, cancellationToken) =>
             {
-                await backupService.StartEdit(ref jobReport, cancellationToken, !statusDialog);
+                await backupService.StartEdit(jobReport, cancellationToken, !statusDialog);
             });
     }
 
-    private async Task<SingleBackupSessionResult> RunSingleOperationAsync(
+    private async Task<JobSessionResult> RunSingleOperationAsync(
         ActionType action,
         IJobSessionPresenter presenter,
         bool statusDialog,
@@ -266,43 +266,20 @@ public sealed class JobSessionRunner
                 jobReport.ReportExceptions(new Collection<FileExceptionEntry> { new() { Exception = ex } }, !statusDialog);
             }
 
-            return new SingleBackupSessionResult()
+            return new JobSessionResult()
             {
                 Started = true,
                 Canceled = cancellationToken.IsCancellationRequested,
                 Failure = JobSessionStartFailure.None
             };
         }
-        catch (TaskRunningException)
+        catch (Exception ex)
         {
-            if (statusDialog)
-            {
-                await presenter.ShowErrorTaskRunningAsync();
-            }
-
-            return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.TaskRunning };
-        }
-        catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
-        {
-            if (statusDialog)
-            {
-                await presenter.ShowErrorDeviceNotReadyAsync();
-            }
-
-            return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.DeviceNotReady };
-        }
-        catch (PasswordRequiredException)
-        {
-            if (statusDialog)
-            {
-                await presenter.ShowErrorPasswordRequiredAsync();
-            }
-
-            return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.PasswordRequired };
+            return await HandleSessionStartFailureAsync(ex, presenter, statusDialog);
         }
     }
 
-    private async Task<SingleBackupSessionResult> RunBatchOperationAsync(
+    private async Task<JobSessionResult> RunBatchOperationAsync(
         ActionType action,
         IJobSessionPresenter presenter,
         bool statusDialog,
@@ -362,40 +339,55 @@ public sealed class JobSessionRunner
                 : (forwardJobReport.HasExceptions ? JobState.ERROR : JobState.FINISHED);
             presenter.ReportState(finalState);
 
-            return new SingleBackupSessionResult()
+            return new JobSessionResult()
             {
                 Started = true,
                 Canceled = cancellationToken.IsCancellationRequested,
                 Failure = JobSessionStartFailure.None
             };
         }
-        catch (TaskRunningException)
+        catch (Exception ex)
+        {
+            return await HandleSessionStartFailureAsync(ex, presenter, statusDialog);
+        }
+    }
+
+    private static async Task<JobSessionResult> HandleSessionStartFailureAsync(
+        Exception exception,
+        IJobSessionPresenter presenter,
+        bool statusDialog)
+    {
+        if (exception is TaskRunningException)
         {
             if (statusDialog)
             {
                 await presenter.ShowErrorTaskRunningAsync();
             }
 
-            return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.TaskRunning };
+            return new JobSessionResult() { Failure = JobSessionStartFailure.TaskRunning };
         }
-        catch (Exception ex) when (ex is DeviceNotReadyException || ex is DeviceContainsWrongStateException)
+
+        if (exception is DeviceNotReadyException or DeviceContainsWrongStateException)
         {
             if (statusDialog)
             {
                 await presenter.ShowErrorDeviceNotReadyAsync();
             }
 
-            return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.DeviceNotReady };
+            return new JobSessionResult() { Failure = JobSessionStartFailure.DeviceNotReady };
         }
-        catch (PasswordRequiredException)
+
+        if (exception is PasswordRequiredException)
         {
             if (statusDialog)
             {
                 await presenter.ShowErrorPasswordRequiredAsync();
             }
 
-            return new SingleBackupSessionResult() { Failure = JobSessionStartFailure.PasswordRequired };
+            return new JobSessionResult() { Failure = JobSessionStartFailure.PasswordRequired };
         }
+
+        throw exception;
     }
 
     public async Task<bool> EnsurePasswordResolvedAsync(IJobSessionPresenter presenter)

@@ -79,7 +79,7 @@ public class DeleteSingleJob : Job
             var fileIds = await versionQueryRepository.GetFileIdsForDeleteSingleAsync(dbClient, fileFilter, pathFilter);
 
             // report progress
-            _logger.Information("{numFiles} files determined for deletion.", fileIds.Count);
+            _logger.Information("{NumFiles} files determined for deletion.", fileIds.Count);
             ReportProgress(fileIds.Count, 0);
 
             foreach (var fileId in fileIds)
@@ -117,7 +117,7 @@ public class DeleteSingleJob : Job
                         },
                             ex);
 
-                        _logger.Error(ex.InnerException, "File {fileName} could not be deleted. {exception}", reader.GetString("fileName"), fileExceptionEntry);
+                        _logger.Error(ex.InnerException, "File {FileName} could not be deleted. {Exception}", reader.GetString("fileName"), fileExceptionEntry);
                     }
 
                 }
@@ -134,7 +134,7 @@ public class DeleteSingleJob : Job
         // report exceptions during job
         if (FileErrorList.Count > 0)
         {
-            _logger.Error("{numFiles} could not be deleted to device.", FileErrorList.Count);
+            _logger.Error("{NumFiles} could not be deleted to device.", FileErrorList.Count);
         }
 
         // refresh free diskspace
@@ -163,49 +163,5 @@ public class DeleteSingleJob : Job
 
         _logger.Information("Deletion of single files successfully.");
         ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
-    }
-
-    /// <summary>
-    /// Deletes a single file from the backup device via the StorageManager.
-    /// </summary>
-    /// <param name="fileName"></param>
-    /// <param name="filePath"></param>
-    /// <param name="longFileName"></param>
-    /// <param name="versionDate"></param>
-    /// <param name="fileType"></param>
-    /// <exception cref="FileNotProcessedException"></exception>
-    private void DeleteFileFromDevice(string fileName, string filePath, string longFileName, string versionDate, string fileType)
-    {
-        // determine remote file name
-        string remoteFile;
-        if ((fileType == "1" || fileType == "2" || fileType == "6") && !string.IsNullOrEmpty(longFileName))
-        {
-            remoteFile = Path.Combine(versionDate, "_LONGFILES_", longFileName);
-        }
-        else
-        {
-            remoteFile = Path.Combine(versionDate + filePath, fileName);
-        }
-
-        // delete file
-        try
-        {
-            if (fileType == "1" || fileType == "3")
-            {
-                storage.DeleteFileFromStorage(remoteFile);
-            }
-            else if (fileType == "2" || fileType == "4")
-            {
-                storage.DeleteFileFromStorageCompressed(remoteFile);
-            }
-            else if (fileType == "5" || fileType == "6")
-            {
-                storage.DeleteFileFromStorageEncrypted(remoteFile);
-            }
-        }
-        catch (Exception ex)
-        {
-            throw new FileNotProcessedException(ex);
-        }
     }
 }

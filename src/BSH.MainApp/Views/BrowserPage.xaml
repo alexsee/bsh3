@@ -224,6 +224,10 @@
                             Command="{x:Bind ViewModel.RestoreFileCommand}" 
                             Icon="Copy" 
                             Label="Restore" />
+                            <AppBarButton 
+                            Command="{x:Bind ViewModel.RestoreFileToCommand}" 
+                            Icon="Folder" 
+                            Label="Restore to…" />
                             <AppBarSeparator />
                             <AppBarButton 
                             Command="{x:Bind ViewModel.ShowFilePreviewCommand}" 
@@ -232,7 +236,7 @@
                             LabelPosition="Collapsed"
                             Width="Auto"
                             MinWidth="40"
-                            Visibility="Collapsed" />
+                            ToolTipService.ToolTip="Quick preview" />
                             <AppBarButton 
                             Command="{x:Bind ViewModel.ShowFilePropertiesCommand}" 
                             Label="Properties"
@@ -265,6 +269,7 @@
                                 <AppBarButton.Flyout>
                                     <MenuFlyout Placement="BottomEdgeAlignedRight">
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllCommand}" Text="Restore all"/>
+                                        <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllToCommand}" Text="Restore all to…"/>
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Text="Add to folder favorites"/>
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteSelectedContentCommand}" Icon="Delete" Text="Delete selected from all backups"/>
                                         <MenuFlyoutSeparator />

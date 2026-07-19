@@ -13,7 +13,7 @@ namespace Brightbits.BSH.Engine;
 
 public class ConfigurationManager : IConfigurationManager
 {
-    private static readonly string[] IntegerBackedProperties = { "Status", "TaskType", "Compression", "Encrypt", "MediumType" };
+    private static readonly string[] IntegerBackedProperties = { "TaskType", "Compression", "Encrypt", "MediumType" };
 
     private readonly IDbClientFactory dbClientFactory;
 
@@ -585,7 +585,7 @@ public class ConfigurationManager : IConfigurationManager
         showWaitOnMediaAutoBackups = "0";
     }
 
-    private async Task<object> LoadConfigurationValueAsync(DbClient dbClient, string propertyName)
+    private static async Task<object> LoadConfigurationValueAsync(DbClient dbClient, string propertyName)
     {
         var parameters = new (string, object)[]
         {

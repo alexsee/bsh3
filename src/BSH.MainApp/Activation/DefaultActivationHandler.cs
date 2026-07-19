@@ -19,15 +19,15 @@ public class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventAr
         _setupRouting = setupRouting;
     }
 
-    protected override bool CanHandleInternal(LaunchActivatedEventArgs args)
+    protected override bool CanHandleInternal(LaunchActivatedEventArgs? args)
     {
         // None of the ActivationHandlers has handled the activation.
         return _navigationService.Frame?.Content == null;
     }
 
-    protected async override Task HandleInternalAsync(LaunchActivatedEventArgs args)
+    protected async override Task HandleInternalAsync(LaunchActivatedEventArgs? args)
     {
-        _setupRouting.NavigateForStartup(args.Arguments);
+        _setupRouting.NavigateForStartup(args?.Arguments);
 
         await Task.CompletedTask;
     }

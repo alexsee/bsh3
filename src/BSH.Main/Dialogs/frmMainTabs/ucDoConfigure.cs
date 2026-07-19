@@ -12,6 +12,7 @@ using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
+using Brightbits.BSH.Engine.Providers.Ports;
 using BSH.Main.Properties;
 
 namespace Brightbits.BSH.Main;
@@ -297,8 +298,8 @@ public partial class ucDoConfigure : IMainTabs
                     // start backup
                     await BackupLogic.StartSystemAsync(true);
 
-                    // create first backup
-                    BackupLogic.BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_FIRST, "", false);
+                    // create first backup (fire-and-forget; balloon notifies the user)
+                    _ = BackupLogic.BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_FIRST, "", false);
                     NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_FIRST_RUN_TITLE, Resources.INFO_BACKUP_FIRST_RUN_TEXT, ToolTipIcon.Info);
                 }
 
@@ -478,7 +479,7 @@ public partial class ucDoConfigure : IMainTabs
                     {
                         // download backup database
                         DeleteCurrentDatabaseFile();
-                        using IStorage storage = new FtpStorage(
+                        using IStorageProvider storage = new FtpStorage(
                             txtFTPServer2.Text,
                             int.Parse(txtFTPPort2.Text),
                             txtFTPUser2.Text,

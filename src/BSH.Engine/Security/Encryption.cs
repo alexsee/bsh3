@@ -19,12 +19,13 @@ public class Encryption
             using var InFileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using FileStream OutFileStream = new(targetFile, FileMode.Create);
 
-            var key = new Rfc2898DeriveBytes(password, mKeySalt, 1000, HashAlgorithmName.SHA1);
-            var iv = new Rfc2898DeriveBytes(password, mIVSalt, 1000, HashAlgorithmName.SHA1);
+            // Iteration count must stay at 1000 to remain compatible with existing encrypted backups.
+            var key = Rfc2898DeriveBytes.Pbkdf2(password, mKeySalt, 1000, HashAlgorithmName.SHA1, 32);
+            var iv = Rfc2898DeriveBytes.Pbkdf2(password, mIVSalt, 1000, HashAlgorithmName.SHA1, 16);
 
             var aes = Aes.Create();
 
-            using var CryptStream = new CryptoStream(OutFileStream, aes.CreateEncryptor(key.GetBytes(32), iv.GetBytes(16)), CryptoStreamMode.Write); // 16,24,32
+            using var CryptStream = new CryptoStream(OutFileStream, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write); // 16,24,32
             InFileStream.CopyTo(CryptStream, bufferSize);
 
             return true;
@@ -42,11 +43,12 @@ public class Encryption
             using var InFileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var OutFileStream = new FileStream(targetFile, FileMode.Create);
 
-            var key = new Rfc2898DeriveBytes(password, mKeySalt, 1000, HashAlgorithmName.SHA1);
-            var iv = new Rfc2898DeriveBytes(password, mIVSalt, 1000, HashAlgorithmName.SHA1);
+            // Iteration count must stay at 1000 to remain compatible with existing encrypted backups.
+            var key = Rfc2898DeriveBytes.Pbkdf2(password, mKeySalt, 1000, HashAlgorithmName.SHA1, 32);
+            var iv = Rfc2898DeriveBytes.Pbkdf2(password, mIVSalt, 1000, HashAlgorithmName.SHA1, 16);
 
             var aes = Aes.Create();
-            using var CryptStream = new CryptoStream(OutFileStream, aes.CreateDecryptor(key.GetBytes(32), iv.GetBytes(16)), CryptoStreamMode.Write);
+            using var CryptStream = new CryptoStream(OutFileStream, aes.CreateDecryptor(key, iv), CryptoStreamMode.Write);
 
             InFileStream.CopyTo(CryptStream, bufferSize);
 

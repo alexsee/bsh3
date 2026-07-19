@@ -1,39 +1,31 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using BSH.MainApp.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using Microsoft.Windows.AppNotifications;
 
 namespace BSH.MainApp.Activation;
 
 public class AppNotificationActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
 {
-    public AppNotificationActivationHandler()
+    private readonly IAppNotificationService _notificationService;
+
+    public AppNotificationActivationHandler(IAppNotificationService notificationService)
     {
+        _notificationService = notificationService;
     }
 
-    protected override bool CanHandleInternal(LaunchActivatedEventArgs args)
+    protected override bool CanHandleInternal(LaunchActivatedEventArgs? args)
     {
         return AppInstance.GetCurrent().GetActivatedEventArgs()?.Kind == ExtendedActivationKind.AppNotification;
     }
 
-    protected async override Task HandleInternalAsync(LaunchActivatedEventArgs args)
+    protected override Task HandleInternalAsync(LaunchActivatedEventArgs? args)
     {
-        // TODO: Handle notification activations.
-
-        //// // Access the AppNotificationActivatedEventArgs.
-        //// var activatedEventArgs = (AppNotificationActivatedEventArgs)AppInstance.GetCurrent().GetActivatedEventArgs().Data;
-
-        //// // Navigate to a specific page based on the notification arguments.
-        //// if (_notificationService.ParseArguments(activatedEventArgs.Argument)["action"] == "Settings")
-        //// {
-        ////     // Queue navigation with low priority to allow the UI to initialize.
-        ////     App.MainWindow.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
-        ////     {
-        ////         _navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
-        ////     });
-        //// }
-
-        await Task.CompletedTask;
+        var argument = (AppInstance.GetCurrent().GetActivatedEventArgs()?.Data as AppNotificationActivatedEventArgs)?.Argument;
+        _notificationService.Activate(argument);
+        return Task.CompletedTask;
     }
 }

@@ -15,7 +15,7 @@ using Serilog;
 
 namespace Brightbits.BSH.Engine.Storage;
 
-public class FileSystemStorage : Storage, IStorage
+public class FileSystemStorage : Storage, IStorageProvider
 {
     private static readonly ILogger _logger = Log.ForContext<FileSystemStorage>();
 
@@ -47,26 +47,6 @@ public class FileSystemStorage : Storage, IStorage
         this.networkPassword = configurationManager.UNCPassword;
 
         networkStorage = !string.IsNullOrEmpty(this.networkUserName);
-    }
-
-    public FileSystemStorage(IConfigurationManager configurationManager,
-        string backupFolder,
-        string volumeSerialNumber,
-        int currentStorageVersion,
-        string networkUserName,
-        string networkPassword,
-        int compressionLevel)
-    {
-        ArgumentNullException.ThrowIfNull(configurationManager);
-
-        this.configurationManager = configurationManager;
-        this.backupFolder = backupFolder;
-        this.volumeSerialNumber = volumeSerialNumber;
-        this.currentStorageVersion = currentStorageVersion;
-        this.networkUserName = networkUserName;
-        this.networkPassword = networkPassword;
-
-        networkStorage = !string.IsNullOrEmpty(networkUserName);
     }
 
     public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
@@ -117,7 +97,7 @@ public class FileSystemStorage : Storage, IStorage
 
     private async Task<bool> TryFindMovedMediumAsync()
     {
-        _logger.Information("Medium directory {directoryName} not found; searching for device with corresponding serial number.", backupFolder);
+        _logger.Information("Medium directory {DirectoryName} not found; searching for device with corresponding serial number.", backupFolder);
 
         if (string.IsNullOrEmpty(volumeSerialNumber))
         {
@@ -155,7 +135,7 @@ public class FileSystemStorage : Storage, IStorage
                 return false;
             }
 
-            _logger.Information("Drive letter updated with the serial number {volumeSerialNumber} at {driveLetter}.",
+            _logger.Information("Drive letter updated with the serial number {VolumeSerialNumber} at {DriveLetter}.",
                 volumeSerialNumber, drive.RootDirectory.FullName);
 
             var newBackupFolder = drive.RootDirectory.FullName[..1] + configurationManager.BackupFolder[1..];

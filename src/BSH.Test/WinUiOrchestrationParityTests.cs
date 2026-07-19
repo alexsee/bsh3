@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
@@ -252,6 +251,7 @@ public class WinUiOrchestrationParityTests
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
         Assert.That(notifications.Payloads[0], Does.Contain("Not enough disk space"));
+        Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=settings\""));
     }
 
     [Test]
@@ -280,11 +280,12 @@ public class WinUiOrchestrationParityTests
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
         Assert.That(notifications.Payloads[0], Does.Contain("Backup outdated"));
+        Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=overview\""));
     }
 
-    [TestCase(JobState.FINISHED, "Backup successful")]
-    [TestCase(JobState.ERROR, "Backup with errors finished")]
-    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitle)
+    [TestCase(JobState.FINISHED, "Backup successful", "action=overview")]
+    [TestCase(JobState.ERROR, "Backup with errors finished", "action=backupResult")]
+    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitle, string expectedLaunch)
     {
         var notifications = new TestNotificationService();
         var configurationManager = new FakeConfigurationManager
@@ -301,6 +302,7 @@ public class WinUiOrchestrationParityTests
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
         Assert.That(notifications.Payloads[0], Does.Contain(expectedTitle));
+        Assert.That(notifications.Payloads[0], Does.Contain($"launch=\"{expectedLaunch}\""));
     }
 
     [Test]
@@ -420,7 +422,7 @@ public class WinUiOrchestrationParityTests
         public List<string> Payloads { get; } = new();
 
         public void Initialize() { }
-        public NameValueCollection ParseArguments(string arguments) => new();
+        public void Activate(string? arguments) { }
         public bool Show(string payload)
         {
             Payloads.Add(payload);
@@ -468,11 +470,11 @@ public class WinUiOrchestrationParityTests
         public void SetPassword(string password) { }
         public Task SetStableAsync(string version, bool stable) => Task.CompletedTask;
         public Task UpdateVersionAsync(string version, VersionDetails versionDetails) => Task.CompletedTask;
-        public Task StartBackup(string title, string description, ref IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false) => Task.CompletedTask;
-        public Task StartDelete(string version, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartEdit(ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartRestore(string version, string file, string destination, ref IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => Task.CompletedTask;
+        public Task StartBackup(string title, string description, IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false) => Task.CompletedTask;
+        public Task StartDelete(string version, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
+        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
+        public Task StartEdit(IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
+        public Task StartRestore(string version, string file, string destination, IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => Task.CompletedTask;
         public void UpdateDatabaseFile(string databaseFile) { }
     }
 
@@ -498,5 +500,6 @@ public class WinUiOrchestrationParityTests
         public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.None);
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
         public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
+        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 }

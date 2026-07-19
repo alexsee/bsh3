@@ -11,39 +11,28 @@ static class ExceptionController
 {
     public static void HandleGlobalException(object sender, System.Threading.ThreadExceptionEventArgs e)
     {
-        Log.Error(e.Exception, "An unexpected error occurred {msg}.", e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString());
-
-        using var dlgException = new frmError();
-        dlgException.txtError.Text = e.Exception.Message.ToString() + "\r\n" + e.Exception.StackTrace.ToString();
-
-        var DialogRes = dlgException.ShowDialog();
-        if (DialogRes == DialogResult.Cancel)
-        {
-            Application.Exit();
-            Environment.Exit(0);
-        }
-        else if (DialogRes == DialogResult.Retry)
-        {
-            Application.Restart();
-            Environment.Exit(0);
-        }
+        ShowFatalError(e.Exception);
     }
 
     public static void HandleGlobalException(object sender, UnhandledExceptionEventArgs e)
     {
-        var exception = (Exception)e.ExceptionObject;
-        Log.Error(exception, "An unexpected error occurred {msg}.", exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString());
+        ShowFatalError((Exception)e.ExceptionObject);
+    }
+
+    private static void ShowFatalError(Exception exception)
+    {
+        Log.Error(exception, "An unexpected error occurred {Msg}.", exception.Message + "\r\n" + exception.StackTrace);
 
         using var dlgException = new frmError();
-        dlgException.txtError.Text = exception.Message.ToString() + "\r\n" + exception.StackTrace.ToString();
+        dlgException.txtError.Text = exception.Message + "\r\n" + exception.StackTrace;
 
-        var DialogRes = dlgException.ShowDialog();
-        if (DialogRes == DialogResult.Cancel)
+        var dialogResult = dlgException.ShowDialog();
+        if (dialogResult == DialogResult.Cancel)
         {
             Application.Exit();
             Environment.Exit(0);
         }
-        else if (DialogRes == DialogResult.Retry)
+        else if (dialogResult == DialogResult.Retry)
         {
             Application.Restart();
             Environment.Exit(0);

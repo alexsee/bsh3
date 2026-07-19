@@ -8,7 +8,7 @@ namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class WaitForMediumViewModel : ObservableObject
 {
-    public event OnCancelRequestedEventHandler OnCancelRequested;
+    public event OnCancelRequestedEventHandler? OnCancelRequested;
 
     public delegate void OnCancelRequestedEventHandler();
 

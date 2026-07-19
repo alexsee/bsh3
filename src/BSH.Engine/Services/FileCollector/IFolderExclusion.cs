@@ -33,13 +33,13 @@ public class PathFolderExclusion(IConfigurationManager configurationManager) : I
             // check if source folder (for drive backup)
             if (("\\" + Path.GetFileName(directory.FullName) + "\\").StartsWith(entry + "\\", StringComparison.OrdinalIgnoreCase))
             {
-                _logger.Debug("{folderName} was ignored due to root folder path filter.", directory.FullName);
+                _logger.Debug("{FolderName} was ignored due to root folder path filter.", directory.FullName);
                 return true;
             }
 
             if (("\\" + Path.Combine(Path.GetFileName(root), IOUtils.GetRelativeFolder(directory.FullName, root)) + "\\").StartsWith(entry + "\\", StringComparison.OrdinalIgnoreCase))
             {
-                _logger.Debug("{folderName} was ignored due to folder path filter.", directory.FullName);
+                _logger.Debug("{FolderName} was ignored due to folder path filter.", directory.FullName);
                 return true;
             }
         }
@@ -60,11 +60,11 @@ public class MaskFolderExclusion(IConfigurationManager configurationManager) : I
             return false;
         }
 
-        _regexExcludeCache ??= new Regex(configurationManager.ExcludeMask, RegexOptions.Compiled & RegexOptions.Singleline, TimeSpan.FromSeconds(10));
+        _regexExcludeCache ??= new Regex(configurationManager.ExcludeMask, RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(10));
 
         if (_regexExcludeCache.IsMatch(directory.FullName))
         {
-            _logger.Debug("{folderName} was ignored due to regex path filter.", directory.FullName);
+            _logger.Debug("{FolderName} was ignored due to regex path filter.", directory.FullName);
             return true;
         }
 

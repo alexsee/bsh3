@@ -3,7 +3,6 @@
 
 using System;
 using System.Data;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -19,7 +18,7 @@ using Serilog;
 namespace Brightbits.BSH.Engine.Jobs;
 
 /// <summary>
-/// Class for the restore task
+/// Deletes an entire backup version from storage and the database.
 /// </summary>
 public class DeleteJob : Job
 {
@@ -86,7 +85,7 @@ public class DeleteJob : Job
             using var files = versionQueryRepository.GetFilesToDeleteForVersion(dbClient, version);
 
             // report progress
-            _logger.Information("{numFiles} files determined for deletion.", files.Tables[0].Rows.Count);
+            _logger.Information("{NumFiles} files determined for deletion.", files.Tables[0].Rows.Count);
 
             ReportProgress(files.Tables[0].Rows.Count, 0);
             ReportStatus(Resources.STATUS_DELETE_REMOVE_SHORT, Resources.STATUS_DELETE_REMOVE_TEXT);
@@ -114,7 +113,7 @@ public class DeleteJob : Job
                     // file not deleted
                     var fileExceptionEntry = AddFileErrorToList(file["versionDate"].ToString(), new FileTableRow() { FileName = file["fileName"].ToString(), FilePath = file["filePath"].ToString() }, ex);
 
-                    _logger.Error(ex.InnerException, "File {fileName} could not be deleted. {exception}", file["fileName"].ToString(), fileExceptionEntry);
+                    _logger.Error(ex.InnerException, "File {FileName} could not be deleted. {Exception}", file["fileName"].ToString(), fileExceptionEntry);
                 }
 
                 // update database
@@ -130,7 +129,7 @@ public class DeleteJob : Job
         // report exceptions during job
         if (FileErrorList.Count > 0)
         {
-            _logger.Error("{numFiles} could not be deleted to device.", FileErrorList.Count);
+            _logger.Error("{NumFiles} could not be deleted to device.", FileErrorList.Count);
         }
 
         // refresh free diskspace
@@ -196,51 +195,7 @@ public class DeleteJob : Job
             ReportExceptions(FileErrorList);
         }
 
-        _logger.Information("Deletion of backup {version} successfully.", Version);
+        _logger.Information("Deletion of backup {Version} successfully.", Version);
         ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
-    }
-
-    /// <summary>
-    /// Deletes a single file from the backup device via the StorageManager.
-    /// </summary>
-    /// <param name="fileName"></param>
-    /// <param name="filePath"></param>
-    /// <param name="longFileName"></param>
-    /// <param name="versionDate"></param>
-    /// <param name="fileType"></param>
-    /// <exception cref="FileNotProcessedException"></exception>
-    private void DeleteFileFromDevice(string fileName, string filePath, string longFileName, string versionDate, string fileType)
-    {
-        // determine remote file name
-        string remoteFile;
-        if ((fileType == "1" || fileType == "2" || fileType == "6") && !string.IsNullOrEmpty(longFileName))
-        {
-            remoteFile = Path.Combine(versionDate, "_LONGFILES_", longFileName);
-        }
-        else
-        {
-            remoteFile = Path.Combine(versionDate + filePath, fileName);
-        }
-
-        // delete file
-        try
-        {
-            if (fileType == "1" || fileType == "3")
-            {
-                storage.DeleteFileFromStorage(remoteFile);
-            }
-            else if (fileType == "2" || fileType == "4")
-            {
-                storage.DeleteFileFromStorageCompressed(remoteFile);
-            }
-            else if (fileType == "5" || fileType == "6")
-            {
-                storage.DeleteFileFromStorageEncrypted(remoteFile);
-            }
-        }
-        catch (Exception ex)
-        {
-            throw new FileNotProcessedException(ex);
-        }
     }
 }

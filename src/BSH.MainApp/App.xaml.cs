@@ -29,7 +29,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Windows.UI.Popups;
 
 namespace BSH.MainApp;
 
@@ -51,6 +53,8 @@ public partial class App : Application
         get; private set;
     }
 
+    private readonly UnhandledExceptionHandler unhandledExceptionHandler;
+
     public static T GetService<T>()
         where T : class
     {
@@ -69,6 +73,10 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
+
+        unhandledExceptionHandler = new UnhandledExceptionHandler(
+            askContinueAsync: AskContinueAfterUnhandledExceptionAsync,
+            exitApplication: ExitAfterUnhandledException);
 
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
@@ -92,9 +100,13 @@ public partial class App : Application
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IStatusService, StatusService>();
             services.AddSingleton<IBrowserFavoritesService, BrowserFavoritesService>();
+            services.AddSingleton<IBrowserViewPreferencesService, BrowserViewPreferencesService>();
             services.AddSingleton<IBrowserContentService, BrowserContentService>();
             services.AddSingleton<IBrowserDialogService, BrowserDialogService>();
+            services.AddSingleton<IBrowserPreviewService, BrowserPreviewService>();
+            services.AddSingleton<ISmartPreviewHost, SmartPreviewHost>();
             services.AddSingleton<IBackupTargetService, BackupTargetService>();
+            services.AddSingleton<ISwitchStorageService, SwitchStorageService>();
             services.AddSingleton<IPowerStatusService, PowerStatusService>();
             services.AddTransient<IWaitForMediaService, WaitForMediaService>();
             services.AddSingleton<Func<IWaitForMediaService>>(x => () => x.GetRequiredService<IWaitForMediaService>());
@@ -142,6 +154,7 @@ public partial class App : Application
 
             services.AddTransient<FilterViewModel>();
             services.AddTransient<ScheduleEditorViewModel>();
+            services.AddTransient<SwitchStorageViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
@@ -151,12 +164,57 @@ public partial class App : Application
         App.GetService<IAppNotificationService>().Initialize();
 
         UnhandledException += App_UnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
     }
 
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-        // TODO: Log and handle exceptions as appropriate.
-        // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
+        // Keep the process alive so we can log and surface the error instead of exiting silently.
+        e.Handled = true;
+        _ = unhandledExceptionHandler.HandleAsync(e.Exception, e.Message);
+    }
+
+    private void CurrentDomain_UnhandledException(object sender, System.UnhandledExceptionEventArgs e)
+    {
+        var exception = e.ExceptionObject as Exception;
+        if (e.IsTerminating)
+        {
+            unhandledExceptionHandler.HandleTerminating(exception);
+            return;
+        }
+
+        _ = unhandledExceptionHandler.HandleAsync(exception);
+    }
+
+    private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+    {
+        e.SetObserved();
+        _ = unhandledExceptionHandler.HandleAsync(e.Exception);
+    }
+
+    private static async Task<bool> AskContinueAfterUnhandledExceptionAsync(string title, string content)
+    {
+        var result = await GetService<IPresentationService>().ShowMessageBoxAsync(
+            title,
+            content,
+            [new UICommand("Continue"), new UICommand("Exit")]);
+
+        return result == ContentDialogResult.Primary;
+    }
+
+    private static void ExitAfterUnhandledException()
+    {
+        try
+        {
+            GetService<IOrchestrationService>().StopAsync().GetAwaiter().GetResult();
+        }
+        catch
+        {
+            // Best-effort shutdown before forced exit.
+        }
+
+        ExitApplication();
     }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)

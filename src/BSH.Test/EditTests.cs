@@ -158,7 +158,7 @@ public class EditTests
             $"INSERT INTO filelink (fileversionID, versionID) VALUES ({fileVersionId}, {versionId})");
     }
 
-    private sealed class RecordingEditStorage : IStorage
+    private sealed class RecordingEditStorage : IStorageProvider
     {
         private readonly HashSet<string> filesToFail;
 

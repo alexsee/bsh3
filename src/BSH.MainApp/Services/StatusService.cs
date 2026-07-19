@@ -35,12 +35,12 @@ public class StatusService : IJobReport, IStatusService
     public string LastStatusTitle
     {
         get; set;
-    }
+    } = string.Empty;
 
     public string LastStatusText
     {
         get; set;
-    }
+    } = string.Empty;
 
     public int LastProgressTotal
     {
@@ -55,12 +55,12 @@ public class StatusService : IJobReport, IStatusService
     public string LastFileProgress
     {
         get; set;
-    }
+    } = string.Empty;
 
     public Collection<FileExceptionEntry> LastFilesException
     {
         get; set;
-    }
+    } = [];
 
     public RequestOverwriteResult LastFileOverwriteChoice => lastFileOverwriteChoice;
 
@@ -116,11 +116,17 @@ public class StatusService : IJobReport, IStatusService
 
         if (jobState == JobState.FINISHED)
         {
-            ShowNotification("Backup successful", "Planned backup was performed successfully.");
+            ShowNotification(
+                "Backup successful",
+                "Planned backup was performed successfully.",
+                ToastNotificationActivation.ActionOverview);
         }
         else if (jobState == JobState.ERROR)
         {
-            ShowNotification("Backup with errors finished", "The planned backup was ended with problems. Click here for more information.");
+            ShowNotification(
+                "Backup with errors finished",
+                "The planned backup was ended with problems. Click here for more information.",
+                ToastNotificationActivation.ActionBackupResult);
         }
     }
 
@@ -200,8 +206,8 @@ public class StatusService : IJobReport, IStatusService
         await this.presentationService.ShowErrorInsufficientDiskSpaceAsync();
     }
 
-    private void ShowNotification(string title, string text)
+    private void ShowNotification(string title, string text, string action)
     {
-        appNotificationService?.Show(ToastNotificationPayload.Create(title, text));
+        appNotificationService?.Show(ToastNotificationPayload.Create(title, text, action));
     }
 }

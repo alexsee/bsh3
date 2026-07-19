@@ -185,7 +185,8 @@ public class OrchestrationService : IOrchestrationService
         {
             appNotificationService.Show(ToastNotificationPayload.Create(
                 "Not enough disk space.",
-                "There is not enough storage space left on the backup medium. Delete backups or switch to a new medium."));
+                "There is not enough storage space left on the backup medium. Delete backups or switch to a new medium.",
+                ToastNotificationActivation.ActionSettings));
         }
     }
 
@@ -207,6 +208,7 @@ public class OrchestrationService : IOrchestrationService
         var days = DateTime.Now.Subtract(lastBackup.CreationDate).Days;
         appNotificationService.Show(ToastNotificationPayload.Create(
             "Backup outdated",
-            $"Your last data backup is already {days} days old. Perform a data backup to ensure your current files are backed up."));
+            $"Your last data backup is already {days} days old. Perform a data backup to ensure your current files are backed up.",
+            ToastNotificationActivation.ActionOverview));
     }
 }

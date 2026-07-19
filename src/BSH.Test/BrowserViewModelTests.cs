@@ -104,14 +104,184 @@ public class BrowserViewModelTests
         Assert.That(queryManager.GetVersionsCallCount, Is.GreaterThanOrEqualTo(1));
     }
 
+    [Test]
+    public void ShowFilePreviewCommand_IsEnabledOnlyForFileSelections()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.CurrentVersion = Version("2");
+
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "docs", FullPath = @"\source\docs\", IsFile = false };
+        Assert.That(viewModel.ShowFilePreviewCommand.CanExecute(null), Is.False);
+
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+        Assert.That(viewModel.ShowFilePreviewCommand.CanExecute(null), Is.True);
+    }
+
+    [Test]
+    public async Task ShowFilePreviewCommand_DelegatesToPreviewServiceForSelectedFile()
+    {
+        var previewService = new BrowserPreviewServiceFake();
+        var viewModel = CreateViewModel(previewService: previewService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+        await viewModel.ShowFilePreviewCommand.ExecuteAsync(null);
+
+        Assert.That(previewService.PreviewCalls.Single(), Is.EqualTo(("2", "report.txt", @"\source\docs\")));
+    }
+
+    [Test]
+    public void ToggleInfoPaneDefaultsToHiddenWhenNoPreferenceSaved()
+    {
+        var viewModel = CreateViewModel();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.False);
+    }
+
+    [Test]
+    public async Task ToggleInfoPaneChangePersistsPreference()
+    {
+        var preferences = new BrowserViewPreferencesService(new MemoryLocalSettingsService());
+        var viewModel = CreateViewModel(viewPreferencesService: preferences);
+
+        viewModel.ToggleInfoPane = true;
+
+        Assert.That(await preferences.GetInfoPaneVisibleAsync(), Is.True);
+
+        viewModel.ToggleInfoPane = false;
+
+        Assert.That(await preferences.GetInfoPaneVisibleAsync(), Is.False);
+    }
+
+    [Test]
+    public async Task LoadViewPreferencesRestoresPersistedInfoPanePreference()
+    {
+        var settings = new MemoryLocalSettingsService();
+        await settings.SaveSettingAsync(BrowserViewPreferencesService.InfoPaneVisibleSettingsKey, true);
+        var preferences = new BrowserViewPreferencesService(settings);
+        var viewModel = CreateViewModel(viewPreferencesService: preferences);
+
+        await viewModel.LoadViewPreferencesAsync();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.True);
+    }
+
+    [Test]
+    public async Task LoadViewPreferencesLeavesDefaultWhenSettingsReadFails()
+    {
+        var viewModel = CreateViewModel(viewPreferencesService: new FailingBrowserViewPreferencesService());
+
+        await viewModel.LoadViewPreferencesAsync();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.False);
+    }
+
+    [Test]
+    public async Task ToggleInfoPaneChangeIgnoresPersistenceFailures()
+    {
+        var viewModel = CreateViewModel(viewPreferencesService: new FailingBrowserViewPreferencesService());
+
+        Assert.DoesNotThrow(() => viewModel.ToggleInfoPane = true);
+        await Task.Yield();
+
+        Assert.That(viewModel.ToggleInfoPane, Is.True);
+    }
+
+    [Test]
+    public async Task RestoreFileCommand_RestoresSelectedFileToOriginalPath()
+    {
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+        await viewModel.RestoreFileCommand.ExecuteAsync(null);
+
+        Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\report.txt", "")));
+    }
+
+    [Test]
+    public async Task RestoreFileToCommand_PassesChosenDestinationFolder()
+    {
+        var dialogService = new BrowserDialogService { DestinationFolder = @"D:\RestoreHere" };
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+        await viewModel.RestoreFileToCommand.ExecuteAsync(null);
+
+        Assert.That(dialogService.DestinationPickerPrompted, Is.True);
+        Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\report.txt", @"D:\RestoreHere")));
+    }
+
+    [Test]
+    public async Task RestoreFileToCommand_CancelsWhenDestinationPickerIsCancelled()
+    {
+        var dialogService = new BrowserDialogService { DestinationFolder = null };
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+        await viewModel.RestoreFileToCommand.ExecuteAsync(null);
+
+        Assert.That(dialogService.DestinationPickerPrompted, Is.True);
+        Assert.That(jobService.RestoreCalls, Is.Empty);
+    }
+
+    [Test]
+    public async Task RestoreAllToCommand_PassesChosenDestinationForCurrentFolder()
+    {
+        var dialogService = new BrowserDialogService { DestinationFolder = @"D:\RestoreHere" };
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
+        viewModel.CurrentVersion = Version("2");
+        // Production BrowserContentService stores slash-stripped folder paths.
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = @"source\docs", IsFile = false });
+
+        await viewModel.RestoreAllToCommand.ExecuteAsync(null);
+
+        Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\", @"D:\RestoreHere")));
+    }
+
+    [Test]
+    public async Task RestoreFileCommand_NormalizesSelectedFolderPathForRestoreJob()
+    {
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "docs", FullPath = @"source\docs", IsFile = false };
+
+        await viewModel.RestoreFileCommand.ExecuteAsync(null);
+
+        Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\", "")));
+    }
+
+    [Test]
+    public async Task RestoreAllCommand_NormalizesCurrentFolderPathForRestoreJob()
+    {
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = @"source\docs", IsFile = false });
+
+        await viewModel.RestoreAllCommand.ExecuteAsync(null);
+
+        Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\", "")));
+    }
+
     private static BrowserViewModel CreateViewModel(
         BrowserQueryManager? queryManager = null,
         BrowserJobService? jobService = null,
         BrowserDialogService? browserDialogService = null,
-        BrowserFavoritesService? favoritesService = null)
+        BrowserFavoritesService? favoritesService = null,
+        BrowserPreviewServiceFake? previewService = null,
+        IBrowserViewPreferencesService? viewPreferencesService = null)
     {
         queryManager ??= new BrowserQueryManager();
         favoritesService ??= new BrowserFavoritesService(new MemoryLocalSettingsService());
+        viewPreferencesService ??= new BrowserViewPreferencesService(new MemoryLocalSettingsService());
 
         return new BrowserViewModel(
             queryManager,
@@ -119,7 +289,9 @@ public class BrowserViewModelTests
             new BrowserBackupService(),
             new BrowserPresentationService(),
             new BrowserContentService(queryManager, favoritesService),
-            browserDialogService ?? new BrowserDialogService());
+            browserDialogService ?? new BrowserDialogService(),
+            previewService ?? new BrowserPreviewServiceFake(),
+            viewPreferencesService);
     }
 
     private static VersionDetails Version(string id) => new()
@@ -177,6 +349,7 @@ public class BrowserViewModelTests
     {
         public List<(string FileFilter, string FolderFilter)> DeleteSingleCalls { get; } = [];
         public List<List<string>> DeleteBackupsCalls { get; } = [];
+        public List<(string Version, string File, string Destination)> RestoreCalls { get; } = [];
         public bool IsCancellationRequested => false;
         public void Cancel() { }
         public Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(true);
@@ -186,8 +359,22 @@ public class BrowserViewModelTests
         public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true) { DeleteSingleCalls.Add((fileFilter, folderFilter)); return Task.CompletedTask; }
         public CancellationToken GetNewCancellationToken() => CancellationToken.None;
         public Task<bool> RequestPassword() => Task.FromResult(true);
-        public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true) => Task.CompletedTask;
-        public Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true) => Task.CompletedTask;
+        public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true)
+        {
+            foreach (var file in files)
+            {
+                RestoreCalls.Add((version, file, destination));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true)
+        {
+            RestoreCalls.Add((version, file, destination));
+            return Task.CompletedTask;
+        }
+
         public Task ModifyBackupAsync(bool statusDialog = true) => Task.CompletedTask;
     }
 
@@ -199,11 +386,11 @@ public class BrowserViewModelTests
         public void SetPassword(string password) { }
         public Task SetStableAsync(string version, bool stable) => Task.CompletedTask;
         public Task UpdateVersionAsync(string version, VersionDetails versionDetails) => Task.CompletedTask;
-        public Task StartBackup(string title, string description, ref IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false) => Task.CompletedTask;
-        public Task StartDelete(string version, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartEdit(ref IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartRestore(string version, string file, string destination, ref IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => Task.CompletedTask;
+        public Task StartBackup(string title, string description, IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false) => Task.CompletedTask;
+        public Task StartDelete(string version, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
+        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
+        public Task StartEdit(IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
+        public Task StartRestore(string version, string file, string destination, IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => Task.CompletedTask;
         public void UpdateDatabaseFile(string databaseFile) { }
     }
 
@@ -213,11 +400,29 @@ public class BrowserViewModelTests
         public bool SelectedContentDeletePrompted { get; private set; }
         public IReadOnlyList<string>? VersionsSelectedForDelete { get; set; }
         public IReadOnlyList<string> MultiDeletePromptedVersions { get; private set; } = [];
+        public string? DestinationFolder { get; set; }
+        public bool DestinationPickerPrompted { get; private set; }
 
         public Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item) { SelectedContentDeletePrompted = true; return Task.FromResult(ConfirmSelectedContentDelete); }
         public Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions) { MultiDeletePromptedVersions = versions.Select(x => x.Id).ToList(); return Task.FromResult(VersionsSelectedForDelete ?? []); }
         public Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite) => Task.FromResult<string?>(favorite.Name);
         public Task ShowFileDetailsAsync(FileDetails fileDetails) => Task.CompletedTask;
+        public Task<string?> PickRestoreDestinationFolderAsync()
+        {
+            DestinationPickerPrompted = true;
+            return Task.FromResult(DestinationFolder);
+        }
+    }
+
+    private sealed class BrowserPreviewServiceFake : IBrowserPreviewService
+    {
+        public List<(string VersionId, string FileName, string FilePath)> PreviewCalls { get; } = [];
+
+        public Task PreviewFileAsync(string versionId, string fileName, string filePath)
+        {
+            PreviewCalls.Add((versionId, fileName, filePath));
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class BrowserPresentationService : IPresentationService
@@ -242,6 +447,7 @@ public class BrowserViewModelTests
         public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.None);
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
         public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
+        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 
     private sealed class MemoryLocalSettingsService : ILocalSettingsService
@@ -263,5 +469,12 @@ public class BrowserViewModelTests
             settings[key] = value;
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class FailingBrowserViewPreferencesService : IBrowserViewPreferencesService
+    {
+        public Task<bool> GetInfoPaneVisibleAsync() => throw new InvalidOperationException("settings unavailable");
+
+        public Task SetInfoPaneVisibleAsync(bool visible) => throw new InvalidOperationException("settings unavailable");
     }
 }

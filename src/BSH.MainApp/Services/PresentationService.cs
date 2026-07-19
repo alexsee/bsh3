@@ -357,4 +357,13 @@ public class PresentationService : IPresentationService
             await dialog.ShowDialogAsync();
         });
     }
+
+    public async Task<bool> ShowSwitchStorageWindowAsync()
+    {
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            var dialog = new SwitchStorageWindow();
+            return await dialog.ShowDialogAsync(App.DatabaseFile);
+        });
+    }
 }
