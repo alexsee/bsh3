@@ -7,9 +7,9 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;
 

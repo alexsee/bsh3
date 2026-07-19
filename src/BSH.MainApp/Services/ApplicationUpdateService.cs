@@ -5,8 +5,8 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using AutoUpdaterDotNET;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using Windows.UI.Popups;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 

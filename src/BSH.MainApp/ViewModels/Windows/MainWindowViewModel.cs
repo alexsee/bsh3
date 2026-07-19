@@ -4,10 +4,10 @@
 using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;
 

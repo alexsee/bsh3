@@ -3,7 +3,6 @@
 
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
@@ -37,10 +36,10 @@ public class BrowserDialogService : IBrowserDialogService
             var dialog = new ContentDialog
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
-                Title = ResourceExtensions.GetLocalized("Browser_DeleteBackups_Title"),
+                Title = "Browser_DeleteBackups_Title".GetLocalized(),
                 Content = versionList,
-                PrimaryButtonText = ResourceExtensions.GetLocalized("MsgBox_Delete"),
-                CloseButtonText = ResourceExtensions.GetLocalized("MsgBox_Cancel"),
+                PrimaryButtonText = "MsgBox_Delete".GetLocalized(),
+                CloseButtonText = "MsgBox_Cancel".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
             };
 
@@ -59,10 +58,10 @@ public class BrowserDialogService : IBrowserDialogService
             var confirmDialog = new ContentDialog
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
-                Title = ResourceExtensions.GetLocalized("Browser_DeleteBackups_Title"),
-                Content = new TextBlock { Text = ResourceExtensions.GetLocalized("Browser_DeleteBackups_Confirm") },
-                PrimaryButtonText = ResourceExtensions.GetLocalized("MsgBox_Yes"),
-                CloseButtonText = ResourceExtensions.GetLocalized("MsgBox_No")
+                Title = "Browser_DeleteBackups_Title".GetLocalized(),
+                Content = new TextBlock { Text = "Browser_DeleteBackups_Confirm".GetLocalized() },
+                PrimaryButtonText = "MsgBox_Yes".GetLocalized(),
+                CloseButtonText = "MsgBox_No".GetLocalized()
             };
 
             return await confirmDialog.ShowAsync() == ContentDialogResult.Primary ? selected : Array.Empty<string>();
@@ -71,11 +70,11 @@ public class BrowserDialogService : IBrowserDialogService
 
     public async Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item)
     {
-        var itemType = item.IsFile ? ResourceExtensions.GetLocalized("Browser_DeleteFromAll_File") : ResourceExtensions.GetLocalized("Browser_DeleteFromAll_Folder");
+        var itemType = item.IsFile ? "Browser_DeleteFromAll_File".GetLocalized() : "Browser_DeleteFromAll_Folder".GetLocalized();
         var messageBoxResult = await presentationService.ShowMessageBoxAsync(
-            ResourceExtensions.GetLocalized("Browser_DeleteFromAll_Title"),
-            string.Format(ResourceExtensions.GetLocalized("Browser_DeleteFromAll_Confirm"), itemType),
-            new List<IUICommand> { new UICommand(ResourceExtensions.GetLocalized("MsgBox_Yes")), new UICommand(ResourceExtensions.GetLocalized("MsgBox_No")) });
+            "Browser_DeleteFromAll_Title".GetLocalized(),
+            string.Format("Browser_DeleteFromAll_Confirm".GetLocalized() ?? "Browser_DeleteFromAll_Confirm", itemType),
+            new List<IUICommand> { new UICommand("MsgBox_Yes".GetLocalized()), new UICommand("MsgBox_No".GetLocalized()) });
         return messageBoxResult == ContentDialogResult.Primary;
     }
 
@@ -86,17 +85,17 @@ public class BrowserDialogService : IBrowserDialogService
             var nameBox = new TextBox
             {
                 Text = favorite.Name,
-                Header = ResourceExtensions.GetLocalized("Browser_Column_Name"),
+                Header = "Browser_Column_Name".GetLocalized(),
                 MinWidth = 320
             };
 
             var dialog = new ContentDialog
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
-                Title = ResourceExtensions.GetLocalized("Browser_RenameFavorite_Title"),
+                Title = "Browser_RenameFavorite_Title".GetLocalized(),
                 Content = nameBox,
-                PrimaryButtonText = ResourceExtensions.GetLocalized("MsgBox_Rename"),
-                CloseButtonText = ResourceExtensions.GetLocalized("MsgBox_Cancel"),
+                PrimaryButtonText = "MsgBox_Rename".GetLocalized(),
+                CloseButtonText = "MsgBox_Cancel".GetLocalized(),
                 DefaultButton = ContentDialogButton.Primary
             };
 
@@ -113,7 +112,7 @@ public class BrowserDialogService : IBrowserDialogService
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
                 Title = fileDetails.Name,
-                CloseButtonText = ResourceExtensions.GetLocalized("MsgBox_Close"),
+                CloseButtonText = "MsgBox_Close".GetLocalized(),
                 Content = BuildFileDetailsContent(fileDetails)
             };
 
@@ -147,9 +146,9 @@ public class BrowserDialogService : IBrowserDialogService
             if (App.MainWindow?.Content != null)
             {
                 await presentationService.ShowMessageBoxAsync(
-                    ResourceExtensions.GetLocalized("Browser_RestoreDestination_Title"),
-                    string.Format(ResourceExtensions.GetLocalized("Browser_RestoreDestination_PickerFailed"), ex.Message),
-                    [new UICommand(ResourceExtensions.GetLocalized("MsgBox_OK"))]);
+                    "Browser_RestoreDestination_Title".GetLocalized(),
+                    string.Format("Browser_RestoreDestination_PickerFailed".GetLocalized() ?? "Browser_RestoreDestination_PickerFailed", ex.Message),
+                    [new UICommand("MsgBox_OK".GetLocalized())]);
             }
 
             return null;
@@ -167,12 +166,12 @@ public class BrowserDialogService : IBrowserDialogService
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
-        AddDetailsRow(grid, ResourceExtensions.GetLocalized("Browser_FileDetails_RestorePath"), fileDetails.RestorePath);
-        AddDetailsRow(grid, ResourceExtensions.GetLocalized("Browser_FileDetails_Type"), fileDetails.Type);
-        AddDetailsRow(grid, ResourceExtensions.GetLocalized("Browser_Column_Size"), string.Format(ResourceExtensions.GetLocalized("Browser_FileDetails_SizeBytes"), fileDetails.Size.ToString("N0")));
-        AddDetailsRow(grid, ResourceExtensions.GetLocalized("Browser_FileDetails_Created"), fileDetails.Created.ToString("g"));
-        AddDetailsRow(grid, ResourceExtensions.GetLocalized("Browser_FileDetails_Modified"), fileDetails.Modified.ToString("g"));
-        AddDetailsRow(grid, ResourceExtensions.GetLocalized("Browser_FileDetails_AvailableVersions"), string.Join(Environment.NewLine, fileDetails.AvailableVersions.Select(x => $"{x.Id} - {x.CreationDate:g}")));
+        AddDetailsRow(grid, "Browser_FileDetails_RestorePath".GetLocalized(), fileDetails.RestorePath);
+        AddDetailsRow(grid, "Browser_FileDetails_Type".GetLocalized(), fileDetails.Type);
+        AddDetailsRow(grid, "Browser_Column_Size".GetLocalized(), string.Format("Browser_FileDetails_SizeBytes".GetLocalized() ?? "Browser_FileDetails_SizeBytes", fileDetails.Size.ToString("N0")));
+        AddDetailsRow(grid, "Browser_FileDetails_Created".GetLocalized(), fileDetails.Created.ToString("g"));
+        AddDetailsRow(grid, "Browser_FileDetails_Modified".GetLocalized(), fileDetails.Modified.ToString("g"));
+        AddDetailsRow(grid, "Browser_FileDetails_AvailableVersions".GetLocalized(), string.Join(Environment.NewLine, fileDetails.AvailableVersions.Select(x => $"{x.Id} - {x.CreationDate:g}")));
 
         return grid;
     }

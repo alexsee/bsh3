@@ -3,8 +3,8 @@
 
 using Brightbits.BSH.Engine.Contracts;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 
@@ -209,7 +209,7 @@ public class OrchestrationService : IOrchestrationService
         var days = DateTime.Now.Subtract(lastBackup.CreationDate).Days;
         appNotificationService.Show(ToastNotificationPayload.Create(
             "INFO_BACKUP_OLD_TITLE".GetLocalized(),
-            string.Format("INFO_BACKUP_OLD_TEXT".GetLocalized(), days),
+            string.Format("INFO_BACKUP_OLD_TEXT".GetLocalized() ?? "INFO_BACKUP_OLD_TEXT", days),
             ToastNotificationActivation.ActionOverview));
     }
 }

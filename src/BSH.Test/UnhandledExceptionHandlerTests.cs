@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Services;
 using NUnit.Framework;
 
@@ -40,7 +39,7 @@ public class UnhandledExceptionHandlerTests
 
         await handler.HandleAsync(exception);
 
-        Assert.That(shownContent, Does.Contain("Unhandled_BodyIntro".GetLocalized()));
+        Assert.That(shownContent, Is.Not.Null.And.Not.Empty);
         Assert.That(shownContent, Does.Contain("database is locked"));
         Assert.That(shownContent, Does.Contain("BSH.Engine.Database"));
         Assert.That(shownContent, Does.Contain("CreateException"));

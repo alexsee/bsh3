@@ -7,13 +7,13 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.Storage.Pickers;
 using Windows.UI.Popups;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels;
 
@@ -610,7 +610,7 @@ public partial class SetupViewModel : ObservableObject
                     }
                     catch (Exception ex)
                     {
-                        ValidationErrorMessage = string.Format("Setup_Validation_NetworkUnreachableWithError".GetLocalized(), ex.Message);
+                        ValidationErrorMessage = string.Format("Setup_Validation_NetworkUnreachableWithError".GetLocalized() ?? "Setup_Validation_NetworkUnreachableWithError", ex.Message);
                         return false;
                     }
 
@@ -642,7 +642,7 @@ public partial class SetupViewModel : ObservableObject
                 }
                 catch (Exception ex)
                 {
-                    ValidationErrorMessage = string.Format("Setup_Validation_FtpConnectionFailed".GetLocalized(), ex.Message);
+                    ValidationErrorMessage = string.Format("Setup_Validation_FtpConnectionFailed".GetLocalized() ?? "Setup_Validation_FtpConnectionFailed", ex.Message);
                     return false;
                 }
 
@@ -809,7 +809,7 @@ public partial class SetupViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ValidationErrorMessage = string.Format("Setup_Validation_FtpImportFailed".GetLocalized(), ex.Message);
+            ValidationErrorMessage = string.Format("Setup_Validation_FtpImportFailed".GetLocalized() ?? "Setup_Validation_FtpImportFailed", ex.Message);
             CurrentStep = SetupWizardStep.ImportMedia;
         }
         finally
@@ -922,7 +922,7 @@ public partial class SetupViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ValidationErrorMessage = string.Format("Setup_Validation_FolderPickerFailed".GetLocalized(), ex.Message);
+            ValidationErrorMessage = string.Format("Setup_Validation_FolderPickerFailed".GetLocalized() ?? "Setup_Validation_FolderPickerFailed", ex.Message);
             return null;
         }
     }

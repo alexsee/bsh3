@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0.
 
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.ViewModels.Windows;
 using Microsoft.UI.Xaml.Media;
 using WinUIEx;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp;
 

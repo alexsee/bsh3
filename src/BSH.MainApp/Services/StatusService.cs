@@ -8,8 +8,8 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 

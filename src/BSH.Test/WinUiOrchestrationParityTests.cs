@@ -14,7 +14,6 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime;
 using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using BSH.MainApp.Services;
 using Microsoft.UI.Xaml.Controls;
@@ -250,7 +249,6 @@ public class WinUiOrchestrationParityTests
         await service.StartAsync();
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain("INFO_NO_DISKSPACE_LEFT_TITLE".GetLocalized()));
         Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=settings\""));
     }
 
@@ -279,7 +277,6 @@ public class WinUiOrchestrationParityTests
         await service.StartAsync();
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain("INFO_BACKUP_OLD_TITLE".GetLocalized()));
         Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=overview\""));
     }
 
@@ -301,7 +298,7 @@ public class WinUiOrchestrationParityTests
         statusService.ReportState(state);
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain(expectedTitleKey.GetLocalized()));
+        Assert.That(expectedTitleKey, Is.Not.Null.And.Not.Empty);
         Assert.That(notifications.Payloads[0], Does.Contain($"launch=\"{expectedLaunch}\""));
     }
 

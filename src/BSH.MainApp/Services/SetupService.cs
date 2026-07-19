@@ -10,6 +10,7 @@ using Brightbits.BSH.Engine.Security;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 

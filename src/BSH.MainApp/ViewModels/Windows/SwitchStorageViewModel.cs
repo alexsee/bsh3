@@ -5,12 +5,12 @@ using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -196,7 +196,7 @@ public partial class SwitchStorageViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            error = string.Format("SwitchStorage_FtpConnectionFailed".GetLocalized(), ex.Message);
+            error = string.Format("SwitchStorage_FtpConnectionFailed".GetLocalized() ?? "SwitchStorage_FtpConnectionFailed", ex.Message);
             return false;
         }
     }
