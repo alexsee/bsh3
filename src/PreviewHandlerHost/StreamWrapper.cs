@@ -125,7 +125,7 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
         public void Seek(long dlibMove, int dwOrigin, IntPtr plibNewPosition)
         {
             long newPosition = 0;
-            SeekOrigin seekOrigin = SeekOrigin.Begin;
+            SeekOrigin seekOrigin;
 
             try
             {

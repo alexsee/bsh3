@@ -10,7 +10,7 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
     /// and posted about on his blog.  http://blogs.msdn.com/toub/archive/2006/12/14/preview-handler-association-editor.aspx
     /// We made a few minor tweaks for our purposes, but the core of the logic is his.  Thanks to Stephen for sharing this code.
     /// </summary>
-    internal class PreviewHandlerRegistryAccessor
+    internal static class PreviewHandlerRegistryAccessor
     {
         private const string BaseRegistryKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\PreviewHandlers";
         private const string BaseClsIDKey = @"HKEY_CLASSES_ROOT\{0}\shellex\{{8895b1c6-b41f-4c1c-a562-0d564250836f}}";

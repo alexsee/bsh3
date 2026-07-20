@@ -14,7 +14,7 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
     public abstract class PreviewHandler : IPreviewHandler, IPreviewHandlerVisuals, IOleWindow, IObjectWithSite
     {
         private bool _showPreview;
-        private PreviewHandlerControl _previewControl;
+        private readonly PreviewHandlerControl _previewControl;
         private IntPtr _parentHwnd;
         private Rectangle _windowBounds;
         private object _unkSite;

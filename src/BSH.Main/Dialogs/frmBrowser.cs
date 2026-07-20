@@ -371,8 +371,7 @@ public partial class frmBrowser : IStatusReport
                 }
 
                 // determine file details
-                var shFi = new SHFILEINFO();
-                SHGetFileInfo(fileInfo.FullName, 0U, out shFi, (uint)System.Runtime.InteropServices.Marshal.SizeOf(shFi), (uint)SHGFI.SHGFI_TYPENAME);
+                SHGetFileInfo(fileInfo.FullName, 0U, out SHFILEINFO shFi, (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(SHFILEINFO)), (uint)SHGFI.SHGFI_TYPENAME);
                 listViewItem.SubItems[2].Text = shFi.szTypeName;
 
                 // set icon to ListViewItem

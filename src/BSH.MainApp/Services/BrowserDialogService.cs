@@ -143,7 +143,7 @@ public class BrowserDialogService : IBrowserDialogService
         }
         catch (Exception ex)
         {
-            if (App.MainWindow?.Content != null)
+            if (App.MainWindow.Content != null)
             {
                 await presentationService.ShowMessageBoxAsync(
                     "Restore destination",

@@ -112,18 +112,17 @@ public class ScheduledBackupService : IScheduledBackupService
         // lower process priority
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        // run backup
-        var task = jobService.CreateBackupAsync("Automatisches Backup", "", false);
-
-        await task.ContinueWith(async (x) =>
+        try
         {
-            if (x.Result)
+            if (await jobService.CreateBackupAsync("Automatisches Backup", "", false))
             {
                 await RemoveOldBackups();
             }
-        }, TaskContinuationOptions.OnlyOnRanToCompletion)
-            .ContinueWith((x) => Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal,
-            TaskContinuationOptions.None);
+        }
+        finally
+        {
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
+        }
     }
 
     private async Task RemoveOldBackups()
@@ -325,16 +324,17 @@ public class ScheduledBackupService : IScheduledBackupService
         var fullBackupOption = schedulePolicy.ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
 
         // Backup durchführen
-        var task = jobService.CreateBackupAsync("Automatische Sicherung", "", false, fullBackupOption);
-
-        await task.ContinueWith(async (x) =>
+        try
         {
-            if (x.Result)
+            if (await jobService.CreateBackupAsync("Automatische Sicherung", "", false, fullBackupOption))
             {
                 await RemoveOldBackupsScheduled();
             }
-        }, TaskContinuationOptions.OnlyOnRanToCompletion)
-            .ContinueWith((x) => Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal, TaskContinuationOptions.None);
+        }
+        finally
+        {
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
+        }
     }
 
     private async Task RemoveOldBackupsScheduled()

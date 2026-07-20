@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+#nullable enable
+
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -174,7 +176,7 @@ public partial class frmChangeMedia
                 txtFTPUsername.Text,
                 txtFTPPassword.Text,
                 txtFTPPath.Text,
-                cboFtpEncoding.SelectedItem.ToString(),
+                Convert.ToString(cboFtpEncoding.SelectedItem) ?? "",
                 !chkFtpEncryption.Checked,
                 0);
             storage.Open();
@@ -217,7 +219,7 @@ public partial class frmChangeMedia
         {
             txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, cboFtpEncoding.SelectedItem.ToString());
+            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
 
             if (!profile)
             {

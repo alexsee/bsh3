@@ -38,6 +38,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IOrchestrationService orchestrationService;
     private readonly IStartupLaunchAdapter startupLaunchAdapter;
     private readonly IUpdateService updateService;
+    private bool suppressEnhancedSettingsPersistence;
 
     #region Sources Settings
 
@@ -693,18 +694,35 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.EnableNotificationWhenBackupOutdated = !string.IsNullOrEmpty(this.configurationManager.RemindAfterDays);
         this.NotificationWhenBackupOutdated = int.TryParse(this.configurationManager.RemindAfterDays, out var days) ? days : 0;
 
-        // Set backing fields so load does not re-enter the persistence handlers.
-        launchAtWindowsStartup = startupLaunchAdapter.IsEnabled();
-        OnPropertyChanged(nameof(LaunchAtWindowsStartup));
+        // Load without re-entering the persistence handlers.
+        suppressEnhancedSettingsPersistence = true;
+        try
+        {
+            LaunchAtWindowsStartup = startupLaunchAdapter.IsEnabled();
+        }
+        finally
+        {
+            suppressEnhancedSettingsPersistence = false;
+        }
+
         _ = LoadUpdateSettingsAsync();
     }
 
     private async Task LoadUpdateSettingsAsync()
     {
-        automaticallyCheckForUpdates = await updateService.GetAutoSearchEnabledAsync();
-        downloadBetaUpdates = await updateService.GetDownloadBetaAsync();
-        OnPropertyChanged(nameof(AutomaticallyCheckForUpdates));
-        OnPropertyChanged(nameof(DownloadBetaUpdates));
+        var autoSearch = await updateService.GetAutoSearchEnabledAsync();
+        var downloadBeta = await updateService.GetDownloadBetaAsync();
+
+        suppressEnhancedSettingsPersistence = true;
+        try
+        {
+            AutomaticallyCheckForUpdates = autoSearch;
+            DownloadBetaUpdates = downloadBeta;
+        }
+        finally
+        {
+            suppressEnhancedSettingsPersistence = false;
+        }
     }
 
     partial void OnEnableNotificationWhenDiskspaceLowChanged(bool oldValue, bool newValue)
@@ -768,7 +786,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     partial void OnLaunchAtWindowsStartupChanged(bool oldValue, bool newValue)
     {
-        if (oldValue == newValue)
+        if (suppressEnhancedSettingsPersistence || oldValue == newValue)
         {
             return;
         }
@@ -778,8 +796,16 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        launchAtWindowsStartup = oldValue;
-        OnPropertyChanged(nameof(LaunchAtWindowsStartup));
+        suppressEnhancedSettingsPersistence = true;
+        try
+        {
+            LaunchAtWindowsStartup = oldValue;
+        }
+        finally
+        {
+            suppressEnhancedSettingsPersistence = false;
+        }
+
         _ = presentationController.ShowMessageBoxAsync(
             "Access denied",
             "Windows startup could not be changed. Check your permissions and try again.",
@@ -788,7 +814,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     partial void OnAutomaticallyCheckForUpdatesChanged(bool oldValue, bool newValue)
     {
-        if (oldValue == newValue)
+        if (suppressEnhancedSettingsPersistence || oldValue == newValue)
         {
             return;
         }
@@ -798,7 +824,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     partial void OnDownloadBetaUpdatesChanged(bool oldValue, bool newValue)
     {
-        if (oldValue == newValue)
+        if (suppressEnhancedSettingsPersistence || oldValue == newValue)
         {
             return;
         }
