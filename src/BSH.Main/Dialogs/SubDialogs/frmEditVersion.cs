@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Windows.Forms;
 
 namespace Brightbits.BSH.Main;
 
@@ -14,13 +15,20 @@ public partial class frmEditVersion
 
     private void txtTitle_TextChanged(object sender, EventArgs e)
     {
-        txtTitle.Text = txtTitle.Text.Replace("\"", "");
-        txtTitle.Text = txtTitle.Text.Replace("'", "");
+        SanitizeQuotes(txtTitle);
     }
 
     private void txtDescription_TextChanged(object sender, EventArgs e)
     {
-        txtTitle.Text = txtTitle.Text.Replace("\"", "");
-        txtTitle.Text = txtTitle.Text.Replace("'", "");
+        SanitizeQuotes(txtDescription);
+    }
+
+    private static void SanitizeQuotes(TextBox textBox)
+    {
+        var sanitized = textBox.Text.Replace("\"", "").Replace("'", "");
+        if (sanitized != textBox.Text)
+        {
+            textBox.Text = sanitized;
+        }
     }
 }

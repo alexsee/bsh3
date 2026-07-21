@@ -23,7 +23,7 @@ namespace BSH.Service.VSS
         /// Otherwise, this example code quiesces all VSS-compatible components
         /// before making its shadow copy.
         /// </remarks>
-        bool ComponentMode = false;
+        readonly bool ComponentMode = false;
 
         /// <summary>A reference to the VSS context.</summary>
         IVssBackupComponents _backup = null!;

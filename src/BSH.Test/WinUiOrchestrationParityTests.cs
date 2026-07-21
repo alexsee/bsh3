@@ -315,8 +315,7 @@ public class WinUiOrchestrationParityTests
             {
                 Assert.That(waitMode, Is.EqualTo(MediaWaitMode.PromptUser));
                 waitWasRequested = true;
-                cancellationTokenSource.Cancel();
-                await Task.Yield();
+                await cancellationTokenSource.CancelAsync();
                 return false;
             },
             () => Task.FromResult(true));

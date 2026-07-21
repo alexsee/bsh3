@@ -132,7 +132,6 @@ public partial class frmSmartPreview
                         previewItem.SizeMode = PictureBoxSizeMode.Zoom;
                         plContent.Controls.Add(previewItem);
                         previewItem.Dock = DockStyle.Fill;
-                        psd = null;
                         break;
                     }
 
@@ -252,8 +251,7 @@ public partial class frmSmartPreview
                                     picIcon.Image = Icon.ExtractAssociatedIcon(fileName).ToBitmap();
 
                                     // retrieve file type
-                                    var shFi = new SHFILEINFO();
-                                    SHGetFileInfo(fileName, 0, out shFi, (uint)System.Runtime.InteropServices.Marshal.SizeOf(shFi), (uint)SHGFI.SHGFI_TYPENAME);
+                                    SHGetFileInfo(fileName, 0, out SHFILEINFO shFi, (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(SHFILEINFO)), (uint)SHGFI.SHGFI_TYPENAME);
 
                                     lblFileType.Text = shFi.szTypeName;
 

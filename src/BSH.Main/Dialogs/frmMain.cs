@@ -293,8 +293,7 @@ public partial class frmMain
 
     private void lblExtras_Click(object sender, EventArgs e)
     {
-        BetaversionenÜberAktualiserungenHerunterladenToolStripMenuItem.Visible = (ModifierKeys & Keys.Control) == Keys.Control;
-        cmsHelp.Show(picHelp, new Point((int)Math.Round(-cmsHelp.Width / 2d + picHelp.Width / 2d), picHelp.Height));
+        picHelp_Click(sender, e);
     }
 
     private void EreignisprotokollAnzeigenToolStripMenuItem_Click(object sender, EventArgs e)
