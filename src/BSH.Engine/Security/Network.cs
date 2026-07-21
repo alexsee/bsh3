@@ -11,7 +11,12 @@ public class NetworkConnection : IDisposable
 {
     public string RemoteShare { get; set; } = null;
 
-    public NetworkConnection(string remoteHost, string remoteUser, string remotePassword)
+    /// <summary>
+    /// Opens a temporary SMB connection. By default <paramref name="remotePassword"/> is
+    /// treated as DPAPI LocalMachine ciphertext (config <c>UNCPassword</c>). Pass
+    /// <paramref name="passwordIsEncrypted"/> as false for UI plaintext (setup / media-switch probes).
+    /// </summary>
+    public NetworkConnection(string remoteHost, string remoteUser, string remotePassword, bool passwordIsEncrypted = true)
     {
         if (string.IsNullOrEmpty(remoteUser) || string.IsNullOrEmpty(remotePassword) || !Uri.TryCreate(remoteHost, UriKind.Absolute, out var loc) || !loc.IsUnc)
         {
@@ -21,8 +26,10 @@ public class NetworkConnection : IDisposable
         var auth = loc.Host;
         var segments = loc.Segments;
 
-        // decrypt password
-        var pw = Crypto.DecryptString(remotePassword, System.Security.Cryptography.DataProtectionScope.LocalMachine);
+        // Config-stored passwords are DPAPI ciphertext; UI probes pass plaintext.
+        var pw = passwordIsEncrypted
+            ? Crypto.DecryptString(remotePassword, System.Security.Cryptography.DataProtectionScope.LocalMachine)
+            : remotePassword;
 
         if (pw.Length == 0)
         {

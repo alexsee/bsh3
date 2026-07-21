@@ -40,7 +40,8 @@ public static class UncTargetProbe
 
         try
         {
-            using var networkConnection = new NetworkConnection(path, username ?? "", password ?? "");
+            // NetworkConnection decrypts config-stored DPAPI passwords by default; UI probes pass plaintext.
+            using var networkConnection = new NetworkConnection(path, username ?? "", password ?? "", passwordIsEncrypted: false);
             if (!Directory.Exists(path))
             {
                 return new UncProbeResult(UncProbeStatus.Unreachable, path);
