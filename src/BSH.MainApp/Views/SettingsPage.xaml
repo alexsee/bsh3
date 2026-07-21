@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     mc:Ignorable="d"
     Background="White">
 
@@ -16,7 +17,7 @@
             <ColumnDefinition Width="*" MaxWidth="1400" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold">Settings</TextBlock>
+        <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Settings_Title}" />
 
         <Grid Grid.Row="1" Margin="0, 20, 0, 0">
             <NavigationView x:Name="navSettings" 
@@ -25,11 +26,11 @@
                             IsSettingsVisible="False"
                             ItemInvoked="navSettings_ItemInvoked">
                 <NavigationView.MenuItems>
-                    <NavigationViewItem x:Name="nviSources" IsSelected="True" Content="Sources" />
-                    <NavigationViewItem x:Name="nviTarget" Content="Backup Target" />
-                    <NavigationViewItem x:Name="nviMode" Content="Automation" />
-                    <NavigationViewItem x:Name="nviOptions" Content="Backup Options" />
-                    <NavigationViewItem x:Name="nviEnhanced" Content="Behavior" />
+                    <NavigationViewItem x:Name="nviSources" IsSelected="True" Content="{helpers:ResourceString Name=Settings_Nav_Sources}" />
+                    <NavigationViewItem x:Name="nviTarget" Content="{helpers:ResourceString Name=Settings_Nav_BackupTarget}" />
+                    <NavigationViewItem x:Name="nviMode" Content="{helpers:ResourceString Name=Settings_Nav_Automation}" />
+                    <NavigationViewItem x:Name="nviOptions" Content="{helpers:ResourceString Name=Settings_Nav_BackupOptions}" />
+                    <NavigationViewItem x:Name="nviEnhanced" Content="{helpers:ResourceString Name=Settings_Nav_Behavior}" />
                 </NavigationView.MenuItems>
                 <Frame Margin="0,20,0,0" x:Name="contentFrame" />
             </NavigationView>

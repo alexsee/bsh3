@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:BSH.MainApp.Windows"
     xmlns:converters="using:BSH.MainApp.Converters"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -25,22 +26,22 @@
                 <TextBlock Text="{x:Bind ViewModel.CurrentProgress}" />
                 <TextBlock Text="/" />
                 <TextBlock Text="{x:Bind ViewModel.TotalProgress}" />
-                <TextBlock Text="files processed" />
+                <TextBlock Text="{helpers:ResourceString Name=Status_FilesProcessed}" />
             </StackPanel>
             <TextBlock Text="{x:Bind ViewModel.CurrentFileText, Mode=OneWay}" />
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock VerticalAlignment="Center" Text="After completion" />
+                <TextBlock VerticalAlignment="Center" Text="{helpers:ResourceString Name=Status_AfterCompletion}" />
                 <ComboBox Width="180" SelectedIndex="{x:Bind ViewModel.SelectedCompletionActionIndex, Mode=TwoWay}">
-                    <ComboBoxItem Content="No action" />
-                    <ComboBoxItem Content="Shutdown" />
-                    <ComboBoxItem Content="Hibernate" />
+                    <ComboBoxItem Content="{helpers:ResourceString Name=Status_NoAction}" />
+                    <ComboBoxItem Content="{helpers:ResourceString Name=Status_Shutdown}" />
+                    <ComboBoxItem Content="{helpers:ResourceString Name=Status_Hibernate}" />
                 </ComboBox>
             </StackPanel>
         </StackPanel>
 
         <Grid Grid.Row="1" Background="#fafafa" Padding="30,10" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Command="{x:Bind ViewModel.CancelCommand}">Cancel</Button>
+                <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=Status_Cancel}" />
             </StackPanel>
         </Grid>
     </Grid>

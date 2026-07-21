@@ -6,8 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     mc:Ignorable="d"
-    Title="Backup Service Home"
+    Title="{helpers:ResourceString Name=AppDisplayName}"
     Width="1200" Height="800" Closed="WindowEx_Closed">
 
     <Grid>
@@ -35,7 +36,7 @@
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="Backup Service Home"/>
+                    Text="{helpers:ResourceString Name=AppDisplayName}"/>
             </Grid>
         </Border>
 
@@ -43,7 +44,7 @@
                         PaneDisplayMode="LeftCompact"
                         IsBackButtonVisible="Collapsed"
                         IsPaneToggleButtonVisible="False"
-                        PaneTitle="Backup Service Home"
+                        PaneTitle="{helpers:ResourceString Name=AppDisplayName}"
                         MenuItemsSource="{x:Bind ViewModel.NavigationItems}"
                         FooterMenuItemsSource="{x:Bind ViewModel.FooterNavigationItems}"
                         SelectedItem="{x:Bind ViewModel.CurrentPage, Mode=TwoWay}">

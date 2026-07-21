@@ -274,9 +274,9 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(Label9, "Label9");
             Label9.Name = "Label9";
-            // 
+            //
             // plUNC
-            // 
+            //
             resources.ApplyResources(plUNC, "plUNC");
             plUNC.BackColor = System.Drawing.Color.Transparent;
             plUNC.Controls.Add(cmdUncCheck);
@@ -287,42 +287,42 @@ namespace Brightbits.BSH.Main
             plUNC.Controls.Add(txtUncPath);
             plUNC.Controls.Add(lblUncPath);
             plUNC.Name = "plUNC";
-            // 
+            //
             // cmdUncCheck
-            // 
+            //
             resources.ApplyResources(cmdUncCheck, "cmdUncCheck");
             cmdUncCheck.Name = "cmdUncCheck";
             cmdUncCheck.UseVisualStyleBackColor = true;
             cmdUncCheck.Click += cmdUncCheck_Click;
-            // 
+            //
             // txtUncPassword
-            // 
+            //
             resources.ApplyResources(txtUncPassword, "txtUncPassword");
             txtUncPassword.Name = "txtUncPassword";
             txtUncPassword.UseSystemPasswordChar = true;
-            // 
+            //
             // lblUncPassword
-            // 
+            //
             resources.ApplyResources(lblUncPassword, "lblUncPassword");
             lblUncPassword.Name = "lblUncPassword";
-            // 
+            //
             // txtUncUsername
-            // 
+            //
             resources.ApplyResources(txtUncUsername, "txtUncUsername");
             txtUncUsername.Name = "txtUncUsername";
-            // 
+            //
             // lblUncUsername
-            // 
+            //
             resources.ApplyResources(lblUncUsername, "lblUncUsername");
             lblUncUsername.Name = "lblUncUsername";
-            // 
+            //
             // txtUncPath
-            // 
+            //
             resources.ApplyResources(txtUncPath, "txtUncPath");
             txtUncPath.Name = "txtUncPath";
-            // 
+            //
             // lblUncPath
-            // 
+            //
             resources.ApplyResources(lblUncPath, "lblUncPath");
             lblUncPath.Name = "lblUncPath";
             // 

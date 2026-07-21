@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls" xmlns:engine="using:Brightbits.BSH.Engine"
@@ -30,14 +31,14 @@
         VerticalScrollBarVisibility="Auto"
         VerticalScrollMode="Auto">
             <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                <toolkit:SettingsExpander Header="Storage device" Description="Select the device to store the backup on." IsExpanded="True">
+                <toolkit:SettingsExpander Header="{helpers:ResourceString Name=Settings_Target_StorageDevice}" Description="{helpers:ResourceString Name=Settings_Target_StorageDeviceDescription}" IsExpanded="True">
                     <toolkit:SettingsExpander.HeaderIcon>
                         <FontIcon Glyph="&#xE8CE;" />
                     </toolkit:SettingsExpander.HeaderIcon>
 
                     <!-- target type selection -->
                     <StackPanel Orientation="Horizontal" Spacing="20">
-                        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Text="Backup storage:" />
+                        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Text="{helpers:ResourceString Name=Settings_Target_BackupStorage}" />
                         <ComboBox x:Name="MediaTypeComboBox"
                             VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="300"
                             ItemsSource="{Binding MediaTypes}"
@@ -65,20 +66,20 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Column="0" Text="Storage path:" />
+                                        <TextBlock Grid.Column="0" Text="{helpers:ResourceString Name=Settings_Target_StoragePath}" />
                                         <TextBox Grid.Column="1" Text="{Binding LocalDevicePath}" IsReadOnly="True" />
                                         <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
                                             <ProgressRing Width="20"
                                                           Height="20"
                                                           IsActive="{Binding IsMovingBackupTarget, Mode=OneWay}"
                                                           Visibility="{Binding BackupTargetMoveProgressVisibility, Mode=OneWay}" />
-                                            <Button Content="Change"
+                                            <Button Content="{helpers:ResourceString Name=Settings_Target_Change}"
                                                     Command="{x:Bind ViewModel.ChangeLocalPathCommand}"
                                                     IsEnabled="{Binding IsBackupTargetChangeEnabled, Mode=OneWay}" />
                                         </StackPanel>
                                     </Grid>
 
-                                    <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">Network authentication</TextBlock>
+                                    <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="{helpers:ResourceString Name=Settings_Target_NetworkAuthentication}" />
                                     <Grid ColumnSpacing="20">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="200" />
@@ -86,10 +87,10 @@
                                             <ColumnDefinition Width="200" />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">Username:</TextBlock>
+                                        <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Text="{helpers:ResourceString Name=Settings_Target_Username}" />
                                         <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding LocalUNCUser, Mode=TwoWay}"></TextBox>
 
-                                        <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0">Password:</TextBlock>
+                                        <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0" Text="{helpers:ResourceString Name=Settings_Target_Password}" />
                                         <PasswordBox Grid.Column="3" Grid.Row="0" Password="{Binding LocalUNCPassword, Mode=TwoWay}"></PasswordBox>
                                     </Grid>
                                 </StackPanel>
@@ -111,28 +112,28 @@
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Text="Server:" />
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Text="{helpers:ResourceString Name=Settings_Target_Server}" />
                                     <TextBox Grid.Column="1" Text="{Binding FtpRemoteHost}" />
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0" Text="Port:" />
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0" Text="{helpers:ResourceString Name=Settings_Target_Port}" />
                                     <NumberBox Grid.Column="3" Grid.Row="0" Value="{Binding FtpRemotePort}" />
 
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Text="Username:" />
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Text="{helpers:ResourceString Name=Settings_Target_Username}" />
                                     <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding FtpRemoteUser}" />
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Text="Password:" />
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Text="{helpers:ResourceString Name=Settings_Target_Password}" />
                                     <PasswordBox Grid.Column="3" Grid.Row="1" Password="{Binding FtpRemotePassword}" />
 
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="Path:" />
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="{helpers:ResourceString Name=Settings_Target_Path}" />
                                     <TextBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2"  Text="{Binding FtpRemotePath}" />
 
-                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="Encoding:" />
+                                    <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="{helpers:ResourceString Name=Settings_Target_Encoding}" />
                                     <ComboBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch" SelectedValue="{Binding FtpRemoteEncoding, Mode=TwoWay}">
                                         <x:String>ISO-8859-1</x:String>
                                         <x:String>UTF8</x:String>
                                     </ComboBox>
 
-                                    <CheckBox Grid.Column="1" Grid.Row="4" Content="Enforce unencrypted connection" IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
+                                    <CheckBox Grid.Column="1" Grid.Row="4" Content="{helpers:ResourceString Name=Settings_Target_EnforceUnencrypted}" IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
 
-                                    <Button Grid.Column="1" Grid.Row="5" Content="Test connection" Command="{Binding CheckFtpRemoteCommand}" />
+                                    <Button Grid.Column="1" Grid.Row="5" Content="{helpers:ResourceString Name=Settings_Target_TestConnection}" Command="{Binding CheckFtpRemoteCommand}" />
                                 </Grid>
                             </Grid>
                         </toolkit:SettingsCard>
@@ -140,8 +141,8 @@
                 </toolkit:SettingsExpander>
 
                 <toolkit:SettingsCard
-                    Header="Switch storage"
-                    Description="Allows changing the backup medium to a new (empty) medium without losing the settings."
+                    Header="{helpers:ResourceString Name=Settings_Target_SwitchStorage}"
+                    Description="{helpers:ResourceString Name=Settings_Target_SwitchStorageDescription}"
                     IsClickEnabled="True"
                     Command="{x:Bind ViewModel.SwitchStorageCommand}">
                     <toolkit:SettingsCard.HeaderIcon>

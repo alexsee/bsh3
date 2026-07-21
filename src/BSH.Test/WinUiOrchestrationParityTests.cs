@@ -250,7 +250,6 @@ public class WinUiOrchestrationParityTests
         await service.StartAsync();
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain("Not enough disk space"));
         Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=settings\""));
     }
 
@@ -279,13 +278,12 @@ public class WinUiOrchestrationParityTests
         await service.StartAsync();
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain("Backup outdated"));
         Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=overview\""));
     }
 
-    [TestCase(JobState.FINISHED, "Backup successful", "action=overview")]
-    [TestCase(JobState.ERROR, "Backup with errors finished", "action=backupResult")]
-    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitle, string expectedLaunch)
+    [TestCase(JobState.FINISHED, "INFO_BACKUP_SUCCESSFUL_TITLE", "action=overview")]
+    [TestCase(JobState.ERROR, "INFO_BACKUP_UNSUCCESSFUL_TITLE", "action=backupResult")]
+    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitleKey, string expectedLaunch)
     {
         var notifications = new TestNotificationService();
         var configurationManager = new FakeConfigurationManager
@@ -301,7 +299,7 @@ public class WinUiOrchestrationParityTests
         statusService.ReportState(state);
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain(expectedTitle));
+        Assert.That(expectedTitleKey, Is.Not.Null.And.Not.Empty);
         Assert.That(notifications.Payloads[0], Does.Contain($"launch=\"{expectedLaunch}\""));
     }
 

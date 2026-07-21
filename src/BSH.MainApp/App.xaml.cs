@@ -24,6 +24,7 @@ using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
 using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Views;
+using CommunityToolkit.WinUI;
 using H.NotifyIcon;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -72,6 +73,12 @@ public partial class App : Application
 
     public App()
     {
+        // Match WinForms default culture: German UI with English satellite resources.
+        var germanCulture = new System.Globalization.CultureInfo("de-DE");
+        System.Globalization.CultureInfo.DefaultThreadCurrentCulture = germanCulture;
+        System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = germanCulture;
+        global::Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "de-DE";
+
         InitializeComponent();
 
         unhandledExceptionHandler = new UnhandledExceptionHandler(
@@ -198,7 +205,7 @@ public partial class App : Application
         var result = await GetService<IPresentationService>().ShowMessageBoxAsync(
             title,
             content,
-            [new UICommand("Continue"), new UICommand("Exit")]);
+            [new UICommand("Unhandled_Continue".GetLocalized()), new UICommand("Unhandled_Exit".GetLocalized())]);
 
         return result == ContentDialogResult.Primary;
     }
@@ -280,7 +287,7 @@ public partial class App : Application
 
     private async void StartManualBackupCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
-        await App.GetService<IJobService>().CreateBackupAsync("Manual backup", "", true);
+        await App.GetService<IJobService>().CreateBackupAsync("CreateBackup_Title_Manual".GetLocalized(), "", true);
     }
 
     private async void startManualBackupExtendedCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
@@ -288,7 +295,7 @@ public partial class App : Application
         var (result, backup) = await App.GetService<IPresentationService>().ShowCreateBackupWindowAsync();
         if (result)
         {
-            await App.GetService<IJobService>().CreateBackupAsync(backup.Title ?? "Manual backup", backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);
+            await App.GetService<IJobService>().CreateBackupAsync(backup.Title ?? "CreateBackup_Title_Manual".GetLocalized(), backup.Description ?? "", true, backup.IsFullBackup, backup.IsShutdownPc);
         }
     }
 

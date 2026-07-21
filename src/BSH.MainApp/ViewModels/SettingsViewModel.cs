@@ -16,6 +16,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Storage.Pickers;
 using Windows.UI.Popups;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels;
 
@@ -89,13 +90,13 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
         if (!PathRules.TryNormalizeFolderPath(folderPath, out var fullPath))
         {
-            SourceValidationErrorMessage = "Selected source folder path is invalid.";
+            SourceValidationErrorMessage = "Settings_Sources_InvalidPath".GetLocalized();
             return false;
         }
 
         if (PathRules.IsDriveRoot(fullPath))
         {
-            SourceValidationErrorMessage = "Selecting a drive root is risky. Choose a specific folder instead.";
+            SourceValidationErrorMessage = "Settings_Sources_DriveRootRisky".GetLocalized();
             return false;
         }
 
@@ -103,7 +104,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         if (this.Sources.Any(source =>
             string.Equals(Path.GetFileName(source.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)), folderName, StringComparison.OrdinalIgnoreCase)))
         {
-            SourceValidationErrorMessage = "A source folder with the same name is already configured.";
+            SourceValidationErrorMessage = "Settings_Sources_SameName".GetLocalized();
             return false;
         }
 
@@ -251,11 +252,11 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
         if (profile)
         {
-            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Successful_Title".GetLocalized(), "MsgBox_Ftp_Successful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
+            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Successful_Title".GetLocalized(), "MsgBox_Ftp_Successful_Text".GetLocalized(), new List<IUICommand> { new UICommand("MsgBox_OK".GetLocalized()) });
         }
         else
         {
-            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Unuccessful_Title".GetLocalized(), "MsgBox_Ftp_Unuccessful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
+            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Unuccessful_Title".GetLocalized(), "MsgBox_Ftp_Unuccessful_Text".GetLocalized(), new List<IUICommand> { new UICommand("MsgBox_OK".GetLocalized()) });
         }
     }
 
@@ -439,9 +440,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             }
 
             await this.presentationController.ShowMessageBoxAsync(
-                "Could not move backup data",
-                result.ErrorMessage ?? "The backup data could not be moved.",
-                [new UICommand("OK")]);
+                "Settings_Target_MoveFailed_Title".GetLocalized(),
+                result.ErrorMessage ?? "Settings_Target_MoveFailed_Text".GetLocalized(),
+                [new UICommand("MsgBox_OK".GetLocalized())]);
         }
         finally
         {
@@ -781,9 +782,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         launchAtWindowsStartup = oldValue;
         OnPropertyChanged(nameof(LaunchAtWindowsStartup));
         _ = presentationController.ShowMessageBoxAsync(
-            "Access denied",
-            "Windows startup could not be changed. Check your permissions and try again.",
-            [new UICommand("OK")]);
+            "Settings_Enhanced_AccessDenied_Title".GetLocalized(),
+            "Settings_Enhanced_AccessDenied_Text".GetLocalized(),
+            [new UICommand("MsgBox_OK".GetLocalized())]);
     }
 
     partial void OnAutomaticallyCheckForUpdatesChanged(bool oldValue, bool newValue)

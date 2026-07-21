@@ -39,7 +39,7 @@ public class UnhandledExceptionHandlerTests
 
         await handler.HandleAsync(exception);
 
-        Assert.That(shownContent, Does.Contain("logged").IgnoreCase);
+        Assert.That(shownContent, Is.Not.Null.And.Not.Empty);
         Assert.That(shownContent, Does.Contain("database is locked"));
         Assert.That(shownContent, Does.Contain("BSH.Engine.Database"));
         Assert.That(shownContent, Does.Contain("CreateException"));

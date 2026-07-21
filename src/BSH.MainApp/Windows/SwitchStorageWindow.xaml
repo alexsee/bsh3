@@ -5,9 +5,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels.Windows"
     xmlns:winex="using:WinUIEx"
-    Title="Switch storage"
+    Title="{helpers:ResourceString Name=SwitchStorage_Title}"
     Width="640"
     Height="620"
     IsAlwaysOnTop="True"
@@ -25,52 +26,52 @@
         <ScrollViewer Grid.Row="0" Padding="28,24,28,20" VerticalScrollBarVisibility="Auto">
             <StackPanel MaxWidth="560" HorizontalAlignment="Stretch" Spacing="20">
                 <StackPanel Spacing="4">
-                    <TextBlock FontSize="26" FontWeight="SemiBold" Text="Switch storage" />
+                    <TextBlock FontSize="26" FontWeight="SemiBold" Text="{helpers:ResourceString Name=SwitchStorage_Title}" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Text="Choose a new empty backup medium. Existing settings are kept, but backup history on this PC is cleared."
+                        Text="{helpers:ResourceString Name=SwitchStorage_Description}"
                         TextWrapping="WrapWholeWords" />
                 </StackPanel>
 
                 <ComboBox
-                    Header="Medium type"
+                    Header="{helpers:ResourceString Name=SwitchStorage_MediumType}"
                     HorizontalAlignment="Stretch"
                     ItemsSource="{x:Bind ViewModel.MediumOptions}"
                     SelectedItem="{x:Bind ViewModel.SelectedMedium, Mode=TwoWay}"
                     DisplayMemberPath="DisplayName" />
 
                 <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">
-                    <TextBlock FontWeight="SemiBold" Text="Select drive" />
+                    <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=SwitchStorage_SelectDrive}" />
                     <ListView
                         Height="220"
                         ItemsSource="{x:Bind ViewModel.AvailableDrives, Mode=OneWay}"
                         SelectedItem="{x:Bind ViewModel.SelectedDrive, Mode=TwoWay}"
                         DisplayMemberPath="DisplayName" />
-                    <Button Command="{x:Bind ViewModel.RefreshDrivesCommand}" Content="Refresh drives" HorizontalAlignment="Left" />
+                    <Button Command="{x:Bind ViewModel.RefreshDrivesCommand}" Content="{helpers:ResourceString Name=SwitchStorage_RefreshDrives}" HorizontalAlignment="Left" />
                 </StackPanel>
 
                 <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.FtpTargetVisibility, Mode=OneWay}">
-                    <TextBlock FontWeight="SemiBold" Text="FTP server" />
-                    <TextBox Header="Host" Text="{x:Bind ViewModel.FtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBox Header="Port" Text="{x:Bind ViewModel.FtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBox Header="Username" Text="{x:Bind ViewModel.FtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <PasswordBox Header="Password" Password="{Binding FtpPassword, Mode=TwoWay}" />
-                    <TextBox Header="Path" Text="{x:Bind ViewModel.FtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=SwitchStorage_FtpServer}" />
+                    <TextBox Header="{helpers:ResourceString Name=SwitchStorage_FtpHost}" Text="{x:Bind ViewModel.FtpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Header="{helpers:ResourceString Name=SwitchStorage_FtpPort}" Text="{x:Bind ViewModel.FtpPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Header="{helpers:ResourceString Name=SwitchStorage_FtpUsername}" Text="{x:Bind ViewModel.FtpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <PasswordBox Header="{helpers:ResourceString Name=SwitchStorage_FtpPassword}" Password="{Binding FtpPassword, Mode=TwoWay}" />
+                    <TextBox Header="{helpers:ResourceString Name=SwitchStorage_FtpPath}" Text="{x:Bind ViewModel.FtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <ComboBox
-                        Header="Encoding"
+                        Header="{helpers:ResourceString Name=SwitchStorage_FtpEncoding}"
                         HorizontalAlignment="Stretch"
                         ItemsSource="{x:Bind ViewModel.FtpEncodings}"
                         SelectedItem="{x:Bind ViewModel.FtpEncoding, Mode=TwoWay}" />
-                    <CheckBox Content="Enforce unencrypted connection" IsChecked="{x:Bind ViewModel.FtpEnforceUnencrypted, Mode=TwoWay}" />
-                    <Button Command="{x:Bind ViewModel.TestFtpConnectionCommand}" Content="Test connection" HorizontalAlignment="Left" />
+                    <CheckBox Content="{helpers:ResourceString Name=SwitchStorage_EnforceUnencrypted}" IsChecked="{x:Bind ViewModel.FtpEnforceUnencrypted, Mode=TwoWay}" />
+                    <Button Command="{x:Bind ViewModel.TestFtpConnectionCommand}" Content="{helpers:ResourceString Name=SwitchStorage_TestConnection}" HorizontalAlignment="Left" />
                 </StackPanel>
 
                 <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.UncTargetVisibility, Mode=OneWay}">
-                    <TextBlock FontWeight="SemiBold" Text="Network share" />
-                    <TextBox Header="Network path (for example \\server\backups)" Text="{x:Bind ViewModel.UncPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBox Header="Username (optional)" Text="{x:Bind ViewModel.UncUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <PasswordBox Header="Password (optional)" Password="{Binding UncPassword, Mode=TwoWay}" />
-                    <Button Command="{x:Bind ViewModel.TestUncConnectionCommand}" Content="Test connection" HorizontalAlignment="Left" />
+                    <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Target_Unc_Title}" />
+                    <TextBox Header="{helpers:ResourceString Name=Setup_Target_NetworkPath}" Text="{x:Bind ViewModel.UncPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Header="{helpers:ResourceString Name=Setup_Target_UsernameOptional}" Text="{x:Bind ViewModel.UncUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <PasswordBox Header="{helpers:ResourceString Name=Setup_Target_PasswordOptional}" Password="{Binding UncPassword, Mode=TwoWay}" />
+                    <Button Command="{x:Bind ViewModel.TestUncConnectionCommand}" Content="{helpers:ResourceString Name=SwitchStorage_TestConnection}" HorizontalAlignment="Left" />
                 </StackPanel>
 
                 <TextBlock
@@ -87,8 +88,8 @@
             BorderThickness="0,1,0,0"
             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Command="{x:Bind ViewModel.CancelCommand}" Content="Cancel" />
-                <Button Command="{x:Bind ViewModel.ConfirmCommand}" Content="Switch" Style="{StaticResource AccentButtonStyle}" />
+                <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=SwitchStorage_Cancel}" />
+                <Button Command="{x:Bind ViewModel.ConfirmCommand}" Content="{helpers:ResourceString Name=SwitchStorage_Confirm}" Style="{StaticResource AccentButtonStyle}" />
             </StackPanel>
         </Grid>
     </Grid>

@@ -7,8 +7,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:BSH.MainApp.Converters"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     mc:Ignorable="d"
-    Title="Overwrite or Skip Files"
+    Title="{helpers:ResourceString Name=Overwrite_Title}"
     IsMaximizable="False"
     IsMinimizable="False"
     IsAlwaysOnTop="True"
@@ -23,14 +24,14 @@
         </Grid.RowDefinitions>
         <StackPanel Margin="30" Spacing="10" Grid.Row="0" Orientation="Vertical">
             <TextBlock Text="{x:Bind ViewModel.FileName}" />
-            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}">There is already a file with the same name at this location.</TextBlock>
-            <toolkit:SettingsCard IsClickEnabled="True" Header="Replace the file in the destination" Command="{x:Bind ViewModel.OverwriteFileCommand}">
+            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{helpers:ResourceString Name=Overwrite_AlreadyExists}" />
+            <toolkit:SettingsCard IsClickEnabled="True" Header="{helpers:ResourceString Name=Overwrite_ReplaceHeader}" Command="{x:Bind ViewModel.OverwriteFileCommand}">
                 <toolkit:SettingsCard.HeaderIcon>
                     <FontIcon Foreground="Green" Glyph="&#xE8FB;" />
                 </toolkit:SettingsCard.HeaderIcon>
                 <toolkit:SettingsCard.Description>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock>Replace file in the destination folder with the file from backup:</TextBlock>
+                        <TextBlock Text="{helpers:ResourceString Name=Overwrite_ReplaceDescription}" />
                         <Grid Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition></ColumnDefinition>
@@ -45,9 +46,9 @@
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Column="0" Grid.Row="0">Size:</TextBlock>
+                                <TextBlock Grid.Column="0" Grid.Row="0" Text="{helpers:ResourceString Name=Overwrite_Size}" />
                                 <TextBlock Grid.Column="1" Grid.Row="0" Text="{x:Bind ViewModel.DestinationFileSize}" />
-                                <TextBlock Grid.Column="0" Grid.Row="1">Last modified:</TextBlock>
+                                <TextBlock Grid.Column="0" Grid.Row="1" Text="{helpers:ResourceString Name=Overwrite_LastModified}" />
                                 <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind ViewModel.DestinationLastModified}" />
                             </Grid>
                             <Grid Grid.Column="1" ColumnSpacing="10">
@@ -59,16 +60,16 @@
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="0">Size:</TextBlock>
+                                <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="0" Text="{helpers:ResourceString Name=Overwrite_Size}" />
                                 <TextBlock FontWeight="Bold" Grid.Column="1" Grid.Row="0" Text="{x:Bind ViewModel.SourceFileSize}" />
-                                <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="1">Last modified:</TextBlock>
+                                <TextBlock FontWeight="Bold" Grid.Column="0" Grid.Row="1" Text="{helpers:ResourceString Name=Overwrite_LastModified}" />
                                 <TextBlock FontWeight="Bold" Grid.Column="1" Grid.Row="1" Text="{x:Bind ViewModel.SourceLastModified}" />
                             </Grid>
                         </Grid>
                     </StackPanel>
                 </toolkit:SettingsCard.Description>
             </toolkit:SettingsCard>
-            <toolkit:SettingsCard IsClickEnabled="True" Header="Skip the file" Command="{x:Bind ViewModel.SkipFileCommand}">
+            <toolkit:SettingsCard IsClickEnabled="True" Header="{helpers:ResourceString Name=Overwrite_SkipHeader}" Command="{x:Bind ViewModel.SkipFileCommand}">
                 <toolkit:SettingsCard.HeaderIcon>
                     <FontIcon Foreground="DarkBlue" Glyph="&#xE7A7;" />
                 </toolkit:SettingsCard.HeaderIcon>
@@ -79,8 +80,8 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <CheckBox IsChecked="{x:Bind ViewModel.ApplyToAll, Mode=TwoWay}">Apply for all conflicts</CheckBox>
-            <Button Grid.Column="1" Command="{x:Bind ViewModel.CancelCommand}">Cancel</Button>
+            <CheckBox IsChecked="{x:Bind ViewModel.ApplyToAll, Mode=TwoWay}" Content="{helpers:ResourceString Name=Overwrite_ApplyForAll}" />
+            <Button Grid.Column="1" Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
         </Grid>
     </Grid>
 </winuiex:WindowEx>

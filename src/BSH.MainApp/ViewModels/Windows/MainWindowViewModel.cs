@@ -7,6 +7,7 @@ using BSH.MainApp.Contracts.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -73,24 +74,24 @@ public partial class MainWindowViewModel : ObservableObject
         }
 
         NavigationItems = [
-            new NavigationViewItem { Tag = ViewModelKeys.Main, Icon = new SymbolIcon(Symbol.Home), Content = "Overview" },
-            new NavigationViewItem { Tag = ViewModelKeys.Browser, Icon = new SymbolIcon(Symbol.BrowsePhotos), Content = "Backup browser" },
+            new NavigationViewItem { Tag = ViewModelKeys.Main, Icon = new SymbolIcon(Symbol.Home), Content = "Nav_Overview".GetLocalized() },
+            new NavigationViewItem { Tag = ViewModelKeys.Browser, Icon = new SymbolIcon(Symbol.BrowsePhotos), Content = "Nav_BackupBrowser".GetLocalized() },
         ];
         FooterNavigationItems = [
             new NavigationViewItem
             {
                 SelectsOnInvoked = false,
                 Icon = new FontIcon { Glyph = "\uE946" },
-                Content = "Extras and Support",
+                Content = "Nav_ExtrasAndSupport".GetLocalized(),
                 MenuItems =
                 {
-                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.About, Icon = new FontIcon { Glyph = "\uE946" }, Content = "About Backup Service Home 3" },
-                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.Help, Icon = new SymbolIcon(Symbol.Link), Content = "Help and Support" },
-                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.EventLog, Icon = new SymbolIcon(Symbol.Document), Content = "Show Event Logs" },
-                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.CheckForUpdates, Icon = new SymbolIcon(Symbol.Sync), Content = "Check for Updates" },
-                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.ClearStoredPassword, Icon = new SymbolIcon(Symbol.Permissions), Content = "Clear Stored Password" },
-                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.ResetUniqueUserId, Icon = new SymbolIcon(Symbol.Contact), Content = "Reset Unique User Id" },
-                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.ResetConfiguration, Icon = new SymbolIcon(Symbol.Delete), Content = "Reset Configuration" },
+                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.About, Icon = new FontIcon { Glyph = "\uE946" }, Content = "Support_About".GetLocalized() },
+                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.Help, Icon = new SymbolIcon(Symbol.Link), Content = "Support_Help".GetLocalized() },
+                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.EventLog, Icon = new SymbolIcon(Symbol.Document), Content = "Support_EventLog".GetLocalized() },
+                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.CheckForUpdates, Icon = new SymbolIcon(Symbol.Sync), Content = "Support_CheckForUpdates".GetLocalized() },
+                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.ClearStoredPassword, Icon = new SymbolIcon(Symbol.Permissions), Content = "Support_ClearStoredPassword".GetLocalized() },
+                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.ResetUniqueUserId, Icon = new SymbolIcon(Symbol.Contact), Content = "Support_ResetUniqueUserId".GetLocalized() },
+                    new NavigationViewItem { SelectsOnInvoked = false, Tag = SupportActionKeys.ResetConfiguration, Icon = new SymbolIcon(Symbol.Delete), Content = "Support_ResetConfiguration".GetLocalized() },
                 }
             }
         ];

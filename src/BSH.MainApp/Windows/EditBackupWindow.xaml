@@ -4,10 +4,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:BSH.MainApp.Windows"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="Create Backup"
+    Title="{helpers:ResourceString Name=EditBackup_WindowTitle}"
     Height="500" Width="600" IsResizable="False" IsMaximizable="False" IsMinimizable="False" IsAlwaysOnTop="True">
 
     <Grid Background="White">
@@ -17,7 +18,7 @@
         </Grid.RowDefinitions>
         <Grid Margin="30" Grid.Row="0">
             <StackPanel Orientation="Vertical" Spacing="30">
-                <TextBlock FontSize="24" FontWeight="SemiBold">Edit Backup</TextBlock>
+                <TextBlock FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=EditBackup_Title}" />
                 <Grid RowSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"></ColumnDefinition>
@@ -29,13 +30,13 @@
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Column="0" Grid.Row="0" AutomationProperties.Name="Backup Title Label">Title:</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="0" AutomationProperties.Name="Backup Title Label" Text="{helpers:ResourceString Name=CreateBackup_TitleLabel}" />
                     <TextBox Grid.Column="1" Grid.Row="0" 
                              Text="{x:Bind ViewModel.Title, Mode=TwoWay}" 
                              MaxLength="100"
                              AutomationProperties.Name="Backup Title Input"
-                             AutomationProperties.HelpText="Enter the title for your backup"></TextBox>
-                    <TextBlock Grid.Column="0" Grid.Row="1" AutomationProperties.Name="Backup Description Label">Description:</TextBlock>
+                             AutomationProperties.HelpText="{helpers:ResourceString Name=CreateBackup_Help_Title}"></TextBox>
+                    <TextBlock Grid.Column="0" Grid.Row="1" AutomationProperties.Name="Backup Description Label" Text="{helpers:ResourceString Name=CreateBackup_DescriptionLabelColon}" />
                     <TextBox Grid.Column="1" Grid.Row="1" 
                              Height="60" 
                              Text="{x:Bind ViewModel.Description, Mode=TwoWay}"
@@ -43,15 +44,15 @@
                              TextWrapping="Wrap"
                              AcceptsReturn="True"
                              AutomationProperties.Name="Backup Description Input"
-                             AutomationProperties.HelpText="Enter a description for your backup"></TextBox>
+                             AutomationProperties.HelpText="{helpers:ResourceString Name=CreateBackup_Help_Description}"></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>
 
         <Grid Grid.Row="1" Background="#fafafa" Padding="30,10" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Command="{x:Bind ViewModel.CancelCommand}">Cancel</Button>
-                <Button Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}">Save</Button>
+                <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
+                <Button Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" Content="{helpers:ResourceString Name=MsgBox_Save}" />
             </StackPanel>
         </Grid>
     </Grid>

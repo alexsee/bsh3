@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Serilog;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 
@@ -53,7 +54,7 @@ public sealed class UnhandledExceptionHandler
     {
         var resolved = exception ?? new InvalidOperationException(
             string.IsNullOrWhiteSpace(preferredMessage)
-                ? "An unexpected error occurred without exception details."
+                ? "Unhandled_NoExceptionDetails".GetLocalized()
                 : preferredMessage);
 
         logError(resolved);
@@ -65,7 +66,9 @@ public sealed class UnhandledExceptionHandler
 
         try
         {
-            var continueRunning = await askContinueAsync("Unexpected error", BuildContent(resolved, preferredMessage));
+            var continueRunning = await askContinueAsync(
+                "Unhandled_Title".GetLocalized(),
+                BuildContent(resolved, preferredMessage));
             if (!continueRunning)
             {
                 exitApplication();
@@ -89,16 +92,18 @@ public sealed class UnhandledExceptionHandler
         var message = !string.IsNullOrWhiteSpace(preferredMessage)
             ? preferredMessage
             : GetMessage(exception);
-        var source = string.IsNullOrWhiteSpace(exception.Source) ? "(unknown)" : exception.Source;
+        var source = string.IsNullOrWhiteSpace(exception.Source)
+            ? "Unhandled_Unknown".GetLocalized()
+            : exception.Source;
         var stackTrace = GetStackTrace(exception);
 
         return
-            "An unexpected problem occurred. The error has been logged." +
+            "Unhandled_BodyIntro".GetLocalized() +
             Environment.NewLine +
             Environment.NewLine +
-            $"Message: {message}" +
+            "Unhandled_MessageLabel".GetLocalized() + " " + message +
             Environment.NewLine +
-            $"Source: {source}" +
+            "Unhandled_SourceLabel".GetLocalized() + " " + source +
             Environment.NewLine +
             Environment.NewLine +
             stackTrace;
@@ -120,7 +125,9 @@ public sealed class UnhandledExceptionHandler
             }
         }
 
-        return string.IsNullOrWhiteSpace(exception.Message) ? "(no message)" : exception.Message;
+        return string.IsNullOrWhiteSpace(exception.Message)
+            ? "Unhandled_NoMessage".GetLocalized()
+            : exception.Message;
     }
 
     private static string GetStackTrace(Exception exception)
@@ -132,11 +139,11 @@ public sealed class UnhandledExceptionHandler
             {
                 return flattened.InnerExceptions[0].StackTrace
                     ?? exception.StackTrace
-                    ?? "(no stack trace)";
+                    ?? "Unhandled_NoStackTrace".GetLocalized();
             }
         }
 
-        return exception.StackTrace ?? "(no stack trace)";
+        return exception.StackTrace ?? "Unhandled_NoStackTrace".GetLocalized();
     }
 
     private static void DefaultLog(Exception exception)

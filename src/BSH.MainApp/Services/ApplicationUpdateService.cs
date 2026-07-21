@@ -6,6 +6,7 @@ using System.Reflection;
 using AutoUpdaterDotNET;
 using BSH.MainApp.Contracts.Services;
 using Windows.UI.Popups;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 
@@ -125,9 +126,9 @@ public sealed class ApplicationUpdateService : IUpdateService
             if (notifyWhenUpToDate)
             {
                 _ = presentationServiceFactory().ShowMessageBoxAsync(
-                    "No updates found",
-                    "You are already using the latest version.",
-                    [new UICommand("OK")]);
+                    "MSG_NO_UPDATE_FOUND_TITLE".GetLocalized(),
+                    "ApplicationUpdate_UpToDate_Text".GetLocalized(),
+                    [new UICommand("MsgBox_OK".GetLocalized())]);
             }
 
             return;

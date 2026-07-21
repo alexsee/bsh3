@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI;
 using Microsoft.Windows.Storage.Pickers;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -327,7 +328,7 @@ public partial class FilterViewModel : ObservableObject
 
         if (!IsPathUnderSources(trimmed))
         {
-            ValidationErrorMessage = "Selected folder is not within the configured source folders.";
+            ValidationErrorMessage = "Filter_FolderNotInSources".GetLocalized();
             return;
         }
 
@@ -364,7 +365,7 @@ public partial class FilterViewModel : ObservableObject
 
         if (!IsPathUnderSources(trimmed))
         {
-            ValidationErrorMessage = "Selected file is not within the configured source folders.";
+            ValidationErrorMessage = "Filter_FileNotInSources".GetLocalized();
             return;
         }
 
@@ -448,7 +449,7 @@ public partial class FilterViewModel : ObservableObject
             }
             catch (ArgumentException)
             {
-                ValidationErrorMessage = "Invalid regular expression. Fix the pattern before saving it.";
+                ValidationErrorMessage = "Filter_InvalidRegex".GetLocalized();
                 return;
             }
 

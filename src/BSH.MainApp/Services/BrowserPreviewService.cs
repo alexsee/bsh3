@@ -6,6 +6,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
 using BSH.MainApp.Contracts.Services;
 using Windows.UI.Popups;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 
@@ -65,9 +66,9 @@ public class BrowserPreviewService : IBrowserPreviewService
         catch
         {
             await presentationService.ShowMessageBoxAsync(
-                "Feature not available",
-                "Feature is currently not available.\n\nThis feature is currently not available because the quick preview could not be found. Reinstall Backup Service Home to resolve the problem.",
-                [new UICommand("OK")]);
+                "Browser_FeatureNotAvailable_Title".GetLocalized(),
+                "Browser_FeatureNotAvailable_Text".GetLocalized(),
+                [new UICommand("MsgBox_OK".GetLocalized())]);
         }
         finally
         {

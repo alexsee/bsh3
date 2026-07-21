@@ -11,6 +11,7 @@ using BSH.MainApp.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -25,9 +26,9 @@ public partial class SwitchStorageViewModel : ObservableObject
 
     public IReadOnlyList<MediaTargetOption> MediumOptions { get; } =
     [
-        new(MediaTargetKind.LocalDrive, "Local drive"),
-        new(MediaTargetKind.Ftp, "FTP server"),
-        new(MediaTargetKind.Unc, "Network share"),
+        new(MediaTargetKind.LocalDrive, "SwitchStorage_LocalDrive".GetLocalized()),
+        new(MediaTargetKind.Ftp, "SwitchStorage_FtpServer".GetLocalized()),
+        new(MediaTargetKind.Unc, "Setup_Target_Unc_Title".GetLocalized()),
     ];
 
     public IReadOnlyList<string> FtpEncodings { get; } = ["ISO-8859-1", "UTF8"];
@@ -124,13 +125,13 @@ public partial class SwitchStorageViewModel : ObservableObject
             case MediaTargetKind.LocalDrive:
                 if (SelectedDrive == null)
                 {
-                    ValidationErrorMessage = "Select a drive for the new backup medium.";
+                    ValidationErrorMessage = "SwitchStorage_SelectDriveRequired".GetLocalized();
                     return;
                 }
 
                 if (switchStorageService.LocalTargetContainsBackupData(SelectedDrive.RootPath))
                 {
-                    ValidationErrorMessage = "The selected medium already contains other backups and cannot be used for switching.";
+                    ValidationErrorMessage = "SwitchStorage_MediumNotEmpty".GetLocalized();
                     return;
                 }
 
@@ -164,7 +165,7 @@ public partial class SwitchStorageViewModel : ObservableObject
                 return;
 
             default:
-                ValidationErrorMessage = "Select a medium type.";
+                ValidationErrorMessage = "Setup_Validation_SelectBackupTarget".GetLocalized();
                 return;
         }
     }
@@ -174,7 +175,7 @@ public partial class SwitchStorageViewModel : ObservableObject
     {
         ValidationErrorMessage = null;
         ValidationErrorMessage = TryValidateUnc(requireEmptyTarget: false, out var error)
-            ? "Network connection successful."
+            ? "SwitchStorage_NetworkConnectionSuccessful".GetLocalized()
             : error;
     }
 
@@ -183,7 +184,7 @@ public partial class SwitchStorageViewModel : ObservableObject
     {
         ValidationErrorMessage = null;
         ValidationErrorMessage = TryOpenFtp(requireEmptyTarget: false, out var error)
-            ? "FTP connection successful."
+            ? "SwitchStorage_FtpConnectionSuccessful".GetLocalized()
             : error;
     }
 
@@ -205,17 +206,19 @@ public partial class SwitchStorageViewModel : ObservableObject
                 return true;
 
             case UncProbeStatus.InvalidPath:
-                error = "Enter a valid UNC path (for example \\\\server\\share).";
+                error = "Setup_Validation_EnterNetworkPath".GetLocalized();
                 return false;
 
             case UncProbeStatus.ContainsBackupData:
-                error = "The selected medium already contains other backups and cannot be used for switching.";
+                error = "SwitchStorage_MediumNotEmpty".GetLocalized();
                 return false;
 
             default:
                 error = string.IsNullOrEmpty(probe.Detail)
-                    ? "The network path could not be reached."
-                    : "The network path could not be reached. " + probe.Detail;
+                    ? "Setup_Validation_NetworkUnreachable".GetLocalized()
+                    : string.Format(
+                        "Setup_Validation_NetworkUnreachableWithError".GetLocalized() ?? "Setup_Validation_NetworkUnreachableWithError",
+                        probe.Detail);
                 return false;
         }
     }
@@ -226,13 +229,13 @@ public partial class SwitchStorageViewModel : ObservableObject
 
         if (string.IsNullOrWhiteSpace(FtpHost) || string.IsNullOrWhiteSpace(FtpUser))
         {
-            error = "Enter FTP host and username.";
+            error = "SwitchStorage_FtpHostUserRequired".GetLocalized();
             return false;
         }
 
         if (!int.TryParse(FtpPort, out var port))
         {
-            error = "FTP port is invalid.";
+            error = "SwitchStorage_FtpPortInvalid".GetLocalized();
             return false;
         }
 
@@ -253,7 +256,7 @@ public partial class SwitchStorageViewModel : ObservableObject
 
             if (requireEmptyTarget && storage.FileExists(UncTargetProbe.BackupDatabaseFileName))
             {
-                error = "The selected medium already contains other backups and cannot be used for switching.";
+                error = "SwitchStorage_MediumNotEmpty".GetLocalized();
                 return false;
             }
 
@@ -261,7 +264,7 @@ public partial class SwitchStorageViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            error = "FTP connection failed: " + ex.Message;
+            error = string.Format("SwitchStorage_FtpConnectionFailed".GetLocalized() ?? "SwitchStorage_FtpConnectionFailed", ex.Message);
             return false;
         }
     }

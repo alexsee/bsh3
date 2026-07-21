@@ -1,7 +1,8 @@
 <Page
     x:Class="BSH.MainApp.Views.FilterPages.ExcludeFileTypesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:helpers="using:BSH.MainApp.Helpers">
 
 	<Grid RowSpacing="12" Padding="8">
 		<Grid.RowDefinitions>
@@ -13,7 +14,7 @@
                     ItemsSource="{Binding ExcludeFileTypes}"
                     SelectedItem="{Binding SelectedFileType, Mode=TwoWay}">
 			<ListView.Header>
-				<TextBlock FontWeight="Bold">Extension</TextBlock>
+				<TextBlock FontWeight="Bold" Text="{helpers:ResourceString Name=Filter_Column_Extension}" />
 			</ListView.Header>
 		</ListView>
 		<Grid Grid.Row="1">
@@ -23,13 +24,13 @@
 			</Grid.ColumnDefinitions>
 
 			<TextBox x:Name="FileTypeInput"
-					 PlaceholderText="Enter extension (without dot)"
+					 PlaceholderText="{helpers:ResourceString Name=Filter_EnterExtension}"
 					 Margin="0,0,10,0"
 					 Text="{Binding FileTypeInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
 			<StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="10">
-				<Button Content="Add" Command="{Binding AddFileTypeCommand}" CommandParameter="{Binding FileTypeInputText}" />
-				<Button Content="Remove" Command="{Binding RemoveFileTypeCommand}" />
+				<Button Content="{helpers:ResourceString Name=MsgBox_Add}" Command="{Binding AddFileTypeCommand}" CommandParameter="{Binding FileTypeInputText}" />
+				<Button Content="{helpers:ResourceString Name=MsgBox_Remove}" Command="{Binding RemoveFileTypeCommand}" />
 			</StackPanel>
 		</Grid>
 	</Grid>

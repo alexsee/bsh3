@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels.Windows"
     xmlns:winex="using:WinUIEx"
-    Title="Schedule"
+    xmlns:helpers="using:BSH.MainApp.Helpers"
+    Title="{helpers:ResourceString Name=Schedule_Title}"
     Width="920"
     Height="720"
     IsAlwaysOnTop="True"
@@ -31,10 +32,10 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Spacing="4">
-                    <TextBlock FontSize="26" FontWeight="SemiBold" Text="Schedule" />
+                    <TextBlock FontSize="26" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Schedule_Title}" />
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Text="Create schedule entries and choose how scheduled backups are retained."
+                        Text="{helpers:ResourceString Name=Schedule_Subtitle}"
                         TextWrapping="WrapWholeWords" />
                 </StackPanel>
 
@@ -59,10 +60,10 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <StackPanel Spacing="2">
-                                <TextBlock FontWeight="SemiBold" Text="Backup times" />
+                                <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Schedule_BackupTimes}" />
                                 <TextBlock
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="Add one-time or recurring backup entries."
+                                    Text="{helpers:ResourceString Name=Schedule_BackupTimesDescription}"
                                     TextWrapping="WrapWholeWords" />
                             </StackPanel>
                             <CommandBar
@@ -73,30 +74,30 @@
                                 <AppBarButton
                                     Command="{Binding DeleteScheduleCommand}"
                                     Icon="Delete"
-                                    Label="Delete" />
+                                    Label="{helpers:ResourceString Name=Schedule_Delete}" />
                             </CommandBar>
                         </Grid>
 
                         <StackPanel Grid.Row="1" Spacing="8">
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <ComboBox
-                                    Header="Repeat"
+                                    Header="{helpers:ResourceString Name=Schedule_Repeat}"
                                     ItemsSource="{Binding ScheduleKinds}"
                                     SelectedItem="{Binding SelectedScheduleKind, Mode=TwoWay}"
                                     Width="170" />
                                 <DatePicker
-                                    Header="Date"
+                                    Header="{helpers:ResourceString Name=Schedule_Date}"
                                     Date="{Binding StartDate, Mode=TwoWay}"
                                     Visibility="{x:Bind ViewModel.ShowDatePicker, Mode=OneWay}"
                                     Width="240" />
                                 <ComboBox
-                                    Header="Day"
+                                    Header="{helpers:ResourceString Name=Schedule_Day}"
                                     ItemsSource="{Binding WeeklyDays}"
                                     SelectedItem="{Binding SelectedWeeklyDay, Mode=TwoWay}"
                                     Visibility="{x:Bind ViewModel.ShowWeeklyDayPicker, Mode=OneWay}"
                                     Width="160" />
                                 <NumberBox
-                                    Header="Day of month"
+                                    Header="{helpers:ResourceString Name=Schedule_DayOfMonth}"
                                     Minimum="1"
                                     Maximum="31"
                                     SpinButtonPlacementMode="Inline"
@@ -111,9 +112,8 @@
                                     MinWidth="78"
                                     Margin="0,28,0,0"
                                     Command="{Binding AddScheduleCommand}"
-                                    Style="{StaticResource AccentButtonStyle}">
-                                    Add
-                                </Button>
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Content="{helpers:ResourceString Name=MsgBox_Add}" />
                             </StackPanel>
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -129,12 +129,12 @@
                             <TextBlock
                                 FontWeight="SemiBold"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Repeat" />
+                                Text="{helpers:ResourceString Name=Schedule_Repeat}" />
                             <TextBlock
                                 Grid.Column="1"
                                 FontWeight="SemiBold"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Date / time" />
+                                Text="{helpers:ResourceString Name=Schedule_DateTime}" />
                         </Grid>
 
                         <ListView
@@ -176,15 +176,15 @@
                         CornerRadius="8">
                         <StackPanel Spacing="12">
                             <StackPanel Spacing="2">
-                                <TextBlock FontWeight="SemiBold" Text="Retention" />
+                                <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Schedule_Retention}" />
                                 <TextBlock
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="Choose how long scheduled backup versions stay available."
+                                    Text="{helpers:ResourceString Name=Schedule_RetentionDescription}"
                                     TextWrapping="WrapWholeWords" />
                             </StackPanel>
 
                             <ComboBox
-                                Header="Mode"
+                                Header="{helpers:ResourceString Name=Schedule_Mode}"
                                 Width="240"
                                 HorizontalAlignment="Left"
                                 ItemsSource="{Binding RetentionModes}"
@@ -192,20 +192,20 @@
 
                             <StackPanel Orientation="Horizontal" Spacing="10">
                                 <NumberBox
-                                    Header="Delete interval"
+                                    Header="{helpers:ResourceString Name=Schedule_DeleteInterval}"
                                     Minimum="1"
                                     SpinButtonPlacementMode="Inline"
                                     Value="{Binding RetentionInterval, Mode=TwoWay}"
                                     Width="150" />
                                 <ComboBox
-                                    Header="Unit"
+                                    Header="{helpers:ResourceString Name=Schedule_Unit}"
                                     Width="150"
                                     ItemsSource="{Binding RetentionIntervalUnits}"
                                     SelectedItem="{Binding RetentionIntervalUnit, Mode=TwoWay}" />
                             </StackPanel>
 
                             <NumberBox
-                                Header="Hourly backup threshold"
+                                Header="{helpers:ResourceString Name=Schedule_HourlyBackupThreshold}"
                                 Minimum="1"
                                 SpinButtonPlacementMode="Inline"
                                 Value="{Binding AutomaticHourlyBackupThreshold, Mode=TwoWay}"
@@ -222,23 +222,23 @@
                         CornerRadius="8">
                         <StackPanel Spacing="12">
                             <StackPanel Spacing="2">
-                                <TextBlock FontWeight="SemiBold" Text="Full backups" />
+                                <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Schedule_FullBackups}" />
                                 <TextBlock
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="Control scheduled full backups and missed backup handling."
+                                    Text="{helpers:ResourceString Name=Schedule_FullBackupsDescription}"
                                     TextWrapping="WrapWholeWords" />
                             </StackPanel>
 
-                            <ToggleSwitch Header="Create full backup after an interval" IsOn="{Binding EnableScheduledFullBackups, Mode=TwoWay}" />
+                            <ToggleSwitch Header="{helpers:ResourceString Name=Schedule_CreateFullBackupAfterInterval}" IsOn="{Binding EnableScheduledFullBackups, Mode=TwoWay}" />
 
                             <NumberBox
-                                Header="Days between full backups"
+                                Header="{helpers:ResourceString Name=Schedule_DaysBetweenFullBackups}"
                                 Minimum="1"
                                 SpinButtonPlacementMode="Inline"
                                 Value="{Binding ScheduledFullBackupDays, Mode=TwoWay}"
                                 Width="190" />
 
-                            <ToggleSwitch Header="Perform missed scheduled backups later" IsOn="{Binding PerformMissedBackupsLater, Mode=TwoWay}" />
+                            <ToggleSwitch Header="{helpers:ResourceString Name=Schedule_PerformMissedLater}" IsOn="{Binding PerformMissedBackupsLater, Mode=TwoWay}" />
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -256,8 +256,8 @@
                     HorizontalAlignment="Right"
                     Orientation="Horizontal"
                     Spacing="10">
-                    <Button Command="{Binding CancelCommand}">Cancel</Button>
-                    <Button Command="{Binding SaveCommand}" Style="{StaticResource AccentButtonStyle}">Save</Button>
+                    <Button Command="{Binding CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
+                    <Button Command="{Binding SaveCommand}" Style="{StaticResource AccentButtonStyle}" Content="{helpers:ResourceString Name=MsgBox_Save}" />
                 </StackPanel>
             </Grid>
         </Grid>

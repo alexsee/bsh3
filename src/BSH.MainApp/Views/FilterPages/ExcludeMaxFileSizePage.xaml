@@ -1,7 +1,8 @@
 <Page
     x:Class="BSH.MainApp.Views.FilterPages.ExcludeMaxFileSizePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:helpers="using:BSH.MainApp.Helpers">
 
     <Grid Padding="8" RowSpacing="12">
         <Grid.RowDefinitions>
@@ -10,11 +11,11 @@
         </Grid.RowDefinitions>
 
         <CheckBox Grid.Row="0"
-                  Content="Exclude files larger than this size"
+                  Content="{helpers:ResourceString Name=Filter_ExcludeLargerThan}"
                   IsChecked="{Binding ExcludeFilesBigger, Mode=TwoWay}" />
 
         <NumberBox Grid.Row="1"
-                   Header="Maximum file size"
+                   Header="{helpers:ResourceString Name=Filter_MaximumFileSize}"
                    Minimum="0"
                    SpinButtonPlacementMode="Inline"
                    Value="{Binding ExcludeFileBigger, Mode=TwoWay}" />
