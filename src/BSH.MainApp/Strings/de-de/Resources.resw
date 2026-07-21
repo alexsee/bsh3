@@ -1340,6 +1340,9 @@ Version {0}</value>
   <data name="SwitchStorage_MediumType" xml:space="preserve">
     <value>Medientyp</value>
   </data>
+  <data name="SwitchStorage_NetworkConnectionSuccessful" xml:space="preserve">
+    <value>Netzwerkverbindung erfolgreich.</value>
+  </data>
   <data name="SwitchStorage_RefreshDrives" xml:space="preserve">
     <value>Laufwerke aktualisieren</value>
   </data>

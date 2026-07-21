@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
@@ -402,24 +403,23 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     public void UseLocalPath(string folderPath)
     {
         this.LocalDevicePath = folderPath;
-        this.configurationManager.BackupFolder = folderPath;
 
-        if (folderPath.StartsWith(@"\\", StringComparison.Ordinal))
+        if (MediaTargetApplier.IsUncPath(folderPath))
         {
+            MediaTargetApplier.ApplyUncTarget(
+                this.configurationManager,
+                folderPath,
+                this.LocalUNCUser,
+                this.LocalUNCPassword);
             return;
         }
 
         this.LocalUNCUser = "";
         this.LocalUNCPassword = "";
-
-        if (folderPath.Length >= 3)
-        {
-            this.configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(folderPath[..3]);
-            if (this.configurationManager.MediaVolumeSerial == null || this.configurationManager.MediaVolumeSerial == "0")
-            {
-                this.configurationManager.MediaVolumeSerial = "";
-            }
-        }
+        MediaTargetApplier.ApplyLocalTarget(
+            this.configurationManager,
+            folderPath,
+            MediaTargetApplier.ResolveVolumeSerial(folderPath));
     }
 
     public async Task MoveExistingLocalBackupDataAsync(string newFolderPath)

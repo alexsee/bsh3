@@ -518,6 +518,42 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte erfolgreich aufgebaut werden. ähnelt.
+        /// </summary>
+        public static string DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Erfolgreich ähnelt.
+        /// </summary>
+        public static string DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TITLE", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Kein gültiger Netzwerkpfad. ähnelt.
+        /// </summary>
+        public static string DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TEXT", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Netzwerkpfad eingeben ähnelt.
+        /// </summary>
+        public static string DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_CHANGE_MEDIA_INVALID_UNC_PATH_TITLE", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Kein Sicherungsmedium ausgewählt.
         ///
         ///Sie haben kein Medium ausgewählt, auf das gesichert werden soll. Um den Vorgang fortzusetzen müssen Sie ein Medium der Liste auswählen. ähnelt.

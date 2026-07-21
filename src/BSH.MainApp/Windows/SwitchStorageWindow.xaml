@@ -36,8 +36,9 @@
                 <ComboBox
                     Header="{helpers:ResourceString Name=SwitchStorage_MediumType}"
                     HorizontalAlignment="Stretch"
-                    ItemsSource="{x:Bind ViewModel.MediumTypeOptions}"
-                    SelectedIndex="{x:Bind ViewModel.SelectedMediumIndex, Mode=TwoWay}" />
+                    ItemsSource="{x:Bind ViewModel.MediumOptions}"
+                    SelectedItem="{x:Bind ViewModel.SelectedMedium, Mode=TwoWay}"
+                    DisplayMemberPath="DisplayName" />
 
                 <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">
                     <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=SwitchStorage_SelectDrive}" />
@@ -63,6 +64,14 @@
                         SelectedItem="{x:Bind ViewModel.FtpEncoding, Mode=TwoWay}" />
                     <CheckBox Content="{helpers:ResourceString Name=SwitchStorage_EnforceUnencrypted}" IsChecked="{x:Bind ViewModel.FtpEnforceUnencrypted, Mode=TwoWay}" />
                     <Button Command="{x:Bind ViewModel.TestFtpConnectionCommand}" Content="{helpers:ResourceString Name=SwitchStorage_TestConnection}" HorizontalAlignment="Left" />
+                </StackPanel>
+
+                <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.UncTargetVisibility, Mode=OneWay}">
+                    <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Target_Unc_Title}" />
+                    <TextBox Header="{helpers:ResourceString Name=Setup_Target_NetworkPath}" Text="{x:Bind ViewModel.UncPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Header="{helpers:ResourceString Name=Setup_Target_UsernameOptional}" Text="{x:Bind ViewModel.UncUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <PasswordBox Header="{helpers:ResourceString Name=Setup_Target_PasswordOptional}" Password="{Binding UncPassword, Mode=TwoWay}" />
+                    <Button Command="{x:Bind ViewModel.TestUncConnectionCommand}" Content="{helpers:ResourceString Name=SwitchStorage_TestConnection}" HorizontalAlignment="Left" />
                 </StackPanel>
 
                 <TextBlock

@@ -19,9 +19,9 @@
         <converters:EnumComparisonConverter x:Key="EnumComparisonConverter" />
         <engine:TaskType x:Key="TaskType_Auto">Auto</engine:TaskType>
         <engine:TaskType x:Key="TaskType_Manual">Manual</engine:TaskType>
-        <models:SetupTargetKind x:Key="Target_Local">LocalDrive</models:SetupTargetKind>
-        <models:SetupTargetKind x:Key="Target_Unc">Unc</models:SetupTargetKind>
-        <models:SetupTargetKind x:Key="Target_Ftp">Ftp</models:SetupTargetKind>
+        <engine:MediaTargetKind x:Key="Target_Local">LocalDrive</engine:MediaTargetKind>
+        <engine:MediaTargetKind x:Key="Target_Unc">Unc</engine:MediaTargetKind>
+        <engine:MediaTargetKind x:Key="Target_Ftp">Ftp</engine:MediaTargetKind>
         <models:SetupImportSourceKind x:Key="Import_Local">LocalMedia</models:SetupImportSourceKind>
         <models:SetupImportSourceKind x:Key="Import_Ftp">Ftp</models:SetupImportSourceKind>
         <models:SetupImportSourceKind x:Key="Import_Path">ExplicitPath</models:SetupImportSourceKind>
@@ -186,21 +186,21 @@
                                 Glyph="&#xEDA2;"
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Local}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
-                                CommandParameter="{converters:EnumValue Type=models:SetupTargetKind, Member=LocalDrive}" />
+                                CommandParameter="{converters:EnumValue Type=engine:MediaTargetKind, Member=LocalDrive}" />
                             <controls:SetupOptionCard
                                 Title="{helpers:ResourceString Name=Setup_Target_Unc_Title}"
                                 Description="{helpers:ResourceString Name=Setup_Target_Unc_Description}"
                                 Glyph="&#xE968;"
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Unc}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
-                                CommandParameter="{converters:EnumValue Type=models:SetupTargetKind, Member=Unc}" />
+                                CommandParameter="{converters:EnumValue Type=engine:MediaTargetKind, Member=Unc}" />
                             <controls:SetupOptionCard
                                 Title="{helpers:ResourceString Name=Setup_Target_Ftp_Title}"
                                 Description="{helpers:ResourceString Name=Setup_Target_Ftp_Description}"
                                 Glyph="&#xE839;"
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Ftp}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
-                                CommandParameter="{converters:EnumValue Type=models:SetupTargetKind, Member=Ftp}" />
+                                CommandParameter="{converters:EnumValue Type=engine:MediaTargetKind, Member=Ftp}" />
                         </StackPanel>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">

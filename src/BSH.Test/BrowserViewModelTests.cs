@@ -237,11 +237,38 @@ public class BrowserViewModelTests
         var jobService = new BrowserJobService();
         var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
         viewModel.CurrentVersion = Version("2");
-        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = @"\source\docs\", IsFile = false });
+        // Production BrowserContentService stores slash-stripped folder paths.
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = @"source\docs", IsFile = false });
 
         await viewModel.RestoreAllToCommand.ExecuteAsync(null);
 
         Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\", @"D:\RestoreHere")));
+    }
+
+    [Test]
+    public async Task RestoreFileCommand_NormalizesSelectedFolderPathForRestoreJob()
+    {
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "docs", FullPath = @"source\docs", IsFile = false };
+
+        await viewModel.RestoreFileCommand.ExecuteAsync(null);
+
+        Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\", "")));
+    }
+
+    [Test]
+    public async Task RestoreAllCommand_NormalizesCurrentFolderPathForRestoreJob()
+    {
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = @"source\docs", IsFile = false });
+
+        await viewModel.RestoreAllCommand.ExecuteAsync(null);
+
+        Assert.That(jobService.RestoreCalls.Single(), Is.EqualTo(("2", @"\source\docs\", "")));
     }
 
     private static BrowserViewModel CreateViewModel(
