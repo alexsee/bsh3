@@ -160,7 +160,7 @@ public class EditTests
     }
 
     [Test]
-    public async Task Edit_SharedEncryptedPackageLinkedToMultipleVersions_SurfacesSecondDecryptError()
+    public async Task Edit_SharedEncryptedPackageLinkedToMultipleVersions_DecryptsOnceSuccessfully()
     {
         configurationManager.Encrypt = 1;
         configurationManager.EncryptPassMD5 = "existing-hash";
@@ -172,14 +172,16 @@ public class EditTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "secret.txt", @"\docs\", 6, "");
         await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (1, 2)");
 
+        // EditJob writes fileType updates on the same SQLite connection while the
+        // editable-files reader is still open, so a shared package is processed once.
         var storage = new StorageMock(failSecondDecryptOfSameFile: true);
         var editJob = CreateEditJob(storage);
         editJob.Password = "test123";
         await editJob.EditAsync();
 
         Assert.That(storage.DecryptedFiles, Has.Count.EqualTo(1));
-        Assert.That(editJob.FileErrorList.Count, Is.EqualTo(1));
-        Assert.That(configurationManager.Encrypt, Is.EqualTo(1), "Partial edit must keep encryption flags.");
+        Assert.That(editJob.FileErrorList, Is.Empty);
+        Assert.That(configurationManager.Encrypt, Is.EqualTo(0));
 
         using var dbClient = dbClientFactory.CreateDbClient();
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileType FROM fileversiontable WHERE fileversionID = 1")), Is.EqualTo(1));

@@ -444,19 +444,17 @@ public class BackupTests
     public async Task Backup_NoChanges_RefreshesVersionDirectoryViaRename()
     {
         var modified = new DateTime(2024, 5, 1, 12, 0, 0, DateTimeKind.Local);
-        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
-            [],
-            [
-                new FileTableRow
-                {
-                    FileName = "same.txt",
-                    FilePath = "",
-                    FileRoot = @"D:\Meine Dokumente",
-                    FileSize = 100,
-                    FileDateCreated = modified,
-                    FileDateModified = modified,
-                }
-            ]);
+        FileTableRow UnchangedFile() => new()
+        {
+            FileName = "same.txt",
+            FilePath = "",
+            FileRoot = @"D:\Meine Dokumente",
+            FileSize = 100,
+            FileDateCreated = modified,
+            FileDateModified = modified,
+        };
+
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock([], [UnchangedFile()]);
 
         var storage = new StorageMock();
         var first = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
@@ -469,8 +467,9 @@ public class BackupTests
         var version1 = await queryManager.GetLastBackupAsync();
         Assert.That(version1, Is.Not.Null);
 
-        // Second run with identical file metadata → link-only, then refresh rename path.
+        // Fresh row instances: BackupJob mutates FilePath on the collected rows.
         await Task.Delay(1100);
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock([], [UnchangedFile()]);
         var second = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
         {
             SourceFolder = @"D:\Meine Dokumente",
