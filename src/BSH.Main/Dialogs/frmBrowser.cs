@@ -1671,6 +1671,7 @@ public partial class frmBrowser : IStatusReport
         await OpenFolderAsync(temp);
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     private async void DateiOrdnerAusSicherungenLöschenToolStripMenuItem_Click(object sender, EventArgs e)
     {
         if (lvFiles.SelectedItems.Count <= 0 || lvFiles.SelectedItems.Count >= 2)
