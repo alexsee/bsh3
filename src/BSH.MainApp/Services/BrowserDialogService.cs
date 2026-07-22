@@ -180,6 +180,7 @@ public class BrowserDialogService : IBrowserDialogService
                 var selectedIds = VersionSelection.SelectLastN(versions, count).Select(id => id.ToString()).ToArray();
                 if (selectedIds.Length == 0)
                 {
+                    await ShowNoMatchingVersionsAsync();
                     return DeleteSelectedContentResult.Cancelled;
                 }
 
@@ -192,6 +193,7 @@ public class BrowserDialogService : IBrowserDialogService
                 var selectedIds = VersionSelection.SelectSinceDate(versions, since).Select(id => id.ToString()).ToArray();
                 if (selectedIds.Length == 0)
                 {
+                    await ShowNoMatchingVersionsAsync();
                     return DeleteSelectedContentResult.Cancelled;
                 }
 
@@ -202,6 +204,7 @@ public class BrowserDialogService : IBrowserDialogService
                 var selectedIds = versionList.SelectedItems.Cast<VersionDetails>().Select(x => x.Id).ToArray();
                 if (selectedIds.Length == 0)
                 {
+                    await ShowNoMatchingVersionsAsync();
                     return DeleteSelectedContentResult.Cancelled;
                 }
 
@@ -225,6 +228,22 @@ public class BrowserDialogService : IBrowserDialogService
                 ? scopeResult
                 : DeleteSelectedContentResult.Cancelled;
         });
+    }
+
+    private async Task ShowNoMatchingVersionsAsync()
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = App.MainWindow.Content.XamlRoot,
+            Title = "Browser_DeleteFromRange_Title".GetLocalized(),
+            Content = new TextBlock
+            {
+                Text = "Browser_DeleteFromRange_NoVersions".GetLocalized(),
+                TextWrapping = TextWrapping.Wrap
+            },
+            CloseButtonText = "MsgBox_OK".GetLocalized()
+        };
+        await dialog.ShowAsync();
     }
 
     public async Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite)

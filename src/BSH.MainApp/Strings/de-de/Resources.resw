@@ -133,6 +133,9 @@
   <data name="Browser_DeleteFromRange_LastN_Value" xml:space="preserve">
     <value>Anzahl der Sicherungen</value>
   </data>
+  <data name="Browser_DeleteFromRange_NoVersions" xml:space="preserve">
+    <value>Keine passenden Sicherungen für die gewählte Auswahl gefunden.</value>
+  </data>
   <data name="Browser_DeleteFromRange_Selected" xml:space="preserve">
     <value>Aus ausgewählten Sicherungen</value>
   </data>

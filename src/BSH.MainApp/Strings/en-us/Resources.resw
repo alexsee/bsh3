@@ -133,6 +133,9 @@
   <data name="Browser_DeleteFromRange_LastN_Value" xml:space="preserve">
     <value>Number of backups</value>
   </data>
+  <data name="Browser_DeleteFromRange_NoVersions" xml:space="preserve">
+    <value>No matching backups were found for the selected options.</value>
+  </data>
   <data name="Browser_DeleteFromRange_Selected" xml:space="preserve">
     <value>From selected backups</value>
   </data>

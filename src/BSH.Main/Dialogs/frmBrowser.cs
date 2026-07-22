@@ -1681,6 +1681,17 @@ public partial class frmBrowser : IStatusReport
         var selected = lvFiles.SelectedItems[0];
         var isFolder = selected.ImageKey == "folder";
         var versions = BackupLogic.QueryManager.GetVersions();
+        if (!isFolder && selectedVersion != null)
+        {
+            var details = await BackupLogic.QueryManager.GetFileDetailsAsync(
+                selectedVersion.Id,
+                selected.Text,
+                selected.Tag?.ToString());
+            if (details?.AvailableVersions is { Count: > 0 })
+            {
+                versions = details.AvailableVersions.ToList();
+            }
+        }
 
         using (var scopeDialog = new frmDeleteSingleScope(versions, !isFolder))
         {
