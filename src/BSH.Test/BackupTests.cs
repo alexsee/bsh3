@@ -364,6 +364,231 @@ public class BackupTests
         Assert.That(version, Is.Null);
     }
 
+    [Test]
+    public async Task FullBackup_ForcesNewPackagesForUnchangedFiles()
+    {
+        var modified = new DateTime(2024, 1, 2, 3, 4, 5, DateTimeKind.Local);
+        var created = new DateTime(2024, 1, 2, 3, 0, 0, DateTimeKind.Local);
+
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
+            [],
+            [
+                new FileTableRow
+                {
+                    FileName = "stable.txt",
+                    FilePath = "",
+                    FileRoot = @"D:\Meine Dokumente",
+                    FileSize = 2048,
+                    FileDateCreated = created,
+                    FileDateModified = modified,
+                }
+            ]);
+
+        var storage = new StorageMock();
+        var first = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = @"D:\Meine Dokumente",
+            Title = "first",
+            Description = "",
+        };
+        await first.BackupAsync(CancellationToken.None);
+
+        var second = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = @"D:\Meine Dokumente",
+            Title = "full",
+            Description = "",
+            FullBackup = true,
+        };
+        await second.BackupAsync(CancellationToken.None);
+
+        Assert.That(storage.CopyFileToStorageCalls, Is.EqualTo(2));
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(2));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink")), Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task Backup_PersistsEmptyFolders()
+    {
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
+            [new FolderTableRow(@"D:\Meine Dokumente\empty", @"D:\Meine Dokumente")],
+            [
+                new FileTableRow
+                {
+                    FileName = "keep.txt",
+                    FilePath = "",
+                    FileRoot = @"D:\Meine Dokumente",
+                    FileSize = 10,
+                    FileDateCreated = DateTime.Now,
+                    FileDateModified = DateTime.Now,
+                }
+            ]);
+
+        var storage = new StorageMock();
+        var backupJob = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = @"D:\Meine Dokumente",
+            Title = "folders",
+            Description = "",
+        };
+        await backupJob.BackupAsync(CancellationToken.None);
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM foldertable")), Is.EqualTo(1));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM folderlink")), Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task Backup_NoChanges_RefreshesVersionDirectoryViaRename()
+    {
+        var modified = new DateTime(2024, 5, 1, 12, 0, 0, DateTimeKind.Local);
+        FileTableRow UnchangedFile() => new()
+        {
+            FileName = "same.txt",
+            FilePath = "",
+            FileRoot = @"D:\Meine Dokumente",
+            FileSize = 100,
+            FileDateCreated = modified,
+            FileDateModified = modified,
+        };
+
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock([], [UnchangedFile()]);
+
+        var storage = new StorageMock();
+        var first = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = @"D:\Meine Dokumente",
+            Title = "first",
+            Description = "",
+        };
+        await first.BackupAsync(CancellationToken.None);
+        var version1 = await queryManager.GetLastBackupAsync();
+        Assert.That(version1, Is.Not.Null);
+
+        // Fresh row instances: BackupJob mutates FilePath on the collected rows.
+        await Task.Delay(1100);
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock([], [UnchangedFile()]);
+        var second = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = @"D:\Meine Dokumente",
+            Title = "refresh",
+            Description = "",
+        };
+        await second.BackupAsync(CancellationToken.None);
+
+        Assert.That(storage.CopyFileToStorageCalls, Is.EqualTo(1), "Unchanged file must not be recopied.");
+        Assert.That(storage.RenamedDirectories, Has.Count.EqualTo(1));
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM versiontable WHERE versionStatus = 0")), Is.EqualTo(1));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task Backup_AbortsWhenFreeSpaceClearlyInsufficient()
+    {
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
+            [],
+            [
+                new FileTableRow
+                {
+                    FileName = "big.bin",
+                    FilePath = "",
+                    FileRoot = @"D:\Meine Dokumente",
+                    FileSize = 5_000_000,
+                    FileDateCreated = DateTime.Now,
+                    FileDateModified = DateTime.Now,
+                }
+            ]);
+
+        var storage = new StorageMock(freeSpaceBytes: 1000);
+        var observer = new Helpers.JobReportStub();
+        var backupJob = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = @"D:\Meine Dokumente",
+            Title = "disk",
+            Description = "",
+        };
+        backupJob.AddObserver(observer);
+
+        await backupJob.BackupAsync(CancellationToken.None);
+
+        Assert.That(observer.ReportedStates, Does.Contain(JobState.ERROR));
+        Assert.That(observer.InsufficientDiskSpaceCalls, Is.EqualTo(1));
+        Assert.That(storage.CopyFileToStorageCalls, Is.EqualTo(0));
+        Assert.That(await queryManager.GetLastBackupAsync(), Is.Null);
+    }
+
+    [Test]
+    public async Task Backup_UnchangedFile_LinksExistingPackageOnIncremental()
+    {
+        var modified = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Local);
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
+            [],
+            [
+                new FileTableRow
+                {
+                    FileName = "link.txt",
+                    FilePath = "",
+                    FileRoot = @"D:\Meine Dokumente",
+                    FileSize = 512,
+                    FileDateCreated = modified,
+                    FileDateModified = modified,
+                }
+            ]);
+
+        var storage = new StorageMock();
+        var first = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = @"D:\Meine Dokumente",
+            Title = "v1",
+            Description = "",
+        };
+        await first.BackupAsync(CancellationToken.None);
+
+        // Force a distinct version date so we get a real second version with a new file (plus the unchanged one).
+        await Task.Delay(1100);
+        fileCollectorServiceFactory = new FileCollectorServiceFactoryMock(
+            [],
+            [
+                new FileTableRow
+                {
+                    FileName = "link.txt",
+                    FilePath = "",
+                    FileRoot = @"D:\Meine Dokumente",
+                    FileSize = 512,
+                    FileDateCreated = modified,
+                    FileDateModified = modified,
+                },
+                new FileTableRow
+                {
+                    FileName = "new.txt",
+                    FilePath = "",
+                    FileRoot = @"D:\Meine Dokumente",
+                    FileSize = 64,
+                    FileDateCreated = DateTime.Now,
+                    FileDateModified = DateTime.Now,
+                }
+            ]);
+
+        var second = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vssClient, versionQueryRepository, backupMutationRepository)
+        {
+            SourceFolder = @"D:\Meine Dokumente",
+            Title = "v2",
+            Description = "",
+        };
+        await second.BackupAsync(CancellationToken.None);
+
+        Assert.That(storage.CopyFileToStorageCalls, Is.EqualTo(2), "Only the new file should be copied on the second run.");
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(2));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync(
+            "SELECT COUNT(*) FROM filelink WHERE fileversionID = 1 AND versionID = 2")), Is.EqualTo(1));
+    }
+
     private BackupJob CreateBackupJobForSingleTempFile(StorageMock storage, VssClientMock vss, string extension)
     {
         var filePath = CreateTempFile(extension);
