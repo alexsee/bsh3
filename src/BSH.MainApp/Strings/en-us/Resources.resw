@@ -112,6 +112,33 @@
   <data name="Browser_DeleteFromAll_Title" xml:space="preserve">
     <value>Delete from all backups</value>
   </data>
+  <data name="Browser_DeleteFromRange_All" xml:space="preserve">
+    <value>From all backups</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Confirm" xml:space="preserve">
+    <value>Are you sure you want to delete this {0} from {1} selected backup(s)?</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Intro" xml:space="preserve">
+    <value>Choose which backups should no longer contain this {0}:</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastDays" xml:space="preserve">
+    <value>From backups in the last X days</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastDays_Value" xml:space="preserve">
+    <value>Number of days</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastN" xml:space="preserve">
+    <value>From the last N backups</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastN_Value" xml:space="preserve">
+    <value>Number of backups</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Selected" xml:space="preserve">
+    <value>From selected backups</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Title" xml:space="preserve">
+    <value>Delete from backups</value>
+  </data>
   <data name="Browser_DeleteMultipleBackups" xml:space="preserve">
     <value>Delete multiple backups</value>
   </data>

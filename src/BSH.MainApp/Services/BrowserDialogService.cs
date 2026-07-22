@@ -1,6 +1,7 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
@@ -68,14 +69,162 @@ public class BrowserDialogService : IBrowserDialogService
         });
     }
 
-    public async Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item)
+    public async Task<DeleteSelectedContentResult> ShowDeleteSelectedContentWindowAsync(
+        FileOrFolderItem item,
+        IReadOnlyList<VersionDetails> versions)
     {
-        var itemType = item.IsFile ? "Browser_DeleteFromAll_File".GetLocalized() : "Browser_DeleteFromAll_Folder".GetLocalized();
-        var messageBoxResult = await presentationService.ShowMessageBoxAsync(
-            "Browser_DeleteFromAll_Title".GetLocalized(),
-            string.Format("Browser_DeleteFromAll_Confirm".GetLocalized() ?? "Browser_DeleteFromAll_Confirm", itemType),
-            new List<IUICommand> { new UICommand("MsgBox_Yes".GetLocalized()), new UICommand("MsgBox_No".GetLocalized()) });
-        return messageBoxResult == ContentDialogResult.Primary;
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            var itemType = item.IsFile
+                ? "Browser_DeleteFromAll_File".GetLocalized()
+                : "Browser_DeleteFromAll_Folder".GetLocalized();
+
+            var radioAll = new RadioButton
+            {
+                Content = "Browser_DeleteFromRange_All".GetLocalized(),
+                IsChecked = true,
+                GroupName = "DeleteScope"
+            };
+            var radioLastN = new RadioButton
+            {
+                Content = "Browser_DeleteFromRange_LastN".GetLocalized(),
+                GroupName = "DeleteScope"
+            };
+            var radioLastDays = new RadioButton
+            {
+                Content = "Browser_DeleteFromRange_LastDays".GetLocalized(),
+                GroupName = "DeleteScope"
+            };
+            var radioSelected = new RadioButton
+            {
+                Content = "Browser_DeleteFromRange_Selected".GetLocalized(),
+                GroupName = "DeleteScope"
+            };
+
+            var lastNBox = new NumberBox
+            {
+                Header = "Browser_DeleteFromRange_LastN_Value".GetLocalized(),
+                Value = Math.Min(3, Math.Max(1, versions.Count)),
+                Minimum = 1,
+                Maximum = Math.Max(1, versions.Count),
+                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
+                IsEnabled = false
+            };
+            var lastDaysBox = new NumberBox
+            {
+                Header = "Browser_DeleteFromRange_LastDays_Value".GetLocalized(),
+                Value = 30,
+                Minimum = 1,
+                Maximum = 3650,
+                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
+                IsEnabled = false
+            };
+            var versionList = new ListView
+            {
+                SelectionMode = ListViewSelectionMode.Multiple,
+                ItemsSource = versions,
+                DisplayMemberPath = nameof(VersionDetails.CreationDate),
+                MaxHeight = 220,
+                IsEnabled = false
+            };
+
+            void UpdateEnabledState()
+            {
+                lastNBox.IsEnabled = radioLastN.IsChecked == true;
+                lastDaysBox.IsEnabled = radioLastDays.IsChecked == true;
+                versionList.IsEnabled = radioSelected.IsChecked == true;
+            }
+
+            radioAll.Checked += (_, _) => UpdateEnabledState();
+            radioLastN.Checked += (_, _) => UpdateEnabledState();
+            radioLastDays.Checked += (_, _) => UpdateEnabledState();
+            radioSelected.Checked += (_, _) => UpdateEnabledState();
+
+            var panel = new StackPanel { Spacing = 8, MinWidth = 420 };
+            panel.Children.Add(new TextBlock
+            {
+                Text = string.Format("Browser_DeleteFromRange_Intro".GetLocalized() ?? "Browser_DeleteFromRange_Intro", itemType),
+                TextWrapping = TextWrapping.Wrap
+            });
+            panel.Children.Add(radioAll);
+            panel.Children.Add(radioLastN);
+            panel.Children.Add(lastNBox);
+            panel.Children.Add(radioLastDays);
+            panel.Children.Add(lastDaysBox);
+            panel.Children.Add(radioSelected);
+            panel.Children.Add(versionList);
+
+            var dialog = new ContentDialog
+            {
+                XamlRoot = App.MainWindow.Content.XamlRoot,
+                Title = "Browser_DeleteFromRange_Title".GetLocalized(),
+                Content = panel,
+                PrimaryButtonText = "MsgBox_Delete".GetLocalized(),
+                CloseButtonText = "MsgBox_Cancel".GetLocalized(),
+                DefaultButton = ContentDialogButton.Close
+            };
+
+            if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+            {
+                return DeleteSelectedContentResult.Cancelled;
+            }
+
+            DeleteSelectedContentResult scopeResult;
+            if (radioAll.IsChecked == true)
+            {
+                scopeResult = DeleteSelectedContentResult.AllVersions;
+            }
+            else if (radioLastN.IsChecked == true)
+            {
+                var count = (int)Math.Max(1, lastNBox.Value);
+                var selectedIds = VersionSelection.SelectLastN(versions, count).Select(id => id.ToString()).ToArray();
+                if (selectedIds.Length == 0)
+                {
+                    return DeleteSelectedContentResult.Cancelled;
+                }
+
+                scopeResult = DeleteSelectedContentResult.FromVersions(selectedIds);
+            }
+            else if (radioLastDays.IsChecked == true)
+            {
+                var days = (int)Math.Max(1, lastDaysBox.Value);
+                var since = DateTime.Now.Date.AddDays(-(days - 1));
+                var selectedIds = VersionSelection.SelectSinceDate(versions, since).Select(id => id.ToString()).ToArray();
+                if (selectedIds.Length == 0)
+                {
+                    return DeleteSelectedContentResult.Cancelled;
+                }
+
+                scopeResult = DeleteSelectedContentResult.FromVersions(selectedIds);
+            }
+            else
+            {
+                var selectedIds = versionList.SelectedItems.Cast<VersionDetails>().Select(x => x.Id).ToArray();
+                if (selectedIds.Length == 0)
+                {
+                    return DeleteSelectedContentResult.Cancelled;
+                }
+
+                scopeResult = DeleteSelectedContentResult.FromVersions(selectedIds);
+            }
+
+            var confirmMessage = scopeResult.DeleteFromAllVersions
+                ? string.Format("Browser_DeleteFromAll_Confirm".GetLocalized() ?? "Browser_DeleteFromAll_Confirm", itemType)
+                : string.Format("Browser_DeleteFromRange_Confirm".GetLocalized() ?? "Browser_DeleteFromRange_Confirm", itemType, scopeResult.VersionIds.Count);
+
+            var confirmDialog = new ContentDialog
+            {
+                XamlRoot = App.MainWindow.Content.XamlRoot,
+                Title = "Browser_DeleteFromRange_Title".GetLocalized(),
+                Content = new TextBlock { Text = confirmMessage, TextWrapping = TextWrapping.Wrap },
+                PrimaryButtonText = "MsgBox_Yes".GetLocalized(),
+                CloseButtonText = "MsgBox_No".GetLocalized()
+            };
+
+            return await confirmDialog.ShowAsync() == ContentDialogResult.Primary
+                ? scopeResult
+                : DeleteSelectedContentResult.Cancelled;
+        });
     }
 
     public async Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite)

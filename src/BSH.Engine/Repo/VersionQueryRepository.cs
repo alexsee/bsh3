@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -175,6 +176,36 @@ public class VersionQueryRepository : IVersionQueryRepository
             "INNER JOIN versionTable AS vt ON " +
             "  fvt.filePackage = vt.versionID " +
             "WHERE fvt.fileID = @fileId",
+            parameters);
+    }
+
+    public async Task<DbDataReader> GetFileVersionsExclusiveToVersionsForDeleteSingleAsync(
+        DbClient dbClient,
+        int fileId,
+        IReadOnlyList<int> versionIds)
+    {
+        ArgumentNullException.ThrowIfNull(versionIds);
+        if (versionIds.Count == 0)
+        {
+            throw new ArgumentException("At least one version ID is required.", nameof(versionIds));
+        }
+
+        var (inClause, inParameters) = SqlParameterBuilder.BuildInClause("v", versionIds);
+        var parameters = SqlParameterBuilder.Combine([("fileId", fileId)], inParameters);
+
+        // Physical payloads that are linked only within the target version set (no remaining outside links).
+        return await dbClient.ExecuteDataReaderAsync(
+            CommandType.Text,
+            "SELECT DISTINCT ft.fileName, ft.filePath, fvt.fileversionid, fvt.fileType, vt.versionDate, fvt.longfilename " +
+            "FROM filelink AS fl " +
+            "INNER JOIN fileversiontable AS fvt ON fl.fileversionID = fvt.fileversionID " +
+            "INNER JOIN filetable AS ft ON fvt.fileID = ft.fileID " +
+            "INNER JOIN versiontable AS vt ON fvt.filePackage = vt.versionID " +
+            "WHERE fvt.fileID = @fileId " +
+            "AND fl.versionID IN (" + inClause + ") " +
+            "AND fvt.fileversionid NOT IN (" +
+            "  SELECT fileversionid FROM filelink WHERE versionID NOT IN (" + inClause + ")" +
+            ")",
             parameters);
     }
 

@@ -377,6 +377,132 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Aus allen Sicherungen ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_ALL {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_ALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die &amp;Abbrechen ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_CANCEL {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_CANCEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sicherungsdatum ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_COLUMN_DATE {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_COLUMN_DATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sind Sie sicher, dass Sie die Auswahl aus allen Sicherungen löschen möchten? ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_CONFIRM_ALL {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_CONFIRM_ALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sind Sie sicher, dass Sie die Auswahl aus {0} Sicherung(en) löschen möchten? ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_CONFIRM_RANGE {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_CONFIRM_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Datei ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_FILE {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Ordner ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_FOLDER {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_FOLDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Wählen Sie, aus welchen Sicherungen diese(r) {0} entfernt werden soll: ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_INTRO {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_INTRO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Aus Sicherungen der letzten X Tage ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_LAST_DAYS {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_LAST_DAYS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Aus den letzten N Sicherungen ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_LAST_N {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_LAST_N", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Keine passenden Sicherungen für die gewählte Auswahl gefunden. ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_NO_VERSIONS_TEXT {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_NO_VERSIONS_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die &amp;OK ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_OK {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Aus ausgewählten Sicherungen ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_SELECTED {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_SELECTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Aus Sicherungen löschen ähnelt.
+        /// </summary>
+        public static string DLG_DELETE_SINGLE_SCOPE_TITLE {
+            get {
+                return ResourceManager.GetString("DLG_DELETE_SINGLE_SCOPE_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Suchergebnis ähnelt.
         /// </summary>
         public static string DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT {

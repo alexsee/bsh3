@@ -1679,15 +1679,44 @@ public partial class frmBrowser : IStatusReport
         }
 
         var selected = lvFiles.SelectedItems[0];
+        var isFolder = selected.ImageKey == "folder";
+        var versions = BackupLogic.QueryManager.GetVersions();
 
-        // file or folder
-        if (selected.ImageKey == "folder")
+        using (var scopeDialog = new frmDeleteSingleScope(versions, !isFolder))
         {
-            await BackupLogic.BackupController.DeleteSingleFileAsync("", selected.Tag.ToString() + "%");
-        }
-        else
-        {
-            await BackupLogic.BackupController.DeleteSingleFileAsync(selected.Text, selected.Tag.ToString());
+            if (scopeDialog.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+
+            var versionIds = scopeDialog.ResolveVersionIds();
+            if (versionIds is { Count: 0 })
+            {
+                MessageBox.Show(
+                    Resources.DLG_DELETE_SINGLE_SCOPE_NO_VERSIONS_TEXT,
+                    Resources.DLG_DELETE_SINGLE_SCOPE_TITLE,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            var confirmText = versionIds == null
+                ? Resources.DLG_DELETE_SINGLE_SCOPE_CONFIRM_ALL
+                : string.Format(Resources.DLG_DELETE_SINGLE_SCOPE_CONFIRM_RANGE, versionIds.Count);
+
+            if (MessageBox.Show(confirmText, Resources.DLG_DELETE_SINGLE_SCOPE_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            {
+                return;
+            }
+
+            if (isFolder)
+            {
+                await BackupLogic.BackupController.DeleteSingleFileAsync("", selected.Tag.ToString() + "%", versionIds: versionIds);
+            }
+            else
+            {
+                await BackupLogic.BackupController.DeleteSingleFileAsync(selected.Text, selected.Tag.ToString(), versionIds: versionIds);
+            }
         }
 
         await OpenFolderAsync(selectedFolder);

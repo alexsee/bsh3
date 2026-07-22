@@ -220,6 +220,48 @@
   <data name="DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE" xml:space="preserve">
     <value>Sicherung löschen</value>
   </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_ALL" xml:space="preserve">
+    <value>Aus allen Sicherungen</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_CANCEL" xml:space="preserve">
+    <value>&amp;Abbrechen</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_COLUMN_DATE" xml:space="preserve">
+    <value>Sicherungsdatum</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_CONFIRM_ALL" xml:space="preserve">
+    <value>Sind Sie sicher, dass Sie die Auswahl aus allen Sicherungen löschen möchten?</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_CONFIRM_RANGE" xml:space="preserve">
+    <value>Sind Sie sicher, dass Sie die Auswahl aus {0} Sicherung(en) löschen möchten?</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_FILE" xml:space="preserve">
+    <value>Datei</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_FOLDER" xml:space="preserve">
+    <value>Ordner</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_INTRO" xml:space="preserve">
+    <value>Wählen Sie, aus welchen Sicherungen diese(r) {0} entfernt werden soll:</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_LAST_DAYS" xml:space="preserve">
+    <value>Aus Sicherungen der letzten X Tage</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_LAST_N" xml:space="preserve">
+    <value>Aus den letzten N Sicherungen</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_NO_VERSIONS_TEXT" xml:space="preserve">
+    <value>Keine passenden Sicherungen für die gewählte Auswahl gefunden.</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_OK" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_SELECTED" xml:space="preserve">
+    <value>Aus ausgewählten Sicherungen</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_TITLE" xml:space="preserve">
+    <value>Aus Sicherungen löschen</value>
+  </data>
   <data name="DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT" xml:space="preserve">
     <value>Suchergebnis für "{0}"</value>
   </data>

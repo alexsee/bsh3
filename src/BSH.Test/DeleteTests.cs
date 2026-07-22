@@ -134,6 +134,113 @@ public class DeleteTests
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filetable")), Is.EqualTo(0));
     }
 
+    [Test]
+    public async Task TestDeleteSingleFromSelectedVersionsKeepsSharedStorageWhenOtherLinksRemain()
+    {
+        // Same content version linked into backups 1, 2, and 3 (unchanged file).
+        await SeedVersionAsync(1, "01-01-2021 00-00-00");
+        await SeedVersionAsync(2, "02-01-2021 00-00-00");
+        await SeedVersionAsync(3, "03-01-2021 00-00-00");
+        await SeedSharedFileAsync(1, 1, [1, 2, 3], "report.txt", @"\docs\", 1, "");
+
+        var storage = new RecordingDeleteStorage();
+        var deleteJob = CreateDeleteSingleJob(storage);
+
+        await deleteJob.DeleteSingleAsync("report.txt", @"\docs\", [2, 3]);
+
+        Assert.That(storage.DeletedPlain, Is.Empty);
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink WHERE fileversionID = 1")), Is.EqualTo(1));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT versionID FROM filelink WHERE fileversionID = 1")), Is.EqualTo(1));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(1));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filetable")), Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task TestDeleteSingleFromSelectedVersionsDeletesStorageWhenLastLinksRemoved()
+    {
+        await SeedVersionAsync(1, "01-01-2021 00-00-00");
+        await SeedVersionAsync(2, "02-01-2021 00-00-00");
+        await SeedSharedFileAsync(1, 1, [1, 2], "report.txt", @"\docs\", 1, "");
+
+        var storage = new RecordingDeleteStorage();
+        var deleteJob = CreateDeleteSingleJob(storage);
+
+        await deleteJob.DeleteSingleAsync("report.txt", @"\docs\", [1, 2]);
+
+        Assert.That(storage.DeletedPlain, Has.Count.EqualTo(1));
+        Assert.That(storage.DeletedPlain[0], Is.EqualTo(Path.Combine("01-01-2021 00-00-00" + @"\docs\", "report.txt")));
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink")), Is.EqualTo(0));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(0));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filetable")), Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task TestDeleteSingleFromSelectedVersionsOnlyRemovesUniqueContentVersions()
+    {
+        // Version 1 has content A; versions 2+3 share content B. Purging 2+3 deletes only B.
+        await SeedVersionAsync(1, "01-01-2021 00-00-00");
+        await SeedVersionAsync(2, "02-01-2021 00-00-00");
+        await SeedVersionAsync(3, "03-01-2021 00-00-00");
+        await SeedFileForVersionAsync(1, 1, 1, "report.txt", @"\docs\", 1, "");
+        await SeedFileVersionLinkAsync(1, 2, 2, "");
+        await SeedFileLinkAsync(2, 3);
+
+        var storage = new RecordingDeleteStorage();
+        var deleteJob = CreateDeleteSingleJob(storage);
+
+        await deleteJob.DeleteSingleAsync("report.txt", @"\docs\", [2, 3]);
+
+        Assert.That(storage.DeletedPlain, Has.Count.EqualTo(1));
+        Assert.That(storage.DeletedPlain[0], Is.EqualTo(Path.Combine("02-01-2021 00-00-00" + @"\docs\", "report.txt")));
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink")), Is.EqualTo(1));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileversionID FROM filelink")), Is.EqualTo(1));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(1));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filetable")), Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task TestDeleteSingleFolderFilterRespectsSelectedVersions()
+    {
+        await SeedVersionAsync(1, "01-01-2021 00-00-00");
+        await SeedVersionAsync(2, "02-01-2021 00-00-00");
+        await SeedSharedFileAsync(1, 1, [1, 2], "a.txt", @"\docs\", 1, "");
+        await SeedSharedFileAsync(2, 2, [1, 2], "b.txt", @"\docs\sub\", 1, "");
+
+        var storage = new RecordingDeleteStorage();
+        var deleteJob = CreateDeleteSingleJob(storage);
+
+        await deleteJob.DeleteSingleAsync(string.Empty, @"\docs\%", [2]);
+
+        Assert.That(storage.DeletedPlain, Is.Empty);
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink WHERE versionID = 2")), Is.EqualTo(0));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink WHERE versionID = 1")), Is.EqualTo(2));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(2));
+    }
+
+    [Test]
+    public void TestVersionSelectionSelectsLastNAndSinceDate()
+    {
+        var versions = new List<VersionDetails>
+        {
+            new() { Id = "1", CreationDate = new DateTime(2021, 1, 1) },
+            new() { Id = "2", CreationDate = new DateTime(2021, 1, 10) },
+            new() { Id = "3", CreationDate = new DateTime(2021, 1, 20) },
+        };
+
+        Assert.That(VersionSelection.SelectLastN(versions, 2), Is.EqualTo(new[] { 3, 2 }));
+        Assert.That(VersionSelection.SelectSinceDate(versions, new DateTime(2021, 1, 10)), Is.EqualTo(new[] { 2, 3 }));
+        Assert.That(VersionSelection.SelectLastN(versions, 0), Is.Empty);
+        Assert.That(VersionSelection.SelectLastN(null!, 2), Is.Empty);
+    }
+
     private DeleteJob CreateDeleteJob(IStorageProvider storage, string version)
     {
         return new DeleteJob(
@@ -176,9 +283,42 @@ public class DeleteTests
     {
         await dbClientFactory.ExecuteNonQueryAsync(
             $"INSERT INTO filetable (fileID, fileName, filePath) VALUES ({fileId}, '{fileName}', '{filePath}')");
+        await SeedFileVersionLinkAsync(fileId, fileVersionId, versionId, longFileName, fileType);
+    }
+
+    private async Task SeedSharedFileAsync(
+        int fileId,
+        int fileVersionId,
+        IReadOnlyList<int> versionIds,
+        string fileName,
+        string filePath,
+        int fileType,
+        string longFileName)
+    {
+        await dbClientFactory.ExecuteNonQueryAsync(
+            $"INSERT INTO filetable (fileID, fileName, filePath) VALUES ({fileId}, '{fileName}', '{filePath}')");
+        await SeedFileVersionLinkAsync(fileId, fileVersionId, versionIds[0], longFileName, fileType);
+        for (var i = 1; i < versionIds.Count; i++)
+        {
+            await SeedFileLinkAsync(fileVersionId, versionIds[i]);
+        }
+    }
+
+    private async Task SeedFileVersionLinkAsync(
+        int fileId,
+        int fileVersionId,
+        int packageVersionId,
+        string longFileName,
+        int fileType = 1)
+    {
         await dbClientFactory.ExecuteNonQueryAsync(
             "INSERT INTO fileversiontable (fileversionID, fileStatus, fileType, fileHash, fileDateModified, fileDateCreated, fileSize, filePackage, fileID, longfilename) VALUES " +
-            $"({fileVersionId}, 1, {fileType}, '', '2021-01-01 00:00:00', '2021-01-01 00:00:00', 123, {versionId}, {fileId}, '{longFileName}')");
+            $"({fileVersionId}, 1, {fileType}, '', '2021-01-01 00:00:00', '2021-01-01 00:00:00', 123, {packageVersionId}, {fileId}, '{longFileName}')");
+        await SeedFileLinkAsync(fileVersionId, packageVersionId);
+    }
+
+    private async Task SeedFileLinkAsync(int fileVersionId, int versionId)
+    {
         await dbClientFactory.ExecuteNonQueryAsync(
             $"INSERT INTO filelink (fileversionID, versionID) VALUES ({fileVersionId}, {versionId})");
     }

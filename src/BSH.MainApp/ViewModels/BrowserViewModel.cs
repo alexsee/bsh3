@@ -443,18 +443,47 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        if (!await browserDialogService.ShowDeleteSelectedContentWindowAsync(CurrentItem))
+        if (Versions.Count == 0)
+        {
+            LoadVersions();
+        }
+
+        IReadOnlyList<VersionDetails> candidateVersions = Versions.ToList();
+        if (CurrentItem.IsFile)
+        {
+            var details = await queryManager.GetFileDetailsAsync(CurrentVersion.Id, CurrentItem.Name, CurrentItem.FullPath);
+            if (details?.AvailableVersions is { Count: > 0 })
+            {
+                candidateVersions = details.AvailableVersions;
+            }
+        }
+
+        var deleteResult = await browserDialogService.ShowDeleteSelectedContentWindowAsync(CurrentItem, candidateVersions);
+        if (deleteResult.IsCancelled)
         {
             return;
         }
 
+        IReadOnlyList<int>? versionIds = null;
+        if (!deleteResult.DeleteFromAllVersions)
+        {
+            versionIds = deleteResult.VersionIds
+                .Select(id => int.TryParse(id, out var parsed) ? parsed : 0)
+                .Where(id => id > 0)
+                .ToList();
+            if (versionIds.Count == 0)
+            {
+                return;
+            }
+        }
+
         if (CurrentItem.IsFile)
         {
-            await jobService.DeleteSingleFileAsync(CurrentItem.Name, CurrentItem.FullPath);
+            await jobService.DeleteSingleFileAsync(CurrentItem.Name, CurrentItem.FullPath, versionIds: versionIds);
         }
         else
         {
-            await jobService.DeleteSingleFileAsync(string.Empty, CurrentItem.FullPath + "%");
+            await jobService.DeleteSingleFileAsync(string.Empty, CurrentItem.FullPath + "%", versionIds: versionIds);
         }
 
         await Refresh();
