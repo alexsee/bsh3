@@ -98,6 +98,9 @@ public class BackupServiceTests
     [TearDown]
     public void Cleanup()
     {
+        storage?.Dispose();
+        storage = null;
+
         DbClientFactory.ClosePool();
 
         try

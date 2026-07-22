@@ -23,7 +23,7 @@ public sealed class EngineJobTestContext : IAsyncDisposable
 
     public string DbPath { get; }
 
-    public IDbClientFactory DbClientFactory { get; private set; }
+    public IDbClientFactory DbFactory { get; private set; }
 
     public IConfigurationManager ConfigurationManager { get; private set; }
 
@@ -54,19 +54,19 @@ public sealed class EngineJobTestContext : IAsyncDisposable
     {
         DbClientFactory.ClosePool();
 
-        DbClientFactory = new DbClientFactory();
-        await DbClientFactory.InitializeAsync(DbPath);
+        DbFactory = new DbClientFactory();
+        await DbFactory.InitializeAsync(DbPath);
 
-        ConfigurationManager = new ConfigurationManager(DbClientFactory);
+        ConfigurationManager = new ConfigurationManager(DbFactory);
         await ConfigurationManager.InitializeAsync();
         ConfigurationManager.OldBackupPrevent = "0";
         ConfigurationManager.MediaVolumeSerial = "";
 
         VersionQueryRepository = new VersionQueryRepository();
-        BackupMutationRepository = new BackupMutationRepository(DbClientFactory);
+        BackupMutationRepository = new BackupMutationRepository(DbFactory);
 
         var storageFactory = new StorageFactory(ConfigurationManager);
-        QueryManager = new QueryManager(DbClientFactory, ConfigurationManager, storageFactory);
+        QueryManager = new QueryManager(DbFactory, ConfigurationManager, storageFactory);
     }
 
     public async ValueTask DisposeAsync()
