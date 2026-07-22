@@ -76,7 +76,7 @@ public class BrowserViewModelTests
     [Test]
     public async Task DeleteSelectedContentConfirmsAndCallsDeleteSingleForFile()
     {
-        var dialogService = new BrowserDialogService { ConfirmSelectedContentDelete = true };
+        var dialogService = new BrowserDialogService { SelectedContentResult = DeleteSelectedContentResult.AllVersions };
         var jobService = new BrowserJobService();
         var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
         viewModel.CurrentVersion = Version("2");
@@ -85,7 +85,27 @@ public class BrowserViewModelTests
         await viewModel.DeleteSelectedContentCommand.ExecuteAsync(null);
 
         Assert.That(dialogService.SelectedContentDeletePrompted, Is.True);
-        Assert.That(jobService.DeleteSingleCalls, Is.EqualTo(new[] { ("report.txt", @"\source\docs\") }));
+        Assert.That(jobService.DeleteSingleCalls, Is.EqualTo(new[] { ("report.txt", @"\source\docs\", (IReadOnlyList<int>?)null) }));
+    }
+
+    [Test]
+    public async Task DeleteSelectedContentPassesSelectedVersionIds()
+    {
+        var dialogService = new BrowserDialogService
+        {
+            SelectedContentResult = DeleteSelectedContentResult.FromVersions(["2", "3"])
+        };
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+        await viewModel.DeleteSelectedContentCommand.ExecuteAsync(null);
+
+        Assert.That(jobService.DeleteSingleCalls, Has.Count.EqualTo(1));
+        Assert.That(jobService.DeleteSingleCalls[0].FileFilter, Is.EqualTo("report.txt"));
+        Assert.That(jobService.DeleteSingleCalls[0].FolderFilter, Is.EqualTo(@"\source\docs\"));
+        Assert.That(jobService.DeleteSingleCalls[0].VersionIds, Is.EqualTo(new[] { 2, 3 }));
     }
 
     [Test]
@@ -347,7 +367,7 @@ public class BrowserViewModelTests
 
     private sealed class BrowserJobService : IJobService
     {
-        public List<(string FileFilter, string FolderFilter)> DeleteSingleCalls { get; } = [];
+        public List<(string FileFilter, string FolderFilter, IReadOnlyList<int>? VersionIds)> DeleteSingleCalls { get; } = [];
         public List<List<string>> DeleteBackupsCalls { get; } = [];
         public List<(string Version, string File, string Destination)> RestoreCalls { get; } = [];
         public bool IsCancellationRequested => false;
@@ -356,7 +376,11 @@ public class BrowserViewModelTests
         public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
         public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
         public Task DeleteBackupsAsync(List<string> versions, bool statusDialog = true) { DeleteBackupsCalls.Add(versions); return Task.CompletedTask; }
-        public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true) { DeleteSingleCalls.Add((fileFilter, folderFilter)); return Task.CompletedTask; }
+        public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null)
+        {
+            DeleteSingleCalls.Add((fileFilter, folderFilter, versionIds));
+            return Task.CompletedTask;
+        }
         public CancellationToken GetNewCancellationToken() => CancellationToken.None;
         public Task<bool> RequestPassword() => Task.FromResult(true);
         public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true)
@@ -388,7 +412,7 @@ public class BrowserViewModelTests
         public Task UpdateVersionAsync(string version, VersionDetails versionDetails) => Task.CompletedTask;
         public Task StartBackup(string title, string description, IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false) => Task.CompletedTask;
         public Task StartDelete(string version, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
+        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false, IReadOnlyList<int> versionIds = null) => Task.CompletedTask;
         public Task StartEdit(IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
         public Task StartRestore(string version, string file, string destination, IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => Task.CompletedTask;
         public void UpdateDatabaseFile(string databaseFile) { }
@@ -396,14 +420,21 @@ public class BrowserViewModelTests
 
     private sealed class BrowserDialogService : IBrowserDialogService
     {
-        public bool ConfirmSelectedContentDelete { get; set; }
+        public DeleteSelectedContentResult SelectedContentResult { get; set; } = DeleteSelectedContentResult.Cancelled;
         public bool SelectedContentDeletePrompted { get; private set; }
         public IReadOnlyList<string>? VersionsSelectedForDelete { get; set; }
         public IReadOnlyList<string> MultiDeletePromptedVersions { get; private set; } = [];
+        public IReadOnlyList<VersionDetails> SelectedContentPromptedVersions { get; private set; } = [];
         public string? DestinationFolder { get; set; }
         public bool DestinationPickerPrompted { get; private set; }
 
-        public Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item) { SelectedContentDeletePrompted = true; return Task.FromResult(ConfirmSelectedContentDelete); }
+        public Task<DeleteSelectedContentResult> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item, IReadOnlyList<VersionDetails> versions)
+        {
+            SelectedContentDeletePrompted = true;
+            SelectedContentPromptedVersions = versions;
+            return Task.FromResult(SelectedContentResult);
+        }
+
         public Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions) { MultiDeletePromptedVersions = versions.Select(x => x.Id).ToList(); return Task.FromResult(VersionsSelectedForDelete ?? []); }
         public Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite) => Task.FromResult<string?>(favorite.Name);
         public Task ShowFileDetailsAsync(FileDetails fileDetails) => Task.CompletedTask;

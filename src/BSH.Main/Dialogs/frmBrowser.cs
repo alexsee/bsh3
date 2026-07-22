@@ -1671,6 +1671,7 @@ public partial class frmBrowser : IStatusReport
         await OpenFolderAsync(temp);
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     private async void DateiOrdnerAusSicherungenLöschenToolStripMenuItem_Click(object sender, EventArgs e)
     {
         if (lvFiles.SelectedItems.Count <= 0 || lvFiles.SelectedItems.Count >= 2)
@@ -1679,15 +1680,51 @@ public partial class frmBrowser : IStatusReport
         }
 
         var selected = lvFiles.SelectedItems[0];
+        var isFolder = selected.ImageKey == "folder";
+        var versions = (await DeleteSingleCandidateVersions.ResolveAsync(
+            BackupLogic.QueryManager,
+            BackupLogic.QueryManager.GetVersions(),
+            selectedVersion?.Id,
+            selected.Text,
+            selected.Tag?.ToString(),
+            !isFolder)).ToList();
 
-        // file or folder
-        if (selected.ImageKey == "folder")
+        using (var scopeDialog = new frmDeleteSingleScope(versions, !isFolder))
         {
-            await BackupLogic.BackupController.DeleteSingleFileAsync("", selected.Tag.ToString() + "%");
-        }
-        else
-        {
-            await BackupLogic.BackupController.DeleteSingleFileAsync(selected.Text, selected.Tag.ToString());
+            if (scopeDialog.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+
+            var scope = scopeDialog.ResolveScope();
+            if (!scope.HasTargetVersions)
+            {
+                MessageBox.Show(
+                    Resources.DLG_DELETE_SINGLE_SCOPE_NO_VERSIONS_TEXT,
+                    Resources.DLG_DELETE_SINGLE_SCOPE_TITLE,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            var versionIds = scope.DeleteFromAllVersions ? null : scope.VersionIds;
+            var confirmText = scope.DeleteFromAllVersions
+                ? Resources.DLG_DELETE_SINGLE_SCOPE_CONFIRM_ALL
+                : string.Format(Resources.DLG_DELETE_SINGLE_SCOPE_CONFIRM_RANGE, scope.VersionIds.Count);
+
+            if (MessageBox.Show(confirmText, Resources.DLG_DELETE_SINGLE_SCOPE_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            {
+                return;
+            }
+
+            if (isFolder)
+            {
+                await BackupLogic.BackupController.DeleteSingleFileAsync("", selected.Tag.ToString() + "%", versionIds: versionIds);
+            }
+            else
+            {
+                await BackupLogic.BackupController.DeleteSingleFileAsync(selected.Text, selected.Tag.ToString(), versionIds: versionIds);
+            }
         }
 
         await OpenFolderAsync(selectedFolder);

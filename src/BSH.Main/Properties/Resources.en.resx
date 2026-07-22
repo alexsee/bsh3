@@ -189,6 +189,48 @@
   <data name="DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE" xml:space="preserve">
     <value>Delete Backup</value>
   </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_ALL" xml:space="preserve">
+    <value>From all backups</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_CANCEL" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_COLUMN_DATE" xml:space="preserve">
+    <value>Backup date</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_CONFIRM_ALL" xml:space="preserve">
+    <value>Are you sure you want to delete the selection from all backups?</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_CONFIRM_RANGE" xml:space="preserve">
+    <value>Are you sure you want to delete the selection from {0} backup(s)?</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_FILE" xml:space="preserve">
+    <value>file</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_FOLDER" xml:space="preserve">
+    <value>folder</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_INTRO" xml:space="preserve">
+    <value>Choose which backups should no longer contain this {0}:</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_LAST_DAYS" xml:space="preserve">
+    <value>From backups in the last X days</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_LAST_N" xml:space="preserve">
+    <value>From the last N backups</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_NO_VERSIONS_TEXT" xml:space="preserve">
+    <value>No matching backups were found for the selected options.</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_OK" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_SELECTED" xml:space="preserve">
+    <value>From selected backups</value>
+  </data>
+  <data name="DLG_DELETE_SINGLE_SCOPE_TITLE" xml:space="preserve">
+    <value>Delete from backups</value>
+  </data>
   <data name="DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT" xml:space="preserve">
     <value>Search result for "{0}"</value>
   </data>
