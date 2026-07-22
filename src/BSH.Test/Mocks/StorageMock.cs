@@ -16,8 +16,12 @@ namespace BSH.Test.Mocks
         private readonly bool failAllCopies;
         private readonly bool pathTooLong;
         private readonly bool throwIoOnFirstRegularCopy;
+        private readonly bool throwOnDelete;
         private readonly string throwOnRemoteContaining;
         private readonly CancellationTokenSource cancelOnCopy;
+        private readonly HashSet<string> decryptFailFiles;
+        private readonly HashSet<string> decryptedOnce = new(StringComparer.OrdinalIgnoreCase);
+        private readonly bool failSecondDecryptOfSameFile;
         private int regularCopyAttempts;
 
         public StorageMock(
@@ -26,7 +30,12 @@ namespace BSH.Test.Mocks
             bool pathTooLong = false,
             bool throwIoOnFirstRegularCopy = false,
             string throwOnRemoteContaining = null,
-            CancellationTokenSource cancelOnCopy = null)
+            CancellationTokenSource cancelOnCopy = null,
+            bool throwOnDelete = false,
+            IEnumerable<string> decryptFailFiles = null,
+            bool failSecondDecryptOfSameFile = false,
+            long freeSpaceBytes = 0,
+            bool canWrite = true)
         {
             this.failCheckMedium = failCheckMedium;
             this.failAllCopies = failAllCopies;
@@ -34,6 +43,13 @@ namespace BSH.Test.Mocks
             this.throwIoOnFirstRegularCopy = throwIoOnFirstRegularCopy;
             this.throwOnRemoteContaining = throwOnRemoteContaining;
             this.cancelOnCopy = cancelOnCopy;
+            this.throwOnDelete = throwOnDelete;
+            this.decryptFailFiles = decryptFailFiles == null
+                ? []
+                : new HashSet<string>(decryptFailFiles, StringComparer.OrdinalIgnoreCase);
+            this.failSecondDecryptOfSameFile = failSecondDecryptOfSameFile;
+            FreeSpaceBytes = freeSpaceBytes;
+            CanWrite = canWrite;
         }
 
         public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
@@ -47,10 +63,19 @@ namespace BSH.Test.Mocks
         public List<string> CopiedFromStorageRemoteFiles { get; } = [];
         public List<string> CopiedFromStorageCompressedRemoteFiles { get; } = [];
         public List<string> CopiedFromStorageEncryptedRemoteFiles { get; } = [];
+        public List<string> DeletedPlain { get; } = [];
+        public List<string> DeletedCompressed { get; } = [];
+        public List<string> DeletedEncrypted { get; } = [];
+        public List<string> DeletedDirectories { get; } = [];
+        public List<(string Source, string Target)> RenamedDirectories { get; } = [];
+        public List<string> DecryptedFiles { get; } = [];
+        public int UploadDatabaseFileCalls { get; private set; }
+        public long FreeSpaceBytes { get; set; }
+        public bool CanWrite { get; set; }
 
         public bool CanWriteToStorage()
         {
-            return true;
+            return CanWrite;
         }
 
         public async Task<bool> CheckMedium(bool quickCheck = false)
@@ -112,26 +137,56 @@ namespace BSH.Test.Mocks
 
         public bool DecryptOnStorage(string remoteFile, string password)
         {
+            if (decryptFailFiles.Contains(remoteFile))
+            {
+                throw new IOException("Decrypt failed.");
+            }
+
+            if (failSecondDecryptOfSameFile && !decryptedOnce.Add(remoteFile))
+            {
+                throw new IOException("File already decrypted.");
+            }
+
+            DecryptedFiles.Add(remoteFile);
             return !failAllCopies;
         }
 
         public bool DeleteDirectory(string remoteDirectory)
         {
+            DeletedDirectories.Add(remoteDirectory);
             return !failAllCopies;
         }
 
         public bool DeleteFileFromStorage(string remoteFile)
         {
+            if (throwOnDelete)
+            {
+                throw new IOException("Delete failed.");
+            }
+
+            DeletedPlain.Add(remoteFile);
             return !failAllCopies;
         }
 
         public bool DeleteFileFromStorageCompressed(string remoteFile)
         {
+            if (throwOnDelete)
+            {
+                throw new IOException("Delete failed.");
+            }
+
+            DeletedCompressed.Add(remoteFile);
             return !failAllCopies;
         }
 
         public bool DeleteFileFromStorageEncrypted(string remoteFile)
         {
+            if (throwOnDelete)
+            {
+                throw new IOException("Delete failed.");
+            }
+
+            DeletedEncrypted.Add(remoteFile);
             return !failAllCopies;
         }
 
@@ -141,7 +196,7 @@ namespace BSH.Test.Mocks
 
         public long GetFreeSpace()
         {
-            return 0;
+            return FreeSpaceBytes;
         }
 
         public bool IsPathTooLong(string path, bool compression, bool encryption)
@@ -155,6 +210,7 @@ namespace BSH.Test.Mocks
 
         public bool RenameDirectory(string remoteDirectorySource, string remoteDirectoryTarget)
         {
+            RenamedDirectories.Add((remoteDirectorySource, remoteDirectoryTarget));
             return true;
         }
 
@@ -164,6 +220,7 @@ namespace BSH.Test.Mocks
 
         public bool UploadDatabaseFile(string databaseFile)
         {
+            UploadDatabaseFileCalls++;
             return true;
         }
 
