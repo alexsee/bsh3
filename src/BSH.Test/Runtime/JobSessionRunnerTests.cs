@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -424,7 +425,7 @@ public class JobSessionRunnerTests
             return OnStartDelete?.Invoke(jobReport, cancellationToken) ?? Task.CompletedTask;
         }
 
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
+        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false, IReadOnlyList<int> versionIds = null)
         {
             StartDeleteSingleCalls++;
             LastFileFilter = fileFilter;
