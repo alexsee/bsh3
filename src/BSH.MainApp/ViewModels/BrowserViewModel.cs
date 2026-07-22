@@ -451,11 +451,13 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         IReadOnlyList<VersionDetails> candidateVersions = Versions.ToList();
         if (CurrentItem.IsFile)
         {
-            var details = await queryManager.GetFileDetailsAsync(CurrentVersion.Id, CurrentItem.Name, CurrentItem.FullPath);
-            if (details?.AvailableVersions is { Count: > 0 })
-            {
-                candidateVersions = details.AvailableVersions;
-            }
+            candidateVersions = await DeleteSingleCandidateVersions.ResolveAsync(
+                queryManager,
+                Versions.ToList(),
+                CurrentVersion.Id,
+                CurrentItem.Name,
+                CurrentItem.FullPath,
+                isFile: true);
         }
 
         var deleteResult = await browserDialogService.ShowDeleteSelectedContentWindowAsync(CurrentItem, candidateVersions);

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -68,21 +67,12 @@ public class DeleteSingleJob : Job
         Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
 
         var scopedVersions = versionIds is { Count: > 0 } ? versionIds : null;
-
-        if (scopedVersions == null)
-        {
-            _logger.Information("Begin delete single file from all versions.");
-        }
-        else
-        {
-            _logger.Information("Begin delete single file from {NumVersions} versions.", scopedVersions.Count);
-        }
+        LogDeleteStart(scopedVersions);
 
         ReportState(JobState.RUNNING);
         ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_DELETE_SINGLE_PREPARE);
         ReportProgress(0, 0);
 
-        // check medium
         if (!await storage.CheckMedium())
         {
             _logger.Error("Backup storage is not ready. Backup will be cancelled.");
@@ -91,98 +81,37 @@ public class DeleteSingleJob : Job
             throw new DeviceNotReadyException();
         }
 
-        // connect to database
         using (var dbClient = dbClientFactory.CreateDbClient())
         {
-            // begin with transaction
             dbClient.BeginTransaction();
-
-            // open storage
             storage.Open();
 
-            // get file list
             var fileIds = await versionQueryRepository.GetFileIdsForDeleteSingleAsync(dbClient, fileFilter, pathFilter);
-
-            // report progress
             _logger.Information("{NumFiles} files determined for deletion.", fileIds.Count);
             ReportProgress(fileIds.Count, 0);
 
-            foreach (var fileId in fileIds)
-            {
-                // obtain file versions that can be physically deleted
-                using var reader = scopedVersions == null
-                    ? await versionQueryRepository.GetFileVersionsForDeleteSingleAsync(dbClient, fileId)
-                    : await versionQueryRepository.GetFileVersionsExclusiveToVersionsForDeleteSingleAsync(dbClient, fileId, scopedVersions);
-                var i = 0;
-                while (await reader.ReadAsync())
-                {
-                    // get file name
-                    var fileName = reader.GetString("filePath") + reader.GetString("fileName");
-
-                    ReportFileProgress(fileName);
-                    ReportProgress(fileIds.Count, i);
-                    i++;
-
-                    // delete file
-                    try
-                    {
-                        DeleteFileFromDevice(
-                            reader.GetString("fileName"),
-                            reader.GetString("filePath"),
-                            reader.GetString("longfilename"),
-                            reader.GetString("versionDate"),
-                            reader.GetInt32("fileType").ToString()
-                        );
-                    }
-                    catch (FileNotProcessedException ex)
-                    {
-                        // file not deleted
-                        var fileExceptionEntry = AddFileErrorToList(new FileTableRow()
-                        {
-                            FileName = reader.GetString("fileName"),
-                            FilePath = reader.GetString("filePath")
-                        },
-                            ex);
-
-                        _logger.Error(ex.InnerException, "File {FileName} could not be deleted. {Exception}", reader.GetString("fileName"), fileExceptionEntry);
-                    }
-
-                }
-
-                await reader.CloseAsync();
-            }
-
-            // delete metadata from database
+            await DeletePhysicalVersionsAsync(dbClient, fileIds, scopedVersions);
             await backupMutationRepository.DeleteSingleFileMetadataAsync(dbClient, fileFilter, pathFilter, scopedVersions);
 
             dbClient.CommitTransaction();
         }
 
-        // report exceptions during job
         if (FileErrorList.Count > 0)
         {
             _logger.Error("{NumFiles} could not be deleted to device.", FileErrorList.Count);
         }
 
-        // refresh free diskspace
         await UpdateFreeDiskSpaceAsync();
 
-        // store database version
         if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
         {
             configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
         }
 
-        // close all database connections
         DbClientFactory.ClosePool();
-
-        // store database
         UpdateDatabaseOnStorage();
-
-        // close storage provider
         storage.Dispose();
 
-        // report exceptions during job
         if (FileErrorList.Count > 0)
         {
             ReportExceptions(FileErrorList);
@@ -190,5 +119,61 @@ public class DeleteSingleJob : Job
 
         _logger.Information("Deletion of single files successfully.");
         ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
+    }
+
+    private static void LogDeleteStart(IReadOnlyList<int> scopedVersions)
+    {
+        if (scopedVersions == null)
+        {
+            _logger.Information("Begin delete single file from all versions.");
+            return;
+        }
+
+        _logger.Information("Begin delete single file from {NumVersions} versions.", scopedVersions.Count);
+    }
+
+    private async Task DeletePhysicalVersionsAsync(
+        DbClient dbClient,
+        IReadOnlyList<int> fileIds,
+        IReadOnlyList<int> scopedVersions)
+    {
+        foreach (var fileId in fileIds)
+        {
+            using var reader = scopedVersions == null
+                ? await versionQueryRepository.GetFileVersionsForDeleteSingleAsync(dbClient, fileId)
+                : await versionQueryRepository.GetFileVersionsExclusiveToVersionsForDeleteSingleAsync(dbClient, fileId, scopedVersions);
+
+            var i = 0;
+            while (await reader.ReadAsync())
+            {
+                var fileName = reader.GetString("filePath") + reader.GetString("fileName");
+                ReportFileProgress(fileName);
+                ReportProgress(fileIds.Count, i);
+                i++;
+
+                try
+                {
+                    DeleteFileFromDevice(
+                        reader.GetString("fileName"),
+                        reader.GetString("filePath"),
+                        reader.GetString("longfilename"),
+                        reader.GetString("versionDate"),
+                        reader.GetInt32("fileType").ToString());
+                }
+                catch (FileNotProcessedException ex)
+                {
+                    var fileExceptionEntry = AddFileErrorToList(new FileTableRow()
+                    {
+                        FileName = reader.GetString("fileName"),
+                        FilePath = reader.GetString("filePath")
+                    },
+                        ex);
+
+                    _logger.Error(ex.InnerException, "File {FileName} could not be deleted. {Exception}", reader.GetString("fileName"), fileExceptionEntry);
+                }
+            }
+
+            await reader.CloseAsync();
+        }
     }
 }

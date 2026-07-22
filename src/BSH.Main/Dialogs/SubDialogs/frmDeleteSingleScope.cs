@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -16,15 +17,17 @@ namespace Brightbits.BSH.Main;
 /// Dialog that lets the user choose whether to delete a file/folder from all backups
 /// or only from a selected range (last N, last X days, or explicit versions).
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class frmDeleteSingleScope : Form
 {
-    private readonly RadioButton radioAll;
-    private readonly RadioButton radioLastN;
-    private readonly RadioButton radioLastDays;
-    private readonly RadioButton radioSelected;
-    private readonly NumericUpDown numLastN;
-    private readonly NumericUpDown numLastDays;
-    private readonly ListView lstVersions;
+    internal RadioButton radioAll;
+    internal RadioButton radioLastN;
+    internal RadioButton radioLastDays;
+    internal RadioButton radioSelected;
+    internal NumericUpDown numLastN;
+    internal NumericUpDown numLastDays;
+    internal ListView lstVersions;
+
     private readonly IReadOnlyList<VersionDetails> versions;
 
     public frmDeleteSingleScope(IReadOnlyList<VersionDetails> versions, bool isFile)
@@ -86,11 +89,10 @@ public sealed class frmDeleteSingleScope : Form
 
         foreach (var version in this.versions)
         {
-            var item = new ListViewItem(version.CreationDate.ToLocalTime().ToString("g"))
+            lstVersions.Items.Add(new ListViewItem(version.CreationDate.ToLocalTime().ToString("g"))
             {
                 Tag = version.Id
-            };
-            lstVersions.Items.Add(item);
+            });
         }
 
         radioAll.CheckedChanged += (_, _) => UpdateEnabledState();
@@ -98,11 +100,7 @@ public sealed class frmDeleteSingleScope : Form
         radioLastDays.CheckedChanged += (_, _) => UpdateEnabledState();
         radioSelected.CheckedChanged += (_, _) => UpdateEnabledState();
 
-        var buttonPanel = new Panel
-        {
-            Dock = DockStyle.Bottom,
-            Height = 48
-        };
+        var buttonPanel = new Panel { Dock = DockStyle.Bottom, Height = 48 };
         var cmdOk = new Button
         {
             Text = Resources.DLG_DELETE_SINGLE_SCOPE_OK,
@@ -135,34 +133,43 @@ public sealed class frmDeleteSingleScope : Form
     }
 
     /// <summary>
-    /// Returns null when deleting from all versions; otherwise the selected version IDs.
+    /// Returns a scope result. <see cref="DeleteSingleScopeResult.DeleteFromAllVersions"/> means all history.
     /// </summary>
-    public IReadOnlyList<int> ResolveVersionIds()
+    public DeleteSingleScopeResult ResolveScope()
     {
-        if (radioAll.Checked)
-        {
-            return null;
-        }
+        return DeleteSingleScope.Resolve(
+            GetSelectedMode(),
+            versions,
+            (int)numLastN.Value,
+            (int)numLastDays.Value,
+            lstVersions.Items
+                .Cast<ListViewItem>()
+                .Where(item => item.Checked && item.Tag != null)
+                .Select(item => item.Tag.ToString())
+                .ToArray());
+    }
 
+    private DeleteSingleScopeMode GetSelectedMode()
+    {
         if (radioLastN.Checked)
         {
-            return VersionSelection.SelectLastN(versions, (int)numLastN.Value);
+            return DeleteSingleScopeMode.LastN;
         }
 
         if (radioLastDays.Checked)
         {
-            var since = DateTime.Now.Date.AddDays(-((int)numLastDays.Value - 1));
-            return VersionSelection.SelectSinceDate(versions, since);
+            return DeleteSingleScopeMode.LastDays;
         }
 
-        return lstVersions.Items
-            .Cast<ListViewItem>()
-            .Where(item => item.Checked && item.Tag != null && int.TryParse(item.Tag.ToString(), out _))
-            .Select(item => int.Parse(item.Tag.ToString()!))
-            .ToList();
+        if (radioSelected.Checked)
+        {
+            return DeleteSingleScopeMode.SelectedVersions;
+        }
+
+        return DeleteSingleScopeMode.AllVersions;
     }
 
-    private RadioButton CreateRadio(string text, Point location, bool isChecked)
+    private static RadioButton CreateRadio(string text, Point location, bool isChecked)
     {
         return new RadioButton
         {

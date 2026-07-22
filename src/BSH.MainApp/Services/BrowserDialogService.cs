@@ -1,6 +1,7 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Diagnostics.CodeAnalysis;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
@@ -13,8 +14,11 @@ using Windows.UI.Popups;
 
 namespace BSH.MainApp.Services;
 
+[ExcludeFromCodeCoverage]
 public class BrowserDialogService : IBrowserDialogService
 {
+    private const string DeleteScopeGroupName = "DeleteScope";
+
     private readonly IPresentationService presentationService;
 
     public BrowserDialogService(IPresentationService presentationService)
@@ -79,46 +83,9 @@ public class BrowserDialogService : IBrowserDialogService
                 ? "Browser_DeleteFromAll_File".GetLocalized()
                 : "Browser_DeleteFromAll_Folder".GetLocalized();
 
-            var radioAll = new RadioButton
-            {
-                Content = "Browser_DeleteFromRange_All".GetLocalized(),
-                IsChecked = true,
-                GroupName = "DeleteScope"
-            };
-            var radioLastN = new RadioButton
-            {
-                Content = "Browser_DeleteFromRange_LastN".GetLocalized(),
-                GroupName = "DeleteScope"
-            };
-            var radioLastDays = new RadioButton
-            {
-                Content = "Browser_DeleteFromRange_LastDays".GetLocalized(),
-                GroupName = "DeleteScope"
-            };
-            var radioSelected = new RadioButton
-            {
-                Content = "Browser_DeleteFromRange_Selected".GetLocalized(),
-                GroupName = "DeleteScope"
-            };
-
-            var lastNBox = new NumberBox
-            {
-                Header = "Browser_DeleteFromRange_LastN_Value".GetLocalized(),
-                Value = Math.Min(3, Math.Max(1, versions.Count)),
-                Minimum = 1,
-                Maximum = Math.Max(1, versions.Count),
-                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
-                IsEnabled = false
-            };
-            var lastDaysBox = new NumberBox
-            {
-                Header = "Browser_DeleteFromRange_LastDays_Value".GetLocalized(),
-                Value = 30,
-                Minimum = 1,
-                Maximum = 3650,
-                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
-                IsEnabled = false
-            };
+            var radios = CreateScopeRadios();
+            var lastNBox = CreateNumberBox("Browser_DeleteFromRange_LastN_Value".GetLocalized(), Math.Min(3, Math.Max(1, versions.Count)), Math.Max(1, versions.Count));
+            var lastDaysBox = CreateNumberBox("Browser_DeleteFromRange_LastDays_Value".GetLocalized(), 30, 3650);
             var versionList = new ListView
             {
                 SelectionMode = ListViewSelectionMode.Multiple,
@@ -130,15 +97,15 @@ public class BrowserDialogService : IBrowserDialogService
 
             void UpdateEnabledState()
             {
-                lastNBox.IsEnabled = radioLastN.IsChecked == true;
-                lastDaysBox.IsEnabled = radioLastDays.IsChecked == true;
-                versionList.IsEnabled = radioSelected.IsChecked == true;
+                lastNBox.IsEnabled = radios.LastN.IsChecked == true;
+                lastDaysBox.IsEnabled = radios.LastDays.IsChecked == true;
+                versionList.IsEnabled = radios.Selected.IsChecked == true;
             }
 
-            radioAll.Checked += (_, _) => UpdateEnabledState();
-            radioLastN.Checked += (_, _) => UpdateEnabledState();
-            radioLastDays.Checked += (_, _) => UpdateEnabledState();
-            radioSelected.Checked += (_, _) => UpdateEnabledState();
+            radios.All.Checked += (_, _) => UpdateEnabledState();
+            radios.LastN.Checked += (_, _) => UpdateEnabledState();
+            radios.LastDays.Checked += (_, _) => UpdateEnabledState();
+            radios.Selected.Checked += (_, _) => UpdateEnabledState();
 
             var panel = new StackPanel { Spacing = 8, MinWidth = 420 };
             panel.Children.Add(new TextBlock
@@ -146,12 +113,12 @@ public class BrowserDialogService : IBrowserDialogService
                 Text = string.Format("Browser_DeleteFromRange_Intro".GetLocalized() ?? "Browser_DeleteFromRange_Intro", itemType),
                 TextWrapping = TextWrapping.Wrap
             });
-            panel.Children.Add(radioAll);
-            panel.Children.Add(radioLastN);
+            panel.Children.Add(radios.All);
+            panel.Children.Add(radios.LastN);
             panel.Children.Add(lastNBox);
-            panel.Children.Add(radioLastDays);
+            panel.Children.Add(radios.LastDays);
             panel.Children.Add(lastDaysBox);
-            panel.Children.Add(radioSelected);
+            panel.Children.Add(radios.Selected);
             panel.Children.Add(versionList);
 
             var dialog = new ContentDialog
@@ -169,48 +136,20 @@ public class BrowserDialogService : IBrowserDialogService
                 return DeleteSelectedContentResult.Cancelled;
             }
 
-            DeleteSelectedContentResult scopeResult;
-            if (radioAll.IsChecked == true)
-            {
-                scopeResult = DeleteSelectedContentResult.AllVersions;
-            }
-            else if (radioLastN.IsChecked == true)
-            {
-                var count = (int)Math.Max(1, lastNBox.Value);
-                var selectedIds = VersionSelection.SelectLastN(versions, count).Select(id => id.ToString()).ToArray();
-                if (selectedIds.Length == 0)
-                {
-                    await ShowNoMatchingVersionsAsync();
-                    return DeleteSelectedContentResult.Cancelled;
-                }
+            var scope = DeleteSingleScope.Resolve(
+                GetSelectedMode(radios),
+                versions,
+                (int)Math.Max(1, lastNBox.Value),
+                (int)Math.Max(1, lastDaysBox.Value),
+                versionList.SelectedItems.Cast<VersionDetails>().Select(x => x.Id).ToArray());
 
-                scopeResult = DeleteSelectedContentResult.FromVersions(selectedIds);
-            }
-            else if (radioLastDays.IsChecked == true)
+            if (!scope.HasTargetVersions)
             {
-                var days = (int)Math.Max(1, lastDaysBox.Value);
-                var since = DateTime.Now.Date.AddDays(-(days - 1));
-                var selectedIds = VersionSelection.SelectSinceDate(versions, since).Select(id => id.ToString()).ToArray();
-                if (selectedIds.Length == 0)
-                {
-                    await ShowNoMatchingVersionsAsync();
-                    return DeleteSelectedContentResult.Cancelled;
-                }
-
-                scopeResult = DeleteSelectedContentResult.FromVersions(selectedIds);
-            }
-            else
-            {
-                var selectedIds = versionList.SelectedItems.Cast<VersionDetails>().Select(x => x.Id).ToArray();
-                if (selectedIds.Length == 0)
-                {
-                    await ShowNoMatchingVersionsAsync();
-                    return DeleteSelectedContentResult.Cancelled;
-                }
-
-                scopeResult = DeleteSelectedContentResult.FromVersions(selectedIds);
+                await ShowNoMatchingVersionsAsync();
+                return DeleteSelectedContentResult.Cancelled;
             }
 
+            var scopeResult = ToUiResult(scope);
             var confirmMessage = scopeResult.DeleteFromAllVersions
                 ? string.Format("Browser_DeleteFromAll_Confirm".GetLocalized() ?? "Browser_DeleteFromAll_Confirm", itemType)
                 : string.Format("Browser_DeleteFromRange_Confirm".GetLocalized() ?? "Browser_DeleteFromRange_Confirm", itemType, scopeResult.VersionIds.Count);
@@ -230,7 +169,60 @@ public class BrowserDialogService : IBrowserDialogService
         });
     }
 
-    private async Task ShowNoMatchingVersionsAsync()
+    private static (RadioButton All, RadioButton LastN, RadioButton LastDays, RadioButton Selected) CreateScopeRadios()
+    {
+        return (
+            new RadioButton { Content = "Browser_DeleteFromRange_All".GetLocalized(), IsChecked = true, GroupName = DeleteScopeGroupName },
+            new RadioButton { Content = "Browser_DeleteFromRange_LastN".GetLocalized(), GroupName = DeleteScopeGroupName },
+            new RadioButton { Content = "Browser_DeleteFromRange_LastDays".GetLocalized(), GroupName = DeleteScopeGroupName },
+            new RadioButton { Content = "Browser_DeleteFromRange_Selected".GetLocalized(), GroupName = DeleteScopeGroupName });
+    }
+
+    private static NumberBox CreateNumberBox(string header, double value, double maximum)
+    {
+        return new NumberBox
+        {
+            Header = header,
+            Value = value,
+            Minimum = 1,
+            Maximum = maximum,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
+            IsEnabled = false
+        };
+    }
+
+    private static DeleteSingleScopeMode GetSelectedMode(
+        (RadioButton All, RadioButton LastN, RadioButton LastDays, RadioButton Selected) radios)
+    {
+        if (radios.LastN.IsChecked == true)
+        {
+            return DeleteSingleScopeMode.LastN;
+        }
+
+        if (radios.LastDays.IsChecked == true)
+        {
+            return DeleteSingleScopeMode.LastDays;
+        }
+
+        if (radios.Selected.IsChecked == true)
+        {
+            return DeleteSingleScopeMode.SelectedVersions;
+        }
+
+        return DeleteSingleScopeMode.AllVersions;
+    }
+
+    private static DeleteSelectedContentResult ToUiResult(DeleteSingleScopeResult scope)
+    {
+        if (scope.DeleteFromAllVersions)
+        {
+            return DeleteSelectedContentResult.AllVersions;
+        }
+
+        return DeleteSelectedContentResult.FromVersions(scope.VersionIds.Select(id => id.ToString()).ToArray());
+    }
+
+    private static async Task ShowNoMatchingVersionsAsync()
     {
         var dialog = new ContentDialog
         {

@@ -1680,18 +1680,13 @@ public partial class frmBrowser : IStatusReport
 
         var selected = lvFiles.SelectedItems[0];
         var isFolder = selected.ImageKey == "folder";
-        var versions = BackupLogic.QueryManager.GetVersions();
-        if (!isFolder && selectedVersion != null)
-        {
-            var details = await BackupLogic.QueryManager.GetFileDetailsAsync(
-                selectedVersion.Id,
-                selected.Text,
-                selected.Tag?.ToString());
-            if (details?.AvailableVersions is { Count: > 0 })
-            {
-                versions = details.AvailableVersions.ToList();
-            }
-        }
+        var versions = (await DeleteSingleCandidateVersions.ResolveAsync(
+            BackupLogic.QueryManager,
+            BackupLogic.QueryManager.GetVersions(),
+            selectedVersion?.Id,
+            selected.Text,
+            selected.Tag?.ToString(),
+            !isFolder)).ToList();
 
         using (var scopeDialog = new frmDeleteSingleScope(versions, !isFolder))
         {
@@ -1700,8 +1695,8 @@ public partial class frmBrowser : IStatusReport
                 return;
             }
 
-            var versionIds = scopeDialog.ResolveVersionIds();
-            if (versionIds is { Count: 0 })
+            var scope = scopeDialog.ResolveScope();
+            if (!scope.HasTargetVersions)
             {
                 MessageBox.Show(
                     Resources.DLG_DELETE_SINGLE_SCOPE_NO_VERSIONS_TEXT,
@@ -1711,9 +1706,10 @@ public partial class frmBrowser : IStatusReport
                 return;
             }
 
-            var confirmText = versionIds == null
+            var versionIds = scope.DeleteFromAllVersions ? null : scope.VersionIds;
+            var confirmText = scope.DeleteFromAllVersions
                 ? Resources.DLG_DELETE_SINGLE_SCOPE_CONFIRM_ALL
-                : string.Format(Resources.DLG_DELETE_SINGLE_SCOPE_CONFIRM_RANGE, versionIds.Count);
+                : string.Format(Resources.DLG_DELETE_SINGLE_SCOPE_CONFIRM_RANGE, scope.VersionIds.Count);
 
             if (MessageBox.Show(confirmText, Resources.DLG_DELETE_SINGLE_SCOPE_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             {

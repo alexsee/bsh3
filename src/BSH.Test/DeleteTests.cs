@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
@@ -240,6 +241,88 @@ public class DeleteTests
         Assert.That(VersionSelection.SelectSinceDate(versions, new DateTime(2021, 1, 10)), Is.EqualTo(new[] { 2, 3 }));
         Assert.That(VersionSelection.SelectLastN(versions, 0), Is.Empty);
         Assert.That(VersionSelection.SelectLastN(null!, 2), Is.Empty);
+    }
+
+    [Test]
+    public void TestDeleteSingleScopeResolvesAllLastNLastDaysAndSelected()
+    {
+        var versions = new List<VersionDetails>
+        {
+            new() { Id = "1", CreationDate = new DateTime(2021, 1, 1) },
+            new() { Id = "2", CreationDate = new DateTime(2021, 1, 10) },
+            new() { Id = "3", CreationDate = new DateTime(2021, 1, 20) },
+        };
+        var now = new DateTime(2021, 1, 20, 12, 0, 0);
+
+        var all = DeleteSingleScope.Resolve(DeleteSingleScopeMode.AllVersions, versions, 2, 5, Array.Empty<string>(), now);
+        Assert.That(all.DeleteFromAllVersions, Is.True);
+        Assert.That(all.HasTargetVersions, Is.True);
+
+        var lastN = DeleteSingleScope.Resolve(DeleteSingleScopeMode.LastN, versions, 2, 5, Array.Empty<string>(), now);
+        Assert.That(lastN.VersionIds, Is.EqualTo(new[] { 3, 2 }));
+
+        var lastDays = DeleteSingleScope.Resolve(DeleteSingleScopeMode.LastDays, versions, 2, 11, Array.Empty<string>(), now);
+        Assert.That(lastDays.VersionIds, Is.EqualTo(new[] { 2, 3 }));
+
+        var selected = DeleteSingleScope.Resolve(DeleteSingleScopeMode.SelectedVersions, versions, 2, 5, ["1", "bogus", "3"], now);
+        Assert.That(selected.VersionIds, Is.EqualTo(new[] { 1, 3 }));
+
+        var none = DeleteSingleScope.Resolve(DeleteSingleScopeMode.SelectedVersions, versions, 2, 5, Array.Empty<string>(), now);
+        Assert.That(none.HasTargetVersions, Is.False);
+    }
+
+    [Test]
+    public async Task TestDeleteSingleCandidateVersionsPrefersAvailableVersionsForFiles()
+    {
+        var allVersions = new List<VersionDetails>
+        {
+            new() { Id = "1", CreationDate = new DateTime(2021, 1, 1) },
+            new() { Id = "2", CreationDate = new DateTime(2021, 1, 10) },
+        };
+        var available = new List<VersionDetails>
+        {
+            new() { Id = "2", CreationDate = new DateTime(2021, 1, 10) },
+        };
+        var queryManager = new CandidateQueryManager(new FileDetails { AvailableVersions = available });
+
+        var forFile = await DeleteSingleCandidateVersions.ResolveAsync(queryManager, allVersions, "2", "a.txt", @"\docs\", isFile: true);
+        Assert.That(forFile.Select(v => v.Id), Is.EqualTo(new[] { "2" }));
+
+        var forFolder = await DeleteSingleCandidateVersions.ResolveAsync(queryManager, allVersions, "2", "", @"\docs\", isFile: false);
+        Assert.That(forFolder.Select(v => v.Id), Is.EqualTo(new[] { "1", "2" }));
+    }
+
+    private sealed class CandidateQueryManager : IQueryManager
+    {
+        private readonly FileDetails details;
+
+        public CandidateQueryManager(FileDetails details)
+        {
+            this.details = details;
+        }
+
+        public Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult(details);
+        public Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult<string>(null);
+        public Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult<string>(null);
+        public string GetFileNameFromDrive(FileTableRow file) => file.FileName;
+        public Task<(string, bool)> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password) => Task.FromResult((fileName, false));
+        public Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path) => Task.FromResult(new List<FileTableRow>());
+        public Task<List<string>> GetFolderListAsync(string version, string path) => Task.FromResult(new List<string>());
+        public Task<string> GetFullRestoreFolderAsync(string folder, string version) => Task.FromResult(folder);
+        public Task<VersionDetails> GetLastBackupAsync() => Task.FromResult<VersionDetails>(null);
+        public Task<VersionDetails> GetLastFullBackupAsync() => Task.FromResult<VersionDetails>(null);
+        public Task<string> GetLocalizedPathAsync(string path) => Task.FromResult(path);
+        public Task<string> GetNextVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult<string>(null);
+        public Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult<string>(null);
+        public Task<int> GetNumberOfVersionsAsync() => Task.FromResult(0);
+        public Task<int> GetNumberOfFilesAsync() => Task.FromResult(0);
+        public Task<double> GetTotalFileSizeAsync() => Task.FromResult(0d);
+        public Task<VersionDetails> GetOldestBackupAsync() => Task.FromResult<VersionDetails>(null);
+        public Task<VersionDetails> GetVersionByIdAsync(string id) => Task.FromResult<VersionDetails>(null);
+        public List<VersionDetails> GetVersions(bool desc = true) => [];
+        public Task<List<FileTableRow>> GetVersionsByFileAsync(string fileName, string filePath) => Task.FromResult(new List<FileTableRow>());
+        public Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500) => Task.FromResult(new List<FileTableRow>());
+        public Task<bool> HasChangesOrNewAsync(string path, string versionId) => Task.FromResult(false);
     }
 
     private DeleteJob CreateDeleteJob(IStorageProvider storage, string version)
