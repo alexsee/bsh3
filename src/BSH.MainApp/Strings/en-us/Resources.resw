@@ -655,6 +655,9 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   <data name="Schedule_HourlyBackupThreshold" xml:space="preserve">
     <value>Hourly backup threshold</value>
   </data>
+  <data name="Schedule_NoEntries" xml:space="preserve">
+    <value>No backup times yet. Use the controls above to add the first one.</value>
+  </data>
   <data name="Schedule_Kind_Daily" xml:space="preserve">
     <value>Daily</value>
   </data>

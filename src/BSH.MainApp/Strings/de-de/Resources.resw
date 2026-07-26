@@ -655,6 +655,9 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   <data name="Schedule_HourlyBackupThreshold" xml:space="preserve">
     <value>Schwellenwert für stündliche Sicherungen</value>
   </data>
+  <data name="Schedule_NoEntries" xml:space="preserve">
+    <value>Noch keine Sicherungszeiten. Fügen Sie oben den ersten Eintrag hinzu.</value>
+  </data>
   <data name="Schedule_Kind_Daily" xml:space="preserve">
     <value>Täglich</value>
   </data>

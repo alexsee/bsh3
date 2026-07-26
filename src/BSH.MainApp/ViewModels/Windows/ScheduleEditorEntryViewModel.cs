@@ -3,6 +3,7 @@
 
 using System.Globalization;
 using Brightbits.BSH.Engine.Models;
+using BSH.MainApp.Helpers;
 using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;
@@ -21,15 +22,7 @@ public sealed class ScheduleEditorEntryViewModel
 
     public ScheduleEntryKind Kind => (ScheduleEntryKind)Entry.Type;
 
-    public string RepeatText => Kind switch
-    {
-        ScheduleEntryKind.Once => "Schedule_Kind_Once".GetLocalized(),
-        ScheduleEntryKind.Hourly => "Schedule_Kind_Hourly".GetLocalized(),
-        ScheduleEntryKind.Daily => "Schedule_Kind_Daily".GetLocalized(),
-        ScheduleEntryKind.Weekly => "Schedule_Kind_Weekly".GetLocalized(),
-        ScheduleEntryKind.Monthly => "Schedule_Kind_Monthly".GetLocalized(),
-        _ => "Schedule_Kind_Unknown".GetLocalized(),
-    };
+    public string RepeatText => ScheduleEditorDisplayText.GetScheduleKind(Kind);
 
     public string ScheduleText => Kind switch
     {
@@ -40,4 +33,6 @@ public sealed class ScheduleEditorEntryViewModel
         ScheduleEntryKind.Monthly => string.Format("Schedule_Text_DayOfMonth".GetLocalized() ?? "Schedule_Text_DayOfMonth", Entry.Date.Day, Entry.Date.ToString("t", CultureInfo.CurrentCulture)),
         _ => Entry.Date.ToString("g", CultureInfo.CurrentCulture),
     };
+
+    public string AccessibleText => $"{RepeatText}: {ScheduleText}";
 }
