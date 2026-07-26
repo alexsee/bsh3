@@ -300,6 +300,9 @@ This feature is currently not available because the quick preview could not be f
   <data name="Filter_InvalidRegex" xml:space="preserve">
     <value>Invalid regular expression. Fix the pattern before saving it.</value>
   </data>
+  <data name="Filter_ValidationError_Title" xml:space="preserve">
+    <value>Unable to exclude item</value>
+  </data>
   <data name="Filter_MaximumFileSize" xml:space="preserve">
     <value>Maximum file size</value>
   </data>

@@ -300,6 +300,9 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="Filter_InvalidRegex" xml:space="preserve">
     <value>Ungültiger regulärer Ausdruck. Korrigieren Sie das Muster, bevor Sie es speichern.</value>
   </data>
+  <data name="Filter_ValidationError_Title" xml:space="preserve">
+    <value>Element kann nicht ausgeschlossen werden</value>
+  </data>
   <data name="Filter_MaximumFileSize" xml:space="preserve">
     <value>Maximale Dateigröße</value>
   </data>

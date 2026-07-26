@@ -9,7 +9,6 @@
 			<RowDefinition />
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
 		<ListView Grid.Row="0"
@@ -25,19 +24,14 @@
 			</ListView.ItemContainerStyle>
 		</ListView>
 
-        <TextBlock Grid.Row="1"
-           Text="{Binding ValidationErrorMessage}"
-           Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-           TextWrapping="Wrap" />
-
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10">
                 <Button Content="{helpers:ResourceString Name=Filter_AddFolder}" Command="{Binding BrowseFolderCommand}" />
                 <Button Content="{helpers:ResourceString Name=MsgBox_Remove}" Command="{Binding RemoveFolderCommand}" />
             </StackPanel>
         </Grid>
         
-        <CheckBox Grid.Row="3"
+        <CheckBox Grid.Row="2"
 				  Content="{helpers:ResourceString Name=Filter_IncludeSystemFolders}"
 				  IsChecked="{Binding IncludeSystemFolders, Mode=TwoWay}" />
 

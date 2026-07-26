@@ -18,12 +18,7 @@ public partial class FilterViewModel : ObservableObject
 
     public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
 
-    private string? validationErrorMessage;
-    public string? ValidationErrorMessage
-    {
-        get => validationErrorMessage;
-        set => SetProperty(ref validationErrorMessage, value);
-    }
+    public event Action<string>? ValidationFailed;
 
     public ObservableCollection<string> ExcludeFolders { get; } = [];
 
@@ -318,8 +313,6 @@ public partial class FilterViewModel : ObservableObject
 
     private void AddFolder(string? folder)
     {
-        ValidationErrorMessage = null;
-
         var trimmed = folder?.Trim();
         if (string.IsNullOrEmpty(trimmed))
         {
@@ -328,7 +321,7 @@ public partial class FilterViewModel : ObservableObject
 
         if (!IsPathUnderSources(trimmed))
         {
-            ValidationErrorMessage = "Filter_FolderNotInSources".GetLocalized();
+            ReportValidationError("Filter_FolderNotInSources");
             return;
         }
 
@@ -355,8 +348,6 @@ public partial class FilterViewModel : ObservableObject
 
     private void AddFile(string? file)
     {
-        ValidationErrorMessage = null;
-
         var trimmed = file?.Trim();
         if (string.IsNullOrEmpty(trimmed))
         {
@@ -365,7 +356,7 @@ public partial class FilterViewModel : ObservableObject
 
         if (!IsPathUnderSources(trimmed))
         {
-            ValidationErrorMessage = "Filter_FileNotInSources".GetLocalized();
+            ReportValidationError("Filter_FileNotInSources");
             return;
         }
 
@@ -428,8 +419,6 @@ public partial class FilterViewModel : ObservableObject
 
     private void AddRegex(string? regex)
     {
-        ValidationErrorMessage = null;
-
         if (string.IsNullOrWhiteSpace(regex))
         {
             return;
@@ -449,7 +438,7 @@ public partial class FilterViewModel : ObservableObject
             }
             catch (ArgumentException)
             {
-                ValidationErrorMessage = "Filter_InvalidRegex".GetLocalized();
+                ReportValidationError("Filter_InvalidRegex");
                 return;
             }
 
@@ -457,6 +446,11 @@ public partial class FilterViewModel : ObservableObject
         }
 
         RegexInputText = null;
+    }
+
+    private void ReportValidationError(string resourceName)
+    {
+        ValidationFailed?.Invoke(resourceName.GetLocalized() ?? resourceName);
     }
 
     private void RemoveRegex()
