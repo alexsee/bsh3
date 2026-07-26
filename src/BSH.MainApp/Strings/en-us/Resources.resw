@@ -280,7 +280,7 @@ This feature is currently not available because the quick preview could not be f
     <value>Enter extension (without dot)</value>
   </data>
   <data name="Filter_EnterRegex" xml:space="preserve">
-    <value>Enter regular expression</value>
+    <value>Enter regular expression (e.g. .*\.tmp$)</value>
   </data>
   <data name="Filter_ExcludeLargerThan" xml:space="preserve">
     <value>Exclude files larger than this size</value>
@@ -299,6 +299,15 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="Filter_InvalidRegex" xml:space="preserve">
     <value>Invalid regular expression. Fix the pattern before saving it.</value>
+  </data>
+  <data name="Filter_RegexDoesNotMatch" xml:space="preserve">
+    <value>Test input does not match</value>
+  </data>
+  <data name="Filter_RegexMatches" xml:space="preserve">
+    <value>Test input matches</value>
+  </data>
+  <data name="Filter_RegexTestInput" xml:space="preserve">
+    <value>Test input (e.g. report.tmp)</value>
   </data>
   <data name="Filter_ValidationError_Title" xml:space="preserve">
     <value>Unable to exclude item</value>

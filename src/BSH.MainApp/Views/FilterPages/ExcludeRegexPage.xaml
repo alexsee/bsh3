@@ -2,11 +2,17 @@
     x:Class="BSH.MainApp.Views.FilterPages.ExcludeRegexPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:BSH.MainApp.Converters"
     xmlns:helpers="using:BSH.MainApp.Helpers">
+
+	<Page.Resources>
+		<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+	</Page.Resources>
 
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
@@ -39,7 +45,31 @@
                         Height="80"
                         Text="{Binding RegexInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-		<StackPanel Grid.Row="3" Margin="0,12,0,0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10">
+		<Grid Grid.Row="3" Margin="0,12,0,0" ColumnSpacing="10">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+
+			<TextBox Grid.Column="0"
+					 PlaceholderText="{helpers:ResourceString Name=Filter_RegexTestInput}"
+					 Text="{Binding RegexTestInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+			<Grid Grid.Column="1" Width="24">
+				<FontIcon Glyph="&#xE73E;"
+						  Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+						  AutomationProperties.Name="{helpers:ResourceString Name=Filter_RegexMatches}"
+						  ToolTipService.ToolTip="{helpers:ResourceString Name=Filter_RegexMatches}"
+						  Visibility="{Binding IsRegexTestMatch, Converter={StaticResource BooleanToVisibilityConverter}}" />
+				<FontIcon Glyph="&#xE711;"
+						  Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+						  AutomationProperties.Name="{helpers:ResourceString Name=Filter_RegexDoesNotMatch}"
+						  ToolTipService.ToolTip="{helpers:ResourceString Name=Filter_RegexDoesNotMatch}"
+						  Visibility="{Binding IsRegexTestNoMatch, Converter={StaticResource BooleanToVisibilityConverter}}" />
+			</Grid>
+		</Grid>
+
+		<StackPanel Grid.Row="4" Margin="0,12,0,0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10">
 			<Button Content="{helpers:ResourceString Name=MsgBox_Add}" Command="{Binding AddRegexCommand}" CommandParameter="{Binding RegexInputText}" />
 			<Button Content="{helpers:ResourceString Name=MsgBox_Remove}" Command="{Binding RemoveRegexCommand}" />
 		</StackPanel>

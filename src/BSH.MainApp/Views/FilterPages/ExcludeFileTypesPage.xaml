@@ -33,8 +33,6 @@
 		<TextBox x:Name="FileTypeInput"
 				 Grid.Row="2"
 				 Margin="0,12,0,0"
-				 MaxWidth="420"
-				 HorizontalAlignment="Stretch"
 				 PlaceholderText="{helpers:ResourceString Name=Filter_EnterExtension}"
 				 Text="{Binding FileTypeInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 

@@ -15,9 +15,10 @@
                   IsChecked="{Binding ExcludeFilesBigger, Mode=TwoWay}" />
 
         <NumberBox Grid.Row="1"
-                   MaxWidth="420"
-                   HorizontalAlignment="Stretch"
+                   Width="420"
+                   HorizontalAlignment="Left"
                    Header="{helpers:ResourceString Name=Filter_MaximumFileSize}"
+                   IsEnabled="{Binding ExcludeFilesBigger}"
                    Minimum="0"
                    SpinButtonPlacementMode="Inline"
                    Value="{Binding ExcludeFileBigger, Mode=TwoWay}" />
