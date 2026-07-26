@@ -9,6 +9,7 @@
     xmlns:helpers="using:BSH.MainApp.Helpers"
     mc:Ignorable="d"
     Title="{helpers:ResourceString Name=Filter_Title}"
+    TaskBarIcon="{StaticResource AppIcon}"
     Height="650"
     Width="850"
 	MinHeight="650"

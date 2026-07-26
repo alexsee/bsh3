@@ -4,7 +4,6 @@
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.ViewModels.Windows;
-using WinUIEx;
 
 namespace BSH.MainApp.Windows;
 
@@ -26,7 +25,7 @@ public sealed partial class RequestFileOverwriteWindow : WinUIEx.WindowEx
         ViewModel.DestinationLastModified = remoteFile.FileDateModified;
 
         Activate();
-        this.CenterOnScreen();
+        this.CenterOnMainWindow();
 
         var result = await ViewModel.TaskCompletionSource.Task;
         Close();

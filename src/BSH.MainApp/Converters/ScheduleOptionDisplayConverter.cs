@@ -3,7 +3,6 @@
 
 using System.Globalization;
 using Brightbits.BSH.Engine.Models;
-using BSH.MainApp.Helpers;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Data;
 

@@ -29,7 +29,7 @@ public sealed partial class FilterWindow : WindowEx
     public async Task<bool> ShowDialogAsync()
     {
         Activate();
-        this.CenterOnScreen();
+        this.CenterOnMainWindow();
         var result = await ViewModel.TaskCompletionSource.Task;
 
         Close();

@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Title="{helpers:ResourceString Name=WaitForMedium_Title}"
+    TaskBarIcon="{StaticResource AppIcon}"
     Width="600"
     Height="300"
     IsMaximizable="False"

@@ -32,7 +32,7 @@ public sealed partial class ScheduleEditorWindow : WindowEx
         await ViewModel.InitializeAsync();
 
         Activate();
-        this.CenterOnScreen();
+        this.CenterOnMainWindow();
         var result = await ViewModel.TaskCompletionSource.Task;
 
         // Save/Cancel complete the TCS while the window is still open; chrome close

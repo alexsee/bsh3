@@ -9,6 +9,7 @@
     xmlns:viewmodels="using:BSH.MainApp.ViewModels.Windows"
     xmlns:winex="using:WinUIEx"
     Title="{helpers:ResourceString Name=SwitchStorage_Title}"
+    TaskBarIcon="{StaticResource AppIcon}"
     Width="640"
     Height="620"
     IsAlwaysOnTop="True"

@@ -3,7 +3,6 @@
 
 using System.Globalization;
 using Brightbits.BSH.Engine.Models;
-using BSH.MainApp.Helpers;
 using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;

@@ -4,7 +4,6 @@
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using Brightbits.BSH.Engine.Contracts;
-using BSH.MainApp.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 

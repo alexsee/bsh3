@@ -30,7 +30,7 @@ public sealed partial class CompressionExclusionsWindow : WindowEx
     public async Task<bool> ShowDialogAsync()
     {
         Activate();
-        this.CenterOnScreen();
+        this.CenterOnMainWindow();
         var result = await ViewModel.TaskCompletionSource.Task;
 
         Close();

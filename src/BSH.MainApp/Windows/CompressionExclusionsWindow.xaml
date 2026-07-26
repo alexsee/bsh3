@@ -10,6 +10,7 @@
     xmlns:winex="using:WinUIEx"
     mc:Ignorable="d"
     Title="{helpers:ResourceString Name=Settings_Options_ExcludedExtensions}"
+    TaskBarIcon="{StaticResource AppIcon}"
     Height="520"
     Width="620"
     MinHeight="520"

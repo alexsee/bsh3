@@ -10,6 +10,7 @@
     xmlns:helpers="using:BSH.MainApp.Helpers"
     mc:Ignorable="d"
     Title="{helpers:ResourceString Name=Overwrite_Title}"
+    TaskBarIcon="{StaticResource AppIcon}"
     IsMaximizable="False"
     IsMinimizable="False"
     IsAlwaysOnTop="True"

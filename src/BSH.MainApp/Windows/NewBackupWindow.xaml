@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Title="{helpers:ResourceString Name=CreateBackup_Title}"
+    TaskBarIcon="{StaticResource AppIcon}"
     Height="500" Width="600" IsResizable="False" IsMaximizable="False" IsMinimizable="False" IsAlwaysOnTop="True">
 
     <Grid Background="White">

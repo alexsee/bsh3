@@ -5,7 +5,6 @@ using Brightbits.BSH.Engine.Contracts.Services;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Windows;
 using CommunityToolkit.WinUI;
-using WinUIEx;
 
 namespace BSH.MainApp.Services;
 
@@ -45,7 +44,7 @@ public class WaitForMediaService : IWaitForMediaService
         {
             window = new WaitForMediumWindow();
             window.ViewModel.OnCancelRequested += cancellationTokenSource.Cancel;
-            window.CenterOnScreen();
+            window.CenterOnMainWindow();
             window.Activate();
         });
     }

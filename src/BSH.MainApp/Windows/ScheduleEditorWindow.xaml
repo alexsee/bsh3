@@ -10,6 +10,7 @@
     xmlns:viewmodels="using:BSH.MainApp.ViewModels.Windows"
     xmlns:winex="using:WinUIEx"
     Title="{helpers:ResourceString Name=Schedule_Title}"
+    TaskBarIcon="{StaticResource AppIcon}"
     Width="850"
     Height="650"
     MinWidth="850"
