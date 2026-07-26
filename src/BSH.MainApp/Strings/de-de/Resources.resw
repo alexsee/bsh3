@@ -274,7 +274,7 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
     <value>Muster</value>
   </data>
   <data name="Filter_Description" xml:space="preserve">
-    <value>Schließen Sie Dateien, Ordner, Dateitypen und anhand regulärer Ausdrücke aus. Wählen Sie die Dateien und Ordner aus, die Sie von Sicherungen ausschließen möchten.</value>
+    <value>Wählen Sie Dateien, Ordner, Dateitypen, Größenlimits oder Namensmuster aus, die Backup Service Home bei Sicherungen überspringen soll.</value>
   </data>
   <data name="Filter_EnterExtension" xml:space="preserve">
     <value>Erweiterung eingeben (ohne Punkt)</value>

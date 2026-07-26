@@ -274,7 +274,7 @@ This feature is currently not available because the quick preview could not be f
     <value>Pattern</value>
   </data>
   <data name="Filter_Description" xml:space="preserve">
-    <value>Exclude files, folders, file types and based on regular expressions. Select the files and folders you want to exclude in backups.</value>
+    <value>Choose the files, folders, file types, size limits, or name patterns that Backup Service Home should skip during backups.</value>
   </data>
   <data name="Filter_EnterExtension" xml:space="preserve">
     <value>Enter extension (without dot)</value>

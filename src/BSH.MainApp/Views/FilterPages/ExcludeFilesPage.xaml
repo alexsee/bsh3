@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:helpers="using:BSH.MainApp.Helpers">
 
-    <Grid RowSpacing="12" Padding="8">
+    <Grid RowSpacing="15">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto" />
@@ -14,20 +14,26 @@
         <ListView Grid.Row="0"
                     ItemsSource="{Binding ExcludeFiles}"
                     SelectedItem="{Binding SelectedFile, Mode=TwoWay}">
-            <ListView.Header>
-                <TextBlock FontWeight="Bold" Text="{helpers:ResourceString Name=Filter_Column_File}" />
-            </ListView.Header>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="MinHeight" Value="44" />
+                    <Setter Property="Padding" Value="15,10" />
+                </Style>
+            </ListView.ItemContainerStyle>
         </ListView>
-        <TextBlock Grid.Row="1"
-                   Text="{Binding ValidationErrorMessage}"
-                   Foreground="Red"
-                   TextWrapping="Wrap">
-        </TextBlock>
 
-        <Grid Grid.Row="2">
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
+        <Grid Grid.Row="2" Margin="0,0,0,0">
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Spacing="10">
                 <Button Content="{helpers:ResourceString Name=Filter_AddFiles}" Command="{Binding BrowseFileCommand}" />
                 <Button Content="{helpers:ResourceString Name=MsgBox_Remove}" Command="{Binding RemoveFileCommand}" />
+
+                <TextBlock
+                   Margin="0,10,0,0"
+                   Text="{Binding ValidationErrorMessage}"
+                   Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                   TextWrapping="Wrap">
+                </TextBlock>
             </StackPanel>
         </Grid>
     </Grid>

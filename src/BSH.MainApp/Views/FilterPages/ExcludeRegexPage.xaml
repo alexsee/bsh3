@@ -4,37 +4,44 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:helpers="using:BSH.MainApp.Helpers">
 
-	<Grid RowSpacing="12" Padding="8">
+	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
 		<ListView Grid.Row="0"
+                    Background="Transparent"
                     ItemsSource="{Binding RegexPatterns}"
                     SelectedItem="{Binding SelectedRegexPattern, Mode=TwoWay}">
-			<ListView.Header>
-				<TextBlock FontWeight="Bold" Text="{helpers:ResourceString Name=Filter_Column_Pattern}" />
-			</ListView.Header>
+			<ListView.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+					<Setter Property="MinHeight" Value="44" />
+					<Setter Property="Padding" Value="16,10" />
+				</Style>
+			</ListView.ItemContainerStyle>
 		</ListView>
-		<Grid Grid.Row="1">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
 
-			<TextBox x:Name="RegexInput"
+		<Border Grid.Row="1"
+				Margin="0,12,0,0"
+				BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+				BorderThickness="0,1,0,0" />
+
+		<TextBox x:Name="RegexInput"
+                        Grid.Row="2"
+                        Margin="0,12,0,0"
                         PlaceholderText="{helpers:ResourceString Name=Filter_EnterRegex}"
                         TextWrapping="Wrap"
                         AcceptsReturn="True"
                         Height="80"
-                        Margin="0,0,10,0"
                         Text="{Binding RegexInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-			<StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="10" VerticalAlignment="Top">
-				<Button Content="{helpers:ResourceString Name=MsgBox_Add}" Command="{Binding AddRegexCommand}" CommandParameter="{Binding RegexInputText}" />
-				<Button Content="{helpers:ResourceString Name=MsgBox_Remove}" Command="{Binding RemoveRegexCommand}" />
-			</StackPanel>
-		</Grid>
+		<StackPanel Grid.Row="3" Margin="0,12,0,0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10">
+			<Button Content="{helpers:ResourceString Name=MsgBox_Add}" Command="{Binding AddRegexCommand}" CommandParameter="{Binding RegexInputText}" />
+			<Button Content="{helpers:ResourceString Name=MsgBox_Remove}" Command="{Binding RemoveRegexCommand}" />
+		</StackPanel>
 	</Grid>
 </Page>

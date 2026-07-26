@@ -4,34 +4,43 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:helpers="using:BSH.MainApp.Helpers">
 
-	<Grid RowSpacing="12" Padding="8">
+	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
 		<ListView Grid.Row="0"
+                    Background="Transparent"
                     ItemsSource="{Binding ExcludeFileTypes}"
                     SelectedItem="{Binding SelectedFileType, Mode=TwoWay}">
-			<ListView.Header>
-				<TextBlock FontWeight="Bold" Text="{helpers:ResourceString Name=Filter_Column_Extension}" />
-			</ListView.Header>
+			<ListView.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+					<Setter Property="MinHeight" Value="44" />
+					<Setter Property="Padding" Value="16,10" />
+				</Style>
+			</ListView.ItemContainerStyle>
 		</ListView>
-		<Grid Grid.Row="1">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
 
-			<TextBox x:Name="FileTypeInput"
-					 PlaceholderText="{helpers:ResourceString Name=Filter_EnterExtension}"
-					 Margin="0,0,10,0"
-					 Text="{Binding FileTypeInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+		<Border Grid.Row="1"
+				Margin="0,12,0,0"
+				BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+				BorderThickness="0,1,0,0" />
 
-			<StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="10">
-				<Button Content="{helpers:ResourceString Name=MsgBox_Add}" Command="{Binding AddFileTypeCommand}" CommandParameter="{Binding FileTypeInputText}" />
-				<Button Content="{helpers:ResourceString Name=MsgBox_Remove}" Command="{Binding RemoveFileTypeCommand}" />
-			</StackPanel>
-		</Grid>
+		<TextBox x:Name="FileTypeInput"
+				 Grid.Row="2"
+				 Margin="0,12,0,0"
+				 MaxWidth="420"
+				 HorizontalAlignment="Stretch"
+				 PlaceholderText="{helpers:ResourceString Name=Filter_EnterExtension}"
+				 Text="{Binding FileTypeInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+		<StackPanel Grid.Row="3" Margin="0,12,0,0" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10">
+			<Button Content="{helpers:ResourceString Name=MsgBox_Add}" Command="{Binding AddFileTypeCommand}" CommandParameter="{Binding FileTypeInputText}" />
+			<Button Content="{helpers:ResourceString Name=MsgBox_Remove}" Command="{Binding RemoveFileTypeCommand}" />
+		</StackPanel>
 	</Grid>
 </Page>
