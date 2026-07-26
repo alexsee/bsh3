@@ -40,7 +40,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="1" Background="#fafafa" Padding="30,10" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+        <Grid Grid.Row="1" Background="{StaticResource ButtonBottomPanelBackgroundColor}" Padding="30,10" BorderBrush="{StaticResource ButtonBottomPanelBorderBrush}" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
                 <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
                 <Button Command="{x:Bind ViewModel.StartBackupCommand}" Style="{StaticResource AccentButtonStyle}" Content="{helpers:ResourceString Name=CreateBackup_CreateButton}" />

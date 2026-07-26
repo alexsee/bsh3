@@ -83,10 +83,7 @@
 
         <Grid
             Grid.Row="1"
-            Padding="28,12"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="0,1,0,0"
-            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+            Background="{StaticResource ButtonBottomPanelBackgroundColor}" Padding="30,10" BorderBrush="{StaticResource ButtonBottomPanelBorderBrush}" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
                 <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=SwitchStorage_Cancel}" />
                 <Button Command="{x:Bind ViewModel.ConfirmCommand}" Content="{helpers:ResourceString Name=SwitchStorage_Confirm}" Style="{StaticResource AccentButtonStyle}" />

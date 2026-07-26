@@ -3,9 +3,9 @@
 
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.ViewModels.Windows;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Media;
 using WinUIEx;
-using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp;
 

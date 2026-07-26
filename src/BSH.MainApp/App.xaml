@@ -16,6 +16,9 @@
             <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled">Transparent</SolidColorBrush>
             <SolidColorBrush x:Key="WarningTextBrush" Color="#C45A00" />
 
+            <SolidColorBrush x:Key="ButtonBottomPanelBackgroundColor">#fafafa</SolidColorBrush>
+            <SolidColorBrush x:Key="ButtonBottomPanelBorderBrush">#f0f0f0</SolidColorBrush>
+
             <Color x:Key="App.Theme.IconBaseColor">#DB202020</Color>
         </ResourceDictionary>
     </Application.Resources>

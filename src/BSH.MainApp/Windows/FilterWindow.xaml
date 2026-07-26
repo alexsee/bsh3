@@ -11,6 +11,8 @@
     Title="{helpers:ResourceString Name=Filter_Title}"
     Height="650"
     Width="850"
+	MinHeight="650"
+	MinWidth="850"
     IsResizable="True"
     IsMaximizable="False"
     IsMinimizable="False"
@@ -72,10 +74,7 @@
         </Grid>
 
         <Grid Grid.Row="1"
-              Background="{ThemeResource LayerFillColorDefaultBrush}"
-              Padding="24,12"
-              BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
-              BorderThickness="0,1,0,0">
+              Background="{StaticResource ButtonBottomPanelBackgroundColor}" Padding="30,10" BorderBrush="{StaticResource ButtonBottomPanelBorderBrush}" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
                 <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
                 <Button Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" Content="{helpers:ResourceString Name=MsgBox_Save}" />
