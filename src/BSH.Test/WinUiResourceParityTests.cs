@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using Brightbits.BSH.Engine.Models;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -152,6 +153,29 @@ public class WinUiResourceParityTests
     }
 
     [Test]
+    public void ScheduleEnumLocalizationKeysArePresentInBothResourceFiles()
+    {
+        var referencedKeys = Enum.GetValues<ScheduleEntryKind>()
+            .Select(kind => $"Schedule_Kind_{kind}")
+            .Concat(Enum.GetValues<ScheduleRetentionMode>()
+                .Select(mode => $"Schedule_RetentionMode_{mode}"))
+            .Concat(Enum.GetValues<ScheduleRetentionIntervalUnit>()
+                .Select(unit => $"Schedule_RetentionUnit_{unit}"))
+            .ToList();
+
+        var englishKeys = LoadResourceKeys(EnglishResourcesPath);
+        var germanKeys = LoadResourceKeys(GermanResourcesPath);
+
+        var missingEnglish = referencedKeys.Where(k => !englishKeys.ContainsKey(k)).ToList();
+        var missingGerman = referencedKeys.Where(k => !germanKeys.ContainsKey(k)).ToList();
+
+        Assert.That(missingEnglish, Is.Empty,
+            "Schedule enum localization keys missing from en-us: " + string.Join(", ", missingEnglish));
+        Assert.That(missingGerman, Is.Empty,
+            "Schedule enum localization keys missing from de-de: " + string.Join(", ", missingGerman));
+    }
+
+    [Test]
     public void ResourceStringMarkupKeysArePresentInBothResourceFiles()
     {
         var referencedKeys = DiscoverResourceStringKeys(MainAppRoot);
@@ -196,7 +220,7 @@ public class WinUiResourceParityTests
 
     private static List<string> DiscoverGetLocalizedKeys(string mainAppRoot)
     {
-        var extensionPattern = new Regex("\"([^\"]+)\"\\.GetLocalized\\(\\)", RegexOptions.Compiled);
+        var extensionPattern = new Regex("(?<!\\$)\"([^\"]+)\"\\.GetLocalized\\(\\)", RegexOptions.Compiled);
         var keys = new HashSet<string>(StringComparer.Ordinal);
         foreach (var file in Directory.EnumerateFiles(mainAppRoot, "*.cs", SearchOption.AllDirectories))
         {

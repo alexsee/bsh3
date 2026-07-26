@@ -274,13 +274,13 @@ This feature is currently not available because the quick preview could not be f
     <value>Pattern</value>
   </data>
   <data name="Filter_Description" xml:space="preserve">
-    <value>Exclude files, folders, file types and based on regular expressions. Select the files and folders you want to exclude in backups.</value>
+    <value>Choose the files, folders, file types, size limits, or name patterns that Backup Service Home should skip during backups.</value>
   </data>
   <data name="Filter_EnterExtension" xml:space="preserve">
     <value>Enter extension (without dot)</value>
   </data>
   <data name="Filter_EnterRegex" xml:space="preserve">
-    <value>Enter regular expression</value>
+    <value>Enter regular expression (e.g. .*\.tmp$)</value>
   </data>
   <data name="Filter_ExcludeLargerThan" xml:space="preserve">
     <value>Exclude files larger than this size</value>
@@ -299,6 +299,18 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="Filter_InvalidRegex" xml:space="preserve">
     <value>Invalid regular expression. Fix the pattern before saving it.</value>
+  </data>
+  <data name="Filter_RegexDoesNotMatch" xml:space="preserve">
+    <value>Test input does not match</value>
+  </data>
+  <data name="Filter_RegexMatches" xml:space="preserve">
+    <value>Test input matches</value>
+  </data>
+  <data name="Filter_RegexTestInput" xml:space="preserve">
+    <value>Test input (e.g. report.tmp)</value>
+  </data>
+  <data name="Filter_ValidationError_Title" xml:space="preserve">
+    <value>Unable to exclude item</value>
   </data>
   <data name="Filter_MaximumFileSize" xml:space="preserve">
     <value>Maximum file size</value>
@@ -643,6 +655,9 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   <data name="Schedule_HourlyBackupThreshold" xml:space="preserve">
     <value>Hourly backup threshold</value>
   </data>
+  <data name="Schedule_NoEntries" xml:space="preserve">
+    <value>No backup times yet. Use the controls above to add the first one.</value>
+  </data>
   <data name="Schedule_Kind_Daily" xml:space="preserve">
     <value>Daily</value>
   </data>
@@ -850,8 +865,8 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   <data name="Settings_Options_ExcludedExtensions" xml:space="preserve">
     <value>Excluded extensions</value>
   </data>
-  <data name="Settings_Options_Extension" xml:space="preserve">
-    <value>Extension</value>
+  <data name="Settings_Options_ExcludedExtensionsDescription" xml:space="preserve">
+    <value>Files with these extensions are stored in compressed backups without being compressed again.</value>
   </data>
   <data name="Settings_Options_NoCompressionOrEncryption" xml:space="preserve">
     <value>No compression or encryption</value>

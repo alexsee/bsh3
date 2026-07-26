@@ -6,9 +6,9 @@ using System.Text.RegularExpressions;
 using Brightbits.BSH.Engine.Contracts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using Microsoft.UI;
 using Microsoft.Windows.Storage.Pickers;
-using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -18,12 +18,7 @@ public partial class FilterViewModel : ObservableObject
 
     public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
 
-    private string? validationErrorMessage;
-    public string? ValidationErrorMessage
-    {
-        get => validationErrorMessage;
-        set => SetProperty(ref validationErrorMessage, value);
-    }
+    public event Action<string>? ValidationFailed;
 
     public ObservableCollection<string> ExcludeFolders { get; } = [];
 
@@ -58,14 +53,54 @@ public partial class FilterViewModel : ObservableObject
     public string? FileTypeInputText
     {
         get => fileTypeInputText;
-        set => SetProperty(ref fileTypeInputText, value);
+        set
+        {
+            if (SetProperty(ref fileTypeInputText, value))
+            {
+                AddFileTypeCommand.NotifyCanExecuteChanged();
+            }
+        }
     }
 
     private string? regexInputText;
     public string? RegexInputText
     {
         get => regexInputText;
-        set => SetProperty(ref regexInputText, value);
+        set
+        {
+            if (SetProperty(ref regexInputText, value))
+            {
+                AddRegexCommand.NotifyCanExecuteChanged();
+                UpdateRegexTestResult();
+            }
+        }
+    }
+
+    private string? regexTestInputText;
+    public string? RegexTestInputText
+    {
+        get => regexTestInputText;
+        set
+        {
+            if (SetProperty(ref regexTestInputText, value))
+            {
+                UpdateRegexTestResult();
+            }
+        }
+    }
+
+    private bool isRegexTestMatch;
+    public bool IsRegexTestMatch
+    {
+        get => isRegexTestMatch;
+        private set => SetProperty(ref isRegexTestMatch, value);
+    }
+
+    private bool isRegexTestNoMatch;
+    public bool IsRegexTestNoMatch
+    {
+        get => isRegexTestNoMatch;
+        private set => SetProperty(ref isRegexTestNoMatch, value);
     }
 
     public IRelayCommand AddFolderCommand
@@ -141,9 +176,9 @@ public partial class FilterViewModel : ObservableObject
         RemoveFolderCommand = new RelayCommand(RemoveFolder, CanRemoveFolder);
         AddFileCommand = new RelayCommand<string?>(AddFile);
         RemoveFileCommand = new RelayCommand(RemoveFile, CanRemoveFile);
-        AddFileTypeCommand = new RelayCommand<string?>(AddFileType);
+        AddFileTypeCommand = new RelayCommand<string?>(AddFileType, CanAddFileType);
         RemoveFileTypeCommand = new RelayCommand(RemoveFileType, CanRemoveFileType);
-        AddRegexCommand = new RelayCommand<string?>(AddRegex);
+        AddRegexCommand = new RelayCommand<string?>(AddRegex, CanAddRegex);
         RemoveRegexCommand = new RelayCommand(RemoveRegex, CanRemoveRegex);
         SaveCommand = new RelayCommand(Save);
         CancelCommand = new RelayCommand(Cancel);
@@ -318,8 +353,6 @@ public partial class FilterViewModel : ObservableObject
 
     private void AddFolder(string? folder)
     {
-        ValidationErrorMessage = null;
-
         var trimmed = folder?.Trim();
         if (string.IsNullOrEmpty(trimmed))
         {
@@ -328,7 +361,7 @@ public partial class FilterViewModel : ObservableObject
 
         if (!IsPathUnderSources(trimmed))
         {
-            ValidationErrorMessage = "Filter_FolderNotInSources".GetLocalized();
+            ReportValidationError("Filter_FolderNotInSources");
             return;
         }
 
@@ -355,8 +388,6 @@ public partial class FilterViewModel : ObservableObject
 
     private void AddFile(string? file)
     {
-        ValidationErrorMessage = null;
-
         var trimmed = file?.Trim();
         if (string.IsNullOrEmpty(trimmed))
         {
@@ -365,7 +396,7 @@ public partial class FilterViewModel : ObservableObject
 
         if (!IsPathUnderSources(trimmed))
         {
-            ValidationErrorMessage = "Filter_FileNotInSources".GetLocalized();
+            ReportValidationError("Filter_FileNotInSources");
             return;
         }
 
@@ -392,13 +423,8 @@ public partial class FilterViewModel : ObservableObject
 
     private void AddFileType(string? fileType)
     {
-        var trimmed = fileType?.Trim().TrimStart('*').TrimStart('.');
-        if (string.IsNullOrEmpty(trimmed))
-        {
-            return;
-        }
-
-        if (!Regex.IsMatch(trimmed, "^[A-Za-z0-9]+$", RegexOptions.None, TimeSpan.FromSeconds(10)))
+        var trimmed = NormalizeFileType(fileType);
+        if (!IsValidFileType(trimmed))
         {
             return;
         }
@@ -413,6 +439,24 @@ public partial class FilterViewModel : ObservableObject
         FileTypeInputText = null;
     }
 
+    private bool CanAddFileType(string? fileType)
+    {
+        var trimmed = NormalizeFileType(fileType);
+        return IsValidFileType(trimmed)
+            && !ExcludeFileTypes.Contains(trimmed!, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static string? NormalizeFileType(string? fileType)
+    {
+        return fileType?.Trim().TrimStart('*').TrimStart('.');
+    }
+
+    private static bool IsValidFileType(string? fileType)
+    {
+        return !string.IsNullOrEmpty(fileType)
+            && Regex.IsMatch(fileType, "^[A-Za-z0-9]+$", RegexOptions.None, TimeSpan.FromSeconds(10));
+    }
+
     private void RemoveFileType()
     {
         if (SelectedFileType == null)
@@ -422,41 +466,90 @@ public partial class FilterViewModel : ObservableObject
 
         ExcludeFileTypes.Remove(SelectedFileType);
         SelectedFileType = null;
+        AddFileTypeCommand.NotifyCanExecuteChanged();
     }
 
     private bool CanRemoveFileType() => !string.IsNullOrEmpty(SelectedFileType);
 
     private void AddRegex(string? regex)
     {
-        ValidationErrorMessage = null;
-
-        if (string.IsNullOrWhiteSpace(regex))
+        if (!TryCreateRegexes(regex, out var regexes))
         {
             return;
         }
 
-        var lines = regex.Replace("\r", "").Split('\n', StringSplitOptions.RemoveEmptyEntries);
-        foreach (var line in lines.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)))
+        foreach (var item in regexes)
         {
+            var line = item.ToString();
             if (RegexPatterns.Contains(line))
             {
                 continue;
-            }
-
-            try
-            {
-                _ = new Regex(line, RegexOptions.None, TimeSpan.FromSeconds(10));
-            }
-            catch (ArgumentException)
-            {
-                ValidationErrorMessage = "Filter_InvalidRegex".GetLocalized();
-                return;
             }
 
             RegexPatterns.Add(line);
         }
 
         RegexInputText = null;
+    }
+
+    private static bool CanAddRegex(string? regex)
+    {
+        return TryCreateRegexes(regex, out _);
+    }
+
+    private static bool TryCreateRegexes(string? input, out IReadOnlyList<Regex> regexes)
+    {
+        regexes = [];
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return false;
+        }
+
+        var parsedRegexes = new List<Regex>();
+        var lines = input.Replace("\r", "").Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+        try
+        {
+            foreach (var line in lines.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)))
+            {
+                parsedRegexes.Add(new Regex(line, RegexOptions.None, TimeSpan.FromSeconds(10)));
+            }
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+
+        regexes = parsedRegexes;
+        return parsedRegexes.Count > 0;
+    }
+
+    private void UpdateRegexTestResult()
+    {
+        if (RegexTestInputText == null || !TryCreateRegexes(RegexInputText, out var regexes))
+        {
+            IsRegexTestMatch = false;
+            IsRegexTestNoMatch = false;
+            return;
+        }
+
+        bool isMatch;
+        try
+        {
+            isMatch = regexes.Any(regex => regex.IsMatch(RegexTestInputText));
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            isMatch = false;
+        }
+
+        IsRegexTestMatch = isMatch;
+        IsRegexTestNoMatch = !isMatch;
+    }
+
+    private void ReportValidationError(string resourceName)
+    {
+        ValidationFailed?.Invoke(resourceName.GetLocalized() ?? resourceName);
     }
 
     private void RemoveRegex()

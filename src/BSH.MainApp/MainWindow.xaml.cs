@@ -3,9 +3,9 @@
 
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.ViewModels.Windows;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Media;
 using WinUIEx;
-using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp;
 
@@ -21,7 +21,7 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(titleBar);
 
-        AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/app_ico.ico"));
+        this.CenterOnScreen();
         Title = "AppDisplayName".GetLocalized();
     }
 

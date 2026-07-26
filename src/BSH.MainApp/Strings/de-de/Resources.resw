@@ -274,13 +274,13 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
     <value>Muster</value>
   </data>
   <data name="Filter_Description" xml:space="preserve">
-    <value>Schließen Sie Dateien, Ordner, Dateitypen und anhand regulärer Ausdrücke aus. Wählen Sie die Dateien und Ordner aus, die Sie von Sicherungen ausschließen möchten.</value>
+    <value>Wählen Sie Dateien, Ordner, Dateitypen, Größenlimits oder Namensmuster aus, die Backup Service Home bei Sicherungen überspringen soll.</value>
   </data>
   <data name="Filter_EnterExtension" xml:space="preserve">
     <value>Erweiterung eingeben (ohne Punkt)</value>
   </data>
   <data name="Filter_EnterRegex" xml:space="preserve">
-    <value>Regulären Ausdruck eingeben</value>
+    <value>Regulären Ausdruck eingeben (z. B. .*\.tmp$)</value>
   </data>
   <data name="Filter_ExcludeLargerThan" xml:space="preserve">
     <value>Dateien größer als diese Größe ausschließen</value>
@@ -299,6 +299,18 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   </data>
   <data name="Filter_InvalidRegex" xml:space="preserve">
     <value>Ungültiger regulärer Ausdruck. Korrigieren Sie das Muster, bevor Sie es speichern.</value>
+  </data>
+  <data name="Filter_RegexDoesNotMatch" xml:space="preserve">
+    <value>Testeingabe stimmt nicht überein</value>
+  </data>
+  <data name="Filter_RegexMatches" xml:space="preserve">
+    <value>Testeingabe stimmt überein</value>
+  </data>
+  <data name="Filter_RegexTestInput" xml:space="preserve">
+    <value>Testeingabe (z. B. bericht.tmp)</value>
+  </data>
+  <data name="Filter_ValidationError_Title" xml:space="preserve">
+    <value>Element kann nicht ausgeschlossen werden</value>
   </data>
   <data name="Filter_MaximumFileSize" xml:space="preserve">
     <value>Maximale Dateigröße</value>
@@ -643,6 +655,9 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   <data name="Schedule_HourlyBackupThreshold" xml:space="preserve">
     <value>Schwellenwert für stündliche Sicherungen</value>
   </data>
+  <data name="Schedule_NoEntries" xml:space="preserve">
+    <value>Noch keine Sicherungszeiten. Fügen Sie oben den ersten Eintrag hinzu.</value>
+  </data>
   <data name="Schedule_Kind_Daily" xml:space="preserve">
     <value>Täglich</value>
   </data>
@@ -850,8 +865,8 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   <data name="Settings_Options_ExcludedExtensions" xml:space="preserve">
     <value>Ausgeschlossene Erweiterungen</value>
   </data>
-  <data name="Settings_Options_Extension" xml:space="preserve">
-    <value>Erweiterung</value>
+  <data name="Settings_Options_ExcludedExtensionsDescription" xml:space="preserve">
+    <value>Dateien mit diesen Erweiterungen werden in komprimierten Sicherungen gespeichert, ohne erneut komprimiert zu werden.</value>
   </data>
   <data name="Settings_Options_NoCompressionOrEncryption" xml:space="preserve">
     <value>Keine Komprimierung oder Verschlüsselung</value>

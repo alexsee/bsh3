@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:helpers="using:BSH.MainApp.Helpers">
 
-    <Grid Padding="8" RowSpacing="12">
+    <Grid Padding="16" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -15,7 +15,10 @@
                   IsChecked="{Binding ExcludeFilesBigger, Mode=TwoWay}" />
 
         <NumberBox Grid.Row="1"
+                   Width="420"
+                   HorizontalAlignment="Left"
                    Header="{helpers:ResourceString Name=Filter_MaximumFileSize}"
+                   IsEnabled="{Binding ExcludeFilesBigger}"
                    Minimum="0"
                    SpinButtonPlacementMode="Inline"
                    Value="{Binding ExcludeFileBigger, Mode=TwoWay}" />

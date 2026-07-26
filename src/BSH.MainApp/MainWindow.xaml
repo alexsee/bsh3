@@ -9,6 +9,7 @@
     xmlns:helpers="using:BSH.MainApp.Helpers"
     mc:Ignorable="d"
     Title="{helpers:ResourceString Name=AppDisplayName}"
+    TaskBarIcon="{StaticResource AppIcon}"
     Width="1200" Height="800" Closed="WindowEx_Closed">
 
     <Grid>

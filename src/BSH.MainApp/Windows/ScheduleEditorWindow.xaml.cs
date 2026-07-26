@@ -3,6 +3,7 @@
 
 using BSH.MainApp.ViewModels.Windows;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using WinUIEx;
 
 namespace BSH.MainApp.Windows;
@@ -21,6 +22,9 @@ public sealed partial class ScheduleEditorWindow : WindowEx
         InitializeComponent();
         ((FrameworkElement)Content).DataContext = ViewModel;
         Closed += OnClosed;
+
+        ScheduleSelectorBar.SelectedItem = BackupTimesItem;
+        ShowSelectedPanel();
     }
 
     public async Task<bool> ShowDialogAsync()
@@ -28,7 +32,7 @@ public sealed partial class ScheduleEditorWindow : WindowEx
         await ViewModel.InitializeAsync();
 
         Activate();
-        this.CenterOnScreen();
+        this.CenterOnMainWindow();
         var result = await ViewModel.TaskCompletionSource.Task;
 
         // Save/Cancel complete the TCS while the window is still open; chrome close
@@ -45,5 +49,23 @@ public sealed partial class ScheduleEditorWindow : WindowEx
     {
         closeRequested = true;
         ViewModel.TaskCompletionSource.TrySetResult(false);
+    }
+
+    private void ScheduleSelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
+    {
+        ShowSelectedPanel();
+    }
+
+    private void ShowSelectedPanel()
+    {
+        BackupTimesPanel.Visibility = ReferenceEquals(ScheduleSelectorBar.SelectedItem, BackupTimesItem)
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+        RetentionPanel.Visibility = ReferenceEquals(ScheduleSelectorBar.SelectedItem, RetentionItem)
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+        FullBackupsPanel.Visibility = ReferenceEquals(ScheduleSelectorBar.SelectedItem, FullBackupsItem)
+            ? Visibility.Visible
+            : Visibility.Collapsed;
     }
 }

@@ -31,28 +31,6 @@
             VerticalScrollBarVisibility="Auto"
             VerticalScrollMode="Auto">
             <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="{helpers:ResourceString Name=Settings_Enhanced_Application}" />
-                <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Enhanced_LaunchAtStartup}" Description="{helpers:ResourceString Name=Settings_Enhanced_LaunchAtStartupDescription}">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE7E8;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding LaunchAtWindowsStartup, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
-
-                <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Enhanced_AutoCheckUpdates}" Description="{helpers:ResourceString Name=Settings_Enhanced_AutoCheckUpdatesDescription}">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE895;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding AutomaticallyCheckForUpdates, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
-
-                <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Enhanced_DownloadBeta}" Description="{helpers:ResourceString Name=Settings_Enhanced_DownloadBetaDescription}">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE945;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding DownloadBetaUpdates, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
-
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="{helpers:ResourceString Name=Settings_Enhanced_Backupbrowser}" />
                 <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Enhanced_DirectoryLocalization}" Description="{helpers:ResourceString Name=Settings_Enhanced_DirectoryLocalizationDescription}">
                     <toolkit:SettingsCard.HeaderIcon>
@@ -93,6 +71,28 @@
                         </toolkit:SettingsCard>
                     </toolkit:SettingsExpander.Items>
                 </toolkit:SettingsExpander>
+
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="{helpers:ResourceString Name=Settings_Enhanced_Application}" />
+                <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Enhanced_LaunchAtStartup}" Description="{helpers:ResourceString Name=Settings_Enhanced_LaunchAtStartupDescription}">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE7E8;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{Binding LaunchAtWindowsStartup, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Enhanced_AutoCheckUpdates}" Description="{helpers:ResourceString Name=Settings_Enhanced_AutoCheckUpdatesDescription}">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE895;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{Binding AutomaticallyCheckForUpdates, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Enhanced_DownloadBeta}" Description="{helpers:ResourceString Name=Settings_Enhanced_DownloadBetaDescription}">
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE945;" />
+                    </toolkit:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{Binding DownloadBetaUpdates, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
             </StackPanel>
         </ScrollViewer>
     </Grid>

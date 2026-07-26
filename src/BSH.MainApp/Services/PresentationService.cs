@@ -16,7 +16,6 @@ using BSH.MainApp.Windows;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Popups;
-using WinUIEx;
 
 namespace BSH.MainApp.Services;
 
@@ -30,7 +29,7 @@ public class PresentationService : IPresentationService
         {
             statusWindow = new StatusWindow();
             statusWindow.Activate();
-            statusWindow.CenterOnScreen();
+            statusWindow.CenterOnMainWindow();
         });
     }
 
@@ -345,6 +344,15 @@ public class PresentationService : IPresentationService
         await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var dialog = new FilterWindow();
+            await dialog.ShowDialogAsync();
+        });
+    }
+
+    public async Task ShowCompressionExclusionsWindowAsync()
+    {
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            var dialog = new CompressionExclusionsWindow();
             await dialog.ShowDialogAsync();
         });
     }

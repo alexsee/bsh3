@@ -6,8 +6,8 @@ using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml.Controls;
 using CommunityToolkit.WinUI;
+using Microsoft.UI.Xaml.Controls;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
