@@ -191,15 +191,6 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private Visibility backupTargetMoveProgressVisibility = Visibility.Collapsed;
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(RemoveCompressionExclusionCommand))]
-    private string? selectedCompressionExclusion;
-
-    [ObservableProperty]
-    private string? compressionExclusionInputText;
-
-    public ObservableCollection<string> CompressionExclusions { get; } = new();
-
     private void InitTargetSettings()
     {
         // selected media type
@@ -498,46 +489,12 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
 
         this.WaitForDevice = this.configurationManager.ShowWaitOnMediaAutoBackups == "1";
-
-        this.CompressionExclusions.Clear();
-        foreach (var entry in CompressionExclusionFormatter.Parse(this.configurationManager.ExcludeCompression))
-        {
-            this.CompressionExclusions.Add(entry);
-        }
     }
 
     [RelayCommand]
-    public void AddCompressionExclusion(string? extension)
+    private async Task ShowCompressionExclusionsWindow()
     {
-        var normalized = CompressionExclusionFormatter.NormalizeExtension(extension);
-        if (string.IsNullOrEmpty(normalized) || this.CompressionExclusions.Contains(normalized, StringComparer.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
-        this.CompressionExclusions.Add(normalized);
-        CompressionExclusionInputText = null;
-        SaveCompressionExclusions();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanRemoveCompressionExclusion))]
-    private void RemoveCompressionExclusion()
-    {
-        if (string.IsNullOrEmpty(SelectedCompressionExclusion))
-        {
-            return;
-        }
-
-        this.CompressionExclusions.Remove(SelectedCompressionExclusion);
-        SelectedCompressionExclusion = null;
-        SaveCompressionExclusions();
-    }
-
-    private bool CanRemoveCompressionExclusion() => !string.IsNullOrEmpty(SelectedCompressionExclusion);
-
-    private void SaveCompressionExclusions()
-    {
-        this.configurationManager.ExcludeCompression = CompressionExclusionFormatter.Format(this.CompressionExclusions);
+        await this.presentationController.ShowCompressionExclusionsWindowAsync();
     }
 
     partial void OnWaitForDeviceChanged(bool oldValue, bool newValue)

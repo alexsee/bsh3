@@ -853,8 +853,8 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   <data name="Settings_Options_ExcludedExtensions" xml:space="preserve">
     <value>Excluded extensions</value>
   </data>
-  <data name="Settings_Options_Extension" xml:space="preserve">
-    <value>Extension</value>
+  <data name="Settings_Options_ExcludedExtensionsDescription" xml:space="preserve">
+    <value>Files with these extensions are stored in compressed backups without being compressed again.</value>
   </data>
   <data name="Settings_Options_NoCompressionOrEncryption" xml:space="preserve">
     <value>No compression or encryption</value>

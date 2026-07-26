@@ -159,6 +159,7 @@ public partial class App : Application
             services.AddTransient<SetupPage>();
 
             services.AddTransient<FilterViewModel>();
+            services.AddTransient<CompressionExclusionsViewModel>();
             services.AddTransient<ScheduleEditorViewModel>();
             services.AddTransient<SwitchStorageViewModel>();
 

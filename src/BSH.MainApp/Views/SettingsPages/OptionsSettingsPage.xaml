@@ -65,31 +65,8 @@
                                                Text="{helpers:ResourceString Name=Settings_Options_RequiresMorePower}" />
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
-                            <StackPanel Spacing="8">
-                                <ListView Height="120"
-                                          ItemsSource="{Binding CompressionExclusions}"
-                                          SelectedItem="{Binding SelectedCompressionExclusion, Mode=TwoWay}">
-                                    <ListView.Header>
-                                        <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Settings_Options_ExcludedExtensions}" />
-                                    </ListView.Header>
-                                </ListView>
-                                <Grid ColumnSpacing="8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox PlaceholderText="{helpers:ResourceString Name=Settings_Options_Extension}"
-                                             Text="{Binding CompressionExclusionInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                    <Button Grid.Column="1"
-                                            Content="{helpers:ResourceString Name=MsgBox_Add}"
-                                            Command="{Binding AddCompressionExclusionCommand}"
-                                            CommandParameter="{Binding CompressionExclusionInputText}" />
-                                    <Button Grid.Column="2"
-                                            Content="{helpers:ResourceString Name=MsgBox_Remove}"
-                                            Command="{Binding RemoveCompressionExclusionCommand}" />
-                                </Grid>
-                            </StackPanel>
+                            <Button Content="{helpers:ResourceString Name=Settings_Options_ExcludedExtensions}"
+                                    Command="{Binding ShowCompressionExclusionsWindowCommand}" />
                         </toolkit:SettingsCard>
 
                         <toolkit:SettingsCard>

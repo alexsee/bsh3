@@ -437,6 +437,7 @@ public class BrowserViewModelTests
         public Task ResetConfigurationAsync() => Task.CompletedTask;
         public Task ShowAboutWindowAsync() => Task.CompletedTask;
         public Task ShowBackupBrowserWindowAsync() => Task.CompletedTask;
+        public Task ShowCompressionExclusionsWindowAsync() => Task.CompletedTask;
         public Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync() => Task.FromResult((false, new NewBackupViewModel()));
         public Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel) => Task.FromResult((false, backupViewModel));
         public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);

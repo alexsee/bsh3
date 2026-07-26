@@ -22,6 +22,7 @@ public interface IPresentationService
     Task ResetConfigurationAsync();
     Task ShowAboutWindowAsync();
     Task ShowBackupBrowserWindowAsync();
+    Task ShowCompressionExclusionsWindowAsync();
     Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync();
     Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel);
     Task<bool> ShowDeleteBackupWindowAsync();

@@ -853,8 +853,8 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   <data name="Settings_Options_ExcludedExtensions" xml:space="preserve">
     <value>Ausgeschlossene Erweiterungen</value>
   </data>
-  <data name="Settings_Options_Extension" xml:space="preserve">
-    <value>Erweiterung</value>
+  <data name="Settings_Options_ExcludedExtensionsDescription" xml:space="preserve">
+    <value>Dateien mit diesen Erweiterungen werden in komprimierten Sicherungen gespeichert, ohne erneut komprimiert zu werden.</value>
   </data>
   <data name="Settings_Options_NoCompressionOrEncryption" xml:space="preserve">
     <value>Keine Komprimierung oder Verschlüsselung</value>
