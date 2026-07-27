@@ -43,6 +43,7 @@ This document is intentionally stable and high-level. Use symbol search for the 
 ### Tests
 - `BSH.Test`: NUnit tests centered on engine behavior.
   - Coverage anchors: `BackupTests`, `ConfigurationManagerTests`, `QueryManagerTests`, `Services/FileCollector/*`, `Security/*`.
+- Beta QA / coverage gaps / launch gates: `docs/testing/beta-release-testing-plan.md`.
 
 ## Architectural invariants and boundaries
 - `BSH.Engine` is the business core; UI projects are orchestration/presentation layers around it.
