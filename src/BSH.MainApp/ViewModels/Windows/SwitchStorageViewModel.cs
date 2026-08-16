@@ -33,7 +33,7 @@ public partial class SwitchStorageViewModel : ObservableObject
         new(MediaTargetKind.Unc, "Setup_Target_Unc_Title".GetLocalized()),
     ];
 
-    public IReadOnlyList<string> FtpEncodings { get; } = ["ISO-8859-1", "UTF8"];
+    public IReadOnlyList<string> FtpEncodings { get; } = ["ISO-8859-1", "UTF-8"];
 
     [ObservableProperty]
     private MediaTargetOption? selectedMedium;
@@ -75,7 +75,7 @@ public partial class SwitchStorageViewModel : ObservableObject
     private string ftpFolder = string.Empty;
 
     [ObservableProperty]
-    private string ftpEncoding = "UTF8";
+    private string ftpEncoding = "UTF-8";
 
     [ObservableProperty]
     private bool ftpEnforceUnencrypted;
@@ -251,7 +251,7 @@ public partial class SwitchStorageViewModel : ObservableObject
                 FtpUser,
                 FtpPassword,
                 FtpFolder,
-                string.IsNullOrWhiteSpace(FtpEncoding) ? "UTF8" : FtpEncoding,
+                string.IsNullOrWhiteSpace(FtpEncoding) ? "UTF-8" : FtpEncoding,
                 !FtpEnforceUnencrypted,
                 0);
             storage.Open();
@@ -287,7 +287,7 @@ public partial class SwitchStorageViewModel : ObservableObject
             FtpUser,
             FtpPassword,
             FtpFolder,
-            string.IsNullOrWhiteSpace(FtpEncoding) ? "UTF8" : FtpEncoding,
+            string.IsNullOrWhiteSpace(FtpEncoding) ? "UTF-8" : FtpEncoding,
             FtpEnforceUnencrypted);
     }
 

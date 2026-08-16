@@ -128,7 +128,7 @@
                                     <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="{helpers:ResourceString Name=Settings_Target_Encoding}" />
                                     <ComboBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch" SelectedValue="{Binding FtpRemoteEncoding, Mode=TwoWay}">
                                         <x:String>ISO-8859-1</x:String>
-                                        <x:String>UTF8</x:String>
+                                        <x:String>UTF-8</x:String>
                                     </ComboBox>
 
                                     <CheckBox x:Name="FtpEnforceUnencryptedCheckBox"

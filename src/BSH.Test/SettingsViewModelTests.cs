@@ -378,6 +378,62 @@ public class SettingsViewModelTests
         });
     }
 
+    [Test]
+    public void MigratedWinFormsOffSentinel_LeavesLowDiskReminderDisabled()
+    {
+        var configuration = new FakeConfigurationManager { RemindSpace = "-1" };
+        var harness = CreateHarness(configuration);
+
+        harness.ViewModel.OnNavigatedTo(null);
+
+        Assert.That(harness.ViewModel.EnableNotificationWhenDiskspaceLow, Is.False);
+        Assert.That(harness.ViewModel.NotificationWhenDiskspaceLow, Is.GreaterThanOrEqualTo(0));
+        Assert.That(configuration.RemindSpace, Is.EqualTo("-1"));
+    }
+
+    [Test]
+    public void TurningOffLowDiskReminder_StoresWinFormsOffSentinel()
+    {
+        var configuration = new FakeConfigurationManager { RemindSpace = "10" };
+        var harness = CreateHarness(configuration);
+
+        harness.ViewModel.OnNavigatedTo(null);
+        Assert.That(harness.ViewModel.EnableNotificationWhenDiskspaceLow, Is.True);
+
+        harness.ViewModel.EnableNotificationWhenDiskspaceLow = false;
+
+        Assert.That(configuration.RemindSpace, Is.EqualTo("-1"));
+    }
+
+    [TestCase(TaskType.Auto, TaskType.Manual)]
+    [TestCase(TaskType.Schedule, TaskType.Manual)]
+    [TestCase(TaskType.Manual, TaskType.Auto)]
+    [TestCase(TaskType.Manual, TaskType.Schedule)]
+    [TestCase(TaskType.Auto, TaskType.Schedule)]
+    public void ChangingTaskTypePersistsAndRefreshesAutomation(TaskType from, TaskType to)
+    {
+        var configuration = new FakeConfigurationManager { TaskType = from };
+        var harness = CreateHarness(configuration);
+
+        harness.ViewModel.TaskType = from;
+        harness.ViewModel.TaskType = to;
+
+        Assert.That(configuration.TaskType, Is.EqualTo(to));
+        Assert.That(harness.OrchestrationService.RefreshCalls, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void LoadingTaskTypeDoesNotRefreshAutomation()
+    {
+        var configuration = new FakeConfigurationManager { TaskType = TaskType.Auto };
+        var harness = CreateHarness(configuration);
+
+        harness.ViewModel.TaskType = TaskType.Auto;
+
+        Assert.That(configuration.TaskType, Is.EqualTo(TaskType.Auto));
+        Assert.That(harness.OrchestrationService.RefreshCalls, Is.EqualTo(0));
+    }
+
     private static FakeConfigurationManager CreateFtpConfiguration() => new()
     {
         MediumType = MediaType.FileTransferServer,
@@ -395,6 +451,7 @@ public class SettingsViewModelTests
         var presentation = new SettingsPresentationService();
         var jobService = new SettingsJobService(configuration);
         var queryManager = new SettingsQueryManager();
+        var orchestrationService = new SettingsOrchestrationService();
         var viewModel = new SettingsViewModel(
             configuration,
             presentation,
@@ -402,18 +459,19 @@ public class SettingsViewModelTests
             queryManager,
             new SettingsBackupTargetService(),
             new SettingsSwitchStorageService(),
-            new SettingsOrchestrationService(),
+            orchestrationService,
             new SettingsStartupLaunchAdapter(),
             new SettingsUpdateService());
 
-        return new SettingsHarness(viewModel, presentation, jobService, queryManager);
+        return new SettingsHarness(viewModel, presentation, jobService, queryManager, orchestrationService);
     }
 
     private sealed record SettingsHarness(
         SettingsViewModel ViewModel,
         SettingsPresentationService PresentationService,
         SettingsJobService JobService,
-        SettingsQueryManager QueryManager);
+        SettingsQueryManager QueryManager,
+        SettingsOrchestrationService OrchestrationService);
 
     private sealed class SettingsPresentationService : IPresentationService
     {
@@ -545,10 +603,17 @@ public class SettingsViewModelTests
 
     private sealed class SettingsOrchestrationService : IOrchestrationService
     {
+        public int RefreshCalls { get; private set; }
+
         public Task InitializeAsync() => Task.CompletedTask;
         public Task StartAsync(bool turnOn = false) => Task.CompletedTask;
         public Task StopAsync(bool turnOff = false) => Task.CompletedTask;
-        public Task RefreshAutomationAsync() => Task.CompletedTask;
+
+        public Task RefreshAutomationAsync()
+        {
+            RefreshCalls++;
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class SettingsStartupLaunchAdapter : IStartupLaunchAdapter

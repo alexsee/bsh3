@@ -40,6 +40,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IUpdateService updateService;
     private bool suppressEnhancedSettingsPersistence;
     private bool suppressTargetSettingsPersistence;
+    private const string RemindSpaceOffSentinel = "-1";
 
     #region Sources Settings
 
@@ -757,6 +758,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         if (oldValue == newValue) return;
 
         this.configurationManager.TaskType = newValue;
+        _ = orchestrationService.RefreshAutomationAsync();
     }
 
     [RelayCommand]
@@ -801,20 +803,21 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     void InitEnhancedSettings()
     {
-        this.EnableNotificationWhenDiskspaceLow = !string.IsNullOrEmpty(this.configurationManager.RemindSpace);
-        this.NotificationWhenDiskspaceLow = int.TryParse(this.configurationManager.RemindSpace, out var diskSpace) ? diskSpace : 0;
-
-        this.EnableDirectoryLocalization = this.configurationManager.ShowLocalizedPath == "1";
-        this.EnableNotificationWhenBackupFinished = this.configurationManager.InfoBackupDone == "1";
-        this.EnableNotificationWhenBackupDeviceNotReady = this.configurationManager.Medium == "1";
-
-        this.EnableNotificationWhenBackupOutdated = !string.IsNullOrEmpty(this.configurationManager.RemindAfterDays);
-        this.NotificationWhenBackupOutdated = int.TryParse(this.configurationManager.RemindAfterDays, out var days) ? days : 0;
-
-        // Load without re-entering the persistence handlers.
         suppressEnhancedSettingsPersistence = true;
         try
         {
+            var remindSpace = this.configurationManager.RemindSpace;
+            var reminderEnabled = int.TryParse(remindSpace, out var diskSpace) && diskSpace >= 0;
+            this.NotificationWhenDiskspaceLow = reminderEnabled ? diskSpace : 0;
+            this.EnableNotificationWhenDiskspaceLow = reminderEnabled;
+
+            this.EnableDirectoryLocalization = this.configurationManager.ShowLocalizedPath == "1";
+            this.EnableNotificationWhenBackupFinished = this.configurationManager.InfoBackupDone == "1";
+            this.EnableNotificationWhenBackupDeviceNotReady = this.configurationManager.Medium == "1";
+
+            this.EnableNotificationWhenBackupOutdated = !string.IsNullOrEmpty(this.configurationManager.RemindAfterDays);
+            this.NotificationWhenBackupOutdated = int.TryParse(this.configurationManager.RemindAfterDays, out var days) ? days : 0;
+
             LaunchAtWindowsStartup = startupLaunchAdapter.IsEnabled();
         }
         finally
@@ -844,7 +847,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     partial void OnEnableNotificationWhenDiskspaceLowChanged(bool oldValue, bool newValue)
     {
-        if (oldValue == newValue) return;
+        if (suppressEnhancedSettingsPersistence || oldValue == newValue) return;
 
         if (newValue)
         {
@@ -852,13 +855,13 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
         else
         {
-            this.configurationManager.RemindSpace = string.Empty;
+            this.configurationManager.RemindSpace = RemindSpaceOffSentinel;
         }
     }
 
     partial void OnNotificationWhenDiskspaceLowChanged(int oldValue, int newValue)
     {
-        if (oldValue == newValue) return;
+        if (suppressEnhancedSettingsPersistence || oldValue == newValue) return;
         if (newValue == 0) return;
         this.configurationManager.RemindSpace = newValue.ToString();
     }
