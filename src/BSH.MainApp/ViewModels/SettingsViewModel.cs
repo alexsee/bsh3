@@ -396,7 +396,64 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     partial void OnFtpRemoteEnforceUnencryptedChanged(bool oldValue, bool newValue)
     {
         if (oldValue == newValue) return;
+
+        // Disabling FTP encryption (enforce unencrypted) must delete backups first.
+        if (newValue)
+        {
+            return;
+        }
+
         PersistFtpTargetIfSelected();
+    }
+
+    public async Task ChangeFtpRemoteEnforceUnencryptedAsync(bool enforceUnencrypted)
+    {
+        var currentlyUnencrypted = this.configurationManager.FtpEncryptionMode != "3";
+        if (enforceUnencrypted == currentlyUnencrypted && FtpRemoteEnforceUnencrypted == enforceUnencrypted)
+        {
+            return;
+        }
+
+        if (enforceUnencrypted)
+        {
+            if (!await TryDeleteAllBackupsWithMediaCheckAsync())
+            {
+                RevertFtpRemoteEnforceUnencrypted(false);
+                return;
+            }
+
+            FtpRemoteEnforceUnencrypted = true;
+            PersistFtpTargetIfSelected();
+            return;
+        }
+
+        FtpRemoteEnforceUnencrypted = false;
+        PersistFtpTargetIfSelected();
+    }
+
+    private void RevertFtpRemoteEnforceUnencrypted(bool enforceUnencrypted)
+    {
+        suppressTargetSettingsPersistence = true;
+        try
+        {
+            FtpRemoteEnforceUnencrypted = enforceUnencrypted;
+        }
+        finally
+        {
+            suppressTargetSettingsPersistence = false;
+        }
+    }
+
+    private async Task<bool> TryDeleteAllBackupsWithMediaCheckAsync()
+    {
+        if (!await this.jobService.CheckMediaAsync(ActionType.Delete))
+        {
+            return false;
+        }
+
+        var versions = this.queryManager.GetVersions().Select(x => x.Id).ToList();
+        await this.jobService.DeleteBackupsAsync(versions);
+        return true;
     }
 
     private void PersistFtpTargetIfSelected()
@@ -632,6 +689,19 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(CanDisableEncryption))]
     private async Task DisableEncryption()
     {
+        if (this.configurationManager.MediumType == MediaType.FileTransferServer)
+        {
+            if (!await TryDeleteAllBackupsWithMediaCheckAsync())
+            {
+                return;
+            }
+
+            this.configurationManager.Encrypt = 0;
+            this.configurationManager.EncryptPassMD5 = "";
+            InitOptionsSettings();
+            return;
+        }
+
         if (!await this.jobService.CheckMediaAsync(ActionType.Restore))
         {
             return;

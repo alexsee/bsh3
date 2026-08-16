@@ -132,10 +132,11 @@ public class SettingsViewModelTests
     }
 
     [Test]
-    public async Task TurningEncryptionOff_RunsMediaCheckPasswordAndDecryptJob()
+    public async Task TurningEncryptionOff_OnLocal_RunsMediaCheckPasswordAndDecryptJob()
     {
         var configuration = new FakeConfigurationManager
         {
+            MediumType = MediaType.LocalDevice,
             Encrypt = 1,
             EncryptPassMD5 = "existing-hash"
         };
@@ -150,8 +151,115 @@ public class SettingsViewModelTests
             Assert.That(harness.JobService.CheckMediaCalls, Is.EqualTo(new[] { ActionType.Restore }));
             Assert.That(harness.JobService.RequestPasswordCallCount, Is.EqualTo(1));
             Assert.That(harness.JobService.ModifyBackupCalls, Is.EqualTo(1));
+            Assert.That(harness.JobService.DeleteBackupsCalls, Is.Empty);
             Assert.That(configuration.Encrypt, Is.EqualTo(0));
             Assert.That(harness.ViewModel.ModeType, Is.EqualTo(ModeType.RegularCopy));
+        });
+    }
+
+    [Test]
+    public async Task TurningEncryptionOff_OnFtp_DeletesAllBackupsWithoutDecryptJob()
+    {
+        var configuration = new FakeConfigurationManager
+        {
+            MediumType = MediaType.FileTransferServer,
+            Encrypt = 1,
+            EncryptPassMD5 = "existing-hash",
+            FtpHost = "ftp.example.com",
+            FtpEncryptionMode = "3"
+        };
+        var harness = CreateHarness(configuration);
+        harness.QueryManager.Versions =
+        [
+            new VersionDetails { Id = "1" },
+            new VersionDetails { Id = "2" }
+        ];
+        harness.ViewModel.OnNavigatedTo(null);
+
+        await harness.ViewModel.DisableEncryptionCommand.ExecuteAsync(null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(harness.JobService.CheckMediaCalls, Is.EqualTo(new[] { ActionType.Delete }));
+            Assert.That(harness.JobService.RequestPasswordCallCount, Is.EqualTo(0));
+            Assert.That(harness.JobService.ModifyBackupCalls, Is.EqualTo(0));
+            Assert.That(harness.JobService.DeleteBackupsCalls, Has.Count.EqualTo(1));
+            Assert.That(harness.JobService.DeleteBackupsCalls[0], Is.EqualTo(new[] { "1", "2" }));
+            Assert.That(configuration.Encrypt, Is.EqualTo(0));
+            Assert.That(configuration.EncryptPassMD5, Is.EqualTo(""));
+            Assert.That(harness.ViewModel.ModeType, Is.EqualTo(ModeType.RegularCopy));
+        });
+    }
+
+    [Test]
+    public async Task TurningEncryptionOff_OnFtp_WhenMediaCheckFails_KeepsEncryption()
+    {
+        var configuration = new FakeConfigurationManager
+        {
+            MediumType = MediaType.FileTransferServer,
+            Encrypt = 1,
+            EncryptPassMD5 = "existing-hash"
+        };
+        var harness = CreateHarness(configuration);
+        harness.QueryManager.Versions = [new VersionDetails { Id = "1" }];
+        harness.JobService.CheckMediaResult = false;
+        harness.ViewModel.OnNavigatedTo(null);
+
+        await harness.ViewModel.DisableEncryptionCommand.ExecuteAsync(null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(harness.JobService.CheckMediaCalls, Is.EqualTo(new[] { ActionType.Delete }));
+            Assert.That(harness.JobService.DeleteBackupsCalls, Is.Empty);
+            Assert.That(harness.JobService.ModifyBackupCalls, Is.EqualTo(0));
+            Assert.That(configuration.Encrypt, Is.EqualTo(1));
+            Assert.That(configuration.EncryptPassMD5, Is.EqualTo("existing-hash"));
+            Assert.That(harness.ViewModel.ModeType, Is.EqualTo(ModeType.Encryption));
+        });
+    }
+
+    [Test]
+    public async Task EnforcingUnencryptedFtp_DeletesAllBackups()
+    {
+        var configuration = CreateFtpConfiguration();
+        var harness = CreateHarness(configuration);
+        harness.QueryManager.Versions =
+        [
+            new VersionDetails { Id = "10" },
+            new VersionDetails { Id = "11" }
+        ];
+        harness.ViewModel.OnNavigatedTo(null);
+
+        await harness.ViewModel.ChangeFtpRemoteEnforceUnencryptedAsync(true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(harness.JobService.CheckMediaCalls, Is.EqualTo(new[] { ActionType.Delete }));
+            Assert.That(harness.JobService.DeleteBackupsCalls, Has.Count.EqualTo(1));
+            Assert.That(harness.JobService.DeleteBackupsCalls[0], Is.EqualTo(new[] { "10", "11" }));
+            Assert.That(harness.JobService.ModifyBackupCalls, Is.EqualTo(0));
+            Assert.That(configuration.FtpEncryptionMode, Is.EqualTo("0"));
+            Assert.That(harness.ViewModel.FtpRemoteEnforceUnencrypted, Is.True);
+        });
+    }
+
+    [Test]
+    public async Task EnforcingUnencryptedFtp_WhenMediaCheckFails_DoesNotDeleteOrPersist()
+    {
+        var configuration = CreateFtpConfiguration();
+        var harness = CreateHarness(configuration);
+        harness.QueryManager.Versions = [new VersionDetails { Id = "10" }];
+        harness.JobService.CheckMediaResult = false;
+        harness.ViewModel.OnNavigatedTo(null);
+
+        await harness.ViewModel.ChangeFtpRemoteEnforceUnencryptedAsync(true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(harness.JobService.CheckMediaCalls, Is.EqualTo(new[] { ActionType.Delete }));
+            Assert.That(harness.JobService.DeleteBackupsCalls, Is.Empty);
+            Assert.That(configuration.FtpEncryptionMode, Is.EqualTo("3"));
+            Assert.That(harness.ViewModel.FtpRemoteEnforceUnencrypted, Is.False);
         });
     }
 

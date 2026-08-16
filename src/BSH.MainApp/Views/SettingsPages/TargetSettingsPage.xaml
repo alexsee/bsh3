@@ -131,7 +131,12 @@
                                         <x:String>UTF8</x:String>
                                     </ComboBox>
 
-                                    <CheckBox Grid.Column="1" Grid.Row="4" Content="{helpers:ResourceString Name=Settings_Target_EnforceUnencrypted}" IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
+                                    <CheckBox x:Name="FtpEnforceUnencryptedCheckBox"
+                                              Grid.Column="1"
+                                              Grid.Row="4"
+                                              Content="{helpers:ResourceString Name=Settings_Target_EnforceUnencrypted}"
+                                              IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=OneWay}"
+                                              Click="FtpEnforceUnencryptedCheckBox_Click" />
 
                                     <Button Grid.Column="1" Grid.Row="5" Command="{Binding CheckFtpRemoteCommand}">
                                         <StackPanel Orientation="Horizontal" Spacing="8">
