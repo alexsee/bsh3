@@ -93,14 +93,7 @@ public class PresentationService : IPresentationService
 
     public Task OpenCurrentEventLogAsync()
     {
-        var date = DateTime.Now.ToString("yyyyMMdd");
-        var logFile = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Alexosoft",
-            "Backup Service Home 3",
-            $"log{date}.txt");
-
-        OpenShellTarget(logFile);
+        OpenShellTarget(AppEventLog.GetCurrentFilePath(App.DatabaseFile, DateTime.Now));
         return Task.CompletedTask;
     }
 

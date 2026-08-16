@@ -641,6 +641,14 @@
           "Serilog": "4.2.0"
         }
       },
+      "Serilog.Sinks.File": {
+        "type": "Transitive",
+        "resolved": "7.0.0",
+        "contentHash": "fKL7mXv7qaiNBUC71ssvn/dU0k9t0o45+qm2XgKAlSt19xF+ijjxyA3R6HmCgfKEKwfcfkwWjayuQtRueZFkYw==",
+        "dependencies": {
+          "Serilog": "4.2.0"
+        }
+      },
       "ServiceWire": {
         "type": "Transitive",
         "resolved": "5.6.0",
@@ -743,6 +751,7 @@
           "Microsoft.WindowsAppSDK": "[2.3.1, )",
           "Microsoft.Xaml.Behaviors.WinUI.Managed": "[3.0.1, )",
           "Newtonsoft.Json": "[13.0.4, )",
+          "Serilog.Sinks.File": "[7.0.0, )",
           "WinUIEx": "[2.9.2, )"
         }
       },
