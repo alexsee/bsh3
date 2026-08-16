@@ -13,16 +13,27 @@ public class BrowserContentService : IBrowserContentService
 {
     private readonly IQueryManager queryManager;
     private readonly IBrowserFavoritesService favoritesService;
+    private readonly IConfigurationManager configurationManager;
 
-    public BrowserContentService(IQueryManager queryManager, IBrowserFavoritesService favoritesService)
+    public BrowserContentService(
+        IQueryManager queryManager,
+        IBrowserFavoritesService favoritesService,
+        IConfigurationManager configurationManager)
     {
         this.queryManager = queryManager;
         this.favoritesService = favoritesService;
+        this.configurationManager = configurationManager;
     }
 
     public async Task<IReadOnlyList<BrowserFavoriteItem>> GetFavoritesAsync(VersionDetails version)
     {
-        var sourceFavorites = version.Sources.Split("|", StringSplitOptions.RemoveEmptyEntries)
+        var sources = version.Sources;
+        if (string.IsNullOrEmpty(sources))
+        {
+            sources = configurationManager.SourceFolder;
+        }
+
+        var sourceFavorites = (sources ?? string.Empty).Split("|", StringSplitOptions.RemoveEmptyEntries)
             .Select(NormalizeBrowserPath)
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => new BrowserFavoriteItem

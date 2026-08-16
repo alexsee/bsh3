@@ -192,11 +192,23 @@ This feature is currently not available because the quick preview could not be f
   <data name="Browser_LockUnlockBackup" xml:space="preserve">
     <value>Lock/unlock backup</value>
   </data>
+  <data name="Browser_NextVersion" xml:space="preserve">
+    <value>Newer</value>
+  </data>
+  <data name="Browser_NextVersion_Tooltip" xml:space="preserve">
+    <value>Jump to a newer backup</value>
+  </data>
   <data name="Browser_Organize" xml:space="preserve">
     <value>Organize</value>
   </data>
   <data name="Browser_PreviewPane" xml:space="preserve">
     <value>Preview pane</value>
+  </data>
+  <data name="Browser_PreviousVersion" xml:space="preserve">
+    <value>Older</value>
+  </data>
+  <data name="Browser_PreviousVersion_Tooltip" xml:space="preserve">
+    <value>Jump to an older backup</value>
   </data>
   <data name="Browser_Properties" xml:space="preserve">
     <value>Properties</value>
