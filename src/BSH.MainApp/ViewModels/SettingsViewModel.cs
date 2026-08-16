@@ -39,6 +39,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IStartupLaunchAdapter startupLaunchAdapter;
     private readonly IUpdateService updateService;
     private bool suppressEnhancedSettingsPersistence;
+    private bool suppressTargetSettingsPersistence;
 
     #region Sources Settings
 
@@ -192,9 +193,37 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     private void InitTargetSettings()
     {
-        // selected media type
-        this.SelectedMediaType = this.configurationManager.MediumType;
+        suppressTargetSettingsPersistence = true;
+        try
+        {
+            // selected media type
+            this.SelectedMediaType = this.configurationManager.MediumType;
+            UpdateTargetVisibility();
 
+            // local device
+            this.LocalDevicePath = this.configurationManager.BackupFolder;
+            this.LocalUNCUser = this.configurationManager.UNCUsername;
+            this.LocalUNCPassword = DecryptConfigurationPassword(this.configurationManager.UNCPassword);
+
+            // ftp remote
+            this.FtpRemoteHost = this.configurationManager.FtpHost;
+            this.FtpRemotePort = string.IsNullOrEmpty(this.configurationManager.FtpPort) ? 21 : int.Parse(this.configurationManager.FtpPort);
+            this.FtpRemoteUser = this.configurationManager.FtpUser;
+            this.FtpRemotePassword = this.configurationManager.FtpPass;
+            this.FtpRemotePath = this.configurationManager.FtpFolder;
+            this.FtpRemoteEncoding = this.configurationManager.FtpCoding;
+
+            // FtpStorage treats mode "3" as encrypted (AutoConnect); anything else is plain FTP.
+            this.FtpRemoteEnforceUnencrypted = this.configurationManager.FtpEncryptionMode != "3";
+        }
+        finally
+        {
+            suppressTargetSettingsPersistence = false;
+        }
+    }
+
+    private void UpdateTargetVisibility()
+    {
         if (SelectedMediaType == MediaType.LocalDevice)
         {
             this.FtpRemoteVisibility = Visibility.Collapsed;
@@ -205,22 +234,11 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             this.FtpRemoteVisibility = Visibility.Visible;
             this.LocalDeviceVisibility = Visibility.Collapsed;
         }
+    }
 
-        // local device
-        this.LocalDevicePath = this.configurationManager.BackupFolder;
-        this.LocalUNCUser = this.configurationManager.UNCUsername;
-        this.LocalUNCPassword = DecryptConfigurationPassword(this.configurationManager.UNCPassword);
-
-        // ftp remote
-        this.FtpRemoteHost = this.configurationManager.FtpHost;
-        this.FtpRemotePort = string.IsNullOrEmpty(this.configurationManager.FtpPort) ? 21 : int.Parse(this.configurationManager.FtpPort);
-        this.FtpRemoteUser = this.configurationManager.FtpUser;
-        this.FtpRemotePassword = this.configurationManager.FtpPass;
-        this.FtpRemotePath = this.configurationManager.FtpFolder;
-        this.FtpRemoteEncoding = this.configurationManager.FtpCoding;
-
-        // FtpStorage treats mode "3" as encrypted (AutoConnect); anything else is plain FTP.
-        this.FtpRemoteEnforceUnencrypted = this.configurationManager.FtpEncryptionMode != "3";
+    public (string Host, int Port, string User, string Password, string Path, string Encoding) GetDisplayedFtpConnectionValues()
+    {
+        return (FtpRemoteHost, FtpRemotePort, FtpRemoteUser, FtpRemotePassword, FtpRemotePath, FtpRemoteEncoding);
     }
 
     public static string GetMediaTypeDisplayName(MediaType mediaType)
@@ -238,8 +256,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(CanExecuteCheckFtpRemote))]
     public async Task CheckFtpRemote()
     {
-        // check FTP
-        var profile = FtpStorage.CheckConnection(FtpRemoteHost, FtpRemotePort, FtpRemoteUser, FtpRemotePassword, FtpRemotePath, FtpRemoteEncoding);
+        var probe = GetDisplayedFtpConnectionValues();
+        var profile = FtpStorage.CheckConnection(probe.Host, probe.Port, probe.User, probe.Password, probe.Path, probe.Encoding);
 
         if (profile)
         {
@@ -314,18 +332,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         await this.jobService.DeleteBackupsAsync(versions);
 
         SelectedMediaType = newValue;
-        this.configurationManager.MediumType = newValue;
-
-        if (newValue == MediaType.LocalDevice)
-        {
-            this.FtpRemoteVisibility = Visibility.Collapsed;
-            this.LocalDeviceVisibility = Visibility.Visible;
-        }
-        else
-        {
-            this.FtpRemoteVisibility = Visibility.Visible;
-            this.LocalDeviceVisibility = Visibility.Collapsed;
-        }
+        ApplyCurrentBackupTarget();
+        UpdateTargetVisibility();
     }
 
     partial void OnLocalUNCUserChanged(string? oldValue, string newValue)
@@ -349,46 +357,115 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     partial void OnFtpRemoteHostChanged(string? oldValue, string newValue)
     {
         if (oldValue == null || oldValue == newValue) return;
-        this.configurationManager.FtpHost = newValue;
+        PersistFtpTargetIfSelected();
         CheckFtpRemoteCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnFtpRemotePortChanged(int oldValue, int newValue)
     {
         if (oldValue == newValue) return;
-        this.configurationManager.FtpPort = newValue.ToString();
+        PersistFtpTargetIfSelected();
     }
 
     partial void OnFtpRemoteUserChanged(string? oldValue, string newValue)
     {
         if (oldValue == null || oldValue == newValue) return;
-        this.configurationManager.FtpUser = newValue;
+        PersistFtpTargetIfSelected();
         CheckFtpRemoteCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnFtpRemotePasswordChanged(string? oldValue, string newValue)
     {
         if (oldValue == null || oldValue == newValue) return;
-        this.configurationManager.FtpPass = newValue;
+        PersistFtpTargetIfSelected();
         CheckFtpRemoteCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnFtpRemotePathChanged(string? oldValue, string newValue)
     {
         if (oldValue == null || oldValue == newValue) return;
-        this.configurationManager.FtpFolder = newValue;
+        PersistFtpTargetIfSelected();
     }
 
     partial void OnFtpRemoteEncodingChanged(string? oldValue, string newValue)
     {
         if (oldValue == null || oldValue == newValue) return;
-        this.configurationManager.FtpCoding = newValue;
+        PersistFtpTargetIfSelected();
     }
 
     partial void OnFtpRemoteEnforceUnencryptedChanged(bool oldValue, bool newValue)
     {
         if (oldValue == newValue) return;
-        this.configurationManager.FtpEncryptionMode = newValue ? "0" : "3";
+        PersistFtpTargetIfSelected();
+    }
+
+    private void PersistFtpTargetIfSelected()
+    {
+        if (suppressTargetSettingsPersistence || SelectedMediaType != MediaType.FileTransferServer)
+        {
+            return;
+        }
+
+        ApplyFtpTargetFromPage();
+    }
+
+    private void ApplyCurrentBackupTarget()
+    {
+        if (suppressTargetSettingsPersistence || SelectedMediaType == MediaType.Unset)
+        {
+            return;
+        }
+
+        if (SelectedMediaType == MediaType.FileTransferServer)
+        {
+            ApplyFtpTargetFromPage();
+            return;
+        }
+
+        ApplyLocalTargetFromPage();
+    }
+
+    private void ApplyFtpTargetFromPage()
+    {
+        MediaTargetApplier.ApplyFtpTarget(
+            this.configurationManager,
+            FtpRemoteHost,
+            FtpRemotePort <= 0 ? "21" : FtpRemotePort.ToString(),
+            FtpRemoteUser,
+            FtpRemotePassword,
+            NormalizeFtpFolder(FtpRemotePath),
+            FtpRemoteEncoding,
+            encryptionMode: FtpRemoteEnforceUnencrypted ? "0" : "3",
+            sslProtocols: "0");
+    }
+
+    private void ApplyLocalTargetFromPage()
+    {
+        if (MediaTargetApplier.IsUncPath(LocalDevicePath))
+        {
+            MediaTargetApplier.ApplyUncTarget(
+                this.configurationManager,
+                LocalDevicePath,
+                LocalUNCUser,
+                LocalUNCPassword);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(LocalDevicePath))
+        {
+            MediaTargetApplier.ApplyEmptyLocalTarget(this.configurationManager);
+            return;
+        }
+
+        MediaTargetApplier.ApplyLocalTarget(
+            this.configurationManager,
+            LocalDevicePath,
+            MediaTargetApplier.ResolveVolumeSerial(LocalDevicePath));
+    }
+
+    private static string NormalizeFtpFolder(string? path)
+    {
+        return string.IsNullOrEmpty(path) ? "" : FtpStorage.GetFtpPath(path);
     }
 
     public void UseLocalPath(string folderPath)
@@ -467,20 +544,23 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(DisableEncryptionCommand))]
+    [NotifyPropertyChangedFor(nameof(CanSelectNonEncryptionMode))]
     private ModeType modeType = ModeType.Unset;
 
     [ObservableProperty]
     private bool waitForDevice;
 
+    public bool CanSelectNonEncryptionMode => ModeType != ModeType.Encryption;
+
     private void InitOptionsSettings()
     {
-        if (this.configurationManager.Compression == 1)
-        {
-            this.ModeType = ModeType.Compression;
-        }
-        else if (this.configurationManager.Encrypt == 1)
+        if (this.configurationManager.Encrypt == 1)
         {
             this.ModeType = ModeType.Encryption;
+        }
+        else if (this.configurationManager.Compression == 1)
+        {
+            this.ModeType = ModeType.Compression;
         }
         else
         {
@@ -512,6 +592,15 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             return;
         }
 
+        if (oldValue == ModeType.Encryption && newValue != ModeType.Encryption)
+        {
+            await DisableEncryption();
+            if (this.configurationManager.Encrypt == 1)
+            {
+                return;
+            }
+        }
+
         if (newValue == ModeType.Compression)
         {
             ModeType = newValue;
@@ -530,6 +619,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             ModeType = newValue;
             this.configurationManager.EncryptPassMD5 = Hash.GetMD5Hash(password);
             this.configurationManager.Encrypt = 1;
+            this.configurationManager.Compression = 0;
         }
         else
         {
@@ -542,7 +632,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(CanDisableEncryption))]
     private async Task DisableEncryption()
     {
-        if (!await this.jobService.CheckMediaAsync(ActionType.Delete))
+        if (!await this.jobService.CheckMediaAsync(ActionType.Restore))
         {
             return;
         }
@@ -832,6 +922,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     public void OnNavigatedFrom()
     {
+        ApplyCurrentBackupTarget();
     }
 
     public void OnNavigatedTo(object parameter)
