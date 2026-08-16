@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
@@ -12,6 +13,7 @@ using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels;
 
@@ -29,6 +31,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private long contentRequestId;
     private bool suppressSearchTermsChanged;
     private bool suppressInfoPaneChanged;
+    private bool suppressFavoriteChanged;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
@@ -60,6 +63,18 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private string searchTerms = string.Empty;
 
     [ObservableProperty]
+    private string committedSearchTerms = string.Empty;
+
+    [ObservableProperty]
+    private string searchPathLabel = string.Empty;
+
+    [ObservableProperty]
+    private bool isSearchMode;
+
+    [ObservableProperty]
+    private bool showSearchEmptyState;
+
+    [ObservableProperty]
     private bool toggleInfoPane = false;
 
     [ObservableProperty]
@@ -70,6 +85,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     public ObservableCollection<BrowserFavoriteItem> Favorites { get; set; } = [];
 
     public ObservableCollection<FileOrFolderItem> Items { get; set; } = [];
+
+    public ObservableCollection<FileOrFolderItem> SelectedItems { get; } = [];
 
     public ObservableCollection<VersionDetails> Versions { get; set; } = [];
 
@@ -91,6 +108,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         this.browserDialogService = browserDialogService;
         this.browserPreviewService = browserPreviewService;
         this.viewPreferencesService = viewPreferencesService;
+        SelectedItems.CollectionChanged += OnSelectedItemsChanged;
     }
 
     partial void OnToggleInfoPaneChanged(bool value)
@@ -133,11 +151,18 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     }
 
     private bool CanUpFolder() => contentMode == BrowserContentMode.Folder && CurrentFolderPath.Count > 1;
-    private bool HasFileOrFolderSelected() => CurrentItem != null && CurrentVersion != null;
+    private bool HasFileOrFolderSelected() => CurrentVersion != null && (SelectedItems.Count > 0 || CurrentItem != null);
     private bool CanRestoreAll() => contentMode == BrowserContentMode.Folder && CurrentVersion != null && CurrentFolderPath.Count > 0;
     private bool HasVersionSelected() => CurrentVersion != null;
     private bool HasFileSelected() => CurrentItem != null && CurrentItem.IsFile;
     private bool HasUserFavoriteSelected() => CurrentFavorite?.IsUserFavorite == true;
+
+    private void OnSelectedItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        RestoreFileCommand.NotifyCanExecuteChanged();
+        RestoreFileToCommand.NotifyCanExecuteChanged();
+        DeleteSelectedContentCommand.NotifyCanExecuteChanged();
+    }
 
     partial void OnSearchTermsChanged(string value)
     {
@@ -146,10 +171,14 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        _ = ApplySearchTermsAsync(value);
+        if (string.IsNullOrWhiteSpace(value) && IsSearchMode)
+        {
+            _ = ClearSearchAsync();
+        }
     }
 
-    private async Task ApplySearchTermsAsync(string value)
+    [RelayCommand]
+    private async Task CommitSearch()
     {
         if (CurrentVersion == null)
         {
@@ -157,17 +186,31 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
 
         var requestId = BeginContentRequest();
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(SearchTerms))
         {
-            if (CurrentFolderPath.Count > 0)
-            {
-                await LoadFolderAsync(CurrentVersion.Id, CurrentFolderPath[^1].FullPath, requestId);
-            }
-
+            await ClearSearchAsync(requestId);
             return;
         }
 
-        await LoadSearchResultsAsync(CurrentVersion.Id, value, requestId);
+        await LoadSearchResultsAsync(CurrentVersion.Id, SearchTerms.Trim(), requestId);
+    }
+
+    private async Task ClearSearchAsync(long? requestId = null)
+    {
+        if (CurrentVersion == null)
+        {
+            ResetSearchChrome();
+            return;
+        }
+
+        if (CurrentFolderPath.Count > 0)
+        {
+            await LoadFolderAsync(CurrentVersion.Id, CurrentFolderPath[^1].FullPath, requestId ?? BeginContentRequest());
+            return;
+        }
+
+        ResetSearchChrome();
+        Items.Clear();
     }
 
     [RelayCommand(CanExecute = nameof(HasVersionSelected))]
@@ -178,22 +221,33 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
+        var preservedItem = CurrentItem;
+        var preservedPath = GetPathToPreserve();
+
         await LoadFavoritesAsync();
         if (Favorites.Count == 0)
         {
             return;
         }
 
-        CurrentFavorite = Favorites[0];
+        var pathToLoad = preservedPath;
+        if (string.IsNullOrEmpty(pathToLoad))
+        {
+            pathToLoad = Favorites[0].Path;
+            preservedItem = null;
+        }
+
+        SelectFavoriteForPath(pathToLoad);
 
         ClearSearchTerms();
-        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite.Path, BeginContentRequest());
+        await LoadFolderAsync(CurrentVersion.Id, pathToLoad, BeginContentRequest());
+        RestorePreservedItem(preservedItem);
     }
 
     [RelayCommand]
     private async Task LoadFavorite()
     {
-        if (CurrentVersion == null || CurrentFavorite == null)
+        if (suppressFavoriteChanged || CurrentVersion == null || CurrentFavorite == null)
         {
             return;
         }
@@ -239,8 +293,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         var favorite = CurrentFavorite;
         var versionId = CurrentVersion.Id;
         var currentFolder = CurrentFolderPath[^1].FullPath;
-        var searchTerms = SearchTerms;
-        var wasSearching = contentMode == BrowserContentMode.Search && !string.IsNullOrWhiteSpace(searchTerms);
+        var searchTerms = CommittedSearchTerms;
+        var wasSearching = IsSearchMode && !string.IsNullOrWhiteSpace(searchTerms);
 
         LoadVersions();
 
@@ -308,19 +362,42 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     private async Task RestoreSelectedAsync(string destination)
     {
-        if (CurrentItem == null || CurrentVersion == null)
+        if (CurrentVersion == null)
         {
             return;
         }
 
-        // RestoreJob treats a path as a single file when Path.GetFileName is non-empty.
-        // Browser folder FullPaths are slash-stripped (e.g. "source\docs"), so folder
-        // restores must be normalized to "\source\docs\" like WinForms.
-        var path = CurrentItem.IsFile
-            ? CurrentItem.FullPath + CurrentItem.Name
-            : ToFolderRestorePath(CurrentItem.FullPath);
+        var items = GetItemsToRestore();
+        if (items.Count == 0)
+        {
+            return;
+        }
 
-        await jobService.RestoreBackupAsync(CurrentVersion.Id, path, destination);
+        var paths = items.Select(ToRestorePath).ToList();
+        if (paths.Count == 1)
+        {
+            await jobService.RestoreBackupAsync(CurrentVersion.Id, paths[0], destination);
+            return;
+        }
+
+        await jobService.RestoreBackupAsync(CurrentVersion.Id, paths, destination);
+    }
+
+    private List<FileOrFolderItem> GetItemsToRestore()
+    {
+        if (SelectedItems.Count > 0)
+        {
+            return [.. SelectedItems];
+        }
+
+        return CurrentItem == null ? [] : [CurrentItem];
+    }
+
+    private static string ToRestorePath(FileOrFolderItem item)
+    {
+        return item.IsFile
+            ? item.FullPath + item.Name
+            : ToFolderRestorePath(item.FullPath);
     }
 
     private async Task RestoreCurrentFolderAsync(string destination)
@@ -607,6 +684,60 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
     }
 
+    private string? GetPathToPreserve()
+    {
+        if (CurrentItem != null)
+        {
+            return CurrentItem.FullPath?.Trim('\\');
+        }
+
+        if (CurrentFolderPath.Count > 0)
+        {
+            return CurrentFolderPath[^1].FullPath;
+        }
+
+        return null;
+    }
+
+    private void SelectFavoriteForPath(string path)
+    {
+        var match = Favorites.FirstOrDefault(x => browserContentService.PathsMatch(x.Path, path))
+            ?? Favorites
+                .Where(x => path.StartsWith(x.Path + "\\", StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(x => x.Path.Length)
+                .FirstOrDefault()
+            ?? Favorites[0];
+
+        suppressFavoriteChanged = true;
+        try
+        {
+            CurrentFavorite = match;
+        }
+        finally
+        {
+            suppressFavoriteChanged = false;
+        }
+    }
+
+    private void RestorePreservedItem(FileOrFolderItem? preservedItem)
+    {
+        if (preservedItem == null)
+        {
+            return;
+        }
+
+        if (preservedItem.IsFile)
+        {
+            CurrentItem = Items.FirstOrDefault(x => x.IsFile
+                && string.Equals(x.Name, preservedItem.Name, StringComparison.OrdinalIgnoreCase)
+                && browserContentService.PathsMatch(x.FullPath, preservedItem.FullPath));
+            return;
+        }
+
+        CurrentItem = CurrentFolderPath.LastOrDefault(x => browserContentService.PathsMatch(x.FullPath, preservedItem.FullPath))
+            ?? preservedItem;
+    }
+
     private async Task NavigateToContainingVersionAsync(bool previous)
     {
         if (CurrentItem == null || CurrentVersion == null)
@@ -641,6 +772,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
 
         contentMode = BrowserContentMode.Folder;
+        ResetSearchChrome();
         CurrentItem = null;
         CurrentFolderPath.Clear();
         foreach (var folder in snapshot.FolderPath)
@@ -661,9 +793,32 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
 
         contentMode = BrowserContentMode.Search;
+        IsSearchMode = true;
+        CommittedSearchTerms = searchTerms;
+        SearchPathLabel = FormatSearchPathLabel(searchTerms);
+        ShowSearchEmptyState = fileList.Count == 0;
         CurrentItem = null;
         ReplaceItems(fileList);
         NotifyContentCommandsChanged();
+    }
+
+    private static string FormatSearchPathLabel(string searchTerms)
+    {
+        var format = "Browser_Search_Results".GetLocalized();
+        if (string.IsNullOrEmpty(format) || !format.Contains("{0}", StringComparison.Ordinal))
+        {
+            format = "Search result for \"{0}\"";
+        }
+
+        return string.Format(format, searchTerms);
+    }
+
+    private void ResetSearchChrome()
+    {
+        IsSearchMode = false;
+        ShowSearchEmptyState = false;
+        CommittedSearchTerms = string.Empty;
+        SearchPathLabel = string.Empty;
     }
 
     private long BeginContentRequest() => Interlocked.Increment(ref contentRequestId);
@@ -698,6 +853,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         UpFolderCommand.NotifyCanExecuteChanged();
         RestoreAllCommand.NotifyCanExecuteChanged();
         RestoreAllToCommand.NotifyCanExecuteChanged();
+        RestoreFileCommand.NotifyCanExecuteChanged();
+        RestoreFileToCommand.NotifyCanExecuteChanged();
         AddFolderToFavoritesCommand.NotifyCanExecuteChanged();
         NavigateToPreviousVersionCommand.NotifyCanExecuteChanged();
         NavigateToNextVersionCommand.NotifyCanExecuteChanged();
