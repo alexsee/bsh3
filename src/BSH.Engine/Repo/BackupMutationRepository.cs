@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -226,10 +227,10 @@ public class BackupMutationRepository : IBackupMutationRepository
         await dbClient.ExecuteNonQueryAsync("DELETE FROM foldertable WHERE id NOT IN (SELECT folderid FROM folderlink)");
     }
 
-    public async Task DeleteSingleFileMetadataAsync(DbClient dbClient, string fileFilter, string pathFilter)
+    public async Task DeleteSingleFileMetadataAsync(DbClient dbClient, string fileFilter, string pathFilter, IReadOnlyList<int> versionIds = null)
     {
         string whereClause;
-        var parameters = new System.Collections.Generic.List<(string, object)>();
+        var parameters = new List<(string, object)>();
 
         if (!string.IsNullOrEmpty(fileFilter) && !string.IsNullOrEmpty(pathFilter))
         {
@@ -245,17 +246,45 @@ public class BackupMutationRepository : IBackupMutationRepository
 
         var subQuerySql = "SELECT ft.fileID FROM fileTable AS ft WHERE " + whereClause;
 
+        if (versionIds == null || versionIds.Count == 0)
+        {
+            await dbClient.ExecuteNonQueryAsync(
+                CommandType.Text,
+                "DELETE FROM fileLink WHERE fileversionid IN (SELECT fileversionid FROM fileversiontable AS fvt WHERE fvt.fileID IN (" + subQuerySql + "))",
+                parameters.ToArray());
+            await dbClient.ExecuteNonQueryAsync(
+                CommandType.Text,
+                "DELETE FROM fileversiontable WHERE fileID IN (" + subQuerySql + ")",
+                parameters.ToArray());
+            await dbClient.ExecuteNonQueryAsync(
+                CommandType.Text,
+                "DELETE FROM fileTable AS ft WHERE " + whereClause,
+                parameters.ToArray());
+            return;
+        }
+
+        var (inClause, inParameters) = SqlParameterBuilder.BuildInClause("v", versionIds);
+        var scopedParameters = SqlParameterBuilder.Combine(parameters, inParameters);
+
+        // Unlink the file from the selected versions only.
         await dbClient.ExecuteNonQueryAsync(
             CommandType.Text,
-            "DELETE FROM fileLink WHERE fileversionid IN (SELECT fileversionid FROM fileversiontable AS fvt WHERE fvt.fileID IN (" + subQuerySql + "))",
+            "DELETE FROM fileLink WHERE versionID IN (" + inClause + ") " +
+            "AND fileversionid IN (SELECT fileversionid FROM fileversiontable AS fvt WHERE fvt.fileID IN (" + subQuerySql + "))",
+            scopedParameters);
+
+        // Drop content rows that no longer have any version links.
+        await dbClient.ExecuteNonQueryAsync(
+            CommandType.Text,
+            "DELETE FROM fileversiontable WHERE fileID IN (" + subQuerySql + ") " +
+            "AND fileversionid NOT IN (SELECT fileversionid FROM filelink)",
             parameters.ToArray());
+
+        // Drop logical files that no longer have any content rows.
         await dbClient.ExecuteNonQueryAsync(
             CommandType.Text,
-            "DELETE FROM fileversiontable WHERE fileID IN (" + subQuerySql + ")",
-            parameters.ToArray());
-        await dbClient.ExecuteNonQueryAsync(
-            CommandType.Text,
-            "DELETE FROM fileTable AS ft WHERE " + whereClause,
+            "DELETE FROM fileTable AS ft WHERE " + whereClause + " " +
+            "AND fileID NOT IN (SELECT fileID FROM fileversiontable)",
             parameters.ToArray());
     }
 

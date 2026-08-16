@@ -20,6 +20,7 @@ public interface IVersionQueryRepository
     Task<DbDataReader> GetOrphanedVersionDatesAsync(DbClient dbClient);
     Task<IReadOnlyList<int>> GetFileIdsForDeleteSingleAsync(DbClient dbClient, string fileFilter, string pathFilter);
     Task<DbDataReader> GetFileVersionsForDeleteSingleAsync(DbClient dbClient, int fileId);
+    Task<DbDataReader> GetFileVersionsExclusiveToVersionsForDeleteSingleAsync(DbClient dbClient, int fileId, IReadOnlyList<int> versionIds);
     Task<int> CountEditableFilesAsync(DbClient dbClient);
     Task<DbDataReader> GetEditableFilesAsync(DbClient dbClient);
     Task<double> GetTotalBackupFileSizeAsync(DbClient dbClient);

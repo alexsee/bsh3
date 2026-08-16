@@ -212,7 +212,7 @@ public class BrowserPreviewServiceTests
         public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
         public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
         public Task DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.CompletedTask;
-        public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true) => Task.CompletedTask;
+        public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
         public CancellationToken GetNewCancellationToken() => CancellationToken.None;
         public Task<bool> RequestPassword()
         {
@@ -235,7 +235,7 @@ public class BrowserPreviewServiceTests
         public Task UpdateVersionAsync(string version, VersionDetails versionDetails) => Task.CompletedTask;
         public Task StartBackup(string title, string description, IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false) => Task.CompletedTask;
         public Task StartDelete(string version, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
+        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false, IReadOnlyList<int> versionIds = null) => Task.CompletedTask;
         public Task StartEdit(IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
         public Task StartRestore(string version, string file, string destination, IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => Task.CompletedTask;
         public void UpdateDatabaseFile(string databaseFile) { }

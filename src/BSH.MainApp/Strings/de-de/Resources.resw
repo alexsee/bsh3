@@ -112,6 +112,36 @@
   <data name="Browser_DeleteFromAll_Title" xml:space="preserve">
     <value>Aus allen Sicherungen löschen</value>
   </data>
+  <data name="Browser_DeleteFromRange_All" xml:space="preserve">
+    <value>Aus allen Sicherungen</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Confirm" xml:space="preserve">
+    <value>Sind Sie sicher, dass Sie diese(n) {0} aus {1} ausgewählten Sicherung(en) löschen möchten?</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Intro" xml:space="preserve">
+    <value>Wählen Sie, aus welchen Sicherungen diese(r) {0} entfernt werden soll:</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastDays" xml:space="preserve">
+    <value>Aus Sicherungen der letzten X Tage</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastDays_Value" xml:space="preserve">
+    <value>Anzahl der Tage</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastN" xml:space="preserve">
+    <value>Aus den letzten N Sicherungen</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastN_Value" xml:space="preserve">
+    <value>Anzahl der Sicherungen</value>
+  </data>
+  <data name="Browser_DeleteFromRange_NoVersions" xml:space="preserve">
+    <value>Keine passenden Sicherungen für die gewählte Auswahl gefunden.</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Selected" xml:space="preserve">
+    <value>Aus ausgewählten Sicherungen</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Title" xml:space="preserve">
+    <value>Aus Sicherungen löschen</value>
+  </data>
   <data name="Browser_DeleteMultipleBackups" xml:space="preserve">
     <value>Mehrere Sicherungen löschen</value>
   </data>

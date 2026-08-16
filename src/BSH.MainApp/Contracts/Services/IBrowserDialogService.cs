@@ -9,7 +9,16 @@ namespace BSH.MainApp.Contracts.Services;
 public interface IBrowserDialogService
 {
     Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions);
-    Task<bool> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item);
+
+    /// <summary>
+    /// Asks the user how to delete the selected file or folder from backups.
+    /// </summary>
+    /// <param name="item">The selected browser item.</param>
+    /// <param name="versions">Candidate backup versions (typically those containing the item).</param>
+    Task<DeleteSelectedContentResult> ShowDeleteSelectedContentWindowAsync(
+        FileOrFolderItem item,
+        IReadOnlyList<VersionDetails> versions);
+
     Task ShowFileDetailsAsync(FileDetails fileDetails);
     Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite);
 
