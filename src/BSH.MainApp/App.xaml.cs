@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Reflection;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -32,6 +33,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Serilog;
 using Windows.UI.Popups;
 
 namespace BSH.MainApp;
@@ -77,6 +79,9 @@ public partial class App : Application
         var germanCulture = new System.Globalization.CultureInfo("de-DE");
         System.Globalization.CultureInfo.DefaultThreadCurrentCulture = germanCulture;
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = germanCulture;
+
+        var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
+        AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home", version);
 
         InitializeComponent();
 
@@ -317,6 +322,15 @@ public partial class App : Application
 
     private static void ExitApplication()
     {
+        try
+        {
+            Log.CloseAndFlush();
+        }
+        catch
+        {
+            // Best-effort flush so the dated event log is complete on exit.
+        }
+
         if (Current is App app)
         {
             app.TrayIcon?.Dispose();
