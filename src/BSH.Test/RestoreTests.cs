@@ -183,6 +183,64 @@ public class RestoreTests
 
         Assert.That(observer.RequestOverwriteCalls, Is.EqualTo(1));
         Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(0));
+        Assert.That(File.ReadAllText(Path.Combine(destination, "plain.txt")), Is.EqualTo("existing"));
+        Assert.That(observer.ReportedStates, Does.Contain(JobState.FINISHED));
+    }
+
+    [Test]
+    public async Task TestOverwriteAskCancelDoesNotOverwriteExistingFile()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await SeedVersionAsync(1, versionDate);
+        await SeedFileForVersionAsync(1, 1, 1, "plain.txt", @"\docs\", 1, "");
+
+        var destination = CreateExistingDestinationFile("plain.txt");
+
+        var storage = new StorageMock();
+        var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
+        var observer = new JobReportStub { OverwriteResult = RequestOverwriteResult.None };
+        restoreJob.AddObserver(observer);
+
+        await restoreJob.RestoreAsync(CancellationToken.None);
+
+        Assert.That(observer.RequestOverwriteCalls, Is.EqualTo(1));
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(0));
+        Assert.That(File.ReadAllText(Path.Combine(destination, "plain.txt")), Is.EqualTo("existing"));
+        Assert.That(observer.ReportedStates, Does.Contain(JobState.CANCELED));
+        Assert.That(observer.ReportedStates, Does.Not.Contain(JobState.FINISHED));
+    }
+
+    [Test]
+    public async Task TestOverwriteAskCancelStopsRestoreRatherThanContinuing()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await SeedVersionAsync(1, versionDate);
+        await SeedFileForVersionAsync(1, 1, 1, "a.txt", @"\docs\", 1, "");
+        await SeedFileForVersionAsync(2, 2, 1, "b.txt", @"\docs\", 1, "");
+
+        var destination = Path.Combine(Path.GetTempPath(), "BSH.Test", "restore-cancel-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(destination);
+        File.WriteAllText(Path.Combine(destination, "a.txt"), "existing-a");
+
+        try
+        {
+            var storage = new StorageMock();
+            var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
+            var observer = new JobReportStub { OverwriteResult = RequestOverwriteResult.None };
+            restoreJob.AddObserver(observer);
+
+            await restoreJob.RestoreAsync(CancellationToken.None);
+
+            Assert.That(observer.RequestOverwriteCalls, Is.EqualTo(1), "Cancel should stop the restore instead of prompting for the next file.");
+            Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(0));
+            Assert.That(File.ReadAllText(Path.Combine(destination, "a.txt")), Is.EqualTo("existing-a"));
+            Assert.That(File.Exists(Path.Combine(destination, "b.txt")), Is.False);
+            Assert.That(observer.ReportedStates, Does.Contain(JobState.CANCELED));
+        }
+        finally
+        {
+            try { Directory.Delete(destination, true); } catch { /* ignore */ }
+        }
     }
 
     [Test]

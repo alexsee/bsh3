@@ -54,6 +54,8 @@ public class RestoreJob : Job
 
     private RequestOverwriteResult overwriteRequestPersistent = RequestOverwriteResult.None;
 
+    private bool overwritePromptCanceled;
+
     public RestoreJob(IStorageProvider storage,
         IDbClientFactory dbClientFactory,
         IQueryManager queryManager,
@@ -199,7 +201,7 @@ public class RestoreJob : Job
                     }
 
                     // cancellation token requested?
-                    if (token.IsCancellationRequested)
+                    if (token.IsCancellationRequested || overwritePromptCanceled)
                     {
                         // report progress
                         _logger.Information("User requested cancellation of restore job.");
@@ -339,6 +341,12 @@ public class RestoreJob : Job
         if (overwriteRequest == RequestOverwriteResult.NoOverwriteAll || overwriteRequest == RequestOverwriteResult.OverwriteAll)
         {
             overwriteRequestPersistent = overwriteRequest;
+        }
+
+        if (overwriteRequest == RequestOverwriteResult.None)
+        {
+            overwritePromptCanceled = true;
+            return true;
         }
 
         return overwriteRequest == RequestOverwriteResult.NoOverwrite || overwriteRequest == RequestOverwriteResult.NoOverwriteAll;

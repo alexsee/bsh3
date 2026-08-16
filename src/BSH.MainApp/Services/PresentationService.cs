@@ -204,7 +204,8 @@ public class PresentationService : IPresentationService
         return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var dialog = new EditBackupWindow();
-            dialog.ViewModel = backupViewModel;
+            dialog.ViewModel.Title = backupViewModel.Title;
+            dialog.ViewModel.Description = backupViewModel.Description;
             return (await dialog.ShowDialogAsync(), dialog.ViewModel);
         });
     }
