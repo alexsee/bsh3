@@ -155,7 +155,17 @@ public sealed class WinUIJobSessionPresenter : IJobSessionPresenter
 
     public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent) => statusService.ReportExceptions(files, silent);
 
-    public Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile) => statusService.RequestOverwrite(localFile, remoteFile);
+    public async Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
+    {
+        var result = await statusService.RequestOverwrite(localFile, remoteFile);
+        if (result != RequestOverwriteResult.None)
+        {
+            return result;
+        }
+
+        await CancelAsync();
+        return RequestOverwriteResult.NoOverwrite;
+    }
 
     public Task RequestShowErrorInsufficientDiskSpaceAsync() => statusService.RequestShowErrorInsufficientDiskSpaceAsync();
 }
