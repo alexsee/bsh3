@@ -15,6 +15,8 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Storage;
+using BSH.Test.Helpers;
+using BSH.Test.Mocks;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -121,6 +123,87 @@ public class EditTests
         using var dbClient = dbClientFactory.CreateDbClient();
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileType FROM fileversiontable WHERE fileversionID = 1")), Is.EqualTo(5));
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileType FROM fileversiontable WHERE fileversionID = 2")), Is.EqualTo(1));
+    }
+
+    [Test]
+    public void Edit_FailsWhenMediumUnavailable()
+    {
+        var storage = new StorageMock(failCheckMedium: true);
+        var editJob = CreateEditJob(storage);
+
+        Assert.ThrowsAsync<DeviceNotReadyException>(async () => await editJob.EditAsync());
+    }
+
+    [Test]
+    public async Task Edit_SkipsNonEncryptedFileTypes()
+    {
+        configurationManager.Encrypt = 1;
+        configurationManager.EncryptPassMD5 = "existing-hash";
+
+        const string versionDate = "01-01-2021 00-00-00";
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 1, versionDate);
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "plain.txt", @"\docs\", 1, "");
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 1, "compressed.txt", @"\docs\", 2, "");
+
+        var storage = new StorageMock();
+        var editJob = CreateEditJob(storage);
+        editJob.Password = "test123";
+        await editJob.EditAsync();
+
+        Assert.That(editJob.FileErrorList, Is.Empty);
+        Assert.That(storage.DecryptedFiles, Is.Empty);
+        Assert.That(configurationManager.Encrypt, Is.EqualTo(0));
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileType FROM fileversiontable WHERE fileversionID = 1")), Is.EqualTo(1));
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileType FROM fileversiontable WHERE fileversionID = 2")), Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task Edit_SharedEncryptedPackageLinkedToMultipleVersions_DecryptsOnceSuccessfully()
+    {
+        configurationManager.Encrypt = 1;
+        configurationManager.EncryptPassMD5 = "existing-hash";
+
+        const string versionDate1 = "01-01-2021 00-00-00";
+        const string versionDate2 = "02-01-2021 00-00-00";
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 1, versionDate1);
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 2, versionDate2);
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "secret.txt", @"\docs\", 6, "");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (1, 2)");
+
+        // EditJob writes fileType updates on the same SQLite connection while the
+        // editable-files reader is still open, so a shared package is processed once.
+        var storage = new StorageMock(failSecondDecryptOfSameFile: true);
+        var editJob = CreateEditJob(storage);
+        editJob.Password = "test123";
+        await editJob.EditAsync();
+
+        Assert.That(storage.DecryptedFiles, Has.Count.EqualTo(1));
+        Assert.That(editJob.FileErrorList, Is.Empty);
+        Assert.That(configurationManager.Encrypt, Is.EqualTo(0));
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileType FROM fileversiontable WHERE fileversionID = 1")), Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task Edit_UsesLongFilesDirectoryForEncryptedLongNames()
+    {
+        configurationManager.Encrypt = 1;
+        configurationManager.EncryptPassMD5 = "existing-hash";
+
+        const string versionDate = "01-01-2021 00-00-00";
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 1, versionDate);
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "long.txt", @"\docs\", 6, "stored-long-name");
+
+        var storage = new StorageMock();
+        var editJob = CreateEditJob(storage);
+        editJob.Password = "test123";
+        await editJob.EditAsync();
+
+        Assert.That(storage.DecryptedFiles, Has.Count.EqualTo(1));
+        Assert.That(storage.DecryptedFiles[0], Is.EqualTo(versionDate + "\\_LONGFILES_\\stored-long-name"));
     }
 
     private EditJob CreateEditJob(IStorageProvider storage)

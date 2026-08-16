@@ -9,44 +9,73 @@
     xmlns:helpers="using:BSH.MainApp.Helpers"
     mc:Ignorable="d"
     Title="{helpers:ResourceString Name=Filter_Title}"
+    TaskBarIcon="{StaticResource AppIcon}"
     Height="650"
     Width="850"
+	MinHeight="650"
+	MinWidth="850"
     IsResizable="True"
     IsMaximizable="False"
     IsMinimizable="False"
     IsAlwaysOnTop="True">
 
-    <Grid Background="White" d:DataContext="{d:DesignInstance Type=viewmodels:FilterViewModel}">
+    <Grid Background="White"
+          d:DataContext="{d:DesignInstance Type=viewmodels:FilterViewModel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="24" RowSpacing="8">
+        <Grid Grid.Row="0" Margin="30" RowSpacing="15">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Spacing="8">
+            <StackPanel Grid.Row="0" Spacing="12">
                 <TextBlock FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Filter_Heading}" />
-                <TextBlock Text="{helpers:ResourceString Name=Filter_Description}" />
+                <TextBlock MaxWidth="760"
+                           HorizontalAlignment="Left"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Text="{helpers:ResourceString Name=Filter_Description}"
+                           TextWrapping="WrapWholeWords" />
             </StackPanel>
 
             <SelectorBar x:Name="FilterSelectorBar"
                          Grid.Row="1"
                          SelectionChanged="FilterSelectorBar_SelectionChanged">
-                <SelectorBarItem x:Name="FilesItem" Text="{helpers:ResourceString Name=Filter_Tab_Files}" />
-                <SelectorBarItem x:Name="FoldersItem" Text="{helpers:ResourceString Name=Filter_Tab_Folders}" />
-                <SelectorBarItem x:Name="FileTypesItem" Text="{helpers:ResourceString Name=Filter_Tab_FileTypes}" />
-                <SelectorBarItem x:Name="MaxFileSizeItem" Text="{helpers:ResourceString Name=Filter_Tab_MaxFileSize}" />
-                <SelectorBarItem x:Name="RegexItem" Text="{helpers:ResourceString Name=Filter_Tab_Regex}" />
+                <SelectorBarItem x:Name="FilesItem" Text="{helpers:ResourceString Name=Filter_Tab_Files}">
+                    <SelectorBarItem.Icon>
+                        <FontIcon Glyph="&#xE8A5;" />
+                    </SelectorBarItem.Icon>
+                </SelectorBarItem>
+                <SelectorBarItem x:Name="FoldersItem" Text="{helpers:ResourceString Name=Filter_Tab_Folders}">
+                    <SelectorBarItem.Icon>
+                        <FontIcon Glyph="&#xE8B7;" />
+                    </SelectorBarItem.Icon>
+                </SelectorBarItem>
+                <SelectorBarItem x:Name="FileTypesItem" Text="{helpers:ResourceString Name=Filter_Tab_FileTypes}">
+                    <SelectorBarItem.Icon>
+                        <FontIcon Glyph="&#xE8EC;" />
+                    </SelectorBarItem.Icon>
+                </SelectorBarItem>
+                <SelectorBarItem x:Name="MaxFileSizeItem" Text="{helpers:ResourceString Name=Filter_Tab_MaxFileSize}">
+                    <SelectorBarItem.Icon>
+                        <FontIcon Glyph="&#xE8E4;" />
+                    </SelectorBarItem.Icon>
+                </SelectorBarItem>
+                <SelectorBarItem x:Name="RegexItem" Text="{helpers:ResourceString Name=Filter_Tab_Regex}">
+                    <SelectorBarItem.Icon>
+                        <FontIcon Glyph="&#xE943;" />
+                    </SelectorBarItem.Icon>
+                </SelectorBarItem>
             </SelectorBar>
 
-            <Frame x:Name="ContentFrame" Grid.Row="2" Margin="0,12,0,0" />
+            <Frame x:Name="ContentFrame" Grid.Row="2" Margin="0,4,0,0" />
         </Grid>
 
-        <Grid Grid.Row="1" Background="#fafafa" Padding="30,10" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+        <Grid Grid.Row="1"
+              Background="{StaticResource ButtonBottomPanelBackgroundColor}" Padding="30,10" BorderBrush="{StaticResource ButtonBottomPanelBorderBrush}" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
                 <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
                 <Button Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" Content="{helpers:ResourceString Name=MsgBox_Save}" />

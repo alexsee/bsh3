@@ -25,7 +25,7 @@ public sealed partial class SwitchStorageWindow : WindowEx
         ViewModel.Initialize(databaseFile);
 
         Activate();
-        this.CenterOnScreen();
+        this.CenterOnMainWindow();
         var result = await ViewModel.TaskCompletionSource.Task;
 
         if (!closeRequested)

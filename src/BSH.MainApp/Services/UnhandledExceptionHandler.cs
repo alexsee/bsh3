@@ -1,8 +1,8 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using Serilog;
 using CommunityToolkit.WinUI;
+using Serilog;
 
 namespace BSH.MainApp.Services;
 

@@ -2,8 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,10 +12,10 @@ using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Storage;
+using BSH.Test.Helpers;
 using BSH.Test.Mocks;
 using NUnit.Framework;
 
@@ -257,6 +255,131 @@ public class RestoreTests
         Assert.That(storage.CopiedFromStorageRemoteFiles[1], Is.EqualTo(versionDate2 + @"\docs\" + "doc.txt"));
     }
 
+    [Test]
+    public async Task Restore_EmptyFoldersAreCreatedAtDestination()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 1, versionDate);
+        await JobSeedHelper.SeedEmptyFolderAsync(dbClientFactory, 1, 1, @"\docs\empty\");
+
+        var destination = Path.Combine(Path.GetTempPath(), "BSH.Test", "restore-empty-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(destination);
+
+        try
+        {
+            var storage = new StorageMock();
+            var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\");
+            await restoreJob.RestoreAsync(CancellationToken.None);
+
+            Assert.That(Directory.Exists(Path.Combine(destination, "empty")), Is.True);
+        }
+        finally
+        {
+            try { Directory.Delete(destination, true); } catch { /* ignore */ }
+        }
+    }
+
+    [Test]
+    public async Task Restore_FtpFileTypesRouteToCorrectCopyApis()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 1, versionDate);
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "plain.txt", @"\docs\", 3, "");
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 1, "zip.txt", @"\docs\", 4, "");
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 3, 3, 1, "enc.txt", @"\docs\", 5, "");
+
+        var storage = new StorageMock();
+        var restoreJob = CreateRestoreJob(storage, file: @"\");
+        restoreJob.Password = "test123";
+        await restoreJob.RestoreAsync(CancellationToken.None);
+
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
+        Assert.That(storage.CopyFileFromStorageCompressedCalls, Is.EqualTo(1));
+        Assert.That(storage.CopyFileFromStorageEncryptedCalls, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task Restore_FolderPathFilterRestoresOnlyMatchingSubtree()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 1, versionDate);
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "in.txt", @"\docs\sub\", 1, "");
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 1, "out.txt", @"\other\", 1, "");
+
+        var storage = new StorageMock();
+        var restoreJob = CreateRestoreJob(storage, file: @"\docs\");
+        await restoreJob.RestoreAsync(CancellationToken.None);
+
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[0], Does.Contain("in.txt"));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[0], Does.Not.Contain("out.txt"));
+    }
+
+    [Test]
+    public async Task Restore_OverwriteAsk_OverwriteAllAppliesToSubsequentFiles()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 1, versionDate);
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "a.txt", @"\docs\", 1, "");
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 1, "b.txt", @"\docs\", 1, "");
+
+        var destination = Path.Combine(Path.GetTempPath(), "BSH.Test", "restore-ask-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(destination);
+        File.WriteAllText(Path.Combine(destination, "a.txt"), "existing-a");
+        File.WriteAllText(Path.Combine(destination, "b.txt"), "existing-b");
+
+        try
+        {
+            var storage = new StorageMock();
+            var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
+            var observer = new JobReportStub { OverwriteResult = RequestOverwriteResult.OverwriteAll };
+            restoreJob.AddObserver(observer);
+
+            await restoreJob.RestoreAsync(CancellationToken.None);
+
+            Assert.That(observer.RequestOverwriteCalls, Is.EqualTo(1), "OverwriteAll should not re-prompt.");
+            Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(2));
+        }
+        finally
+        {
+            try { Directory.Delete(destination, true); } catch { /* ignore */ }
+        }
+    }
+
+    [Test]
+    public async Task Restore_SharedPackageFromEarlierVersionUsesOriginalPackageDate()
+    {
+        const string versionDate1 = "01-01-2021 00-00-00";
+        const string versionDate2 = "02-01-2021 00-00-00";
+
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 1, versionDate1);
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 2, versionDate2);
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "shared.txt", @"\docs\", 1, "");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (1, 2)");
+
+        var storage = new StorageMock();
+        var restoreJob = CreateRestoreJob(storage, version: 2, file: @"\");
+        await restoreJob.RestoreAsync(CancellationToken.None);
+
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[0], Is.EqualTo(versionDate1 + @"\docs\" + "shared.txt"));
+    }
+
+    [Test]
+    public async Task Restore_LongFileNameUsesLongFilesDirectory()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await JobSeedHelper.SeedVersionAsync(dbClientFactory, 1, versionDate);
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "very-long-name.txt", @"\docs\", 1, "stored-long-id");
+
+        var storage = new StorageMock();
+        var restoreJob = CreateRestoreJob(storage, file: @"\");
+        await restoreJob.RestoreAsync(CancellationToken.None);
+
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[0], Is.EqualTo(versionDate + "\\_LONGFILES_\\stored-long-id"));
+    }
+
     private RestoreJob CreateRestoreJob(
         IStorageProvider storage,
         int version = 1,
@@ -311,26 +434,5 @@ public class RestoreTests
         Directory.CreateDirectory(destination);
         File.WriteAllText(Path.Combine(destination, fileName), "existing");
         return destination;
-    }
-
-    private sealed class JobReportStub : IJobReport
-    {
-        public RequestOverwriteResult OverwriteResult { get; set; } = RequestOverwriteResult.Overwrite;
-        public int RequestOverwriteCalls { get; private set; }
-        public List<JobState> ReportedStates { get; } = [];
-
-        public void ReportAction(ActionType action, bool silent) { }
-        public void ReportState(JobState jobState) => ReportedStates.Add(jobState);
-        public void ReportStatus(string title, string text) { }
-        public void ReportProgress(int total, int current) { }
-        public void ReportFileProgress(string file) { }
-        public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent) { }
-        public Task RequestShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
-
-        public Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
-        {
-            RequestOverwriteCalls++;
-            return Task.FromResult(OverwriteResult);
-        }
     }
 }

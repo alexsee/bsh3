@@ -77,7 +77,6 @@ public partial class App : Application
         var germanCulture = new System.Globalization.CultureInfo("de-DE");
         System.Globalization.CultureInfo.DefaultThreadCurrentCulture = germanCulture;
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = germanCulture;
-        global::Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "de-DE";
 
         InitializeComponent();
 
@@ -160,6 +159,7 @@ public partial class App : Application
             services.AddTransient<SetupPage>();
 
             services.AddTransient<FilterViewModel>();
+            services.AddTransient<CompressionExclusionsViewModel>();
             services.AddTransient<ScheduleEditorViewModel>();
             services.AddTransient<SwitchStorageViewModel>();
 

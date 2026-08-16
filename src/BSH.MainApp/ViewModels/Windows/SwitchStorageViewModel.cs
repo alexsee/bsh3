@@ -7,11 +7,10 @@ using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
-using BSH.MainApp.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml;
 using CommunityToolkit.WinUI;
+using Microsoft.UI.Xaml;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -24,7 +23,10 @@ public partial class SwitchStorageViewModel : ObservableObject
 
     public ObservableCollection<SetupDriveItem> AvailableDrives { get; } = new();
 
-    public IReadOnlyList<MediaTargetOption> MediumOptions { get; } =
+    public IReadOnlyList<MediaTargetOption> MediumOptions
+    {
+        get;
+    } =
     [
         new(MediaTargetKind.LocalDrive, "SwitchStorage_LocalDrive".GetLocalized()),
         new(MediaTargetKind.Ftp, "SwitchStorage_FtpServer".GetLocalized()),

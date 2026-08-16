@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
-using BSH.MainApp.Helpers;
 
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;

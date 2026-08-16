@@ -4,34 +4,36 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:helpers="using:BSH.MainApp.Helpers">
 
-	<Grid Padding="8" RowSpacing="12">
+	<Grid RowSpacing="15">
 		<Grid.RowDefinitions>
 			<RowDefinition />
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
-			<RowDefinition Height="Auto" />
-		</Grid.RowDefinitions>
+        </Grid.RowDefinitions>
 
 		<ListView Grid.Row="0"
+                  Background="Transparent"
                   ItemsSource="{Binding ExcludeFolders}"
                   SelectedItem="{Binding SelectedFolder, Mode=TwoWay}">
-			<ListView.Header>
-				<TextBlock FontWeight="Bold" Text="{helpers:ResourceString Name=Filter_Column_Folder}" />
-			</ListView.Header>
+			<ListView.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+					<Setter Property="MinHeight" Value="44" />
+					<Setter Property="Padding" Value="16,10" />
+				</Style>
+			</ListView.ItemContainerStyle>
 		</ListView>
 
-		<TextBlock Grid.Row="1"
-				   Text="{Binding ValidationErrorMessage}"
-				   Foreground="Red"
-				   TextWrapping="Wrap" />
-		<CheckBox Grid.Row="2"
+        <Grid Grid.Row="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10">
+                <Button Content="{helpers:ResourceString Name=Filter_AddFolder}" Command="{Binding BrowseFolderCommand}" />
+                <Button Content="{helpers:ResourceString Name=MsgBox_Remove}" Command="{Binding RemoveFolderCommand}" />
+            </StackPanel>
+        </Grid>
+        
+        <CheckBox Grid.Row="2"
 				  Content="{helpers:ResourceString Name=Filter_IncludeSystemFolders}"
 				  IsChecked="{Binding IncludeSystemFolders, Mode=TwoWay}" />
-		<Grid Grid.Row="3">
-			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-				<Button Content="{helpers:ResourceString Name=Filter_AddFolder}" Command="{Binding BrowseFolderCommand}" />
-				<Button Content="{helpers:ResourceString Name=MsgBox_Remove}" Command="{Binding RemoveFolderCommand}" />
-			</StackPanel>
-		</Grid>
+
 	</Grid>
 </Page>
