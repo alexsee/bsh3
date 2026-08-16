@@ -27,6 +27,8 @@ public class PresentationService : IPresentationService
     {
         await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
         {
+            CloseStatusWindowCore();
+
             statusWindow = new StatusWindow();
             statusWindow.Activate();
             statusWindow.CenterOnMainWindow();
@@ -36,17 +38,33 @@ public class PresentationService : IPresentationService
     public async Task<TaskCompleteAction> CloseStatusWindowAsync()
     {
         var action = TaskCompleteAction.NoAction;
-        if (statusWindow != null)
+        if (statusWindow == null)
         {
-            await statusWindow.DispatcherQueue.EnqueueAsync(() =>
-            {
-                action = statusWindow.ViewModel.SelectedCompletionAction;
-                statusWindow.Close();
-            });
-
-            App.GetService<IStatusService>().RemoveObserver(statusWindow.ViewModel);
-            statusWindow = null;
+            return action;
         }
+
+        await statusWindow.DispatcherQueue.EnqueueAsync(() =>
+        {
+            action = CloseStatusWindowCore();
+        });
+
+        return action;
+    }
+
+    private TaskCompleteAction CloseStatusWindowCore()
+    {
+        if (statusWindow == null)
+        {
+            return TaskCompleteAction.NoAction;
+        }
+
+        var window = statusWindow;
+        statusWindow = null;
+
+        var action = window.ViewModel.SelectedCompletionAction;
+        window.ViewModel.Detach();
+        App.GetService<IStatusService>().RemoveObserver(window.ViewModel);
+        window.Close();
         return action;
     }
 
@@ -67,6 +85,11 @@ public class PresentationService : IPresentationService
     public async Task ShowBackupBrowserWindowAsync()
     {
         await App.GetService<IActivationService>().ActivateAsync(null);
+        if (!App.MainWindow.ViewModel.IsShellNavigationEnabled)
+        {
+            return;
+        }
+
         App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
     }
 

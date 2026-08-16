@@ -53,6 +53,9 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private NavigationViewItem? currentPage;
 
+    [ObservableProperty]
+    private bool isShellNavigationEnabled = true;
+
     public ObservableCollection<NavigationViewItem> NavigationItems { get; } = [];
     public ObservableCollection<NavigationViewItem> FooterNavigationItems { get; } = [];
 
@@ -98,10 +101,29 @@ public partial class MainWindowViewModel : ObservableObject
         CurrentPage = NavigationItems[0];
     }
 
+    public void SetSetupMode(bool isSetup)
+    {
+        IsShellNavigationEnabled = !isSetup;
+        if (isSetup)
+        {
+            CurrentPage = null;
+        }
+    }
+
+    partial void OnIsShellNavigationEnabledChanged(bool value)
+    {
+        ApplyNavigationItemEnabled(value);
+    }
+
     [RelayCommand]
     private void NavigateToMainPage(NavigationViewItemInvokedEventArgs args)
     {
         ArgumentNullException.ThrowIfNull(args);
+
+        if (!IsShellNavigationEnabled)
+        {
+            return;
+        }
 
         if (args.IsSettingsInvoked)
         {
@@ -128,6 +150,11 @@ public partial class MainWindowViewModel : ObservableObject
 
     public bool HandleSupportAction(string? action)
     {
+        if (!IsShellNavigationEnabled)
+        {
+            return false;
+        }
+
         switch (action)
         {
             case SupportActionKeys.About:
@@ -174,5 +201,27 @@ public partial class MainWindowViewModel : ObservableObject
     private IStoredPasswordAdapter GetStoredPasswordAdapter()
     {
         return storedPasswordAdapter ?? App.GetService<IStoredPasswordAdapter>();
+    }
+
+    private void ApplyNavigationItemEnabled(bool enabled)
+    {
+        foreach (var item in NavigationItems)
+        {
+            SetItemEnabled(item, enabled);
+        }
+
+        foreach (var item in FooterNavigationItems)
+        {
+            SetItemEnabled(item, enabled);
+        }
+    }
+
+    private static void SetItemEnabled(NavigationViewItem item, bool enabled)
+    {
+        item.IsEnabled = enabled;
+        foreach (var child in item.MenuItems.OfType<NavigationViewItem>())
+        {
+            SetItemEnabled(child, enabled);
+        }
     }
 }

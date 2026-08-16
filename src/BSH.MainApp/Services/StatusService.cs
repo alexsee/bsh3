@@ -10,12 +10,16 @@ using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using CommunityToolkit.WinUI;
+using Serilog;
 
 namespace BSH.MainApp.Services;
 
 public class StatusService : IJobReport, IStatusService
 {
+    private static readonly ILogger Logger = Log.ForContext<StatusService>();
+
     private readonly List<IStatusReport> observers = new();
+    private readonly object observersLock = new();
     private readonly IConfigurationManager configurationManager;
     private readonly IPresentationService presentationService;
     private readonly IAppNotificationService? appNotificationService;
@@ -92,23 +96,20 @@ public class StatusService : IJobReport, IStatusService
     public void SetSystemStatus(SystemStatus status)
     {
         SystemStatus = status;
-        observers.ForEach(x => x.ReportSystemStatus(status));
+        NotifyObservers(x => x.ReportSystemStatus(status));
     }
 
     public void ReportAction(ActionType action, bool silent)
     {
         lastFileOverwriteChoice = RequestOverwriteResult.None;
         lastActionType = action;
-        observers.ForEach(x => x.ReportAction(action, silent));
+        NotifyObservers(x => x.ReportAction(action, silent));
     }
 
     public void ReportState(JobState jobState)
     {
         JobState = jobState;
-        foreach (IStatusReport x in observers)
-        {
-            x.ReportState(jobState);
-        }
+        NotifyObservers(x => x.ReportState(jobState));
 
         if (lastActionType != ActionType.Backup || configurationManager.InfoBackupDone != "1")
         {
@@ -135,20 +136,20 @@ public class StatusService : IJobReport, IStatusService
     {
         LastStatusTitle = title;
         LastStatusText = text;
-        observers.ForEach(x => x.ReportStatus(title, text));
+        NotifyObservers(x => x.ReportStatus(title, text));
     }
 
     public void ReportProgress(int total, int current)
     {
         LastProgressTotal = total;
         LastProgressCurrent = current;
-        observers.ForEach(x => x.ReportProgress(total, current));
+        NotifyObservers(x => x.ReportProgress(total, current));
     }
 
     public void ReportFileProgress(string file)
     {
         LastFileProgress = file;
-        observers.ForEach(x => x.ReportFileProgress(file));
+        NotifyObservers(x => x.ReportFileProgress(file));
     }
 
     public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)
@@ -179,17 +180,59 @@ public class StatusService : IJobReport, IStatusService
 
     public void AddObserver(IStatusReport jobReport, bool triggerLastState = false)
     {
-        observers.Add(jobReport);
+        lock (observersLock)
+        {
+            observers.Add(jobReport);
+        }
+
         if (triggerLastState)
         {
-            jobReport.ReportSystemStatus(SystemStatus);
-            jobReport.ReportState(JobState);
+            try
+            {
+                jobReport.ReportSystemStatus(SystemStatus);
+                jobReport.ReportState(JobState);
+
+                if (JobState == JobState.RUNNING)
+                {
+                    jobReport.ReportStatus(LastStatusTitle, LastStatusText);
+                    jobReport.ReportProgress(LastProgressTotal, LastProgressCurrent);
+                    jobReport.ReportFileProgress(LastFileProgress);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(ex, "Status observer replay failed.");
+            }
         }
     }
 
     public void RemoveObserver(IStatusReport jobReport)
     {
-        observers.Remove(jobReport);
+        lock (observersLock)
+        {
+            observers.Remove(jobReport);
+        }
+    }
+
+    private void NotifyObservers(Action<IStatusReport> notify)
+    {
+        IStatusReport[] snapshot;
+        lock (observersLock)
+        {
+            snapshot = observers.ToArray();
+        }
+
+        foreach (var observer in snapshot)
+        {
+            try
+            {
+                notify(observer);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(ex, "Status observer notification failed.");
+            }
+        }
     }
 
     public void ShowExceptionDialog()

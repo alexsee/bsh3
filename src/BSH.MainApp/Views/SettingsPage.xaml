@@ -17,7 +17,10 @@
             <ColumnDefinition Width="*" MaxWidth="1400" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Settings_Title}" />
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
+            <FontIcon FontSize="22" Glyph="&#xE713;" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBlock VerticalAlignment="Center" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Settings_Title}" />
+        </StackPanel>
 
         <Grid Grid.Row="1" Margin="0, 20, 0, 0">
             <NavigationView x:Name="navSettings" 

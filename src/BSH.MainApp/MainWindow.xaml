@@ -45,6 +45,7 @@
                         PaneDisplayMode="LeftCompact"
                         IsBackButtonVisible="Collapsed"
                         IsPaneToggleButtonVisible="False"
+                        IsSettingsVisible="{x:Bind ViewModel.IsShellNavigationEnabled, Mode=OneWay}"
                         PaneTitle="{helpers:ResourceString Name=AppDisplayName}"
                         MenuItemsSource="{x:Bind ViewModel.NavigationItems}"
                         FooterMenuItemsSource="{x:Bind ViewModel.FooterNavigationItems}"
