@@ -408,6 +408,10 @@ static class BackupLogic
             {
                 await RemoveOldBackups();
             }
+            else
+            {
+                DoBackupWhenDriveIsAvailable(RunBackupMethod.Auto);
+            }
         }
         finally
         {
@@ -654,6 +658,10 @@ static class BackupLogic
             if (succeeded)
             {
                 await RemoveOldBackupsScheduled();
+            }
+            else
+            {
+                DoBackupWhenDriveIsAvailable(RunBackupMethod.Schedule);
             }
         }
         finally
