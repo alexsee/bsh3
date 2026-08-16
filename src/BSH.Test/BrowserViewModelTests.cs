@@ -58,7 +58,7 @@ public class BrowserViewModelTests
     }
 
     [Test]
-    public void PreviousAndNextVersionCommandsAreEnabledWhenFileOrFolderIsSelected()
+    public void PreviousAndNextVersionCommandsAreEnabledForCurrentFolderOrSearch()
     {
         var viewModel = CreateViewModel();
         viewModel.CurrentVersion = Version("2");
@@ -67,38 +67,63 @@ public class BrowserViewModelTests
         Assert.That(viewModel.NavigateToNextVersionCommand.CanExecute(null), Is.False);
 
         viewModel.CurrentItem = new FileOrFolderItem { Name = "docs", FullPath = "source\\docs", IsFile = false };
-        Assert.That(viewModel.NavigateToPreviousVersionCommand.CanExecute(null), Is.True);
-        Assert.That(viewModel.NavigateToNextVersionCommand.CanExecute(null), Is.True);
+        Assert.That(viewModel.NavigateToPreviousVersionCommand.CanExecute(null), Is.False);
+        Assert.That(viewModel.NavigateToNextVersionCommand.CanExecute(null), Is.False);
 
-        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"source\docs", IsFile = true };
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = "source\\docs", IsFile = false });
+        viewModel.NavigateToPreviousVersionCommand.NotifyCanExecuteChanged();
+        viewModel.NavigateToNextVersionCommand.NotifyCanExecuteChanged();
         Assert.That(viewModel.NavigateToPreviousVersionCommand.CanExecute(null), Is.True);
         Assert.That(viewModel.NavigateToNextVersionCommand.CanExecute(null), Is.True);
     }
 
     [Test]
-    public async Task NavigateToPreviousVersionContainingSelectedFolderLoadsMatchingVersion()
+    public async Task NavigateToPreviousVersionUsesCurrentFolderAndSelectsExistingVersionInstance()
     {
         var queryManager = new BrowserQueryManager
         {
             PreviousFolderVersion = "1"
         };
+        var older = Version("1");
+        var current = Version("2");
         var viewModel = CreateViewModel(queryManager);
-        viewModel.CurrentVersion = Version("2");
-        viewModel.CurrentItem = new FileOrFolderItem { Name = "docs", FullPath = "source\\docs", IsFile = false };
+        viewModel.Versions.Add(current);
+        viewModel.Versions.Add(older);
+        viewModel.CurrentVersion = current;
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "source", FullPath = "source", IsFile = false });
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = "source\\docs", IsFile = false });
 
         await viewModel.NavigateToPreviousVersionCommand.ExecuteAsync(null);
 
         Assert.That(queryManager.PreviousFolderLookup, Is.EqualTo(("2", "source\\docs")));
-        Assert.That(viewModel.CurrentVersion?.Id, Is.EqualTo("1"));
+        Assert.That(viewModel.CurrentVersion, Is.SameAs(older));
         Assert.That(viewModel.CurrentFolderPath.Select(x => x.FullPath), Is.EqualTo(new[] { "source", "source\\docs" }));
     }
 
     [Test]
-    public async Task NavigateToNextVersionContainingSelectedFileKeepsCurrentFile()
+    public async Task LoadVersionDoesNotDuplicateFavoritesWhenInvokedConcurrently()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "source", FullPath = "source", IsFile = false });
+
+        await viewModel.LoadVersionCommand.ExecuteAsync(null);
+        var expected = viewModel.Favorites.Select(x => (x.Name, x.Path, x.IsUserFavorite)).ToList();
+        Assert.That(expected, Is.Not.Empty);
+
+        await Task.WhenAll(
+            viewModel.LoadVersionCommand.ExecuteAsync(null),
+            viewModel.LoadVersionCommand.ExecuteAsync(null));
+
+        Assert.That(viewModel.Favorites.Select(x => (x.Name, x.Path, x.IsUserFavorite)), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public async Task NavigateToNextVersionContainingCurrentFolderKeepsCurrentFile()
     {
         var queryManager = new BrowserQueryManager
         {
-            NextFileVersion = "3",
+            NextFolderVersion = "3",
             Files =
             [
                 new FileTableRow { FileName = "report.txt", FilePath = @"\source\docs\", VersionId = "3" }
@@ -106,15 +131,41 @@ public class BrowserViewModelTests
         };
         var viewModel = CreateViewModel(queryManager);
         viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "source", FullPath = "source", IsFile = false });
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = @"source\docs", IsFile = false });
         viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
 
         await viewModel.NavigateToNextVersionCommand.ExecuteAsync(null);
 
-        Assert.That(queryManager.NextFileLookup, Is.EqualTo(("2", "report.txt")));
+        Assert.That(queryManager.NextFolderLookup, Is.EqualTo(("2", @"source\docs")));
         Assert.That(viewModel.CurrentVersion?.Id, Is.EqualTo("3"));
         Assert.That(viewModel.CurrentFolderPath[^1].FullPath, Is.EqualTo(@"source\docs"));
         Assert.That(viewModel.CurrentItem?.Name, Is.EqualTo("report.txt"));
         Assert.That(viewModel.CurrentItem?.IsFile, Is.True);
+    }
+
+    [Test]
+    public async Task NavigateToNextVersionDuringSearchUsesSearchTermsAndStaysInSearch()
+    {
+        var queryManager = new BrowserQueryManager
+        {
+            NextFileVersion = "3",
+            SearchResults =
+            [
+                new FileTableRow { FileName = "report.txt", FilePath = @"\source\docs\", VersionId = "3" }
+            ]
+        };
+        var viewModel = CreateViewModel(queryManager);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.SearchTerms = "report";
+        await viewModel.CommitSearchCommand.ExecuteAsync(null);
+
+        await viewModel.NavigateToNextVersionCommand.ExecuteAsync(null);
+
+        Assert.That(queryManager.NextFileLookup, Is.EqualTo(("2", "report")));
+        Assert.That(viewModel.CurrentVersion?.Id, Is.EqualTo("3"));
+        Assert.That(viewModel.IsSearchMode, Is.True);
+        Assert.That(viewModel.CommittedSearchTerms, Is.EqualTo("report"));
     }
 
     [Test]
@@ -441,8 +492,10 @@ public class BrowserViewModelTests
     private sealed class BrowserQueryManager : IQueryManager
     {
         public string? PreviousFolderVersion { get; set; }
+        public string? NextFolderVersion { get; set; }
         public string? NextFileVersion { get; set; }
         public (string Version, string Path)? PreviousFolderLookup { get; private set; }
+        public (string Version, string Path)? NextFolderLookup { get; private set; }
         public (string Version, string Search)? NextFileLookup { get; private set; }
         public List<FileTableRow> Files { get; set; } = [];
         public int GetVersionsCallCount { get; private set; }
@@ -471,7 +524,11 @@ public class BrowserViewModelTests
             return Task.FromResult(NextFileVersion);
         }
 
-        public Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult<string>(null);
+        public Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path)
+        {
+            NextFolderLookup = (startVersion, path);
+            return Task.FromResult(NextFolderVersion);
+        }
         public Task<int> GetNumberOfVersionsAsync() => Task.FromResult(3);
         public Task<int> GetNumberOfFilesAsync() => Task.FromResult(0);
         public Task<double> GetTotalFileSizeAsync() => Task.FromResult(0d);

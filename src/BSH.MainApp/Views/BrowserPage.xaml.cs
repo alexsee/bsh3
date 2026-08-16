@@ -20,6 +20,9 @@ public sealed partial class BrowserPage : Page
         InitializeComponent();
     }
 
+    private ListViewSelectionMode GetFilesSelectionMode(bool isMultiSelectMode) =>
+        isMultiSelectMode ? ListViewSelectionMode.Multiple : ListViewSelectionMode.Extended;
+
     private async void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
     {
         await ViewModel.LoadFolderWithParamCommand.ExecuteAsync(args.Item);
@@ -36,6 +39,15 @@ public sealed partial class BrowserPage : Page
         foreach (var item in FilesListView.SelectedItems.OfType<FileOrFolderItem>())
         {
             ViewModel.SelectedItems.Add(item);
+        }
+
+        if (FilesListView.SelectedItems.Count == 1)
+        {
+            ViewModel.CurrentItem = FilesListView.SelectedItems.OfType<FileOrFolderItem>().First();
+        }
+        else if (FilesListView.SelectedItems.Count == 0)
+        {
+            ViewModel.CurrentItem = null;
         }
     }
 

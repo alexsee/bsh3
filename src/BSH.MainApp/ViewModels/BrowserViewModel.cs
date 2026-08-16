@@ -32,6 +32,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private bool suppressSearchTermsChanged;
     private bool suppressInfoPaneChanged;
     private bool suppressFavoriteChanged;
+    private bool suppressVersionSelectionChanged;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
@@ -39,6 +40,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [NotifyCanExecuteChangedFor(nameof(RestoreAllCommand))]
     [NotifyCanExecuteChangedFor(nameof(RestoreAllToCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteMultipleBackupsCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NavigateToPreviousVersionCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NavigateToNextVersionCommand))]
     private VersionDetails? currentVersion;
 
     [ObservableProperty]
@@ -49,8 +52,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [NotifyCanExecuteChangedFor(nameof(ShowFilePreviewCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowFilePropertiesCommand))]
     [NotifyCanExecuteChangedFor(nameof(AddFolderToFavoritesCommand))]
-    [NotifyCanExecuteChangedFor(nameof(NavigateToPreviousVersionCommand))]
-    [NotifyCanExecuteChangedFor(nameof(NavigateToNextVersionCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteSelectedContentCommand))]
     private FileOrFolderItem? currentItem;
 
@@ -76,6 +77,9 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty]
     private bool toggleInfoPane = false;
+
+    [ObservableProperty]
+    private bool isMultiSelectMode;
 
     [ObservableProperty]
     private bool hasVersions = false;
@@ -156,6 +160,8 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private bool HasVersionSelected() => CurrentVersion != null;
     private bool HasFileSelected() => CurrentItem != null && CurrentItem.IsFile;
     private bool HasUserFavoriteSelected() => CurrentFavorite?.IsUserFavorite == true;
+    private bool CanNavigateAcrossVersions() => CurrentVersion != null
+        && ((IsSearchMode && !string.IsNullOrWhiteSpace(CommittedSearchTerms)) || CurrentFolderPath.Count > 0);
 
     private void OnSelectedItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
@@ -214,7 +220,17 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand(CanExecute = nameof(HasVersionSelected))]
-    private async Task LoadVersion()
+    private Task LoadVersion()
+    {
+        if (suppressVersionSelectionChanged)
+        {
+            return Task.CompletedTask;
+        }
+
+        return LoadVersionCoreAsync();
+    }
+
+    private async Task LoadVersionCoreAsync()
     {
         if (CurrentVersion == null)
         {
@@ -223,10 +239,20 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
         var preservedItem = CurrentItem;
         var preservedPath = GetPathToPreserve();
+        var searchTerms = CommittedSearchTerms;
+        var wasSearching = IsSearchMode && !string.IsNullOrWhiteSpace(searchTerms);
 
         await LoadFavoritesAsync();
         if (Favorites.Count == 0)
         {
+            return;
+        }
+
+        if (wasSearching)
+        {
+            SelectFavoriteForPath(preservedPath ?? Favorites[0].Path);
+            await LoadSearchResultsAsync(CurrentVersion.Id, searchTerms, BeginContentRequest());
+            RestorePreservedItem(preservedItem);
             return;
         }
 
@@ -501,13 +527,13 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         CurrentFavorite = Favorites.FirstOrDefault();
     }
 
-    [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
+    [RelayCommand(CanExecute = nameof(CanNavigateAcrossVersions))]
     private async Task NavigateToPreviousVersion()
     {
         await NavigateToContainingVersionAsync(previous: true);
     }
 
-    [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
+    [RelayCommand(CanExecute = nameof(CanNavigateAcrossVersions))]
     private async Task NavigateToNextVersion()
     {
         await NavigateToContainingVersionAsync(previous: false);
@@ -677,10 +703,19 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        Favorites.Clear();
-        foreach (var favorite in await browserContentService.GetFavoritesAsync(CurrentVersion))
+        var favorites = await browserContentService.GetFavoritesAsync(CurrentVersion);
+        suppressFavoriteChanged = true;
+        try
         {
-            Favorites.Add(favorite);
+            Favorites.Clear();
+            foreach (var favorite in favorites)
+            {
+                Favorites.Add(favorite);
+            }
+        }
+        finally
+        {
+            suppressFavoriteChanged = false;
         }
     }
 
@@ -740,26 +775,56 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     private async Task NavigateToContainingVersionAsync(bool previous)
     {
-        if (CurrentItem == null || CurrentVersion == null)
+        if (CurrentVersion == null)
         {
             return;
         }
 
-        var versionId = CurrentItem.IsFile
-            ? previous
-                ? await queryManager.GetBackVersionWhereFileAsync(CurrentVersion.Id, CurrentItem.Name)
-                : await queryManager.GetNextVersionWhereFileAsync(CurrentVersion.Id, CurrentItem.Name)
-            : previous
-                ? await queryManager.GetBackVersionWhereFilesInFolderAsync(CurrentVersion.Id, CurrentItem.FullPath)
-                : await queryManager.GetNextVersionWhereFilesInFolderAsync(CurrentVersion.Id, CurrentItem.FullPath);
-
-        if (versionId == null)
+        string? versionId;
+        if (IsSearchMode && !string.IsNullOrWhiteSpace(CommittedSearchTerms))
+        {
+            versionId = previous
+                ? await queryManager.GetBackVersionWhereFileAsync(CurrentVersion.Id, CommittedSearchTerms)
+                : await queryManager.GetNextVersionWhereFileAsync(CurrentVersion.Id, CommittedSearchTerms);
+        }
+        else if (CurrentFolderPath.Count > 0)
+        {
+            var path = CurrentFolderPath[^1].FullPath;
+            versionId = previous
+                ? await queryManager.GetBackVersionWhereFilesInFolderAsync(CurrentVersion.Id, path)
+                : await queryManager.GetNextVersionWhereFilesInFolderAsync(CurrentVersion.Id, path);
+        }
+        else
         {
             return;
         }
 
-        CurrentVersion = await queryManager.GetVersionByIdAsync(versionId);
-        await LoadVersion();
+        if (string.IsNullOrEmpty(versionId))
+        {
+            return;
+        }
+
+        // Bind the backup list to the instance already in Versions. A fresh
+        // GetVersionByIdAsync object is not in that collection, so the TwoWay
+        // SelectedItem binding would snap CurrentVersion back and look like a no-op refresh.
+        var matchingVersion = Versions.FirstOrDefault(x => x.Id == versionId)
+            ?? await queryManager.GetVersionByIdAsync(versionId);
+        if (matchingVersion == null)
+        {
+            return;
+        }
+
+        suppressVersionSelectionChanged = true;
+        try
+        {
+            CurrentVersion = matchingVersion;
+        }
+        finally
+        {
+            suppressVersionSelectionChanged = false;
+        }
+
+        await LoadVersionCoreAsync();
     }
 
     private async Task LoadFolderAsync(string version, string path, long requestId)
@@ -839,6 +904,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     private void ReplaceItems(IEnumerable<FileOrFolderItem> items)
     {
+        SelectedItems.Clear();
         Items.Clear();
         foreach (var item in items)
         {

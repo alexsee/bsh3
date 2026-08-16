@@ -204,6 +204,12 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="Browser_PreviewPane" xml:space="preserve">
     <value>Vorschaufenster</value>
   </data>
+  <data name="Browser_MultiSelect" xml:space="preserve">
+    <value>Auswählen</value>
+  </data>
+  <data name="Browser_MultiSelect_Tooltip" xml:space="preserve">
+    <value>Mehrere Dateien und Ordner auswählen</value>
+  </data>
   <data name="Browser_PreviousVersion" xml:space="preserve">
     <value>Älter</value>
   </data>
