@@ -161,10 +161,24 @@
                             </StackPanel>
                         </Button>
 
-                        <ListView
+                        <Border
                             Grid.Row="1"
-                            ItemsSource="{x:Bind ViewModel.Sources, Mode=OneWay}"
-                            SelectedItem="{x:Bind ViewModel.SelectedSource, Mode=TwoWay}" />
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <ListView
+                                ItemsSource="{x:Bind ViewModel.Sources, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedSource, Mode=TwoWay}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <FontIcon FontSize="16" Glyph="&#xE8B7;" VerticalAlignment="Center" />
+                                            <TextBlock Text="{x:Bind}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Border>
 
                         <Button
                             Grid.Row="2"

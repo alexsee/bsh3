@@ -31,7 +31,7 @@
         </VisualStateManager.VisualStateGroups>
 
         <Button
-            Width="168"
+            Width="184"
             Padding="0"
             HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Center"
@@ -42,26 +42,26 @@
             CommandParameter="{Binding CommandParameter, ElementName=Root}">
             <Border
                 x:Name="CardBorder"
-                Padding="10,12"
+                Padding="16,18"
                 CornerRadius="8"
                 BorderThickness="1"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
-                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                <StackPanel Spacing="8" HorizontalAlignment="Center">
                     <FontIcon
                         x:Name="GlyphIcon"
-                        FontSize="18"
+                        FontSize="24"
                         Glyph="{Binding Glyph, ElementName=Root}"
                         HorizontalAlignment="Center" />
                     <TextBlock
-                        FontSize="13"
+                        FontSize="14"
                         FontWeight="SemiBold"
                         TextAlignment="Center"
                         TextWrapping="Wrap"
                         Text="{Binding Title, ElementName=Root}" />
                     <TextBlock
-                        FontSize="11"
-                        Opacity="0.75"
+                        FontSize="12"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         TextAlignment="Center"
                         TextWrapping="WrapWholeWords"
                         Text="{Binding Description, ElementName=Root}" />
