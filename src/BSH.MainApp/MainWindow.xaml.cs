@@ -3,6 +3,7 @@
 
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.ViewModels.Windows;
+using BSH.MainApp.Views;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Media;
 using WinUIEx;
@@ -47,6 +48,11 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
 
     private void ContentArea_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
     {
-        EnsureCurrentPageSelected();
+        var isSetup = e.Content is SetupPage;
+        ViewModel.SetSetupMode(isSetup);
+        if (!isSetup)
+        {
+            EnsureCurrentPageSelected();
+        }
     }
 }

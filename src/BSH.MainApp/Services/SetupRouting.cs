@@ -20,6 +20,16 @@ public class SetupRouting
 
     public bool IsSetupRequired => configurationManager.IsConfigured == "0";
 
+    public static bool CanNavigateTo(string pageKey, string isConfigured)
+    {
+        if (isConfigured != "0")
+        {
+            return true;
+        }
+
+        return pageKey == typeof(SetupViewModel).FullName;
+    }
+
     public void NavigateForStartup(object? parameter = null)
     {
         if (IsSetupRequired)

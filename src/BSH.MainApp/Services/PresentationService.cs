@@ -67,6 +67,11 @@ public class PresentationService : IPresentationService
     public async Task ShowBackupBrowserWindowAsync()
     {
         await App.GetService<IActivationService>().ActivateAsync(null);
+        if (!App.MainWindow.ViewModel.IsShellNavigationEnabled)
+        {
+            return;
+        }
+
         App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
     }
 
