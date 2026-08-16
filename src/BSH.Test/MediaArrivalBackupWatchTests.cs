@@ -79,6 +79,55 @@ public class MediaArrivalBackupWatchTests
         Assert.That(factory.Watcher.StopWatchingCount, Is.EqualTo(0));
     }
 
+    [Test]
+    public async Task StartIfMediaMissing_WhenMediaUnavailable_StartsWatcherAndMatchingDriveRunsBackup()
+    {
+        var factory = new FakeMediaWatcherFactory();
+        var watch = CreateWatch(MediaType.LocalDevice, @"E:\Backups", factory);
+        var backupStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var mediaAvailable = false;
+        var backupCalls = 0;
+
+        await watch.StartIfMediaMissing(
+            () =>
+            {
+                backupCalls++;
+                backupStarted.TrySetResult();
+                return Task.CompletedTask;
+            },
+            () => Task.FromResult(mediaAvailable));
+
+        Assert.That(factory.CreateCount, Is.EqualTo(1));
+
+        mediaAvailable = true;
+        factory.Watcher.Arrive("E:");
+
+        await backupStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        Assert.That(backupCalls, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task StartIfMediaMissing_WhenMediaAvailable_DoesNotStartWatcher()
+    {
+        var factory = new FakeMediaWatcherFactory();
+        var watch = CreateWatch(MediaType.LocalDevice, @"E:\Backups", factory);
+
+        await watch.StartIfMediaMissing(() => Task.CompletedTask, () => Task.FromResult(true));
+
+        Assert.That(factory.CreateCount, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task StartIfMediaMissing_WhenTargetIsFtp_DoesNotStartWatcher()
+    {
+        var factory = new FakeMediaWatcherFactory();
+        var watch = CreateWatch(MediaType.FileTransferServer, @"E:\Backups", factory);
+
+        await watch.StartIfMediaMissing(() => Task.CompletedTask, () => Task.FromResult(false));
+
+        Assert.That(factory.CreateCount, Is.EqualTo(0));
+    }
+
     private static MediaArrivalBackupWatch CreateWatch(
         MediaType mediaType,
         string backupFolder,

@@ -59,6 +59,19 @@ public sealed class MediaArrivalBackupWatch
         }
     }
 
+    public async Task StartIfMediaMissing(Func<Task> runBackup, Func<Task<bool>> isMediaAvailable)
+    {
+        ArgumentNullException.ThrowIfNull(runBackup);
+        ArgumentNullException.ThrowIfNull(isMediaAvailable);
+
+        if (await isMediaAvailable())
+        {
+            return;
+        }
+
+        Start(runBackup, isMediaAvailable);
+    }
+
     public void Stop()
     {
         IMediaWatcher current;

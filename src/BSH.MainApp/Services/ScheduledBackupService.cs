@@ -366,12 +366,9 @@ public class ScheduledBackupService : IScheduledBackupService
         mediaArrivalWatch.Start(runBackup, CheckBackupMediaAsync);
     }
 
-    private async Task WatchIfMediaMissing(Func<Task> runBackup)
+    private Task WatchIfMediaMissing(Func<Task> runBackup)
     {
-        if (!await CheckBackupMediaAsync())
-        {
-            WatchForDueBackup(runBackup);
-        }
+        return mediaArrivalWatch.StartIfMediaMissing(runBackup, CheckBackupMediaAsync);
     }
 
     private Task<bool> CheckBackupMediaAsync()
