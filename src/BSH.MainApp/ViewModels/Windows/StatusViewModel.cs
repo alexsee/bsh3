@@ -82,15 +82,7 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
         UpdateOnUiThread(() =>
         {
             CurrentFilePath = file ?? string.Empty;
-            try
-            {
-                CurrentFileText = Formatter.ShortenPathMiddle(file, 75);
-            }
-            catch (Exception ex)
-            {
-                Logger.Warning(ex, "Could not shorten status file path.");
-                CurrentFileText = file ?? string.Empty;
-            }
+            CurrentFileText = Formatter.ShortenPathMiddleSafe(file, 75, Logger);
         });
     }
 

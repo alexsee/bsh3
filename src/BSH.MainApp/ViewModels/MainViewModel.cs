@@ -246,7 +246,10 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
                 current,
                 maximum => CurrentProgressMax = maximum,
                 value => CurrentProgressValue = value);
-            ProgressCountText = $"{current} / {total} {"Status_FilesProcessed".GetLocalized()}";
+
+            var safeTotal = Math.Max(0, total);
+            var safeCurrent = Math.Clamp(current, 0, safeTotal);
+            ProgressCountText = $"{safeCurrent} / {safeTotal} {"Status_FilesProcessed".GetLocalized()}";
         });
     }
 
@@ -255,15 +258,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         EnqueueUi(() =>
         {
             CurrentFilePath = file ?? string.Empty;
-            try
-            {
-                CurrentFileText = Formatter.ShortenPathMiddle(file, 70);
-            }
-            catch (Exception ex)
-            {
-                Logger.Warning(ex, "Could not shorten overview file path.");
-                CurrentFileText = file ?? string.Empty;
-            }
+            CurrentFileText = Formatter.ShortenPathMiddleSafe(file, 70, Logger);
         });
     }
 

@@ -32,4 +32,40 @@ public class FormatterTests
         Assert.That(shortened, Does.EndWith("report.pdf"));
         Assert.That(shortened.Length, Is.EqualTo(40));
     }
+
+    [Test]
+    public void ShortenPathMiddleTruncatesWhenFileNameAloneDoesNotFit()
+    {
+        var path = @"C:\dir\a-very-long-file-name-that-cannot-fit.txt";
+        var shortened = Formatter.ShortenPathMiddle(path, 15);
+
+        Assert.That(shortened, Does.Contain("..."));
+        Assert.That(shortened.Length, Is.EqualTo(15));
+    }
+
+    [Test]
+    public void ShortenPathMiddleTruncatesBareFileNameWithoutDirectory()
+    {
+        var path = "a-very-long-bare-file-name-without-any-directory.txt";
+        var shortened = Formatter.ShortenPathMiddle(path, 20);
+
+        Assert.That(shortened, Does.Contain("..."));
+        Assert.That(shortened.Length, Is.EqualTo(20));
+    }
+
+    [Test]
+    public void ShortenPathMiddleSafeFallsBackToOriginalOnNull()
+    {
+        Assert.That(Formatter.ShortenPathMiddleSafe(null, 10), Is.EqualTo(string.Empty));
+    }
+
+    [Test]
+    public void ShortenPathMiddleSafeMatchesShortenPathMiddleForValidInput()
+    {
+        var path = @"C:\Users\alex\Documents\Projects\Backup\very-long-folder\report.pdf";
+
+        Assert.That(
+            Formatter.ShortenPathMiddleSafe(path, 40),
+            Is.EqualTo(Formatter.ShortenPathMiddle(path, 40)));
+    }
 }
