@@ -391,6 +391,22 @@
     "en": "Lock/unlock backup",
     "de": "Sicherung sperren/entsperren"
   },
+  "Browser_PreviousVersion": {
+    "en": "Older",
+    "de": "Älter"
+  },
+  "Browser_PreviousVersion_Tooltip": {
+    "en": "Jump to an older backup",
+    "de": "Eine frühere Version anzeigen"
+  },
+  "Browser_NextVersion": {
+    "en": "Newer",
+    "de": "Neuer"
+  },
+  "Browser_NextVersion_Tooltip": {
+    "en": "Jump to a newer backup",
+    "de": "Eine neuere Version anzeigen"
+  },
   "Browser_Column_Name": {
     "en": "Name",
     "de": "Name"

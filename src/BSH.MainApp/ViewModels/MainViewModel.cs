@@ -13,11 +13,14 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using Humanizer;
 using Microsoft.UI.Dispatching;
+using Serilog;
 
 namespace BSH.MainApp.ViewModels;
 
 public partial class MainViewModel : ObservableObject, INavigationAware, IStatusReport
 {
+    private static readonly ILogger Logger = Log.ForContext<MainViewModel>();
+
     private readonly IPresentationService presentationService;
     private readonly IStatusService statusService;
     private readonly IQueryManager queryManager;
@@ -70,6 +73,15 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     [ObservableProperty]
     private double currentProgressMax = 100;
+
+    [ObservableProperty]
+    private string? currentFileText;
+
+    [ObservableProperty]
+    private string? currentFilePath;
+
+    [ObservableProperty]
+    private string? progressCountText;
 
     [ObservableProperty]
     private string? systemStatusText;
@@ -166,16 +178,32 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         }
     }
 
+    [RelayCommand]
+    private void CancelBackup()
+    {
+        jobService.Cancel();
+    }
+
     public void ReportAction(ActionType action, bool silent)
     {
     }
 
     public void ReportState(JobState jobState)
     {
-        dispatcherQueue.TryEnqueue(async () =>
+        EnqueueUi(async () =>
         {
             if (jobState == JobState.RUNNING)
             {
+                CurrentFileText = null;
+                CurrentFilePath = null;
+                ProgressCountText = null;
+                ProgressDisplay.Assign(
+                    (int)CurrentProgressMax,
+                    (int)CurrentProgressValue,
+                    total: 0,
+                    current: 0,
+                    maximum => CurrentProgressMax = maximum,
+                    value => CurrentProgressValue = value);
                 NextBackupGridVisibility = false;
                 ProgressGridVisibility = true;
                 return;
@@ -183,7 +211,14 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
             if (jobState == JobState.FINISHED)
             {
-                await UpdateBackupStatsAsync();
+                try
+                {
+                    await UpdateBackupStatsAsync();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warning(ex, "Could not refresh overview statistics after backup.");
+                }
             }
 
             NextBackupGridVisibility = true;
@@ -193,7 +228,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     public void ReportStatus(string title, string text)
     {
-        dispatcherQueue.TryEnqueue(() =>
+        EnqueueUi(() =>
         {
             CurrentProgressStatusTitle = title;
             CurrentProgressStatusText = text;
@@ -202,20 +237,64 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     public void ReportProgress(int total, int current)
     {
-        dispatcherQueue.TryEnqueue(() =>
+        EnqueueUi(() =>
         {
-            CurrentProgressMax = total;
-            CurrentProgressValue = current;
+            ProgressDisplay.Assign(
+                (int)CurrentProgressMax,
+                (int)CurrentProgressValue,
+                total,
+                current,
+                maximum => CurrentProgressMax = maximum,
+                value => CurrentProgressValue = value);
+
+            var safeTotal = Math.Max(0, total);
+            var safeCurrent = Math.Clamp(current, 0, safeTotal);
+            ProgressCountText = $"{safeCurrent} / {safeTotal} {"Status_FilesProcessed".GetLocalized()}";
         });
     }
 
     public void ReportFileProgress(string file)
     {
+        EnqueueUi(() =>
+        {
+            CurrentFilePath = file ?? string.Empty;
+            CurrentFileText = Formatter.ShortenPathMiddleSafe(file, 70, Logger);
+        });
     }
 
     public void ReportSystemStatus(SystemStatus systemStatus)
     {
-        dispatcherQueue.TryEnqueue(() => ApplySystemStatus(systemStatus));
+        EnqueueUi(() => ApplySystemStatus(systemStatus));
+    }
+
+    private void EnqueueUi(Action action)
+    {
+        dispatcherQueue.TryEnqueue(() =>
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(ex, "Overview UI update failed.");
+            }
+        });
+    }
+
+    private void EnqueueUi(Func<Task> action)
+    {
+        dispatcherQueue.TryEnqueue(async () =>
+        {
+            try
+            {
+                await action();
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(ex, "Overview UI update failed.");
+            }
+        });
     }
 
     private void ApplySystemStatus(SystemStatus systemStatus)

@@ -47,7 +47,11 @@ public class AppNotificationService : IAppNotificationService
         {
             try
             {
-                _navigationService.NavigateTo(pageKey);
+                if (App.MainWindow.ViewModel.IsShellNavigationEnabled)
+                {
+                    _navigationService.NavigateTo(pageKey);
+                }
+
                 App.MainWindow.Activate();
                 App.MainWindow.AppWindow.MoveInZOrderAtTop();
             }

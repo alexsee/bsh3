@@ -95,6 +95,41 @@ public class MediaTargetApplierTests
     }
 
     [Test]
+    public void ApplyEmptyLocalTarget_ClearsFolderSerialUncAndFtpFields()
+    {
+        var configuration = new FakeConfigurationManager
+        {
+            MediumType = MediaType.FileTransferServer,
+            BackupFolder = @"E:\OldBackups",
+            MediaVolumeSerial = "1234567890",
+            UNCUsername = "old-user",
+            UNCPassword = "old-password",
+            FtpHost = "ftp.old",
+            FtpUser = "ftp-user",
+            FtpPass = "ftp-pass",
+            FtpFolder = "/old",
+            FtpCoding = "UTF8",
+            FtpEncryptionMode = "3",
+            FtpSslProtocols = "0",
+        };
+
+        MediaTargetApplier.ApplyEmptyLocalTarget(configuration);
+
+        Assert.That(configuration.MediumType, Is.EqualTo(MediaType.LocalDevice));
+        Assert.That(configuration.BackupFolder, Is.EqualTo(""));
+        Assert.That(configuration.MediaVolumeSerial, Is.EqualTo(""));
+        Assert.That(configuration.UNCUsername, Is.EqualTo(""));
+        Assert.That(configuration.UNCPassword, Is.EqualTo(""));
+        Assert.That(configuration.FtpHost, Is.EqualTo(""));
+        Assert.That(configuration.FtpUser, Is.EqualTo(""));
+        Assert.That(configuration.FtpPass, Is.EqualTo(""));
+        Assert.That(configuration.FtpFolder, Is.EqualTo(""));
+        Assert.That(configuration.FtpCoding, Is.EqualTo(""));
+        Assert.That(configuration.FtpEncryptionMode, Is.EqualTo(""));
+        Assert.That(configuration.FtpSslProtocols, Is.EqualTo(""));
+    }
+
+    [Test]
     public void ApplyLocalTarget_SetsFolderSerialAndClearsUncCredentials()
     {
         var configuration = new FakeConfigurationManager

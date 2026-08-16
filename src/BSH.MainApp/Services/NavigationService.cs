@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
+using Brightbits.BSH.Engine.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
 
@@ -16,6 +17,7 @@ namespace BSH.MainApp.Services;
 public class NavigationService : INavigationService
 {
     private readonly IPageService _pageService;
+    private readonly IConfigurationManager _configurationManager;
     private object? _lastParameterUsed;
     private Frame? _frame;
 
@@ -45,9 +47,10 @@ public class NavigationService : INavigationService
     [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
     public bool CanGoBack => Frame != null && Frame.CanGoBack;
 
-    public NavigationService(IPageService pageService)
+    public NavigationService(IPageService pageService, IConfigurationManager configurationManager)
     {
         _pageService = pageService;
+        _configurationManager = configurationManager;
     }
 
     private void RegisterFrameEvents()
@@ -85,6 +88,11 @@ public class NavigationService : INavigationService
 
     public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false)
     {
+        if (!SetupRouting.CanNavigateTo(pageKey, _configurationManager.IsConfigured))
+        {
+            return false;
+        }
+
         var pageType = _pageService.GetPageType(pageKey);
 
         if (Frame != null && (Frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameterUsed))))

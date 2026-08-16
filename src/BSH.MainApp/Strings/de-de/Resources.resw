@@ -192,11 +192,23 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="Browser_LockUnlockBackup" xml:space="preserve">
     <value>Sicherung sperren/entsperren</value>
   </data>
+  <data name="Browser_NextVersion" xml:space="preserve">
+    <value>Neuer</value>
+  </data>
+  <data name="Browser_NextVersion_Tooltip" xml:space="preserve">
+    <value>Eine neuere Version anzeigen</value>
+  </data>
   <data name="Browser_Organize" xml:space="preserve">
     <value>Organisieren</value>
   </data>
   <data name="Browser_PreviewPane" xml:space="preserve">
     <value>Vorschaufenster</value>
+  </data>
+  <data name="Browser_PreviousVersion" xml:space="preserve">
+    <value>Älter</value>
+  </data>
+  <data name="Browser_PreviousVersion_Tooltip" xml:space="preserve">
+    <value>Eine frühere Version anzeigen</value>
   </data>
   <data name="Browser_Properties" xml:space="preserve">
     <value>Eigenschaften</value>
@@ -233,6 +245,21 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   </data>
   <data name="Browser_Search" xml:space="preserve">
     <value>Suchen</value>
+  </data>
+  <data name="Browser_Search_Empty_Text" xml:space="preserve">
+    <value>Versuchen Sie einen anderen Dateinamen oder Pfad.</value>
+  </data>
+  <data name="Browser_Search_Empty_Title" xml:space="preserve">
+    <value>Keine Suchergebnisse</value>
+  </data>
+  <data name="Browser_Search_Results" xml:space="preserve">
+    <value>Suchergebnis für "{0}"</value>
+  </data>
+  <data name="Browser_PreviewRetrieveFailed_Text" xml:space="preserve">
+    <value>Die Datei konnte vom Sicherungsmedium nicht abgerufen werden.</value>
+  </data>
+  <data name="Browser_PreviewRetrieveFailed_Title" xml:space="preserve">
+    <value>Vorschau nicht verfügbar</value>
   </data>
   <data name="Browser_Title.Text" xml:space="preserve">
     <value>Browser</value>

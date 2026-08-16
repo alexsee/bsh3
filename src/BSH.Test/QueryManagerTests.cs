@@ -297,6 +297,22 @@ public class QueryManagerTests
     }
 
     [Test]
+    public async Task GetFileNameFromDriveAsync_LongNamedFileUsesSamePackageFolderAsRestore()
+    {
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filetable (fileID, fileName, filePath) VALUES (4, 'very-long-name.txt', '\\source_1\\')");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (4, 1)");
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO fileversiontable (fileversionID, fileStatus, fileType, fileHash, fileDateModified, fileDateCreated, fileSize, filePackage, fileID, longfilename) VALUES (4, 0, 3, 'hash4', '2021-01-01 00:00:00', '2021-01-01 00:00:00', 100, 1, '4', 'stored-long-id')");
+
+        var storage = new StorageMock();
+        queryManager = new QueryManager(dbClientFactory, configurationManager, new StorageFactoryMock(storage));
+
+        await queryManager.GetFileNameFromDriveAsync(1, "very-long-name.txt", "\\source_1\\", null);
+
+        Assert.That(storage.CopiedFromStorageRemoteFiles, Has.Count.EqualTo(1));
+        Assert.That(storage.CopiedFromStorageRemoteFiles[0], Is.EqualTo("01-01-2021 00-00-00\\_LONGFILES_\\stored-long-id"));
+    }
+
+    [Test]
     public async Task GetRestoreSingleFileAsyncTreatsLikeMetacharactersAsLiteral()
     {
         await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filetable (fileID, fileName, filePath) VALUES (4, 'report_1%.txt', '\\source_%\\')");

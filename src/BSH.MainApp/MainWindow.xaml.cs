@@ -3,6 +3,7 @@
 
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.ViewModels.Windows;
+using BSH.MainApp.Views;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml.Media;
 using WinUIEx;
@@ -20,6 +21,14 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
         SystemBackdrop = new MicaBackdrop();
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(titleBar);
+
+        // Load the window/taskbar icon from the multi-resolution .ico so Windows can
+        // pick a crisp size per DPI instead of upscaling a single small frame.
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "app_ico.ico");
+        if (File.Exists(iconPath))
+        {
+            AppWindow.SetIcon(iconPath);
+        }
 
         this.CenterOnScreen();
         Title = "AppDisplayName".GetLocalized();
@@ -47,6 +56,11 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
 
     private void ContentArea_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
     {
-        EnsureCurrentPageSelected();
+        var isSetup = e.Content is SetupPage;
+        ViewModel.SetSetupMode(isSetup);
+        if (!isSetup)
+        {
+            EnsureCurrentPageSelected();
+        }
     }
 }

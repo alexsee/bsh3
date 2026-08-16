@@ -10,7 +10,13 @@ public class FileSizeConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return value is double ? ((double)value).Bytes().ToString() : value;
+        return value switch
+        {
+            double d => d.Bytes().ToString(),
+            long l => l.Bytes().ToString(),
+            int i => ((long)i).Bytes().ToString(),
+            _ => value
+        };
     }
     public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotImplementedException();
 }

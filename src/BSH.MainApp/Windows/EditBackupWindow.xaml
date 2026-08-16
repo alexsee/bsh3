@@ -12,14 +12,17 @@
     TaskBarIcon="{StaticResource AppIcon}"
     Height="500" Width="600" IsResizable="False" IsMaximizable="False" IsMinimizable="False" IsAlwaysOnTop="True">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource AppPageBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Margin="30" Grid.Row="0">
             <StackPanel Orientation="Vertical" Spacing="30">
-                <TextBlock FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=EditBackup_Title}" />
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <FontIcon FontSize="22" Glyph="&#xE70F;" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
+                    <TextBlock VerticalAlignment="Center" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=EditBackup_Title}" />
+                </StackPanel>
                 <Grid RowSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"></ColumnDefinition>
@@ -52,8 +55,8 @@
 
         <Grid Grid.Row="1" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,10" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
-                <Button Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" Content="{helpers:ResourceString Name=MsgBox_Save}" />
+                <Button MinWidth="100" Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
+                <Button MinWidth="100" Command="{x:Bind ViewModel.SaveCommand}" Style="{StaticResource AccentButtonStyle}" Content="{helpers:ResourceString Name=MsgBox_Save}" />
             </StackPanel>
         </Grid>
     </Grid>

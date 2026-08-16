@@ -69,22 +69,10 @@ public sealed class EngineJobTestContext : IAsyncDisposable
         QueryManager = new QueryManager(DbFactory, ConfigurationManager, storageFactory);
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         DbClientFactory.ClosePool();
-
-        try
-        {
-            if (Directory.Exists(RootDir))
-            {
-                Directory.Delete(RootDir, recursive: true);
-            }
-        }
-        catch
-        {
-            // Best-effort cleanup when Windows still holds file locks.
-        }
-
-        await Task.CompletedTask;
+        TempDirectory.DeleteBestEffort(RootDir);
+        return ValueTask.CompletedTask;
     }
 }

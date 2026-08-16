@@ -20,7 +20,7 @@
     IsResizable="True"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" d:DataContext="{d:DesignInstance Type=viewmodels:ScheduleEditorViewModel}">
+    <Grid Background="{ThemeResource AppPageBackgroundBrush}" d:DataContext="{d:DesignInstance Type=viewmodels:ScheduleEditorViewModel}">
         <Grid.Resources>
             <converters:ScheduleOptionDisplayConverter x:Key="ScheduleOptionDisplayConverter" />
             <DataTemplate x:Key="ScheduleOptionTemplate">
@@ -41,7 +41,10 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Spacing="12">
-                <TextBlock FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Schedule_Title}" />
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <FontIcon FontSize="22" Glyph="&#xE787;" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
+                    <TextBlock VerticalAlignment="Center" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Schedule_Title}" />
+                </StackPanel>
                 <TextBlock
                     MaxWidth="760"
                     HorizontalAlignment="Left"
@@ -305,8 +308,9 @@
             Grid.Row="1"
             Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,10" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
-                <Button Command="{Binding CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
+                <Button MinWidth="100" Command="{Binding CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
                 <Button
+                    MinWidth="100"
                     Command="{Binding SaveCommand}"
                     Content="{helpers:ResourceString Name=MsgBox_Save}"
                     Style="{StaticResource AccentButtonStyle}" />
