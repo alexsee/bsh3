@@ -1,6 +1,7 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using BSH.MainApp.Contracts.Services;
@@ -12,6 +13,33 @@ namespace BSH.Test;
 
 public class SettingsViewModelTests
 {
+    [Test]
+    public void MigratedWinFormsOffSentinel_LeavesLowDiskReminderDisabled()
+    {
+        var configuration = new FakeConfigurationManager { RemindSpace = "-1" };
+        var viewModel = CreateViewModel(configuration);
+
+        viewModel.OnNavigatedTo(null);
+
+        Assert.That(viewModel.EnableNotificationWhenDiskspaceLow, Is.False);
+        Assert.That(viewModel.NotificationWhenDiskspaceLow, Is.GreaterThanOrEqualTo(0));
+        Assert.That(configuration.RemindSpace, Is.EqualTo("-1"));
+    }
+
+    [Test]
+    public void TurningOffLowDiskReminder_StoresWinFormsOffSentinel()
+    {
+        var configuration = new FakeConfigurationManager { RemindSpace = "10" };
+        var viewModel = CreateViewModel(configuration);
+
+        viewModel.OnNavigatedTo(null);
+        Assert.That(viewModel.EnableNotificationWhenDiskspaceLow, Is.True);
+
+        viewModel.EnableNotificationWhenDiskspaceLow = false;
+
+        Assert.That(configuration.RemindSpace, Is.EqualTo("-1"));
+    }
+
     [TestCase(TaskType.Auto, TaskType.Manual)]
     [TestCase(TaskType.Schedule, TaskType.Manual)]
     [TestCase(TaskType.Manual, TaskType.Auto)]
@@ -43,6 +71,11 @@ public class SettingsViewModelTests
         Assert.That(orchestrationService.RefreshCalls, Is.EqualTo(0));
     }
 
+    private static SettingsViewModel CreateViewModel(FakeConfigurationManager configuration)
+    {
+        return CreateViewModel(configuration, orchestrationService: null!);
+    }
+
     private static SettingsViewModel CreateViewModel(
         FakeConfigurationManager configurationManager,
         IOrchestrationService orchestrationService)
@@ -55,8 +88,34 @@ public class SettingsViewModelTests
             backupTargetService: null!,
             switchStorageService: null!,
             orchestrationService,
-            startupLaunchAdapter: null!,
-            updateService: null!);
+            new StubStartupLaunchAdapter(),
+            new StubUpdateService());
+    }
+
+    private sealed class StubStartupLaunchAdapter : IStartupLaunchAdapter
+    {
+        public bool IsEnabled() => false;
+
+        public bool TrySetEnabled(bool enabled) => true;
+    }
+
+    private sealed class StubUpdateService : IUpdateService
+    {
+        public Task InitializeAsync(Action onApplicationExitRequested) => Task.CompletedTask;
+
+        public Task CheckAsync(bool notifyWhenUpToDate) => Task.CompletedTask;
+
+        public Task MaybeCheckOnStartupAsync() => Task.CompletedTask;
+
+        public Task<bool> GetAutoSearchEnabledAsync() => Task.FromResult(true);
+
+        public Task SetAutoSearchEnabledAsync(bool enabled) => Task.CompletedTask;
+
+        public Task<bool> GetDownloadBetaAsync() => Task.FromResult(false);
+
+        public Task SetDownloadBetaAsync(bool enabled) => Task.CompletedTask;
+
+        public Task<string> ResetUniqueUserIdAsync() => Task.FromResult(string.Empty);
     }
 
     private sealed class RecordingOrchestrationService : IOrchestrationService

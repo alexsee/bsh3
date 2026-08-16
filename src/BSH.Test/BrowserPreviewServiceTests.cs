@@ -126,7 +126,7 @@ public class BrowserPreviewServiceTests
     }
 
     [Test]
-    public async Task PreviewFileAsync_WhenRetrievedPathIsEmpty_DoesNotLaunch()
+    public async Task PreviewFileAsync_WhenRetrievedPathIsEmpty_ShowsErrorAndDoesNotLaunch()
     {
         var queryManager = new PreviewQueryManager
         {
@@ -139,7 +139,9 @@ public class BrowserPreviewServiceTests
         await service.PreviewFileAsync("2", "report.txt", @"\source\docs\");
 
         Assert.That(host.ShownFiles, Is.Empty);
-        Assert.That(presentation.MessageBoxes, Is.Empty);
+        Assert.That(presentation.MessageBoxes, Has.Count.EqualTo(1));
+        Assert.That(presentation.MessageBoxes[0].Title, Is.Null.Or.Empty.Or.EqualTo("Browser_PreviewRetrieveFailed_Title"));
+        Assert.That(presentation.MessageBoxes[0].Content, Is.Null.Or.Empty.Or.EqualTo("Browser_PreviewRetrieveFailed_Text"));
     }
 
     [Test]
