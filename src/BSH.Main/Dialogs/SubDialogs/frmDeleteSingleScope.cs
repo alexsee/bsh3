@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
@@ -18,118 +17,22 @@ namespace Brightbits.BSH.Main;
 /// or only from a selected range (last N, last X days, or explicit versions).
 /// </summary>
 [ExcludeFromCodeCoverage]
-public sealed class frmDeleteSingleScope : Form
+public partial class frmDeleteSingleScope
 {
-    internal RadioButton radioAll;
-    internal RadioButton radioLastN;
-    internal RadioButton radioLastDays;
-    internal RadioButton radioSelected;
-    internal NumericUpDown numLastN;
-    internal NumericUpDown numLastDays;
-    internal ListView lstVersions;
+    private readonly IReadOnlyList<VersionDetails> versions = Array.Empty<VersionDetails>();
 
-    private readonly IReadOnlyList<VersionDetails> versions;
+    public frmDeleteSingleScope()
+    {
+        InitializeComponent();
+    }
 
     public frmDeleteSingleScope(IReadOnlyList<VersionDetails> versions, bool isFile)
+        : this()
     {
         this.versions = versions ?? Array.Empty<VersionDetails>();
-
-        Text = Resources.DLG_DELETE_SINGLE_SCOPE_TITLE;
-        FormBorderStyle = FormBorderStyle.FixedDialog;
-        MaximizeBox = false;
-        MinimizeBox = false;
-        StartPosition = FormStartPosition.CenterParent;
-        ClientSize = new Size(520, 460);
-        Font = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-
-        var intro = new Label
-        {
-            AutoSize = false,
-            Location = new Point(18, 16),
-            Size = new Size(480, 40),
-            Text = string.Format(
-                Resources.DLG_DELETE_SINGLE_SCOPE_INTRO,
-                isFile ? Resources.DLG_DELETE_SINGLE_SCOPE_FILE : Resources.DLG_DELETE_SINGLE_SCOPE_FOLDER)
-        };
-
-        radioAll = CreateRadio(Resources.DLG_DELETE_SINGLE_SCOPE_ALL, new Point(22, 64), true);
-        radioLastN = CreateRadio(Resources.DLG_DELETE_SINGLE_SCOPE_LAST_N, new Point(22, 96), false);
-        numLastN = new NumericUpDown
-        {
-            Location = new Point(42, 124),
-            Size = new Size(120, 25),
-            Minimum = 1,
-            Maximum = Math.Max(1, this.versions.Count),
-            Value = Math.Min(3, Math.Max(1, this.versions.Count)),
-            Enabled = false
-        };
-
-        radioLastDays = CreateRadio(Resources.DLG_DELETE_SINGLE_SCOPE_LAST_DAYS, new Point(22, 160), false);
-        numLastDays = new NumericUpDown
-        {
-            Location = new Point(42, 188),
-            Size = new Size(120, 25),
-            Minimum = 1,
-            Maximum = 3650,
-            Value = 30,
-            Enabled = false
-        };
-
-        radioSelected = CreateRadio(Resources.DLG_DELETE_SINGLE_SCOPE_SELECTED, new Point(22, 224), false);
-        lstVersions = new ListView
-        {
-            Location = new Point(42, 252),
-            Size = new Size(440, 140),
-            CheckBoxes = true,
-            View = View.Details,
-            FullRowSelect = true,
-            Enabled = false
-        };
-        lstVersions.Columns.Add(Resources.DLG_DELETE_SINGLE_SCOPE_COLUMN_DATE, 300);
-
-        foreach (var version in this.versions)
-        {
-            lstVersions.Items.Add(new ListViewItem(version.CreationDate.ToLocalTime().ToString("g"))
-            {
-                Tag = version.Id
-            });
-        }
-
-        radioAll.CheckedChanged += (_, _) => UpdateEnabledState();
-        radioLastN.CheckedChanged += (_, _) => UpdateEnabledState();
-        radioLastDays.CheckedChanged += (_, _) => UpdateEnabledState();
-        radioSelected.CheckedChanged += (_, _) => UpdateEnabledState();
-
-        var buttonPanel = new Panel { Dock = DockStyle.Bottom, Height = 48 };
-        var cmdOk = new Button
-        {
-            Text = Resources.DLG_DELETE_SINGLE_SCOPE_OK,
-            DialogResult = DialogResult.OK,
-            Size = new Size(93, 26),
-            Location = new Point(310, 10)
-        };
-        var cmdCancel = new Button
-        {
-            Text = Resources.DLG_DELETE_SINGLE_SCOPE_CANCEL,
-            DialogResult = DialogResult.Cancel,
-            Size = new Size(93, 26),
-            Location = new Point(410, 10)
-        };
-        buttonPanel.Controls.Add(cmdOk);
-        buttonPanel.Controls.Add(cmdCancel);
-
-        Controls.Add(intro);
-        Controls.Add(radioAll);
-        Controls.Add(radioLastN);
-        Controls.Add(numLastN);
-        Controls.Add(radioLastDays);
-        Controls.Add(numLastDays);
-        Controls.Add(radioSelected);
-        Controls.Add(lstVersions);
-        Controls.Add(buttonPanel);
-
-        AcceptButton = cmdOk;
-        CancelButton = cmdCancel;
+        ApplyLocalizedTexts(isFile);
+        ConfigureCountBoxes();
+        PopulateVersions();
     }
 
     /// <summary>
@@ -147,6 +50,40 @@ public sealed class frmDeleteSingleScope : Form
                 .Where(item => item.Checked && item.Tag != null)
                 .Select(item => item.Tag.ToString())
                 .ToArray());
+    }
+
+    private void ApplyLocalizedTexts(bool isFile)
+    {
+        Text = Resources.DLG_DELETE_SINGLE_SCOPE_TITLE;
+        lblIntro.Text = string.Format(
+            Resources.DLG_DELETE_SINGLE_SCOPE_INTRO,
+            isFile ? Resources.DLG_DELETE_SINGLE_SCOPE_FILE : Resources.DLG_DELETE_SINGLE_SCOPE_FOLDER);
+        radioAll.Text = Resources.DLG_DELETE_SINGLE_SCOPE_ALL;
+        radioLastN.Text = Resources.DLG_DELETE_SINGLE_SCOPE_LAST_N;
+        radioLastDays.Text = Resources.DLG_DELETE_SINGLE_SCOPE_LAST_DAYS;
+        radioSelected.Text = Resources.DLG_DELETE_SINGLE_SCOPE_SELECTED;
+        ColumnHeader1.Text = Resources.DLG_DELETE_SINGLE_SCOPE_COLUMN_DATE;
+        cmdOK.Text = Resources.DLG_DELETE_SINGLE_SCOPE_OK;
+        cmdCancel.Text = Resources.DLG_DELETE_SINGLE_SCOPE_CANCEL;
+    }
+
+    private void ConfigureCountBoxes()
+    {
+        var lastNMaximum = Math.Max(1, versions.Count);
+        numLastN.Maximum = lastNMaximum;
+        numLastN.Value = Math.Min(3, lastNMaximum);
+    }
+
+    private void PopulateVersions()
+    {
+        lstVersions.Items.Clear();
+        foreach (var version in versions)
+        {
+            lstVersions.Items.Add(new ListViewItem(version.CreationDate.ToLocalTime().ToString("g"))
+            {
+                Tag = version.Id
+            });
+        }
     }
 
     private DeleteSingleScopeMode GetSelectedMode()
@@ -169,21 +106,49 @@ public sealed class frmDeleteSingleScope : Form
         return DeleteSingleScopeMode.AllVersions;
     }
 
-    private static RadioButton CreateRadio(string text, Point location, bool isChecked)
-    {
-        return new RadioButton
-        {
-            AutoSize = true,
-            Location = location,
-            Text = text,
-            Checked = isChecked
-        };
-    }
-
-    private void UpdateEnabledState()
+    private void radioScope_CheckedChanged(object sender, EventArgs e)
     {
         numLastN.Enabled = radioLastN.Checked;
         numLastDays.Enabled = radioLastDays.Checked;
         lstVersions.Enabled = radioSelected.Checked;
+    }
+
+    private void numLastN_Enter(object sender, EventArgs e)
+    {
+        radioLastN.Checked = true;
+    }
+
+    private void numLastDays_Enter(object sender, EventArgs e)
+    {
+        radioLastDays.Checked = true;
+    }
+
+    private void lstVersions_Enter(object sender, EventArgs e)
+    {
+        radioSelected.Checked = true;
+    }
+
+    private void lstVersions_SizeChanged(object sender, EventArgs e)
+    {
+        ResizeVersionColumn();
+    }
+
+    private void frmDeleteSingleScope_Shown(object sender, EventArgs e)
+    {
+        ResizeVersionColumn();
+    }
+
+    private void ResizeVersionColumn()
+    {
+        if (lstVersions.Columns.Count == 0)
+        {
+            return;
+        }
+
+        var width = lstVersions.ClientSize.Width - 8;
+        if (width > 80)
+        {
+            lstVersions.Columns[0].Width = width;
+        }
     }
 }

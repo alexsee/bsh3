@@ -8,6 +8,7 @@ using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Storage.Pickers;
 using Windows.UI.Popups;
@@ -84,14 +85,20 @@ public class BrowserDialogService : IBrowserDialogService
                 : "Browser_DeleteFromAll_Folder".GetLocalized();
 
             var radios = CreateScopeRadios();
-            var lastNBox = CreateNumberBox("Browser_DeleteFromRange_LastN_Value".GetLocalized(), Math.Min(3, Math.Max(1, versions.Count)), Math.Max(1, versions.Count));
+            var lastNBox = CreateNumberBox(
+                "Browser_DeleteFromRange_LastN_Value".GetLocalized(),
+                Math.Min(3, Math.Max(1, versions.Count)),
+                Math.Max(1, versions.Count));
             var lastDaysBox = CreateNumberBox("Browser_DeleteFromRange_LastDays_Value".GetLocalized(), 30, 3650);
+            var versionItems = versions.Select(version => new VersionChoice(version)).ToList();
             var versionList = new ListView
             {
                 SelectionMode = ListViewSelectionMode.Multiple,
-                ItemsSource = versions,
-                DisplayMemberPath = nameof(VersionDetails.CreationDate),
-                MaxHeight = 220,
+                ItemsSource = versionItems,
+                DisplayMemberPath = nameof(VersionChoice.Caption),
+                MinHeight = 180,
+                MaxHeight = 260,
+                Margin = new Thickness(32, 0, 0, 0),
                 IsEnabled = false
             };
 
@@ -106,30 +113,28 @@ public class BrowserDialogService : IBrowserDialogService
             radios.LastN.Checked += (_, _) => UpdateEnabledState();
             radios.LastDays.Checked += (_, _) => UpdateEnabledState();
             radios.Selected.Checked += (_, _) => UpdateEnabledState();
+            lastNBox.GotFocus += (_, _) => radios.LastN.IsChecked = true;
+            lastDaysBox.GotFocus += (_, _) => radios.LastDays.IsChecked = true;
+            versionList.GotFocus += (_, _) => radios.Selected.IsChecked = true;
 
-            var panel = new StackPanel { Spacing = 8, MinWidth = 420 };
-            panel.Children.Add(new TextBlock
-            {
-                Text = string.Format("Browser_DeleteFromRange_Intro".GetLocalized() ?? "Browser_DeleteFromRange_Intro", itemType),
-                TextWrapping = TextWrapping.Wrap
-            });
-            panel.Children.Add(radios.All);
-            panel.Children.Add(radios.LastN);
-            panel.Children.Add(lastNBox);
-            panel.Children.Add(radios.LastDays);
-            panel.Children.Add(lastDaysBox);
-            panel.Children.Add(radios.Selected);
-            panel.Children.Add(versionList);
+            var content = BuildDeleteScopeContent(
+                string.Format("Browser_DeleteFromRange_Intro".GetLocalized() ?? "Browser_DeleteFromRange_Intro", itemType),
+                radios,
+                lastNBox,
+                lastDaysBox,
+                versionList);
 
             var dialog = new ContentDialog
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
                 Title = "Browser_DeleteFromRange_Title".GetLocalized(),
-                Content = panel,
+                Content = content,
                 PrimaryButtonText = "MsgBox_Delete".GetLocalized(),
                 CloseButtonText = "MsgBox_Cancel".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
             };
+            dialog.Resources["ContentDialogButtonMinWidth"] = 120d;
+            dialog.Resources["ContentDialogButtonMaxWidth"] = 200d;
 
             if (await dialog.ShowAsync() != ContentDialogResult.Primary)
             {
@@ -141,7 +146,7 @@ public class BrowserDialogService : IBrowserDialogService
                 versions,
                 (int)Math.Max(1, lastNBox.Value),
                 (int)Math.Max(1, lastDaysBox.Value),
-                versionList.SelectedItems.Cast<VersionDetails>().Select(x => x.Id).ToArray());
+                versionList.SelectedItems.Cast<VersionChoice>().Select(x => x.Version.Id).ToArray());
 
             if (!scope.HasTargetVersions)
             {
@@ -169,26 +174,115 @@ public class BrowserDialogService : IBrowserDialogService
         });
     }
 
+    private static Grid BuildDeleteScopeContent(
+        string intro,
+        (RadioButton All, RadioButton LastN, RadioButton LastDays, RadioButton Selected) radios,
+        NumberBox lastNBox,
+        NumberBox lastDaysBox,
+        ListView versionList)
+    {
+        var grid = new Grid
+        {
+            MinWidth = 480,
+            MaxWidth = 560,
+            RowSpacing = 12,
+            ColumnSpacing = 16
+        };
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        for (var i = 0; i < 6; i++)
+        {
+            grid.RowDefinitions.Add(new RowDefinition
+            {
+                Height = i == 5 ? new GridLength(1, GridUnitType.Star) : GridLength.Auto
+            });
+        }
+
+        var introBlock = new TextBlock
+        {
+            Text = intro,
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 0, 0, 8)
+        };
+        Grid.SetRow(introBlock, 0);
+        Grid.SetColumnSpan(introBlock, 2);
+        grid.Children.Add(introBlock);
+
+        Grid.SetRow(radios.All, 1);
+        Grid.SetColumnSpan(radios.All, 2);
+        grid.Children.Add(radios.All);
+
+        Grid.SetRow(radios.LastN, 2);
+        grid.Children.Add(radios.LastN);
+        Grid.SetRow(lastNBox, 2);
+        Grid.SetColumn(lastNBox, 1);
+        grid.Children.Add(lastNBox);
+
+        Grid.SetRow(radios.LastDays, 3);
+        grid.Children.Add(radios.LastDays);
+        Grid.SetRow(lastDaysBox, 3);
+        Grid.SetColumn(lastDaysBox, 1);
+        grid.Children.Add(lastDaysBox);
+
+        Grid.SetRow(radios.Selected, 4);
+        Grid.SetColumnSpan(radios.Selected, 2);
+        grid.Children.Add(radios.Selected);
+
+        Grid.SetRow(versionList, 5);
+        Grid.SetColumnSpan(versionList, 2);
+        grid.Children.Add(versionList);
+
+        return grid;
+    }
+
     private static (RadioButton All, RadioButton LastN, RadioButton LastDays, RadioButton Selected) CreateScopeRadios()
     {
         return (
-            new RadioButton { Content = "Browser_DeleteFromRange_All".GetLocalized(), IsChecked = true, GroupName = DeleteScopeGroupName },
-            new RadioButton { Content = "Browser_DeleteFromRange_LastN".GetLocalized(), GroupName = DeleteScopeGroupName },
-            new RadioButton { Content = "Browser_DeleteFromRange_LastDays".GetLocalized(), GroupName = DeleteScopeGroupName },
-            new RadioButton { Content = "Browser_DeleteFromRange_Selected".GetLocalized(), GroupName = DeleteScopeGroupName });
+            CreateScopeRadio("Browser_DeleteFromRange_All".GetLocalized(), isChecked: true),
+            CreateScopeRadio("Browser_DeleteFromRange_LastN".GetLocalized(), isChecked: false),
+            CreateScopeRadio("Browser_DeleteFromRange_LastDays".GetLocalized(), isChecked: false),
+            CreateScopeRadio("Browser_DeleteFromRange_Selected".GetLocalized(), isChecked: false));
     }
 
-    private static NumberBox CreateNumberBox(string header, double value, double maximum)
+    private static RadioButton CreateScopeRadio(string? content, bool isChecked)
     {
-        return new NumberBox
+        return new RadioButton
         {
-            Header = header,
+            Content = content,
+            IsChecked = isChecked,
+            GroupName = DeleteScopeGroupName,
+            VerticalAlignment = VerticalAlignment.Center,
+            MinHeight = 32
+        };
+    }
+
+    private static NumberBox CreateNumberBox(string? name, double value, double maximum)
+    {
+        var box = new NumberBox
+        {
             Value = value,
             Minimum = 1,
             Maximum = maximum,
-            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
+            Width = 140,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Center,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
             IsEnabled = false
         };
+        AutomationProperties.SetName(box, name ?? string.Empty);
+        return box;
+    }
+
+    private sealed class VersionChoice
+    {
+        public VersionChoice(VersionDetails version)
+        {
+            Version = version;
+        }
+
+        public VersionDetails Version { get; }
+
+        public string Caption => Version.CreationDate.ToLocalTime().ToString("g");
     }
 
     private static DeleteSingleScopeMode GetSelectedMode(
