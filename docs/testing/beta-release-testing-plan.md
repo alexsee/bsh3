@@ -56,7 +56,7 @@ WinUI 3 feature-parity PRD [#521](https://github.com/alexsee/bsh3/issues/521) is
 
 **Still open for beta readiness:**
 
-- Manual golden-path + risk-scenario QA on the WinUI installer (primary remaining work)
+- Sign-off of the WinUI golden-path click-through (`docs/testing/winui-golden-path.md`) — primary remaining work
 - FTP / Quartz scheduler / real VSS coverage
 - Optional WinUI UI E2E
 
@@ -144,9 +144,9 @@ Before inviting customers:
    - ~~Unhandled exceptions logged and shown in WinUI~~ ✅ #584 (`UnhandledExceptionHandler`).
    - ~~WinUI file logging~~ ✅ #606 (`AppEventLog` Serilog file sink). “Show Event Logs” opens `%AppData%\Alexosoft\Backup Service Home 3\log{yyyyMMdd}.txt`.
    - Known-good DB path: `%AppData%\Alexosoft\Backup Service Home 3\`. Support procedure (what to collect besides passwords) still needs a short note.
-4. **Test data kit** *(open)*
-   - Small fixture tree: nested folders, empty folder, Unicode name, long path (>260), locked file (open in Notepad), large file (~500MB optional), junction/symlink if supported.
-   - Automated suite already covers nested/Unicode/empty-folder round-trips on local FS; the kit is for **manual** WinUI/VSS/USB runs.
+4. **Test data kit** ✅ fixture script
+   - `docs/testing/New-WinUiGoldenPathFixture.ps1` builds nested folders, an empty folder, Unicode names, and a restore-to directory.
+   - Long path / locked file / large file remain optional extras for risk-scenario runs.
 5. **Exit criteria checklist** (see [Beta exit criteria](#beta-exit-criteria)).
 
 ---
@@ -245,20 +245,22 @@ Browser/restore/delete **view-model** behavior is unit-tested (`BrowserViewModel
 
 ## Phase 3 — Manual / beta scenario QA
 
-Automate what we can; **manually** validate what backups actually need in the wild. This is the **primary remaining work** before inviting customers. Engineering gates for installer, logs, and migrations are in; they have not been signed off on a real WinUI beta installer.
+Automate what we can; **manually** validate what backups actually need in the wild. Engineering gates for installer, logs, and migrations are in. The remaining quality work is the WinUI golden path on a running shell (installer/uninstaller is out of scope for this pass).
 
-Use the **WinUI** installer (`backupservicehome-*-winui-win64.exe`), not the WinForms artifact.
+Click-through: `docs/testing/winui-golden-path.md`. Fixture: `docs/testing/New-WinUiGoldenPathFixture.ps1`. Headless sequence: `WinUiGoldenPathTests`.
+
+If the app is already configured, use **Extras and Support → Reset Configuration** instead of reinstalling.
 
 ### Golden path (every beta build)
 
-1. Clean install (or side-by-side AppData reset)  
-2. Setup wizard: sources, local target, compression on/off  
-3. Manual full backup  
+1. ~~Clean install~~ skipped — use Reset Configuration when a wizard re-run is needed  
+2. Setup wizard: sources, local target, **Manual backups** (compression in Settings → Backup Options)  
+3. Manual full/first backup from Overview  
 4. Change files → incremental  
 5. Browse versions → search → favorite → preview  
 6. Restore file + folder to original and alternate paths  
 7. Delete a version; delete a file from selected versions  
-8. Uninstall / upgrade from previous beta without DB loss  
+8. ~~Uninstall / upgrade~~ skipped for this pass  
 
 ### Risk scenarios (must pass before public beta)
 
@@ -359,7 +361,7 @@ These reduce blast radius even when tests miss something:
 6. ~~**Pin installer entry point**~~ ✅ #607 — `Setup-WinUI.iss` launches `BSH.MainApp.exe`; WinForms remains a separate artifact.  
 7. ~~**WinUI Serilog file sink**~~ ✅ #606 — `AppEventLog` writes the dated AppData log.  
 8. ~~**DB migration smoke tests**~~ ✅ #605 — `DatabaseSchemaUpgradeTests`.  
-9. **Manual golden-path checklist** executed on first `v*-beta*` WinUI installer. ← **next**  
+9. **Manual golden-path checklist** on the WinUI shell (`docs/testing/winui-golden-path.md`). Installer/uninstaller skipped for this pass. ← **next**  
 10. **Optional:** WinAppDriver smoke for setup wizard + one backup button.
 
 ### Effort sketch (technical, not calendar)
@@ -374,7 +376,7 @@ These reduce blast radius even when tests miss something:
 | Installer shell pin | `Setup-WinUI.iss` + contract tests | ✅ Done (#607) |
 | WinUI file logging | `AppEventLog` Serilog config | ✅ Done (#606) |
 | DB migration smoke | `DbMigrationService` fixtures | ✅ Done (#605) |
-| Manual / dogfood QA | WinUI installer + real media | **Open — highest remaining quality risk** |
+| Manual / dogfood QA | WinUI shell golden path | **Open** — runbook + fixture + headless sequence landed; still needs a signed-off UI pass |
 | WinAppDriver E2E | New project + CI image deps | Optional; high flake/setup cost |
 
 ---
@@ -438,6 +440,9 @@ dotnet test "BSH.Test\BSH.Test.csproj" -c Release -p:Platform=x64 --filter "Cate
 | `src/BSH.Test/InstallerEntryPointTests.cs` | WinForms vs WinUI ISS entry-point contract |
 | `src/BSH.Test/Integration/FileSystemRestoreIntegrationTests.cs` | Real-FS backup↔restore |
 | `src/BSH.Test/Integration/FileSystemEngineLifecycleTests.cs` | Real-FS delete+restore / cancel / unicode |
+| `src/BSH.Test/Integration/WinUiGoldenPathTests.cs` | Sequenced setup → backup → restore → delete (WinUI `SetupService`) |
+| `docs/testing/winui-golden-path.md` | WinUI shell golden-path click-through (no installer) |
+| `docs/testing/New-WinUiGoldenPathFixture.ps1` | Source tree for the click-through |
 | `src/BSH.Test/Mocks/StorageMock.cs` | Shared backup/restore/delete storage mock |
 | `src/BSH.Engine/Jobs/RestoreJob.cs` | Restore implementation |
 | `src/BSH.Engine/Database/DbMigrationService.cs` | Schema upgrades |
