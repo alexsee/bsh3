@@ -18,10 +18,20 @@
             <SolidColorBrush x:Key="WarningTextBrush" Color="#C45A00" />
             <winex:Icon x:Key="AppIcon">Assets\app_ico.ico</winex:Icon>
 
-            <SolidColorBrush x:Key="ButtonBottomPanelBackgroundColor">#fafafa</SolidColorBrush>
-            <SolidColorBrush x:Key="ButtonBottomPanelBorderBrush">#f0f0f0</SolidColorBrush>
-
-            <Color x:Key="App.Theme.IconBaseColor">#DB202020</Color>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="AppPageBackgroundBrush" Color="White" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="AppPageBackgroundBrush" Color="White" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="AppPageBackgroundBrush" Color="{StaticResource SolidBackgroundFillColorBase}" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <SolidColorBrush x:Key="AppPageBackgroundBrush" Color="{StaticResource SystemColorWindowColor}" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

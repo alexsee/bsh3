@@ -12,7 +12,7 @@
     xmlns:engine="using:Brightbits.BSH.Engine"
     xmlns:helpers="using:BSH.MainApp.Helpers"
     d:DataContext="{d:DesignInstance Type=viewmodels:SetupViewModel}"
-    Background="White"
+    Background="{ThemeResource AppPageBackgroundBrush}"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -27,7 +27,7 @@
         <models:SetupImportSourceKind x:Key="Import_Path">ExplicitPath</models:SetupImportSourceKind>
     </Page.Resources>
 
-    <Grid Background="White">
+    <Grid>
         <Grid
             Width="800"
             HorizontalAlignment="Center"
@@ -52,7 +52,7 @@
             </StackPanel>
 
             <ScrollViewer Grid.Row="1" Margin="0,28,0,0" VerticalScrollBarVisibility="Auto">
-                <Grid Background="White">
+                <Grid>
                     <!-- Welcome -->
                     <StackPanel
                         Visibility="{x:Bind ViewModel.WelcomeVisibility, Mode=OneWay}"
@@ -73,7 +73,7 @@
 
                         <Border
                             Padding="20,18"
-                            Background="#F3F8FF"
+                            Background="{ThemeResource AccentFillColorTertiaryBrush}"
                             BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
                             BorderThickness="2"
                             CornerRadius="8">

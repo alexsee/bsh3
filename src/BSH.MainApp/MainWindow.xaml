@@ -12,7 +12,7 @@
     TaskBarIcon="{StaticResource AppIcon}"
     Width="1200" Height="800" Closed="WindowEx_Closed">
 
-    <Grid>
+    <Grid Background="{ThemeResource AppPageBackgroundBrush}">
         <Border
             Canvas.ZIndex="0"
             IsHitTestVisible="False">

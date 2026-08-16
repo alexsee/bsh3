@@ -18,7 +18,7 @@
     Width="700"
     Height="450">
 
-    <Grid Background="White">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -28,7 +28,7 @@
             <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{helpers:ResourceString Name=Overwrite_AlreadyExists}" />
             <toolkit:SettingsCard IsClickEnabled="True" Header="{helpers:ResourceString Name=Overwrite_ReplaceHeader}" Command="{x:Bind ViewModel.OverwriteFileCommand}">
                 <toolkit:SettingsCard.HeaderIcon>
-                    <FontIcon Foreground="Green" Glyph="&#xE8FB;" />
+                    <FontIcon Foreground="{ThemeResource SystemFillColorSuccessBrush}" Glyph="&#xE8FB;" />
                 </toolkit:SettingsCard.HeaderIcon>
                 <toolkit:SettingsCard.Description>
                     <StackPanel Orientation="Vertical">
@@ -72,11 +72,11 @@
             </toolkit:SettingsCard>
             <toolkit:SettingsCard IsClickEnabled="True" Header="{helpers:ResourceString Name=Overwrite_SkipHeader}" Command="{x:Bind ViewModel.SkipFileCommand}">
                 <toolkit:SettingsCard.HeaderIcon>
-                    <FontIcon Foreground="DarkBlue" Glyph="&#xE7A7;" />
+                    <FontIcon Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" Glyph="&#xE7A7;" />
                 </toolkit:SettingsCard.HeaderIcon>
             </toolkit:SettingsCard>
         </StackPanel>
-        <Grid Grid.Row="1" Background="{StaticResource ButtonBottomPanelBackgroundColor}" Padding="30,10" BorderBrush="{StaticResource ButtonBottomPanelBorderBrush}" BorderThickness="0,1,0,0">
+        <Grid Grid.Row="1" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,10" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>

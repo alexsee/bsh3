@@ -19,7 +19,7 @@
     IsMaximizable="False"
     IsMinimizable="False">
 
-    <Grid Background="White"
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
           d:DataContext="{d:DesignInstance Type=viewmodels:CompressionExclusionsViewModel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -46,7 +46,7 @@
         </Grid>
 
         <Grid Grid.Row="1"
-              Background="{StaticResource ButtonBottomPanelBackgroundColor}" Padding="30,10" BorderBrush="{StaticResource ButtonBottomPanelBorderBrush}" BorderThickness="0,1,0,0">
+              Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,10" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
                 <Button Command="{x:Bind ViewModel.CancelCommand}"
                         Content="{helpers:ResourceString Name=MainView_Cancel}" />

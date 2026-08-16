@@ -20,7 +20,7 @@
     IsResizable="True"
     mc:Ignorable="d">
 
-    <Grid Background="White" d:DataContext="{d:DesignInstance Type=viewmodels:ScheduleEditorViewModel}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" d:DataContext="{d:DesignInstance Type=viewmodels:ScheduleEditorViewModel}">
         <Grid.Resources>
             <converters:ScheduleOptionDisplayConverter x:Key="ScheduleOptionDisplayConverter" />
             <DataTemplate x:Key="ScheduleOptionTemplate">
@@ -158,7 +158,7 @@
                     <Border
                         Grid.Row="0" Grid.Column="1"
                         Padding="16,16"
-                        Background="#f1f1f1"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         CornerRadius="8">
                         <StackPanel Spacing="8">
                             <StackPanel Orientation="Vertical" VerticalAlignment="Center" Spacing="10">
@@ -303,7 +303,7 @@
 
         <Grid
             Grid.Row="1"
-            Background="{StaticResource ButtonBottomPanelBackgroundColor}" Padding="30,10" BorderBrush="{StaticResource ButtonBottomPanelBorderBrush}" BorderThickness="0,1,0,0">
+            Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,10" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
                 <Button Command="{Binding CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
                 <Button
