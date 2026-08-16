@@ -161,6 +161,11 @@ jobs:
         rm -R ../output/*.pdb
       working-directory: ./src
 
+    - name: Confirm WinUI installer entry point
+      shell: pwsh
+      run: |
+        ./tools/setup/Confirm-InstallerEntryPoint.ps1 -PublishDir ./output
+
     - name: Building the installer
       run: |
         iscc.exe tools\setup\Setup.iss /DApplicationVersion=$env:BUILD_VERSION /DApplicationInfoVersion=$env:INFO_VERSION

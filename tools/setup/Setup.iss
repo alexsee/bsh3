@@ -27,7 +27,7 @@ AppVersion={#ApplicationVersion}
 VersionInfoCompany=Alexander Seeliger Software
 VersionInfoCopyright=Alexander Seeliger
 MinVersion=10.0.19045
-UninstallDisplayIcon={app}\BSH.Main.exe
+UninstallDisplayIcon={app}\BSH.MainApp.exe
 VersionInfoProductVersion={#ApplicationInfoVersion}
 AppMutex=BackupServiceHome3
 UsePreviousAppDir=true
@@ -37,25 +37,23 @@ DisableWelcomePage=false
 Name: german; MessagesFile: compiler:Languages\German.isl
 
 [Icons]
-Name: "{group}\Backup Service Home"; Filename: "{app}\BSH.Main.exe"; Parameters: "/config"
+Name: "{group}\Backup Service Home"; Filename: "{app}\BSH.MainApp.exe"
 
 [Run]
 Filename: "net"; Parameters: "stop ""Backup Service Home-Dienst"""; Flags: runhidden
 Filename: "sc"; Parameters: "create ""Backup Service Home-Dienst"" binpath=""{app}\BSH.Service.exe"" start=auto"; WorkingDir: "{app}"; Flags: runhidden runascurrentuser; StatusMsg: "Backup Service Home-Dienst wird eingerichtet..."
 Filename: "net"; Parameters: "start ""Backup Service Home-Dienst"""; Flags: runascurrentuser runhidden; StatusMsg: "Backup Service Home-Dienst wird gestartet..."
-Filename: "{app}\BSH.Main.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,Backup Service Home}"
+Filename: "{app}\BSH.MainApp.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,Backup Service Home}"
 
 [Registry]
-Root: "HKCU"; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "BackupServiceHome3Run"; ValueData: "{app}\BSH.Main.exe"; Flags: uninsdeletevalue
+Root: "HKCU"; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "BackupServiceHome3Run"; ValueData: "{app}\BSH.MainApp.exe"; Flags: uninsdeletevalue
 
 [UninstallRun]
 Filename: "net"; Parameters: "stop ""Backup Service Home-Dienst"""; Flags: runhidden
 Filename: "sc"; Parameters: "delete ""Backup Service Home-Dienst"""; WorkingDir: "{app}"; Flags: runhidden
 
 [Files]
-Source: "..\..\output\*"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\de\*"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de-DE\*"; DestDir: "{app}\de-DE"; Flags: ignoreversion
+Source: "..\..\output\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);

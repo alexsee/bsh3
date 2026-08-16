@@ -8,5 +8,8 @@ dotnet publish -c Release -o ../output -a x64 --self-contained /p:Version="$buil
 # remove pdb
 rm -R ../output/*.pdb
 
+# confirm the installer still packages WinUI as the customer-facing entry point
+& "$PSScriptRoot\..\tools\setup\Confirm-InstallerEntryPoint.ps1" -PublishDir "$PSScriptRoot\..\output"
+
 # build innosetup
 iscc.exe "..\tools\setup\Setup.iss" /DApplicationVersion=$build_version /DApplicationInfoVersion=$info_version
