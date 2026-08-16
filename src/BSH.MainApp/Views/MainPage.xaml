@@ -17,107 +17,125 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Margin="30" Grid.Row="0">
+        <Grid Grid.Row="0"
+              Margin="36,32,36,24"
+              MaxWidth="1080"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Top"
+              RowSpacing="28">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Nav_Overview}" />
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
+                <FontIcon FontSize="22" Glyph="&#xE80F;" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
+                <TextBlock VerticalAlignment="Center" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Nav_Overview}" />
+            </StackPanel>
 
-            <Grid Grid.Row="1" Margin="0, 20, 0, 0">
+            <!-- System status hero -->
+            <Grid Grid.Row="1" ColumnSpacing="20">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0">
-                    <TextBlock HorizontalAlignment="Center" FontSize="40" FontFamily="Segoe MDL2 Assets">&#xE8FB;</TextBlock>
+                <Grid Grid.Column="0"
+                      Width="56"
+                      Height="56"
+                      VerticalAlignment="Center">
+                    <Border CornerRadius="28"
+                            Background="{ThemeResource AccentFillColorDefaultBrush}"
+                            Visibility="{x:Bind ViewModel.NextBackupGridVisibility, Mode=OneWay}">
+                        <FontIcon FontSize="26"
+                                  Glyph="&#xE8FB;"
+                                  Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
+                    </Border>
+                    <ProgressRing Width="56"
+                                  Height="56"
+                                  IsActive="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}"
+                                  Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}" />
+                </Grid>
 
-                    <ToggleSwitch Margin="30,20,0,0" x:Name="tsSystem" OnContent="" OffContent=""></ToggleSwitch>
-                    <TextBlock HorizontalAlignment="Center" Visibility="{x:Bind tsSystem.IsOn, Mode=OneWay}" Text="{helpers:ResourceString Name=MainView_On}" />
-                    <TextBlock HorizontalAlignment="Center" Visibility="{x:Bind tsSystem.IsOn, Mode=OneWay}" Text="{helpers:ResourceString Name=MainView_Off}" />
-                </StackPanel>
-
-                <Grid Grid.Column="1" RowSpacing="15" Margin="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200"></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40"></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" FontSize="18" x:Name="tbBigStatus"
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
+                    <TextBlock FontSize="22"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap"
                                Text="{x:Bind ViewModel.SystemStatusText, Mode=OneWay}" />
-
-                    <TextBlock Grid.Column="0" Grid.Row="1" Text="{helpers:ResourceString Name=MainView_Available}" />
-                    <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind ViewModel.AvailableDiskSpace, Mode=OneWay}">653 GB</TextBlock>
-
-                    <TextBlock Grid.Column="0" Grid.Row="2" Text="{helpers:ResourceString Name=MainView_DiskspaceFullExpected}" />
-                    <TextBlock Grid.Column="1" Grid.Row="2" x:Name="tbDiskspaceFullyFilled" Text="{helpers:ResourceString Name=MainView_DiskspaceUnpredictable}" />
-
-                    <TextBlock Grid.Column="0" Grid.Row="3" Text="{helpers:ResourceString Name=MainView_LastBackup}" />
-                    <TextBlock Grid.Column="1" Grid.Row="3" Text="{x:Bind ViewModel.LastBackupDate, Mode=OneWay}">Today, 13:00</TextBlock>
-
-                    <TextBlock Grid.Column="0"
-                               Grid.ColumnSpan="2"
-                               Grid.Row="4"
-                               Foreground="{StaticResource WarningTextBrush}"
+                    <TextBlock Foreground="{StaticResource WarningTextBrush}"
+                               TextWrapping="Wrap"
                                Text="{x:Bind ViewModel.ScheduleWarningText, Mode=OneWay}"
                                Visibility="{x:Bind ViewModel.ScheduleWarningVisible, Mode=OneWay}" />
-
-                    <TextBlock Grid.Column="0" Grid.Row="5" Text="{helpers:ResourceString Name=MainView_BackupMode}" />
-                    <TextBlock Grid.Column="1" Grid.Row="5" Text="{x:Bind ViewModel.BackupMode, Mode=OneWay}">Automatic Backup</TextBlock>
-                </Grid>
+                </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="3" Margin="0, 40, 0, 0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+            <!-- Consolidated details + statistics card -->
+            <Border Grid.Row="2"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                <StackPanel>
+                    <!-- Statistics -->
+                    <Grid Padding="28,24">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="0" Padding="20,0,20,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.TotalFilesBackuped, Mode=OneWay}" FontSize="24"></TextBlock>
-                    <TextBlock Grid.Row="1" Text="{helpers:ResourceString Name=MainView_Files}" />
-                </Grid>
+                        <StackPanel Grid.Column="0" Spacing="2" HorizontalAlignment="Center">
+                            <TextBlock FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Center" Text="{x:Bind ViewModel.TotalFilesBackuped, Mode=OneWay}" />
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Text="{helpers:ResourceString Name=MainView_Files}" />
+                        </StackPanel>
 
-                <Border Grid.Column="1" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="1,0,0,0" Padding="20,0,20,0">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.TotalBackups, Mode=OneWay}" FontSize="24"></TextBlock>
-                        <TextBlock Grid.Row="1" Text="{helpers:ResourceString Name=MainView_Backups}" />
+                        <Rectangle Grid.Column="1" Width="1" Margin="24,4" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                        <StackPanel Grid.Column="2" Spacing="2" HorizontalAlignment="Center">
+                            <TextBlock FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Center" Text="{x:Bind ViewModel.TotalBackups, Mode=OneWay}" />
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Text="{helpers:ResourceString Name=MainView_Backups}" />
+                        </StackPanel>
+
+                        <Rectangle Grid.Column="3" Width="1" Margin="24,4" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                        <StackPanel Grid.Column="4" Spacing="2" HorizontalAlignment="Center">
+                            <TextBlock FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Center" Text="{x:Bind ViewModel.TotalFileSize, Mode=OneWay}" />
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" Text="{helpers:ResourceString Name=MainView_TotalSizeBackuped}" />
+                        </StackPanel>
                     </Grid>
-                </Border>
 
-                <Border Grid.Column="2" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="1,0,0,0" Padding="20,0,20,0">
-                    <Grid>
+                    <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                    <!-- Backup details -->
+                    <Grid Padding="28,20" RowSpacing="12" ColumnSpacing="24">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="180" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.TotalFileSize, Mode=OneWay}" FontSize="24"></TextBlock>
-                        <TextBlock Grid.Row="1" Text="{helpers:ResourceString Name=MainView_TotalSizeBackuped}" />
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=MainView_LastBackup}" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{x:Bind ViewModel.LastBackupDate, Mode=OneWay}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=MainView_BackupMode}" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.BackupMode, Mode=OneWay}" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=MainView_Available}" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AvailableDiskSpace, Mode=OneWay}" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=MainView_DiskspaceFullExpected}" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{helpers:ResourceString Name=MainView_DiskspaceUnpredictable}" />
                     </Grid>
-                </Border>
-            </Grid>
+                </StackPanel>
+            </Border>
         </Grid>
 
         <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.NextBackupGridVisibility, Mode=OneWay}" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
@@ -140,25 +158,35 @@
             </Button>
         </Grid>
 
-        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" ColumnSpacing="20" Padding="30,20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-            </Grid.RowDefinitions>
+        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" ColumnSpacing="20" Padding="30,16" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <FontIcon Grid.Column="0" FontSize="24" FontFamily="Segoe MDL2 Assets" Glyph="&#xE895;" Margin="0,0,10,0"/>
-
-            <StackPanel Grid.Column="1" Spacing="5">
-                <TextBlock Text="{x:Bind ViewModel.CurrentProgressStatusTitle, Mode=OneWay}" />
+            <StackPanel Grid.Column="0" Spacing="6" VerticalAlignment="Center">
+                <TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentProgressStatusTitle, Mode=OneWay}" />
                 <ProgressBar Maximum="{x:Bind ViewModel.CurrentProgressMax, Mode=OneWay}" Value="{x:Bind ViewModel.CurrentProgressValue, Mode=OneWay}" />
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               TextTrimming="CharacterEllipsis"
+                               TextWrapping="NoWrap"
+                               Text="{x:Bind ViewModel.CurrentFileText, Mode=OneWay}"
+                               ToolTipService.ToolTip="{x:Bind ViewModel.CurrentFilePath, Mode=OneWay}" />
+                    <TextBlock Grid.Column="1"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Text="{x:Bind ViewModel.ProgressCountText, Mode=OneWay}" />
+                </Grid>
             </StackPanel>
 
-            <Button Grid.Column="2" Style="{StaticResource AccentButtonStyle}">
-                <StackPanel Orientation="Horizontal">
+            <Button Grid.Column="1" VerticalAlignment="Center" Command="{x:Bind ViewModel.CancelBackupCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE711;" />
                     <TextBlock Text="{helpers:ResourceString Name=MainView_Cancel}" />
                 </StackPanel>
             </Button>

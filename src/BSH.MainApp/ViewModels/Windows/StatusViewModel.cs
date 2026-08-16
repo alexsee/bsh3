@@ -9,12 +9,16 @@ using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
+using Serilog;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class StatusViewModel : ObservableObject, IStatusReport
 {
+    private static readonly ILogger Logger = Log.ForContext<StatusViewModel>();
+
     private readonly DispatcherQueue? dispatcherQueue;
+    private int isActive = 1;
 
     [ObservableProperty]
     private string statusTitle = "";
@@ -24,6 +28,9 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
 
     [ObservableProperty]
     private string currentFileText = "";
+
+    [ObservableProperty]
+    private string currentFilePath = "";
 
     [ObservableProperty]
     private int totalProgress = 100;
@@ -51,6 +58,11 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
         this.dispatcherQueue = dispatcherQueue;
     }
 
+    public void Detach()
+    {
+        Interlocked.Exchange(ref isActive, 0);
+    }
+
     public void ReportAction(ActionType action, bool silent)
     {
         // not used
@@ -69,7 +81,8 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
     {
         UpdateOnUiThread(() =>
         {
-            CurrentFileText = file;
+            CurrentFilePath = file ?? string.Empty;
+            CurrentFileText = Formatter.ShortenPathMiddleSafe(file, 75, Logger);
         });
     }
 
@@ -77,8 +90,13 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
     {
         UpdateOnUiThread(() =>
         {
-            TotalProgress = total;
-            CurrentProgress = current;
+            ProgressDisplay.Assign(
+                TotalProgress,
+                CurrentProgress,
+                total,
+                current,
+                maximum => TotalProgress = maximum,
+                value => CurrentProgress = value);
         });
     }
 
@@ -102,11 +120,36 @@ public partial class StatusViewModel : ObservableObject, IStatusReport
         OnPropertyChanged(nameof(SelectedCompletionAction));
     }
 
+    private bool IsActive => Volatile.Read(ref isActive) == 1;
+
     private void UpdateOnUiThread(Action action)
     {
-        if (dispatcherQueue == null || !dispatcherQueue.TryEnqueue(() => action()))
+        if (!IsActive)
+        {
+            return;
+        }
+
+        if (dispatcherQueue == null)
         {
             action();
+            return;
         }
+
+        dispatcherQueue.TryEnqueue(() =>
+        {
+            if (!IsActive)
+            {
+                return;
+            }
+
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(ex, "Status window UI update failed.");
+            }
+        });
     }
 }

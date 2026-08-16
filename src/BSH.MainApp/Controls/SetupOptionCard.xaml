@@ -6,6 +6,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    HorizontalAlignment="Stretch"
+    HorizontalContentAlignment="Stretch"
     mc:Ignorable="d">
 
     <Grid>
@@ -14,9 +16,9 @@
                 <VisualState x:Name="Selected">
                     <VisualState.Setters>
                         <Setter Target="CardBorder.BorderThickness" Value="2" />
-                        <Setter Target="CardBorder.BorderBrush" Value="{ThemeResource AccentFillColorDefaultBrush}" />
-                        <Setter Target="CardBorder.Background" Value="{ThemeResource AccentFillColorTertiaryBrush}" />
-                        <Setter Target="GlyphIcon.Foreground" Value="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                        <Setter Target="CardBorder.BorderBrush" Value="{ThemeResource SetupHighlightBorderBrush}" />
+                        <Setter Target="CardBorder.Background" Value="{ThemeResource SetupHighlightBackgroundBrush}" />
+                        <Setter Target="GlyphIcon.Foreground" Value="{ThemeResource SetupHighlightForegroundBrush}" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Unselected">
@@ -31,10 +33,11 @@
         </VisualStateManager.VisualStateGroups>
 
         <Button
-            Width="168"
+            MinWidth="150"
             Padding="0"
             HorizontalAlignment="Stretch"
-            HorizontalContentAlignment="Center"
+            VerticalAlignment="Stretch"
+            HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
             Background="Transparent"
             BorderThickness="0"
@@ -42,26 +45,26 @@
             CommandParameter="{Binding CommandParameter, ElementName=Root}">
             <Border
                 x:Name="CardBorder"
-                Padding="10,12"
+                Padding="16,18"
                 CornerRadius="8"
                 BorderThickness="1"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
-                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                <StackPanel Spacing="8" HorizontalAlignment="Center">
                     <FontIcon
                         x:Name="GlyphIcon"
-                        FontSize="18"
+                        FontSize="24"
                         Glyph="{Binding Glyph, ElementName=Root}"
                         HorizontalAlignment="Center" />
                     <TextBlock
-                        FontSize="13"
+                        FontSize="14"
                         FontWeight="SemiBold"
                         TextAlignment="Center"
                         TextWrapping="Wrap"
                         Text="{Binding Title, ElementName=Root}" />
                     <TextBlock
-                        FontSize="11"
-                        Opacity="0.75"
+                        FontSize="12"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         TextAlignment="Center"
                         TextWrapping="WrapWholeWords"
                         Text="{Binding Description, ElementName=Root}" />

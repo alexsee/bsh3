@@ -14,6 +14,35 @@
     <Page.Resources>
         <DataTemplate x:Name="VersionTemplate" x:DataType="engine:VersionDetails">
             <Grid>
+                <ToolTipService.ToolTip>
+                    <ToolTip>
+                        <StackPanel MaxWidth="300" Spacing="8">
+                            <TextBlock FontSize="14"
+                                       FontWeight="SemiBold"
+                                       TextWrapping="Wrap"
+                                       Text="{x:Bind Title, Mode=OneWay}"
+                                       Visibility="{x:Bind Title, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap"
+                                       Text="{x:Bind Description, Mode=OneWay}"
+                                       Visibility="{x:Bind Description, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
+                            <Grid ColumnSpacing="16" RowSpacing="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=Browser_Column_DateCreated}" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{x:Bind CreationDate, Mode=OneWay}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=Browser_Column_Size}" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind Size, Mode=OneWay, Converter={StaticResource FileSizeConverter}}" />
+                            </Grid>
+                        </StackPanel>
+                    </ToolTip>
+                </ToolTipService.ToolTip>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -57,6 +86,7 @@
 
         <converters:VisibilityInvertConverter x:Key="VisibilityInvertConverter" />
         <converters:FileSizeConverter x:Key="FileSizeConverter" />
+        <converters:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter" />
 
         <Style
 			x:Key="AddressToolbarButtonStyle"
@@ -73,19 +103,19 @@
         <Style
             x:Key="SideBarTitleStyle"
             TargetType="TextBlock">
-            <Setter Target="Margin" Value="8,0,12,0" />
-            <Setter Target="FontSize" Value="12" />
-            <Setter Target="FontWeight" Value="SemiBold" />
-            <Setter Target="Foreground" Value="{ThemeResource TextFillColorTertiaryBrush}" />
+            <Setter Property="Margin" Value="8,0,12,0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{ThemeResource TextFillColorTertiaryBrush}" />
         </Style>
 
         <Style
             x:Key="InfoPaneTitleStyle"
             TargetType="TextBlock">
-            <Setter Target="Margin" Value="0,10,0,0" />
-            <Setter Target="FontSize" Value="12" />
-            <Setter Target="FontWeight" Value="SemiBold" />
-            <Setter Target="Foreground" Value="{ThemeResource TextFillColorTertiaryBrush}" />
+            <Setter Property="Margin" Value="0,10,0,0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{ThemeResource TextFillColorTertiaryBrush}" />
         </Style>
     </Page.Resources>
 
@@ -163,7 +193,7 @@
 
                         <!-- favorites -->
                         <TextBlock Grid.Row="0" Text="{helpers:ResourceString Name=Browser_Favorites}" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
-                        <ListView Margin="8,0,12,0" SelectedItem="{x:Bind ViewModel.CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{x:Bind ViewModel.Favorites, Mode=TwoWay}" ItemTemplate="{StaticResource FavoriteTemplate}">
+                        <ListView Margin="8,0,12,0" SelectedItem="{x:Bind ViewModel.CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{x:Bind ViewModel.Favorites, Mode=TwoWay}" ItemTemplate="{StaticResource FavoriteTemplate}" RightTapped="FavoritesListView_RightTapped">
                             <i:Interaction.Behaviors>
                                 <i:EventTriggerBehavior EventName="SelectionChanged">
                                     <i:InvokeCommandAction Command="{x:Bind ViewModel.LoadFavoriteCommand}" />
