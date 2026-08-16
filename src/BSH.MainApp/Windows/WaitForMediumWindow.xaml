@@ -18,7 +18,7 @@
     IsAlwaysOnTop="True"
     Closed="WindowEx_Closed">
 
-    <Grid>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -39,7 +39,7 @@
                    Margin="30,0,30,0" />
 
         <!-- Cancel Button -->
-        <Grid Grid.Row="2" Background="{StaticResource ButtonBottomPanelBackgroundColor}" Padding="30,10" BorderBrush="{StaticResource ButtonBottomPanelBorderBrush}" BorderThickness="0,1,0,0">
+        <Grid Grid.Row="2" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,10" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
                 <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=WaitForMedium_Cancel}" />
             </StackPanel>

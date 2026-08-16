@@ -67,7 +67,7 @@
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Width" Value="36" />
             <Setter Property="Height" Value="32" />
-            <Setter Property="Foreground" Value="{StaticResource App.Theme.IconBaseColor}"/>
+            <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}"/>
         </Style>
 
         <Style
@@ -89,7 +89,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid Background="White">
+    <Grid Background="{ThemeResource AppPageBackgroundBrush}">
         <Grid Visibility="{x:Bind ViewModel.HasVersions, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}">
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
                 <TextBlock HorizontalTextAlignment="Center" Style="{StaticResource HeaderTextBlockStyle}" Text="{helpers:ResourceString Name=Browser_Empty_Title}" />
@@ -134,7 +134,7 @@
                 Padding="6,0,12,0"
 				CornerRadius="{StaticResource ControlCornerRadius}">
                     <BreadcrumbBar
-                    Background="White"
+                    Background="Transparent"
                     ItemsSource="{x:Bind ViewModel.CurrentFolderPath, Mode=OneWay}"
                     ItemClicked="BreadcrumbBar_ItemClicked"
                     VerticalAlignment="Center">
@@ -194,7 +194,7 @@
                     </Grid>
                 </SplitView.Pane>
 
-                <Grid BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+                <Grid BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -335,7 +335,7 @@
                     ColumnSpacing="15" 
                     RowSpacing="10" 
                     Padding="20" 
-                    BorderBrush="#f0f0f0" 
+                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
                     BorderThickness="1,0,0,0" 
                     Visibility="{x:Bind ViewModel.ToggleInfoPane, Mode=OneWay}"
                     Width="300">

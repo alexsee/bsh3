@@ -15,7 +15,7 @@
                     <VisualState.Setters>
                         <Setter Target="CardBorder.BorderThickness" Value="2" />
                         <Setter Target="CardBorder.BorderBrush" Value="{ThemeResource AccentFillColorDefaultBrush}" />
-                        <Setter Target="CardBorder.Background" Value="#F3F8FF" />
+                        <Setter Target="CardBorder.Background" Value="{ThemeResource AccentFillColorTertiaryBrush}" />
                         <Setter Target="GlyphIcon.Foreground" Value="{ThemeResource AccentTextFillColorPrimaryBrush}" />
                     </VisualState.Setters>
                 </VisualState>

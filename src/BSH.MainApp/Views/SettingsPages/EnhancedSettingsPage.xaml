@@ -9,7 +9,7 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
-    Background="White">
+    Background="{ThemeResource AppPageBackgroundBrush}">
 
     <Page.Resources>
         <x:Double x:Key="SettingsCardSpacing">3</x:Double>

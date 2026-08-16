@@ -12,7 +12,7 @@
     TaskBarIcon="{StaticResource AppIcon}"
     Height="500" Width="600" IsResizable="False" IsMaximizable="False" IsMinimizable="False" IsAlwaysOnTop="True">
 
-    <Grid Background="White">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -41,7 +41,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="1" Background="{StaticResource ButtonBottomPanelBackgroundColor}" Padding="30,10" BorderBrush="{StaticResource ButtonBottomPanelBorderBrush}" BorderThickness="0,1,0,0">
+        <Grid Grid.Row="1" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,10" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
                 <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
                 <Button Command="{x:Bind ViewModel.StartBackupCommand}" Style="{StaticResource AccentButtonStyle}" Content="{helpers:ResourceString Name=CreateBackup_CreateButton}" />

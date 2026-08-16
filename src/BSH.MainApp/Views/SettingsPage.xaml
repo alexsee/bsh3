@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:BSH.MainApp.Helpers"
     mc:Ignorable="d"
-    Background="White">
+    Background="{ThemeResource AppPageBackgroundBrush}">
 
     <Grid Margin="30">
         <Grid.RowDefinitions>

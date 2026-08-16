@@ -8,10 +8,10 @@
     xmlns:converters="using:BSH.MainApp.Converters"
     xmlns:helpers="using:BSH.MainApp.Helpers"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
-    Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+    Background="{ThemeResource AppPageBackgroundBrush}"
     mc:Ignorable="d">
 
-    <Grid Background="White">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -96,7 +96,7 @@
                     <TextBlock Grid.Row="1" Text="{helpers:ResourceString Name=MainView_Files}" />
                 </Grid>
 
-                <Border Grid.Column="1" BorderBrush="LightGray" BorderThickness="1,0,0,0" Padding="20,0,20,0">
+                <Border Grid.Column="1" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="1,0,0,0" Padding="20,0,20,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -107,7 +107,7 @@
                     </Grid>
                 </Border>
 
-                <Border Grid.Column="2" BorderBrush="LightGray" BorderThickness="1,0,0,0" Padding="20,0,20,0">
+                <Border Grid.Column="2" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="1,0,0,0" Padding="20,0,20,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -120,7 +120,7 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.NextBackupGridVisibility, Mode=OneWay}" Background="#fafafa" Padding="30,20" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.NextBackupGridVisibility, Mode=OneWay}" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -140,7 +140,7 @@
             </Button>
         </Grid>
 
-        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}" Background="#fafafa" ColumnSpacing="20" Padding="30,20" BorderBrush="#f0f0f0" BorderThickness="0,1,0,0">
+        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" ColumnSpacing="20" Padding="30,20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition />
             </Grid.RowDefinitions>
