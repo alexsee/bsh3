@@ -1,6 +1,8 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Brightbits.BSH.Engine;
 
 namespace BSH.MainApp.Models;
@@ -122,12 +124,14 @@ public sealed class DiscoveredBackup
     public string DisplayName => $"{ComputerName} / {UserName} — {FolderPath}";
 }
 
-public sealed class SourceRemap
+public sealed class SourceRemap : INotifyPropertyChanged
 {
+    private string currentPath;
+
     public SourceRemap(string originalPath, string currentPath)
     {
         OriginalPath = originalPath;
-        CurrentPath = currentPath;
+        this.currentPath = currentPath;
     }
 
     public string OriginalPath
@@ -137,6 +141,23 @@ public sealed class SourceRemap
 
     public string CurrentPath
     {
-        get; set;
+        get => currentPath;
+        set
+        {
+            if (currentPath == value)
+            {
+                return;
+            }
+
+            currentPath = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

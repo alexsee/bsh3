@@ -411,7 +411,7 @@
                                         <TextBlock
                                             Grid.Column="1"
                                             FontWeight="SemiBold"
-                                            Text="{x:Bind CurrentPath, Mode=OneTime}"
+                                            Text="{x:Bind CurrentPath, Mode=OneWay}"
                                             TextWrapping="Wrap"
                                             VerticalAlignment="Center" />
                                     </Grid>
