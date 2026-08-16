@@ -11,20 +11,49 @@ using NUnit.Framework;
 namespace BSH.Test;
 
 /// <summary>
-/// Contract for the tagged beta installer: customers launch the WinUI shell,
-/// the VSS helper still installs, and both shells remain publishable.
+/// Contract for release installers: the original WinForms setup stays as its
+/// own artifact, the WinUI beta setup launches BSH.MainApp, and both shells
+/// remain publishable with the VSS helper.
 /// </summary>
 public class InstallerEntryPointTests
 {
     private static readonly string RepoRoot = LocateRepoRoot();
-    private static readonly string SetupIssPath = Path.Combine(RepoRoot, "tools", "setup", "Setup.iss");
+    private static readonly string WinFormsSetupIssPath = Path.Combine(RepoRoot, "tools", "setup", "Setup.iss");
+    private static readonly string WinUiSetupIssPath = Path.Combine(RepoRoot, "tools", "setup", "Setup-WinUI.iss");
     private static readonly string MainAppCsprojPath = Path.Combine(RepoRoot, "src", "BSH.MainApp", "BSH.MainApp.csproj");
     private static readonly string MainCsprojPath = Path.Combine(RepoRoot, "src", "BSH.Main", "BSH.Main.csproj");
 
     [Test]
-    public void StartMenuShortcutLaunchesWinUiShell()
+    public void WinFormsInstallerStartMenuLaunchesWinFormsShell()
     {
-        var icons = GetIssSection("[Icons]");
+        var icons = GetIssSection(WinFormsSetupIssPath, "[Icons]");
+
+        Assert.That(icons, Does.Contain(@"Filename: ""{app}\BSH.Main.exe"""));
+        Assert.That(icons, Does.Not.Contain(@"BSH.MainApp.exe"));
+    }
+
+    [Test]
+    public void WinFormsInstallerPostInstallLaunchesWinFormsShell()
+    {
+        var run = GetIssSection(WinFormsSetupIssPath, "[Run]");
+
+        Assert.That(run, Does.Contain(@"Filename: ""{app}\BSH.Main.exe""; Flags: nowait postinstall skipifsilent"));
+        Assert.That(run, Does.Not.Contain(@"Filename: ""{app}\BSH.MainApp.exe"""));
+    }
+
+    [Test]
+    public void WinFormsInstallerStartWithWindowsTargetsWinFormsShell()
+    {
+        var registry = GetIssSection(WinFormsSetupIssPath, "[Registry]");
+
+        Assert.That(registry, Does.Contain(@"ValueData: ""{app}\BSH.Main.exe"""));
+        Assert.That(registry, Does.Not.Contain(@"BSH.MainApp.exe"));
+    }
+
+    [Test]
+    public void WinUiInstallerStartMenuLaunchesWinUiShell()
+    {
+        var icons = GetIssSection(WinUiSetupIssPath, "[Icons]");
 
         Assert.That(icons, Does.Match(
             @"Name:\s*""\{group\}\\Backup Service Home"";\s*Filename:\s*""\{app\}\\BSH\.MainApp\.exe"""));
@@ -32,30 +61,44 @@ public class InstallerEntryPointTests
     }
 
     [Test]
-    public void PostInstallLaunchStartsWinUiShell()
+    public void WinUiInstallerPostInstallLaunchesWinUiShell()
     {
-        var run = GetIssSection("[Run]");
+        var run = GetIssSection(WinUiSetupIssPath, "[Run]");
 
         Assert.That(run, Does.Contain(@"Filename: ""{app}\BSH.MainApp.exe""; Flags: nowait postinstall skipifsilent"));
         Assert.That(run, Does.Not.Contain(@"Filename: ""{app}\BSH.Main.exe"""));
     }
 
     [Test]
-    public void StartWithWindowsRunKeyTargetsWinUiShell()
+    public void WinUiInstallerStartWithWindowsTargetsWinUiShell()
     {
-        var registry = GetIssSection("[Registry]");
+        var registry = GetIssSection(WinUiSetupIssPath, "[Registry]");
 
         Assert.That(registry, Does.Contain(@"ValueName: ""BackupServiceHome3Run""; ValueData: ""{app}\BSH.MainApp.exe"""));
         Assert.That(registry, Does.Not.Contain(@"BSH.Main.exe"));
     }
 
     [Test]
-    public void InstallerRegistersAndStartsVssService()
+    public void BothInstallersRegisterAndStartVssService()
     {
-        var run = GetIssSection("[Run]");
+        foreach (var setupIssPath in new[] { WinFormsSetupIssPath, WinUiSetupIssPath })
+        {
+            var run = GetIssSection(setupIssPath, "[Run]");
 
-        Assert.That(run, Does.Contain("binpath=\"\"{app}\\BSH.Service.exe\"\" start=auto"));
-        Assert.That(run, Does.Contain("Parameters: \"start \"\"Backup Service Home-Dienst\"\""));
+            Assert.That(run, Does.Contain("binpath=\"\"{app}\\BSH.Service.exe\"\" start=auto"));
+            Assert.That(run, Does.Contain("Parameters: \"start \"\"Backup Service Home-Dienst\"\""));
+        }
+    }
+
+    [Test]
+    public void WinUiInstallerIsASeparateArtifact()
+    {
+        var setup = GetIssSection(WinUiSetupIssPath, "[Setup]");
+        var winFormsSetup = GetIssSection(WinFormsSetupIssPath, "[Setup]");
+
+        Assert.That(setup, Does.Contain("OutputBaseFilename=backupservicehome-{#ApplicationVersion}-winui-win64"));
+        Assert.That(winFormsSetup, Does.Contain("OutputBaseFilename=backupservicehome-{#ApplicationVersion}-win64"));
+        Assert.That(winFormsSetup, Does.Not.Contain("-winui-win64"));
     }
 
     [Test]
@@ -78,9 +121,9 @@ public class InstallerEntryPointTests
     }
 
     [Test]
-    public void InstallerPackagesNestedPublishOutputForWindowsAppRuntime()
+    public void WinUiInstallerPackagesNestedPublishOutputForWindowsAppRuntime()
     {
-        var files = GetIssSection("[Files]");
+        var files = GetIssSection(WinUiSetupIssPath, "[Files]");
 
         Assert.That(
             files,
@@ -93,14 +136,16 @@ public class InstallerEntryPointTests
         Assert.That(IsPublishable(MainCsprojPath), Is.True);
     }
 
-    private static string GetIssSection(string sectionHeader)
+    private static string GetIssSection(string setupIssPath, string sectionHeader)
     {
-        var text = File.ReadAllText(SetupIssPath);
+        Assert.That(File.Exists(setupIssPath), Is.True, $"Installer script was not found at {setupIssPath}.");
+
+        var text = File.ReadAllText(setupIssPath);
         var match = Regex.Match(
             text,
             Regex.Escape(sectionHeader) + @"\r?\n(?<body>[\s\S]*?)(?=\r?\n\[|\z)");
 
-        Assert.That(match.Success, Is.True, $"Section {sectionHeader} was not found in Setup.iss.");
+        Assert.That(match.Success, Is.True, $"Section {sectionHeader} was not found in {Path.GetFileName(setupIssPath)}.");
         return match.Groups["body"].Value;
     }
 
