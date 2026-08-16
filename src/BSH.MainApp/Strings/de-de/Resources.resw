@@ -192,11 +192,23 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="Browser_LockUnlockBackup" xml:space="preserve">
     <value>Sicherung sperren/entsperren</value>
   </data>
+  <data name="Browser_NextVersion" xml:space="preserve">
+    <value>Neuer</value>
+  </data>
+  <data name="Browser_NextVersion_Tooltip" xml:space="preserve">
+    <value>Eine neuere Version anzeigen</value>
+  </data>
   <data name="Browser_Organize" xml:space="preserve">
     <value>Organisieren</value>
   </data>
   <data name="Browser_PreviewPane" xml:space="preserve">
     <value>Vorschaufenster</value>
+  </data>
+  <data name="Browser_PreviousVersion" xml:space="preserve">
+    <value>Älter</value>
+  </data>
+  <data name="Browser_PreviousVersion_Tooltip" xml:space="preserve">
+    <value>Eine frühere Version anzeigen</value>
   </data>
   <data name="Browser_Properties" xml:space="preserve">
     <value>Eigenschaften</value>
