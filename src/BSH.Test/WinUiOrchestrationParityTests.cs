@@ -135,6 +135,29 @@ public class WinUiOrchestrationParityTests
     }
 
     [Test]
+    public async Task RefreshAutomationAsyncStopsThenStartsWhenTaskTypeIsManual()
+    {
+        var scheduledBackupService = new TestScheduledBackupService();
+        var service = new OrchestrationService(
+            new FakeConfigurationManager
+            {
+                IsConfigured = "1",
+                DbStatus = "0",
+                TaskType = TaskType.Manual
+            },
+            new TestStatusService(),
+            scheduledBackupService,
+            new TestQueryManager(),
+            new TestNotificationService(),
+            new TestPowerStatusService());
+
+        await service.RefreshAutomationAsync();
+
+        Assert.That(scheduledBackupService.StopCalls, Is.EqualTo(1));
+        Assert.That(scheduledBackupService.StartCalls, Is.EqualTo(1));
+    }
+
+    [Test]
     public async Task RefreshAutomationAsyncDoesNothingWhenSystemIsDeactivated()
     {
         var statusService = new TestStatusService { SystemStatus = SystemStatus.DEACTIVATED };

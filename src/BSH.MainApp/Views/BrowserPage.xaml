@@ -271,6 +271,17 @@
                             Icon="Folder" 
                             Label="{helpers:ResourceString Name=Browser_RestoreTo}" />
                             <AppBarSeparator />
+                            <AppBarButton
+                            Command="{x:Bind ViewModel.NavigateToPreviousVersionCommand}"
+                            Icon="Previous"
+                            Label="{helpers:ResourceString Name=Browser_PreviousVersion}"
+                            ToolTipService.ToolTip="{helpers:ResourceString Name=Browser_PreviousVersion_Tooltip}" />
+                            <AppBarButton
+                            Command="{x:Bind ViewModel.NavigateToNextVersionCommand}"
+                            Icon="Next"
+                            Label="{helpers:ResourceString Name=Browser_NextVersion}"
+                            ToolTipService.ToolTip="{helpers:ResourceString Name=Browser_NextVersion_Tooltip}" />
+                            <AppBarSeparator />
                             <AppBarButton 
                             Command="{x:Bind ViewModel.ShowFilePreviewCommand}" 
                             Icon="Preview"

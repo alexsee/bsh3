@@ -31,6 +31,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private long contentRequestId;
     private bool suppressSearchTermsChanged;
     private bool suppressInfoPaneChanged;
+    private bool suppressFavoriteChanged;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RestoreFileCommand))]
@@ -220,22 +221,33 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
+        var preservedItem = CurrentItem;
+        var preservedPath = GetPathToPreserve();
+
         await LoadFavoritesAsync();
         if (Favorites.Count == 0)
         {
             return;
         }
 
-        CurrentFavorite = Favorites[0];
+        var pathToLoad = preservedPath;
+        if (string.IsNullOrEmpty(pathToLoad))
+        {
+            pathToLoad = Favorites[0].Path;
+            preservedItem = null;
+        }
+
+        SelectFavoriteForPath(pathToLoad);
 
         ClearSearchTerms();
-        await LoadFolderAsync(CurrentVersion.Id, CurrentFavorite.Path, BeginContentRequest());
+        await LoadFolderAsync(CurrentVersion.Id, pathToLoad, BeginContentRequest());
+        RestorePreservedItem(preservedItem);
     }
 
     [RelayCommand]
     private async Task LoadFavorite()
     {
-        if (CurrentVersion == null || CurrentFavorite == null)
+        if (suppressFavoriteChanged || CurrentVersion == null || CurrentFavorite == null)
         {
             return;
         }
@@ -670,6 +682,60 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         {
             Favorites.Add(favorite);
         }
+    }
+
+    private string? GetPathToPreserve()
+    {
+        if (CurrentItem != null)
+        {
+            return CurrentItem.FullPath?.Trim('\\');
+        }
+
+        if (CurrentFolderPath.Count > 0)
+        {
+            return CurrentFolderPath[^1].FullPath;
+        }
+
+        return null;
+    }
+
+    private void SelectFavoriteForPath(string path)
+    {
+        var match = Favorites.FirstOrDefault(x => browserContentService.PathsMatch(x.Path, path))
+            ?? Favorites
+                .Where(x => path.StartsWith(x.Path + "\\", StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(x => x.Path.Length)
+                .FirstOrDefault()
+            ?? Favorites[0];
+
+        suppressFavoriteChanged = true;
+        try
+        {
+            CurrentFavorite = match;
+        }
+        finally
+        {
+            suppressFavoriteChanged = false;
+        }
+    }
+
+    private void RestorePreservedItem(FileOrFolderItem? preservedItem)
+    {
+        if (preservedItem == null)
+        {
+            return;
+        }
+
+        if (preservedItem.IsFile)
+        {
+            CurrentItem = Items.FirstOrDefault(x => x.IsFile
+                && string.Equals(x.Name, preservedItem.Name, StringComparison.OrdinalIgnoreCase)
+                && browserContentService.PathsMatch(x.FullPath, preservedItem.FullPath));
+            return;
+        }
+
+        CurrentItem = CurrentFolderPath.LastOrDefault(x => browserContentService.PathsMatch(x.FullPath, preservedItem.FullPath))
+            ?? preservedItem;
     }
 
     private async Task NavigateToContainingVersionAsync(bool previous)

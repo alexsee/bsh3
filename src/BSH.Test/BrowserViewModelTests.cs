@@ -11,6 +11,7 @@ using BSH.MainApp.Models;
 using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
 using BSH.MainApp.ViewModels.Windows;
+using BSH.Test.Fakes;
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 using System;
@@ -57,6 +58,24 @@ public class BrowserViewModelTests
     }
 
     [Test]
+    public void PreviousAndNextVersionCommandsAreEnabledWhenFileOrFolderIsSelected()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.CurrentVersion = Version("2");
+
+        Assert.That(viewModel.NavigateToPreviousVersionCommand.CanExecute(null), Is.False);
+        Assert.That(viewModel.NavigateToNextVersionCommand.CanExecute(null), Is.False);
+
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "docs", FullPath = "source\\docs", IsFile = false };
+        Assert.That(viewModel.NavigateToPreviousVersionCommand.CanExecute(null), Is.True);
+        Assert.That(viewModel.NavigateToNextVersionCommand.CanExecute(null), Is.True);
+
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"source\docs", IsFile = true };
+        Assert.That(viewModel.NavigateToPreviousVersionCommand.CanExecute(null), Is.True);
+        Assert.That(viewModel.NavigateToNextVersionCommand.CanExecute(null), Is.True);
+    }
+
+    [Test]
     public async Task NavigateToPreviousVersionContainingSelectedFolderLoadsMatchingVersion()
     {
         var queryManager = new BrowserQueryManager
@@ -71,6 +90,47 @@ public class BrowserViewModelTests
 
         Assert.That(queryManager.PreviousFolderLookup, Is.EqualTo(("2", "source\\docs")));
         Assert.That(viewModel.CurrentVersion?.Id, Is.EqualTo("1"));
+        Assert.That(viewModel.CurrentFolderPath.Select(x => x.FullPath), Is.EqualTo(new[] { "source", "source\\docs" }));
+    }
+
+    [Test]
+    public async Task NavigateToNextVersionContainingSelectedFileKeepsCurrentFile()
+    {
+        var queryManager = new BrowserQueryManager
+        {
+            NextFileVersion = "3",
+            Files =
+            [
+                new FileTableRow { FileName = "report.txt", FilePath = @"\source\docs\", VersionId = "3" }
+            ]
+        };
+        var viewModel = CreateViewModel(queryManager);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+
+        await viewModel.NavigateToNextVersionCommand.ExecuteAsync(null);
+
+        Assert.That(queryManager.NextFileLookup, Is.EqualTo(("2", "report.txt")));
+        Assert.That(viewModel.CurrentVersion?.Id, Is.EqualTo("3"));
+        Assert.That(viewModel.CurrentFolderPath[^1].FullPath, Is.EqualTo(@"source\docs"));
+        Assert.That(viewModel.CurrentItem?.Name, Is.EqualTo("report.txt"));
+        Assert.That(viewModel.CurrentItem?.IsFile, Is.True);
+    }
+
+    [Test]
+    public async Task LoadVersionKeepsCurrentFolderInsteadOfResettingToFirstFavorite()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "docs", FullPath = @"source\docs", IsFile = false };
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "source", FullPath = "source", IsFile = false });
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "docs", FullPath = @"source\docs", IsFile = false });
+
+        viewModel.CurrentVersion = Version("1");
+        await viewModel.LoadVersionCommand.ExecuteAsync(null);
+
+        Assert.That(viewModel.CurrentVersion?.Id, Is.EqualTo("1"));
+        Assert.That(viewModel.CurrentFolderPath.Select(x => x.FullPath), Is.EqualTo(new[] { "source", @"source\docs" }));
     }
 
     [Test]
@@ -363,7 +423,7 @@ public class BrowserViewModelTests
             jobService ?? new BrowserJobService(),
             new BrowserBackupService(),
             new BrowserPresentationService(),
-            new BrowserContentService(queryManager, favoritesService),
+            new BrowserContentService(queryManager, favoritesService, new FakeConfigurationManager()),
             browserDialogService ?? new BrowserDialogService(),
             previewService ?? new BrowserPreviewServiceFake(),
             viewPreferencesService);
@@ -381,7 +441,10 @@ public class BrowserViewModelTests
     private sealed class BrowserQueryManager : IQueryManager
     {
         public string? PreviousFolderVersion { get; set; }
+        public string? NextFileVersion { get; set; }
         public (string Version, string Path)? PreviousFolderLookup { get; private set; }
+        public (string Version, string Search)? NextFileLookup { get; private set; }
+        public List<FileTableRow> Files { get; set; } = [];
         public int GetVersionsCallCount { get; private set; }
 
         public Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult<string>(null);
@@ -395,13 +458,19 @@ public class BrowserViewModelTests
         public string GetFileNameFromDrive(FileTableRow file) => file.FileName;
         public Task<(string, bool)> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password) => Task.FromResult((fileName, false));
         public Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult<FileDetails>(null);
-        public Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path) => Task.FromResult(new List<FileTableRow>());
+        public Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path) => Task.FromResult(Files);
         public Task<List<string>> GetFolderListAsync(string version, string path) => Task.FromResult(new List<string>());
         public Task<string> GetFullRestoreFolderAsync(string folder, string version) => Task.FromResult(folder);
         public Task<VersionDetails> GetLastBackupAsync() => Task.FromResult(Version("3"));
         public Task<VersionDetails> GetLastFullBackupAsync() => Task.FromResult(Version("3"));
         public Task<string> GetLocalizedPathAsync(string path) => Task.FromResult(path);
-        public Task<string> GetNextVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult<string>(null);
+
+        public Task<string> GetNextVersionWhereFileAsync(string startVersion, string searchString)
+        {
+            NextFileLookup = (startVersion, searchString);
+            return Task.FromResult(NextFileVersion);
+        }
+
         public Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult<string>(null);
         public Task<int> GetNumberOfVersionsAsync() => Task.FromResult(3);
         public Task<int> GetNumberOfFilesAsync() => Task.FromResult(0);
