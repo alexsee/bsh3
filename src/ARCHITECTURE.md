@@ -41,8 +41,8 @@ This document is intentionally stable and high-level. Use symbol search for the 
 - `PreviewHandlerFramework` + `PreviewHandlerHost`: COM preview-handler framework/host abstractions used by preview features.
 
 ### Tests
-- `BSH.Test`: NUnit tests centered on engine behavior.
-  - Coverage anchors: `BackupTests`, `ConfigurationManagerTests`, `QueryManagerTests`, `Services/FileCollector/*`, `Security/*`.
+- `BSH.Test`: NUnit tests centered on engine behavior, plus WinUI view-model/service tests.
+  - Coverage anchors: `BackupTests`, `RestoreTests`, `DeleteTests`, `ConfigurationManagerTests`, `QueryManagerTests`, `Services/FileCollector/*`, `Security/*`, `Integration/*`.
 - Beta QA / coverage gaps / launch gates: `docs/testing/beta-release-testing-plan.md`.
 
 ## Architectural invariants and boundaries
