@@ -70,8 +70,14 @@
                             Width="72"
                             Height="72"
                             Margin="0,0,0,20"
-                            HorizontalAlignment="Center"
-                            Source="/Assets/app_ico.ico" />
+                            HorizontalAlignment="Center">
+                            <Image.Source>
+                                <BitmapImage
+                                    UriSource="ms-appx:///Assets/app_logo.png"
+                                    DecodePixelWidth="72"
+                                    DecodePixelType="Logical" />
+                            </Image.Source>
+                        </Image>
                         <TextBlock
                             FontSize="32"
                             FontWeight="SemiBold"
