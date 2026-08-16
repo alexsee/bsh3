@@ -713,7 +713,7 @@ public class QueryManager : IQueryManager
     {
         if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
         {
-            return reader.GetString("versionDate") + "\\_LONG_FILES\\" + reader.GetString("longfilename");
+            return reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
         }
 
         return reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
