@@ -22,6 +22,14 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(titleBar);
 
+        // Load the window/taskbar icon from the multi-resolution .ico so Windows can
+        // pick a crisp size per DPI instead of upscaling a single small frame.
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "app_ico.ico");
+        if (File.Exists(iconPath))
+        {
+            AppWindow.SetIcon(iconPath);
+        }
+
         this.CenterOnScreen();
         Title = "AppDisplayName".GetLocalized();
     }

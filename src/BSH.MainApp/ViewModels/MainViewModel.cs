@@ -166,6 +166,12 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         }
     }
 
+    [RelayCommand]
+    private void CancelBackup()
+    {
+        jobService.Cancel();
+    }
+
     public void ReportAction(ActionType action, bool silent)
     {
     }
