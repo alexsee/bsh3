@@ -41,16 +41,22 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0"
-                        Width="56"
-                        Height="56"
-                        CornerRadius="28"
-                        VerticalAlignment="Center"
-                        Background="{ThemeResource AccentFillColorDefaultBrush}">
-                    <FontIcon FontSize="26"
-                              Glyph="&#xE8FB;"
-                              Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
-                </Border>
+                <Grid Grid.Column="0"
+                      Width="56"
+                      Height="56"
+                      VerticalAlignment="Center">
+                    <Border CornerRadius="28"
+                            Background="{ThemeResource AccentFillColorDefaultBrush}"
+                            Visibility="{x:Bind ViewModel.NextBackupGridVisibility, Mode=OneWay}">
+                        <FontIcon FontSize="26"
+                                  Glyph="&#xE8FB;"
+                                  Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
+                    </Border>
+                    <ProgressRing Width="56"
+                                  Height="56"
+                                  IsActive="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}"
+                                  Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}" />
+                </Grid>
 
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
                     <TextBlock FontSize="22"
@@ -152,25 +158,35 @@
             </Button>
         </Grid>
 
-        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" ColumnSpacing="20" Padding="30,20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-            </Grid.RowDefinitions>
+        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" ColumnSpacing="20" Padding="30,16" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <FontIcon Grid.Column="0" FontSize="24" FontFamily="Segoe MDL2 Assets" Glyph="&#xE895;" Margin="0,0,10,0"/>
-
-            <StackPanel Grid.Column="1" Spacing="5">
-                <TextBlock Text="{x:Bind ViewModel.CurrentProgressStatusTitle, Mode=OneWay}" />
+            <StackPanel Grid.Column="0" Spacing="6" VerticalAlignment="Center">
+                <TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.CurrentProgressStatusTitle, Mode=OneWay}" />
                 <ProgressBar Maximum="{x:Bind ViewModel.CurrentProgressMax, Mode=OneWay}" Value="{x:Bind ViewModel.CurrentProgressValue, Mode=OneWay}" />
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               TextTrimming="CharacterEllipsis"
+                               TextWrapping="NoWrap"
+                               Text="{x:Bind ViewModel.CurrentFileText, Mode=OneWay}"
+                               ToolTipService.ToolTip="{x:Bind ViewModel.CurrentFilePath, Mode=OneWay}" />
+                    <TextBlock Grid.Column="1"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Text="{x:Bind ViewModel.ProgressCountText, Mode=OneWay}" />
+                </Grid>
             </StackPanel>
 
-            <Button Grid.Column="2" Command="{x:Bind ViewModel.CancelBackupCommand}">
-                <StackPanel Orientation="Horizontal">
+            <Button Grid.Column="1" VerticalAlignment="Center" Command="{x:Bind ViewModel.CancelBackupCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE711;" />
                     <TextBlock Text="{helpers:ResourceString Name=MainView_Cancel}" />
                 </StackPanel>
             </Button>
