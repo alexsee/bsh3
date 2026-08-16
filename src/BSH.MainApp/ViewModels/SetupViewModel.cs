@@ -50,9 +50,9 @@ public partial class SetupViewModel : ObservableObject
         this.dbClientFactory = dbClientFactory;
 
         FtpPort = "21";
-        FtpEncoding = "UTF8";
+        FtpEncoding = "UTF-8";
         ImportFtpPort = "21";
-        ImportFtpEncoding = "UTF8";
+        ImportFtpEncoding = "UTF-8";
         SelectedTaskType = TaskType.Auto;
         SelectedTargetKind = MediaTargetKind.LocalDrive;
         SelectedImportSourceKind = SetupImportSourceKind.LocalMedia;
@@ -126,7 +126,7 @@ public partial class SetupViewModel : ObservableObject
     private string ftpFolder = "";
 
     [ObservableProperty]
-    private string ftpEncoding = "UTF8";
+    private string ftpEncoding = "UTF-8";
 
     [ObservableProperty]
     private bool ftpEnforceUnencrypted;
@@ -162,7 +162,7 @@ public partial class SetupViewModel : ObservableObject
     private string importFtpFolder = "";
 
     [ObservableProperty]
-    private string importFtpEncoding = "UTF8";
+    private string importFtpEncoding = "UTF-8";
 
     [ObservableProperty]
     private bool importFtpEnforceUnencrypted;

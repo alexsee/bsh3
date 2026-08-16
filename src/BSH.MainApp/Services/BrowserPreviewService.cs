@@ -58,6 +58,10 @@ public class BrowserPreviewService : IBrowserPreviewService
 
             if (string.IsNullOrEmpty(localFilePath))
             {
+                await presentationService.ShowMessageBoxAsync(
+                    "Browser_PreviewRetrieveFailed_Title".GetLocalized(),
+                    "Browser_PreviewRetrieveFailed_Text".GetLocalized(),
+                    [new UICommand("MsgBox_OK".GetLocalized())]);
                 return;
             }
 
