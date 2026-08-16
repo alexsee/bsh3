@@ -113,17 +113,17 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Text="{helpers:ResourceString Name=Settings_Target_Server}" />
-                                    <TextBox Grid.Column="1" Text="{Binding FtpRemoteHost}" />
+                                    <TextBox Grid.Column="1" Text="{Binding FtpRemoteHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="0" Text="{helpers:ResourceString Name=Settings_Target_Port}" />
-                                    <NumberBox Grid.Column="3" Grid.Row="0" Value="{Binding FtpRemotePort}" />
+                                    <NumberBox Grid.Column="3" Grid.Row="0" Value="{Binding FtpRemotePort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Text="{helpers:ResourceString Name=Settings_Target_Username}" />
-                                    <TextBox Grid.Column="1" Grid.Row="1"  Text="{Binding FtpRemoteUser}" />
+                                    <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding FtpRemoteUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBlock VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Text="{helpers:ResourceString Name=Settings_Target_Password}" />
-                                    <PasswordBox Grid.Column="3" Grid.Row="1" Password="{Binding FtpRemotePassword}" />
+                                    <PasswordBox Grid.Column="3" Grid.Row="1" Password="{Binding FtpRemotePassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Text="{helpers:ResourceString Name=Settings_Target_Path}" />
-                                    <TextBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2"  Text="{Binding FtpRemotePath}" />
+                                    <TextBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Text="{Binding FtpRemotePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                                     <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="3" Text="{helpers:ResourceString Name=Settings_Target_Encoding}" />
                                     <ComboBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch" SelectedValue="{Binding FtpRemoteEncoding, Mode=TwoWay}">
@@ -131,7 +131,12 @@
                                         <x:String>UTF-8</x:String>
                                     </ComboBox>
 
-                                    <CheckBox Grid.Column="1" Grid.Row="4" Content="{helpers:ResourceString Name=Settings_Target_EnforceUnencrypted}" IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=TwoWay}" />
+                                    <CheckBox x:Name="FtpEnforceUnencryptedCheckBox"
+                                              Grid.Column="1"
+                                              Grid.Row="4"
+                                              Content="{helpers:ResourceString Name=Settings_Target_EnforceUnencrypted}"
+                                              IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=OneWay}"
+                                              Click="FtpEnforceUnencryptedCheckBox_Click" />
 
                                     <Button Grid.Column="1" Grid.Row="5" Command="{Binding CheckFtpRemoteCommand}">
                                         <StackPanel Orientation="Horizontal" Spacing="8">

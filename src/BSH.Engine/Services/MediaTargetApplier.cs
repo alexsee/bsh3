@@ -70,6 +70,20 @@ public static class MediaTargetApplier
     }
 
     /// <summary>
+    /// Sets MediumType to LocalDevice with no folder and clears UNC credentials and FTP fields.
+    /// </summary>
+    public static void ApplyEmptyLocalTarget(IConfigurationManager configurationManager)
+    {
+        ArgumentNullException.ThrowIfNull(configurationManager);
+
+        configurationManager.MediumType = MediaType.LocalDevice;
+        configurationManager.BackupFolder = "";
+        configurationManager.MediaVolumeSerial = "";
+        ClearUncCredentials(configurationManager);
+        ClearFtpFields(configurationManager);
+    }
+
+    /// <summary>
     /// Sets BackupFolder + MediaVolumeSerial and clears UNC credentials and FTP fields (LocalDevice).
     /// </summary>
     public static void ApplyLocalTarget(
