@@ -597,6 +597,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         if (oldValue == newValue) return;
 
         this.configurationManager.TaskType = newValue;
+        _ = orchestrationService.RefreshAutomationAsync();
     }
 
     [RelayCommand]
