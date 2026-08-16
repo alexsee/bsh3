@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Collections.Generic;
 using Brightbits.BSH.Engine;
 
 namespace BSH.MainApp.Contracts.Services;
@@ -17,7 +18,7 @@ public interface IJobService
     Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "");
     Task DeleteBackupAsync(string version, bool statusDialog = true);
     Task DeleteBackupsAsync(List<string> versions, bool statusDialog = true);
-    Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true);
+    Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null);
     CancellationToken GetNewCancellationToken();
     Task<bool> RequestPassword();
     Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true);

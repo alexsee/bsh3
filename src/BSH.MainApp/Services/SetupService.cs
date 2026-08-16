@@ -1,15 +1,14 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Security.Cryptography;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Services;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 
@@ -41,13 +40,13 @@ public class SetupService : ISetupService
 
         if (!PathRules.TryNormalizeFolderPath(folderPath, out var fullPath))
         {
-            error = "Selected source folder path is invalid.";
+            error = "Settings_Sources_InvalidPath".GetLocalized();
             return false;
         }
 
         if (PathRules.IsDriveRoot(fullPath))
         {
-            error = "Selecting a drive root is risky. Choose a specific folder instead.";
+            error = "Settings_Sources_DriveRootRisky".GetLocalized();
             return false;
         }
 
@@ -58,7 +57,7 @@ public class SetupService : ISetupService
                 folderName,
                 StringComparison.OrdinalIgnoreCase)))
         {
-            error = "A source folder with the same name is already configured.";
+            error = "Settings_Sources_SameName".GetLocalized();
             return false;
         }
 
@@ -68,8 +67,7 @@ public class SetupService : ISetupService
 
     public string BuildLocalBackupFolder(string driveRoot)
     {
-        var root = driveRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
-        return Path.Combine(root, "Backups", Environment.MachineName, Environment.UserName);
+        return MediaTargetApplier.BuildLocalBackupFolder(driveRoot);
     }
 
     public bool IsLocalBackupFolderAvailable(string backupFolder)
@@ -87,14 +85,24 @@ public class SetupService : ISetupService
 
         switch (configuration.TargetKind)
         {
-            case SetupTargetKind.LocalDrive:
-                ApplyLocalTarget(configuration.LocalBackupFolder, configuration.MediaVolumeSerial, createFolder: true);
+            case MediaTargetKind.LocalDrive:
+                Directory.CreateDirectory(configuration.LocalBackupFolder!);
+                MediaTargetApplier.ApplyLocalTarget(configurationManager, configuration.LocalBackupFolder, configuration.MediaVolumeSerial);
                 break;
-            case SetupTargetKind.Unc:
-                ApplyUncTarget(configuration.UncPath, configuration.UncUsername, configuration.UncPassword);
+            case MediaTargetKind.Unc:
+                MediaTargetApplier.ApplyUncTarget(configurationManager, configuration.UncPath, configuration.UncUsername, configuration.UncPassword);
                 break;
-            case SetupTargetKind.Ftp:
-                ApplyFtpTarget(configuration);
+            case MediaTargetKind.Ftp:
+                MediaTargetApplier.ApplyFtpTarget(
+                    configurationManager,
+                    configuration.FtpHost,
+                    configuration.FtpPort,
+                    configuration.FtpUser,
+                    configuration.FtpPassword,
+                    configuration.FtpFolder,
+                    configuration.FtpEncoding,
+                    encryptionMode: configuration.FtpEnforceUnencrypted ? "0" : "3",
+                    sslProtocols: "0");
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(configuration), configuration.TargetKind, "Unsupported setup target.");
@@ -153,7 +161,7 @@ public class SetupService : ISetupService
 
         if (string.IsNullOrWhiteSpace(originalPath) || string.IsNullOrWhiteSpace(newPath))
         {
-            error = "Source path cannot be empty.";
+            error = "Setup_Validation_SourcePathEmpty".GetLocalized();
             return false;
         }
 
@@ -170,7 +178,7 @@ public class SetupService : ISetupService
             return true;
         }
 
-        error = "Cannot change the directory because the folder name does not match.";
+        error = "Setup_Validation_FolderNameMismatch".GetLocalized();
         return false;
     }
 
@@ -254,67 +262,6 @@ public class SetupService : ISetupService
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
-    }
-
-    private void ApplyLocalTarget(string? backupFolder, string? mediaVolumeSerial, bool createFolder)
-    {
-        if (string.IsNullOrWhiteSpace(backupFolder))
-        {
-            throw new ArgumentException("Local backup folder is required.", nameof(backupFolder));
-        }
-
-        if (createFolder)
-        {
-            Directory.CreateDirectory(backupFolder);
-        }
-
-        configurationManager.MediumType = MediaType.LocalDevice;
-        configurationManager.BackupFolder = backupFolder;
-        configurationManager.MediaVolumeSerial = string.IsNullOrEmpty(mediaVolumeSerial) || mediaVolumeSerial == "0"
-            ? ""
-            : mediaVolumeSerial;
-        configurationManager.UNCUsername = "";
-        configurationManager.UNCPassword = "";
-    }
-
-    private void ApplyUncTarget(string? uncPath, string? username, string? password)
-    {
-        if (string.IsNullOrWhiteSpace(uncPath))
-        {
-            throw new ArgumentException("UNC path is required.", nameof(uncPath));
-        }
-
-        var normalized = uncPath.Replace("//", @"\", StringComparison.Ordinal);
-        configurationManager.MediumType = MediaType.LocalDevice;
-        configurationManager.BackupFolder = normalized;
-        configurationManager.MediaVolumeSerial = "";
-
-        if (normalized.StartsWith(@"\\", StringComparison.Ordinal))
-        {
-            configurationManager.UNCUsername = username ?? "";
-            configurationManager.UNCPassword = string.IsNullOrEmpty(password)
-                ? ""
-                : Crypto.EncryptString(password, DataProtectionScope.LocalMachine);
-        }
-        else
-        {
-            configurationManager.UNCUsername = "";
-            configurationManager.UNCPassword = "";
-        }
-    }
-
-    private void ApplyFtpTarget(NewSetupConfiguration configuration)
-    {
-        configurationManager.MediumType = MediaType.FileTransferServer;
-        configurationManager.BackupFolder = "";
-        configurationManager.FtpHost = configuration.FtpHost ?? "";
-        configurationManager.FtpPort = configuration.FtpPort ?? "21";
-        configurationManager.FtpUser = configuration.FtpUser ?? "";
-        configurationManager.FtpPass = configuration.FtpPassword ?? "";
-        configurationManager.FtpFolder = configuration.FtpFolder ?? "";
-        configurationManager.FtpCoding = configuration.FtpEncoding ?? "UTF8";
-        configurationManager.FtpEncryptionMode = configuration.FtpEnforceUnencrypted ? "0" : "3";
-        configurationManager.FtpSslProtocols = "0";
     }
 
     private static string EscapeSql(string value)

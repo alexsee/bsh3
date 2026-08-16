@@ -9,7 +9,7 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerFramework
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public sealed class PreviewHandlerAttribute : Attribute
     {
-        private string _name, _extension, _appId;
+        private readonly string _name, _extension, _appId;
 
         public PreviewHandlerAttribute(string name, string extension, string appId)
         {

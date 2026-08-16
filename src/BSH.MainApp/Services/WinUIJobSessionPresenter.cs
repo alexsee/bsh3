@@ -7,8 +7,8 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 
@@ -101,8 +101,8 @@ public sealed class WinUIJobSessionPresenter : IJobSessionPresenter
     public Task ShowErrorPasswordRequiredAsync()
     {
         return presentationService.ShowMessageBoxAsync(
-            "Password required",
-            "A password is required to access this backup.",
+            "Password_Required_Title".GetLocalized(),
+            "Password_Required_Text".GetLocalized(),
             null);
     }
 

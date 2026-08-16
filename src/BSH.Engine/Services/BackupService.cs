@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -220,13 +221,15 @@ public class BackupService : IBackupService
 
     /// <summary>
     /// Starts a new single deletion job given the file or path filter.
+    /// When <paramref name="versionIds"/> is provided, only those backup versions are targeted.
     /// </summary>
     public Task StartDeleteSingle(
         string fileFilter,
         string pathFilter,
         IJobReport jobReport,
         CancellationToken cancellationToken,
-        bool silent = false)
+        bool silent = false,
+        IReadOnlyList<int> versionIds = null)
     {
         var deleteJob = new DeleteSingleJob(storageFactory.GetCurrentStorageProvider(),
             dbClientFactory,
@@ -235,7 +238,7 @@ public class BackupService : IBackupService
             versionQueryRepository,
             backupMutationRepository);
 
-        return StartJob(jobReport, ActionType.Delete, deleteJob, () => deleteJob.DeleteSingleAsync(fileFilter, pathFilter), cancellationToken, silent);
+        return StartJob(jobReport, ActionType.Delete, deleteJob, () => deleteJob.DeleteSingleAsync(fileFilter, pathFilter, versionIds), cancellationToken, silent);
     }
 
     /// <summary>

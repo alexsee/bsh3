@@ -1,0 +1,1464 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppDescription" xml:space="preserve">
+    <value>BSH.MainApp</value>
+  </data>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>Backup Service Home</value>
+  </data>
+  <data name="AppNotificationSamplePayload" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;App-Benachrichtigung&lt;/text&gt;
+      &lt;text&gt;&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="Einstellungen" arguments="action=Settings"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="ApplicationUpdate_UpToDate_Text" xml:space="preserve">
+    <value>Sie verwenden bereits die neueste Version.</value>
+  </data>
+  <data name="Browser_AddToFolderFavorites" xml:space="preserve">
+    <value>Zu Ordnerfavoriten hinzufügen</value>
+  </data>
+  <data name="Browser_Backups" xml:space="preserve">
+    <value>Sicherungen</value>
+  </data>
+  <data name="Browser_Column_DateCreated" xml:space="preserve">
+    <value>Erstellungsdatum</value>
+  </data>
+  <data name="Browser_Column_LastModified" xml:space="preserve">
+    <value>Zuletzt geändert</value>
+  </data>
+  <data name="Browser_Column_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Browser_Column_Path" xml:space="preserve">
+    <value>Pfad</value>
+  </data>
+  <data name="Browser_Column_Size" xml:space="preserve">
+    <value>Größe</value>
+  </data>
+  <data name="Browser_DeleteBackup" xml:space="preserve">
+    <value>Sicherung löschen</value>
+  </data>
+  <data name="Browser_DeleteBackup_Confirm" xml:space="preserve">
+    <value>Sind Sie sicher, dass Sie diese Sicherung löschen möchten?</value>
+  </data>
+  <data name="Browser_DeleteBackup_Title" xml:space="preserve">
+    <value>Sicherung löschen</value>
+  </data>
+  <data name="Browser_DeleteBackups_Confirm" xml:space="preserve">
+    <value>Sind Sie sicher, dass Sie die ausgewählten Sicherungen löschen möchten?</value>
+  </data>
+  <data name="Browser_DeleteBackups_Title" xml:space="preserve">
+    <value>Sicherungen löschen</value>
+  </data>
+  <data name="Browser_DeleteFromAll_Confirm" xml:space="preserve">
+    <value>Sind Sie sicher, dass Sie diese(n) {0} aus allen Sicherungen löschen möchten?</value>
+  </data>
+  <data name="Browser_DeleteFromAll_File" xml:space="preserve">
+    <value>Datei</value>
+  </data>
+  <data name="Browser_DeleteFromAll_Folder" xml:space="preserve">
+    <value>Ordner</value>
+  </data>
+  <data name="Browser_DeleteFromAll_Title" xml:space="preserve">
+    <value>Aus allen Sicherungen löschen</value>
+  </data>
+  <data name="Browser_DeleteFromRange_All" xml:space="preserve">
+    <value>Aus allen Sicherungen</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Confirm" xml:space="preserve">
+    <value>Sind Sie sicher, dass Sie diese(n) {0} aus {1} ausgewählten Sicherung(en) löschen möchten?</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Intro" xml:space="preserve">
+    <value>Wählen Sie, aus welchen Sicherungen diese(r) {0} entfernt werden soll:</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastDays" xml:space="preserve">
+    <value>Aus Sicherungen der letzten X Tage</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastDays_Value" xml:space="preserve">
+    <value>Anzahl der Tage</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastN" xml:space="preserve">
+    <value>Aus den letzten N Sicherungen</value>
+  </data>
+  <data name="Browser_DeleteFromRange_LastN_Value" xml:space="preserve">
+    <value>Anzahl der Sicherungen</value>
+  </data>
+  <data name="Browser_DeleteFromRange_NoVersions" xml:space="preserve">
+    <value>Keine passenden Sicherungen für die gewählte Auswahl gefunden.</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Selected" xml:space="preserve">
+    <value>Aus ausgewählten Sicherungen</value>
+  </data>
+  <data name="Browser_DeleteFromRange_Title" xml:space="preserve">
+    <value>Aus Sicherungen löschen</value>
+  </data>
+  <data name="Browser_DeleteMultipleBackups" xml:space="preserve">
+    <value>Mehrere Sicherungen löschen</value>
+  </data>
+  <data name="Browser_DeleteSelectedFromAllBackups" xml:space="preserve">
+    <value>Auswahl aus allen Sicherungen löschen</value>
+  </data>
+  <data name="Browser_EditBackup" xml:space="preserve">
+    <value>Sicherung bearbeiten</value>
+  </data>
+  <data name="Browser_Empty_GoHome" xml:space="preserve">
+    <value>Zur Übersicht</value>
+  </data>
+  <data name="Browser_Empty_Text" xml:space="preserve">
+    <value>Erstellen Sie Sicherungen, um sie hier zu durchsuchen.</value>
+  </data>
+  <data name="Browser_Empty_Title" xml:space="preserve">
+    <value>Es sind derzeit keine Sicherungen vorhanden!</value>
+  </data>
+  <data name="Browser_Favorites" xml:space="preserve">
+    <value>Favoriten</value>
+  </data>
+  <data name="Browser_FeatureNotAvailable_Text" xml:space="preserve">
+    <value>Die Funktion ist derzeit nicht verfügbar.
+
+Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefunden werden konnte. Installieren Sie Backup Service Home erneut, um das Problem zu beheben.</value>
+  </data>
+  <data name="Browser_FeatureNotAvailable_Title" xml:space="preserve">
+    <value>Funktion nicht verfügbar</value>
+  </data>
+  <data name="Browser_FileDetails_AvailableVersions" xml:space="preserve">
+    <value>Verfügbare Versionen</value>
+  </data>
+  <data name="Browser_FileDetails_Created" xml:space="preserve">
+    <value>Erstellt</value>
+  </data>
+  <data name="Browser_FileDetails_Modified" xml:space="preserve">
+    <value>Geändert</value>
+  </data>
+  <data name="Browser_FileDetails_RestorePath" xml:space="preserve">
+    <value>Wiederherstellungspfad</value>
+  </data>
+  <data name="Browser_FileDetails_SizeBytes" xml:space="preserve">
+    <value>{0} Bytes</value>
+  </data>
+  <data name="Browser_FileDetails_Type" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="Browser_LockUnlockBackup" xml:space="preserve">
+    <value>Sicherung sperren/entsperren</value>
+  </data>
+  <data name="Browser_Organize" xml:space="preserve">
+    <value>Organisieren</value>
+  </data>
+  <data name="Browser_PreviewPane" xml:space="preserve">
+    <value>Vorschaufenster</value>
+  </data>
+  <data name="Browser_Properties" xml:space="preserve">
+    <value>Eigenschaften</value>
+  </data>
+  <data name="Browser_QuickPreview" xml:space="preserve">
+    <value>Schnellvorschau</value>
+  </data>
+  <data name="Browser_Remove" xml:space="preserve">
+    <value>Entfernen</value>
+  </data>
+  <data name="Browser_Rename" xml:space="preserve">
+    <value>Umbenennen</value>
+  </data>
+  <data name="Browser_RenameFavorite_Title" xml:space="preserve">
+    <value>Favorit umbenennen</value>
+  </data>
+  <data name="Browser_Restore" xml:space="preserve">
+    <value>Wiederherstellen</value>
+  </data>
+  <data name="Browser_RestoreAll" xml:space="preserve">
+    <value>Alles wiederherstellen</value>
+  </data>
+  <data name="Browser_RestoreAllTo" xml:space="preserve">
+    <value>Alles wiederherstellen nach…</value>
+  </data>
+  <data name="Browser_RestoreDestination_PickerFailed" xml:space="preserve">
+    <value>Der Ordnerauswahldialog konnte nicht geöffnet werden. {0}</value>
+  </data>
+  <data name="Browser_RestoreDestination_Title" xml:space="preserve">
+    <value>Wiederherstellungsziel</value>
+  </data>
+  <data name="Browser_RestoreTo" xml:space="preserve">
+    <value>Wiederherstellen nach…</value>
+  </data>
+  <data name="Browser_Search" xml:space="preserve">
+    <value>Suchen</value>
+  </data>
+  <data name="Browser_Title.Text" xml:space="preserve">
+    <value>Browser</value>
+  </data>
+  <data name="CreateBackup_CreateButton" xml:space="preserve">
+    <value>Sicherung erstellen</value>
+  </data>
+  <data name="CreateBackup_DescriptionLabel" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="CreateBackup_DescriptionLabelColon" xml:space="preserve">
+    <value>Beschreibung:</value>
+  </data>
+  <data name="CreateBackup_FullBackup" xml:space="preserve">
+    <value>Vollständige Sicherung erstellen</value>
+  </data>
+  <data name="CreateBackup_Help_Description" xml:space="preserve">
+    <value>Geben Sie eine Beschreibung für Ihre Sicherung ein</value>
+  </data>
+  <data name="CreateBackup_Help_Title" xml:space="preserve">
+    <value>Geben Sie den Titel für Ihre Sicherung ein</value>
+  </data>
+  <data name="CreateBackup_ShutdownAfter" xml:space="preserve">
+    <value>Computer nach Abschluss herunterfahren</value>
+  </data>
+  <data name="CreateBackup_Title" xml:space="preserve">
+    <value>Sicherung erstellen</value>
+  </data>
+  <data name="CreateBackup_TitleLabel" xml:space="preserve">
+    <value>Titel:</value>
+  </data>
+  <data name="CreateBackup_Title_Automatic" xml:space="preserve">
+    <value>Automatisches Backup</value>
+  </data>
+  <data name="CreateBackup_Title_First" xml:space="preserve">
+    <value>Erste Sicherung</value>
+  </data>
+  <data name="CreateBackup_Title_Manual" xml:space="preserve">
+    <value>Manuelle Sicherung</value>
+  </data>
+  <data name="CreateBackup_Title_Scheduled" xml:space="preserve">
+    <value>Automatische Sicherung</value>
+  </data>
+  <data name="DATETIME_FORMAT" xml:space="preserve">
+    <value>dd. MMM yyyy HH:mm</value>
+  </data>
+  <data name="EditBackup_Title" xml:space="preserve">
+    <value>Sicherung bearbeiten</value>
+  </data>
+  <data name="EditBackup_WindowTitle" xml:space="preserve">
+    <value>Sicherung erstellen</value>
+  </data>
+  <data name="Filter_AddFiles" xml:space="preserve">
+    <value>Datei(en) hinzufügen</value>
+  </data>
+  <data name="Filter_AddFolder" xml:space="preserve">
+    <value>Ordner hinzufügen</value>
+  </data>
+  <data name="Filter_Column_Extension" xml:space="preserve">
+    <value>Erweiterung</value>
+  </data>
+  <data name="Filter_Column_File" xml:space="preserve">
+    <value>Datei</value>
+  </data>
+  <data name="Filter_Column_Folder" xml:space="preserve">
+    <value>Ordner</value>
+  </data>
+  <data name="Filter_Column_Pattern" xml:space="preserve">
+    <value>Muster</value>
+  </data>
+  <data name="Filter_Description" xml:space="preserve">
+    <value>Wählen Sie Dateien, Ordner, Dateitypen, Größenlimits oder Namensmuster aus, die Backup Service Home bei Sicherungen überspringen soll.</value>
+  </data>
+  <data name="Filter_EnterExtension" xml:space="preserve">
+    <value>Erweiterung eingeben (ohne Punkt)</value>
+  </data>
+  <data name="Filter_EnterRegex" xml:space="preserve">
+    <value>Regulären Ausdruck eingeben (z. B. .*\.tmp$)</value>
+  </data>
+  <data name="Filter_ExcludeLargerThan" xml:space="preserve">
+    <value>Dateien größer als diese Größe ausschließen</value>
+  </data>
+  <data name="Filter_FileNotInSources" xml:space="preserve">
+    <value>Die ausgewählte Datei liegt nicht in den konfigurierten Quellordnern.</value>
+  </data>
+  <data name="Filter_FolderNotInSources" xml:space="preserve">
+    <value>Der ausgewählte Ordner liegt nicht in den konfigurierten Quellordnern.</value>
+  </data>
+  <data name="Filter_Heading" xml:space="preserve">
+    <value>Dateien und Ordner ausschließen</value>
+  </data>
+  <data name="Filter_IncludeSystemFolders" xml:space="preserve">
+    <value>Als System markierte Ordner einbeziehen (z. B. Nextcloud-Sync-Ordner)</value>
+  </data>
+  <data name="Filter_InvalidRegex" xml:space="preserve">
+    <value>Ungültiger regulärer Ausdruck. Korrigieren Sie das Muster, bevor Sie es speichern.</value>
+  </data>
+  <data name="Filter_RegexDoesNotMatch" xml:space="preserve">
+    <value>Testeingabe stimmt nicht überein</value>
+  </data>
+  <data name="Filter_RegexMatches" xml:space="preserve">
+    <value>Testeingabe stimmt überein</value>
+  </data>
+  <data name="Filter_RegexTestInput" xml:space="preserve">
+    <value>Testeingabe (z. B. bericht.tmp)</value>
+  </data>
+  <data name="Filter_ValidationError_Title" xml:space="preserve">
+    <value>Element kann nicht ausgeschlossen werden</value>
+  </data>
+  <data name="Filter_MaximumFileSize" xml:space="preserve">
+    <value>Maximale Dateigröße</value>
+  </data>
+  <data name="Filter_Tab_FileTypes" xml:space="preserve">
+    <value>Dateitypen</value>
+  </data>
+  <data name="Filter_Tab_Files" xml:space="preserve">
+    <value>Dateien</value>
+  </data>
+  <data name="Filter_Tab_Folders" xml:space="preserve">
+    <value>Ordner</value>
+  </data>
+  <data name="Filter_Tab_MaxFileSize" xml:space="preserve">
+    <value>Max. Dateigröße</value>
+  </data>
+  <data name="Filter_Tab_Regex" xml:space="preserve">
+    <value>Reguläre Ausdrücke</value>
+  </data>
+  <data name="Filter_Title" xml:space="preserve">
+    <value>Elemente ausschließen</value>
+  </data>
+  <data name="Formatter_DatePrefix" xml:space="preserve">
+    <value>dd. MMMM yyyy </value>
+  </data>
+  <data name="Formatter_Never" xml:space="preserve">
+    <value>Nie</value>
+  </data>
+  <data name="Formatter_Today" xml:space="preserve">
+    <value>Heute {0}</value>
+  </data>
+  <data name="Formatter_Yesterday" xml:space="preserve">
+    <value>Gestern {0}</value>
+  </data>
+  <data name="INFO_BACKUP_OLD_TEXT" xml:space="preserve">
+    <value>Ihre letzte Datensicherung liegt bereits {0} Tage zurück. Führen Sie eine Datensicherung aus, damit Ihre aktuellen Dateien gesichert sind.</value>
+  </data>
+  <data name="INFO_BACKUP_OLD_TITLE" xml:space="preserve">
+    <value>Datensicherung veraltet</value>
+  </data>
+  <data name="INFO_BACKUP_SUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Die geplante Sicherung wurde erfolgreich abgeschlossen.</value>
+  </data>
+  <data name="INFO_BACKUP_SUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Datensicherung erfolgreich</value>
+  </data>
+  <data name="INFO_BACKUP_UNSUCCESSFUL_TEXT" xml:space="preserve">
+    <value>Die geplante Datensicherung wurde mit Problemen beendet. Klicken Sie hier für mehr Informationen.</value>
+  </data>
+  <data name="INFO_BACKUP_UNSUCCESSFUL_TITLE" xml:space="preserve">
+    <value>Datensicherung mit Problemen beendet</value>
+  </data>
+  <data name="INFO_NO_DISKSPACE_LEFT_TEXT" xml:space="preserve">
+    <value>Auf dem Backupmedium ist nicht mehr genug Speicherplatz vorhanden. Löschen Sie Datensicherungen oder wechseln Sie das Medium.</value>
+  </data>
+  <data name="INFO_NO_DISKSPACE_LEFT_TITLE" xml:space="preserve">
+    <value>Nicht genug Speicherplatz.</value>
+  </data>
+  <data name="MSG_BACKUP_DEVICE_NOT_READY_TEXT" xml:space="preserve">
+    <value>Das Sicherungsmedium steht aktuell nicht zur Verfügung, weshalb die Sicherung abgebrochen wird.</value>
+  </data>
+  <data name="MSG_BACKUP_DEVICE_NOT_READY_TITLE" xml:space="preserve">
+    <value>Sicherungsmedium nicht bereit</value>
+  </data>
+  <data name="MSG_NO_UPDATE_FOUND_TEXT" xml:space="preserve">
+    <value>Sie sind auf der neusten Version von Backup Service Home 3. Es wurden keine Aktualisierungen gefunden.</value>
+  </data>
+  <data name="MSG_NO_UPDATE_FOUND_TITLE" xml:space="preserve">
+    <value>Keine Aktualisierungen gefunden</value>
+  </data>
+  <data name="MSG_PASSWORD_WRONG_TEXT" xml:space="preserve">
+    <value>Das angegebene Kennwort ist falsch.</value>
+  </data>
+  <data name="MSG_PASSWORD_WRONG_TITLE" xml:space="preserve">
+    <value>Kennwort falsch</value>
+  </data>
+  <data name="MSG_TASK_RUNNING_TEXT" xml:space="preserve">
+    <value>Eine andere Sicherungsaufgabe wird aktuell bereits ausgeführt, weshalb diese Sicherung abgebrochen wird.</value>
+  </data>
+  <data name="MSG_TASK_RUNNING_TITLE" xml:space="preserve">
+    <value>Andere Sicherungsaufgabe in Bearbeitung</value>
+  </data>
+  <data name="MainView_Available" xml:space="preserve">
+    <value>Verfügbar:</value>
+  </data>
+  <data name="MainView_BackupMode" xml:space="preserve">
+    <value>Sicherungsmodus:</value>
+  </data>
+  <data name="MainView_BackupMode_Automatic" xml:space="preserve">
+    <value>Automatische Sicherungen</value>
+  </data>
+  <data name="MainView_BackupMode_Manual" xml:space="preserve">
+    <value>Manuelle Sicherungen</value>
+  </data>
+  <data name="MainView_BackupMode_Scheduled" xml:space="preserve">
+    <value>Zeitplanbasierte Sicherungen</value>
+  </data>
+  <data name="MainView_Backups" xml:space="preserve">
+    <value>Sicherungen</value>
+  </data>
+  <data name="MainView_BtnCreateBackup_Title" xml:space="preserve">
+    <value>Manuelle Sicherung</value>
+  </data>
+  <data name="MainView_Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="MainView_DiskspaceFullExpected" xml:space="preserve">
+    <value>Voraussichtlich voll am:</value>
+  </data>
+  <data name="MainView_DiskspaceUnpredictable" xml:space="preserve">
+    <value>noch nicht vorhersehbar</value>
+  </data>
+  <data name="MainView_Files" xml:space="preserve">
+    <value>Dateien</value>
+  </data>
+  <data name="MainView_LastBackup" xml:space="preserve">
+    <value>Letzte Sicherung:</value>
+  </data>
+  <data name="MainView_NextBackup" xml:space="preserve">
+    <value>Nächste Sicherung:</value>
+  </data>
+  <data name="MainView_NonePlanned" xml:space="preserve">
+    <value>keines geplant</value>
+  </data>
+  <data name="MainView_Off" xml:space="preserve">
+    <value>Aus</value>
+  </data>
+  <data name="MainView_On" xml:space="preserve">
+    <value>Ein</value>
+  </data>
+  <data name="MainView_ScheduleWarning_NoEntries" xml:space="preserve">
+    <value>Für geplante Sicherungen ist kein Zeitplan eingerichtet.</value>
+  </data>
+  <data name="MainView_StartBackup" xml:space="preserve">
+    <value>Sicherung starten</value>
+  </data>
+  <data name="MainView_SystemStatus_BatteryPaused" xml:space="preserve">
+    <value>Batteriebetrieb. Es werden keine Sicherungen durchgeführt.</value>
+  </data>
+  <data name="MainView_SystemStatus_Deactivated" xml:space="preserve">
+    <value>Automatische Sicherung ist deaktiviert.</value>
+  </data>
+  <data name="MainView_SystemStatus_NotConfigured" xml:space="preserve">
+    <value>Backup Service Home ist noch nicht konfiguriert.</value>
+  </data>
+  <data name="MainView_SystemStatus_Running" xml:space="preserve">
+    <value>Backup Service Home wird ordnungsgemäß ausgeführt.</value>
+  </data>
+  <data name="MainView_TotalSizeBackuped" xml:space="preserve">
+    <value>Gesamtgröße gesichert</value>
+  </data>
+  <data name="Main_Title.Text" xml:space="preserve">
+    <value>Übersicht</value>
+  </data>
+  <data name="MediaType_FileTransferServer" xml:space="preserve">
+    <value>File Transfer Protocol (FTP)</value>
+  </data>
+  <data name="MediaType_LocalDevice" xml:space="preserve">
+    <value>Lokales Gerät</value>
+  </data>
+  <data name="MsgBox_Add" xml:space="preserve">
+    <value>Hinzufügen</value>
+  </data>
+  <data name="MsgBox_Back" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="MsgBox_Browse" xml:space="preserve">
+    <value>Durchsuchen...</value>
+  </data>
+  <data name="MsgBox_Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="MsgBox_Change" xml:space="preserve">
+    <value>Ändern</value>
+  </data>
+  <data name="MsgBox_Close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="MsgBox_Delete" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="MsgBox_Ftp_Successful_Text" xml:space="preserve">
+    <value>Die Verbindung zum angegebenen FTP-Server konnte erfolgreich getestet werden.</value>
+  </data>
+  <data name="MsgBox_Ftp_Successful_Title" xml:space="preserve">
+    <value>Verbindung zum FTP-Server erfolgreich</value>
+  </data>
+  <data name="MsgBox_Ftp_Unuccessful_Text" xml:space="preserve">
+    <value>Die Verbindung zum angegebenen FTP-Server konnte nicht hergestellt werden.</value>
+  </data>
+  <data name="MsgBox_Ftp_Unuccessful_Title" xml:space="preserve">
+    <value>Verbindung zum FTP-Server nicht erfolgreich</value>
+  </data>
+  <data name="MsgBox_LocalPath_Change_Move" xml:space="preserve">
+    <value>Verschieben</value>
+  </data>
+  <data name="MsgBox_LocalPath_Change_Text" xml:space="preserve">
+    <value>Sie können den Speicherort der Sicherungen entweder übernehmen oder verschieben:
+
+Übernehmen: Sie haben den Pfad der Sicherungen bereits verschoben oder die Pfade haben sich geändert.
+Verschieben: Sie möchten die Sicherungen an einen anderen Pfad verschieben und BSH soll die Dateien verschieben.</value>
+  </data>
+  <data name="MsgBox_LocalPath_Change_Title" xml:space="preserve">
+    <value>Lokalen Pfad ändern</value>
+  </data>
+  <data name="MsgBox_LocalPath_Change_Use" xml:space="preserve">
+    <value>Übernehmen</value>
+  </data>
+  <data name="MsgBox_MediaType_Change_Text" xml:space="preserve">
+    <value>Vorhandene Sicherungen werden gelöscht.
+
+Wenn Sie den Medientyp wechseln, werden alle vorhandenen Sicherungen gelöscht. Ein Wechsel des Sicherungsgerätetyps wird nicht unterstützt.
+
+Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
+  </data>
+  <data name="MsgBox_MediaType_Change_Title" xml:space="preserve">
+    <value>Vorhandene Sicherungen werden gelöscht</value>
+  </data>
+  <data name="MsgBox_Next" xml:space="preserve">
+    <value>Weiter</value>
+  </data>
+  <data name="MsgBox_No" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="MsgBox_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="MsgBox_Remove" xml:space="preserve">
+    <value>Entfernen</value>
+  </data>
+  <data name="MsgBox_Rename" xml:space="preserve">
+    <value>Umbenennen</value>
+  </data>
+  <data name="MsgBox_Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="MsgBox_Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="Nav_BackupBrowser" xml:space="preserve">
+    <value>Backupbrowser</value>
+  </data>
+  <data name="Nav_ExtrasAndSupport" xml:space="preserve">
+    <value>Extras und Support</value>
+  </data>
+  <data name="Nav_Overview" xml:space="preserve">
+    <value>Übersicht</value>
+  </data>
+  <data name="Overwrite_AlreadyExists" xml:space="preserve">
+    <value>An diesem Speicherort ist bereits eine Datei mit demselben Namen vorhanden.</value>
+  </data>
+  <data name="Overwrite_ApplyForAll" xml:space="preserve">
+    <value>Für alle Konflikte übernehmen</value>
+  </data>
+  <data name="Overwrite_LastModified" xml:space="preserve">
+    <value>Zuletzt geändert:</value>
+  </data>
+  <data name="Overwrite_ReplaceDescription" xml:space="preserve">
+    <value>Datei im Zielordner durch die Datei aus der Sicherung ersetzen:</value>
+  </data>
+  <data name="Overwrite_ReplaceHeader" xml:space="preserve">
+    <value>Datei im Ziel ersetzen</value>
+  </data>
+  <data name="Overwrite_Size" xml:space="preserve">
+    <value>Größe:</value>
+  </data>
+  <data name="Overwrite_SkipHeader" xml:space="preserve">
+    <value>Datei überspringen</value>
+  </data>
+  <data name="Overwrite_Title" xml:space="preserve">
+    <value>Dateien überschreiben oder überspringen</value>
+  </data>
+  <data name="Password_Description" xml:space="preserve">
+    <value>Backup Service Home erfordert die Eingabe Ihres Kennworts, um den Vorgang fortzusetzen. Nach der Eingabe werden Sie in dieser Sitzung nicht erneut danach gefragt.</value>
+  </data>
+  <data name="Password_Label" xml:space="preserve">
+    <value>Kennwort:</value>
+  </data>
+  <data name="Password_Remember" xml:space="preserve">
+    <value>Kennwort merken</value>
+  </data>
+  <data name="Password_Required_Text" xml:space="preserve">
+    <value>Zum Zugriff auf diese Sicherung ist ein Kennwort erforderlich.</value>
+  </data>
+  <data name="Password_Required_Title" xml:space="preserve">
+    <value>Kennwort erforderlich</value>
+  </data>
+  <data name="Password_Title" xml:space="preserve">
+    <value>Kennwort erforderlich</value>
+  </data>
+  <data name="Schedule_BackupTimes" xml:space="preserve">
+    <value>Sicherungszeiten</value>
+  </data>
+  <data name="Schedule_BackupTimesDescription" xml:space="preserve">
+    <value>Fügen Sie einmalige oder wiederkehrende Sicherungseinträge hinzu.</value>
+  </data>
+  <data name="Schedule_CreateFullBackupAfterInterval" xml:space="preserve">
+    <value>Vollständige Sicherung nach einem Intervall erstellen</value>
+  </data>
+  <data name="Schedule_Date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Schedule_DateTime" xml:space="preserve">
+    <value>Datum / Uhrzeit</value>
+  </data>
+  <data name="Schedule_Day" xml:space="preserve">
+    <value>Tag</value>
+  </data>
+  <data name="Schedule_DayOfMonth" xml:space="preserve">
+    <value>Tag des Monats</value>
+  </data>
+  <data name="Schedule_DaysBetweenFullBackups" xml:space="preserve">
+    <value>Tage zwischen vollständigen Sicherungen</value>
+  </data>
+  <data name="Schedule_Delete" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Schedule_DeleteInterval" xml:space="preserve">
+    <value>Löschintervall</value>
+  </data>
+  <data name="Schedule_FullBackups" xml:space="preserve">
+    <value>Vollständige Sicherungen</value>
+  </data>
+  <data name="Schedule_FullBackupsDescription" xml:space="preserve">
+    <value>Steuern Sie geplante vollständige Sicherungen und den Umgang mit verpassten Sicherungen.</value>
+  </data>
+  <data name="Schedule_Help_Daily" xml:space="preserve">
+    <value>Jeden Tag zur ausgewählten Uhrzeit ausführen.</value>
+  </data>
+  <data name="Schedule_Help_Hourly" xml:space="preserve">
+    <value>Jede Stunde zur ausgewählten Minute ausführen.</value>
+  </data>
+  <data name="Schedule_Help_Monthly" xml:space="preserve">
+    <value>Jeden Monat am ausgewählten Tag und zur ausgewählten Uhrzeit ausführen.</value>
+  </data>
+  <data name="Schedule_Help_Once" xml:space="preserve">
+    <value>Einmalig am ausgewählten Datum und zur ausgewählten Uhrzeit ausführen.</value>
+  </data>
+  <data name="Schedule_Help_Weekly" xml:space="preserve">
+    <value>Jede Woche am ausgewählten Tag und zur ausgewählten Uhrzeit ausführen.</value>
+  </data>
+  <data name="Schedule_HourlyBackupThreshold" xml:space="preserve">
+    <value>Schwellenwert für stündliche Sicherungen</value>
+  </data>
+  <data name="Schedule_NoEntries" xml:space="preserve">
+    <value>Noch keine Sicherungszeiten. Fügen Sie oben den ersten Eintrag hinzu.</value>
+  </data>
+  <data name="Schedule_Kind_Daily" xml:space="preserve">
+    <value>Täglich</value>
+  </data>
+  <data name="Schedule_Kind_Hourly" xml:space="preserve">
+    <value>Stündlich</value>
+  </data>
+  <data name="Schedule_Kind_Monthly" xml:space="preserve">
+    <value>Monatlich</value>
+  </data>
+  <data name="Schedule_Kind_Once" xml:space="preserve">
+    <value>Einmalig</value>
+  </data>
+  <data name="Schedule_Kind_Unknown" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
+  <data name="Schedule_Kind_Weekly" xml:space="preserve">
+    <value>Wöchentlich</value>
+  </data>
+  <data name="Schedule_Minute" xml:space="preserve">
+    <value>Minute</value>
+  </data>
+  <data name="Schedule_Mode" xml:space="preserve">
+    <value>Modus</value>
+  </data>
+  <data name="Schedule_PerformMissedLater" xml:space="preserve">
+    <value>Verpasste geplante Sicherungen später ausführen</value>
+  </data>
+  <data name="Schedule_Repeat" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="Schedule_Retention" xml:space="preserve">
+    <value>Aufbewahrung</value>
+  </data>
+  <data name="Schedule_RetentionDescription" xml:space="preserve">
+    <value>Legen Sie fest, wie lange geplante Sicherungsversionen verfügbar bleiben.</value>
+  </data>
+  <data name="Schedule_RetentionMode_Automatic" xml:space="preserve">
+    <value>Automatisch</value>
+  </data>
+  <data name="Schedule_RetentionMode_Interval" xml:space="preserve">
+    <value>Intervall</value>
+  </data>
+  <data name="Schedule_RetentionMode_None" xml:space="preserve">
+    <value>Keine</value>
+  </data>
+  <data name="Schedule_RetentionUnit_Day" xml:space="preserve">
+    <value>Tag</value>
+  </data>
+  <data name="Schedule_RetentionUnit_Hour" xml:space="preserve">
+    <value>Stunde</value>
+  </data>
+  <data name="Schedule_RetentionUnit_Week" xml:space="preserve">
+    <value>Woche</value>
+  </data>
+  <data name="Schedule_Subtitle" xml:space="preserve">
+    <value>Erstellen Sie Zeitplaneinträge und legen Sie fest, wie geplante Sicherungen aufbewahrt werden.</value>
+  </data>
+  <data name="Schedule_Text_AtMinute" xml:space="preserve">
+    <value>Zur Minute {0}</value>
+  </data>
+  <data name="Schedule_Text_DayOfMonth" xml:space="preserve">
+    <value>Tag {0}, {1}</value>
+  </data>
+  <data name="Schedule_Time" xml:space="preserve">
+    <value>Uhrzeit</value>
+  </data>
+  <data name="Schedule_Title" xml:space="preserve">
+    <value>Zeitplan</value>
+  </data>
+  <data name="Schedule_Unit" xml:space="preserve">
+    <value>Einheit</value>
+  </data>
+  <data name="Settings_Enhanced_AccessDenied_Text" xml:space="preserve">
+    <value>Der Windows-Autostart konnte nicht geändert werden. Prüfen Sie Ihre Berechtigungen und versuchen Sie es erneut.</value>
+  </data>
+  <data name="Settings_Enhanced_AccessDenied_Title" xml:space="preserve">
+    <value>Zugriff verweigert</value>
+  </data>
+  <data name="Settings_Enhanced_Application" xml:space="preserve">
+    <value>Anwendung</value>
+  </data>
+  <data name="Settings_Enhanced_AutoCheckUpdates" xml:space="preserve">
+    <value>Automatisch nach Aktualisierungen suchen</value>
+  </data>
+  <data name="Settings_Enhanced_AutoCheckUpdatesDescription" xml:space="preserve">
+    <value>Beim Start der Anwendung nach Aktualisierungen suchen</value>
+  </data>
+  <data name="Settings_Enhanced_BackupCompleted" xml:space="preserve">
+    <value>Sicherung abgeschlossen</value>
+  </data>
+  <data name="Settings_Enhanced_BackupCompletedDescription" xml:space="preserve">
+    <value>Benachrichtigung anzeigen, wenn die Sicherung abgeschlossen ist</value>
+  </data>
+  <data name="Settings_Enhanced_BackupOutdated" xml:space="preserve">
+    <value>Sicherung veraltet</value>
+  </data>
+  <data name="Settings_Enhanced_BackupOutdatedDescription" xml:space="preserve">
+    <value>Benachrichtigung anzeigen, wenn die Sicherung veraltet ist</value>
+  </data>
+  <data name="Settings_Enhanced_BackupOutdatedWhen" xml:space="preserve">
+    <value>Sicherung ist veraltet, wenn älter als</value>
+  </data>
+  <data name="Settings_Enhanced_Backupbrowser" xml:space="preserve">
+    <value>Backupbrowser</value>
+  </data>
+  <data name="Settings_Enhanced_Days" xml:space="preserve">
+    <value>Tage</value>
+  </data>
+  <data name="Settings_Enhanced_DirectoryLocalization" xml:space="preserve">
+    <value>Verzeichnislokalisierung</value>
+  </data>
+  <data name="Settings_Enhanced_DirectoryLocalizationDescription" xml:space="preserve">
+    <value>Lokalisierte Verzeichnisnamen anzeigen, falls verfügbar</value>
+  </data>
+  <data name="Settings_Enhanced_DiskspaceLowerThan" xml:space="preserve">
+    <value>Speicherplatz niedriger als</value>
+  </data>
+  <data name="Settings_Enhanced_DownloadBeta" xml:space="preserve">
+    <value>Beta-Aktualisierungen herunterladen</value>
+  </data>
+  <data name="Settings_Enhanced_DownloadBetaDescription" xml:space="preserve">
+    <value>Vorabversionen bei der Suche nach Aktualisierungen einbeziehen</value>
+  </data>
+  <data name="Settings_Enhanced_LaunchAtStartup" xml:space="preserve">
+    <value>Beim Windows-Start starten</value>
+  </data>
+  <data name="Settings_Enhanced_LaunchAtStartupDescription" xml:space="preserve">
+    <value>Backup Service Home starten, wenn Sie sich bei Windows anmelden</value>
+  </data>
+  <data name="Settings_Enhanced_LowDiskspace" xml:space="preserve">
+    <value>Wenig Speicherplatz</value>
+  </data>
+  <data name="Settings_Enhanced_LowDiskspaceDescription" xml:space="preserve">
+    <value>Benachrichtigung anzeigen, wenn wenig Speicherplatz verfügbar ist</value>
+  </data>
+  <data name="Settings_Enhanced_MB" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="Settings_Enhanced_Notifications" xml:space="preserve">
+    <value>Benachrichtigungen</value>
+  </data>
+  <data name="Settings_Enhanced_StorageDeviceNotify" xml:space="preserve">
+    <value>Speichermedium</value>
+  </data>
+  <data name="Settings_Enhanced_StorageDeviceNotifyDescription" xml:space="preserve">
+    <value>Benachrichtigung anzeigen, um das Speichermedium anzufordern, falls nicht verfügbar</value>
+  </data>
+  <data name="Settings_Mode_BackupMode" xml:space="preserve">
+    <value>Sicherungsmodus</value>
+  </data>
+  <data name="Settings_Mode_BackupModeDescription" xml:space="preserve">
+    <value>Legen Sie die Automatisierung der Sicherungen fest</value>
+  </data>
+  <data name="Settings_Mode_BatterySaver" xml:space="preserve">
+    <value>Energiesparmodus</value>
+  </data>
+  <data name="Settings_Mode_BatterySaverDescription" xml:space="preserve">
+    <value>Stoppt automatische und geplante Sicherungen, wenn das Gerät im Batteriebetrieb ist</value>
+  </data>
+  <data name="Settings_Mode_FullAutomatic" xml:space="preserve">
+    <value>Vollautomatische Sicherungen (empfohlen)</value>
+  </data>
+  <data name="Settings_Mode_FullAutomaticDescription" xml:space="preserve">
+    <value>Das vollautomatische Sicherungsmodell sichert Ihre Dateien stündlich. Diese Sicherungen sind 24 Stunden verfügbar. Anschließend sind tägliche Sicherungen 30 Tage verfügbar. Danach sind wöchentliche Sicherungen verfügbar, solange ausreichend Speicherplatz vorhanden ist.</value>
+  </data>
+  <data name="Settings_Mode_Manual" xml:space="preserve">
+    <value>Manuelle Sicherungen</value>
+  </data>
+  <data name="Settings_Mode_ManualDescription" xml:space="preserve">
+    <value>Sicherungen werden nicht automatisch ausgeführt, sondern Sie starten die Sicherung manuell.</value>
+  </data>
+  <data name="Settings_Mode_Scheduled" xml:space="preserve">
+    <value>Zeitplanbasierte Sicherungen</value>
+  </data>
+  <data name="Settings_Mode_ScheduledDescription" xml:space="preserve">
+    <value>Sie legen fest, wann Sicherungen durchgeführt werden und wie lange diese verfügbar bleiben sollen.</value>
+  </data>
+  <data name="Settings_Mode_SetSchedule" xml:space="preserve">
+    <value>Zeitplan festlegen</value>
+  </data>
+  <data name="Settings_Nav_Automation" xml:space="preserve">
+    <value>Automatisierung</value>
+  </data>
+  <data name="Settings_Nav_BackupOptions" xml:space="preserve">
+    <value>Sicherungsoptionen</value>
+  </data>
+  <data name="Settings_Nav_BackupTarget" xml:space="preserve">
+    <value>Sicherungsziel</value>
+  </data>
+  <data name="Settings_Nav_Behavior" xml:space="preserve">
+    <value>Verhalten</value>
+  </data>
+  <data name="Settings_Nav_Sources" xml:space="preserve">
+    <value>Quellen</value>
+  </data>
+  <data name="Settings_Options_Compress" xml:space="preserve">
+    <value>Sicherungen komprimieren</value>
+  </data>
+  <data name="Settings_Options_Encrypt" xml:space="preserve">
+    <value>Sicherungen verschlüsseln</value>
+  </data>
+  <data name="Settings_Options_EncryptionHint" xml:space="preserve">
+    <value>Zum Schutz vor unbefugtem Zugriff kann die Sicherung verschlüsselt werden. Sie werden dann in jeder Sitzung nach Ihrem Kennwort gefragt. Die Verschlüsselung kann nicht nachträglich angewendet werden.</value>
+  </data>
+  <data name="Settings_Options_ExcludedExtensions" xml:space="preserve">
+    <value>Ausgeschlossene Erweiterungen</value>
+  </data>
+  <data name="Settings_Options_ExcludedExtensionsDescription" xml:space="preserve">
+    <value>Dateien mit diesen Erweiterungen werden in komprimierten Sicherungen gespeichert, ohne erneut komprimiert zu werden.</value>
+  </data>
+  <data name="Settings_Options_NoCompressionOrEncryption" xml:space="preserve">
+    <value>Keine Komprimierung oder Verschlüsselung</value>
+  </data>
+  <data name="Settings_Options_RequiresMorePower" xml:space="preserve">
+    <value>(erfordert mehr Rechenleistung; langsamere Sicherungen)</value>
+  </data>
+  <data name="Settings_Options_StorageDeviceBehavior" xml:space="preserve">
+    <value>Verhalten des Speichermediums</value>
+  </data>
+  <data name="Settings_Options_StorageOptions" xml:space="preserve">
+    <value>Speicheroptionen</value>
+  </data>
+  <data name="Settings_Options_StorageOptionsDescription" xml:space="preserve">
+    <value>Legen Sie fest, wie die Sicherung gespeichert werden soll.</value>
+  </data>
+  <data name="Settings_Options_TurnOff" xml:space="preserve">
+    <value>Ausschalten</value>
+  </data>
+  <data name="Settings_Options_WaitForDevice" xml:space="preserve">
+    <value>Auf Speichermedium warten, falls nicht verfügbar</value>
+  </data>
+  <data name="Settings_Sources_AddDirectory" xml:space="preserve">
+    <value>Verzeichnis hinzufügen</value>
+  </data>
+  <data name="Settings_Sources_Delete" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Settings_Sources_Description" xml:space="preserve">
+    <value>Wählen Sie die Verzeichnisse aus, die in die Sicherung einbezogen werden sollen.</value>
+  </data>
+  <data name="Settings_Sources_Directory" xml:space="preserve">
+    <value>Verzeichnis</value>
+  </data>
+  <data name="Settings_Sources_DriveRootRisky" xml:space="preserve">
+    <value>Die Auswahl eines Laufwerksstamms ist riskant. Wählen Sie stattdessen einen bestimmten Ordner.</value>
+  </data>
+  <data name="Settings_Sources_ExcludeDescription" xml:space="preserve">
+    <value>Schließen Sie einzelne Dateien und Ordner aus oder definieren Sie eigene Ausschlussregeln.</value>
+  </data>
+  <data name="Settings_Sources_ExcludeHeader" xml:space="preserve">
+    <value>Dateien und Ordner ausschließen</value>
+  </data>
+  <data name="Settings_Sources_Header" xml:space="preserve">
+    <value>Quellverzeichnisse</value>
+  </data>
+  <data name="Settings_Sources_InvalidPath" xml:space="preserve">
+    <value>Der ausgewählte Quellordnerpfad ist ungültig.</value>
+  </data>
+  <data name="Settings_Sources_SameName" xml:space="preserve">
+    <value>Ein Quellordner mit demselben Namen ist bereits konfiguriert.</value>
+  </data>
+  <data name="Settings_Target_BackupStorage" xml:space="preserve">
+    <value>Sicherungsspeicher:</value>
+  </data>
+  <data name="Settings_Target_Change" xml:space="preserve">
+    <value>Ändern</value>
+  </data>
+  <data name="Settings_Target_DriveRootNotSupported" xml:space="preserve">
+    <value>Die Auswahl eines Laufwerksstamms als Sicherungsziel wird nicht unterstützt. Wählen Sie stattdessen einen bestimmten Ordner.</value>
+  </data>
+  <data name="Settings_Target_Encoding" xml:space="preserve">
+    <value>Kodierung:</value>
+  </data>
+  <data name="Settings_Target_EnforceUnencrypted" xml:space="preserve">
+    <value>Unverschlüsselte Verbindung erzwingen</value>
+  </data>
+  <data name="Settings_Target_FolderNotEmpty" xml:space="preserve">
+    <value>Der ausgewählte Zielordner enthält bereits Dateien.</value>
+  </data>
+  <data name="Settings_Target_MoveFailed_Text" xml:space="preserve">
+    <value>Die Sicherungsdaten konnten nicht verschoben werden.</value>
+  </data>
+  <data name="Settings_Target_MoveFailed_Title" xml:space="preserve">
+    <value>Sicherungsdaten konnten nicht verschoben werden</value>
+  </data>
+  <data name="Settings_Target_NetworkAuthentication" xml:space="preserve">
+    <value>Netzwerkauthentifizierung</value>
+  </data>
+  <data name="Settings_Target_Password" xml:space="preserve">
+    <value>Kennwort:</value>
+  </data>
+  <data name="Settings_Target_Path" xml:space="preserve">
+    <value>Pfad:</value>
+  </data>
+  <data name="Settings_Target_Port" xml:space="preserve">
+    <value>Port:</value>
+  </data>
+  <data name="Settings_Target_Server" xml:space="preserve">
+    <value>Server:</value>
+  </data>
+  <data name="Settings_Target_StorageDevice" xml:space="preserve">
+    <value>Speichermedium</value>
+  </data>
+  <data name="Settings_Target_StorageDeviceDescription" xml:space="preserve">
+    <value>Wählen Sie das Gerät aus, auf dem die Sicherung gespeichert werden soll.</value>
+  </data>
+  <data name="Settings_Target_StoragePath" xml:space="preserve">
+    <value>Speicherpfad:</value>
+  </data>
+  <data name="Settings_Target_SwitchStorage" xml:space="preserve">
+    <value>Speicher wechseln</value>
+  </data>
+  <data name="Settings_Target_SwitchStorageDescription" xml:space="preserve">
+    <value>Ermöglicht den Wechsel des Sicherungsmediums auf ein neues (leeres) Medium, ohne die Einstellungen zu verlieren.</value>
+  </data>
+  <data name="Settings_Target_TestConnection" xml:space="preserve">
+    <value>Verbindung testen</value>
+  </data>
+  <data name="Settings_Target_Username" xml:space="preserve">
+    <value>Benutzername:</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="Setup_FirstBackup_Title" xml:space="preserve">
+    <value>Erste Sicherung</value>
+  </data>
+  <data name="Setup_FtpConnectionSuccessful_Text" xml:space="preserve">
+    <value>Die FTP-Verbindung wurde erfolgreich überprüft.</value>
+  </data>
+  <data name="Setup_FtpConnectionSuccessful_Title" xml:space="preserve">
+    <value>FTP-Verbindung erfolgreich</value>
+  </data>
+  <data name="Setup_Hero_Subtitle" xml:space="preserve">
+    <value>Schützen Sie Ihre Dateien in wenigen Schritten. Wählen Sie, wie Sie beginnen möchten.</value>
+  </data>
+  <data name="Setup_Hero_Title" xml:space="preserve">
+    <value>Backup Service Home einrichten</value>
+  </data>
+  <data name="Setup_Import_Button" xml:space="preserve">
+    <value>Importieren</value>
+  </data>
+  <data name="Setup_Import_ChangePath" xml:space="preserve">
+    <value>Pfad auf diesem PC ändern</value>
+  </data>
+  <data name="Setup_Import_ChooseFolder" xml:space="preserve">
+    <value>Wählen Sie den Ordner mit backup.bshdb</value>
+  </data>
+  <data name="Setup_Import_Description" xml:space="preserve">
+    <value>Haben Sie bereits eine Backup-Service-Home-Datenbank auf einem Laufwerk, einer Netzwerkfreigabe oder einem FTP-Server? Importieren Sie sie und ordnen Sie Quellordner neu zu, falls sich Pfade geändert haben.</value>
+  </data>
+  <data name="Setup_Import_FolderPath_Description" xml:space="preserve">
+    <value>Ordner mit backup.bshdb</value>
+  </data>
+  <data name="Setup_Import_FolderPath_Title" xml:space="preserve">
+    <value>Ordnerpfad</value>
+  </data>
+  <data name="Setup_Import_Local_Description" xml:space="preserve">
+    <value>Laufwerk nach Sicherungen durchsuchen</value>
+  </data>
+  <data name="Setup_Import_OriginalPath" xml:space="preserve">
+    <value>Originalpfad</value>
+  </data>
+  <data name="Setup_Import_PathOnThisPc" xml:space="preserve">
+    <value>Pfad auf diesem PC</value>
+  </data>
+  <data name="Setup_Import_SelectDrive" xml:space="preserve">
+    <value>Wählen Sie das Laufwerk mit Ihrer Sicherung</value>
+  </data>
+  <data name="Setup_Import_Title" xml:space="preserve">
+    <value>Vorhandene Sicherung importieren</value>
+  </data>
+  <data name="Setup_Mode_Automatic" xml:space="preserve">
+    <value>Automatische Sicherungen</value>
+  </data>
+  <data name="Setup_Mode_AutomaticDescription" xml:space="preserve">
+    <value>Das System startet sofort und erstellt die erste Sicherung.</value>
+  </data>
+  <data name="Setup_Mode_Manual" xml:space="preserve">
+    <value>Manuelle Sicherungen</value>
+  </data>
+  <data name="Setup_Mode_ManualDescription" xml:space="preserve">
+    <value>Öffnen Sie nach der Einrichtung die Einstellungen, um die Konfiguration vor der ersten Sicherung anzupassen.</value>
+  </data>
+  <data name="Setup_NewSetup_Continue" xml:space="preserve">
+    <value>Weiter</value>
+  </data>
+  <data name="Setup_NewSetup_Description" xml:space="preserve">
+    <value>Empfohlen für die erste Nutzung. Wählen Sie die zu schützenden Ordner, den Speicherort der Sicherungen und ob Sicherungen automatisch ausgeführt werden.</value>
+  </data>
+  <data name="Setup_NewSetup_Title" xml:space="preserve">
+    <value>Neue Sicherungseinrichtung starten</value>
+  </data>
+  <data name="Setup_Progress_Applying" xml:space="preserve">
+    <value>Einrichtung wird angewendet...</value>
+  </data>
+  <data name="Setup_ReplaceDatabase_Text" xml:space="preserve">
+    <value>Beim Importieren werden die aktuelle Konfiguration und die Sicherungsdatenbank ersetzt. Möchten Sie fortfahren?</value>
+  </data>
+  <data name="Setup_ReplaceDatabase_Title" xml:space="preserve">
+    <value>Aktuelle Datenbank ersetzen</value>
+  </data>
+  <data name="Setup_Sources_AddFolder" xml:space="preserve">
+    <value>Ordner zur Sicherung hinzufügen</value>
+  </data>
+  <data name="Setup_Sources_RemoveSelected" xml:space="preserve">
+    <value>Ausgewählten Ordner entfernen</value>
+  </data>
+  <data name="Setup_Step_Default_Title" xml:space="preserve">
+    <value>Einrichtung</value>
+  </data>
+  <data name="Setup_Step_ImportMedia_Description" xml:space="preserve">
+    <value>Wählen Sie das Medium, den FTP-Server oder den Pfad mit Ihrer Sicherungsdatenbank.</value>
+  </data>
+  <data name="Setup_Step_ImportMedia_Title" xml:space="preserve">
+    <value>Sicherung importieren</value>
+  </data>
+  <data name="Setup_Step_ImportRemap_Description" xml:space="preserve">
+    <value>Ordnen Sie jeden Originalpfad aus der importierten Sicherung dem Ordner auf diesem PC zu.</value>
+  </data>
+  <data name="Setup_Step_ImportRemap_Title" xml:space="preserve">
+    <value>Quellordner neu zuordnen</value>
+  </data>
+  <data name="Setup_Step_ImportSelect_Description" xml:space="preserve">
+    <value>Wählen Sie, welche gefundene Sicherungsdatenbank importiert werden soll.</value>
+  </data>
+  <data name="Setup_Step_ImportSelect_Title" xml:space="preserve">
+    <value>Sicherung wählen</value>
+  </data>
+  <data name="Setup_Step_Mode_Description" xml:space="preserve">
+    <value>Führen Sie Sicherungen automatisch aus oder starten Sie sie manuell.</value>
+  </data>
+  <data name="Setup_Step_Mode_Title" xml:space="preserve">
+    <value>Sicherungsmodus wählen</value>
+  </data>
+  <data name="Setup_Step_Progress_Description" xml:space="preserve">
+    <value>Bitte warten Sie, während die Einrichtung angewendet wird.</value>
+  </data>
+  <data name="Setup_Step_Progress_Title" xml:space="preserve">
+    <value>Bitte warten</value>
+  </data>
+  <data name="Setup_Step_Sources_Description" xml:space="preserve">
+    <value>Wählen Sie die Ordner auf diesem PC aus, die in Ihre Sicherungen einbezogen werden sollen. Sie können weitere Ordner hinzufügen oder nicht benötigte entfernen.</value>
+  </data>
+  <data name="Setup_Step_Sources_Title" xml:space="preserve">
+    <value>Auswählen, was gesichert werden soll</value>
+  </data>
+  <data name="Setup_Step_Target_Description" xml:space="preserve">
+    <value>Wählen Sie ein Ziel. Unten erscheinen nur die Optionen für Ihre Auswahl.</value>
+  </data>
+  <data name="Setup_Step_Target_Title" xml:space="preserve">
+    <value>Wo sollen Sicherungen gespeichert werden?</value>
+  </data>
+  <data name="Setup_Target_DriveHint" xml:space="preserve">
+    <value>Sicherungen werden unter Backups\ComputerName\UserName auf dem gewählten Laufwerk gespeichert.</value>
+  </data>
+  <data name="Setup_Target_EnforceUnencryptedFtp" xml:space="preserve">
+    <value>Unverschlüsseltes FTP erzwingen</value>
+  </data>
+  <data name="Setup_Target_EnterFtpDetails" xml:space="preserve">
+    <value>FTP-Serverdetails eingeben</value>
+  </data>
+  <data name="Setup_Target_EnterNetworkShare" xml:space="preserve">
+    <value>Netzwerkfreigabe eingeben</value>
+  </data>
+  <data name="Setup_Target_FtpEncoding" xml:space="preserve">
+    <value>FTP-Kodierung</value>
+  </data>
+  <data name="Setup_Target_FtpFolder" xml:space="preserve">
+    <value>FTP-Ordner</value>
+  </data>
+  <data name="Setup_Target_FtpHost" xml:space="preserve">
+    <value>FTP-Host</value>
+  </data>
+  <data name="Setup_Target_FtpPassword" xml:space="preserve">
+    <value>FTP-Kennwort</value>
+  </data>
+  <data name="Setup_Target_FtpPort" xml:space="preserve">
+    <value>FTP-Port</value>
+  </data>
+  <data name="Setup_Target_FtpUser" xml:space="preserve">
+    <value>FTP-Benutzer</value>
+  </data>
+  <data name="Setup_Target_Ftp_Description" xml:space="preserve">
+    <value>Remote-Host und Anmeldung</value>
+  </data>
+  <data name="Setup_Target_Ftp_Title" xml:space="preserve">
+    <value>FTP-Server</value>
+  </data>
+  <data name="Setup_Target_Local_Description" xml:space="preserve">
+    <value>Festplatte, USB oder zugeordnetes Laufwerk</value>
+  </data>
+  <data name="Setup_Target_Local_Title" xml:space="preserve">
+    <value>Dieser PC oder dieses Laufwerk</value>
+  </data>
+  <data name="Setup_Target_NetworkPath" xml:space="preserve">
+    <value>Netzwerkpfad (zum Beispiel \\server\backups)</value>
+  </data>
+  <data name="Setup_Target_PasswordOptional" xml:space="preserve">
+    <value>Kennwort (optional)</value>
+  </data>
+  <data name="Setup_Target_RefreshDrives" xml:space="preserve">
+    <value>Laufwerke aktualisieren</value>
+  </data>
+  <data name="Setup_Target_SelectDrive" xml:space="preserve">
+    <value>Wählen Sie das Laufwerk für Ihre Sicherungen</value>
+  </data>
+  <data name="Setup_Target_Unc_Description" xml:space="preserve">
+    <value>UNC-Pfad wie \\server\share</value>
+  </data>
+  <data name="Setup_Target_Unc_Title" xml:space="preserve">
+    <value>Netzwerkfreigabe</value>
+  </data>
+  <data name="Setup_Target_UsernameOptional" xml:space="preserve">
+    <value>Benutzername (optional)</value>
+  </data>
+  <data name="Setup_Validation_AddAtLeastOneSource" xml:space="preserve">
+    <value>Fügen Sie mindestens einen Quellordner hinzu.</value>
+  </data>
+  <data name="Setup_Validation_EnterNetworkPath" xml:space="preserve">
+    <value>Geben Sie einen Netzwerkpfad ein.</value>
+  </data>
+  <data name="Setup_Validation_FirstBackupFailed" xml:space="preserve">
+    <value>Die Einrichtung wurde gespeichert, aber die erste Sicherung konnte nicht gestartet werden.</value>
+  </data>
+  <data name="Setup_Validation_FolderNameMismatch" xml:space="preserve">
+    <value>Das Verzeichnis kann nicht geändert werden, da der Ordnername nicht übereinstimmt.</value>
+  </data>
+  <data name="Setup_Validation_FolderPickerFailed" xml:space="preserve">
+    <value>Der Ordnerauswahldialog konnte nicht geöffnet werden. {0}</value>
+  </data>
+  <data name="Setup_Validation_FtpConnectionFailed" xml:space="preserve">
+    <value>FTP-Verbindung fehlgeschlagen. {0}</value>
+  </data>
+  <data name="Setup_Validation_FtpDirectoryNotFound" xml:space="preserve">
+    <value>Das FTP-Verzeichnis wurde nicht gefunden.</value>
+  </data>
+  <data name="Setup_Validation_FtpImportFailed" xml:space="preserve">
+    <value>FTP-Import fehlgeschlagen. {0}</value>
+  </data>
+  <data name="Setup_Validation_FtpPortInvalid" xml:space="preserve">
+    <value>FTP-Port ist ungültig.</value>
+  </data>
+  <data name="Setup_Validation_NetworkUnreachable" xml:space="preserve">
+    <value>Der Netzwerkpfad konnte nicht erreicht werden.</value>
+  </data>
+  <data name="Setup_Validation_NetworkUnreachableWithError" xml:space="preserve">
+    <value>Der Netzwerkpfad konnte nicht erreicht werden. {0}</value>
+  </data>
+  <data name="Setup_Validation_NoDatabaseAtPath" xml:space="preserve">
+    <value>Am ausgewählten Pfad wurde keine Sicherungsdatenbank gefunden.</value>
+  </data>
+  <data name="Setup_Validation_NoDatabaseOnFtp" xml:space="preserve">
+    <value>Auf dem FTP-Server wurde keine Sicherungsdatenbank gefunden.</value>
+  </data>
+  <data name="Setup_Validation_SelectBackupTarget" xml:space="preserve">
+    <value>Wählen Sie ein Sicherungsziel.</value>
+  </data>
+  <data name="Setup_Validation_SelectBackupToImport" xml:space="preserve">
+    <value>Wählen Sie eine zu importierende Sicherung.</value>
+  </data>
+  <data name="Setup_Validation_SelectDeviceWithBackups" xml:space="preserve">
+    <value>Wählen Sie ein Gerät, das Sicherungen enthält.</value>
+  </data>
+  <data name="Setup_Validation_SelectSourceToRemap" xml:space="preserve">
+    <value>Wählen Sie einen Quellordner zur Neuordnung.</value>
+  </data>
+  <data name="Setup_Validation_SelectTargetDrive" xml:space="preserve">
+    <value>Wählen Sie ein Sicherungsziellaufwerk.</value>
+  </data>
+  <data name="Setup_Validation_SourcePathEmpty" xml:space="preserve">
+    <value>Der Quellpfad darf nicht leer sein.</value>
+  </data>
+  <data name="Setup_Validation_TargetContainsBackup" xml:space="preserve">
+    <value>Das ausgewählte Ziel enthält bereits eine Sicherung für diesen Computer und Benutzer.</value>
+  </data>
+  <data name="Setup_Validation_WindowNotReady" xml:space="preserve">
+    <value>Das Hauptfenster ist für die Ordnerauswahl nicht bereit.</value>
+  </data>
+  <data name="Setup_Welcome_Description" xml:space="preserve">
+    <value>Wählen Sie, wie Sie beginnen möchten.</value>
+  </data>
+  <data name="Setup_Welcome_Title" xml:space="preserve">
+    <value>Willkommen</value>
+  </data>
+  <data name="Status_AfterCompletion" xml:space="preserve">
+    <value>Nach Abschluss</value>
+  </data>
+  <data name="Status_Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Status_FilesNotCopied_Title" xml:space="preserve">
+    <value>Dateien konnten nicht kopiert werden</value>
+  </data>
+  <data name="Status_FilesProcessed" xml:space="preserve">
+    <value>Dateien verarbeitet</value>
+  </data>
+  <data name="Status_Hibernate" xml:space="preserve">
+    <value>Ruhezustand</value>
+  </data>
+  <data name="Status_InsufficientSpace_Text" xml:space="preserve">
+    <value>Das Sicherungsmedium verfügt nicht über ausreichend freien Speicherplatz für diesen Vorgang.</value>
+  </data>
+  <data name="Status_InsufficientSpace_Title" xml:space="preserve">
+    <value>Nicht genügend Speicherplatz auf dem Sicherungsmedium</value>
+  </data>
+  <data name="Status_NoAction" xml:space="preserve">
+    <value>Keine Aktion</value>
+  </data>
+  <data name="Status_Shutdown" xml:space="preserve">
+    <value>Herunterfahren</value>
+  </data>
+  <data name="Support_About" xml:space="preserve">
+    <value>Über Backup Service Home 3</value>
+  </data>
+  <data name="Support_About_Text" xml:space="preserve">
+    <value>Backup Service Home 3
+Version {0}</value>
+  </data>
+  <data name="Support_CheckForUpdates" xml:space="preserve">
+    <value>Nach Aktualisierungen suchen</value>
+  </data>
+  <data name="Support_ClearStoredPassword" xml:space="preserve">
+    <value>Gespeichertes Kennwort löschen</value>
+  </data>
+  <data name="Support_EventLog" xml:space="preserve">
+    <value>Ereignisprotokolle anzeigen</value>
+  </data>
+  <data name="Support_Help" xml:space="preserve">
+    <value>Hilfe und Support</value>
+  </data>
+  <data name="Support_ResetConfiguration" xml:space="preserve">
+    <value>Konfiguration zurücksetzen</value>
+  </data>
+  <data name="Support_ResetConfiguration_Text" xml:space="preserve">
+    <value>Dadurch werden die aktuelle Konfiguration und die Sicherungsdatenbank gelöscht. Möchten Sie fortfahren?</value>
+  </data>
+  <data name="Support_ResetConfiguration_Title" xml:space="preserve">
+    <value>Konfiguration zurücksetzen</value>
+  </data>
+  <data name="Support_ResetUniqueUserId" xml:space="preserve">
+    <value>Eindeutige Benutzer-ID zurücksetzen</value>
+  </data>
+  <data name="SwitchStorage_Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="SwitchStorage_Confirm" xml:space="preserve">
+    <value>Wechseln</value>
+  </data>
+  <data name="SwitchStorage_Description" xml:space="preserve">
+    <value>Wählen Sie ein neues leeres Sicherungsmedium. Bestehende Einstellungen bleiben erhalten, aber der Sicherungshistorie auf diesem PC wird geleert.</value>
+  </data>
+  <data name="SwitchStorage_EnforceUnencrypted" xml:space="preserve">
+    <value>Unverschlüsselte Verbindung erzwingen</value>
+  </data>
+  <data name="SwitchStorage_FtpConnectionFailed" xml:space="preserve">
+    <value>FTP-Verbindung fehlgeschlagen: {0}</value>
+  </data>
+  <data name="SwitchStorage_FtpConnectionSuccessful" xml:space="preserve">
+    <value>FTP-Verbindung erfolgreich.</value>
+  </data>
+  <data name="SwitchStorage_FtpEncoding" xml:space="preserve">
+    <value>Kodierung</value>
+  </data>
+  <data name="SwitchStorage_FtpHost" xml:space="preserve">
+    <value>Host</value>
+  </data>
+  <data name="SwitchStorage_FtpHostUserRequired" xml:space="preserve">
+    <value>Geben Sie FTP-Host und Benutzername ein.</value>
+  </data>
+  <data name="SwitchStorage_FtpPassword" xml:space="preserve">
+    <value>Kennwort</value>
+  </data>
+  <data name="SwitchStorage_FtpPath" xml:space="preserve">
+    <value>Pfad</value>
+  </data>
+  <data name="SwitchStorage_FtpPort" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="SwitchStorage_FtpPortInvalid" xml:space="preserve">
+    <value>FTP-Port ist ungültig.</value>
+  </data>
+  <data name="SwitchStorage_FtpServer" xml:space="preserve">
+    <value>FTP-Server</value>
+  </data>
+  <data name="SwitchStorage_FtpUsername" xml:space="preserve">
+    <value>Benutzername</value>
+  </data>
+  <data name="SwitchStorage_LocalDrive" xml:space="preserve">
+    <value>Lokales Laufwerk</value>
+  </data>
+  <data name="SwitchStorage_MediumNotEmpty" xml:space="preserve">
+    <value>Das ausgewählte Medium enthält bereits andere Sicherungen und kann nicht zum Wechseln verwendet werden.</value>
+  </data>
+  <data name="SwitchStorage_MediumType" xml:space="preserve">
+    <value>Medientyp</value>
+  </data>
+  <data name="SwitchStorage_NetworkConnectionSuccessful" xml:space="preserve">
+    <value>Netzwerkverbindung erfolgreich.</value>
+  </data>
+  <data name="SwitchStorage_RefreshDrives" xml:space="preserve">
+    <value>Laufwerke aktualisieren</value>
+  </data>
+  <data name="SwitchStorage_SelectDrive" xml:space="preserve">
+    <value>Laufwerk auswählen</value>
+  </data>
+  <data name="SwitchStorage_SelectDriveRequired" xml:space="preserve">
+    <value>Wählen Sie ein Laufwerk für das neue Sicherungsmedium.</value>
+  </data>
+  <data name="SwitchStorage_TestConnection" xml:space="preserve">
+    <value>Verbindung testen</value>
+  </data>
+  <data name="SwitchStorage_Title" xml:space="preserve">
+    <value>Speicher wechseln</value>
+  </data>
+  <data name="Tray_Exit" xml:space="preserve">
+    <value>Backup Service Home beenden</value>
+  </data>
+  <data name="Tray_ShowBackupBrowser" xml:space="preserve">
+    <value>Backupbrowser anzeigen</value>
+  </data>
+  <data name="Tray_StartManualBackup" xml:space="preserve">
+    <value>Manuelle Sicherung starten</value>
+  </data>
+  <data name="Tray_StartManualBackupWithSettings" xml:space="preserve">
+    <value>Manuelle Sicherung starten (+ Optionen)</value>
+  </data>
+  <data name="Tray_StatusAndConfiguration" xml:space="preserve">
+    <value>Status und Konfigurieren</value>
+  </data>
+  <data name="Unhandled_BodyIntro" xml:space="preserve">
+    <value>Es ist ein unerwartetes Problem aufgetreten. Der Fehler wurde protokolliert.</value>
+  </data>
+  <data name="Unhandled_Continue" xml:space="preserve">
+    <value>Fortsetzen</value>
+  </data>
+  <data name="Unhandled_Exit" xml:space="preserve">
+    <value>Beenden</value>
+  </data>
+  <data name="Unhandled_MessageLabel" xml:space="preserve">
+    <value>Meldung:</value>
+  </data>
+  <data name="Unhandled_NoExceptionDetails" xml:space="preserve">
+    <value>Es ist ein unerwarteter Fehler ohne Ausnahmeinformationen aufgetreten.</value>
+  </data>
+  <data name="Unhandled_NoMessage" xml:space="preserve">
+    <value>(keine Meldung)</value>
+  </data>
+  <data name="Unhandled_NoStackTrace" xml:space="preserve">
+    <value>(kein Stacktrace)</value>
+  </data>
+  <data name="Unhandled_SourceLabel" xml:space="preserve">
+    <value>Quelle:</value>
+  </data>
+  <data name="Unhandled_Title" xml:space="preserve">
+    <value>Unerwarteter Fehler</value>
+  </data>
+  <data name="Unhandled_Unknown" xml:space="preserve">
+    <value>(unbekannt)</value>
+  </data>
+  <data name="WaitForMedium_Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="WaitForMedium_Heading" xml:space="preserve">
+    <value>Backup Service Home wartet auf das Medium...</value>
+  </data>
+  <data name="WaitForMedium_Text" xml:space="preserve">
+    <value>Backup Service Home 3 wartet auf das Sicherungsmedium, um die geplante Aktion fortzusetzen. Verbinden Sie dieses Medium jetzt mit Ihrem Computer.
+Das Medium wird automatisch erkannt.</value>
+  </data>
+  <data name="WaitForMedium_Title" xml:space="preserve">
+    <value>Backup Service Home wartet auf das Medium</value>
+  </data>
+</root>

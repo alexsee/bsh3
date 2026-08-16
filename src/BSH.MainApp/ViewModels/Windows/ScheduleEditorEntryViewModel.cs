@@ -3,6 +3,7 @@
 
 using System.Globalization;
 using Brightbits.BSH.Engine.Models;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -20,23 +21,17 @@ public sealed class ScheduleEditorEntryViewModel
 
     public ScheduleEntryKind Kind => (ScheduleEntryKind)Entry.Type;
 
-    public string RepeatText => Kind switch
-    {
-        ScheduleEntryKind.Once => "Once",
-        ScheduleEntryKind.Hourly => "Hourly",
-        ScheduleEntryKind.Daily => "Daily",
-        ScheduleEntryKind.Weekly => "Weekly",
-        ScheduleEntryKind.Monthly => "Monthly",
-        _ => "Unknown",
-    };
+    public string RepeatText => ScheduleEditorDisplayText.GetScheduleKind(Kind);
 
     public string ScheduleText => Kind switch
     {
         ScheduleEntryKind.Once => Entry.Date.ToString("g", CultureInfo.CurrentCulture),
-        ScheduleEntryKind.Hourly => $"At minute {Entry.Date.Minute:00}",
+        ScheduleEntryKind.Hourly => string.Format("Schedule_Text_AtMinute".GetLocalized() ?? "Schedule_Text_AtMinute", Entry.Date.Minute.ToString("00", CultureInfo.CurrentCulture)),
         ScheduleEntryKind.Daily => Entry.Date.ToString("t", CultureInfo.CurrentCulture),
         ScheduleEntryKind.Weekly => $"{Entry.Date:dddd}, {Entry.Date:t}",
-        ScheduleEntryKind.Monthly => $"Day {Entry.Date.Day}, {Entry.Date:t}",
+        ScheduleEntryKind.Monthly => string.Format("Schedule_Text_DayOfMonth".GetLocalized() ?? "Schedule_Text_DayOfMonth", Entry.Date.Day, Entry.Date.ToString("t", CultureInfo.CurrentCulture)),
         _ => Entry.Date.ToString("g", CultureInfo.CurrentCulture),
     };
+
+    public string AccessibleText => $"{RepeatText}: {ScheduleText}";
 }

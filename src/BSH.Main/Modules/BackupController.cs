@@ -221,18 +221,20 @@ public class BackupController : IDisposable
     }
 
     /// <summary>
-    /// Runs a new delete single file task which deletes files in all backups given the 
-    /// corresponding filters.
+    /// Runs a new delete single file task which deletes files in backups given the 
+    /// corresponding filters. When <paramref name="versionIds"/> is provided, only those
+    /// backup versions are targeted; otherwise the file is removed from all backups.
     /// </summary>
-    /// <param name="fileFilter">Specifies the files to delete from all backups.</param>
-    /// <param name="folderFilter">Specifies the folders to delete from all backups.</param>
+    /// <param name="fileFilter">Specifies the files to delete.</param>
+    /// <param name="folderFilter">Specifies the folders to delete.</param>
     /// <param name="statusDialog">Specifies if the user should be shown a status user interface.</param>
+    /// <param name="versionIds">Optional version IDs to scope the delete.</param>
     /// <returns></returns>
-    public async Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true)
+    public async Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int> versionIds = null)
     {
         _logger.Debug("Delete task started for file and folder filter.");
 
-        var result = await jobSessionRunner.RunSingleDeleteSingleAsync(fileFilter, folderFilter, presenter, statusDialog);
+        var result = await jobSessionRunner.RunSingleDeleteSingleAsync(fileFilter, folderFilter, presenter, statusDialog, versionIds);
         if (!await HandleSessionStartAsync(result, "delete", statusDialog))
         {
             return;

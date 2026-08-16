@@ -112,7 +112,7 @@ public class FileSystemRestoreIntegrationTests
 
         var restoredFile = Path.Combine(restoreDir, Path.GetFileName(sourceFile));
         Assert.That(File.Exists(restoredFile), Is.True);
-        Assert.That(File.ReadAllText(restoredFile), Is.EqualTo(SampleContent));
+        Assert.That(await File.ReadAllTextAsync(restoredFile), Is.EqualTo(SampleContent));
     }
 
     [Test]
@@ -125,7 +125,7 @@ public class FileSystemRestoreIntegrationTests
         await RunRestoreAsync(overwrite: FileOverwrite.Overwrite);
 
         var restoredFile = Path.Combine(restoreDir, "report.txt");
-        Assert.That(File.ReadAllText(restoredFile), Is.EqualTo(SampleContent + "-compressed"));
+        Assert.That(await File.ReadAllTextAsync(restoredFile), Is.EqualTo(SampleContent + "-compressed"));
     }
 
     [Test]

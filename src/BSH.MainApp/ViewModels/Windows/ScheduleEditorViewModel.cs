@@ -9,6 +9,7 @@ using Brightbits.BSH.Engine.Services;
 using BSH.MainApp.Contracts.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -80,7 +81,8 @@ public partial class ScheduleEditorViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowDatePicker))]
     [NotifyPropertyChangedFor(nameof(ShowWeeklyDayPicker))]
     [NotifyPropertyChangedFor(nameof(ShowMonthlyDayPicker))]
-    [NotifyPropertyChangedFor(nameof(TimeHeader))]
+    [NotifyPropertyChangedFor(nameof(ShowTimePicker))]
+    [NotifyPropertyChangedFor(nameof(ShowMinutePicker))]
     [NotifyPropertyChangedFor(nameof(AddScheduleHelpText))]
     private ScheduleEntryKind selectedScheduleKind = ScheduleEntryKind.Daily;
 
@@ -89,6 +91,9 @@ public partial class ScheduleEditorViewModel : ObservableObject
 
     [ObservableProperty]
     private TimeSpan startTime = DateTime.Now.TimeOfDay;
+
+    [ObservableProperty]
+    private int selectedMinute = DateTime.Now.Minute;
 
     [ObservableProperty]
     private DayOfWeek selectedWeeklyDay = DayOfWeek.Monday;
@@ -101,6 +106,8 @@ public partial class ScheduleEditorViewModel : ObservableObject
     private ScheduleEditorEntryViewModel? selectedEntry;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowAutomaticRetentionOptions))]
+    [NotifyPropertyChangedFor(nameof(ShowIntervalRetentionOptions))]
     private ScheduleRetentionMode retentionMode = ScheduleRetentionMode.None;
 
     [ObservableProperty]
@@ -113,6 +120,7 @@ public partial class ScheduleEditorViewModel : ObservableObject
     private int automaticHourlyBackupThreshold = 24;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowFullBackupInterval))]
     private bool enableScheduledFullBackups;
 
     [ObservableProperty]
@@ -127,17 +135,25 @@ public partial class ScheduleEditorViewModel : ObservableObject
 
     public bool ShowMonthlyDayPicker => SelectedScheduleKind == ScheduleEntryKind.Monthly;
 
-    public string TimeHeader => SelectedScheduleKind == ScheduleEntryKind.Hourly
-        ? "Minute"
-        : "Time";
+    public bool ShowTimePicker => SelectedScheduleKind != ScheduleEntryKind.Hourly;
+
+    public bool ShowMinutePicker => SelectedScheduleKind == ScheduleEntryKind.Hourly;
+
+    public bool ShowAutomaticRetentionOptions => RetentionMode == ScheduleRetentionMode.Automatic;
+
+    public bool ShowIntervalRetentionOptions => RetentionMode == ScheduleRetentionMode.Interval;
+
+    public bool ShowFullBackupInterval => EnableScheduledFullBackups;
+
+    public bool HasNoEntries => Entries.Count == 0;
 
     public string AddScheduleHelpText => SelectedScheduleKind switch
     {
-        ScheduleEntryKind.Once => "Run once on the selected date and time.",
-        ScheduleEntryKind.Hourly => "Run every hour at the selected minute.",
-        ScheduleEntryKind.Daily => "Run every day at the selected time.",
-        ScheduleEntryKind.Weekly => "Run every week on the selected day and time.",
-        ScheduleEntryKind.Monthly => "Run every month on the selected day and time.",
+        ScheduleEntryKind.Once => "Schedule_Help_Once".GetLocalized(),
+        ScheduleEntryKind.Hourly => "Schedule_Help_Hourly".GetLocalized(),
+        ScheduleEntryKind.Daily => "Schedule_Help_Daily".GetLocalized(),
+        ScheduleEntryKind.Weekly => "Schedule_Help_Weekly".GetLocalized(),
+        ScheduleEntryKind.Monthly => "Schedule_Help_Monthly".GetLocalized(),
         _ => string.Empty,
     };
 
@@ -168,10 +184,14 @@ public partial class ScheduleEditorViewModel : ObservableObject
     [RelayCommand]
     private void AddSchedule()
     {
+        var scheduleTime = SelectedScheduleKind == ScheduleEntryKind.Hourly
+            ? TimeSpan.FromMinutes(Math.Clamp(SelectedMinute, 0, 59))
+            : StartTime;
+
         settings.AddSchedule(
             SelectedScheduleKind,
             StartDate,
-            StartTime,
+            scheduleTime,
             SelectedWeeklyDay,
             SelectedMonthlyDay);
         LoadEntries();
@@ -226,5 +246,7 @@ public partial class ScheduleEditorViewModel : ObservableObject
         {
             Entries.Add(new ScheduleEditorEntryViewModel(entry));
         }
+
+        OnPropertyChanged(nameof(HasNoEntries));
     }
 }

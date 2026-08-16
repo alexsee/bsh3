@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BSH.MainApp.Helpers;
 
-public class RuntimeHelper
+public static class RuntimeHelper
 {
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern int GetCurrentPackageFullName(ref int packageFullNameLength, StringBuilder? packageFullName);

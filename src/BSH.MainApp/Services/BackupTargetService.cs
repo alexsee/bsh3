@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Helpers;
 
 namespace BSH.MainApp.Services;
 

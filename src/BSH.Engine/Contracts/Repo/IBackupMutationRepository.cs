@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Database;
 
@@ -21,7 +22,7 @@ public interface IBackupMutationRepository
     Task RenameVersionDateAsync(DbClient dbClient, long versionId, string newVersionDate);
     Task DeleteFileVersionAsync(DbClient dbClient, long fileVersionId);
     Task DeleteVersionMetadataAsync(DbClient dbClient, long versionId);
-    Task DeleteSingleFileMetadataAsync(DbClient dbClient, string fileFilter, string pathFilter);
+    Task DeleteSingleFileMetadataAsync(DbClient dbClient, string fileFilter, string pathFilter, IReadOnlyList<int> versionIds = null);
     Task UpdateFileVersionTypeAsync(DbClient dbClient, long fileVersionId, int fileType);
     Task SetVersionStableAsync(string version, bool stable);
     Task UpdateVersionDetailsAsync(long versionId, string title, string description);

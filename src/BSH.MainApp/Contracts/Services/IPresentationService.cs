@@ -22,6 +22,7 @@ public interface IPresentationService
     Task ResetConfigurationAsync();
     Task ShowAboutWindowAsync();
     Task ShowBackupBrowserWindowAsync();
+    Task ShowCompressionExclusionsWindowAsync();
     Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync();
     Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel);
     Task<bool> ShowDeleteBackupWindowAsync();
@@ -32,4 +33,5 @@ public interface IPresentationService
     Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1);
     Task ShowExcludeFileFolderWindowAsync();
     Task ShowScheduleEditorWindowAsync();
+    Task<bool> ShowSwitchStorageWindowAsync();
 }

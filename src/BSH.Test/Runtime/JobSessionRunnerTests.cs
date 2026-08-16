@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -268,7 +269,27 @@ public class JobSessionRunnerTests
         Assert.That(backupService.StartDeleteSingleCalls, Is.EqualTo(1));
         Assert.That(backupService.LastFileFilter, Is.EqualTo("*.tmp"));
         Assert.That(backupService.LastPathFilter, Is.EqualTo("\\cache\\"));
+        Assert.That(backupService.LastVersionIds, Is.Null);
         Assert.That(backupService.LastSilent, Is.False);
+    }
+
+    [Test]
+    public async Task RunSingleDeleteSingleAsync_ForwardsVersionIds_WhenProvided()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+        IReadOnlyList<int> versionIds = [2, 5, 9];
+
+        var result = await runner.RunSingleDeleteSingleAsync("report.txt", "\\docs\\", presenter, statusDialog: false, versionIds);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(backupService.StartDeleteSingleCalls, Is.EqualTo(1));
+        Assert.That(backupService.LastFileFilter, Is.EqualTo("report.txt"));
+        Assert.That(backupService.LastPathFilter, Is.EqualTo("\\docs\\"));
+        Assert.That(backupService.LastVersionIds, Is.EqualTo(versionIds));
+        Assert.That(backupService.LastSilent, Is.True);
     }
 
     [Test]
@@ -383,6 +404,7 @@ public class JobSessionRunnerTests
         public string LastDestination { get; private set; }
         public string LastFileFilter { get; private set; }
         public string LastPathFilter { get; private set; }
+        public IReadOnlyList<int> LastVersionIds { get; private set; }
         public bool LastFullBackup { get; private set; }
         public string LastSources { get; private set; }
         public bool LastSilent { get; private set; }
@@ -424,11 +446,12 @@ public class JobSessionRunnerTests
             return OnStartDelete?.Invoke(jobReport, cancellationToken) ?? Task.CompletedTask;
         }
 
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
+        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false, IReadOnlyList<int> versionIds = null)
         {
             StartDeleteSingleCalls++;
             LastFileFilter = fileFilter;
             LastPathFilter = pathFilter;
+            LastVersionIds = versionIds;
             LastSilent = silent;
             return Task.CompletedTask;
         }

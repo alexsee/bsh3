@@ -4,7 +4,6 @@
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Core.Contracts.Services;
 using BSH.MainApp.Core.Helpers;
-using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 
 using Microsoft.Extensions.Options;

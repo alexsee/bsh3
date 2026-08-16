@@ -28,4 +28,4 @@ LoggerProviderOptions.RegisterProviderOptions<
 builder.Services.AddHostedService<WindowsBackgroundService>();
 
 IHost host = builder.Build();
-host.Run();
+await host.RunAsync();

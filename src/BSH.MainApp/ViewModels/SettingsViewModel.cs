@@ -5,12 +5,13 @@ using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Security;
+using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
-using BSH.MainApp.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Storage.Pickers;
@@ -33,9 +34,11 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IJobService jobService;
     private readonly IQueryManager queryManager;
     private readonly IBackupTargetService backupTargetService;
+    private readonly ISwitchStorageService switchStorageService;
     private readonly IOrchestrationService orchestrationService;
     private readonly IStartupLaunchAdapter startupLaunchAdapter;
     private readonly IUpdateService updateService;
+    private bool suppressEnhancedSettingsPersistence;
 
     #region Sources Settings
 
@@ -87,13 +90,13 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
         if (!PathRules.TryNormalizeFolderPath(folderPath, out var fullPath))
         {
-            SourceValidationErrorMessage = "Selected source folder path is invalid.";
+            SourceValidationErrorMessage = "Settings_Sources_InvalidPath".GetLocalized();
             return false;
         }
 
         if (PathRules.IsDriveRoot(fullPath))
         {
-            SourceValidationErrorMessage = "Selecting a drive root is risky. Choose a specific folder instead.";
+            SourceValidationErrorMessage = "Settings_Sources_DriveRootRisky".GetLocalized();
             return false;
         }
 
@@ -101,7 +104,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         if (this.Sources.Any(source =>
             string.Equals(Path.GetFileName(source.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)), folderName, StringComparison.OrdinalIgnoreCase)))
         {
-            SourceValidationErrorMessage = "A source folder with the same name is already configured.";
+            SourceValidationErrorMessage = "Settings_Sources_SameName".GetLocalized();
             return false;
         }
 
@@ -187,15 +190,6 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private Visibility backupTargetMoveProgressVisibility = Visibility.Collapsed;
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(RemoveCompressionExclusionCommand))]
-    private string? selectedCompressionExclusion;
-
-    [ObservableProperty]
-    private string? compressionExclusionInputText;
-
-    public ObservableCollection<string> CompressionExclusions { get; } = new();
-
     private void InitTargetSettings()
     {
         // selected media type
@@ -225,14 +219,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.FtpRemotePath = this.configurationManager.FtpFolder;
         this.FtpRemoteEncoding = this.configurationManager.FtpCoding;
 
-        if (this.configurationManager.FtpEncryptionMode == "3")
-        {
-            this.FtpRemoteEnforceUnencrypted = true;
-        }
-        else
-        {
-            this.FtpRemoteEnforceUnencrypted = false;
-        }
+        // FtpStorage treats mode "3" as encrypted (AutoConnect); anything else is plain FTP.
+        this.FtpRemoteEnforceUnencrypted = this.configurationManager.FtpEncryptionMode != "3";
     }
 
     public static string GetMediaTypeDisplayName(MediaType mediaType)
@@ -255,11 +243,11 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
         if (profile)
         {
-            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Successful_Title".GetLocalized(), "MsgBox_Ftp_Successful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
+            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Successful_Title".GetLocalized(), "MsgBox_Ftp_Successful_Text".GetLocalized(), new List<IUICommand> { new UICommand("MsgBox_OK".GetLocalized()) });
         }
         else
         {
-            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Unuccessful_Title".GetLocalized(), "MsgBox_Ftp_Unuccessful_Text".GetLocalized(), new List<IUICommand> { new UICommand("OK") });
+            await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Unuccessful_Title".GetLocalized(), "MsgBox_Ftp_Unuccessful_Text".GetLocalized(), new List<IUICommand> { new UICommand("MsgBox_OK".GetLocalized()) });
         }
     }
 
@@ -400,30 +388,29 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     partial void OnFtpRemoteEnforceUnencryptedChanged(bool oldValue, bool newValue)
     {
         if (oldValue == newValue) return;
-        this.configurationManager.FtpEncryptionMode = newValue ? "3" : "0";
+        this.configurationManager.FtpEncryptionMode = newValue ? "0" : "3";
     }
 
     public void UseLocalPath(string folderPath)
     {
         this.LocalDevicePath = folderPath;
-        this.configurationManager.BackupFolder = folderPath;
 
-        if (folderPath.StartsWith(@"\\", StringComparison.Ordinal))
+        if (MediaTargetApplier.IsUncPath(folderPath))
         {
+            MediaTargetApplier.ApplyUncTarget(
+                this.configurationManager,
+                folderPath,
+                this.LocalUNCUser,
+                this.LocalUNCPassword);
             return;
         }
 
         this.LocalUNCUser = "";
         this.LocalUNCPassword = "";
-
-        if (folderPath.Length >= 3)
-        {
-            this.configurationManager.MediaVolumeSerial = Win32Stuff.GetVolumeSerial(folderPath[..3]);
-            if (this.configurationManager.MediaVolumeSerial == null || this.configurationManager.MediaVolumeSerial == "0")
-            {
-                this.configurationManager.MediaVolumeSerial = "";
-            }
-        }
+        MediaTargetApplier.ApplyLocalTarget(
+            this.configurationManager,
+            folderPath,
+            MediaTargetApplier.ResolveVolumeSerial(folderPath));
     }
 
     public async Task MoveExistingLocalBackupDataAsync(string newFolderPath)
@@ -444,9 +431,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             }
 
             await this.presentationController.ShowMessageBoxAsync(
-                "Could not move backup data",
-                result.ErrorMessage ?? "The backup data could not be moved.",
-                [new UICommand("OK")]);
+                "Settings_Target_MoveFailed_Title".GetLocalized(),
+                result.ErrorMessage ?? "Settings_Target_MoveFailed_Text".GetLocalized(),
+                [new UICommand("MsgBox_OK".GetLocalized())]);
         }
         finally
         {
@@ -454,6 +441,24 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             IsBackupTargetChangeEnabled = true;
             BackupTargetMoveProgressVisibility = Visibility.Collapsed;
         }
+    }
+
+    [RelayCommand]
+    public async Task SwitchStorageAsync()
+    {
+        if (!await this.jobService.CheckMediaAsync(ActionType.Modify, true))
+        {
+            return;
+        }
+
+        this.switchStorageService.SyncDatabaseToCurrentMedium(App.DatabaseFile);
+
+        if (!await this.presentationController.ShowSwitchStorageWindowAsync())
+        {
+            return;
+        }
+
+        InitTargetSettings();
     }
 
     #endregion
@@ -483,46 +488,12 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
 
         this.WaitForDevice = this.configurationManager.ShowWaitOnMediaAutoBackups == "1";
-
-        this.CompressionExclusions.Clear();
-        foreach (var entry in CompressionExclusionFormatter.Parse(this.configurationManager.ExcludeCompression))
-        {
-            this.CompressionExclusions.Add(entry);
-        }
     }
 
     [RelayCommand]
-    public void AddCompressionExclusion(string? extension)
+    private async Task ShowCompressionExclusionsWindow()
     {
-        var normalized = CompressionExclusionFormatter.NormalizeExtension(extension);
-        if (string.IsNullOrEmpty(normalized) || this.CompressionExclusions.Contains(normalized, StringComparer.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
-        this.CompressionExclusions.Add(normalized);
-        CompressionExclusionInputText = null;
-        SaveCompressionExclusions();
-    }
-
-    [RelayCommand(CanExecute = nameof(CanRemoveCompressionExclusion))]
-    private void RemoveCompressionExclusion()
-    {
-        if (string.IsNullOrEmpty(SelectedCompressionExclusion))
-        {
-            return;
-        }
-
-        this.CompressionExclusions.Remove(SelectedCompressionExclusion);
-        SelectedCompressionExclusion = null;
-        SaveCompressionExclusions();
-    }
-
-    private bool CanRemoveCompressionExclusion() => !string.IsNullOrEmpty(SelectedCompressionExclusion);
-
-    private void SaveCompressionExclusions()
-    {
-        this.configurationManager.ExcludeCompression = CompressionExclusionFormatter.Format(this.CompressionExclusions);
+        await this.presentationController.ShowCompressionExclusionsWindowAsync();
     }
 
     partial void OnWaitForDeviceChanged(bool oldValue, bool newValue)
@@ -680,18 +651,35 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.EnableNotificationWhenBackupOutdated = !string.IsNullOrEmpty(this.configurationManager.RemindAfterDays);
         this.NotificationWhenBackupOutdated = int.TryParse(this.configurationManager.RemindAfterDays, out var days) ? days : 0;
 
-        // Set backing fields so load does not re-enter the persistence handlers.
-        launchAtWindowsStartup = startupLaunchAdapter.IsEnabled();
-        OnPropertyChanged(nameof(LaunchAtWindowsStartup));
+        // Load without re-entering the persistence handlers.
+        suppressEnhancedSettingsPersistence = true;
+        try
+        {
+            LaunchAtWindowsStartup = startupLaunchAdapter.IsEnabled();
+        }
+        finally
+        {
+            suppressEnhancedSettingsPersistence = false;
+        }
+
         _ = LoadUpdateSettingsAsync();
     }
 
     private async Task LoadUpdateSettingsAsync()
     {
-        automaticallyCheckForUpdates = await updateService.GetAutoSearchEnabledAsync();
-        downloadBetaUpdates = await updateService.GetDownloadBetaAsync();
-        OnPropertyChanged(nameof(AutomaticallyCheckForUpdates));
-        OnPropertyChanged(nameof(DownloadBetaUpdates));
+        var autoSearch = await updateService.GetAutoSearchEnabledAsync();
+        var downloadBeta = await updateService.GetDownloadBetaAsync();
+
+        suppressEnhancedSettingsPersistence = true;
+        try
+        {
+            AutomaticallyCheckForUpdates = autoSearch;
+            DownloadBetaUpdates = downloadBeta;
+        }
+        finally
+        {
+            suppressEnhancedSettingsPersistence = false;
+        }
     }
 
     partial void OnEnableNotificationWhenDiskspaceLowChanged(bool oldValue, bool newValue)
@@ -755,7 +743,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     partial void OnLaunchAtWindowsStartupChanged(bool oldValue, bool newValue)
     {
-        if (oldValue == newValue)
+        if (suppressEnhancedSettingsPersistence || oldValue == newValue)
         {
             return;
         }
@@ -765,17 +753,25 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        launchAtWindowsStartup = oldValue;
-        OnPropertyChanged(nameof(LaunchAtWindowsStartup));
+        suppressEnhancedSettingsPersistence = true;
+        try
+        {
+            LaunchAtWindowsStartup = oldValue;
+        }
+        finally
+        {
+            suppressEnhancedSettingsPersistence = false;
+        }
+
         _ = presentationController.ShowMessageBoxAsync(
-            "Access denied",
-            "Windows startup could not be changed. Check your permissions and try again.",
-            [new UICommand("OK")]);
+            "Settings_Enhanced_AccessDenied_Title".GetLocalized(),
+            "Settings_Enhanced_AccessDenied_Text".GetLocalized(),
+            [new UICommand("MsgBox_OK".GetLocalized())]);
     }
 
     partial void OnAutomaticallyCheckForUpdatesChanged(bool oldValue, bool newValue)
     {
-        if (oldValue == newValue)
+        if (suppressEnhancedSettingsPersistence || oldValue == newValue)
         {
             return;
         }
@@ -785,7 +781,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     partial void OnDownloadBetaUpdatesChanged(bool oldValue, bool newValue)
     {
-        if (oldValue == newValue)
+        if (suppressEnhancedSettingsPersistence || oldValue == newValue)
         {
             return;
         }
@@ -801,6 +797,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         IJobService jobService,
         IQueryManager queryManager,
         IBackupTargetService backupTargetService,
+        ISwitchStorageService switchStorageService,
         IOrchestrationService orchestrationService,
         IStartupLaunchAdapter startupLaunchAdapter,
         IUpdateService updateService)
@@ -810,6 +807,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         this.jobService = jobService;
         this.queryManager = queryManager;
         this.backupTargetService = backupTargetService;
+        this.switchStorageService = switchStorageService;
         this.orchestrationService = orchestrationService;
         this.startupLaunchAdapter = startupLaunchAdapter;
         this.updateService = updateService;

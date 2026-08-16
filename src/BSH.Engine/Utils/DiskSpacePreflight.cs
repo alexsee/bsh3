@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Brightbits.BSH.Engine.Utils;
 
@@ -32,6 +33,25 @@ public static class DiskSpacePreflight
         }
 
         return total;
+    }
+
+    /// <summary>
+    /// Estimates bytes that will actually be written to the backup device.
+    /// Full backups copy every collected file; incrementals only copy files without
+    /// a matching existing version (unchanged files are link-only and need no space).
+    /// </summary>
+    public static long EstimateRequiredCopyBytes(
+        bool fullBackup,
+        IEnumerable<(double FileSize, bool HasMatchingVersion)> files,
+        long slackBytes = DefaultSlackBytes)
+    {
+        ArgumentNullException.ThrowIfNull(files);
+
+        var sizesToCopy = fullBackup
+            ? files.Select(file => file.FileSize)
+            : files.Where(file => !file.HasMatchingVersion).Select(file => file.FileSize);
+
+        return EstimateRequiredBytes(sizesToCopy, slackBytes);
     }
 
     /// <summary>

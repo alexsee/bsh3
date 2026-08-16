@@ -191,12 +191,14 @@ public sealed class JobSessionRunner
 
     /// <summary>
     /// Runs a single delete-single-file session with shared session preparation and error handling.
+    /// When <paramref name="versionIds"/> is provided, only those backup versions are targeted.
     /// </summary>
     public async Task<JobSessionResult> RunSingleDeleteSingleAsync(
         string fileFilter,
         string pathFilter,
         IJobSessionPresenter presenter,
-        bool statusDialog = true)
+        bool statusDialog = true,
+        IReadOnlyList<int> versionIds = null)
     {
         return await RunSingleOperationAsync(
             ActionType.Delete,
@@ -205,7 +207,7 @@ public sealed class JobSessionRunner
             requirePassword: false,
             async (jobReport, cancellationToken) =>
             {
-                await backupService.StartDeleteSingle(fileFilter, pathFilter, jobReport, cancellationToken, !statusDialog);
+                await backupService.StartDeleteSingle(fileFilter, pathFilter, jobReport, cancellationToken, !statusDialog, versionIds);
             });
     }
 

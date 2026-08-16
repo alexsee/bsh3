@@ -9,6 +9,7 @@ using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
+using CommunityToolkit.WinUI;
 
 namespace BSH.MainApp.Services;
 
@@ -116,11 +117,17 @@ public class StatusService : IJobReport, IStatusService
 
         if (jobState == JobState.FINISHED)
         {
-            ShowNotification("Backup successful", "Planned backup was performed successfully.");
+            ShowNotification(
+                "INFO_BACKUP_SUCCESSFUL_TITLE".GetLocalized(),
+                "INFO_BACKUP_SUCCESSFUL_TEXT".GetLocalized(),
+                ToastNotificationActivation.ActionOverview);
         }
         else if (jobState == JobState.ERROR)
         {
-            ShowNotification("Backup with errors finished", "The planned backup was ended with problems. Click here for more information.");
+            ShowNotification(
+                "INFO_BACKUP_UNSUCCESSFUL_TITLE".GetLocalized(),
+                "INFO_BACKUP_UNSUCCESSFUL_TEXT".GetLocalized(),
+                ToastNotificationActivation.ActionBackupResult);
         }
     }
 
@@ -200,8 +207,8 @@ public class StatusService : IJobReport, IStatusService
         await this.presentationService.ShowErrorInsufficientDiskSpaceAsync();
     }
 
-    private void ShowNotification(string title, string text)
+    private void ShowNotification(string title, string text, string action)
     {
-        appNotificationService?.Show(ToastNotificationPayload.Create(title, text));
+        appNotificationService?.Show(ToastNotificationPayload.Create(title, text, action));
     }
 }

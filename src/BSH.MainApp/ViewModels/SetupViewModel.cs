@@ -5,11 +5,13 @@ using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.Storage.Pickers;
 using Windows.UI.Popups;
@@ -52,7 +54,7 @@ public partial class SetupViewModel : ObservableObject
         ImportFtpPort = "21";
         ImportFtpEncoding = "UTF8";
         SelectedTaskType = TaskType.Auto;
-        SelectedTargetKind = SetupTargetKind.LocalDrive;
+        SelectedTargetKind = MediaTargetKind.LocalDrive;
         SelectedImportSourceKind = SetupImportSourceKind.LocalMedia;
         CurrentStep = SetupWizardStep.Welcome;
     }
@@ -79,10 +81,10 @@ public partial class SetupViewModel : ObservableObject
     private SetupWizardStep currentStep;
 
     [ObservableProperty]
-    private string title = "Welcome";
+    private string title = "Setup_Welcome_Title".GetLocalized();
 
     [ObservableProperty]
-    private string description = "Choose how you want to get started.";
+    private string description = "Setup_Welcome_Description".GetLocalized();
 
     [ObservableProperty]
     private string? validationErrorMessage;
@@ -91,7 +93,7 @@ public partial class SetupViewModel : ObservableObject
     private string? selectedSource;
 
     [ObservableProperty]
-    private SetupTargetKind selectedTargetKind;
+    private MediaTargetKind selectedTargetKind;
 
     [ObservableProperty]
     private SetupDriveItem? selectedDrive;
@@ -232,7 +234,7 @@ public partial class SetupViewModel : ObservableObject
         SelectedDriveRoot = value?.RootPath;
     }
 
-    partial void OnSelectedTargetKindChanged(SetupTargetKind value)
+    partial void OnSelectedTargetKindChanged(MediaTargetKind value)
     {
         UpdateTargetVisibility();
     }
@@ -291,7 +293,7 @@ public partial class SetupViewModel : ObservableObject
         ValidationErrorMessage = null;
         if (index < 0 || index >= SourceRemaps.Count)
         {
-            ValidationErrorMessage = "Select a source folder to remap.";
+            ValidationErrorMessage = "Setup_Validation_SelectSourceToRemap".GetLocalized();
             return false;
         }
 
@@ -314,7 +316,7 @@ public partial class SetupViewModel : ObservableObject
 
         if (Sources.Count == 0)
         {
-            ValidationErrorMessage = "Add at least one source folder.";
+            ValidationErrorMessage = "Setup_Validation_AddAtLeastOneSource".GetLocalized();
             return false;
         }
 
@@ -324,11 +326,11 @@ public partial class SetupViewModel : ObservableObject
             return false;
         }
 
-        if (SelectedTargetKind == SetupTargetKind.LocalDrive)
+        if (SelectedTargetKind == MediaTargetKind.LocalDrive)
         {
             if (string.IsNullOrWhiteSpace(configuration.LocalBackupFolder))
             {
-                ValidationErrorMessage = "Select a backup target drive.";
+                ValidationErrorMessage = "Setup_Validation_SelectTargetDrive".GetLocalized();
                 return false;
             }
 
@@ -336,7 +338,7 @@ public partial class SetupViewModel : ObservableObject
             if (configurationManager.IsConfigured != "1" &&
                 !setupService.IsLocalBackupFolderAvailable(configuration.LocalBackupFolder))
             {
-                ValidationErrorMessage = "The selected target already contains a backup for this computer and user.";
+                ValidationErrorMessage = "Setup_Validation_TargetContainsBackup".GetLocalized();
                 return false;
             }
         }
@@ -359,10 +361,10 @@ public partial class SetupViewModel : ObservableObject
             }
 
             await orchestrationService.StartAsync(true);
-            var backupStarted = await jobService.CreateBackupAsync("First backup", "", statusDialog: false);
+            var backupStarted = await jobService.CreateBackupAsync("CreateBackup_Title_First".GetLocalized(), "", statusDialog: false);
             if (!backupStarted)
             {
-                ValidationErrorMessage = "Setup was saved, but the first backup could not be started.";
+                ValidationErrorMessage = "Setup_Validation_FirstBackupFailed".GetLocalized();
                 CurrentStep = SetupWizardStep.Mode;
                 return false;
             }
@@ -408,7 +410,7 @@ public partial class SetupViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SelectTarget(SetupTargetKind kind)
+    private void SelectTarget(MediaTargetKind kind)
     {
         SelectedTargetKind = kind;
     }
@@ -487,7 +489,7 @@ public partial class SetupViewModel : ObservableObject
     {
         if (SelectedSourceRemap == null)
         {
-            ValidationErrorMessage = "Select a source folder to remap.";
+            ValidationErrorMessage = "Setup_Validation_SelectSourceToRemap".GetLocalized();
             return;
         }
 
@@ -535,7 +537,7 @@ public partial class SetupViewModel : ObservableObject
             case SetupWizardStep.Sources:
                 if (Sources.Count == 0)
                 {
-                    ValidationErrorMessage = "Add at least one source folder.";
+                    ValidationErrorMessage = "Setup_Validation_AddAtLeastOneSource".GetLocalized();
                     return;
                 }
 
@@ -573,80 +575,76 @@ public partial class SetupViewModel : ObservableObject
     {
         switch (SelectedTargetKind)
         {
-            case SetupTargetKind.LocalDrive:
+            case MediaTargetKind.LocalDrive:
                 if (string.IsNullOrWhiteSpace(SelectedDriveRoot))
                 {
-                    ValidationErrorMessage = "Select a backup target drive.";
+                    ValidationErrorMessage = "Setup_Validation_SelectTargetDrive".GetLocalized();
                     return false;
                 }
 
                 var backupFolder = setupService.BuildLocalBackupFolder(SelectedDriveRoot);
                 if (!setupService.IsLocalBackupFolderAvailable(backupFolder))
                 {
-                    ValidationErrorMessage = "The selected target already contains a backup for this computer and user.";
+                    ValidationErrorMessage = "Setup_Validation_TargetContainsBackup".GetLocalized();
                     return false;
                 }
 
                 return true;
 
-            case SetupTargetKind.Unc:
+            case MediaTargetKind.Unc:
                 {
-                    var path = UncPath.Replace("//", @"\", StringComparison.Ordinal);
-                    if (string.IsNullOrWhiteSpace(path))
+                    var probe = UncTargetProbe.Probe(UncPath, UncUsername, UncPassword, requireEmptyTarget: false);
+                    if (probe.Status == UncProbeStatus.Ok)
                     {
-                        ValidationErrorMessage = "Enter a network path.";
+                        UncPath = probe.NormalizedPath;
+                        return true;
+                    }
+
+                    if (probe.Status == UncProbeStatus.InvalidPath)
+                    {
+                        ValidationErrorMessage = "Setup_Validation_EnterNetworkPath".GetLocalized();
                         return false;
                     }
 
-                    try
-                    {
-                        using var connection = new Brightbits.BSH.Engine.Security.NetworkConnection(path, UncUsername, UncPassword);
-                        if (!Directory.Exists(path))
-                        {
-                            ValidationErrorMessage = "The network path could not be reached.";
-                            return false;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        ValidationErrorMessage = "The network path could not be reached. " + ex.Message;
-                        return false;
-                    }
-
-                    return true;
+                    ValidationErrorMessage = string.IsNullOrEmpty(probe.Detail)
+                        ? "Setup_Validation_NetworkUnreachable".GetLocalized()
+                        : string.Format(
+                            "Setup_Validation_NetworkUnreachableWithError".GetLocalized() ?? "Setup_Validation_NetworkUnreachableWithError",
+                            probe.Detail);
+                    return false;
                 }
 
-            case SetupTargetKind.Ftp:
+            case MediaTargetKind.Ftp:
                 try
                 {
                     FtpFolder = FtpStorage.GetFtpPath(FtpFolder);
                     if (!int.TryParse(FtpPort, out var port))
                     {
-                        ValidationErrorMessage = "FTP port is invalid.";
+                        ValidationErrorMessage = "Setup_Validation_FtpPortInvalid".GetLocalized();
                         return false;
                     }
 
                     var ok = FtpStorage.CheckConnection(FtpHost, port, FtpUser, FtpPassword, FtpFolder, FtpEncoding);
                     if (!ok)
                     {
-                        ValidationErrorMessage = "The FTP directory was not found.";
+                        ValidationErrorMessage = "Setup_Validation_FtpDirectoryNotFound".GetLocalized();
                         return false;
                     }
 
                     await presentationService.ShowMessageBoxAsync(
-                        "FTP connection successful",
-                        "The FTP connection was verified successfully.",
-                        [new UICommand("OK")]);
+                        "Setup_FtpConnectionSuccessful_Title".GetLocalized(),
+                        "Setup_FtpConnectionSuccessful_Text".GetLocalized(),
+                        [new UICommand("MsgBox_OK".GetLocalized())]);
                     return true;
                 }
                 catch (Exception ex)
                 {
-                    ValidationErrorMessage = "FTP connection failed. " + ex.Message;
+                    ValidationErrorMessage = string.Format("Setup_Validation_FtpConnectionFailed".GetLocalized() ?? "Setup_Validation_FtpConnectionFailed", ex.Message);
                     return false;
                 }
 
             default:
-                ValidationErrorMessage = "Select a backup target.";
+                ValidationErrorMessage = "Setup_Validation_SelectBackupTarget".GetLocalized();
                 return false;
         }
     }
@@ -658,7 +656,7 @@ public partial class SetupViewModel : ObservableObject
             case SetupImportSourceKind.LocalMedia:
                 if (SelectedImportDrive == null)
                 {
-                    ValidationErrorMessage = "Select a device that contains backups.";
+                    ValidationErrorMessage = "Setup_Validation_SelectDeviceWithBackups".GetLocalized();
                     return;
                 }
 
@@ -675,7 +673,7 @@ public partial class SetupViewModel : ObservableObject
                 if (string.IsNullOrWhiteSpace(ExplicitImportPath) ||
                     !setupService.BackupDatabaseExists(ExplicitImportPath))
                 {
-                    ValidationErrorMessage = "No backup database was found at the selected path.";
+                    ValidationErrorMessage = "Setup_Validation_NoDatabaseAtPath".GetLocalized();
                     return;
                 }
 
@@ -692,7 +690,7 @@ public partial class SetupViewModel : ObservableObject
     {
         if (SelectedDiscoveredBackup == null)
         {
-            ValidationErrorMessage = "Select a backup to import.";
+            ValidationErrorMessage = "Setup_Validation_SelectBackupToImport".GetLocalized();
             return;
         }
 
@@ -745,7 +743,7 @@ public partial class SetupViewModel : ObservableObject
             ImportFtpFolder = FtpStorage.GetFtpPath(ImportFtpFolder);
             if (!int.TryParse(ImportFtpPort, out var port))
             {
-                ValidationErrorMessage = "FTP port is invalid.";
+                ValidationErrorMessage = "Setup_Validation_FtpPortInvalid".GetLocalized();
                 return;
             }
 
@@ -762,7 +760,7 @@ public partial class SetupViewModel : ObservableObject
                 storage.Open();
                 if (!storage.FileExists("backup.bshdb"))
                 {
-                    ValidationErrorMessage = "No backup database was found on the FTP server.";
+                    ValidationErrorMessage = "Setup_Validation_NoDatabaseOnFtp".GetLocalized();
                     return;
                 }
             }
@@ -808,7 +806,7 @@ public partial class SetupViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ValidationErrorMessage = "FTP import failed. " + ex.Message;
+            ValidationErrorMessage = string.Format("Setup_Validation_FtpImportFailed".GetLocalized() ?? "Setup_Validation_FtpImportFailed", ex.Message);
             CurrentStep = SetupWizardStep.ImportMedia;
         }
         finally
@@ -834,9 +832,9 @@ public partial class SetupViewModel : ObservableObject
     private async Task<bool> ConfirmDatabaseReplacementAsync()
     {
         var result = await presentationService.ShowMessageBoxAsync(
-            "Replace current database",
-            "Importing replaces the current configuration and backup database. Do you want to continue?",
-            [new UICommand("Yes"), new UICommand("No")],
+            "Setup_ReplaceDatabase_Title".GetLocalized(),
+            "Setup_ReplaceDatabase_Text".GetLocalized(),
+            [new UICommand("MsgBox_Yes".GetLocalized()), new UICommand("MsgBox_No".GetLocalized())],
             defaultCommandIndex: 0,
             cancelCommandIndex: 1);
 
@@ -847,29 +845,29 @@ public partial class SetupViewModel : ObservableObject
     {
         return SelectedTargetKind switch
         {
-            SetupTargetKind.LocalDrive => new NewSetupConfiguration
+            MediaTargetKind.LocalDrive => new NewSetupConfiguration
             {
                 SourceFolders = Sources.ToList(),
-                TargetKind = SetupTargetKind.LocalDrive,
+                TargetKind = MediaTargetKind.LocalDrive,
                 LocalBackupFolder = string.IsNullOrWhiteSpace(SelectedDriveRoot)
                     ? null
                     : setupService.BuildLocalBackupFolder(SelectedDriveRoot),
                 MediaVolumeSerial = ResolveVolumeSerial(SelectedDriveRoot),
                 TaskType = SelectedTaskType
             },
-            SetupTargetKind.Unc => new NewSetupConfiguration
+            MediaTargetKind.Unc => new NewSetupConfiguration
             {
                 SourceFolders = Sources.ToList(),
-                TargetKind = SetupTargetKind.Unc,
+                TargetKind = MediaTargetKind.Unc,
                 UncPath = UncPath,
                 UncUsername = UncUsername,
                 UncPassword = UncPassword,
                 TaskType = SelectedTaskType
             },
-            SetupTargetKind.Ftp => new NewSetupConfiguration
+            MediaTargetKind.Ftp => new NewSetupConfiguration
             {
                 SourceFolders = Sources.ToList(),
-                TargetKind = SetupTargetKind.Ftp,
+                TargetKind = MediaTargetKind.Ftp,
                 FtpHost = FtpHost,
                 FtpPort = FtpPort,
                 FtpUser = FtpUser,
@@ -885,20 +883,7 @@ public partial class SetupViewModel : ObservableObject
 
     private static string ResolveVolumeSerial(string? driveRoot)
     {
-        if (string.IsNullOrWhiteSpace(driveRoot) || driveRoot.Length < 1)
-        {
-            return "";
-        }
-
-        try
-        {
-            var serial = Brightbits.BSH.Engine.Win32Stuff.GetVolumeSerial(driveRoot[..1] + @":\");
-            return string.IsNullOrEmpty(serial) || serial == "0" ? "" : serial;
-        }
-        catch
-        {
-            return "";
-        }
+        return MediaTargetApplier.ResolveVolumeSerial(driveRoot);
     }
 
     private async Task<string?> PickFolderAsync()
@@ -907,7 +892,7 @@ public partial class SetupViewModel : ObservableObject
         {
             if (App.MainWindow?.Content == null)
             {
-                ValidationErrorMessage = "The main window is not ready for folder selection.";
+                ValidationErrorMessage = "Setup_Validation_WindowNotReady".GetLocalized();
                 return null;
             }
 
@@ -921,7 +906,7 @@ public partial class SetupViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ValidationErrorMessage = "Unable to open the folder picker. " + ex.Message;
+            ValidationErrorMessage = string.Format("Setup_Validation_FolderPickerFailed".GetLocalized() ?? "Setup_Validation_FolderPickerFailed", ex.Message);
             return null;
         }
     }
@@ -948,14 +933,14 @@ public partial class SetupViewModel : ObservableObject
         (Title, Description) = CurrentStep switch
         {
             SetupWizardStep.Welcome => ("", ""),
-            SetupWizardStep.Sources => ("Choose what to back up", "Select the folders on this PC that should be included in your backups. You can add more folders or remove ones you do not need."),
-            SetupWizardStep.Target => ("Where should backups be stored?", "Pick one destination. Only the options for your choice appear below."),
-            SetupWizardStep.Mode => ("Choose backup mode", "Run backups automatically or start them manually."),
-            SetupWizardStep.ImportMedia => ("Import backup", "Select the media, FTP server, or path that contains your backup database."),
-            SetupWizardStep.ImportSelect => ("Select backup", "Choose which discovered backup database to import."),
-            SetupWizardStep.ImportRemap => ("Remap source folders", "Match each original path from the imported backup to where that folder lives on this PC."),
-            SetupWizardStep.Progress => ("Working", "Please wait while the setup is applied."),
-            _ => ("Setup", "")
+            SetupWizardStep.Sources => ("Setup_Step_Sources_Title".GetLocalized(), "Setup_Step_Sources_Description".GetLocalized()),
+            SetupWizardStep.Target => ("Setup_Step_Target_Title".GetLocalized(), "Setup_Step_Target_Description".GetLocalized()),
+            SetupWizardStep.Mode => ("Setup_Step_Mode_Title".GetLocalized(), "Setup_Step_Mode_Description".GetLocalized()),
+            SetupWizardStep.ImportMedia => ("Setup_Step_ImportMedia_Title".GetLocalized(), "Setup_Step_ImportMedia_Description".GetLocalized()),
+            SetupWizardStep.ImportSelect => ("Setup_Step_ImportSelect_Title".GetLocalized(), "Setup_Step_ImportSelect_Description".GetLocalized()),
+            SetupWizardStep.ImportRemap => ("Setup_Step_ImportRemap_Title".GetLocalized(), "Setup_Step_ImportRemap_Description".GetLocalized()),
+            SetupWizardStep.Progress => ("Setup_Step_Progress_Title".GetLocalized(), "Setup_Step_Progress_Description".GetLocalized()),
+            _ => ("Setup_Step_Default_Title".GetLocalized(), "")
         };
 
         UpdateTargetVisibility();
@@ -964,9 +949,9 @@ public partial class SetupViewModel : ObservableObject
 
     private void UpdateTargetVisibility()
     {
-        LocalTargetVisibility = SelectedTargetKind == SetupTargetKind.LocalDrive ? Visibility.Visible : Visibility.Collapsed;
-        UncTargetVisibility = SelectedTargetKind == SetupTargetKind.Unc ? Visibility.Visible : Visibility.Collapsed;
-        FtpTargetVisibility = SelectedTargetKind == SetupTargetKind.Ftp ? Visibility.Visible : Visibility.Collapsed;
+        LocalTargetVisibility = SelectedTargetKind == MediaTargetKind.LocalDrive ? Visibility.Visible : Visibility.Collapsed;
+        UncTargetVisibility = SelectedTargetKind == MediaTargetKind.Unc ? Visibility.Visible : Visibility.Collapsed;
+        FtpTargetVisibility = SelectedTargetKind == MediaTargetKind.Ftp ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void UpdateImportSourceVisibility()

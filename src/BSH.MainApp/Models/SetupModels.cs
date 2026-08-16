@@ -5,13 +5,6 @@ using Brightbits.BSH.Engine;
 
 namespace BSH.MainApp.Models;
 
-public enum SetupTargetKind
-{
-    LocalDrive,
-    Unc,
-    Ftp
-}
-
 public enum SetupImportSourceKind
 {
     LocalMedia,
@@ -38,7 +31,7 @@ public sealed class NewSetupConfiguration
         get; init;
     }
 
-    public required SetupTargetKind TargetKind
+    public required MediaTargetKind TargetKind
     {
         get; init;
     }

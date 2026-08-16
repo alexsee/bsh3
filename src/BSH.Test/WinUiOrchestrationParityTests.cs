@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
@@ -17,6 +16,7 @@ using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.Services;
+using BSH.Test.Fakes;
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 using Windows.System.Power;
@@ -29,7 +29,7 @@ public class WinUiOrchestrationParityTests
     [Test]
     public async Task StartAsyncPausesAutomationWhenBatteryRuleApplies()
     {
-        var configurationManager = new TestConfigurationManager
+        var configurationManager = new FakeConfigurationManager
         {
             IsConfigured = "1",
             DbStatus = "0",
@@ -59,7 +59,7 @@ public class WinUiOrchestrationParityTests
         var statusService = new TestStatusService();
         var scheduledBackupService = new TestScheduledBackupService();
         var service = new OrchestrationService(
-            new TestConfigurationManager
+            new FakeConfigurationManager
             {
                 IsConfigured = "1",
                 DbStatus = "0",
@@ -84,7 +84,7 @@ public class WinUiOrchestrationParityTests
     [Test]
     public async Task RefreshAutomationAsyncDoesNotRestartSchedulesWhileBatteryPaused()
     {
-        var configurationManager = new TestConfigurationManager
+        var configurationManager = new FakeConfigurationManager
         {
             IsConfigured = "1",
             DbStatus = "0",
@@ -114,7 +114,7 @@ public class WinUiOrchestrationParityTests
         var statusService = new TestStatusService();
         var scheduledBackupService = new TestScheduledBackupService();
         var service = new OrchestrationService(
-            new TestConfigurationManager
+            new FakeConfigurationManager
             {
                 IsConfigured = "1",
                 DbStatus = "0",
@@ -140,7 +140,7 @@ public class WinUiOrchestrationParityTests
         var statusService = new TestStatusService { SystemStatus = SystemStatus.DEACTIVATED };
         var scheduledBackupService = new TestScheduledBackupService();
         var service = new OrchestrationService(
-            new TestConfigurationManager
+            new FakeConfigurationManager
             {
                 IsConfigured = "1",
                 DbStatus = "1",
@@ -172,7 +172,7 @@ public class WinUiOrchestrationParityTests
         var scheduledBackupService = new TestScheduledBackupService();
         var notifications = new TestNotificationService();
         var service = new OrchestrationService(
-            new TestConfigurationManager
+            new FakeConfigurationManager
             {
                 IsConfigured = "1",
                 DbStatus = "0",
@@ -201,7 +201,7 @@ public class WinUiOrchestrationParityTests
     [Test]
     public async Task PowerChangeDoesNothingWhenSystemIsDeactivated()
     {
-        var configurationManager = new TestConfigurationManager
+        var configurationManager = new FakeConfigurationManager
         {
             IsConfigured = "1",
             DbStatus = "0",
@@ -231,7 +231,7 @@ public class WinUiOrchestrationParityTests
     [Test]
     public async Task StartAsyncShowsLowDiskSpaceNotificationWhenConfigured()
     {
-        var configurationManager = new TestConfigurationManager
+        var configurationManager = new FakeConfigurationManager
         {
             IsConfigured = "1",
             DbStatus = "0",
@@ -250,7 +250,7 @@ public class WinUiOrchestrationParityTests
         await service.StartAsync();
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain("Not enough disk space"));
+        Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=settings\""));
     }
 
     [Test]
@@ -263,7 +263,7 @@ public class WinUiOrchestrationParityTests
         };
         var notifications = new TestNotificationService();
         var service = new OrchestrationService(
-            new TestConfigurationManager
+            new FakeConfigurationManager
             {
                 IsConfigured = "1",
                 DbStatus = "0",
@@ -278,15 +278,15 @@ public class WinUiOrchestrationParityTests
         await service.StartAsync();
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain("Backup outdated"));
+        Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=overview\""));
     }
 
-    [TestCase(JobState.FINISHED, "Backup successful")]
-    [TestCase(JobState.ERROR, "Backup with errors finished")]
-    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitle)
+    [TestCase(JobState.FINISHED, "INFO_BACKUP_SUCCESSFUL_TITLE", "action=overview")]
+    [TestCase(JobState.ERROR, "INFO_BACKUP_UNSUCCESSFUL_TITLE", "action=backupResult")]
+    public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitleKey, string expectedLaunch)
     {
         var notifications = new TestNotificationService();
-        var configurationManager = new TestConfigurationManager
+        var configurationManager = new FakeConfigurationManager
         {
             InfoBackupDone = "1"
         };
@@ -299,7 +299,8 @@ public class WinUiOrchestrationParityTests
         statusService.ReportState(state);
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
-        Assert.That(notifications.Payloads[0], Does.Contain(expectedTitle));
+        Assert.That(expectedTitleKey, Is.Not.Null.And.Not.Empty);
+        Assert.That(notifications.Payloads[0], Does.Contain($"launch=\"{expectedLaunch}\""));
     }
 
     [Test]
@@ -314,8 +315,7 @@ public class WinUiOrchestrationParityTests
             {
                 Assert.That(waitMode, Is.EqualTo(MediaWaitMode.PromptUser));
                 waitWasRequested = true;
-                cancellationTokenSource.Cancel();
-                await Task.Yield();
+                await cancellationTokenSource.CancelAsync();
                 return false;
             },
             () => Task.FromResult(true));
@@ -334,57 +334,6 @@ public class WinUiOrchestrationParityTests
     public void PowerStatusServiceDetectsBatteryMode(BatteryStatus batteryStatus, PowerSupplyStatus powerSupplyStatus, bool expected)
     {
         Assert.That(PowerStatusService.DetermineIsRunningOnBattery(batteryStatus, powerSupplyStatus), Is.EqualTo(expected));
-    }
-
-    private sealed class TestConfigurationManager : IConfigurationManager
-    {
-        public string AutoBackup { get; set; } = "";
-        public string BackupFolder { get; set; } = "";
-        public string BackupSize { get; set; } = "";
-        public int Compression { get; set; }
-        public string DbStatus { get; set; } = "";
-        public string DBVersion { get; set; } = "";
-        public string DeativateAutoBackupsWhenAkku { get; set; } = "";
-        public string DoPastBackups { get; set; } = "";
-        public int Encrypt { get; set; }
-        public string EncryptPassMD5 { get; set; } = "";
-        public string ExcludeCompression { get; set; } = "";
-        public string ExcludeFile { get; set; } = "";
-        public string ExcludeFileBigger { get; set; } = "";
-        public string ExcludeFileTypes { get; set; } = "";
-        public string ExcludeFolder { get; set; } = "";
-        public string ExcludeMask { get; set; } = "";
-        public string IncludeSystemFolders { get; set; } = "0";
-        public string FreeSpace { get; set; } = "";
-        public string FtpCoding { get; set; } = "";
-        public string FtpEncryptionMode { get; set; } = "";
-        public string FtpFolder { get; set; } = "";
-        public string FtpHost { get; set; } = "";
-        public string FtpPass { get; set; } = "";
-        public string FtpPort { get; set; } = "";
-        public string FtpSslProtocols { get; set; } = "";
-        public string FtpUser { get; set; } = "";
-        public string InfoBackupDone { get; set; } = "";
-        public string IntervallAutoHourBackups { get; set; } = "";
-        public string IntervallDelete { get; set; } = "";
-        public string IsConfigured { get; set; } = "";
-        public string LastBackupDone { get; set; } = "";
-        public string LastVersionDate { get; set; } = "";
-        public string MediaVolumeSerial { get; set; } = "";
-        public string Medium { get; set; } = "";
-        public MediaType MediumType { get; set; }
-        public string OldBackupPrevent { get; set; } = "";
-        public string RemindAfterDays { get; set; } = "";
-        public string RemindSpace { get; set; } = "";
-        public string ScheduleFullBackup { get; set; } = "";
-        public string ShowLocalizedPath { get; set; } = "";
-        public string ShowWaitOnMediaAutoBackups { get; set; } = "";
-        public string SourceFolder { get; set; } = "";
-        public TaskType TaskType { get; set; }
-        public string UNCPassword { get; set; } = "";
-        public string UNCUsername { get; set; } = "";
-
-        public Task InitializeAsync() => Task.CompletedTask;
     }
 
     private sealed class TestStatusService : IStatusService
@@ -470,7 +419,7 @@ public class WinUiOrchestrationParityTests
         public List<string> Payloads { get; } = new();
 
         public void Initialize() { }
-        public NameValueCollection ParseArguments(string arguments) => new();
+        public void Activate(string? arguments) { }
         public bool Show(string payload)
         {
             Payloads.Add(payload);
@@ -520,7 +469,7 @@ public class WinUiOrchestrationParityTests
         public Task UpdateVersionAsync(string version, VersionDetails versionDetails) => Task.CompletedTask;
         public Task StartBackup(string title, string description, IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false) => Task.CompletedTask;
         public Task StartDelete(string version, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
+        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false, IReadOnlyList<int> versionIds = null) => Task.CompletedTask;
         public Task StartEdit(IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
         public Task StartRestore(string version, string file, string destination, IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => Task.CompletedTask;
         public void UpdateDatabaseFile(string databaseFile) { }
@@ -538,6 +487,7 @@ public class WinUiOrchestrationParityTests
         public Task ResetConfigurationAsync() => Task.CompletedTask;
         public Task ShowAboutWindowAsync() => Task.CompletedTask;
         public Task ShowBackupBrowserWindowAsync() => Task.CompletedTask;
+        public Task ShowCompressionExclusionsWindowAsync() => Task.CompletedTask;
         public Task<(bool, BSH.MainApp.ViewModels.Windows.NewBackupViewModel)> ShowCreateBackupWindowAsync() => Task.FromResult((false, new BSH.MainApp.ViewModels.Windows.NewBackupViewModel()));
         public Task<(bool, BSH.MainApp.ViewModels.Windows.EditBackupViewModel)> ShowEditBackupWindowAsync(BSH.MainApp.ViewModels.Windows.EditBackupViewModel backupViewModel) => Task.FromResult((false, backupViewModel));
         public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);
@@ -548,5 +498,6 @@ public class WinUiOrchestrationParityTests
         public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.None);
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
         public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
+        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 }
