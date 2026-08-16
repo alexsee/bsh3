@@ -9,13 +9,12 @@
 		<Platforms>x64</Platforms>
 		<Platform Condition="'$(Platform)' == '' Or '$(Platform)' == 'AnyCPU'">x64</Platform>
 		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-		<PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<WindowsPackageType>None</WindowsPackageType>
-		<IsPublishable>False</IsPublishable>
+		<WindowsAppSDKSelfContained Condition="'$(SelfContained)' == 'true'">true</WindowsAppSDKSelfContained>
 		<UseRidGraph>true</UseRidGraph>
 		<Version>3.9.0.3</Version>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
