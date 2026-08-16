@@ -30,7 +30,10 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Nav_Overview}" />
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
+                <FontIcon FontSize="22" Glyph="&#xE80F;" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
+                <TextBlock VerticalAlignment="Center" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Nav_Overview}" />
+            </StackPanel>
 
             <!-- System status -->
             <Border Grid.Row="1"

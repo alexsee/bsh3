@@ -13,7 +13,7 @@
     TaskBarIcon="{StaticResource AppIcon}"
     Height="340" Width="600" IsResizable="False" IsMaximizable="False" IsMinimizable="False" IsAlwaysOnTop="True">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource AppPageBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -42,7 +42,7 @@
 
         <Grid Grid.Row="1" Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,10" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=Status_Cancel}" />
+                <Button MinWidth="100" Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=Status_Cancel}" />
             </StackPanel>
         </Grid>
     </Grid>

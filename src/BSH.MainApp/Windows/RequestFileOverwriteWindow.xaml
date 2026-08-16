@@ -18,7 +18,7 @@
     Width="700"
     Height="450">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource AppPageBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -81,8 +81,8 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <CheckBox IsChecked="{x:Bind ViewModel.ApplyToAll, Mode=TwoWay}" Content="{helpers:ResourceString Name=Overwrite_ApplyForAll}" />
-            <Button Grid.Column="1" Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
+            <CheckBox VerticalAlignment="Center" IsChecked="{x:Bind ViewModel.ApplyToAll, Mode=TwoWay}" Content="{helpers:ResourceString Name=Overwrite_ApplyForAll}" />
+            <Button Grid.Column="1" MinWidth="100" Command="{x:Bind ViewModel.CancelCommand}" Content="{helpers:ResourceString Name=MainView_Cancel}" />
         </Grid>
     </Grid>
 </winuiex:WindowEx>

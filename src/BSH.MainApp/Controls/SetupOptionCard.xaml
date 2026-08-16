@@ -14,9 +14,9 @@
                 <VisualState x:Name="Selected">
                     <VisualState.Setters>
                         <Setter Target="CardBorder.BorderThickness" Value="2" />
-                        <Setter Target="CardBorder.BorderBrush" Value="{ThemeResource AccentFillColorDefaultBrush}" />
-                        <Setter Target="CardBorder.Background" Value="{ThemeResource AccentFillColorTertiaryBrush}" />
-                        <Setter Target="GlyphIcon.Foreground" Value="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                        <Setter Target="CardBorder.BorderBrush" Value="{ThemeResource SetupHighlightBorderBrush}" />
+                        <Setter Target="CardBorder.Background" Value="{ThemeResource SetupHighlightBackgroundBrush}" />
+                        <Setter Target="GlyphIcon.Foreground" Value="{ThemeResource SetupHighlightForegroundBrush}" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Unselected">
@@ -31,10 +31,11 @@
         </VisualStateManager.VisualStateGroups>
 
         <Button
-            Width="184"
+            MinWidth="150"
             Padding="0"
             HorizontalAlignment="Stretch"
-            HorizontalContentAlignment="Center"
+            VerticalAlignment="Stretch"
+            HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
             Background="Transparent"
             BorderThickness="0"

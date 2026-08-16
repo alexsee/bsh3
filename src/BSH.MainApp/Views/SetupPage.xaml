@@ -16,6 +16,14 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        <!-- Fixed brand color for onboarding primary actions (independent of the system accent). -->
+        <SolidColorBrush x:Key="AccentButtonBackground" Color="#0F6CBD" />
+        <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#1A7AD1" />
+        <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#0C5AA0" />
+        <SolidColorBrush x:Key="AccentButtonForeground" Color="White" />
+        <SolidColorBrush x:Key="AccentButtonForegroundPointerOver" Color="White" />
+        <SolidColorBrush x:Key="AccentButtonForegroundPressed" Color="White" />
+
         <converters:EnumComparisonConverter x:Key="EnumComparisonConverter" />
         <engine:TaskType x:Key="TaskType_Auto">Auto</engine:TaskType>
         <engine:TaskType x:Key="TaskType_Manual">Manual</engine:TaskType>
@@ -58,6 +66,12 @@
                         Visibility="{x:Bind ViewModel.WelcomeVisibility, Mode=OneWay}"
                         VerticalAlignment="Center"
                         Spacing="0">
+                        <Image
+                            Width="72"
+                            Height="72"
+                            Margin="0,0,0,20"
+                            HorizontalAlignment="Center"
+                            Source="/Assets/app_ico.ico" />
                         <TextBlock
                             FontSize="32"
                             FontWeight="SemiBold"
@@ -73,8 +87,8 @@
 
                         <Border
                             Padding="20,18"
-                            Background="{ThemeResource AccentFillColorTertiaryBrush}"
-                            BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                            Background="{ThemeResource SetupHighlightBackgroundBrush}"
+                            BorderBrush="{ThemeResource SetupHighlightBorderBrush}"
                             BorderThickness="2"
                             CornerRadius="8">
                             <Grid ColumnSpacing="16">
@@ -87,7 +101,7 @@
                                     Grid.Column="0"
                                     FontSize="22"
                                     Glyph="&#xE8B7;"
-                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    Foreground="{ThemeResource SetupHighlightForegroundBrush}"
                                     VerticalAlignment="Top" />
                                 <StackPanel Grid.Column="1" Spacing="6">
                                     <TextBlock FontSize="16" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_NewSetup_Title}" />
@@ -190,11 +204,17 @@
 
                     <!-- Target -->
                     <StackPanel Spacing="28" Visibility="{x:Bind ViewModel.TargetVisibility, Mode=OneWay}">
-                        <StackPanel
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Spacing="12">
+                        <Grid
+                            ColumnSpacing="12"
+                            MaxWidth="600"
+                            HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
                             <controls:SetupOptionCard
+                                Grid.Column="0"
                                 Title="{helpers:ResourceString Name=Setup_Target_Local_Title}"
                                 Description="{helpers:ResourceString Name=Setup_Target_Local_Description}"
                                 Glyph="&#xEDA2;"
@@ -202,6 +222,7 @@
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
                                 CommandParameter="{converters:EnumValue Type=engine:MediaTargetKind, Member=LocalDrive}" />
                             <controls:SetupOptionCard
+                                Grid.Column="1"
                                 Title="{helpers:ResourceString Name=Setup_Target_Unc_Title}"
                                 Description="{helpers:ResourceString Name=Setup_Target_Unc_Description}"
                                 Glyph="&#xE968;"
@@ -209,13 +230,14 @@
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
                                 CommandParameter="{converters:EnumValue Type=engine:MediaTargetKind, Member=Unc}" />
                             <controls:SetupOptionCard
+                                Grid.Column="2"
                                 Title="{helpers:ResourceString Name=Setup_Target_Ftp_Title}"
                                 Description="{helpers:ResourceString Name=Setup_Target_Ftp_Description}"
                                 Glyph="&#xE839;"
                                 IsSelected="{Binding SelectedTargetKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Target_Ftp}}"
                                 Command="{x:Bind ViewModel.SelectTargetCommand}"
                                 CommandParameter="{converters:EnumValue Type=engine:MediaTargetKind, Member=Ftp}" />
-                        </StackPanel>
+                        </Grid>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalTargetVisibility, Mode=OneWay}">
                             <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Target_SelectDrive}" />
@@ -266,11 +288,17 @@
 
                     <!-- Import media -->
                     <StackPanel Spacing="28" Visibility="{x:Bind ViewModel.ImportMediaVisibility, Mode=OneWay}">
-                        <StackPanel
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Spacing="12">
+                        <Grid
+                            ColumnSpacing="12"
+                            MaxWidth="600"
+                            HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
                             <controls:SetupOptionCard
+                                Grid.Column="0"
                                 Title="{helpers:ResourceString Name=Setup_Target_Local_Title}"
                                 Description="{helpers:ResourceString Name=Setup_Import_Local_Description}"
                                 Glyph="&#xEDA2;"
@@ -278,6 +306,7 @@
                                 Command="{x:Bind ViewModel.SelectImportSourceCommand}"
                                 CommandParameter="{converters:EnumValue Type=models:SetupImportSourceKind, Member=LocalMedia}" />
                             <controls:SetupOptionCard
+                                Grid.Column="1"
                                 Title="{helpers:ResourceString Name=Setup_Target_Ftp_Title}"
                                 Description="{helpers:ResourceString Name=Setup_Target_Ftp_Description}"
                                 Glyph="&#xE839;"
@@ -285,13 +314,14 @@
                                 Command="{x:Bind ViewModel.SelectImportSourceCommand}"
                                 CommandParameter="{converters:EnumValue Type=models:SetupImportSourceKind, Member=Ftp}" />
                             <controls:SetupOptionCard
+                                Grid.Column="2"
                                 Title="{helpers:ResourceString Name=Setup_Import_FolderPath_Title}"
                                 Description="{helpers:ResourceString Name=Setup_Import_FolderPath_Description}"
                                 Glyph="&#xE8B7;"
                                 IsSelected="{Binding SelectedImportSourceKind, Converter={StaticResource EnumComparisonConverter}, ConverterParameter={StaticResource Import_Path}}"
                                 Command="{x:Bind ViewModel.SelectImportSourceCommand}"
                                 CommandParameter="{converters:EnumValue Type=models:SetupImportSourceKind, Member=ExplicitPath}" />
-                        </StackPanel>
+                        </Grid>
 
                         <StackPanel Spacing="14" Visibility="{x:Bind ViewModel.LocalImportVisibility, Mode=OneWay}">
                             <TextBlock FontWeight="SemiBold" Text="{helpers:ResourceString Name=Setup_Import_SelectDrive}" />
