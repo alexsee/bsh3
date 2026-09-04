@@ -4,10 +4,12 @@
 using System;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Security;
 
 namespace Brightbits.BSH.Engine;
 
@@ -299,7 +301,8 @@ public class ConfigurationManager : IConfigurationManager
         get => ftpPass;
         set
         {
-            ftpPass = value; SaveProperty(nameof(FtpPass), value.ToString());
+            ftpPass = value ?? "";
+            SaveProperty(nameof(FtpPass), ProtectFtpPassword(ftpPass));
         }
     }
 
@@ -532,8 +535,42 @@ public class ConfigurationManager : IConfigurationManager
                 continue;
             }
 
+            if (configEntry.Name == nameof(FtpPass))
+            {
+                LoadPersistedFtpPassword(result);
+                continue;
+            }
+
             configEntry.SetValue(this, result);
         }
+    }
+
+    private void LoadPersistedFtpPassword(object persistedValue)
+    {
+        var persistedPassword = persistedValue.ToString() ?? "";
+        if (string.IsNullOrEmpty(persistedPassword))
+        {
+            ftpPass = "";
+            return;
+        }
+
+        if (Crypto.TryDecryptString(persistedPassword, DataProtectionScope.LocalMachine, out var plaintextPassword))
+        {
+            ftpPass = plaintextPassword;
+            return;
+        }
+
+        // Older databases stored FTP passwords as plaintext. Keep the value usable
+        // in memory and replace the persisted legacy value with protected data.
+        ftpPass = persistedPassword;
+        SaveProperty(nameof(FtpPass), ProtectFtpPassword(ftpPass));
+    }
+
+    private static string ProtectFtpPassword(string password)
+    {
+        return string.IsNullOrEmpty(password)
+            ? ""
+            : Crypto.EncryptString(password, DataProtectionScope.LocalMachine);
     }
 
     private void ResetInMemoryDefaults()

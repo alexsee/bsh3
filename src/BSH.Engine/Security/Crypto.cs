@@ -31,17 +31,29 @@ public static class Crypto
 
     public static string DecryptString(string encryptedData, System.Security.Cryptography.DataProtectionScope scope)
     {
+        return TryDecryptString(encryptedData, scope, out var decryptedData)
+            ? decryptedData
+            : "";
+    }
+
+    public static bool TryDecryptString(
+        string encryptedData,
+        System.Security.Cryptography.DataProtectionScope scope,
+        out string decryptedData)
+    {
         try
         {
-            var decryptedData = System.Security.Cryptography.ProtectedData.Unprotect(
+            var protectedData = System.Security.Cryptography.ProtectedData.Unprotect(
                 Convert.FromBase64String(encryptedData),
                 entropy,
                 scope);
-            return Encoding.Unicode.GetString(decryptedData);
+            decryptedData = Encoding.Unicode.GetString(protectedData);
+            return true;
         }
         catch
         {
-            return "";
+            decryptedData = "";
+            return false;
         }
     }
 }
