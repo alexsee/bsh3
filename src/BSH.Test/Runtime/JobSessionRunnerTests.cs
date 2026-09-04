@@ -359,10 +359,45 @@ public class JobSessionRunnerTests
         var result = await runner.RunBatchDeleteAsync(new[] { "5", "6" }, presenter, statusDialog: false);
 
         Assert.That(result.Started, Is.True);
+        Assert.That(result.Succeeded, Is.False);
+        Assert.That(result.HasErrors, Is.True);
         Assert.That(backupService.StartDeleteCalls, Is.EqualTo(2));
         Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.RUNNING, JobState.ERROR }));
         Assert.That(presenter.ReportedExceptions.Count, Is.EqualTo(1));
         Assert.That(presenter.ReportedExceptions[0].Exception.Message, Is.EqualTo("boom"));
+    }
+
+    [Test]
+    public async Task RunBatchDeleteAsync_ReturnsSucceeded_WhenEveryItemFinishes()
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunBatchDeleteAsync(new[] { "5", "6" }, presenter, statusDialog: false);
+
+        Assert.That(result.Succeeded, Is.True);
+        Assert.That(backupService.StartDeleteCalls, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task RunBatchDeleteAsync_ReturnsTaskRunning_WhenAnotherTaskIsRunning()
+    {
+        var backupService = new BackupServiceStub();
+        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunBatchDeleteAsync(new[] { "5" }, presenter, statusDialog: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Failure, Is.EqualTo(JobSessionStartFailure.TaskRunning));
+            Assert.That(backupService.StartDeleteCalls, Is.EqualTo(0));
+            Assert.That(presenter.ShowErrorTaskRunningCalls, Is.EqualTo(1));
+        });
     }
 
     [Test]
@@ -383,6 +418,8 @@ public class JobSessionRunnerTests
 
         Assert.That(result.Started, Is.True);
         Assert.That(result.Canceled, Is.True);
+        Assert.That(result.Succeeded, Is.False);
+        Assert.That(result.HasErrors, Is.False);
         Assert.That(backupService.StartDeleteCalls, Is.EqualTo(1));
         Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.RUNNING, JobState.CANCELED }));
         Assert.That(presenter.ProgressUpdates, Is.EqualTo(new[] { "3/1" }));

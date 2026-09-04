@@ -453,8 +453,16 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
 
         var versions = this.queryManager.GetVersions().Select(x => x.Id).ToList();
-        await this.jobService.DeleteBackupsAsync(versions);
-        return true;
+        var deletionResult = await this.jobService.DeleteBackupsAsync(versions);
+        if (deletionResult.Canceled)
+        {
+            await this.presentationController.ShowMessageBoxAsync(
+                "Settings_SecurityChangeCancelled_Title".GetLocalized(),
+                "Settings_SecurityChangeCancelled_Text".GetLocalized(),
+                [new UICommand("MsgBox_OK".GetLocalized())]);
+        }
+
+        return deletionResult.Succeeded;
     }
 
     private void PersistFtpTargetIfSelected()

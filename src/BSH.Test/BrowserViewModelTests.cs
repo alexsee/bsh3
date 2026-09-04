@@ -6,6 +6,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Runtime;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.Services;
@@ -565,7 +566,7 @@ public class BrowserViewModelTests
         public Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(true);
         public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
         public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
-        public Task DeleteBackupsAsync(List<string> versions, bool statusDialog = true) { DeleteBackupsCalls.Add(versions); return Task.CompletedTask; }
+        public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) { DeleteBackupsCalls.Add(versions); return Task.FromResult(new JobSessionResult { Started = true }); }
         public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null)
         {
             DeleteSingleCalls.Add((fileFilter, folderFilter, versionIds));

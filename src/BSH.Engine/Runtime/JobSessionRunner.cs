@@ -39,6 +39,16 @@ public readonly struct JobSessionResult
     public bool Canceled { get; init; }
 
     /// <summary>
+    /// Gets a value indicating whether the session completed with one or more reported errors.
+    /// </summary>
+    public bool HasErrors { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether the session started and completed without cancellation or errors.
+    /// </summary>
+    public bool Succeeded => Started && !Canceled && !HasErrors;
+
+    /// <summary>
     /// Gets the startup failure reason when the session could not be started.
     /// </summary>
     public JobSessionStartFailure Failure { get; init; }
@@ -272,6 +282,7 @@ public sealed class JobSessionRunner
             {
                 Started = true,
                 Canceled = cancellationToken.IsCancellationRequested,
+                HasErrors = false,
                 Failure = JobSessionStartFailure.None
             };
         }
@@ -345,6 +356,7 @@ public sealed class JobSessionRunner
             {
                 Started = true,
                 Canceled = cancellationToken.IsCancellationRequested,
+                HasErrors = forwardJobReport.HasExceptions,
                 Failure = JobSessionStartFailure.None
             };
         }
