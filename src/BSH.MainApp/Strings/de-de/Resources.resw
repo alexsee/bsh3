@@ -1327,6 +1327,12 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   <data name="Status_InsufficientSpace_Title" xml:space="preserve">
     <value>Nicht genügend Speicherplatz auf dem Sicherungsmedium</value>
   </data>
+  <data name="Settings_SecurityChangeCancelled_Text" xml:space="preserve">
+    <value>Der Löschvorgang wurde abgebrochen, bevor alle Sicherungen entfernt werden konnten. Die Sicherheitseinstellung wurde nicht geändert.</value>
+  </data>
+  <data name="Settings_SecurityChangeCancelled_Title" xml:space="preserve">
+    <value>Löschen der Sicherungen abgebrochen</value>
+  </data>
   <data name="Status_NoAction" xml:space="preserve">
     <value>Keine Aktion</value>
   </data>

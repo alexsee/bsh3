@@ -9,6 +9,7 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
@@ -218,6 +219,43 @@ public class SettingsViewModelTests
         });
     }
 
+    [TestCase(JobSessionStartFailure.TaskRunning, false, false)]
+    [TestCase(JobSessionStartFailure.None, true, false)]
+    [TestCase(JobSessionStartFailure.None, false, true)]
+    public async Task TurningEncryptionOff_OnFtp_WhenDeletionDoesNotComplete_KeepsEncryption(
+        JobSessionStartFailure failure,
+        bool canceled,
+        bool hasErrors)
+    {
+        var configuration = new FakeConfigurationManager
+        {
+            MediumType = MediaType.FileTransferServer,
+            Encrypt = 1,
+            EncryptPassMD5 = "existing-hash"
+        };
+        var harness = CreateHarness(configuration);
+        harness.QueryManager.Versions = [new VersionDetails { Id = "1" }];
+        harness.JobService.DeleteBackupsResult = new JobSessionResult
+        {
+            Started = failure == JobSessionStartFailure.None,
+            Failure = failure,
+            Canceled = canceled,
+            HasErrors = hasErrors
+        };
+        harness.ViewModel.OnNavigatedTo(null);
+
+        await harness.ViewModel.DisableEncryptionCommand.ExecuteAsync(null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(harness.JobService.DeleteBackupsCalls, Has.Count.EqualTo(1));
+            Assert.That(configuration.Encrypt, Is.EqualTo(1));
+            Assert.That(configuration.EncryptPassMD5, Is.EqualTo("existing-hash"));
+            Assert.That(harness.ViewModel.ModeType, Is.EqualTo(ModeType.Encryption));
+            Assert.That(harness.PresentationService.MessageBoxCalls, Is.EqualTo(canceled ? 1 : 0));
+        });
+    }
+
     [Test]
     public async Task EnforcingUnencryptedFtp_DeletesAllBackups()
     {
@@ -260,6 +298,37 @@ public class SettingsViewModelTests
             Assert.That(harness.JobService.DeleteBackupsCalls, Is.Empty);
             Assert.That(configuration.FtpEncryptionMode, Is.EqualTo("3"));
             Assert.That(harness.ViewModel.FtpRemoteEnforceUnencrypted, Is.False);
+        });
+    }
+
+    [TestCase(JobSessionStartFailure.TaskRunning, false, false)]
+    [TestCase(JobSessionStartFailure.None, true, false)]
+    [TestCase(JobSessionStartFailure.None, false, true)]
+    public async Task EnforcingUnencryptedFtp_WhenDeletionDoesNotComplete_DoesNotPersist(
+        JobSessionStartFailure failure,
+        bool canceled,
+        bool hasErrors)
+    {
+        var configuration = CreateFtpConfiguration();
+        var harness = CreateHarness(configuration);
+        harness.QueryManager.Versions = [new VersionDetails { Id = "10" }];
+        harness.JobService.DeleteBackupsResult = new JobSessionResult
+        {
+            Started = failure == JobSessionStartFailure.None,
+            Failure = failure,
+            Canceled = canceled,
+            HasErrors = hasErrors
+        };
+        harness.ViewModel.OnNavigatedTo(null);
+
+        await harness.ViewModel.ChangeFtpRemoteEnforceUnencryptedAsync(true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(harness.JobService.DeleteBackupsCalls, Has.Count.EqualTo(1));
+            Assert.That(configuration.FtpEncryptionMode, Is.EqualTo("3"));
+            Assert.That(harness.ViewModel.FtpRemoteEnforceUnencrypted, Is.False);
+            Assert.That(harness.PresentationService.MessageBoxCalls, Is.EqualTo(canceled ? 1 : 0));
         });
     }
 
@@ -476,6 +545,7 @@ public class SettingsViewModelTests
     private sealed class SettingsPresentationService : IPresentationService
     {
         public ContentDialogResult MessageBoxResult { get; set; } = ContentDialogResult.Primary;
+        public int MessageBoxCalls { get; private set; }
         public string? Password { get; set; }
 
         public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
@@ -496,7 +566,11 @@ public class SettingsViewModelTests
         public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
         public Task ShowMainWindowAsync() => Task.CompletedTask;
         public Task ShowStatusWindowAsync() => Task.CompletedTask;
-        public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(MessageBoxResult);
+        public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
+        {
+            MessageBoxCalls++;
+            return Task.FromResult(MessageBoxResult);
+        }
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
         public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
         public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
@@ -516,6 +590,7 @@ public class SettingsViewModelTests
         public int RequestPasswordCallCount { get; private set; }
         public int ModifyBackupCalls { get; private set; }
         public bool CheckMediaResult { get; set; } = true;
+        public JobSessionResult DeleteBackupsResult { get; set; } = new() { Started = true };
         public bool RequestPasswordResult { get; set; } = true;
         public bool ClearEncryptionOnModify { get; set; }
 
@@ -529,10 +604,10 @@ public class SettingsViewModelTests
 
         public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
         public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
-        public Task DeleteBackupsAsync(List<string> versions, bool statusDialog = true)
+        public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true)
         {
             DeleteBackupsCalls.Add(versions);
-            return Task.CompletedTask;
+            return Task.FromResult(DeleteBackupsResult);
         }
 
         public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;

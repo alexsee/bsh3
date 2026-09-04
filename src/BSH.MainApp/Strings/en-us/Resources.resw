@@ -1327,6 +1327,12 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   <data name="Status_InsufficientSpace_Title" xml:space="preserve">
     <value>Insufficient Storage Space on Backup Medium</value>
   </data>
+  <data name="Settings_SecurityChangeCancelled_Text" xml:space="preserve">
+    <value>The backup deletion was cancelled before all backups could be removed. The security setting was not changed.</value>
+  </data>
+  <data name="Settings_SecurityChangeCancelled_Title" xml:space="preserve">
+    <value>Backup deletion cancelled</value>
+  </data>
   <data name="Status_NoAction" xml:space="preserve">
     <value>No action</value>
   </data>

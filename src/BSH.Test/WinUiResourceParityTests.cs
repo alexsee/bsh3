@@ -34,6 +34,8 @@ public class WinUiResourceParityTests
         "Nav_Overview",
         "Nav_BackupBrowser",
         "Settings_Title",
+        "Settings_SecurityChangeCancelled_Title",
+        "Settings_SecurityChangeCancelled_Text",
         "MainView_BtnCreateBackup_Title",
         "MainView_BackupMode_Automatic",
         "MainView_BackupMode_Manual",
