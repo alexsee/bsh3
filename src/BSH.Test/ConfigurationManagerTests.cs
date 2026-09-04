@@ -2,11 +2,14 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Data;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
+using Brightbits.BSH.Engine.Security;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -55,6 +58,54 @@ public class ConfigurationManagerTests
 
         Assert.That(configurationManager.MediumType, Is.EqualTo(MediaType.FileTransferServer));
         Assert.That(configurationManager.TaskType, Is.EqualTo(TaskType.Manual));
+    }
+
+    [Test]
+    public async Task FtpPasswordIsProtectedAtRestAndReloadedAsPlaintext()
+    {
+        var configurationManager = new ConfigurationManager(dbClientFactory);
+        await configurationManager.InitializeAsync();
+
+        configurationManager.FtpPass = "ftp-secret";
+
+        var persistedPassword = await GetPersistedFtpPasswordAsync();
+        Assert.That(persistedPassword, Is.Not.EqualTo("ftp-secret"));
+        Assert.That(
+            Crypto.DecryptString(persistedPassword, DataProtectionScope.LocalMachine),
+            Is.EqualTo("ftp-secret"));
+
+        var reloadedConfiguration = new ConfigurationManager(dbClientFactory);
+        await reloadedConfiguration.InitializeAsync();
+
+        Assert.That(reloadedConfiguration.FtpPass, Is.EqualTo("ftp-secret"));
+    }
+
+    [Test]
+    public async Task LegacyPlaintextFtpPasswordIsMigratedAndRemainsUsable()
+    {
+        await dbClientFactory.ExecuteNonQueryAsync(
+            "INSERT INTO configuration (confValue, confProperty) VALUES ('legacy-secret', 'ftppass');");
+
+        var configurationManager = new ConfigurationManager(dbClientFactory);
+        await configurationManager.InitializeAsync();
+
+        Assert.That(configurationManager.FtpPass, Is.EqualTo("legacy-secret"));
+
+        var persistedPassword = await GetPersistedFtpPasswordAsync();
+        Assert.That(persistedPassword, Is.Not.EqualTo("legacy-secret"));
+        Assert.That(
+            Crypto.DecryptString(persistedPassword, DataProtectionScope.LocalMachine),
+            Is.EqualTo("legacy-secret"));
+    }
+
+    private async Task<string> GetPersistedFtpPasswordAsync()
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+        var persistedValue = await dbClient.ExecuteScalarAsync(
+            CommandType.Text,
+            "SELECT confValue FROM configuration WHERE confProperty = @property",
+            [("property", "ftppass")]);
+        return persistedValue.ToString();
     }
 
     [Test]

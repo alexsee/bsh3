@@ -3,6 +3,7 @@
 
 using BSH.MainApp.ViewModels.Windows;
 using CommunityToolkit.WinUI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using WinUIEx;
@@ -11,6 +12,7 @@ namespace BSH.MainApp.Windows;
 
 public sealed partial class FilterWindow : WindowEx
 {
+    private readonly ModalCloseHandler closeHandler = new();
     private bool isValidationDialogOpen;
 
     public FilterViewModel ViewModel { get; } = App.GetService<FilterViewModel>();
@@ -21,19 +23,22 @@ public sealed partial class FilterWindow : WindowEx
         ViewModel.ValidationFailed += ViewModel_ValidationFailed;
         ViewModel.ParentWindowId = this.AppWindow.Id;
         ContentFrame.DataContext = ViewModel;
+        Closed += OnClosed;
 
         FilterSelectorBar.SelectedItem = FilesItem;
         NavigateToSelectedItem();
     }
 
-    public async Task<bool> ShowDialogAsync()
+    public Task<bool> ShowDialogAsync()
     {
         Activate();
         this.CenterOnMainWindow();
-        var result = await ViewModel.TaskCompletionSource.Task;
+        return closeHandler.AwaitThenCloseAsync(ViewModel.TaskCompletionSource.Task, Close);
+    }
 
-        Close();
-        return result;
+    private void OnClosed(object sender, WindowEventArgs args)
+    {
+        closeHandler.HandleClosed(ViewModel.OnWindowClosed);
     }
 
     private void FilterSelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)

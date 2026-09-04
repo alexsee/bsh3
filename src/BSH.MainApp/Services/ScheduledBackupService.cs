@@ -22,6 +22,7 @@ public class ScheduledBackupService : IScheduledBackupService
     private readonly IScheduleRepository scheduleRepository;
     private readonly ISchedulerAdapterFactory schedulerAdapterFactory;
     private readonly ScheduleSettingsService scheduleSettingsService;
+    private readonly MediaArrivalBackupWatch mediaArrivalWatch;
 
     private ISchedulerAdapter? schedulerService;
 
@@ -31,7 +32,8 @@ public class ScheduledBackupService : IScheduledBackupService
         IQueryManager queryManager,
         IScheduleRepository scheduleRepository,
         ISchedulerAdapterFactory schedulerAdapterFactory,
-        ScheduleSettingsService scheduleSettingsService)
+        ScheduleSettingsService scheduleSettingsService,
+        IMediaWatcherFactory mediaWatcherFactory)
     {
         this.configurationManager = configurationManager;
         this.jobService = jobService;
@@ -39,6 +41,8 @@ public class ScheduledBackupService : IScheduledBackupService
         this.scheduleRepository = scheduleRepository;
         this.schedulerAdapterFactory = schedulerAdapterFactory;
         this.scheduleSettingsService = scheduleSettingsService;
+        ArgumentNullException.ThrowIfNull(mediaWatcherFactory);
+        mediaArrivalWatch = new MediaArrivalBackupWatch(configurationManager, mediaWatcherFactory);
     }
 
     public async Task InitializeAsync()
@@ -63,6 +67,7 @@ public class ScheduledBackupService : IScheduledBackupService
     {
         StopFullAutomatedSystem();
         StopScheduleSystem();
+        mediaArrivalWatch.Stop();
     }
 
     public DateTime GetNextBackupDate()
@@ -91,6 +96,8 @@ public class ScheduledBackupService : IScheduledBackupService
         schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
         schedulerService.ScheduleAutoBackup(async () => await RunAutoBackup());
+
+        WatchForDueBackup(RunAutoBackup);
     }
 
     private void StopFullAutomatedSystem()
@@ -109,6 +116,8 @@ public class ScheduledBackupService : IScheduledBackupService
     {
         Log.Information("Automatic backup is scheduled and will be performed now.");
 
+        mediaArrivalWatch.Stop();
+
         // lower process priority
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
@@ -117,6 +126,10 @@ public class ScheduledBackupService : IScheduledBackupService
             if (await jobService.CreateBackupAsync("Automatisches Backup", "", false))
             {
                 await RemoveOldBackups();
+            }
+            else
+            {
+                await WatchIfMediaMissing(RunAutoBackup);
             }
         }
         finally
@@ -177,6 +190,7 @@ public class ScheduledBackupService : IScheduledBackupService
                 if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                 {
                     schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                    WatchForDueBackup(thScheduleSysRunBackup);
                 }
 
                 schedulerService.ScheduleDaily(async () => await thScheduleSysRunBackup(), scheduleDate);
@@ -192,6 +206,7 @@ public class ScheduledBackupService : IScheduledBackupService
                     if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                     {
                         schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                        WatchForDueBackup(thScheduleSysRunBackup);
                     }
                 }
                 else
@@ -208,6 +223,7 @@ public class ScheduledBackupService : IScheduledBackupService
                             if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                             {
                                 schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                                WatchForDueBackup(thScheduleSysRunBackup);
                             }
 
                             break;
@@ -233,6 +249,7 @@ public class ScheduledBackupService : IScheduledBackupService
                     if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                     {
                         schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                        WatchForDueBackup(thScheduleSysRunBackup);
                     }
                 }
                 else
@@ -249,6 +266,7 @@ public class ScheduledBackupService : IScheduledBackupService
                             if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
                             {
                                 schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                                WatchForDueBackup(thScheduleSysRunBackup);
                             }
 
                             break;
@@ -314,6 +332,8 @@ public class ScheduledBackupService : IScheduledBackupService
     {
         Log.Information("Scheduled backup is planned and will be performed now.");
 
+        mediaArrivalWatch.Stop();
+
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
@@ -330,11 +350,30 @@ public class ScheduledBackupService : IScheduledBackupService
             {
                 await RemoveOldBackupsScheduled();
             }
+            else
+            {
+                await WatchIfMediaMissing(thScheduleSysRunBackup);
+            }
         }
         finally
         {
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
         }
+    }
+
+    private void WatchForDueBackup(Func<Task> runBackup)
+    {
+        mediaArrivalWatch.Start(runBackup, CheckBackupMediaAsync);
+    }
+
+    private Task WatchIfMediaMissing(Func<Task> runBackup)
+    {
+        return mediaArrivalWatch.StartIfMediaMissing(runBackup, CheckBackupMediaAsync);
+    }
+
+    private Task<bool> CheckBackupMediaAsync()
+    {
+        return jobService.CheckMediaAsync(ActionType.Backup, true);
     }
 
     private async Task RemoveOldBackupsScheduled()

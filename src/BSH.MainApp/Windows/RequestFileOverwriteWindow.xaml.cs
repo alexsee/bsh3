@@ -4,19 +4,23 @@
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.ViewModels.Windows;
+using Microsoft.UI.Xaml;
 
 namespace BSH.MainApp.Windows;
 
 public sealed partial class RequestFileOverwriteWindow : WinUIEx.WindowEx
 {
+    private readonly ModalCloseHandler closeHandler = new();
+
     private RequestFileOverwriteViewModel ViewModel { get; } = new RequestFileOverwriteViewModel();
 
     public RequestFileOverwriteWindow()
     {
         InitializeComponent();
+        Closed += OnClosed;
     }
 
-    public async Task<RequestOverwriteResult> ShowDialogAsync(FileTableRow localFile, FileTableRow remoteFile)
+    public Task<RequestOverwriteResult> ShowDialogAsync(FileTableRow localFile, FileTableRow remoteFile)
     {
         ViewModel.FileName = localFile.FileName;
         ViewModel.SourceFileSize = localFile.FileSize;
@@ -26,9 +30,11 @@ public sealed partial class RequestFileOverwriteWindow : WinUIEx.WindowEx
 
         Activate();
         this.CenterOnMainWindow();
+        return closeHandler.AwaitThenCloseAsync(ViewModel.TaskCompletionSource.Task, Close);
+    }
 
-        var result = await ViewModel.TaskCompletionSource.Task;
-        Close();
-        return result;
+    private void OnClosed(object sender, WindowEventArgs args)
+    {
+        closeHandler.HandleClosed(ViewModel.OnWindowClosed);
     }
 }

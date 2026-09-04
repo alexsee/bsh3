@@ -16,7 +16,7 @@ public partial class FilterViewModel : ObservableObject
 {
     private readonly IConfigurationManager configurationManager;
 
-    public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
+    public TaskCompletionSource<bool> TaskCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     public event Action<string>? ValidationFailed;
 
@@ -571,9 +571,14 @@ public partial class FilterViewModel : ObservableObject
         TaskCompletionSource.TrySetResult(true);
     }
 
-    private void Cancel()
+    public void OnWindowClosed()
     {
         TaskCompletionSource.TrySetResult(false);
+    }
+
+    private void Cancel()
+    {
+        OnWindowClosed();
     }
 
     private async Task BrowseFolderAsync()

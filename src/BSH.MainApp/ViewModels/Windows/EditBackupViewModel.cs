@@ -8,7 +8,7 @@ namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class EditBackupViewModel : ObservableObject
 {
-    public TaskCompletionSource<bool> TaskCompletionSource { get; } = new TaskCompletionSource<bool>();
+    public TaskCompletionSource<bool> TaskCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     [ObservableProperty]
     private string? title;
@@ -16,15 +16,20 @@ public partial class EditBackupViewModel : ObservableObject
     [ObservableProperty]
     private string? description;
 
+    public void OnWindowClosed()
+    {
+        TaskCompletionSource.TrySetResult(false);
+    }
+
     [RelayCommand]
     private void Save()
     {
-        TaskCompletionSource.SetResult(true);
+        TaskCompletionSource.TrySetResult(true);
     }
 
     [RelayCommand]
     private void Cancel()
     {
-        TaskCompletionSource.SetResult(false);
+        OnWindowClosed();
     }
 }

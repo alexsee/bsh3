@@ -28,4 +28,21 @@ public sealed partial class TargetSettingsPage : Page
         await viewModel.ChangeSelectedMediaTypeAsync(mediaType);
         MediaTypeComboBox.SelectedItem = viewModel.SelectedMediaType;
     }
+
+    private async void FtpEnforceUnencryptedCheckBox_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (DataContext is not SettingsViewModel viewModel)
+        {
+            return;
+        }
+
+        var requested = FtpEnforceUnencryptedCheckBox.IsChecked == true;
+        if (requested == viewModel.FtpRemoteEnforceUnencrypted)
+        {
+            return;
+        }
+
+        await viewModel.ChangeFtpRemoteEnforceUnencryptedAsync(requested);
+        FtpEnforceUnencryptedCheckBox.IsChecked = viewModel.FtpRemoteEnforceUnencrypted;
+    }
 }

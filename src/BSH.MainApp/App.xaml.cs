@@ -46,10 +46,10 @@ public partial class App : Application
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
     // https://docs.microsoft.com/dotnet/core/extensions/configuration
     // https://docs.microsoft.com/dotnet/core/extensions/logging
-    public IHost Host
-    {
-        get;
-    }
+    // Built on first GetService call. WinUI can raise OnLaunched before App() assigns fields.
+    private static readonly Lazy<IHost> host = new(CreateHost);
+
+    public IHost Host => host.Value;
 
     public TaskbarIcon? TrayIcon
     {
@@ -61,7 +61,7 @@ public partial class App : Application
     public static T GetService<T>()
         where T : class
     {
-        if ((App.Current as App)!.Host.Services.GetService(typeof(T)) is not T service)
+        if (host.Value.Services.GetService(typeof(T)) is not T service)
         {
             throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
         }
@@ -69,7 +69,9 @@ public partial class App : Application
         return service;
     }
 
-    public static MainWindow MainWindow { get; } = new MainWindow();
+    private static MainWindow? mainWindow;
+
+    public static MainWindow MainWindow => mainWindow ??= new MainWindow();
 
     public static string DatabaseFile { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
 
@@ -83,95 +85,13 @@ public partial class App : Application
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
         AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home", version);
 
+        _ = host.Value;
+
         InitializeComponent();
 
         unhandledExceptionHandler = new UnhandledExceptionHandler(
             askContinueAsync: AskContinueAfterUnhandledExceptionAsync,
             exitApplication: ExitAfterUnhandledException);
-
-        Host = Microsoft.Extensions.Hosting.Host.
-        CreateDefaultBuilder().
-        UseContentRoot(AppContext.BaseDirectory).
-        ConfigureServices((context, services) =>
-        {
-            // Default Activation Handler
-            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
-
-            // Other Activation Handlers
-            services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
-
-            // Services
-            services.AddSingleton<IAppNotificationService, AppNotificationService>();
-            services.AddSingleton<IActivationService, ActivationService>();
-            services.AddSingleton<IPageService, PageService>();
-            services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
-
-            // Core Services
-            services.AddSingleton<IFileService, FileService>();
-            services.AddSingleton<IStatusService, StatusService>();
-            services.AddSingleton<IBrowserFavoritesService, BrowserFavoritesService>();
-            services.AddSingleton<IBrowserViewPreferencesService, BrowserViewPreferencesService>();
-            services.AddSingleton<IBrowserContentService, BrowserContentService>();
-            services.AddSingleton<IBrowserDialogService, BrowserDialogService>();
-            services.AddSingleton<IBrowserPreviewService, BrowserPreviewService>();
-            services.AddSingleton<ISmartPreviewHost, SmartPreviewHost>();
-            services.AddSingleton<IBackupTargetService, BackupTargetService>();
-            services.AddSingleton<ISwitchStorageService, SwitchStorageService>();
-            services.AddSingleton<IPowerStatusService, PowerStatusService>();
-            services.AddTransient<IWaitForMediaService, WaitForMediaService>();
-            services.AddSingleton<Func<IWaitForMediaService>>(x => () => x.GetRequiredService<IWaitForMediaService>());
-            services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();
-            services.AddSingleton<IOrchestrationService, OrchestrationService>();
-            services.AddSingleton<ICompletionActionService, CompletionActionService>();
-            services.AddSingleton<IStoredPasswordAdapter, WinUIStoredPasswordAdapter>();
-            services.AddSingleton<IJobService, JobService>();
-            services.AddSingleton<IPresentationService, PresentationService>();
-            services.AddSingleton<IStartupLaunchAdapter, RegistryStartupLaunchAdapter>();
-            services.AddSingleton<IUpdateService, ApplicationUpdateService>();
-            services.AddSingleton<ISetupService, SetupService>();
-            services.AddSingleton<SetupRouting>();
-
-            // Engine Services
-            services.AddSingleton<IConfigurationManager, ConfigurationManager>();
-            services.AddSingleton<IQueryManager, QueryManager>();
-
-            services.AddSingleton<IDbClientFactory, DbClientFactory>();
-            services.AddSingleton<IDbMigrationService, DbMigrationService>();
-            services.AddSingleton<IVersionQueryRepository, VersionQueryRepository>();
-            services.AddSingleton<IBackupMutationRepository, BackupMutationRepository>();
-            services.AddSingleton<IScheduleRepository, ScheduleRepository>();
-            services.AddSingleton<ScheduleSettingsService>();
-
-            services.AddSingleton<IVssClient, VolumeShadowCopyClient>();
-            services.AddSingleton<ISchedulerAdapterFactory, SchedulerAdapterFactory>();
-            services.AddSingleton<IMediaWatcherFactory, MediaWatcherFactory>();
-            services.AddSingleton<IFileCollectorServiceFactory, FileCollectorServiceFactory>();
-            services.AddSingleton<IBackupService, BackupService>();
-
-            services.AddSingleton<IStorageFactory, StorageFactory>();
-
-            services.AddSingleton<DispatcherQueue>((x) => DispatcherQueue.GetForCurrentThread());
-
-            // Views and ViewModels
-            services.AddTransient<BrowserViewModel>();
-            services.AddTransient<BrowserPage>();
-            services.AddTransient<MainViewModel>();
-            services.AddTransient<MainPage>();
-            services.AddTransient<SettingsViewModel>();
-            services.AddTransient<SettingsPage>();
-            services.AddTransient<SetupViewModel>();
-            services.AddTransient<SetupPage>();
-
-            services.AddTransient<FilterViewModel>();
-            services.AddTransient<CompressionExclusionsViewModel>();
-            services.AddTransient<ScheduleEditorViewModel>();
-            services.AddTransient<SwitchStorageViewModel>();
-
-            // Configuration
-            services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
-        }).
-        Build();
 
         App.GetService<IAppNotificationService>().Initialize();
 
@@ -334,9 +254,100 @@ public partial class App : Application
         if (Current is App app)
         {
             app.TrayIcon?.Dispose();
-            app.Host.Dispose();
+        }
+
+        if (host.IsValueCreated)
+        {
+            host.Value.Dispose();
         }
 
         Environment.Exit(0);
+    }
+
+    private static IHost CreateHost()
+    {
+        return Microsoft.Extensions.Hosting.Host.
+        CreateDefaultBuilder().
+        UseContentRoot(AppContext.BaseDirectory).
+        ConfigureServices((context, services) =>
+        {
+            // Default Activation Handler
+            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
+
+            // Other Activation Handlers
+            services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
+
+            // Services
+            services.AddSingleton<IAppNotificationService, AppNotificationService>();
+            services.AddSingleton<IActivationService, ActivationService>();
+            services.AddSingleton<IPageService, PageService>();
+            services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
+
+            // Core Services
+            services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<IStatusService, StatusService>();
+            services.AddSingleton<IBrowserFavoritesService, BrowserFavoritesService>();
+            services.AddSingleton<IBrowserViewPreferencesService, BrowserViewPreferencesService>();
+            services.AddSingleton<IBrowserContentService, BrowserContentService>();
+            services.AddSingleton<IBrowserDialogService, BrowserDialogService>();
+            services.AddSingleton<IBrowserPreviewService, BrowserPreviewService>();
+            services.AddSingleton<ISmartPreviewHost, SmartPreviewHost>();
+            services.AddSingleton<IBackupTargetService, BackupTargetService>();
+            services.AddSingleton<ISwitchStorageService, SwitchStorageService>();
+            services.AddSingleton<IPowerStatusService, PowerStatusService>();
+            services.AddTransient<IWaitForMediaService, WaitForMediaService>();
+            services.AddSingleton<Func<IWaitForMediaService>>(x => () => x.GetRequiredService<IWaitForMediaService>());
+            services.AddSingleton<IScheduledBackupService, ScheduledBackupService>();
+            services.AddSingleton<IOrchestrationService, OrchestrationService>();
+            services.AddSingleton<ICompletionActionService, CompletionActionService>();
+            services.AddSingleton<IStoredPasswordAdapter, WinUIStoredPasswordAdapter>();
+            services.AddSingleton<IJobService, JobService>();
+            services.AddSingleton<IPresentationService, PresentationService>();
+            services.AddSingleton<IStartupLaunchAdapter, RegistryStartupLaunchAdapter>();
+            services.AddSingleton<IUpdateService, ApplicationUpdateService>();
+            services.AddSingleton<ISetupService, SetupService>();
+            services.AddSingleton<SetupRouting>();
+
+            // Engine Services
+            services.AddSingleton<IConfigurationManager, ConfigurationManager>();
+            services.AddSingleton<IQueryManager, QueryManager>();
+
+            services.AddSingleton<IDbClientFactory, DbClientFactory>();
+            services.AddSingleton<IDbMigrationService, DbMigrationService>();
+            services.AddSingleton<IVersionQueryRepository, VersionQueryRepository>();
+            services.AddSingleton<IBackupMutationRepository, BackupMutationRepository>();
+            services.AddSingleton<IScheduleRepository, ScheduleRepository>();
+            services.AddSingleton<ScheduleSettingsService>();
+
+            services.AddSingleton<IVssClient, VolumeShadowCopyClient>();
+            services.AddSingleton<ISchedulerAdapterFactory, SchedulerAdapterFactory>();
+            services.AddSingleton<IMediaWatcherFactory, MediaWatcherFactory>();
+            services.AddSingleton<IFileCollectorServiceFactory, FileCollectorServiceFactory>();
+            services.AddSingleton<IBackupService, BackupService>();
+
+            services.AddSingleton<IStorageFactory, StorageFactory>();
+
+            services.AddSingleton<DispatcherQueue>((x) => DispatcherQueue.GetForCurrentThread());
+
+            // Views and ViewModels
+            services.AddTransient<BrowserViewModel>();
+            services.AddTransient<BrowserPage>();
+            services.AddTransient<MainViewModel>();
+            services.AddTransient<MainPage>();
+            services.AddTransient<SettingsViewModel>();
+            services.AddTransient<SettingsPage>();
+            services.AddTransient<SetupViewModel>();
+            services.AddTransient<SetupPage>();
+
+            services.AddTransient<FilterViewModel>();
+            services.AddTransient<CompressionExclusionsViewModel>();
+            services.AddTransient<ScheduleEditorViewModel>();
+            services.AddTransient<SwitchStorageViewModel>();
+
+            // Configuration
+            services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
+        }).
+        Build();
     }
 }

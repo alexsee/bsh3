@@ -21,27 +21,75 @@ public class UsbWatchService : IMediaWatcher
 
     public void StartWatching()
     {
+        ManagementEventWatcher current = null;
         try
         {
             var arriveQuery = new WqlEventQuery("SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2");
 
-            watcher = new ManagementEventWatcher
+            current = new ManagementEventWatcher
             {
                 Query = arriveQuery
             };
-            watcher.EventArrived += WatcherDeviceChange;
+            current.EventArrived += WatcherDeviceChange;
 
-            watcher.Start();
+            current.Start();
+            watcher = current;
         }
         catch (Exception ex)
         {
+            if (current != null)
+            {
+                ReleaseWatcher(current, stop: false);
+            }
+
             Log.Warning(ex, "USB device watcher could not be initialized.");
         }
     }
 
     public void StopWatching()
     {
-        this.watcher?.Stop();
+        var current = watcher;
+        watcher = null;
+
+        if (current == null)
+        {
+            return;
+        }
+
+        ReleaseWatcher(current, stop: true);
+    }
+
+    private void ReleaseWatcher(ManagementEventWatcher current, bool stop)
+    {
+        try
+        {
+            current.EventArrived -= WatcherDeviceChange;
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "USB device watcher event subscription could not be released.");
+        }
+
+        if (stop)
+        {
+            try
+            {
+                current.Stop();
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "USB device watcher could not be stopped.");
+            }
+        }
+
+        try
+        {
+            current.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "USB device watcher could not be disposed.");
+        }
     }
 
     public void WatcherDeviceChange(object sender, EventArrivedEventArgs e)

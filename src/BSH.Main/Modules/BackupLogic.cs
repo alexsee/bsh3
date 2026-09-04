@@ -77,8 +77,7 @@ static class BackupLogic
 
     public static string DatabaseFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
 
-    private static IMediaWatcher dCWatcher;
-    private static IMediaWatcherFactory mediaWatcherFactory;
+    private static MediaArrivalBackupWatch mediaArrivalWatch;
     private static IFileCollectorServiceFactory fileCollectorServiceFactory;
 
     private static ISchedulerAdapter schedulerService;
@@ -98,7 +97,8 @@ static class BackupLogic
         BackupService = null;
         BackupController = null;
         fileCollectorServiceFactory = null;
-        mediaWatcherFactory = null;
+        mediaArrivalWatch?.Stop();
+        mediaArrivalWatch = null;
         schedulerAdapterFactory = null;
     }
 
@@ -149,7 +149,7 @@ static class BackupLogic
         VersionQueryRepository = new VersionQueryRepository();
         BackupMutationRepository = new BackupMutationRepository(DbClientFactory);
         fileCollectorServiceFactory = new FileCollectorServiceFactory();
-        mediaWatcherFactory = new MediaWatcherFactory();
+        mediaArrivalWatch = new MediaArrivalBackupWatch(ConfigurationManager, new MediaWatcherFactory());
         schedulerAdapterFactory = new SchedulerAdapterFactory();
 
         BackupService = new BackupService(
@@ -408,6 +408,10 @@ static class BackupLogic
             {
                 await RemoveOldBackups();
             }
+            else
+            {
+                await WatchIfMediaMissing(RunBackupMethod.Auto);
+            }
         }
         finally
         {
@@ -655,6 +659,10 @@ static class BackupLogic
             {
                 await RemoveOldBackupsScheduled();
             }
+            else
+            {
+                await WatchIfMediaMissing(RunBackupMethod.Schedule);
+            }
         }
         finally
         {
@@ -697,8 +705,6 @@ static class BackupLogic
 
     #endregion
 
-    private static RunBackupMethod _RunBackupDelegate;
-
     public enum RunBackupMethod
     {
         Schedule,
@@ -708,71 +714,42 @@ static class BackupLogic
 
     public static void DoBackupWhenDriveIsAvailable(RunBackupMethod RunBackupDelegate)
     {
-        if (dCWatcher != null)
-        {
-            return;
-        }
-
-        // only start, if local device
-        if (ConfigurationManager.MediumType != MediaType.FileTransferServer)
-        {
-            dCWatcher = mediaWatcherFactory.Create();
-            dCWatcher.StartWatching();
-
-            // observe devices
-            dCWatcher.DeviceAdded += DriveArrived;
-            _RunBackupDelegate = RunBackupDelegate;
-        }
+        mediaArrivalWatch?.Start(GetRunBackup(RunBackupDelegate), CheckBackupMediaAsync);
     }
 
     public static void StopDoBackupWhenDriveIsAvailable()
     {
-        try
-        {
-            if (dCWatcher != null)
-            {
-                dCWatcher.DeviceAdded -= DriveArrived;
-                dCWatcher.StopWatching();
-                dCWatcher = null;
-            }
-        }
-        catch
-        {
-            // ignore error
-        }
+        mediaArrivalWatch?.Stop();
     }
 
-    private static async void DriveArrived(object sender, string driveLetter)
+    private static Task WatchIfMediaMissing(RunBackupMethod runBackupDelegate)
     {
-        if (!await BackupController.CheckMediaAsync(ActionType.Backup, true))
+        if (mediaArrivalWatch == null)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        // check is backup device is connected
-        if (ConfigurationManager.BackupFolder.ToLower().StartsWith(driveLetter.ToLower()))
-        {
-            try
-            {
-                dCWatcher.DeviceAdded -= DriveArrived;
-                dCWatcher.StopWatching();
-                dCWatcher = null;
-            }
-            catch
-            {
-                // ignore error
-            }
+        return mediaArrivalWatch.StartIfMediaMissing(GetRunBackup(runBackupDelegate), CheckBackupMediaAsync);
+    }
 
-            // start backup
-            if (_RunBackupDelegate == RunBackupMethod.Auto)
-            {
-                await RunAutoBackup();
-            }
-            else if (_RunBackupDelegate == RunBackupMethod.Schedule)
-            {
-                await thScheduleSysRunBackup();
-            }
+    private static Func<Task> GetRunBackup(RunBackupMethod runBackupDelegate)
+    {
+        if (runBackupDelegate == RunBackupMethod.Auto)
+        {
+            return RunAutoBackup;
         }
+
+        if (runBackupDelegate == RunBackupMethod.Schedule)
+        {
+            return thScheduleSysRunBackup;
+        }
+
+        return () => Task.CompletedTask;
+    }
+
+    private static Task<bool> CheckBackupMediaAsync()
+    {
+        return BackupController.CheckMediaAsync(ActionType.Backup, true);
     }
 
     public static async Task CommandAutoDelete()

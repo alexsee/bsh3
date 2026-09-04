@@ -213,17 +213,18 @@ public class JobService : IJobService, IDisposable
     /// </summary>
     /// <param name="versions">Specifies the versions to delete.</param>
     /// <param name="statusDialog">Specifies if the user should be shown a status user interface.</param>
-    /// <returns></returns>
-    public async Task DeleteBackupsAsync(List<string> versions, bool statusDialog = true)
+    /// <returns>The completion outcome of the delete session.</returns>
+    public async Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true)
     {
         _logger.Debug("Delete task started for {Versions} versions.", versions.Count);
         var result = await jobSessionRunner.RunBatchDeleteAsync(versions, presenter, statusDialog);
         if (!await HandleSessionStartAsync(result, "delete", statusDialog))
         {
-            return;
+            return result;
         }
 
         await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
+        return result;
     }
 
     /// <summary>

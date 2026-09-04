@@ -9,7 +9,7 @@ namespace BSH.MainApp.ViewModels.Windows;
 
 public partial class RequestFileOverwriteViewModel : ObservableObject
 {
-    public TaskCompletionSource<RequestOverwriteResult> TaskCompletionSource { get; } = new TaskCompletionSource<RequestOverwriteResult>();
+    public TaskCompletionSource<RequestOverwriteResult> TaskCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     [ObservableProperty]
     private string fileName = string.Empty;
@@ -34,11 +34,11 @@ public partial class RequestFileOverwriteViewModel : ObservableObject
     {
         if (!ApplyToAll)
         {
-            TaskCompletionSource.SetResult(RequestOverwriteResult.Overwrite);
+            TaskCompletionSource.TrySetResult(RequestOverwriteResult.Overwrite);
         }
         else
         {
-            TaskCompletionSource.SetResult(RequestOverwriteResult.OverwriteAll);
+            TaskCompletionSource.TrySetResult(RequestOverwriteResult.OverwriteAll);
         }
     }
 
@@ -47,17 +47,22 @@ public partial class RequestFileOverwriteViewModel : ObservableObject
     {
         if (!ApplyToAll)
         {
-            TaskCompletionSource.SetResult(RequestOverwriteResult.NoOverwrite);
+            TaskCompletionSource.TrySetResult(RequestOverwriteResult.NoOverwrite);
         }
         else
         {
-            TaskCompletionSource.SetResult(RequestOverwriteResult.NoOverwriteAll);
+            TaskCompletionSource.TrySetResult(RequestOverwriteResult.NoOverwriteAll);
         }
+    }
+
+    public void OnWindowClosed()
+    {
+        TaskCompletionSource.TrySetResult(RequestOverwriteResult.None);
     }
 
     [RelayCommand]
     private void Cancel()
     {
-        TaskCompletionSource.SetResult(RequestOverwriteResult.None);
+        OnWindowClosed();
     }
 }

@@ -6,6 +6,7 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Runtime;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.Services;
@@ -126,7 +127,7 @@ public class BrowserPreviewServiceTests
     }
 
     [Test]
-    public async Task PreviewFileAsync_WhenRetrievedPathIsEmpty_DoesNotLaunch()
+    public async Task PreviewFileAsync_WhenRetrievedPathIsEmpty_ShowsErrorAndDoesNotLaunch()
     {
         var queryManager = new PreviewQueryManager
         {
@@ -139,7 +140,9 @@ public class BrowserPreviewServiceTests
         await service.PreviewFileAsync("2", "report.txt", @"\source\docs\");
 
         Assert.That(host.ShownFiles, Is.Empty);
-        Assert.That(presentation.MessageBoxes, Is.Empty);
+        Assert.That(presentation.MessageBoxes, Has.Count.EqualTo(1));
+        Assert.That(presentation.MessageBoxes[0].Title, Is.Null.Or.Empty.Or.EqualTo("Browser_PreviewRetrieveFailed_Title"));
+        Assert.That(presentation.MessageBoxes[0].Content, Is.Null.Or.Empty.Or.EqualTo("Browser_PreviewRetrieveFailed_Text"));
     }
 
     [Test]
@@ -211,7 +214,7 @@ public class BrowserPreviewServiceTests
 
         public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
         public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
-        public Task DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.CompletedTask;
+        public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.FromResult(new JobSessionResult { Started = true });
         public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
         public CancellationToken GetNewCancellationToken() => CancellationToken.None;
         public Task<bool> RequestPassword()
