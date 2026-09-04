@@ -19,15 +19,15 @@ using NUnit.Framework;
 namespace BSH.Test.Integration;
 
 /// <summary>
-/// Sequences the WinUI golden-path steps through <see cref="SetupService"/> and engine jobs
-/// (setup → backup → incremental → search → restore original/alternate → delete version/file).
-/// Does not click XAML; see <c>docs/testing/winui-golden-path.md</c> for the shell checklist.
+/// Verifies that <see cref="SetupService"/> configuration interoperates with local-file-system
+/// engine jobs for backup, incremental, query, restore, and delete operations. This test bypasses
+/// WinUI view models and XAML; see <c>docs/testing/winui-golden-path.md</c> for shell validation.
 /// </summary>
 [Category("Integration")]
-public class WinUiGoldenPathTests
+public class LocalFileSystemOrchestrationSmokeTests
 {
     [Test]
-    public async Task SetupBackupIncrementalBrowseRestoreAndDelete_RoundTripsOnLocalFs()
+    public async Task SetupAndEngineJobs_RoundTripOnLocalFileSystem()
     {
         await using var context = await EngineJobTestContext.CreateAsync("winui-golden");
         var sourceDir = Path.Combine(context.RootDir, "source");
@@ -136,8 +136,8 @@ public class WinUiGoldenPathTests
 
     private static async Task RunRestoreAsync(
         EngineJobTestContext context,
-        int version,
-        string file,
+        int versionId,
+        string selectionPath,
         string destination)
     {
         var restoreJob = new RestoreJob(
@@ -147,14 +147,14 @@ public class WinUiGoldenPathTests
             context.ConfigurationManager,
             context.VersionQueryRepository)
         {
-            Version = version,
-            File = file,
+            Version = versionId,
+            File = selectionPath,
             Destination = destination,
             FileOverwrite = FileOverwrite.Overwrite,
         };
 
         await restoreJob.RestoreAsync(CancellationToken.None);
-        Assert.That(restoreJob.FileErrorList, Is.Empty, "Restore reported file errors for " + file);
+        Assert.That(restoreJob.FileErrorList, Is.Empty, "Restore reported file errors for " + selectionPath);
     }
 
     private static async Task RunDeleteVersionAsync(EngineJobTestContext context, string versionId)

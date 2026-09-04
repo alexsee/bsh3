@@ -1,14 +1,23 @@
 # WinUI golden-path QA
 
-Click-through checklist for `BSH.MainApp`. Installer and upgrade/uninstall are out of scope here.
+Click-through checklist for an installed `BSH.MainApp` beta candidate. Installation and
+upgrade evidence are release gates; uninstall behavior is covered by the rollback rehearsal.
 
-English UI labels. Use a debug/F5 build or an already-installed WinUI build.
+English UI labels are shown below. Run the same checklist once in German across the
+candidate machine matrix. Record results in `docs/testing/beta-release-signoff.md`.
 
 Companion fixture: `docs/testing/New-WinUiGoldenPathFixture.ps1`.
 
 ## Prepare
 
-1. Run the fixture:
+1. Install the immutable `backupservicehome-*-winui-win64.exe` candidate. Record its
+   filename and SHA-256. On a fresh-install machine, confirm it starts `BSH.MainApp` and
+   `Get-Service 'Backup Service Home-Dienst'` reports `Running`.
+
+2. Open **Extras and Support → About** and confirm the displayed version includes the
+   same `-betaN` identifier as the installer and release.
+
+3. Run the fixture:
 
    ```powershell
    powershell -NoProfile -File docs/testing/New-WinUiGoldenPathFixture.ps1
@@ -17,9 +26,11 @@ Companion fixture: `docs/testing/New-WinUiGoldenPathFixture.ps1`.
    Default source: `%TEMP%\bsh-winui-golden-path\source`  
    Restore-to folder: `%TEMP%\bsh-winui-golden-path\restore-to`
 
-2. If the app already has a configuration: **Extras and Support → Reset Configuration**. Confirm. The setup wizard should appear.
+4. On the fresh-install pass, continue directly to setup. On a reset-only repeat pass,
+   use **Extras and Support → Reset Configuration** and confirm that the setup wizard appears.
+   A reset-only result does not satisfy the fresh-install or upgrade gates.
 
-3. Local target is a **drive**, stored as `X:\Backups\{Computer}\{User}`. Pick a drive that does **not** already have that folder (USB is fine). The wizard rejects an existing backup folder.
+5. Local target is a **drive**, stored as `X:\Backups\{Computer}\{User}`. Pick a drive that does **not** already have that folder (USB is fine). The wizard rejects an existing backup folder.
 
 ## Checklist
 
@@ -34,12 +45,15 @@ Pass/fail each step. Stop on the first failure.
 
 Expected: shell navigation is enabled; Settings opens; no first backup has run yet.
 
-### 2. Compression (optional pass — do both over two runs if time allows)
+### 2. Compression
 
 Default is no compression. For the compressed pass:
 
 - [ ] Settings gear → **Backup Options** → **Compress backups**.
 - [ ] Leave encryption off.
+
+An uncompressed pass is enough for the first internal dogfood run. A compressed pass is
+required before public beta. Encryption is covered by `beta-risk-scenarios.md`.
 
 ### 3. First backup
 
@@ -62,6 +76,7 @@ Expected: **2** backups. First version still listed in the browser.
 - [ ] Clear search. Select `nested` → **… → Add to folder favorites**. Favorite appears in the pane.
 - [ ] Select `notes.txt` → **Quick preview**. Content is `notes-v2`.
 - [ ] Open `unicode` → `äöü` → `файл.txt`. Preview still works.
+- [ ] Use previous/next version navigation while viewing `notes.txt`; content and selected version remain synchronized.
 
 ### 6. Restore file and folder
 
@@ -79,6 +94,8 @@ Expected: **2** backups. First version still listed in the browser.
 
 ## Done when
 
-All boxes pass on one uncompressed run. Compressed run (step 2) is strongly recommended before public beta, but not required to start dogfood.
+All boxes pass on one installed, uncompressed run. Before public beta, also complete a
+compressed run, the German UI pass, the stable-to-beta upgrade in
+`beta-risk-scenarios.md`, and the release matrix in `beta-release-signoff.md`.
 
 Failures: note the step, screenshot, and attach `%AppData%\Alexosoft\Backup Service Home 3\log{yyyyMMdd}.txt` (**Extras and Support → Event Logs**).

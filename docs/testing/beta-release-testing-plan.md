@@ -10,11 +10,14 @@ This plan defines how we get the WinUI app (`BSH.MainApp`) to a **robust beta** 
 4. Manual / scenario QA for beta
 5. A safe launch strategy (gates, rollout, rollback)
 
-Companion design context: `docs/design-docs/job-system.md`, `src/ARCHITECTURE.md`.
+Execution documents: `docs/testing/winui-golden-path.md`,
+`docs/testing/beta-risk-scenarios.md`, `docs/testing/beta-release-signoff.md`, and
+`docs/testing/beta-operations-runbook.md`. Companion design context:
+`docs/design-docs/job-system.md`, `src/ARCHITECTURE.md`.
 
 ---
 
-## Progress (as of 2026-08-16, after #605/#606/#607)
+## Progress (as of 2026-09-04, after #615–#629)
 
 ### Automated engine coverage
 
@@ -53,11 +56,17 @@ WinUI 3 feature-parity PRD [#521](https://github.com/alexsee/bsh3/issues/521) is
 | WinUI overview/onboarding refinements | [#604](https://github.com/alexsee/bsh3/pull/604) |
 | Collectable WinUI event log (Serilog file sink) | [#606](https://github.com/alexsee/bsh3/pull/606) |
 | Beta installer launches WinUI | [#607](https://github.com/alexsee/bsh3/pull/607) |
+| Import-path, scheduler, browser, settings, and dialog hardening | [#615](https://github.com/alexsee/bsh3/pull/615)–[#621](https://github.com/alexsee/bsh3/pull/621) |
+| Preserve security settings after incomplete deletion | [#627](https://github.com/alexsee/bsh3/pull/627) |
+| Protect persisted FTP passwords | [#628](https://github.com/alexsee/bsh3/pull/628) |
+| Start one due backup on USB arrival | [#618](https://github.com/alexsee/bsh3/pull/618), [#629](https://github.com/alexsee/bsh3/pull/629) |
 
 **Still open for beta readiness:**
 
-- Sign-off of the WinUI golden-path click-through (`docs/testing/winui-golden-path.md`) — primary remaining work
-- FTP / Quartz scheduler / real VSS coverage
+- Sign-off of the golden path and risk scenarios on an immutable installed candidate — primary remaining work
+- Live FTP / Quartz trigger / real VSS evidence
+- Publishing and verifying the v4 update feeds (both returned HTTP 404 on 2026-09-04)
+- Rollback rehearsal and candidate-specific support/release notes
 - Optional WinUI UI E2E
 
 ---
@@ -92,7 +101,7 @@ Strength by area:
 | **`FileSystemStorage` lifecycle** | **Strong (integration)** | Delete+restore, cancel, unicode, empty folders, decrypt (#590) |
 | File collector exclusions | Strong | Paths, types, size, masks, system folders |
 | `QueryManager` | Strong | Versions, search, restore path resolution; long-path preview uses `_LONGFILES_` (#603) |
-| Config / schedule policy / schedule settings | Moderate | Policy math + persistence |
+| Config / schedule policy / schedule settings | Moderate–strong | Policy math, persistence, orchestration refresh, and USB-arrival behavior; no real Quartz trigger |
 | Delete / edit jobs | **Strong** | Shared packages, scoped `DeleteSingle`, decrypt paths (#589, #590) |
 | Disk space preflight | **Strong** | Helpers + session-level abort (#582, #590) |
 | `JobSessionRunner` / WinUI orchestration | Moderate–strong | Preflight, battery pause, notifications, restore-to, switch storage |
@@ -101,7 +110,7 @@ Strength by area:
 | DB migrations | **Strong (smoke)** | Prior schema v1/v8 → current v9; newer DB fails closed (#605) |
 | WinUI event log | **Strong (unit)** | Dated AppData `log.txt` sink (#606) |
 | Installer entry points | **Strong (contract)** | WinForms vs WinUI ISS + publish layout (#607) |
-| **`FTPStorage`** | **Gap** | Real I/O untested |
+| **`FTPStorage`** | **Gap** | Credential persistence/protection is covered; real I/O is untested |
 | Quartz scheduler end-to-end | Gap | |
 | Real VSS / `BSH.Service` | Gap | Mock only |
 | WinUI UI / XAML | **None** | No UI E2E; VM/service tests only |
@@ -139,11 +148,11 @@ Before inviting customers:
    - WinForms installer (`tools/setup/Setup.iss`) remains a separate artifact launching `BSH.Main.exe`.
    - Release workflow builds both and uploads `backupservicehome-*-win64.exe` plus `backupservicehome-*-winui-win64.exe`.
    - Contract tests: `InstallerEntryPointTests` + `tools/setup/Confirm-InstallerEntryPoint.ps1`.
-   - Ensure beta update feed points only at beta tags *(still open — ops)*.
+   - Ensure beta update feed points only at beta tags. **Blocked:** both configured v4 feed URLs returned HTTP 404 on 2026-09-04; follow `beta-operations-runbook.md`.
 3. **Crash / diagnostic baseline** ✅ #584, #606
    - ~~Unhandled exceptions logged and shown in WinUI~~ ✅ #584 (`UnhandledExceptionHandler`).
    - ~~WinUI file logging~~ ✅ #606 (`AppEventLog` Serilog file sink). “Show Event Logs” opens `%AppData%\Alexosoft\Backup Service Home 3\log{yyyyMMdd}.txt`.
-   - Known-good DB path: `%AppData%\Alexosoft\Backup Service Home 3\`. Support procedure (what to collect besides passwords) still needs a short note.
+   - Support collection and data-handling procedure: `docs/testing/beta-operations-runbook.md`.
 4. **Test data kit** ✅ fixture script
    - `docs/testing/New-WinUiGoldenPathFixture.ps1` builds nested folders, an empty folder, Unicode names, and a restore-to directory.
    - Long path / locked file / large file remain optional extras for risk-scenario runs.
@@ -175,7 +184,7 @@ Prioritized by **customer risk × implementation ease**.
 | **Delete version then restore remaining** | Unit + integration | ✅ #590 | `DeleteTests`; `FileSystemEngineLifecycleTests` |
 | **Long-path restore** | Unit | ✅ #590 | `Restore_LongFileNameUsesLongFilesDirectory` |
 | **Disk space preflight → abort** | Unit | ✅ #582, #590 | `Backup_AbortsWhenFreeSpaceClearlyInsufficient` |
-| Deeper `FileSystemStorage` lifecycle (delete/rename/edit on real FS) | Integration | ✅ #590 | `FileSystemEngineLifecycleTests` (not exhaustive `\\?\` API coverage) |
+| Deeper `FileSystemStorage` lifecycle (delete + decrypt/edit on real FS) | Integration | ✅ #590 | `FileSystemEngineLifecycleTests` (rename is not covered; not exhaustive `\\?\` API coverage) |
 | **DB migration smoke** | Unit/integration | ✅ #605 | `DatabaseSchemaUpgradeTests` — fixture DBs at schema v1/v8 reach current (v9); newer DB raises `DatabaseIncompatibleException` |
 | Long-path folder convention consistency | Code debt | ✅ #603 | `QueryManager` preview/restore paths use `_LONGFILES_`, matching jobs |
 
@@ -184,8 +193,8 @@ Prioritized by **customer risk × implementation ease**.
 | Test | Type | Status / notes |
 |------|------|----------------|
 | FTP storage with local FTP stub / Testcontainers-like fixture | Integration | Still open; harder in CI; optional nightly |
-| Scheduler trigger fires and invokes backup (Quartz) | Integration | Still open; time-travel or short interval + wait |
-| `UsbWatchService` media-appear path | Integration | Device simulation is OS-heavy |
+| Scheduler trigger fires and invokes backup (Quartz) | Integration | Still open; policy/orchestration tests do not run a real Quartz trigger |
+| USB media-arrival orchestration | Unit | ✅ #618/#629 `MediaArrivalBackupWatchTests`; real device remains manual |
 | WinForms ↔ WinUI orchestration parity expansion | Unit | Improved (`JobSessionRunnerTests`, notification/switch-storage tests); keep extending as needed |
 | WinUI DE/EN resource parity | Unit | ✅ #579 `WinUiResourceParityTests` |
 | NetArchTest layer rules | Unit | Still open; per `layered-architecture-evolution.md` |
@@ -208,7 +217,7 @@ Browser/restore/delete **view-model** behavior is unit-tested (`BrowserViewModel
 
 | Option | Pros | Cons | Status |
 |--------|------|------|--------|
-| **A. Engine “headless golden path” in `BSH.Test`** (no UI) | Fast, stable, CI-friendly | Doesn’t catch WinUI wiring bugs | ✅ Done for local FS (`Integration/`) |
+| **A. Local-FS orchestration smoke in `BSH.Test`** (no UI) | Fast, stable, CI-friendly | Bypasses view models, XAML, and `IBackupService` orchestration | ✅ `LocalFileSystemOrchestrationSmokeTests` |
 | **B. WinAppDriver / Appium Windows** against packaged WinUI | True UI E2E | Flaky, App SDK setup cost | Optional next |
 | **C. Scripted smoke via public service APIs** (if exposed) | Medium fidelity | Needs test hooks | Use if UI automation slips |
 
@@ -245,24 +254,30 @@ Browser/restore/delete **view-model** behavior is unit-tested (`BrowserViewModel
 
 ## Phase 3 — Manual / beta scenario QA
 
-Automate what we can; **manually** validate what backups actually need in the wild. Engineering gates for installer, logs, and migrations are in. The remaining quality work is the WinUI golden path on a running shell (installer/uninstaller is out of scope for this pass).
+Automate what we can; **manually** validate what backups actually need in the wild. Engineering mechanisms for installer, logs, and migrations are in. Candidate sign-off must use the installed WinUI artifact and include fresh-install, upgrade, service/VSS, and rollback evidence.
 
-Click-through: `docs/testing/winui-golden-path.md`. Fixture: `docs/testing/New-WinUiGoldenPathFixture.ps1`. Headless sequence: `WinUiGoldenPathTests`.
+Click-through: `docs/testing/winui-golden-path.md`. Risk procedures:
+`docs/testing/beta-risk-scenarios.md`. Sign-off record:
+`docs/testing/beta-release-signoff.md`. Fixture:
+`docs/testing/New-WinUiGoldenPathFixture.ps1`. Automated local-FS orchestration smoke:
+`LocalFileSystemOrchestrationSmokeTests`.
 
 If the app is already configured, use **Extras and Support → Reset Configuration** instead of reinstalling.
 
 ### Golden path (every beta build)
 
-1. ~~Clean install~~ skipped — use Reset Configuration when a wizard re-run is needed  
+1. Install the immutable WinUI candidate; verify version label and Windows service
 2. Setup wizard: sources, local target, **Manual backups** (compression in Settings → Backup Options)  
 3. Manual full/first backup from Overview  
 4. Change files → incremental  
 5. Browse versions → search → favorite → preview  
 6. Restore file + folder to original and alternate paths  
 7. Delete a version; delete a file from selected versions  
-8. ~~Uninstall / upgrade~~ skipped for this pass  
+8. Run a stable-to-beta upgrade on a separate matrix machine; rehearse rollback
 
 ### Risk scenarios (must pass before public beta)
+
+Detailed steps and pass criteria are in `docs/testing/beta-risk-scenarios.md`.
 
 | Scenario | Why critical |
 |----------|----------------|
@@ -301,7 +316,7 @@ Backup software fails loudly in customer trust. Launch beta as a **controlled ch
 
 ### Gate 1 — Engineering (block tag)
 
-- [x] PR CI green (`dotnet-desktop-build`) — required ongoing  
+- [ ] Candidate commit CI green (`dotnet-desktop-build`) — rerun after every plan/code update
 - [x] **Release workflow runs the test suite and fails the release on test failure** (#569)  
 - [x] P0 restore unit + FS integration tests merged and green (#569)  
 - [x] P1 delete+restore, long-path restore, disk-space abort, FS lifecycle (#590)  
@@ -312,6 +327,9 @@ Backup software fails loudly in customer trust. Launch beta as a **controlled ch
 
 ### Gate 2 — Internal dogfood (block public beta)
 
+Use `docs/testing/beta-release-signoff.md`; unchecked boxes cannot be satisfied by the
+existence of a test or runbook alone.
+
 - [ ] ≥3 internal machines on beta for several days of real schedules  
 - [ ] Golden path + risk scenarios signed off **on WinUI** (using the WinUI installer)  
 - [ ] At least one full encrypted backup ↔ restore verified bit-for-bit on real FS *(automated happy path exists; still dogfood on real media/USB)*  
@@ -320,15 +338,15 @@ Backup software fails loudly in customer trust. Launch beta as a **controlled ch
 
 ### Gate 3 — Closed beta (limited customers)
 
-- [ ] Opt-in beta feed only (Autoupdater beta channel; WinUI already has separate v4 stable/beta URLs)  
-- [ ] Clear “beta” labeling in UI / about / release notes  
-- [ ] Support path: how to collect logs + DB (not passwords)  
-- [ ] Rollback: previous stable installer still available; documented downgrade (AppData compatibility notes)  
+- [ ] Opt-in beta feed only — currently blocked because both configured v4 feed URLs returned HTTP 404 on 2026-09-04
+- [ ] Clear “beta” labeling verified in installed About UI and release notes (`ApplicationVersionInfo` now preserves the prerelease label)
+- [x] Support path documents private collection of logs and, only when needed, DB without passwords
+- [ ] Rollback rehearsed; downgrade is unsupported by default after a DB migration unless compatibility is explicitly proven
 
 ### Gate 4 — Open beta / promote toward stable
 
 - [ ] No unresolved data-loss issues from closed beta  
-- [ ] Crash/error rate acceptable (define threshold after first week of telemetry/logs)  
+- [ ] Crash/error rate meets a threshold recorded before evaluation in `beta-release-signoff.md`
 - [ ] FTP and scheduling scenarios covered by at least lab automation or repeated manual runs  
 - [x] Packaging decision finalized — dual artifacts; WinUI is the beta entry point (#607)  
 
@@ -361,8 +379,10 @@ These reduce blast radius even when tests miss something:
 6. ~~**Pin installer entry point**~~ ✅ #607 — `Setup-WinUI.iss` launches `BSH.MainApp.exe`; WinForms remains a separate artifact.  
 7. ~~**WinUI Serilog file sink**~~ ✅ #606 — `AppEventLog` writes the dated AppData log.  
 8. ~~**DB migration smoke tests**~~ ✅ #605 — `DatabaseSchemaUpgradeTests`.  
-9. **Manual golden-path checklist** on the WinUI shell (`docs/testing/winui-golden-path.md`). Installer/uninstaller skipped for this pass. ← **next**  
-10. **Optional:** WinAppDriver smoke for setup wizard + one backup button.
+9. ~~**Refresh after #615–#629**~~ ✅ current branch includes the startup, settings, browser, scheduler/USB, deletion-security, and FTP-credential fixes; affected scenarios are listed in `beta-risk-scenarios.md`.
+10. **Restore the v4 stable/beta feeds and verify channel isolation.** Both URLs returned HTTP 404 on 2026-09-04. ← **next**
+11. **Build one immutable candidate and complete the three-machine sign-off record**, including FTP, Quartz-backed scheduling, VSS, upgrade, and rollback.
+12. **Optional:** WinAppDriver smoke for setup wizard + one backup button.
 
 ### Effort sketch (technical, not calendar)
 
@@ -376,7 +396,7 @@ These reduce blast radius even when tests miss something:
 | Installer shell pin | `Setup-WinUI.iss` + contract tests | ✅ Done (#607) |
 | WinUI file logging | `AppEventLog` Serilog config | ✅ Done (#606) |
 | DB migration smoke | `DbMigrationService` fixtures | ✅ Done (#605) |
-| Manual / dogfood QA | WinUI shell golden path | **Open** — runbook + fixture + headless sequence landed; still needs a signed-off UI pass |
+| Manual / dogfood QA | Installed WinUI shell + risk matrix | **Open** — procedures and sign-off template landed; execution evidence is required |
 | WinAppDriver E2E | New project + CI image deps | Optional; high flake/setup cost |
 
 ---
@@ -387,10 +407,10 @@ Ship / widen beta only when:
 
 1. Automated: P0 restore suite + existing suite green on the release tag build. ✅ *(mechanism + tests landed, including P1 lifecycle, migrations, installer contract, and file log; still required green on each tag)*  
 2. Manual: golden path + encrypted restore + cancel integrity + media-missing signed off on WinUI.  
-3. Ops: beta feed isolated; rollback path rehearsed once.  
+3. Ops: both update feeds valid and isolated; rollback path rehearsed once.
 4. Product: testers install the WinUI artifact (`*-winui-win64.exe`). ✅ packaging; still verify on a real install  
 5. Trust: release notes state backup/restore verification steps for participants.
-6. Support: WinUI writes a log file testers can attach. ✅ sink landed; still document the support procedure
+6. Support: WinUI writes a log file testers can attach and private collection is documented. ✅
 
 ---
 
@@ -440,8 +460,11 @@ dotnet test "BSH.Test\BSH.Test.csproj" -c Release -p:Platform=x64 --filter "Cate
 | `src/BSH.Test/InstallerEntryPointTests.cs` | WinForms vs WinUI ISS entry-point contract |
 | `src/BSH.Test/Integration/FileSystemRestoreIntegrationTests.cs` | Real-FS backup↔restore |
 | `src/BSH.Test/Integration/FileSystemEngineLifecycleTests.cs` | Real-FS delete+restore / cancel / unicode |
-| `src/BSH.Test/Integration/WinUiGoldenPathTests.cs` | Sequenced setup → backup → restore → delete (WinUI `SetupService`) |
-| `docs/testing/winui-golden-path.md` | WinUI shell golden-path click-through (no installer) |
+| `src/BSH.Test/Integration/LocalFileSystemOrchestrationSmokeTests.cs` | `SetupService` + direct local-FS engine-job smoke; not a WinUI E2E test |
+| `docs/testing/winui-golden-path.md` | Installed WinUI shell golden-path click-through |
+| `docs/testing/beta-risk-scenarios.md` | Manual integrity, scheduling, FTP, VSS, and upgrade scenarios |
+| `docs/testing/beta-release-signoff.md` | Per-candidate evidence and release decisions |
+| `docs/testing/beta-operations-runbook.md` | Feed checks, safe support collection, and rollback |
 | `docs/testing/New-WinUiGoldenPathFixture.ps1` | Source tree for the click-through |
 | `src/BSH.Test/Mocks/StorageMock.cs` | Shared backup/restore/delete storage mock |
 | `src/BSH.Engine/Jobs/RestoreJob.cs` | Restore implementation |

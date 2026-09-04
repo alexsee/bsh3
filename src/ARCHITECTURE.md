@@ -42,8 +42,9 @@ This document is intentionally stable and high-level. Use symbol search for the 
 
 ### Tests
 - `BSH.Test`: NUnit tests centered on engine behavior, plus WinUI view-model/service tests.
-  - Coverage anchors: `BackupTests`, `RestoreTests`, `DeleteTests`, `DatabaseSchemaUpgradeTests`, `ConfigurationManagerTests`, `QueryManagerTests`, `Services/FileCollector/*`, `Security/*`, `Integration/*` (including `WinUiGoldenPathTests`).
-- Beta QA / coverage gaps / launch gates: `docs/testing/beta-release-testing-plan.md`.
+  - Coverage anchors: `BackupTests`, `RestoreTests`, `DeleteTests`, `DatabaseSchemaUpgradeTests`, `ConfigurationManagerTests`, `QueryManagerTests`, `Services/FileCollector/*`, `Security/*`, `Integration/*` (including `LocalFileSystemOrchestrationSmokeTests`).
+- Beta QA / coverage gaps / launch gates: `docs/testing/beta-release-testing-plan.md`,
+  with executable checklists and release evidence templates under `docs/testing/`.
 
 ## Architectural invariants and boundaries
 - `BSH.Engine` is the business core; UI projects are orchestration/presentation layers around it.
