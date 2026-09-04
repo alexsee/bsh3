@@ -22,6 +22,8 @@ public sealed class MediaArrivalBackupWatch
     private IMediaWatcher watcher;
     private Func<Task> runBackup;
     private Func<Task<bool>> isMediaAvailable;
+    private long sessionId;
+    private bool arrivalInProgress;
 
     public MediaArrivalBackupWatch(
         IConfigurationManager configurationManager,
@@ -40,22 +42,7 @@ public sealed class MediaArrivalBackupWatch
 
         lock (sync)
         {
-            if (watcher != null)
-            {
-                return;
-            }
-
-            if (configurationManager.MediumType == MediaType.FileTransferServer)
-            {
-                return;
-            }
-
-            this.runBackup = runBackup;
-            this.isMediaAvailable = isMediaAvailable;
-
-            watcher = mediaWatcherFactory.Create();
-            watcher.DeviceAdded += OnDeviceAdded;
-            watcher.StartWatching();
+            StartCore(runBackup, isMediaAvailable);
         }
     }
 
@@ -64,12 +51,43 @@ public sealed class MediaArrivalBackupWatch
         ArgumentNullException.ThrowIfNull(runBackup);
         ArgumentNullException.ThrowIfNull(isMediaAvailable);
 
+        long startSession;
+        lock (sync)
+        {
+            startSession = sessionId;
+        }
+
         if (await isMediaAvailable())
         {
             return;
         }
 
-        Start(runBackup, isMediaAvailable);
+        lock (sync)
+        {
+            if (sessionId != startSession)
+            {
+                return;
+            }
+
+            StartCore(runBackup, isMediaAvailable);
+        }
+    }
+
+    private void StartCore(Func<Task> runBackup, Func<Task<bool>> isMediaAvailable)
+    {
+        if (watcher != null || configurationManager.MediumType == MediaType.FileTransferServer)
+        {
+            return;
+        }
+
+        sessionId++;
+        this.runBackup = runBackup;
+        this.isMediaAvailable = isMediaAvailable;
+        arrivalInProgress = false;
+
+        watcher = mediaWatcherFactory.Create();
+        watcher.DeviceAdded += OnDeviceAdded;
+        watcher.StartWatching();
     }
 
     public void Stop()
@@ -81,6 +99,8 @@ public sealed class MediaArrivalBackupWatch
             watcher = null;
             runBackup = null;
             isMediaAvailable = null;
+            arrivalInProgress = false;
+            sessionId++;
         }
 
         if (current == null)
@@ -88,9 +108,22 @@ public sealed class MediaArrivalBackupWatch
             return;
         }
 
+        StopWatcher(current);
+    }
+
+    private void StopWatcher(IMediaWatcher current)
+    {
         try
         {
             current.DeviceAdded -= OnDeviceAdded;
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "USB device watcher event subscription could not be released.");
+        }
+
+        try
+        {
             current.StopWatching();
         }
         catch (Exception ex)
@@ -101,35 +134,99 @@ public sealed class MediaArrivalBackupWatch
 
     private async void OnDeviceAdded(object sender, string driveLetter)
     {
+        long currentSession = 0;
+        Func<Task> pending;
+        Func<Task<bool>> mediaCheck;
+
         try
         {
-            Func<Task> pending;
-            Func<Task<bool>> mediaCheck;
             lock (sync)
             {
+                if (watcher == null || !ReferenceEquals(sender, watcher))
+                {
+                    return;
+                }
+
+                if (!IsTargetDrive(configurationManager.BackupFolder, driveLetter) || arrivalInProgress)
+                {
+                    return;
+                }
+
+                currentSession = sessionId;
+                arrivalInProgress = true;
                 pending = runBackup;
                 mediaCheck = isMediaAvailable;
             }
 
             if (mediaCheck != null && !await mediaCheck())
             {
+                ReleaseArrival(currentSession, sender);
                 return;
             }
 
-            if (!IsTargetDrive(configurationManager.BackupFolder, driveLetter))
+            IMediaWatcher current;
+            lock (sync)
             {
-                return;
+                if (sessionId != currentSession
+                    || watcher == null
+                    || !ReferenceEquals(sender, watcher))
+                {
+                    return;
+                }
+
+                if (!IsTargetDrive(configurationManager.BackupFolder, driveLetter))
+                {
+                    arrivalInProgress = false;
+                    return;
+                }
+
+                current = watcher;
+                watcher = null;
+                runBackup = null;
+                isMediaAvailable = null;
             }
 
-            Stop();
-            if (pending != null)
+            StopWatcher(current);
+
+            Task backupTask = null;
+            lock (sync)
             {
-                await pending();
+                if (sessionId != currentSession || !arrivalInProgress)
+                {
+                    return;
+                }
+
+                arrivalInProgress = false;
+                // Start the callback while holding the lifecycle lock so Stop and
+                // a later session cannot race ahead of an accepted arrival.
+                if (pending != null)
+                {
+                    backupTask = pending();
+                }
+            }
+
+            if (backupTask != null)
+            {
+                await backupTask;
             }
         }
         catch (Exception ex)
         {
+            ReleaseArrival(currentSession, sender);
             Log.Warning(ex, "USB arrival backup could not be started.");
+        }
+    }
+
+    private void ReleaseArrival(long currentSession, object sender)
+    {
+        lock (sync)
+        {
+            if (sessionId == currentSession
+                && watcher != null
+                && ReferenceEquals(sender, watcher))
+            {
+                arrivalInProgress = false;
+            }
         }
     }
 
