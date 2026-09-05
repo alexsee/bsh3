@@ -154,6 +154,57 @@ public class BackupServiceTests
     }
 
     [Test]
+    public void StartDelete_DoesNotRunJob_WhenTokenWasAlreadyCanceled()
+    {
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            await backupService.StartDelete("1", new JobReportStub(), cancellationTokenSource.Token));
+
+        Assert.That(storage.DeletedPlain, Is.Empty);
+    }
+
+    [Test]
+    public async Task StartDelete_RejectsSecondJob_WhileFirstJobIsAwaitingStorage()
+    {
+        var storageCheckStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var finishStorageCheck = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        storage.CheckMediumAsync = () =>
+        {
+            storageCheckStarted.SetResult(true);
+            return finishStorageCheck.Task;
+        };
+
+        var firstJob = backupService.StartDelete("1", new JobReportStub(), CancellationToken.None);
+        await storageCheckStarted.Task;
+
+        Assert.Throws<TaskRunningException>(() =>
+            backupService.StartDelete("2", new JobReportStub(), CancellationToken.None));
+
+        finishStorageCheck.SetResult(false);
+        Assert.ThrowsAsync<DeviceNotReadyException>(async () => await firstJob);
+    }
+
+    [Test]
+    public void StartDelete_ReservesAdmissionBeforeReportingAction()
+    {
+        Exception reentrantStartException = null;
+        var observer = new JobReportStub
+        {
+            OnReportAction = (_, _) => reentrantStartException = Assert.Catch(() =>
+                backupService.StartDelete("2", new JobReportStub(), CancellationToken.None))
+        };
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        var firstJob = backupService.StartDelete("1", observer, cancellationTokenSource.Token);
+
+        Assert.That(reentrantStartException, Is.TypeOf<TaskRunningException>());
+        Assert.ThrowsAsync<OperationCanceledException>(async () => await firstJob);
+    }
+
+    [Test]
     public async Task SetStableAsync_PersistsStableFlag()
     {
         await JobSeedHelper.SeedVersionAsync(dbClientFactory, 1, "01-01-2021 00-00-00");

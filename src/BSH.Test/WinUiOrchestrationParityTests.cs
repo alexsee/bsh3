@@ -340,8 +340,7 @@ public class WinUiOrchestrationParityTests
                 waitWasRequested = true;
                 await cancellationTokenSource.CancelAsync();
                 return false;
-            },
-            () => Task.FromResult(true));
+            });
 
         var result = await runtime.CheckMediaAsync(ActionType.Backup, silent: true);
 

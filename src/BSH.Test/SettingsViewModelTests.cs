@@ -611,7 +611,6 @@ public class SettingsViewModelTests
         }
 
         public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
-        public CancellationToken GetNewCancellationToken() => CancellationToken.None;
         public Task<bool> RequestPassword()
         {
             RequestPasswordCallCount++;

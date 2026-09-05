@@ -572,7 +572,6 @@ public class BrowserViewModelTests
             DeleteSingleCalls.Add((fileFilter, folderFilter, versionIds));
             return Task.CompletedTask;
         }
-        public CancellationToken GetNewCancellationToken() => CancellationToken.None;
         public Task<bool> RequestPassword() => Task.FromResult(true);
         public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true)
         {

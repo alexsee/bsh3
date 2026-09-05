@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime;
@@ -23,7 +24,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_ReturnsTaskRunning_WhenAnotherTaskIsRunning()
     {
         var backupService = new BackupServiceStub();
-        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -39,7 +40,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_DoesNotResolvePassword_WhenAnotherTaskIsRunning()
     {
         var backupService = new BackupServiceStub { HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub
         {
             NextPasswordRequest = new JobSessionPasswordRequest("secret", true)
@@ -60,7 +61,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_DoesNotShowStartupErrors_WhenStartedSilently()
     {
         var backupService = new BackupServiceStub();
-        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -78,7 +79,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_ReturnsDeviceNotReady_WhenMediaIsMissing()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -93,7 +94,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_DoesNotResolvePassword_WhenMediaIsMissing()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = false, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub
         {
             NextPasswordRequest = new JobSessionPasswordRequest("secret", true)
@@ -114,7 +115,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_ReturnsPasswordRequired_WhenPasswordRequestFails()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime, () => true, () => Hash.GetMD5Hash("secret"), new StoredPasswordAdapterStub());
 
@@ -129,7 +130,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_StartsBackup_WhenSessionCanBePrepared()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -150,7 +151,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_UsesStoredPasswordBeforePrompting()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var storedPasswordAdapter = new StoredPasswordAdapterStub { StoredPassword = "secret" };
         var runner = new JobSessionRunner(backupService, jobRuntime, () => true, () => Hash.GetMD5Hash("secret"), storedPasswordAdapter);
@@ -166,7 +167,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_PromptsAndPersistsPassword_WhenStoredPasswordIsUnavailable()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub
         {
             NextPasswordRequest = new JobSessionPasswordRequest("secret", true)
@@ -185,7 +186,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_RetriesPrompt_WhenPasswordIsWrong()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         presenter.PasswordRequests.Enqueue(new JobSessionPasswordRequest("wrong", false));
         presenter.PasswordRequests.Enqueue(new JobSessionPasswordRequest("secret", false));
@@ -202,7 +203,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_UsesLatestPasswordHash_WhenConfigurationChangesAfterConstruction()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub
         {
             NextPasswordRequest = new JobSessionPasswordRequest("new-secret", false)
@@ -224,7 +225,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleRestoreAsync_StartsRestore_WhenSessionCanBePrepared()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -243,7 +244,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleDeleteAsync_StartsDelete_WhenSessionCanBePrepared()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -259,7 +260,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleDeleteSingleAsync_StartsDeleteSingle_WhenSessionCanBePrepared()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -277,7 +278,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleDeleteSingleAsync_ForwardsVersionIds_WhenProvided()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
         IReadOnlyList<int> versionIds = [2, 5, 9];
@@ -296,7 +297,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleModifyAsync_StartsEdit_WhenSessionCanBePrepared()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -311,7 +312,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_ReturnsCanceled_WhenOperationRequestsCancellation()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -333,7 +334,7 @@ public class JobSessionRunnerTests
     public async Task RunBatchRestoreAsync_CarriesForwardOverwriteChoice_AndReportsFinishedState()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         presenter.BatchOverwriteChoices.Enqueue(FileOverwrite.Overwrite);
         var runner = new JobSessionRunner(backupService, jobRuntime);
@@ -352,7 +353,7 @@ public class JobSessionRunnerTests
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
         backupService.DeleteFailures.Enqueue(new FileExceptionEntry() { Exception = new InvalidOperationException("boom") });
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -371,7 +372,7 @@ public class JobSessionRunnerTests
     public async Task RunBatchDeleteAsync_ReturnsSucceeded_WhenEveryItemFinishes()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -385,7 +386,7 @@ public class JobSessionRunnerTests
     public async Task RunBatchDeleteAsync_ReturnsTaskRunning_WhenAnotherTaskIsRunning()
     {
         var backupService = new BackupServiceStub();
-        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -404,7 +405,7 @@ public class JobSessionRunnerTests
     public async Task RunBatchDeleteAsync_ReportsCanceledAndStopsProcessing_WhenCancellationIsRequested()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false), () => Task.FromResult(true));
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -423,6 +424,135 @@ public class JobSessionRunnerTests
         Assert.That(backupService.StartDeleteCalls, Is.EqualTo(1));
         Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.RUNNING, JobState.CANCELED }));
         Assert.That(presenter.ProgressUpdates, Is.EqualTo(new[] { "3/1" }));
+    }
+
+    [Test]
+    public async Task PrepareAsync_WhenTaskBecomesBusy_PreservesActiveCancellationToken()
+    {
+        var isTaskRunning = false;
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => isTaskRunning, () => false, (_, _, _) => Task.FromResult(false));
+        var activeToken = await jobRuntime.PrepareAsync(ActionType.Backup, statusDialog: false);
+        isTaskRunning = true;
+
+        Assert.ThrowsAsync<TaskRunningException>(async () => await jobRuntime.PrepareAsync(ActionType.Delete, statusDialog: false));
+
+        jobRuntime.Cancel();
+        Assert.That(activeToken.IsCancellationRequested, Is.True);
+    }
+
+    [Test]
+    public async Task PrepareAsync_RejectsOverlapWhileFirstMediaCheckIsPending()
+    {
+        var waitStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var finishWait = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        CancellationTokenSource activeCancellation = null;
+        var backupService = new BackupServiceStub { CheckMediaResult = false };
+        using var jobRuntime = new JobRuntime(
+            backupService,
+            () => false,
+            () => true,
+            async (_, _, cancellationTokenSource) =>
+            {
+                activeCancellation = cancellationTokenSource;
+                waitStarted.SetResult(true);
+                return await finishWait.Task;
+            });
+
+        var firstPreparation = jobRuntime.PrepareAsync(ActionType.Backup, statusDialog: true);
+        await waitStarted.Task;
+
+        Assert.ThrowsAsync<TaskRunningException>(async () => await jobRuntime.PrepareAsync(ActionType.Delete, statusDialog: true));
+        jobRuntime.Cancel();
+        Assert.That(activeCancellation.IsCancellationRequested, Is.True);
+
+        finishWait.SetResult(false);
+        Assert.ThrowsAsync<DeviceNotReadyException>(async () => await firstPreparation);
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_ReportsThrownExceptionAsErrorOutcome()
+    {
+        var backupService = new BackupServiceStub
+        {
+            CheckMediaResult = true,
+            OnStartBackup = (_, _) => throw new InvalidOperationException("boom")
+        };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: false);
+
+        Assert.That(result.Started, Is.True);
+        Assert.That(result.HasErrors, Is.True);
+        Assert.That(result.Succeeded, Is.False);
+        Assert.That(presenter.ReportedExceptions, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_UsesReportedCanceledStateInOutcome()
+    {
+        var backupService = new BackupServiceStub
+        {
+            CheckMediaResult = true,
+            OnStartBackup = (report, _) =>
+            {
+                report.ReportState(JobState.CANCELED);
+                return Task.CompletedTask;
+            }
+        };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: false);
+
+        Assert.That(result.Canceled, Is.True);
+        Assert.That(result.Succeeded, Is.False);
+    }
+
+    [Test]
+    public async Task RunBatchDeleteAsync_StopsAfterOperationCanceledException()
+    {
+        var backupService = new BackupServiceStub
+        {
+            CheckMediaResult = true,
+            OnStartDelete = (_, _) => Task.FromException(new OperationCanceledException())
+        };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunBatchDeleteAsync(new[] { "5", "6" }, presenter, statusDialog: false);
+
+        Assert.That(result.Canceled, Is.True);
+        Assert.That(result.Succeeded, Is.False);
+        Assert.That(backupService.StartDeleteCalls, Is.EqualTo(1));
+        Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.RUNNING, JobState.CANCELED }));
+    }
+
+    [Test]
+    public async Task RunBatchDeleteAsync_UsesReportedErrorStateInOutcome()
+    {
+        var backupService = new BackupServiceStub
+        {
+            CheckMediaResult = true,
+            OnStartDelete = (report, _) =>
+            {
+                report.ReportState(JobState.ERROR);
+                return Task.CompletedTask;
+            }
+        };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        var presenter = new JobReportStub();
+        var runner = new JobSessionRunner(backupService, jobRuntime);
+
+        var result = await runner.RunBatchDeleteAsync(new[] { "5" }, presenter, statusDialog: false);
+
+        Assert.That(result.HasErrors, Is.True);
+        Assert.That(result.Succeeded, Is.False);
+        Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.RUNNING, JobState.ERROR }));
     }
 
     private sealed class BackupServiceStub : IBackupService

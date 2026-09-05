@@ -2,8 +2,10 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -46,9 +48,10 @@ public class EditJob : Job
     /// <summary>
     /// Starts the decryption task for all files of all backups that are encrypted.
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <exception cref="DeviceNotReadyException"></exception>
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-    public async Task EditAsync()
+    public async Task EditAsync(CancellationToken cancellationToken = default)
     {
         Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
 
@@ -59,6 +62,8 @@ public class EditJob : Job
         ReportStatus(Resources.STATUS_PREPARE, Resources.STATUS_EDIT_PREPARE);
         ReportProgress(0, 0);
 
+        cancellationToken.ThrowIfCancellationRequested();
+
         // check medium
         if (!await storage.CheckMedium())
         {
@@ -67,6 +72,8 @@ public class EditJob : Job
             ReportState(JobState.ERROR);
             throw new DeviceNotReadyException();
         }
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         // connect to database
         using (var dbClient = dbClientFactory.CreateDbClient())
@@ -80,50 +87,51 @@ public class EditJob : Job
             var numFiles = await versionQueryRepository.CountEditableFilesAsync(dbClient);
             ReportProgress(numFiles, 0);
 
-            // determine files of backup to edit
+            var editableFiles = new List<EditableFile>(numFiles);
             using (var reader = await versionQueryRepository.GetEditableFilesAsync(dbClient))
             {
-                var i = 0;
                 while (await reader.ReadAsync())
                 {
-                    // determine remote file
-                    string remoteFilePath;
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                    if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
-                    {
-                        remoteFilePath = reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
-                    }
-                    else
-                    {
-                        remoteFilePath = reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
-                    }
-
-                    ReportFileProgress(remoteFilePath);
-                    ReportProgress(numFiles, i);
-                    i++;
-
-                    // change file
-                    try
-                    {
-                        await EditFileFromDeviceAsync(
-                            dbClient,
-                            remoteFilePath,
-                            reader.GetInt32("fileType"),
-                            Convert.ToInt64(reader["fileversionid"]));
-                    }
-                    catch (Exception ex)
-                    {
-                        var fileExceptionEntry = AddFileErrorToList(new FileTableRow()
-                        {
-                            FilePath = reader.GetString("filePath"),
-                            FileName = reader.GetString("fileName")
-                        }, ex);
-
-                        _logger.Error(ex.InnerException, "File {FileName} could not be edited. {Exception}", remoteFilePath, fileExceptionEntry);
-                    }
+                    editableFiles.Add(new EditableFile(
+                        reader.GetString("fileName"),
+                        reader.GetString("filePath"),
+                        reader.GetString("versionDate"),
+                        reader.GetString("longfilename"),
+                        reader.GetInt32("fileType"),
+                        Convert.ToInt64(reader["fileversionid"])));
                 }
 
                 await reader.CloseAsync();
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            for (var i = 0; i < editableFiles.Count; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var file = editableFiles[i];
+                var remoteFilePath = file.GetRemoteFilePath();
+
+                ReportFileProgress(remoteFilePath);
+                ReportProgress(numFiles, i);
+
+                try
+                {
+                    await EditFileFromDeviceAsync(dbClient, remoteFilePath, file.FileType, file.FileVersionId);
+                }
+                catch (Exception ex)
+                {
+                    var fileExceptionEntry = AddFileErrorToList(new FileTableRow()
+                    {
+                        FilePath = file.FilePath,
+                        FileName = file.FileName
+                    }, ex);
+
+                    _logger.Error(ex, "File {FileName} could not be edited. {Exception}", remoteFilePath, fileExceptionEntry);
+                }
             }
 
             dbClient.CommitTransaction();
@@ -142,9 +150,6 @@ public class EditJob : Job
         // store database
         UpdateDatabaseOnStorage();
 
-        // close storage provider
-        storage.Dispose();
-
         ReportExceptions(FileErrorList);
 
         ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
@@ -162,21 +167,42 @@ public class EditJob : Job
     /// <param name="fileVersionId"></param>
     private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, long fileVersionId)
     {
-        if (fileType == 5)
+        var decryptedFileType = fileType switch
         {
-            // decrypt on device
-            storage.DecryptOnStorage(remoteFile, Password);
+            5 => 3,
+            6 => 1,
+            _ => (int?)null
+        };
 
-            // modify entry
-            await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, 3);
+        if (decryptedFileType == null)
+        {
+            return;
         }
-        else if (fileType == 6)
-        {
-            // decrypt on device
-            storage.DecryptOnStorage(remoteFile, Password);
 
-            // modify entry
-            await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, 1);
+        if (!storage.DecryptOnStorage(remoteFile, Password))
+        {
+            throw new IOException($"Storage failed to decrypt '{remoteFile}'.");
+        }
+
+        await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, decryptedFileType.Value);
+    }
+
+    private sealed record EditableFile(
+        string FileName,
+        string FilePath,
+        string VersionDate,
+        string LongFileName,
+        int FileType,
+        long FileVersionId)
+    {
+        public string GetRemoteFilePath()
+        {
+            if (!string.IsNullOrEmpty(LongFileName))
+            {
+                return VersionDate + "\\_LONGFILES_\\" + LongFileName;
+            }
+
+            return VersionDate + FilePath + FileName;
         }
     }
 }

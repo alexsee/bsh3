@@ -208,7 +208,7 @@ public class BackupJob : Job
             ReportProgress(files.Count, 0);
 
             // keep system running
-            Win32Stuff.KeepSystemAwake();
+            KeepSystemAwake();
 
             // process empty folders
             await ProcessEmptyFolders(dbClient, newVersionId, emptyFolder);
@@ -364,12 +364,6 @@ public class BackupJob : Job
         // store database
         UpdateDatabaseOnStorage();
 
-        // close storage provider
-        storage.Dispose();
-
-        // standby mode
-        Win32Stuff.AllowSystemSleep();
-
         // report exceptions during job
         if (FileErrorList.Count > 0)
         {
@@ -435,9 +429,7 @@ public class BackupJob : Job
     private void RollbackIncompleteVersion(DbClient dbClient, string versionDate)
     {
         storage.DeleteDirectory(versionDate);
-        storage.Dispose();
         dbClient.RollbackTransaction();
-        Win32Stuff.AllowSystemSleep();
     }
 
     private async Task ProcessEmptyFolders(DbClient dbClient, long newVersionId, List<FolderTableRow> emptyFolder)

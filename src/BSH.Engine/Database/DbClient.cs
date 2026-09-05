@@ -15,12 +15,14 @@ namespace Brightbits.BSH.Engine.Database;
 /// </summary>
 public class DbClient : IDisposable
 {
+    private const int DefaultCommandTimeout = 60000;
+
     #region Fields
 
     SQLiteConnection _connection;
     SQLiteTransaction _transaction;
-    DbProviderFactory _factory;
     readonly Dictionary<string, SQLiteCommand> _commands = new();
+    bool _disposed;
 
     #endregion
 
@@ -31,18 +33,6 @@ public class DbClient : IDisposable
     /// </summary>
     public string ConnectionString => _connection.ConnectionString;
 
-    /// <summary>
-    /// Gets or sets the command timeout
-    /// </summary>
-    public int CommandTimeout
-    {
-        get; set;
-    }
-    public object ConfigurationManager
-    {
-        get;
-    }
-
     #endregion
 
     #region Construction / Destruction
@@ -50,44 +40,15 @@ public class DbClient : IDisposable
     /// <summary>
     ///
     /// </summary>
-    /// <param name="connectionStringName">the name of the connection string defined in application configuration</param>
+    /// <param name="connectionString">the SQLite connection string</param>
     public DbClient(string connectionString)
     {
-        InitializeConnection("System.Data.SQLite", connectionString);
-    }
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="dbProvider">the database provider name</param>
-    /// <param name="connectionString">the connection string</param>
-    public DbClient(string dbProvider, string connectionString)
-    {
-        InitializeConnection(dbProvider, connectionString);
+        _connection = new SQLiteConnection(connectionString);
     }
 
     #endregion
 
     #region Methods
-
-    /// <summary>
-    /// Method to initialize the db connection
-    /// </summary>
-    /// <param name="providerName">the db provider name</param>
-    /// <param name="connectionString">the connection string</param>
-    /// <param name="connectTimeout">the connect timeout</param>
-    private void InitializeConnection(string providerName, string connectionString)
-    {
-        _factory = DbProviderFactories.GetFactory(providerName);
-
-        if (_factory == null)
-        {
-            throw new InvalidOperationException(string.Format("The factory for data provider {0} could not be found!", providerName));
-        }
-
-        _connection = new SQLiteConnection();
-        _connection.ConnectionString = connectionString;
-    }
 
     /// <summary>
     /// Method to open the connection
@@ -180,13 +141,24 @@ public class DbClient : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (_connection != null)
+        if (!disposing || _disposed)
         {
-            _commands.Clear();
-
-            CloseConnection();
-            _connection.Dispose();
+            return;
         }
+
+        _disposed = true;
+
+        foreach (var command in _commands.Values)
+        {
+            command.Dispose();
+        }
+
+        _commands.Clear();
+
+        _transaction?.Dispose();
+        _transaction = null;
+
+        _connection?.Dispose();
     }
 
     /// <summary>
@@ -198,7 +170,7 @@ public class DbClient : IDisposable
     /// <returns>the dataset with the execution results</returns>
     public DataSet ExecuteDataSet(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return ExecuteDataSet(commandType, commandText, parameters, 60000);
+        return ExecuteDataSet(commandType, commandText, parameters, DefaultCommandTimeout);
     }
 
     /// <summary>
@@ -210,19 +182,21 @@ public class DbClient : IDisposable
     /// <returns>the dataset with the execution results</returns>
     public DataSet ExecuteDataSet(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
-        var dsResult = new DataSet();
-        // open the connection
         OpenConnection();
 
         var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        using var adapter = new SQLiteDataAdapter(command);
 
-        var adapter = _factory.CreateDataAdapter();
-        adapter.SelectCommand = command;
-        adapter.Fill(dsResult);
-
-        // close the connection
-        CloseConnection();
-        return dsResult;
+        try
+        {
+            var dsResult = new DataSet();
+            adapter.Fill(dsResult);
+            return dsResult;
+        }
+        finally
+        {
+            CloseConnection();
+        }
     }
 
     /// <summary>
@@ -234,7 +208,7 @@ public class DbClient : IDisposable
     /// <returns>the data reader</returns>
     public IDataReader ExecuteDataReader(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return ExecuteDataReader(commandType, commandText, parameters, 60000);
+        return ExecuteDataReader(commandType, commandText, parameters, DefaultCommandTimeout);
     }
 
     /// <summary>
@@ -262,7 +236,7 @@ public class DbClient : IDisposable
     /// <returns>the data reader</returns>
     public async Task<DbDataReader> ExecuteDataReaderAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return await ExecuteDataReaderAsync(commandType, commandText, parameters, 60000);
+        return await ExecuteDataReaderAsync(commandType, commandText, parameters, DefaultCommandTimeout);
     }
 
     /// <summary>
@@ -288,58 +262,67 @@ public class DbClient : IDisposable
 
     public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return await ExecuteScalarAsync(commandType, commandText, parameters, 60000);
+        return await ExecuteScalarAsync(commandType, commandText, parameters, DefaultCommandTimeout);
     }
 
     public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         await OpenConnectionAsync();
 
-        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-        var result = await command.ExecuteScalarAsync();
-
-        await CloseConnectionAsync();
-
-        return result;
+        try
+        {
+            var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+            return await command.ExecuteScalarAsync();
+        }
+        finally
+        {
+            await CloseConnectionAsync();
+        }
     }
 
     public int ExecuteNonQuery(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return ExecuteNonQuery(commandType, commandText, parameters, 60000);
+        return ExecuteNonQuery(commandType, commandText, parameters, DefaultCommandTimeout);
     }
 
     public int ExecuteNonQuery(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         OpenConnection();
 
-        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-        var result = command.ExecuteNonQuery();
-
-        CloseConnection();
-
-        return result;
+        try
+        {
+            var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+            return command.ExecuteNonQuery();
+        }
+        finally
+        {
+            CloseConnection();
+        }
     }
 
     public async Task<int> ExecuteNonQueryAsync(string commandText)
     {
-        return await ExecuteNonQueryAsync(CommandType.Text, commandText, null, 60000);
+        return await ExecuteNonQueryAsync(CommandType.Text, commandText, null, DefaultCommandTimeout);
     }
 
     public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return await ExecuteNonQueryAsync(commandType, commandText, parameters, 60000);
+        return await ExecuteNonQueryAsync(commandType, commandText, parameters, DefaultCommandTimeout);
     }
 
     public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         await OpenConnectionAsync();
 
-        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-        var result = await command.ExecuteNonQueryAsync();
-
-        await CloseConnectionAsync();
-
-        return result;
+        try
+        {
+            var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+            return await command.ExecuteNonQueryAsync();
+        }
+        finally
+        {
+            await CloseConnectionAsync();
+        }
     }
 
     /// <summary>
@@ -350,35 +333,19 @@ public class DbClient : IDisposable
     /// <param name="parameters">the parameters</param>
     /// <param name="commandTimeout">the command timeout</param>
     /// <returns>the command</returns>
-    private DbCommand CreateCommand(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
+    private SQLiteCommand CreateCommand(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
-        if (_commands.TryGetValue(commandText, out var command))
+        if (!_commands.TryGetValue(commandText, out var command))
         {
-            if (_transaction != null)
-            {
-                command.Transaction = _transaction;
-            }
-
-            if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    command.Parameters[parameter.Item1].Value = parameter.Item2;
-                }
-            }
-
-            return command;
+            command = _connection.CreateCommand();
+            command.CommandText = commandText;
+            _commands.Add(commandText, command);
         }
 
-        command = _connection.CreateCommand();
-        command.CommandTimeout = commandTimeout;
-        command.CommandText = commandText;
         command.CommandType = commandType;
-
-        if (_transaction != null)
-        {
-            command.Transaction = _transaction;
-        }
+        command.CommandTimeout = commandTimeout;
+        command.Transaction = _transaction;
+        command.Parameters.Clear();
 
         if (parameters != null)
         {
@@ -388,56 +355,7 @@ public class DbClient : IDisposable
             }
         }
 
-        _commands.Add(commandText, command);
         return command;
     }
-
-    /// <summary>
-    /// Method to create a parameter
-    /// </summary>
-    /// <param name="parameterName">the parameter name</param>
-    /// <param name="dbType">the database type</param>
-    /// <param name="size">size of the parameter</param>
-    /// <param name="value">the value of the parameter</param>
-    /// <returns>the new parameter</returns>
-    public IDataParameter CreateParameter(string parameterName, DbType dbType, int size, object value)
-    {
-        return CreateParameter(parameterName, dbType, size, ParameterDirection.Input, value);
-    }
-
-    /// <summary>
-    /// Method to create a parameter
-    /// </summary>
-    /// <param name="parameterName">the parameter name</param>
-    /// <param name="dbType">the database type</param>
-    /// <param name="size">size of the parameter</param>
-    /// <param name="parameterDirection">the parameter direction</param>
-    /// <returns></returns>
-    public IDataParameter CreateParameter(string parameterName, DbType dbType, int size, ParameterDirection parameterDirection)
-    {
-        return CreateParameter(parameterName, dbType, size, parameterDirection, null);
-    }
-
-    /// <summary>
-    /// Method to create a parameter
-    /// </summary>
-    /// <param name="parameterName">the parameter name</param>
-    /// <param name="dbType">the database type</param>
-    /// <param name="parameterDirection">the parameter direction</param>
-    /// <param name="size">size of the parameter</param>
-    /// <param name="value">the value of the parameter</param>
-    /// <returns>the new parameter</returns>
-    public IDataParameter CreateParameter(string parameterName, DbType dbType, int size, ParameterDirection parameterDirection, object value)
-    {
-        var parameter = _factory.CreateParameter();
-        parameter.ParameterName = parameterName;
-        parameter.Direction = parameterDirection;
-        parameter.DbType = dbType;
-        parameter.Value = value;
-        parameter.Size = size;
-
-        return parameter;
-    }
-
     #endregion
 }

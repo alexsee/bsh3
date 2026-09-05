@@ -37,12 +37,15 @@ public class ConfigurationManagerTests
     }
 
     [Test]
-    public async Task LoadConfigurationTest()
+    public async Task LoadConfigurationFromDirectDatabaseInsertLoadsAutoBackup()
     {
+        await dbClientFactory.ExecuteNonQueryAsync(
+            "INSERT INTO configuration (confValue, confProperty) VALUES ('06:30', 'autobackup');");
+
         var configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
 
-        Assert.That(configurationManager.AutoBackup, Is.Empty);
+        Assert.That(configurationManager.AutoBackup, Is.EqualTo("06:30"));
     }
 
     [Test]

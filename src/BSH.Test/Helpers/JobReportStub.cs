@@ -1,6 +1,7 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace BSH.Test.Helpers;
 /// </summary>
 public sealed class JobReportStub : IJobReport
 {
+    public Action<ActionType, bool> OnReportAction { get; set; }
     public RequestOverwriteResult OverwriteResult { get; set; } = RequestOverwriteResult.Overwrite;
 
     public int RequestOverwriteCalls { get; private set; }
@@ -25,7 +27,7 @@ public sealed class JobReportStub : IJobReport
 
     public List<(string Title, string Text)> ReportedStatuses { get; } = [];
 
-    public void ReportAction(ActionType action, bool silent) { }
+    public void ReportAction(ActionType action, bool silent) => OnReportAction?.Invoke(action, silent);
 
     public void ReportState(JobState jobState) => ReportedStates.Add(jobState);
 

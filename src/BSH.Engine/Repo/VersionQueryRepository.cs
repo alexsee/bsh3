@@ -213,9 +213,11 @@ public class VersionQueryRepository : IVersionQueryRepository
     {
         var result = await dbClient.ExecuteScalarAsync(
             CommandType.Text,
-            "SELECT COUNT(1) FROM filetable a, fileversiontable b, filelink c, versiontable d " +
-            "WHERE(c.fileversionid = b.fileversionid And a.fileid = b.fileid) " +
-            "and d.versionid = b.filepackage",
+            "SELECT COUNT(1) " +
+            "FROM fileversiontable AS fvt " +
+            "INNER JOIN filetable AS ft ON ft.fileID = fvt.fileID " +
+            "INNER JOIN versiontable AS vt ON vt.versionID = fvt.filePackage " +
+            "WHERE fvt.fileType IN (5, 6)",
             null);
 
         return int.Parse(result?.ToString() ?? "0");
@@ -225,9 +227,12 @@ public class VersionQueryRepository : IVersionQueryRepository
     {
         return await dbClient.ExecuteDataReaderAsync(
             CommandType.Text,
-            "SELECT * FROM filetable a, fileversiontable b, filelink c, versiontable d " +
-            "WHERE(c.fileversionid = b.fileversionid And a.fileid = b.fileid) " +
-            "and d.versionid = b.filepackage",
+            "SELECT ft.fileName, ft.filePath, fvt.fileversionid, fvt.fileType, vt.versionDate, fvt.longfilename " +
+            "FROM fileversiontable AS fvt " +
+            "INNER JOIN filetable AS ft ON ft.fileID = fvt.fileID " +
+            "INNER JOIN versiontable AS vt ON vt.versionID = fvt.filePackage " +
+            "WHERE fvt.fileType IN (5, 6) " +
+            "ORDER BY fvt.fileversionid",
             null);
     }
 

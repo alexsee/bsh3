@@ -182,7 +182,7 @@ public class FileSystemEngineLifecycleTests
 
         await RunBackupAsync(password: Password);
 
-        var editJob = new EditJob(
+        using var editJob = new EditJob(
             CreateStorage(),
             dbClientFactory,
             queryManager,
@@ -198,7 +198,7 @@ public class FileSystemEngineLifecycleTests
 
         var dest = Path.Combine(restoreDir, "decrypted");
         Directory.CreateDirectory(dest);
-        var restoreJob = CreateRestoreJob(CreateStorage(), version: 1, destination: dest, password: null);
+        using var restoreJob = CreateRestoreJob(CreateStorage(), version: 1, destination: dest, password: null);
         await restoreJob.RestoreAsync(CancellationToken.None);
 
         Assert.That(restoreJob.FileErrorList, Is.Empty);
@@ -253,7 +253,7 @@ public class FileSystemEngineLifecycleTests
         await RunBackupAsync();
 
         var sourceLeaf = Path.GetFileName(sourceDir);
-        var deleteJob = new DeleteSingleJob(
+        using var deleteJob = new DeleteSingleJob(
             CreateStorage(),
             dbClientFactory,
             queryManager,
@@ -304,7 +304,7 @@ public class FileSystemEngineLifecycleTests
         using var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        var backupJob = CreateBackupJob(CreateStorage());
+        using var backupJob = CreateBackupJob(CreateStorage());
         await backupJob.BackupAsync(cts.Token);
 
         Assert.That(await queryManager.GetLastBackupAsync(), Is.Null);
@@ -319,7 +319,7 @@ public class FileSystemEngineLifecycleTests
         await Task.Delay(1100);
         var before = CountFilesRecursive(backupDir);
 
-        var backupJob = CreateBackupJob(CreateStorage());
+        using var backupJob = CreateBackupJob(CreateStorage());
         backupJob.FullBackup = true;
         await backupJob.BackupAsync(CancellationToken.None);
         Assert.That(backupJob.FileErrorList, Is.Empty);
@@ -362,7 +362,7 @@ public class FileSystemEngineLifecycleTests
 
     private async Task RunBackupAsync(string password = null)
     {
-        var backupJob = CreateBackupJob(CreateStorage());
+        using var backupJob = CreateBackupJob(CreateStorage());
         backupJob.Password = password;
         await backupJob.BackupAsync(CancellationToken.None);
         Assert.That(backupJob.FileErrorList, Is.Empty, "Backup reported file errors.");
@@ -371,14 +371,14 @@ public class FileSystemEngineLifecycleTests
 
     private async Task RunRestoreAsync(int version, string destination)
     {
-        var restoreJob = CreateRestoreJob(CreateStorage(), version, destination);
+        using var restoreJob = CreateRestoreJob(CreateStorage(), version, destination);
         await restoreJob.RestoreAsync(CancellationToken.None);
         Assert.That(restoreJob.FileErrorList, Is.Empty, "Restore reported file errors.");
     }
 
     private async Task RunDeleteAsync(string versionId)
     {
-        var deleteJob = new DeleteJob(
+        using var deleteJob = new DeleteJob(
             CreateStorage(),
             dbClientFactory,
             queryManager,

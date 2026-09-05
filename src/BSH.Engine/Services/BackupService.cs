@@ -35,7 +35,8 @@ public class BackupService : IBackupService
     private readonly IVersionQueryRepository versionQueryRepository;
     private readonly IBackupMutationRepository backupMutationRepository;
 
-    private Task currentTask;
+    private readonly object currentTaskSync = new();
+    private bool jobActive;
 
     private string password;
 
@@ -216,7 +217,7 @@ public class BackupService : IBackupService
             Version = version
         };
 
-        return StartJob(jobReport, ActionType.Delete, deleteJob, deleteJob.DeleteAsync, cancellationToken, silent);
+        return StartJob(jobReport, ActionType.Delete, deleteJob, () => deleteJob.DeleteAsync(cancellationToken), cancellationToken, silent);
     }
 
     /// <summary>
@@ -238,7 +239,7 @@ public class BackupService : IBackupService
             versionQueryRepository,
             backupMutationRepository);
 
-        return StartJob(jobReport, ActionType.Delete, deleteJob, () => deleteJob.DeleteSingleAsync(fileFilter, pathFilter, versionIds), cancellationToken, silent);
+        return StartJob(jobReport, ActionType.Delete, deleteJob, () => deleteJob.DeleteSingleAsync(fileFilter, pathFilter, versionIds, cancellationToken), cancellationToken, silent);
     }
 
     /// <summary>
@@ -259,7 +260,7 @@ public class BackupService : IBackupService
             Password = password
         };
 
-        return StartJob(jobReport, ActionType.Modify, editJob, editJob.EditAsync, cancellationToken, silent, requirePassword: true);
+        return StartJob(jobReport, ActionType.Modify, editJob, () => editJob.EditAsync(cancellationToken), cancellationToken, silent, requirePassword: true);
     }
 
     private Task StartJob(
@@ -275,27 +276,69 @@ public class BackupService : IBackupService
         ArgumentNullException.ThrowIfNull(job);
         ArgumentNullException.ThrowIfNull(runAsync);
 
-        if (requirePassword && configurationManager.Encrypt == 1 && (password == null || password.Length == 0))
+        lock (currentTaskSync)
         {
-            throw new PasswordRequiredException();
+            if (jobActive)
+            {
+                job.Dispose();
+                throw new TaskRunningException();
+            }
+
+            if (requirePassword && configurationManager.Encrypt == 1 && string.IsNullOrEmpty(password))
+            {
+                job.Dispose();
+                throw new PasswordRequiredException();
+            }
+
+            jobActive = true;
+
+            try
+            {
+                job.AddObserver(jobReport);
+                jobReport.ReportAction(actionType, silent);
+
+                var task = Task.Run(async () =>
+                {
+                    try
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await runAsync();
+                    }
+                    catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                    {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(ex, "Exception during {Action} job.", actionType);
+                        job.ReportState(JobState.ERROR);
+                        throw;
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            job.Dispose();
+                        }
+                        finally
+                        {
+                            lock (currentTaskSync)
+                            {
+                                jobActive = false;
+                            }
+                        }
+                    }
+                });
+
+                return task;
+            }
+            catch
+            {
+                jobActive = false;
+                job.Dispose();
+                throw;
+            }
         }
-
-        if (currentTask != null && currentTask.Status == TaskStatus.Running)
-        {
-            return Task.FromResult<object>(null);
-        }
-
-        job.AddObserver(jobReport);
-        jobReport.ReportAction(actionType, silent);
-
-        currentTask = Task.Run(runAsync, cancellationToken);
-        currentTask.ContinueWith(t =>
-        {
-            _logger.Error(t.Exception, "Exception during {action} job.", actionType);
-            job.ReportState(JobState.ERROR);
-        }, TaskContinuationOptions.OnlyOnFaulted);
-
-        return currentTask;
     }
 
     /// <summary>

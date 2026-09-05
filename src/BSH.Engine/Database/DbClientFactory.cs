@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
-using System.Data.Common;
 using System.Data.SQLite;
 using System.IO;
 using System.Threading.Tasks;
@@ -18,11 +17,6 @@ public class DbClientFactory : IDbClientFactory
     private string databaseFile;
 
     public string DatabaseFile => databaseFile;
-
-    public DbClientFactory()
-    {
-        DbProviderFactories.RegisterFactory("System.Data.SQLite", SQLiteFactory.Instance);
-    }
 
     public async Task InitializeAsync(string databaseFile)
     {

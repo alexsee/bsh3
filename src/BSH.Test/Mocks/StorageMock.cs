@@ -72,6 +72,7 @@ namespace BSH.Test.Mocks
         public int UploadDatabaseFileCalls { get; private set; }
         public long FreeSpaceBytes { get; set; }
         public bool CanWrite { get; set; }
+        public Func<Task<bool>> CheckMediumAsync { get; set; }
 
         public bool CanWriteToStorage()
         {
@@ -80,6 +81,11 @@ namespace BSH.Test.Mocks
 
         public async Task<bool> CheckMedium(bool quickCheck = false)
         {
+            if (CheckMediumAsync != null)
+            {
+                return await CheckMediumAsync();
+            }
+
             return !failCheckMedium;
         }
 

@@ -82,7 +82,7 @@ public class RestoreTests
     public void TestFailMedium()
     {
         var storage = new StorageMock(failCheckMedium: true);
-        var restoreJob = CreateRestoreJob(storage);
+        using var restoreJob = CreateRestoreJob(storage);
 
         Assert.ThrowsAsync<DeviceNotReadyException>(async () => await restoreJob.RestoreAsync(CancellationToken.None));
     }
@@ -97,7 +97,7 @@ public class RestoreTests
         await SeedFileForVersionAsync(3, 3, 1, "encrypted-long.txt", @"\docs\", 6, "very-long-file-name");
 
         var storage = new StorageMock();
-        var restoreJob = CreateRestoreJob(storage, file: @"\");
+        using var restoreJob = CreateRestoreJob(storage, file: @"\");
         restoreJob.Password = "test123";
 
         await restoreJob.RestoreAsync(CancellationToken.None);
@@ -121,7 +121,7 @@ public class RestoreTests
         await SeedFileForVersionAsync(2, 2, 1, "other.txt", @"\docs\", 1, "");
 
         var storage = new StorageMock();
-        var restoreJob = CreateRestoreJob(storage, file: @"\docs\plain.txt");
+        using var restoreJob = CreateRestoreJob(storage, file: @"\docs\plain.txt");
 
         await restoreJob.RestoreAsync(CancellationToken.None);
 
@@ -141,7 +141,7 @@ public class RestoreTests
         var destination = CreateExistingDestinationFile("plain.txt");
 
         var storage = new StorageMock();
-        var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.DontCopy);
+        using var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.DontCopy);
 
         await restoreJob.RestoreAsync(CancellationToken.None);
 
@@ -158,7 +158,7 @@ public class RestoreTests
         var destination = CreateExistingDestinationFile("plain.txt");
 
         var storage = new StorageMock();
-        var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Overwrite);
+        using var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Overwrite);
 
         await restoreJob.RestoreAsync(CancellationToken.None);
 
@@ -175,7 +175,7 @@ public class RestoreTests
         var destination = CreateExistingDestinationFile("plain.txt");
 
         var storage = new StorageMock();
-        var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
+        using var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
         var observer = new JobReportStub { OverwriteResult = RequestOverwriteResult.NoOverwrite };
         restoreJob.AddObserver(observer);
 
@@ -197,7 +197,7 @@ public class RestoreTests
         var destination = CreateExistingDestinationFile("plain.txt");
 
         var storage = new StorageMock();
-        var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
+        using var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
         var observer = new JobReportStub { OverwriteResult = RequestOverwriteResult.None };
         restoreJob.AddObserver(observer);
 
@@ -225,7 +225,7 @@ public class RestoreTests
         try
         {
             var storage = new StorageMock();
-            var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
+            using var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
             var observer = new JobReportStub { OverwriteResult = RequestOverwriteResult.None };
             restoreJob.AddObserver(observer);
 
@@ -252,7 +252,7 @@ public class RestoreTests
 
         using var cts = new CancellationTokenSource();
         var storage = new StorageMock(cancelOnCopy: cts);
-        var restoreJob = CreateRestoreJob(storage, file: @"\");
+        using var restoreJob = CreateRestoreJob(storage, file: @"\");
         var observer = new JobReportStub();
         restoreJob.AddObserver(observer);
 
@@ -271,7 +271,7 @@ public class RestoreTests
         await SeedFileForVersionAsync(2, 2, 1, "ok.txt", @"\docs\", 1, "");
 
         var storage = new StorageMock(throwOnRemoteContaining: "fails.txt");
-        var restoreJob = CreateRestoreJob(storage, file: @"\");
+        using var restoreJob = CreateRestoreJob(storage, file: @"\");
         var observer = new JobReportStub();
         restoreJob.AddObserver(observer);
 
@@ -302,10 +302,10 @@ public class RestoreTests
 
         var storage = new StorageMock();
 
-        var restoreV1 = CreateRestoreJob(storage, version: 1, file: @"\");
+        using var restoreV1 = CreateRestoreJob(storage, version: 1, file: @"\");
         await restoreV1.RestoreAsync(CancellationToken.None);
 
-        var restoreV2 = CreateRestoreJob(storage, version: 2, file: @"\", overwrite: FileOverwrite.Overwrite);
+        using var restoreV2 = CreateRestoreJob(storage, version: 2, file: @"\", overwrite: FileOverwrite.Overwrite);
         await restoreV2.RestoreAsync(CancellationToken.None);
 
         Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(2));
@@ -326,7 +326,7 @@ public class RestoreTests
         try
         {
             var storage = new StorageMock();
-            var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\");
+            using var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\");
             await restoreJob.RestoreAsync(CancellationToken.None);
 
             Assert.That(Directory.Exists(Path.Combine(destination, "empty")), Is.True);
@@ -347,7 +347,7 @@ public class RestoreTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 3, 3, 1, "enc.txt", @"\docs\", 5, "");
 
         var storage = new StorageMock();
-        var restoreJob = CreateRestoreJob(storage, file: @"\");
+        using var restoreJob = CreateRestoreJob(storage, file: @"\");
         restoreJob.Password = "test123";
         await restoreJob.RestoreAsync(CancellationToken.None);
 
@@ -365,7 +365,7 @@ public class RestoreTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 1, "out.txt", @"\other\", 1, "");
 
         var storage = new StorageMock();
-        var restoreJob = CreateRestoreJob(storage, file: @"\docs\");
+        using var restoreJob = CreateRestoreJob(storage, file: @"\docs\");
         await restoreJob.RestoreAsync(CancellationToken.None);
 
         Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
@@ -389,7 +389,7 @@ public class RestoreTests
         try
         {
             var storage = new StorageMock();
-            var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
+            using var restoreJob = CreateRestoreJob(storage, destination: destination, file: @"\", overwrite: FileOverwrite.Ask);
             var observer = new JobReportStub { OverwriteResult = RequestOverwriteResult.OverwriteAll };
             restoreJob.AddObserver(observer);
 
@@ -416,7 +416,7 @@ public class RestoreTests
         await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (1, 2)");
 
         var storage = new StorageMock();
-        var restoreJob = CreateRestoreJob(storage, version: 2, file: @"\");
+        using var restoreJob = CreateRestoreJob(storage, version: 2, file: @"\");
         await restoreJob.RestoreAsync(CancellationToken.None);
 
         Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
@@ -431,7 +431,7 @@ public class RestoreTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "very-long-name.txt", @"\docs\", 1, "stored-long-id");
 
         var storage = new StorageMock();
-        var restoreJob = CreateRestoreJob(storage, file: @"\");
+        using var restoreJob = CreateRestoreJob(storage, file: @"\");
         await restoreJob.RestoreAsync(CancellationToken.None);
 
         Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));

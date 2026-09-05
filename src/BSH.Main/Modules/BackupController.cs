@@ -33,8 +33,6 @@ public class BackupController : IDisposable
     private readonly JobSessionRunner jobSessionRunner;
     private readonly IJobSessionPresenter presenter;
 
-    private CancellationToken cancellationToken;
-
     /// <summary>
     /// Initializes a new instance of the BackupController given the BackupService and
     /// ConfigurationManager instance.
@@ -43,27 +41,23 @@ public class BackupController : IDisposable
     /// <param name="configurationManager"></param>
     /// <param name="isTaskRunning"></param>
     /// <param name="waitForMediaAsync"></param>
-    /// <param name="requestPasswordAsync"></param>
     public BackupController(
         IBackupService backupService,
         IConfigurationManager configurationManager,
         Func<bool> isTaskRunning,
-        Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync,
-        Func<Task<bool>> requestPasswordAsync)
+        Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync)
     {
         ArgumentNullException.ThrowIfNull(backupService);
         ArgumentNullException.ThrowIfNull(configurationManager);
         ArgumentNullException.ThrowIfNull(isTaskRunning);
         ArgumentNullException.ThrowIfNull(waitForMediaAsync);
-        ArgumentNullException.ThrowIfNull(requestPasswordAsync);
 
         this.configurationManager = configurationManager;
         this.jobRuntime = new JobRuntime(
             backupService,
             isTaskRunning,
             () => this.configurationManager.Medium == "1",
-            waitForMediaAsync,
-            requestPasswordAsync);
+            waitForMediaAsync);
         this.presenter = new WinFormsJobSessionPresenter();
         IStoredPasswordAdapter storedPasswordAdapter = new WinFormsStoredPasswordAdapter();
         this.jobSessionRunner = new JobSessionRunner(
@@ -72,18 +66,6 @@ public class BackupController : IDisposable
             () => this.configurationManager.Encrypt == 1,
             () => this.configurationManager.EncryptPassMD5,
             storedPasswordAdapter);
-
-        GetNewCancellationToken();
-    }
-
-    /// <summary>
-    /// Creates a new CancellationToken and assigns it to the current internal state.
-    /// </summary>
-    /// <returns>Returns the new CancellationToken.</returns>
-    public CancellationToken GetNewCancellationToken()
-    {
-        cancellationToken = jobRuntime.GetNewCancellationToken();
-        return cancellationToken;
     }
 
     /// <summary>

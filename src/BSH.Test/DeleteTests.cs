@@ -64,7 +64,7 @@ public class DeleteTests
     public void TestFailMedium()
     {
         var storage = new RecordingDeleteStorage(failCheckMedium: true);
-        var deleteJob = CreateDeleteJob(storage, "1");
+        using var deleteJob = CreateDeleteJob(storage, "1");
 
         Assert.ThrowsAsync<DeviceNotReadyException>(async () => await deleteJob.DeleteAsync());
     }
@@ -79,7 +79,7 @@ public class DeleteTests
         await SeedFileForVersionAsync(3, 3, 1, "encrypted-long.txt", @"\docs\", 6, "very-long-file-name");
 
         var storage = new RecordingDeleteStorage();
-        var deleteJob = CreateDeleteJob(storage, "1");
+        using var deleteJob = CreateDeleteJob(storage, "1");
 
         await deleteJob.DeleteAsync();
 
@@ -108,7 +108,7 @@ public class DeleteTests
         await SeedFileForVersionAsync(1, 1, 1, "plain.txt", @"\docs\", 1, "");
 
         var storage = new RecordingDeleteStorage(throwOnDelete: true);
-        var deleteJob = CreateDeleteJob(storage, "1");
+        using var deleteJob = CreateDeleteJob(storage, "1");
 
         await deleteJob.DeleteAsync();
 
@@ -126,7 +126,7 @@ public class DeleteTests
         await SeedFileForVersionAsync(1, 1, 1, "encrypted-long.txt", @"\docs\", 6, "very-long-file-name");
 
         var storage = new RecordingDeleteStorage();
-        var deleteJob = CreateDeleteSingleJob(storage);
+        using var deleteJob = CreateDeleteSingleJob(storage);
 
         await deleteJob.DeleteSingleAsync("encrypted-long.txt", @"\docs\");
 
@@ -148,7 +148,7 @@ public class DeleteTests
         await SeedSharedFileAsync(1, 1, [1, 2, 3], "report.txt", @"\docs\", 1, "");
 
         var storage = new RecordingDeleteStorage();
-        var deleteJob = CreateDeleteSingleJob(storage);
+        using var deleteJob = CreateDeleteSingleJob(storage);
 
         await deleteJob.DeleteSingleAsync("report.txt", @"\docs\", [2, 3]);
 
@@ -169,7 +169,7 @@ public class DeleteTests
         await SeedSharedFileAsync(1, 1, [1, 2], "report.txt", @"\docs\", 1, "");
 
         var storage = new RecordingDeleteStorage();
-        var deleteJob = CreateDeleteSingleJob(storage);
+        using var deleteJob = CreateDeleteSingleJob(storage);
 
         await deleteJob.DeleteSingleAsync("report.txt", @"\docs\", [1, 2]);
 
@@ -194,7 +194,7 @@ public class DeleteTests
         await SeedFileLinkAsync(2, 3);
 
         var storage = new RecordingDeleteStorage();
-        var deleteJob = CreateDeleteSingleJob(storage);
+        using var deleteJob = CreateDeleteSingleJob(storage);
 
         await deleteJob.DeleteSingleAsync("report.txt", @"\docs\", [2, 3]);
 
@@ -217,7 +217,7 @@ public class DeleteTests
         await SeedSharedFileAsync(2, 2, [1, 2], "b.txt", @"\docs\sub\", 1, "");
 
         var storage = new RecordingDeleteStorage();
-        var deleteJob = CreateDeleteSingleJob(storage);
+        using var deleteJob = CreateDeleteSingleJob(storage);
 
         await deleteJob.DeleteSingleAsync(string.Empty, @"\docs\%", [2]);
 
@@ -311,7 +311,7 @@ public class DeleteTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 2, "only-v2.txt", @"\docs\", 1, "");
 
         var storage = new StorageMock();
-        var deleteJob = CreateDeleteJob(storage, "1");
+        using var deleteJob = CreateDeleteJob(storage, "1");
         await deleteJob.DeleteAsync();
 
         Assert.That(storage.DeletedPlain, Is.Empty, "Shared package must remain for version 2 restores.");
@@ -337,7 +337,7 @@ public class DeleteTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 2, "only-v2.txt", @"\docs\", 1, "");
 
         var storage = new StorageMock();
-        var deleteJob = CreateDeleteJob(storage, "2");
+        using var deleteJob = CreateDeleteJob(storage, "2");
         await deleteJob.DeleteAsync();
 
         Assert.That(storage.DeletedPlain, Has.Count.EqualTo(1));
@@ -357,7 +357,8 @@ public class DeleteTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "plain.txt", @"\docs\", 1, "");
 
         var storage = new StorageMock();
-        await CreateDeleteJob(storage, "1").DeleteAsync();
+        using var deleteJob = CreateDeleteJob(storage, "1");
+        await deleteJob.DeleteAsync();
 
         Assert.That(storage.DeletedDirectories, Does.Contain(versionDate));
         Assert.That(storage.UploadDatabaseFileCalls, Is.EqualTo(1));
@@ -367,7 +368,7 @@ public class DeleteTests
     public void DeleteSingle_FailsWhenMediumUnavailable()
     {
         var storage = new StorageMock(failCheckMedium: true);
-        var deleteJob = CreateDeleteSingleJob(storage);
+        using var deleteJob = CreateDeleteSingleJob(storage);
 
         Assert.ThrowsAsync<DeviceNotReadyException>(async () => await deleteJob.DeleteSingleAsync("a.txt", @"\docs\"));
     }
@@ -382,7 +383,8 @@ public class DeleteTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 3, 3, 1, "keep.txt", @"\other\", 1, "");
 
         var storage = new StorageMock();
-        await CreateDeleteSingleJob(storage).DeleteSingleAsync(fileFilter: "", pathFilter: @"\docs\%");
+        using var deleteJob = CreateDeleteSingleJob(storage);
+        await deleteJob.DeleteSingleAsync(fileFilter: "", pathFilter: @"\docs\%");
 
         Assert.That(storage.DeletedPlain, Has.Count.EqualTo(1));
         Assert.That(storage.DeletedCompressed, Has.Count.EqualTo(1));
@@ -403,12 +405,14 @@ public class DeleteTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 1, "zip.txt", @"\docs\", 2, "");
 
         var storage = new StorageMock();
-        await CreateDeleteSingleJob(storage).DeleteSingleAsync("plain.txt", @"\docs\");
+        using var plainDeleteJob = CreateDeleteSingleJob(storage);
+        await plainDeleteJob.DeleteSingleAsync("plain.txt", @"\docs\");
 
         Assert.That(storage.DeletedPlain, Has.Count.EqualTo(1));
         Assert.That(storage.DeletedCompressed, Is.Empty);
 
-        await CreateDeleteSingleJob(storage).DeleteSingleAsync("zip.txt", @"\docs\");
+        using var zipDeleteJob = CreateDeleteSingleJob(storage);
+        await zipDeleteJob.DeleteSingleAsync("zip.txt", @"\docs\");
         Assert.That(storage.DeletedCompressed, Has.Count.EqualTo(1));
     }
 
@@ -425,7 +429,8 @@ public class DeleteTests
         await JobSeedHelper.SeedEmptyFolderAsync(dbClientFactory, 1, 2, @"\docs\empty\");
 
         var storage = new StorageMock();
-        await CreateDeleteJob(storage, "1").DeleteAsync();
+        using var deleteJob = CreateDeleteJob(storage, "1");
+        await deleteJob.DeleteAsync();
 
         using var dbClient = dbClientFactory.CreateDbClient();
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM folderlink WHERE versionid = 1")), Is.EqualTo(0));
