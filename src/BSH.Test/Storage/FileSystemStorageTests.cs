@@ -87,9 +87,11 @@ public class FileSystemStorageTests
 
         using var storage = CreateStorage();
 
-        Assert.That(
-            () => storage.DecryptOnStorage(remoteFile, password),
-            Throws.InstanceOf<IOException>());
+        // File.Move onto a directory path fails with IOException on Unix and
+        // UnauthorizedAccessException on Windows (ERROR_ACCESS_DENIED).
+        Assert.Throws(
+            Is.InstanceOf<IOException>().Or.InstanceOf<UnauthorizedAccessException>(),
+            () => storage.DecryptOnStorage(remoteFile, password));
         Assert.That(File.Exists(encryptedFile), Is.True);
         Assert.That(Directory.Exists(plaintextPath), Is.True);
         Assert.That(Directory.EnumerateFiles(temporaryDirectory, "*.tmp"), Is.Empty);
