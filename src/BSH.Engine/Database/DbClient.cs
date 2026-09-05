@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Brightbits.BSH.Engine.Database;
 
 /// <summary>
-/// class for db access
+/// SQLite database client used by the backup engine.
 /// </summary>
 public class DbClient : IDisposable
 {
@@ -21,7 +21,7 @@ public class DbClient : IDisposable
 
     SQLiteConnection _connection;
     SQLiteTransaction _transaction;
-    readonly Dictionary<string, SQLiteCommand> _commands = new();
+    readonly List<SQLiteCommand> _readerCommands = new();
     bool _disposed;
 
     #endregion
@@ -38,7 +38,7 @@ public class DbClient : IDisposable
     #region Construction / Destruction
 
     /// <summary>
-    ///
+    /// Creates a SQLite client for the given connection string.
     /// </summary>
     /// <param name="connectionString">the SQLite connection string</param>
     public DbClient(string connectionString)
@@ -148,12 +148,12 @@ public class DbClient : IDisposable
 
         _disposed = true;
 
-        foreach (var command in _commands.Values)
+        foreach (var command in _readerCommands)
         {
             command.Dispose();
         }
 
-        _commands.Clear();
+        _readerCommands.Clear();
 
         _transaction?.Dispose();
         _transaction = null;
@@ -162,29 +162,17 @@ public class DbClient : IDisposable
     }
 
     /// <summary>
-    /// Method to call a stored procedure and retrieve the result
+    /// Executes a query and returns the result as a <see cref="DataSet"/>.
     /// </summary>
     /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the command to execute</param>
-    /// <param name="parameters">parameters for calling the stored procedure</param>
+    /// <param name="commandText">the command to execute</param>
+    /// <param name="parameters">parameters for the command</param>
     /// <returns>the dataset with the execution results</returns>
     public DataSet ExecuteDataSet(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return ExecuteDataSet(commandType, commandText, parameters, DefaultCommandTimeout);
-    }
-
-    /// <summary>
-    /// Method to call a stored procedure and retrieve the result
-    /// </summary>
-    /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the command to execute</param>
-    /// <param name="parameters">parameters for calling the stored procedure</param>
-    /// <returns>the dataset with the execution results</returns>
-    public DataSet ExecuteDataSet(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
         OpenConnection();
 
-        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        using var command = CreateCommand(commandType, commandText, parameters);
         using var adapter = new SQLiteDataAdapter(command);
 
         try
@@ -200,58 +188,36 @@ public class DbClient : IDisposable
     }
 
     /// <summary>
-    /// Method to execute a datareader
+    /// Executes a query and returns a data reader. The reader must be disposed
+    /// before this client is disposed.
     /// </summary>
     /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the procedurename</param>
+    /// <param name="commandText">the command text</param>
     /// <param name="parameters">the parameters</param>
     /// <returns>the data reader</returns>
     public IDataReader ExecuteDataReader(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return ExecuteDataReader(commandType, commandText, parameters, DefaultCommandTimeout);
-    }
-
-    /// <summary>
-    /// Method to execute a datareader
-    /// </summary>
-    /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the procedurename</param>
-    /// <param name="parameters">the parameters</param>
-    /// <param name="commandTimeout">the command timeout</param>
-    /// <returns>the data reader</returns>
-    public IDataReader ExecuteDataReader(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
         OpenConnection();
 
-        IDbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        var command = CreateCommand(commandType, commandText, parameters);
+        _readerCommands.Add(command);
         return command.ExecuteReader();
     }
 
     /// <summary>
-    /// Method to execute a datareader
+    /// Executes a query and returns a data reader. The reader must be disposed
+    /// before this client is disposed.
     /// </summary>
     /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the procedurename</param>
+    /// <param name="commandText">the command text</param>
     /// <param name="parameters">the parameters</param>
     /// <returns>the data reader</returns>
     public async Task<DbDataReader> ExecuteDataReaderAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return await ExecuteDataReaderAsync(commandType, commandText, parameters, DefaultCommandTimeout);
-    }
-
-    /// <summary>
-    /// Method to execute a datareader
-    /// </summary>
-    /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the procedurename</param>
-    /// <param name="parameters">the parameters</param>
-    /// <param name="commandTimeout">the command timeout</param>
-    /// <returns>the data reader</returns>
-    public async Task<DbDataReader> ExecuteDataReaderAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
         await OpenConnectionAsync();
 
-        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        var command = CreateCommand(commandType, commandText, parameters);
+        _readerCommands.Add(command);
         return await command.ExecuteReaderAsync();
     }
 
@@ -262,16 +228,11 @@ public class DbClient : IDisposable
 
     public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return await ExecuteScalarAsync(commandType, commandText, parameters, DefaultCommandTimeout);
-    }
-
-    public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
         await OpenConnectionAsync();
 
         try
         {
-            var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+            using var command = CreateCommand(commandType, commandText, parameters);
             return await command.ExecuteScalarAsync();
         }
         finally
@@ -282,16 +243,11 @@ public class DbClient : IDisposable
 
     public int ExecuteNonQuery(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return ExecuteNonQuery(commandType, commandText, parameters, DefaultCommandTimeout);
-    }
-
-    public int ExecuteNonQuery(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
         OpenConnection();
 
         try
         {
-            var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+            using var command = CreateCommand(commandType, commandText, parameters);
             return command.ExecuteNonQuery();
         }
         finally
@@ -302,21 +258,16 @@ public class DbClient : IDisposable
 
     public async Task<int> ExecuteNonQueryAsync(string commandText)
     {
-        return await ExecuteNonQueryAsync(CommandType.Text, commandText, null, DefaultCommandTimeout);
+        return await ExecuteNonQueryAsync(CommandType.Text, commandText, null);
     }
 
     public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, (string, object)[] parameters)
-    {
-        return await ExecuteNonQueryAsync(commandType, commandText, parameters, DefaultCommandTimeout);
-    }
-
-    public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
     {
         await OpenConnectionAsync();
 
         try
         {
-            var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+            using var command = CreateCommand(commandType, commandText, parameters);
             return await command.ExecuteNonQueryAsync();
         }
         finally
@@ -326,26 +277,19 @@ public class DbClient : IDisposable
     }
 
     /// <summary>
-    /// Method to create a command
+    /// Creates a new command bound to the current connection and transaction.
     /// </summary>
     /// <param name="commandType">the command type</param>
     /// <param name="commandText">the command text</param>
     /// <param name="parameters">the parameters</param>
-    /// <param name="commandTimeout">the command timeout</param>
     /// <returns>the command</returns>
-    private SQLiteCommand CreateCommand(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
+    private SQLiteCommand CreateCommand(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        if (!_commands.TryGetValue(commandText, out var command))
-        {
-            command = _connection.CreateCommand();
-            command.CommandText = commandText;
-            _commands.Add(commandText, command);
-        }
-
+        var command = _connection.CreateCommand();
+        command.CommandText = commandText;
         command.CommandType = commandType;
-        command.CommandTimeout = commandTimeout;
+        command.CommandTimeout = DefaultCommandTimeout;
         command.Transaction = _transaction;
-        command.Parameters.Clear();
 
         if (parameters != null)
         {

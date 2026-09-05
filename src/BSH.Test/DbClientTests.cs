@@ -29,7 +29,7 @@ public class DbClientTests
     }
 
     [Test]
-    public async Task ReusedCommandRebindsParameters()
+    public async Task ExecuteNonQueryRebindsParametersOnEachCall()
     {
         using var dbClient = CreateDbClient();
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE entries (value TEXT)");
@@ -45,7 +45,7 @@ public class DbClientTests
     }
 
     [Test]
-    public async Task ReusedCommandIsDetachedAfterRollback()
+    public async Task ExecuteNonQueryAfterRollbackCommitsNewWork()
     {
         using var dbClient = CreateDbClient();
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE entries (value TEXT)");
@@ -58,6 +58,25 @@ public class DbClientTests
         await dbClient.ExecuteNonQueryAsync(CommandType.Text, insert, new (string, object)[] { ("value", "committed") });
 
         Assert.That(await dbClient.ExecuteScalarAsync("SELECT value FROM entries"), Is.EqualTo("committed"));
+    }
+
+    [Test]
+    public async Task ExecuteDataReaderThenSameSqlNonQuerySucceeds()
+    {
+        using var dbClient = CreateDbClient();
+        await dbClient.ExecuteNonQueryAsync("CREATE TABLE entries (value TEXT)");
+        await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO entries (value) VALUES (@value)", new (string, object)[] { ("value", "first") });
+
+        const string select = "SELECT value FROM entries";
+        using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, select, null))
+        {
+            Assert.That(await reader.ReadAsync(), Is.True);
+            Assert.That(reader.GetString(0), Is.EqualTo("first"));
+        }
+
+        using var secondReader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, select, null);
+        Assert.That(await secondReader.ReadAsync(), Is.True);
+        Assert.That(secondReader.GetString(0), Is.EqualTo("first"));
     }
 
     private DbClient CreateDbClient()

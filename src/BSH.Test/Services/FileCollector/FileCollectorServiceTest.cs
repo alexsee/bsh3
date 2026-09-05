@@ -138,6 +138,20 @@ public class FileCollectorServiceTraversalTests
     }
 
     [Test]
+    public void GetLocalFileListAppliesFolderExclusions()
+    {
+        File.WriteAllText(Path.Combine(root, "keep.txt"), "keep");
+        var skipped = Directory.CreateDirectory(Path.Combine(root, "skipped"));
+        File.WriteAllText(Path.Combine(skipped.FullName, "skip.txt"), "skip");
+        configurationManager.ExcludeFolder = @"\skipped";
+        fileCollectorService.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
+
+        var result = fileCollectorService.GetLocalFileList(root);
+
+        Assert.That(result.Select(file => file.FileName), Is.EqualTo(["keep.txt"]));
+    }
+
+    [Test]
     public void GetLocalFileListTracksEmptyFoldersAndCanSkipRecursion()
     {
         File.WriteAllText(Path.Combine(root, "root.txt"), "root");
