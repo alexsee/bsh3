@@ -29,7 +29,7 @@ public class DbClientTests
     }
 
     [Test]
-    public async Task ExecuteNonQueryRebindsParametersOnEachCall()
+    public async Task ExecuteNonQueryAppliesParametersOnEachCall()
     {
         using var dbClient = CreateDbClient();
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE entries (value TEXT)");
@@ -61,7 +61,7 @@ public class DbClientTests
     }
 
     [Test]
-    public async Task ExecuteDataReaderThenSameSqlNonQuerySucceeds()
+    public async Task ExecuteDataReaderCanRepeatSameSql()
     {
         using var dbClient = CreateDbClient();
         await dbClient.ExecuteNonQueryAsync("CREATE TABLE entries (value TEXT)");

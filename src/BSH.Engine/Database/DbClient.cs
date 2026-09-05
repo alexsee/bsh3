@@ -55,7 +55,7 @@ public class DbClient : IDisposable
     /// </summary>
     private void OpenConnection()
     {
-        if (_connection != null && _connection.State != ConnectionState.Open)
+        if (_connection.State != ConnectionState.Open)
         {
             _connection.Open();
         }
@@ -66,7 +66,7 @@ public class DbClient : IDisposable
     /// </summary>
     private async Task OpenConnectionAsync()
     {
-        if (_connection != null && _connection.State != ConnectionState.Open)
+        if (_connection.State != ConnectionState.Open)
         {
             await _connection.OpenAsync();
         }
@@ -77,7 +77,7 @@ public class DbClient : IDisposable
     /// </summary>
     private void CloseConnection()
     {
-        if (_connection != null && _connection.State != ConnectionState.Closed && _transaction == null)
+        if (_connection.State != ConnectionState.Closed && _transaction == null)
         {
             _connection.Close();
         }
@@ -85,7 +85,7 @@ public class DbClient : IDisposable
 
     private async Task CloseConnectionAsync()
     {
-        if (_connection != null && _connection.State != ConnectionState.Closed && _transaction == null)
+        if (_connection.State != ConnectionState.Closed && _transaction == null)
         {
             await _connection.CloseAsync();
         }
@@ -130,18 +130,9 @@ public class DbClient : IDisposable
         CloseConnection();
     }
 
-    /// <summary>
-    /// Method to dispose the connection
-    /// </summary>
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposing || _disposed)
+        if (_disposed)
         {
             return;
         }
@@ -158,7 +149,8 @@ public class DbClient : IDisposable
         _transaction?.Dispose();
         _transaction = null;
 
-        _connection?.Dispose();
+        _connection.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>
@@ -172,11 +164,10 @@ public class DbClient : IDisposable
     {
         OpenConnection();
 
-        using var command = CreateCommand(commandType, commandText, parameters);
-        using var adapter = new SQLiteDataAdapter(command);
-
         try
         {
+            using var command = CreateCommand(commandType, commandText, parameters);
+            using var adapter = new SQLiteDataAdapter(command);
             var dsResult = new DataSet();
             adapter.Fill(dsResult);
             return dsResult;
@@ -291,12 +282,9 @@ public class DbClient : IDisposable
         command.CommandTimeout = DefaultCommandTimeout;
         command.Transaction = _transaction;
 
-        if (parameters != null)
+        foreach (var parameter in parameters ?? [])
         {
-            foreach (var parameter in parameters)
-            {
-                command.Parameters.AddWithValue(parameter.Item1, parameter.Item2);
-            }
+            command.Parameters.AddWithValue(parameter.Item1, parameter.Item2);
         }
 
         return command;
