@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -137,6 +138,9 @@ public class QueryManagerTests
 
         result = await queryManager.GetVersionByIdAsync("2");
         Assert.That(result.Id, Is.EqualTo("2"));
+
+        result = await queryManager.GetVersionByIdAsync("999");
+        Assert.That(result, Is.Null);
     }
 
     [Test]
@@ -338,6 +342,37 @@ public class QueryManagerTests
     public async Task HasChangesOrNewAsyncTest()
     {
         var result = await queryManager.HasChangesOrNewAsync("\\source_1\\", "1");
+        Assert.That(result, Is.True);
+
+        result = await queryManager.HasChangesOrNewAsync("\\missing\\", "1");
+        Assert.That(result, Is.False);
+    }
+
+    [Test]
+    public async Task HasChangesOrNewAsyncHandlesQuotedPath()
+    {
+        using (var dbClient = dbClientFactory.CreateDbClient())
+        {
+            await dbClient.ExecuteNonQueryAsync(
+                CommandType.Text,
+                "INSERT INTO filetable (fileID, fileName, filePath) VALUES (@id, @name, @path)",
+                new (string, object)[]
+                {
+                    ("id", 99),
+                    ("name", "quoted.txt"),
+                    ("path", "\\source_\"q\"\\")
+                });
+            await dbClient.ExecuteNonQueryAsync(
+                CommandType.Text,
+                "INSERT INTO fileversiontable (fileversionID, fileStatus, fileType, fileHash, fileDateModified, fileDateCreated, fileSize, filePackage, fileID) VALUES (@id, 0, 1, 'hashq', '2021-01-01 00:00:00', '2021-01-01 00:00:00', 100, 1, @fileId)",
+                new (string, object)[]
+                {
+                    ("id", 99),
+                    ("fileId", "99")
+                });
+        }
+
+        var result = await queryManager.HasChangesOrNewAsync("\\source_\"q\"\\", "1");
         Assert.That(result, Is.True);
     }
 

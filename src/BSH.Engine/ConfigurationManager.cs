@@ -63,17 +63,6 @@ public class ConfigurationManager : IConfigurationManager
         }
     }
 
-    private string autoBackup = "";
-
-    public string AutoBackup
-    {
-        get => autoBackup;
-        set
-        {
-            autoBackup = value; SaveProperty(nameof(AutoBackup), value);
-        }
-    }
-
     private string medium = "1";
 
     public string Medium
@@ -579,7 +568,6 @@ public class ConfigurationManager : IConfigurationManager
         sourceFolder = "";
         backupFolder = "";
         remindAfterDays = "7";
-        autoBackup = "";
         medium = "1";
         mediumType = "1";
         lastBackupDone = "";

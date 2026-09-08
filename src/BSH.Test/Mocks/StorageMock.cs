@@ -190,8 +190,11 @@ namespace BSH.Test.Mocks
             return !failAllCopies;
         }
 
+        public int DisposeCalls { get; private set; }
+
         public void Dispose()
         {
+            DisposeCalls++;
         }
 
         public long GetFreeSpace()

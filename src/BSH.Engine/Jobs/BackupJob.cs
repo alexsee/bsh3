@@ -136,7 +136,7 @@ public class BackupJob : Job
             var lastVersionDate = await versionQueryRepository.GetLastVersionDateAsync(dbClient);
 
             // full backup?
-            var fullBackup = string.IsNullOrEmpty(lastVersionDate?.ToString()) || FullBackup;
+            var fullBackup = string.IsNullOrEmpty(lastVersionDate) || FullBackup;
 
             // open storage
             storage.Open();
@@ -172,21 +172,7 @@ public class BackupJob : Job
             foreach (var folderEntry in folderList)
             {
                 var fileCollector = fileCollectorServiceFactory.Create();
-
-                // file exclusions
-                fileCollector.FileExclusionHandlers.Add(new DatabaseFileExclusion());
-                fileCollector.FileExclusionHandlers.Add(new PathFileExclusion(configurationManager));
-                fileCollector.FileExclusionHandlers.Add(new TypeFileExclusion(configurationManager));
-                fileCollector.FileExclusionHandlers.Add(new SizeFileExclusion(configurationManager));
-                fileCollector.FileExclusionHandlers.Add(new MaskFileExclusion(configurationManager));
-                fileCollector.FileExclusionHandlers.Add(new NameFileExclusion(configurationManager));
-
-                // folder exclusions
-                fileCollector.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
-                fileCollector.FolderExclusionHandlers.Add(new MaskFolderExclusion(configurationManager));
-                fileCollector.FolderExclusionHandlers.Add(new ReparsePointFolderExclusion());
-                fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion(configurationManager));
-                fileCollector.FolderExclusionHandlers.Add(new TemporaryFolderExclusion());
+                AddExclusionHandlers(fileCollector);
 
                 var filesList = fileCollector.GetLocalFileList(folderEntry, true);
                 emptyFolder.AddRange(fileCollector.EmptyFolders);
@@ -449,6 +435,22 @@ public class BackupJob : Job
             var folderId = await backupMutationRepository.AddOrGetFolderIdAsync(dbClient, folderPath);
             await backupMutationRepository.AddFolderLinkAsync(dbClient, folderId, newVersionId);
         }
+    }
+
+    private void AddExclusionHandlers(IFileCollectorService fileCollector)
+    {
+        fileCollector.FileExclusionHandlers.Add(new DatabaseFileExclusion());
+        fileCollector.FileExclusionHandlers.Add(new PathFileExclusion(configurationManager));
+        fileCollector.FileExclusionHandlers.Add(new TypeFileExclusion(configurationManager));
+        fileCollector.FileExclusionHandlers.Add(new SizeFileExclusion(configurationManager));
+        fileCollector.FileExclusionHandlers.Add(new MaskFileExclusion(configurationManager));
+        fileCollector.FileExclusionHandlers.Add(new NameFileExclusion(configurationManager));
+
+        fileCollector.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
+        fileCollector.FolderExclusionHandlers.Add(new MaskFolderExclusion(configurationManager));
+        fileCollector.FolderExclusionHandlers.Add(new ReparsePointFolderExclusion());
+        fileCollector.FolderExclusionHandlers.Add(new SystemFolderExclusion(configurationManager));
+        fileCollector.FolderExclusionHandlers.Add(new TemporaryFolderExclusion());
     }
 
     /// <summary>

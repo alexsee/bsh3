@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Diagnostics;
+using System.Globalization;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Repo;
@@ -293,7 +294,8 @@ public class ScheduledBackupService : IScheduledBackupService
         }
 
         // backup is after the last backup
-        if (!string.IsNullOrEmpty(configurationManager.LastBackupDone) && DateUtils.ReformatVersionDate(configurationManager.LastBackupDone) >= date)
+        if (!string.IsNullOrEmpty(configurationManager.LastBackupDone)
+            && DateTime.ParseExact(configurationManager.LastBackupDone, "dd-MM-yyyy HH-mm-ss", CultureInfo.InvariantCulture) >= date)
         {
             return false;
         }

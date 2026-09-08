@@ -150,8 +150,13 @@ public class QueryManager : IQueryManager
         VersionDetails result = null;
 
         // obtain lastest backup
+        var parameters = new (string, object)[]
+        {
+            ("id", id)
+        };
+
         using (var dbClient = dbClientFactory.CreateDbClient())
-        using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, $"SELECT * FROM versiontable WHERE versionID = {id}", null))
+        using (var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionID = @id", parameters))
         {
             if (await reader.ReadAsync())
             {
@@ -748,7 +753,15 @@ public class QueryManager : IQueryManager
     public async Task<bool> HasChangesOrNewAsync(string path, string versionId)
     {
         using var dbClient = dbClientFactory.CreateDbClient();
-        var result = await dbClient.ExecuteScalarAsync($"SELECT COUNT(1) FROM fileversiontable, filetable WHERE filetable.fileID = fileversiontable.fileID AND fileversiontable.filePackage = {versionId} AND filetable.filePath LIKE \"{path}%\"");
+        var parameters = new (string, object)[]
+        {
+            ("versionId", versionId),
+            ("path", path + "%")
+        };
+        var result = await dbClient.ExecuteScalarAsync(
+            CommandType.Text,
+            "SELECT COUNT(1) FROM fileversiontable, filetable WHERE filetable.fileID = fileversiontable.fileID AND fileversiontable.filePackage = @versionId AND filetable.filePath LIKE @path",
+            parameters);
         if (result == null)
         {
             return false;

@@ -85,6 +85,7 @@ public class RestoreTests
         var restoreJob = CreateRestoreJob(storage);
 
         Assert.ThrowsAsync<DeviceNotReadyException>(async () => await restoreJob.RestoreAsync(CancellationToken.None));
+        Assert.That(storage.DisposeCalls, Is.EqualTo(0));
     }
 
     [Test]
@@ -103,6 +104,7 @@ public class RestoreTests
         await restoreJob.RestoreAsync(CancellationToken.None);
 
         Assert.That(restoreJob.FileErrorList, Is.Empty);
+        Assert.That(storage.DisposeCalls, Is.EqualTo(1));
         Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
         Assert.That(storage.CopyFileFromStorageCompressedCalls, Is.EqualTo(1));
         Assert.That(storage.CopyFileFromStorageEncryptedCalls, Is.EqualTo(1));
@@ -260,6 +262,7 @@ public class RestoreTests
 
         Assert.That(observer.ReportedStates, Does.Contain(JobState.CANCELED));
         Assert.That(observer.ReportedStates, Does.Not.Contain(JobState.FINISHED));
+        Assert.That(storage.DisposeCalls, Is.EqualTo(1));
     }
 
     [Test]
