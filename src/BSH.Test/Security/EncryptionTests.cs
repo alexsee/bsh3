@@ -14,8 +14,13 @@ public class EncryptionTests
     [TearDown]
     public void TearDown()
     {
-        // delete the temporary file
+        if (string.IsNullOrEmpty(mTempFile))
+        {
+            return;
+        }
+
         File.Delete(mTempFile);
+        mTempFile = null;
     }
 
     [Test]
