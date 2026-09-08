@@ -92,10 +92,11 @@ public class RestoreJob : Job
             throw new DeviceNotReadyException();
         }
 
-        // connect to database
-        using (var dbClient = dbClientFactory.CreateDbClient())
+        storage.Open();
+        try
         {
-            storage.Open();
+            // connect to database
+            using var dbClient = dbClientFactory.CreateDbClient();
 
             // obtain files that need to be restored
             var countFiles = 0;
@@ -236,13 +237,17 @@ public class RestoreJob : Job
 
                 await folderReader.CloseAsync();
             }
+
+            // report file errors
+            ReportExceptions(FileErrorList);
+            ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
+
+            _logger.Information("Restore of files successfully finished.");
         }
-
-        // report file errors
-        ReportExceptions(FileErrorList);
-        ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
-
-        _logger.Information("Restore of files successfully finished.");
+        finally
+        {
+            storage.Dispose();
+        }
     }
 
     /// <summary>

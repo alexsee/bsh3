@@ -179,6 +179,35 @@ public class ScheduledBackupServiceTests
         Assert.That(service.GetNextBackupDate(), Is.EqualTo(NextAutoRun));
     }
 
+    [Test]
+    public async Task ScheduledDailySkipsCatchUpWhenLastBackupIsNewer()
+    {
+        var scheduler = new FakeSchedulerAdapter();
+        var configuration = new FakeConfigurationManager
+        {
+            TaskType = TaskType.Schedule,
+            MediumType = MediaType.LocalDevice,
+            BackupFolder = @"E:\Backups",
+            DoPastBackups = "1",
+            LastBackupDone = DateTime.Now.ToString("dd-MM-yyyy HH-mm-ss")
+        };
+        var schedules = new[] { new ScheduleEntry { Type = 3, Date = DateTime.Today } };
+        var scheduleRepository = new FakeScheduleRepository(schedules);
+        var service = new ScheduledBackupService(
+            configuration,
+            new RecordingJobService { MediaAvailable = true },
+            new StubQueryManager(),
+            scheduleRepository,
+            new FakeSchedulerAdapterFactory(scheduler),
+            new ScheduleSettingsService(configuration, scheduleRepository),
+            new FakeMediaWatcherFactory());
+
+        await service.StartAsync();
+
+        Assert.That(scheduler.ScheduleOnceCalls, Is.EqualTo(0));
+        Assert.That(scheduler.ScheduleDailyCalls, Is.EqualTo(1));
+    }
+
     private static ScheduledBackupService CreateService(
         TaskType taskType,
         MediaType mediaType,
@@ -283,12 +312,15 @@ public class ScheduledBackupServiceTests
         public Action AutoBackup { get; private set; }
         public Action HourlyBackup { get; private set; }
 
+        public int ScheduleOnceCalls { get; private set; }
+        public int ScheduleDailyCalls { get; private set; }
+
         public DateTime GetNextRun() => DateTime.MaxValue;
         public void ScheduleAutoBackup(Action action) => AutoBackup = action;
-        public void ScheduleDaily(Action action, DateTime time) { }
+        public void ScheduleDaily(Action action, DateTime time) => ScheduleDailyCalls++;
         public void ScheduleHourly(Action action, DateTime time) => HourlyBackup = action;
         public void ScheduleMonthly(Action action, DateTime time) { }
-        public void ScheduleOnce(Action action, DateTime time) { }
+        public void ScheduleOnce(Action action, DateTime time) => ScheduleOnceCalls++;
         public void ScheduleWeekly(Action action, DateTime time) { }
         public void Start() { }
         public void Stop() { }

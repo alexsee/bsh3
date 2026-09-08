@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Text;
+using System.Text.Json;
 
 using BSH.MainApp.Core.Contracts.Services;
-
-using Newtonsoft.Json;
 
 namespace BSH.MainApp.Core.Services;
 
@@ -17,7 +15,7 @@ public class FileService : IFileService
         if (File.Exists(path))
         {
             var json = File.ReadAllText(path);
-            return JsonConvert.DeserializeObject<T>(json);
+            return JsonSerializer.Deserialize<T>(json);
         }
 
         return default;
@@ -30,8 +28,8 @@ public class FileService : IFileService
             Directory.CreateDirectory(folderPath);
         }
 
-        var fileContent = JsonConvert.SerializeObject(content);
-        File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
+        var fileContent = JsonSerializer.Serialize(content);
+        File.WriteAllText(Path.Combine(folderPath, fileName), fileContent);
     }
 
     public void Delete(string folderPath, string fileName)

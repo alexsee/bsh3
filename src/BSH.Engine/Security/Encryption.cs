@@ -19,12 +19,9 @@ public class Encryption
             using var InFileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using FileStream OutFileStream = new(targetFile, FileMode.Create);
 
-            // Iteration count must stay at 1000 to remain compatible with existing encrypted backups.
-            var key = Rfc2898DeriveBytes.Pbkdf2(password, mKeySalt, 1000, HashAlgorithmName.SHA1, 32);
-            var iv = Rfc2898DeriveBytes.Pbkdf2(password, mIVSalt, 1000, HashAlgorithmName.SHA1, 16);
+            DeriveKeyMaterial(password, out var key, out var iv);
 
-            var aes = Aes.Create();
-
+            using var aes = Aes.Create();
             using var CryptStream = new CryptoStream(OutFileStream, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write); // 16,24,32
             InFileStream.CopyTo(CryptStream, bufferSize);
 
@@ -43,11 +40,9 @@ public class Encryption
             using var InFileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var OutFileStream = new FileStream(targetFile, FileMode.Create);
 
-            // Iteration count must stay at 1000 to remain compatible with existing encrypted backups.
-            var key = Rfc2898DeriveBytes.Pbkdf2(password, mKeySalt, 1000, HashAlgorithmName.SHA1, 32);
-            var iv = Rfc2898DeriveBytes.Pbkdf2(password, mIVSalt, 1000, HashAlgorithmName.SHA1, 16);
+            DeriveKeyMaterial(password, out var key, out var iv);
 
-            var aes = Aes.Create();
+            using var aes = Aes.Create();
             using var CryptStream = new CryptoStream(OutFileStream, aes.CreateDecryptor(key, iv), CryptoStreamMode.Write);
 
             InFileStream.CopyTo(CryptStream, bufferSize);
@@ -58,5 +53,12 @@ public class Encryption
         {
             return false;
         }
+    }
+
+    private void DeriveKeyMaterial(string password, out byte[] key, out byte[] iv)
+    {
+        // Iteration count must stay at 1000 to remain compatible with existing encrypted backups.
+        key = Rfc2898DeriveBytes.Pbkdf2(password, mKeySalt, 1000, HashAlgorithmName.SHA1, 32);
+        iv = Rfc2898DeriveBytes.Pbkdf2(password, mIVSalt, 1000, HashAlgorithmName.SHA1, 16);
     }
 }

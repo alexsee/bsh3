@@ -110,12 +110,6 @@
           "Microsoft.WindowsAppSDK.WinUI": "1.8.250906003"
         }
       },
-      "Newtonsoft.Json": {
-        "type": "Direct",
-        "requested": "[13.0.4, )",
-        "resolved": "13.0.4",
-        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
-      },
       "Serilog.Sinks.File": {
         "type": "Direct",
         "requested": "[7.0.0, )",
