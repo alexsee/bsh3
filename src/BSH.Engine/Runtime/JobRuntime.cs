@@ -20,7 +20,6 @@ public sealed class JobRuntime : IDisposable
     private readonly Func<ActionType, MediaWaitMode, CancellationTokenSource, Task<bool>> waitForMediaAsync;
     private readonly object cancellationTokenSync = new();
     private CancellationTokenSource cancellationTokenSource;
-    private CancellationToken cancellationToken;
     private bool sessionActive;
     private bool disposed;
 
@@ -64,7 +63,6 @@ public sealed class JobRuntime : IDisposable
         this.selectMediaWaitMode = selectMediaWaitMode;
         this.waitForMediaAsync = waitForMediaAsync;
         cancellationTokenSource = new CancellationTokenSource();
-        cancellationToken = cancellationTokenSource.Token;
     }
 
     public void Cancel()
@@ -126,8 +124,7 @@ public sealed class JobRuntime : IDisposable
             sessionActive = true;
             cancellationTokenSource?.Dispose();
             cancellationTokenSource = new CancellationTokenSource();
-            cancellationToken = cancellationTokenSource.Token;
-            newCancellationToken = cancellationToken;
+            newCancellationToken = cancellationTokenSource.Token;
         }
 
         try
@@ -166,7 +163,6 @@ public sealed class JobRuntime : IDisposable
             disposed = true;
             cancellationTokenSource?.Dispose();
             cancellationTokenSource = null;
-            cancellationToken = default;
         }
 
         GC.SuppressFinalize(this);

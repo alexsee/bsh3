@@ -368,9 +368,10 @@ public sealed class JobSessionRunner
                 }
             }
 
+            var canceled = operationCanceled || cancellationToken.IsCancellationRequested || forwardJobReport.WasCanceled;
             forwardJobReport.ForwardExceptions(!statusDialog);
 
-            var finalState = operationCanceled || cancellationToken.IsCancellationRequested || forwardJobReport.WasCanceled
+            var finalState = canceled
                 ? JobState.CANCELED
                 : (forwardJobReport.HasErrors ? JobState.ERROR : JobState.FINISHED);
             presenter.ReportState(finalState);
@@ -378,7 +379,7 @@ public sealed class JobSessionRunner
             return new JobSessionResult()
             {
                 Started = true,
-                Canceled = operationCanceled || cancellationToken.IsCancellationRequested || forwardJobReport.WasCanceled,
+                Canceled = canceled,
                 HasErrors = forwardJobReport.HasErrors,
                 Failure = JobSessionStartFailure.None
             };
