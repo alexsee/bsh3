@@ -480,30 +480,51 @@ public class FtpStorage : Storage, IStorageProvider
         var remoteFilePath = Combine(folderPath, remoteFile + ".enc").GetFtpPath();
         var remoteFilePathDecrypted = Combine(folderPath, remoteFile).GetFtpPath();
 
-        var tmpFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(remoteFile));
+        var temporaryDirectory = Path.Combine(Path.GetTempPath(), "bsh-decrypt-" + Guid.NewGuid().ToString("N"));
+        var encryptedTemporaryFile = Path.Combine(temporaryDirectory, "payload.enc");
+        var decryptedTemporaryFile = Path.Combine(temporaryDirectory, "payload");
 
-        // check if tmp file is still there
-        if (File.Exists(tmpFile))
+        Directory.CreateDirectory(temporaryDirectory);
+
+        try
         {
-            File.Delete(tmpFile);
+            var result = ftpClient.DownloadFile(encryptedTemporaryFile, remoteFilePath, FtpLocalExists.Overwrite);
+            if (result != FtpStatus.Success)
+            {
+                return false;
+            }
+
+            var crypto = new Encryption();
+            if (!crypto.Decode(encryptedTemporaryFile, decryptedTemporaryFile, password))
+            {
+                return false;
+            }
+
+            result = ftpClient.UploadFile(decryptedTemporaryFile, remoteFilePathDecrypted, FtpRemoteExists.Overwrite);
+            if (result != FtpStatus.Success)
+            {
+                return false;
+            }
+
+            ftpClient.DeleteFile(remoteFilePath);
+            return true;
         }
-
-        // download encrypted file
-        var result = ftpClient.DownloadFile(tmpFile + ".enc", remoteFilePath, FtpLocalExists.Overwrite);
-
-        if (result != FtpStatus.Success)
+        finally
         {
-            return false;
+            TryDeleteTemporaryDirectory(temporaryDirectory);
         }
+    }
 
-        var crypto = new Encryption();
-        crypto.Decode(tmpFile + ".enc", tmpFile, password);
-        File.Delete(tmpFile + ".enc");
-
-        result = ftpClient.UploadFile(tmpFile, remoteFilePathDecrypted, FtpRemoteExists.Overwrite);
-        ftpClient.DeleteFile(remoteFilePath);
-
-        return result == FtpStatus.Success;
+    private static void TryDeleteTemporaryDirectory(string temporaryDirectory)
+    {
+        try
+        {
+            Directory.Delete(temporaryDirectory, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "Could not delete temporary decryption directory {TemporaryDirectory}.", temporaryDirectory);
+        }
     }
 
     public bool FileExists(string remoteFile)

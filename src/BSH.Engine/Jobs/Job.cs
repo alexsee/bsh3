@@ -19,7 +19,7 @@ namespace Brightbits.BSH.Engine.Jobs;
 /// <summary>
 /// Class for all job tasks
 /// </summary>
-public abstract class Job
+public abstract class Job : IDisposable
 {
     private static readonly ILogger _logger = Log.ForContext<Job>();
 
@@ -35,6 +35,8 @@ public abstract class Job
     protected readonly bool silent;
 
     private readonly List<IJobReport> observers = new();
+    private bool disposed;
+    private bool keepsSystemAwake;
 
     public Collection<FileExceptionEntry> FileErrorList
     {
@@ -234,6 +236,36 @@ public abstract class Job
         observers.Remove(observer);
     }
 
+    public void Dispose()
+    {
+        if (disposed)
+        {
+            return;
+        }
+
+        disposed = true;
+        try
+        {
+            storage.Dispose();
+        }
+        finally
+        {
+            if (keepsSystemAwake)
+            {
+                keepsSystemAwake = false;
+                Win32Stuff.AllowSystemSleep();
+            }
+        }
+
+        GC.SuppressFinalize(this);
+    }
+
+    protected void KeepSystemAwake()
+    {
+        Win32Stuff.KeepSystemAwake();
+        keepsSystemAwake = true;
+    }
+
     /// <summary>
     /// Deletes a single file from the backup device via the storage provider.
     /// </summary>
@@ -289,10 +321,6 @@ public abstract class Job
             _logger.Error(ex, "Database file could not be refreshed on storage device.");
 
             ReportState(JobState.ERROR);
-
-            // standby mode
-            Win32Stuff.AllowSystemSleep();
-            storage.Dispose();
 
             throw new DatabaseFileNotUpdatedException();
         }

@@ -18,10 +18,9 @@ public sealed class JobRuntime : IDisposable
     private readonly Func<bool> isTaskRunning;
     private readonly Func<bool, MediaWaitMode> selectMediaWaitMode;
     private readonly Func<ActionType, MediaWaitMode, CancellationTokenSource, Task<bool>> waitForMediaAsync;
-    private readonly Func<Task<bool>> requestPasswordAsync;
     private readonly object cancellationTokenSync = new();
     private CancellationTokenSource cancellationTokenSource;
-    private CancellationToken cancellationToken;
+    private bool sessionActive;
     private bool disposed;
 
     public bool IsCancellationRequested
@@ -39,37 +38,12 @@ public sealed class JobRuntime : IDisposable
         IBackupService backupService,
         Func<bool> isTaskRunning,
         Func<bool> shouldWaitForMedia,
-        Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync,
-        Func<Task<bool>> requestPasswordAsync)
+        Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync)
         : this(
             backupService,
             isTaskRunning,
             silent => shouldWaitForMedia() && !silent ? MediaWaitMode.PromptUser : MediaWaitMode.None,
-            (action, mode, cancellationTokenSource) => waitForMediaAsync(action, mode == MediaWaitMode.SilentPolling, cancellationTokenSource),
-            requestPasswordAsync)
-    {
-    }
-
-    public JobRuntime(
-        IBackupService backupService,
-        Func<bool> isTaskRunning,
-        Func<bool, bool> shouldWaitForMedia,
-        Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync,
-        Func<Task<bool>> requestPasswordAsync)
-        : this(
-            backupService,
-            isTaskRunning,
-            silent =>
-            {
-                if (!shouldWaitForMedia(silent))
-                {
-                    return MediaWaitMode.None;
-                }
-
-                return silent ? MediaWaitMode.SilentPolling : MediaWaitMode.PromptUser;
-            },
-            (action, mode, cancellationTokenSource) => waitForMediaAsync(action, mode == MediaWaitMode.SilentPolling, cancellationTokenSource),
-            requestPasswordAsync)
+            (action, mode, cancellationTokenSource) => waitForMediaAsync(action, mode == MediaWaitMode.SilentPolling, cancellationTokenSource))
     {
     }
 
@@ -77,36 +51,18 @@ public sealed class JobRuntime : IDisposable
         IBackupService backupService,
         Func<bool> isTaskRunning,
         Func<bool, MediaWaitMode> selectMediaWaitMode,
-        Func<ActionType, MediaWaitMode, CancellationTokenSource, Task<bool>> waitForMediaAsync,
-        Func<Task<bool>> requestPasswordAsync)
+        Func<ActionType, MediaWaitMode, CancellationTokenSource, Task<bool>> waitForMediaAsync)
     {
         ArgumentNullException.ThrowIfNull(backupService);
         ArgumentNullException.ThrowIfNull(isTaskRunning);
         ArgumentNullException.ThrowIfNull(selectMediaWaitMode);
         ArgumentNullException.ThrowIfNull(waitForMediaAsync);
-        ArgumentNullException.ThrowIfNull(requestPasswordAsync);
 
         this.backupService = backupService;
         this.isTaskRunning = isTaskRunning;
         this.selectMediaWaitMode = selectMediaWaitMode;
         this.waitForMediaAsync = waitForMediaAsync;
-        this.requestPasswordAsync = requestPasswordAsync;
-
-        GetNewCancellationToken();
-    }
-
-    public CancellationToken GetNewCancellationToken()
-    {
-        lock (cancellationTokenSync)
-        {
-            ThrowIfDisposed();
-
-            cancellationTokenSource?.Dispose();
-            cancellationTokenSource = new CancellationTokenSource();
-            cancellationToken = cancellationTokenSource.Token;
-
-            return cancellationToken;
-        }
+        cancellationTokenSource = new CancellationTokenSource();
     }
 
     public void Cancel()
@@ -149,26 +105,50 @@ public sealed class JobRuntime : IDisposable
         return false;
     }
 
-    public async Task<CancellationToken> PrepareAsync(ActionType action, bool statusDialog, bool requirePassword = true)
+    public async Task<CancellationToken> PrepareAsync(ActionType action, bool statusDialog)
     {
-        var newCancellationToken = GetNewCancellationToken();
-
         if (isTaskRunning())
         {
             throw new TaskRunningException();
         }
 
-        if (!await CheckMediaAsync(action, !statusDialog))
+        CancellationToken newCancellationToken;
+        lock (cancellationTokenSync)
         {
-            throw new DeviceNotReadyException();
+            ThrowIfDisposed();
+            if (sessionActive)
+            {
+                throw new TaskRunningException();
+            }
+
+            sessionActive = true;
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+            newCancellationToken = cancellationTokenSource.Token;
         }
 
-        if (requirePassword && !await requestPasswordAsync())
+        try
         {
-            throw new PasswordRequiredException();
-        }
+            if (!await CheckMediaAsync(action, !statusDialog))
+            {
+                throw new DeviceNotReadyException();
+            }
 
-        return newCancellationToken;
+            return newCancellationToken;
+        }
+        catch
+        {
+            CompleteSession();
+            throw;
+        }
+    }
+
+    internal void CompleteSession()
+    {
+        lock (cancellationTokenSync)
+        {
+            sessionActive = false;
+        }
     }
 
     public void Dispose()
@@ -183,7 +163,6 @@ public sealed class JobRuntime : IDisposable
             disposed = true;
             cancellationTokenSource?.Dispose();
             cancellationTokenSource = null;
-            cancellationToken = default;
         }
 
         GC.SuppressFinalize(this);

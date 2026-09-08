@@ -81,7 +81,7 @@ public class EditTests
         await SeedEditableFileAsync(2, 2, 1, "compressed-encrypted.txt", @"\docs\", 6, "long-name.bin");
 
         var storage = new RecordingEditStorage();
-        var editJob = CreateEditJob(storage);
+        using var editJob = CreateEditJob(storage);
         editJob.Password = "test123";
 
         await editJob.EditAsync();
@@ -109,7 +109,7 @@ public class EditTests
 
         var failingRemoteFile = versionDate + @"\docs\" + "fails.txt";
         var storage = new RecordingEditStorage([failingRemoteFile]);
-        var editJob = CreateEditJob(storage);
+        using var editJob = CreateEditJob(storage);
         editJob.Password = "test123";
 
         await editJob.EditAsync();
@@ -126,10 +126,35 @@ public class EditTests
     }
 
     [Test]
+    public async Task Edit_WhenStorageReturnsFalse_DoesNotChangeFileTypeOrEncryptionMetadata()
+    {
+        configurationManager.Encrypt = 1;
+        configurationManager.EncryptPassMD5 = "existing-hash";
+
+        const string versionDate = "01-01-2021 00-00-00";
+        await SeedVersionAsync(1, versionDate);
+        await SeedEditableFileAsync(1, 1, 1, "fails.txt", @"\docs\", 5, "");
+
+        var remoteFile = versionDate + @"\docs\fails.txt";
+        var storage = new RecordingEditStorage(filesToReturnFalse: [remoteFile]);
+        using var editJob = CreateEditJob(storage);
+        editJob.Password = "test123";
+
+        await editJob.EditAsync();
+
+        Assert.That(editJob.FileErrorList, Has.Count.EqualTo(1));
+        Assert.That(configurationManager.Encrypt, Is.EqualTo(1));
+        Assert.That(configurationManager.EncryptPassMD5, Is.EqualTo("existing-hash"));
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileType FROM fileversiontable WHERE fileversionID = 1")), Is.EqualTo(5));
+    }
+
+    [Test]
     public void Edit_FailsWhenMediumUnavailable()
     {
         var storage = new StorageMock(failCheckMedium: true);
-        var editJob = CreateEditJob(storage);
+        using var editJob = CreateEditJob(storage);
 
         Assert.ThrowsAsync<DeviceNotReadyException>(async () => await editJob.EditAsync());
     }
@@ -146,7 +171,7 @@ public class EditTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 1, "compressed.txt", @"\docs\", 2, "");
 
         var storage = new StorageMock();
-        var editJob = CreateEditJob(storage);
+        using var editJob = CreateEditJob(storage);
         editJob.Password = "test123";
         await editJob.EditAsync();
 
@@ -172,10 +197,10 @@ public class EditTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "secret.txt", @"\docs\", 6, "");
         await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO filelink (fileversionID, versionID) VALUES (1, 2)");
 
-        // EditJob writes fileType updates on the same SQLite connection while the
-        // editable-files reader is still open, so a shared package is processed once.
+        // A file version can be linked into multiple logical backup versions while
+        // referring to one physical payload on storage.
         var storage = new StorageMock(failSecondDecryptOfSameFile: true);
-        var editJob = CreateEditJob(storage);
+        using var editJob = CreateEditJob(storage);
         editJob.Password = "test123";
         await editJob.EditAsync();
 
@@ -198,7 +223,7 @@ public class EditTests
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "long.txt", @"\docs\", 6, "stored-long-name");
 
         var storage = new StorageMock();
-        var editJob = CreateEditJob(storage);
+        using var editJob = CreateEditJob(storage);
         editJob.Password = "test123";
         await editJob.EditAsync();
 
@@ -244,10 +269,14 @@ public class EditTests
     private sealed class RecordingEditStorage : IStorageProvider
     {
         private readonly HashSet<string> filesToFail;
+        private readonly HashSet<string> filesToReturnFalse;
 
-        public RecordingEditStorage(IEnumerable<string> filesToFail = null)
+        public RecordingEditStorage(
+            IEnumerable<string> filesToFail = null,
+            IEnumerable<string> filesToReturnFalse = null)
         {
             this.filesToFail = filesToFail == null ? [] : new HashSet<string>(filesToFail, StringComparer.OrdinalIgnoreCase);
+            this.filesToReturnFalse = filesToReturnFalse == null ? [] : new HashSet<string>(filesToReturnFalse, StringComparer.OrdinalIgnoreCase);
         }
 
         public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
@@ -268,6 +297,11 @@ public class EditTests
             if (filesToFail.Contains(remoteFile))
             {
                 throw new IOException("Decrypt failed.");
+            }
+
+            if (filesToReturnFalse.Contains(remoteFile))
+            {
+                return false;
             }
 
             DecryptedFiles.Add(remoteFile);

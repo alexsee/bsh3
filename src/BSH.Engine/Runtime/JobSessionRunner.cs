@@ -249,8 +249,7 @@ public sealed class JobSessionRunner
         ArgumentNullException.ThrowIfNull(presenter);
         ArgumentNullException.ThrowIfNull(startAsync);
 
-        IJobReport jobReport = presenter;
-
+        var sessionPrepared = false;
         try
         {
             if (statusDialog)
@@ -258,7 +257,8 @@ public sealed class JobSessionRunner
                 await presenter.ShowStatusWindowAsync();
             }
 
-            var cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog, requirePassword: false);
+            var cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog);
+            sessionPrepared = true;
             presenter.SetCancellationToken(cancellationToken);
 
             if (requirePassword)
@@ -266,29 +266,44 @@ public sealed class JobSessionRunner
                 await ResolvePasswordAsync(presenter);
             }
 
+            var operationCanceled = false;
+            var trackingJobReport = new TrackingJobReport(presenter);
+
             try
             {
-                await startAsync(jobReport, cancellationToken);
+                await startAsync(trackingJobReport, cancellationToken);
             }
             catch (OperationCanceledException)
             {
+                operationCanceled = true;
+            }
+            catch (TaskRunningException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-                jobReport.ReportExceptions(new Collection<FileExceptionEntry> { new() { Exception = ex } }, !statusDialog);
+                trackingJobReport.ReportExceptions(new Collection<FileExceptionEntry> { new() { Exception = ex } }, !statusDialog);
             }
 
             return new JobSessionResult()
             {
                 Started = true,
-                Canceled = cancellationToken.IsCancellationRequested,
-                HasErrors = false,
+                Canceled = operationCanceled || cancellationToken.IsCancellationRequested || trackingJobReport.WasCanceled,
+                HasErrors = trackingJobReport.HasErrors,
                 Failure = JobSessionStartFailure.None
             };
         }
         catch (Exception ex)
         {
             return await HandleSessionStartFailureAsync(ex, presenter, statusDialog);
+        }
+        finally
+        {
+            if (sessionPrepared)
+            {
+                jobRuntime.CompleteSession();
+            }
         }
     }
 
@@ -303,6 +318,7 @@ public sealed class JobSessionRunner
         ArgumentNullException.ThrowIfNull(presenter);
         ArgumentNullException.ThrowIfNull(runItemAsync);
 
+        var sessionPrepared = false;
         try
         {
             if (statusDialog)
@@ -310,7 +326,8 @@ public sealed class JobSessionRunner
                 await presenter.ShowStatusWindowAsync();
             }
 
-            var cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog, requirePassword: false);
+            var cancellationToken = await jobRuntime.PrepareAsync(action, statusDialog);
+            sessionPrepared = true;
             presenter.SetCancellationToken(cancellationToken);
 
             if (requirePassword)
@@ -322,6 +339,7 @@ public sealed class JobSessionRunner
             presenter.ReportState(JobState.RUNNING);
 
             var forwardJobReport = new ForwardJobReport(presenter);
+            var operationCanceled = false;
 
             for (var i = 0; i < itemCount; i++)
             {
@@ -333,36 +351,49 @@ public sealed class JobSessionRunner
                 }
                 catch (OperationCanceledException)
                 {
+                    operationCanceled = true;
+                }
+                catch (TaskRunningException)
+                {
+                    throw;
                 }
                 catch (Exception ex)
                 {
                     forwardJobReport.ReportExceptions(new Collection<FileExceptionEntry> { new() { Exception = ex } }, !statusDialog);
                 }
 
-                if (cancellationToken.IsCancellationRequested)
+                if (operationCanceled || cancellationToken.IsCancellationRequested || forwardJobReport.WasCanceled)
                 {
                     break;
                 }
             }
 
+            var canceled = operationCanceled || cancellationToken.IsCancellationRequested || forwardJobReport.WasCanceled;
             forwardJobReport.ForwardExceptions(!statusDialog);
 
-            var finalState = cancellationToken.IsCancellationRequested
+            var finalState = canceled
                 ? JobState.CANCELED
-                : (forwardJobReport.HasExceptions ? JobState.ERROR : JobState.FINISHED);
+                : (forwardJobReport.HasErrors ? JobState.ERROR : JobState.FINISHED);
             presenter.ReportState(finalState);
 
             return new JobSessionResult()
             {
                 Started = true,
-                Canceled = cancellationToken.IsCancellationRequested,
-                HasErrors = forwardJobReport.HasExceptions,
+                Canceled = canceled,
+                HasErrors = forwardJobReport.HasErrors,
                 Failure = JobSessionStartFailure.None
             };
         }
         catch (Exception ex)
         {
             return await HandleSessionStartFailureAsync(ex, presenter, statusDialog);
+        }
+        finally
+        {
+            if (sessionPrepared)
+            {
+                jobRuntime.CompleteSession();
+            }
         }
     }
 
@@ -463,5 +494,44 @@ public sealed class JobSessionRunner
         var expectedPasswordHash = expectedPasswordHashProvider() ?? string.Empty;
         return !string.IsNullOrEmpty(password) &&
             string.Equals(Hash.GetMD5Hash(password) ?? string.Empty, expectedPasswordHash, StringComparison.Ordinal);
+    }
+
+    private sealed class TrackingJobReport : IJobReport
+    {
+        private readonly IJobReport report;
+
+        public bool HasErrors { get; private set; }
+        public bool WasCanceled { get; private set; }
+
+        public TrackingJobReport(IJobReport report)
+        {
+            this.report = report;
+        }
+
+        public void ReportAction(ActionType action, bool silent) => report.ReportAction(action, silent);
+
+        public void ReportState(JobState jobState)
+        {
+            HasErrors |= jobState == JobState.ERROR;
+            WasCanceled |= jobState == JobState.CANCELED;
+            report.ReportState(jobState);
+        }
+
+        public void ReportStatus(string title, string text) => report.ReportStatus(title, text);
+
+        public void ReportProgress(int total, int current) => report.ReportProgress(total, current);
+
+        public void ReportFileProgress(string file) => report.ReportFileProgress(file);
+
+        public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)
+        {
+            HasErrors |= files.Count > 0;
+            report.ReportExceptions(files, silent);
+        }
+
+        public Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile) =>
+            report.RequestOverwrite(localFile, remoteFile);
+
+        public Task RequestShowErrorInsufficientDiskSpaceAsync() => report.RequestShowErrorInsufficientDiskSpaceAsync();
     }
 }

@@ -3,145 +3,168 @@
 
 using System;
 using System.IO;
-using System.Threading.Tasks;
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Database;
+using System.Linq;
+using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services.FileCollector;
-using Brightbits.BSH.Engine.Utils;
-using BSH.Test.Mocks;
+using BSH.Test.Fakes;
 using NUnit.Framework;
 
 namespace BSH.Test.Services.FileCollector;
-public class FileCollectorServiceTest
+public class FileExclusionTests
 {
-    private IDbClientFactory dbClientFactory;
-    private IConfigurationManager configurationManager;
-    private IFileCollectorService fileCollectorService;
+    private FakeConfigurationManager configurationManager;
 
+    [SetUp]
+    public void Setup()
+    {
+        configurationManager = new FakeConfigurationManager();
+    }
+
+    [Test]
+    public void PathFileExclusionMatchesConfiguredFolder()
+    {
+        configurationManager.ExcludeFolder = @"\Meine Dokumente\Sub directory";
+        var file = CreateWindowsFile("test.docx", @"Sub directory");
+        var otherFile = CreateWindowsFile("test.docx", @"Other directory");
+
+        Assert.That(new PathFileExclusion(configurationManager).IsFileExcluded(file), Is.True);
+        Assert.That(new PathFileExclusion(configurationManager).IsFileExcluded(otherFile), Is.False);
+    }
+
+    [Test]
+    public void TypeFileExclusionMatchesConfiguredExtension()
+    {
+        configurationManager.ExcludeFileTypes = "docx";
+        var file = CreateWindowsFile("test.docx");
+        var otherFile = CreateWindowsFile("test.txt");
+
+        Assert.That(new TypeFileExclusion(configurationManager).IsFileExcluded(file), Is.True);
+        Assert.That(new TypeFileExclusion(configurationManager).IsFileExcluded(otherFile), Is.False);
+    }
+
+    [Test]
+    public void SizeFileExclusionMatchesConfiguredLimit()
+    {
+        configurationManager.ExcludeFileBigger = "10240";
+        var file = CreateWindowsFile("test.bin", fileSize: 10241);
+        var otherFile = CreateWindowsFile("test.bin", fileSize: 10240);
+
+        Assert.That(new SizeFileExclusion(configurationManager).IsFileExcluded(file), Is.True);
+        Assert.That(new SizeFileExclusion(configurationManager).IsFileExcluded(otherFile), Is.False);
+    }
+
+    [Test]
+    public void NameFileExclusionMatchesConfiguredPath()
+    {
+        configurationManager.ExcludeFile = @"\Meine Dokumente\Sub directory\test.docx";
+        var file = CreateWindowsFile("test.docx", @"Sub directory");
+        var otherFile = CreateWindowsFile("other.docx", @"Sub directory");
+
+        Assert.That(new NameFileExclusion(configurationManager).IsFileExcluded(file), Is.True);
+        Assert.That(new NameFileExclusion(configurationManager).IsFileExcluded(otherFile), Is.False);
+    }
+
+    [Test]
+    public void MaskFileExclusionMatchesConfiguredPattern()
+    {
+        configurationManager.ExcludeMask = @".*\.docx";
+        var file = CreateWindowsFile("test.docx");
+        var otherFile = CreateWindowsFile("test.txt");
+
+        Assert.That(new MaskFileExclusion(configurationManager).IsFileExcluded(file), Is.True);
+        Assert.That(new MaskFileExclusion(configurationManager).IsFileExcluded(otherFile), Is.False);
+    }
+
+    private static FileTableRow CreateWindowsFile(string fileName, string filePath = "", double fileSize = 1024)
+    {
+        return new FileTableRow
+        {
+            FileName = fileName,
+            FilePath = filePath,
+            FileRoot = @"D:\Meine Dokumente",
+            FileSize = fileSize,
+        };
+    }
+}
+
+public class FileCollectorServiceTraversalTests
+{
+    private FakeConfigurationManager configurationManager;
+    private FileCollectorService fileCollectorService;
     private string root;
 
     [SetUp]
-    public async Task Setup()
+    public void Setup()
     {
-        if (dbClientFactory != null)
+        configurationManager = new FakeConfigurationManager();
+        root = Path.Combine(Path.GetTempPath(), "bsh-file-collector-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        fileCollectorService = new FileCollectorService();
+    }
+
+    [TearDown]
+    public void Cleanup()
+    {
+        if (Directory.Exists(root))
         {
-            DbClientFactory.ClosePool();
-            this.dbClientFactory = null;
+            Directory.Delete(root, recursive: true);
         }
-
-        // start with clean database
-        if (File.Exists("testdb.db"))
-        {
-            File.Delete("testdb.db");
-        }
-
-        dbClientFactory = new DbClientFactory();
-        await dbClientFactory.InitializeAsync(Environment.CurrentDirectory + "\\testdb.db");
-
-        configurationManager = new ConfigurationManager(dbClientFactory);
-        await configurationManager.InitializeAsync();
-
-        // setup file collector
-        root = "D:\\Meine Dokumente";
-        fileCollectorService = new FileCollectorServiceMock(
-            [],
-            [
-                new()
-                {
-                    FileName = "test_1.txt",
-                    FilePath = IOUtils.GetRelativeFolder("D:\\Meine Dokumente",root),
-                    FileRoot = "D:\\Meine Dokumente",
-                    FileSize = 1024,
-                    FileDateCreated = DateTime.Now,
-                    FileDateModified = DateTime.Now,
-                },
-                new()
-                {
-                    FileName = "test_2.docx",
-                    FilePath = IOUtils.GetRelativeFolder("D:\\Meine Dokumente\\Sub directory", root),
-                    FileRoot = "D:\\Meine Dokumente",
-                    FileSize = 1024 * 20,
-                    FileDateCreated = DateTime.Now,
-                    FileDateModified = DateTime.Now,
-                }
-            ]);
     }
 
     [Test]
-    public void TestPathFileExclusion()
+    public void GetLocalFileListTraversesNestedFiles()
     {
-        fileCollectorService.FileExclusionHandlers.Add(new PathFileExclusion(configurationManager));
+        File.WriteAllText(Path.Combine(root, "root.txt"), "root");
+        var nested = Directory.CreateDirectory(Path.Combine(root, "nested", "deeper"));
+        File.WriteAllText(Path.Combine(nested.FullName, "nested.txt"), "nested");
 
-        // check files - non excluded
-        var result = fileCollectorService.GetLocalFileList("D:\\Meine Dokumente");
-        Assert.That(result.Count, Is.EqualTo(2));
+        var result = fileCollectorService.GetLocalFileList(root);
 
-        // check files - excluded
-        configurationManager.ExcludeFolder = "\\Meine Dokumente\\Sub directory";
-        result = fileCollectorService.GetLocalFileList("D:\\Meine Dokumente");
-        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result.Select(file => file.FileName), Is.EquivalentTo(["root.txt", "nested.txt"]));
+        Assert.That(result.Single(file => file.FileName == "nested.txt").FilePath, Does.EndWith(Path.Combine("nested", "deeper")));
     }
 
     [Test]
-    public void TestTypeFileExclusion()
+    public void GetLocalFileListAppliesFileExclusions()
     {
+        File.WriteAllText(Path.Combine(root, "keep.txt"), "keep");
+        File.WriteAllText(Path.Combine(root, "skip.tmp"), "skip");
+        configurationManager.ExcludeFileTypes = "tmp";
         fileCollectorService.FileExclusionHandlers.Add(new TypeFileExclusion(configurationManager));
 
-        // check files - non excluded
         var result = fileCollectorService.GetLocalFileList(root);
-        Assert.That(result.Count, Is.EqualTo(2));
 
-        // check files - excluded
-        configurationManager.ExcludeFileTypes = "docx";
-        result = fileCollectorService.GetLocalFileList(root);
-        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result.Select(file => file.FileName), Is.EqualTo(["keep.txt"]));
     }
 
     [Test]
-    public void TestSizeFileExclusion()
+    public void GetLocalFileListAppliesFolderExclusions()
     {
-        fileCollectorService.FileExclusionHandlers.Add(new SizeFileExclusion(configurationManager));
+        File.WriteAllText(Path.Combine(root, "keep.txt"), "keep");
+        var skipped = Directory.CreateDirectory(Path.Combine(root, "skipped"));
+        File.WriteAllText(Path.Combine(skipped.FullName, "skip.txt"), "skip");
+        configurationManager.ExcludeFolder = @"\skipped";
+        fileCollectorService.FolderExclusionHandlers.Add(new PathFolderExclusion(configurationManager));
 
-        // check files - non excluded
         var result = fileCollectorService.GetLocalFileList(root);
-        Assert.That(result.Count, Is.EqualTo(2));
 
-        // check files - excluded
-        configurationManager.ExcludeFileBigger = (1024 * 10).ToString();
-        result = fileCollectorService.GetLocalFileList(root);
-        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result.Select(file => file.FileName), Is.EqualTo(["keep.txt"]));
     }
 
     [Test]
-    public void TestNameFileExclusion()
+    public void GetLocalFileListTracksEmptyFoldersAndCanSkipRecursion()
     {
-        fileCollectorService.FileExclusionHandlers.Add(new NameFileExclusion(configurationManager));
+        File.WriteAllText(Path.Combine(root, "root.txt"), "root");
+        var nested = Directory.CreateDirectory(Path.Combine(root, "nested"));
+        File.WriteAllText(Path.Combine(nested.FullName, "nested.txt"), "nested");
+        var empty = Directory.CreateDirectory(Path.Combine(root, "empty"));
 
-        // check files - non excluded
-        var result = fileCollectorService.GetLocalFileList(root);
-        Assert.That(result.Count, Is.EqualTo(2));
+        var withoutRecursion = fileCollectorService.GetLocalFileList(root, subFolders: false);
+        Assert.That(withoutRecursion.Select(file => file.FileName), Is.EqualTo(["root.txt"]));
 
-        // check files - excluded
-        configurationManager.ExcludeFile = "\\Meine Dokumente\\Sub directory\\test_2.docx";
-        result = fileCollectorService.GetLocalFileList(root);
-        Assert.That(result.Count, Is.EqualTo(1));
+        var withRecursion = fileCollectorService.GetLocalFileList(root);
+        Assert.That(withRecursion.Select(file => file.FileName), Is.EquivalentTo(["root.txt", "nested.txt"]));
+        Assert.That(fileCollectorService.EmptyFolders.Select(folder => folder.Folder), Is.EqualTo([empty.FullName]));
     }
 
-    [Test]
-    public void TestMaskFileExclusion()
-    {
-        fileCollectorService.FileExclusionHandlers.Add(new MaskFileExclusion(configurationManager));
-
-        // check files - non excluded
-        var result = fileCollectorService.GetLocalFileList(root);
-        Assert.That(result.Count, Is.EqualTo(2));
-
-        // check files - excluded
-        configurationManager.ExcludeMask = ".*\\.docx";
-        result = fileCollectorService.GetLocalFileList(root);
-        Assert.That(result.Count, Is.EqualTo(1));
-    }
 }

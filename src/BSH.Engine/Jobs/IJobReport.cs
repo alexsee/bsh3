@@ -35,7 +35,8 @@ public class ForwardJobReport : IJobReport
     private readonly IJobReport report;
     private readonly List<FileExceptionEntry> files = new();
 
-    public bool HasExceptions => this.files.Count > 0;
+    public bool HasErrors { get; private set; }
+    public bool WasCanceled { get; private set; }
 
     public ForwardJobReport(IJobReport report)
     {
@@ -49,7 +50,8 @@ public class ForwardJobReport : IJobReport
 
     public void ReportState(JobState jobState)
     {
-        // not used
+        HasErrors |= jobState == JobState.ERROR;
+        WasCanceled |= jobState == JobState.CANCELED;
     }
 
     public void ReportStatus(string title, string text)
@@ -70,6 +72,7 @@ public class ForwardJobReport : IJobReport
     public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)
     {
         this.files.AddRange(files);
+        HasErrors |= files.Count > 0;
     }
 
     public async Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)

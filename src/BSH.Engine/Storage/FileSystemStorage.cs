@@ -416,11 +416,36 @@ public class FileSystemStorage : Storage, IStorageProvider
         var remoteFilePath = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile) + ".enc");
         var remoteFilePathDecrypted = Path.Combine(backupFolder, CleanRemoteFileName(remoteFile));
 
-        var crypto = new Encryption();
-        var result = crypto.Decode(remoteFilePath, remoteFilePathDecrypted, password);
-        File.Delete(remoteFilePath);
+        var temporaryFile = Path.Combine(Path.GetDirectoryName(remoteFilePathDecrypted), Path.GetRandomFileName() + ".tmp");
 
-        return result;
+        try
+        {
+            var crypto = new Encryption();
+            if (!crypto.Decode(remoteFilePath, temporaryFile, password))
+            {
+                return false;
+            }
+
+            File.Move(temporaryFile, remoteFilePathDecrypted, true);
+            File.Delete(remoteFilePath);
+            return true;
+        }
+        finally
+        {
+            TryDeleteTemporaryFile(temporaryFile);
+        }
+    }
+
+    private static void TryDeleteTemporaryFile(string temporaryFile)
+    {
+        try
+        {
+            File.Delete(temporaryFile);
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "Could not delete temporary decryption file {TemporaryFile}.", temporaryFile);
+        }
     }
 
     public bool IsPathTooLong(string path, bool compression, bool encryption)

@@ -171,8 +171,7 @@ static class BackupLogic
             {
                 var waitForMediaService = new WaitForMediaService(BackupService, silent, cancellationTokenSource);
                 return await waitForMediaService.ExecuteAsync();
-            },
-            () => Task.FromResult(BackupLogic.BackupController.RequestPassword()));
+            });
 
         // first time start?
         if (ConfigurationManager.IsConfigured == "0")

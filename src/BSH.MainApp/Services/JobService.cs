@@ -63,8 +63,7 @@ public class JobService : IJobService, IDisposable
                 var waitForMediaService = this.waitForMediaServiceFactory();
                 var suppressPrompt = waitMode == MediaWaitMode.SilentPolling;
                 return await waitForMediaService.ExecuteAsync(suppressPrompt, cancellationTokenSource);
-            },
-            this.RequestPassword);
+            });
         this.presenter = new WinUIJobSessionPresenter(this.presentationService, this.statusService, this.Cancel, this.completionActionService);
         this.jobSessionRunner = new JobSessionRunner(
             backupService,
@@ -73,7 +72,6 @@ public class JobService : IJobService, IDisposable
             () => this.configurationManager.EncryptPassMD5,
             storedPasswordAdapter);
 
-        GetNewCancellationToken();
     }
 
     private MediaWaitMode SelectMediaWaitMode(bool silent)
@@ -89,15 +87,6 @@ public class JobService : IJobService, IDisposable
         }
 
         return MediaWaitMode.None;
-    }
-
-    /// <summary>
-    /// Creates a new CancellationToken and assigns it to the current internal state.
-    /// </summary>
-    /// <returns>Returns the new CancellationToken.</returns>
-    public CancellationToken GetNewCancellationToken()
-    {
-        return jobRuntime.GetNewCancellationToken();
     }
 
     /// <summary>

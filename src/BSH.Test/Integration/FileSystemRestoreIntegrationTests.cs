@@ -137,7 +137,7 @@ public class FileSystemRestoreIntegrationTests
 
         await RunBackupAsync(password: Password);
 
-        var restoreJob = CreateRestoreJob(CreateStorage(), password: Password);
+        using var restoreJob = CreateRestoreJob(CreateStorage(), password: Password);
         await restoreJob.RestoreAsync(CancellationToken.None);
 
         Assert.That(restoreJob.FileErrorList, Is.Empty);
@@ -170,12 +170,12 @@ public class FileSystemRestoreIntegrationTests
         Directory.CreateDirectory(restoreV2Dir);
 
         var storage = CreateStorage();
-        var restoreV1 = CreateRestoreJob(storage, version: int.Parse(version1.Id), destination: restoreV1Dir);
+        using var restoreV1 = CreateRestoreJob(storage, version: int.Parse(version1.Id), destination: restoreV1Dir);
         await restoreV1.RestoreAsync(CancellationToken.None);
         Assert.That(restoreV1.FileErrorList, Is.Empty);
         Assert.That(File.ReadAllText(Path.Combine(restoreV1Dir, "doc.txt")), Is.EqualTo("version-one-content-abcdefghijklmnopqrstuvwxyz"));
 
-        var restoreV2 = CreateRestoreJob(storage, version: int.Parse(version2.Id), destination: restoreV2Dir);
+        using var restoreV2 = CreateRestoreJob(storage, version: int.Parse(version2.Id), destination: restoreV2Dir);
         await restoreV2.RestoreAsync(CancellationToken.None);
         Assert.That(restoreV2.FileErrorList, Is.Empty);
         Assert.That(File.ReadAllText(Path.Combine(restoreV2Dir, "doc.txt")), Is.EqualTo("version-two-content-abcdefghijklmnopqrstuvwxyz"));
@@ -183,7 +183,7 @@ public class FileSystemRestoreIntegrationTests
 
     private async Task RunBackupAsync(string password = null)
     {
-        var backupJob = new BackupJob(
+        using var backupJob = new BackupJob(
             CreateStorage(),
             dbClientFactory,
             queryManager,
@@ -208,7 +208,7 @@ public class FileSystemRestoreIntegrationTests
 
     private async Task RunRestoreAsync(FileOverwrite overwrite)
     {
-        var restoreJob = CreateRestoreJob(CreateStorage(), overwrite: overwrite);
+        using var restoreJob = CreateRestoreJob(CreateStorage(), overwrite: overwrite);
         await restoreJob.RestoreAsync(CancellationToken.None);
         Assert.That(restoreJob.FileErrorList, Is.Empty, "Restore reported file errors.");
     }

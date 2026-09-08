@@ -48,8 +48,9 @@ public class DeleteJob : Job
     /// </summary>
     /// <exception cref="DeviceNotReadyException"></exception>
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-    public async Task DeleteAsync()
+    public async Task DeleteAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
 
         // report status
@@ -68,6 +69,8 @@ public class DeleteJob : Job
             throw new DeviceNotReadyException();
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
+
         // connect to database
         using (var dbClient = dbClientFactory.CreateDbClient())
         {
@@ -77,12 +80,13 @@ public class DeleteJob : Job
             // open storage
             storage.Open();
 
-            Win32Stuff.KeepSystemAwake();
+            KeepSystemAwake();
 
             var version = int.Parse(Version);
 
             // obtain files to delete
             using var files = versionQueryRepository.GetFilesToDeleteForVersion(dbClient, version);
+            cancellationToken.ThrowIfCancellationRequested();
 
             // report progress
             _logger.Information("{NumFiles} files determined for deletion.", files.Tables[0].Rows.Count);
@@ -168,12 +172,6 @@ public class DeleteJob : Job
 
         // store database
         UpdateDatabaseOnStorage();
-
-        // close storage provider
-        storage.Dispose();
-
-        // standby mode
-        Win32Stuff.AllowSystemSleep();
 
         // report exceptions during job
         if (FileErrorList.Count > 0)

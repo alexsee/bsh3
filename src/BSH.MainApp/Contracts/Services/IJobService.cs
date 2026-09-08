@@ -20,7 +20,6 @@ public interface IJobService
     Task DeleteBackupAsync(string version, bool statusDialog = true);
     Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true);
     Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null);
-    CancellationToken GetNewCancellationToken();
     Task<bool> RequestPassword();
     Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true);
     Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true);

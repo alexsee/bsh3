@@ -48,7 +48,7 @@ public class DeleteSingleJob : Job
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
     public Task DeleteSingleAsync(string fileFilter, string pathFilter)
     {
-        return DeleteSingleAsync(fileFilter, pathFilter, null);
+        return DeleteSingleAsync(fileFilter, pathFilter, null, CancellationToken.None);
     }
 
     /// <summary>
@@ -62,8 +62,13 @@ public class DeleteSingleJob : Job
     /// <param name="versionIds">Optional version IDs to scope the delete; null/empty means all versions.</param>
     /// <exception cref="DeviceNotReadyException"></exception>
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
-    public async Task DeleteSingleAsync(string fileFilter, string pathFilter, IReadOnlyList<int> versionIds)
+    public async Task DeleteSingleAsync(
+        string fileFilter,
+        string pathFilter,
+        IReadOnlyList<int> versionIds,
+        CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
 
         var scopedVersions = versionIds is { Count: > 0 } ? versionIds : null;
@@ -81,12 +86,15 @@ public class DeleteSingleJob : Job
             throw new DeviceNotReadyException();
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
+
         using (var dbClient = dbClientFactory.CreateDbClient())
         {
             dbClient.BeginTransaction();
             storage.Open();
 
             var fileIds = await versionQueryRepository.GetFileIdsForDeleteSingleAsync(dbClient, fileFilter, pathFilter);
+            cancellationToken.ThrowIfCancellationRequested();
             _logger.Information("{NumFiles} files determined for deletion.", fileIds.Count);
             ReportProgress(fileIds.Count, 0);
 
@@ -110,8 +118,6 @@ public class DeleteSingleJob : Job
 
         DbClientFactory.ClosePool();
         UpdateDatabaseOnStorage();
-        storage.Dispose();
-
         if (FileErrorList.Count > 0)
         {
             ReportExceptions(FileErrorList);

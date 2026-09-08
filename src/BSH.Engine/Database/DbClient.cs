@@ -11,16 +11,18 @@ using System.Threading.Tasks;
 namespace Brightbits.BSH.Engine.Database;
 
 /// <summary>
-/// class for db access
+/// SQLite database client used by the backup engine.
 /// </summary>
 public class DbClient : IDisposable
 {
+    private const int DefaultCommandTimeout = 60000;
+
     #region Fields
 
     SQLiteConnection _connection;
     SQLiteTransaction _transaction;
-    DbProviderFactory _factory;
-    readonly Dictionary<string, SQLiteCommand> _commands = new();
+    readonly List<SQLiteCommand> _readerCommands = new();
+    bool _disposed;
 
     #endregion
 
@@ -36,22 +38,12 @@ public class DbClient : IDisposable
     #region Construction / Destruction
 
     /// <summary>
-    ///
+    /// Creates a SQLite client for the given connection string.
     /// </summary>
-    /// <param name="connectionStringName">the name of the connection string defined in application configuration</param>
+    /// <param name="connectionString">the SQLite connection string</param>
     public DbClient(string connectionString)
     {
-        InitializeConnection("System.Data.SQLite", connectionString);
-    }
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="dbProvider">the database provider name</param>
-    /// <param name="connectionString">the connection string</param>
-    public DbClient(string dbProvider, string connectionString)
-    {
-        InitializeConnection(dbProvider, connectionString);
+        _connection = new SQLiteConnection(connectionString);
     }
 
     #endregion
@@ -59,30 +51,11 @@ public class DbClient : IDisposable
     #region Methods
 
     /// <summary>
-    /// Method to initialize the db connection
-    /// </summary>
-    /// <param name="providerName">the db provider name</param>
-    /// <param name="connectionString">the connection string</param>
-    /// <param name="connectTimeout">the connect timeout</param>
-    private void InitializeConnection(string providerName, string connectionString)
-    {
-        _factory = DbProviderFactories.GetFactory(providerName);
-
-        if (_factory == null)
-        {
-            throw new InvalidOperationException(string.Format("The factory for data provider {0} could not be found!", providerName));
-        }
-
-        _connection = new SQLiteConnection();
-        _connection.ConnectionString = connectionString;
-    }
-
-    /// <summary>
     /// Method to open the connection
     /// </summary>
     private void OpenConnection()
     {
-        if (_connection != null && _connection.State != ConnectionState.Open)
+        if (_connection.State != ConnectionState.Open)
         {
             _connection.Open();
         }
@@ -93,7 +66,7 @@ public class DbClient : IDisposable
     /// </summary>
     private async Task OpenConnectionAsync()
     {
-        if (_connection != null && _connection.State != ConnectionState.Open)
+        if (_connection.State != ConnectionState.Open)
         {
             await _connection.OpenAsync();
         }
@@ -104,7 +77,7 @@ public class DbClient : IDisposable
     /// </summary>
     private void CloseConnection()
     {
-        if (_connection != null && _connection.State != ConnectionState.Closed && _transaction == null)
+        if (_connection.State != ConnectionState.Closed && _transaction == null)
         {
             _connection.Close();
         }
@@ -112,7 +85,7 @@ public class DbClient : IDisposable
 
     private async Task CloseConnectionAsync()
     {
-        if (_connection != null && _connection.State != ConnectionState.Closed && _transaction == null)
+        if (_connection.State != ConnectionState.Closed && _transaction == null)
         {
             await _connection.CloseAsync();
         }
@@ -157,115 +130,85 @@ public class DbClient : IDisposable
         CloseConnection();
     }
 
-    /// <summary>
-    /// Method to dispose the connection
-    /// </summary>
     public void Dispose()
     {
-        Dispose(true);
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+
+        foreach (var command in _readerCommands)
+        {
+            command.Dispose();
+        }
+
+        _readerCommands.Clear();
+
+        _transaction?.Dispose();
+        _transaction = null;
+
+        _connection.Dispose();
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    /// <summary>
+    /// Executes a query and returns the result as a <see cref="DataSet"/>.
+    /// </summary>
+    /// <param name="commandType">the command type</param>
+    /// <param name="commandText">the command to execute</param>
+    /// <param name="parameters">parameters for the command</param>
+    /// <returns>the dataset with the execution results</returns>
+    public DataSet ExecuteDataSet(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        if (_connection != null)
-        {
-            _commands.Clear();
+        OpenConnection();
 
+        try
+        {
+            using var command = CreateCommand(commandType, commandText, parameters);
+            using var adapter = new SQLiteDataAdapter(command);
+            var dsResult = new DataSet();
+            adapter.Fill(dsResult);
+            return dsResult;
+        }
+        finally
+        {
             CloseConnection();
-            _connection.Dispose();
         }
     }
 
     /// <summary>
-    /// Method to call a stored procedure and retrieve the result
+    /// Executes a query and returns a data reader. The reader must be disposed
+    /// before this client is disposed.
     /// </summary>
     /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the command to execute</param>
-    /// <param name="parameters">parameters for calling the stored procedure</param>
-    /// <returns>the dataset with the execution results</returns>
-    public DataSet ExecuteDataSet(CommandType commandType, string commandText, (string, object)[] parameters)
-    {
-        return ExecuteDataSet(commandType, commandText, parameters, 60000);
-    }
-
-    /// <summary>
-    /// Method to call a stored procedure and retrieve the result
-    /// </summary>
-    /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the command to execute</param>
-    /// <param name="parameters">parameters for calling the stored procedure</param>
-    /// <returns>the dataset with the execution results</returns>
-    public DataSet ExecuteDataSet(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
-        var dsResult = new DataSet();
-        // open the connection
-        OpenConnection();
-
-        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-
-        var adapter = _factory.CreateDataAdapter();
-        adapter.SelectCommand = command;
-        adapter.Fill(dsResult);
-
-        // close the connection
-        CloseConnection();
-        return dsResult;
-    }
-
-    /// <summary>
-    /// Method to execute a datareader
-    /// </summary>
-    /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the procedurename</param>
+    /// <param name="commandText">the command text</param>
     /// <param name="parameters">the parameters</param>
     /// <returns>the data reader</returns>
     public IDataReader ExecuteDataReader(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return ExecuteDataReader(commandType, commandText, parameters, 60000);
-    }
-
-    /// <summary>
-    /// Method to execute a datareader
-    /// </summary>
-    /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the procedurename</param>
-    /// <param name="parameters">the parameters</param>
-    /// <param name="commandTimeout">the command timeout</param>
-    /// <returns>the data reader</returns>
-    public IDataReader ExecuteDataReader(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
         OpenConnection();
 
-        IDbCommand command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        var command = CreateCommand(commandType, commandText, parameters);
+        _readerCommands.Add(command);
         return command.ExecuteReader();
     }
 
     /// <summary>
-    /// Method to execute a datareader
+    /// Executes a query and returns a data reader. The reader must be disposed
+    /// before this client is disposed.
     /// </summary>
     /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the procedurename</param>
+    /// <param name="commandText">the command text</param>
     /// <param name="parameters">the parameters</param>
     /// <returns>the data reader</returns>
     public async Task<DbDataReader> ExecuteDataReaderAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return await ExecuteDataReaderAsync(commandType, commandText, parameters, 60000);
-    }
-
-    /// <summary>
-    /// Method to execute a datareader
-    /// </summary>
-    /// <param name="commandType">the command type</param>
-    /// <param name="procedureName">the procedurename</param>
-    /// <param name="parameters">the parameters</param>
-    /// <param name="commandTimeout">the command timeout</param>
-    /// <returns>the data reader</returns>
-    public async Task<DbDataReader> ExecuteDataReaderAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
         await OpenConnectionAsync();
 
-        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
+        var command = CreateCommand(commandType, commandText, parameters);
+        _readerCommands.Add(command);
         return await command.ExecuteReaderAsync();
     }
 
@@ -276,156 +219,75 @@ public class DbClient : IDisposable
 
     public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return await ExecuteScalarAsync(commandType, commandText, parameters, 60000);
-    }
-
-    public async Task<object> ExecuteScalarAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
         await OpenConnectionAsync();
 
-        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-        var result = await command.ExecuteScalarAsync();
-
-        await CloseConnectionAsync();
-
-        return result;
+        try
+        {
+            using var command = CreateCommand(commandType, commandText, parameters);
+            return await command.ExecuteScalarAsync();
+        }
+        finally
+        {
+            await CloseConnectionAsync();
+        }
     }
 
     public int ExecuteNonQuery(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return ExecuteNonQuery(commandType, commandText, parameters, 60000);
-    }
-
-    public int ExecuteNonQuery(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
         OpenConnection();
 
-        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-        var result = command.ExecuteNonQuery();
-
-        CloseConnection();
-
-        return result;
+        try
+        {
+            using var command = CreateCommand(commandType, commandText, parameters);
+            return command.ExecuteNonQuery();
+        }
+        finally
+        {
+            CloseConnection();
+        }
     }
 
     public async Task<int> ExecuteNonQueryAsync(string commandText)
     {
-        return await ExecuteNonQueryAsync(CommandType.Text, commandText, null, 60000);
+        return await ExecuteNonQueryAsync(CommandType.Text, commandText, null);
     }
 
     public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        return await ExecuteNonQueryAsync(commandType, commandText, parameters, 60000);
-    }
-
-    public async Task<int> ExecuteNonQueryAsync(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
-    {
         await OpenConnectionAsync();
 
-        var command = CreateCommand(commandType, commandText, parameters, commandTimeout);
-        var result = await command.ExecuteNonQueryAsync();
-
-        await CloseConnectionAsync();
-
-        return result;
+        try
+        {
+            using var command = CreateCommand(commandType, commandText, parameters);
+            return await command.ExecuteNonQueryAsync();
+        }
+        finally
+        {
+            await CloseConnectionAsync();
+        }
     }
 
     /// <summary>
-    /// Method to create a command
+    /// Creates a new command bound to the current connection and transaction.
     /// </summary>
     /// <param name="commandType">the command type</param>
     /// <param name="commandText">the command text</param>
     /// <param name="parameters">the parameters</param>
-    /// <param name="commandTimeout">the command timeout</param>
     /// <returns>the command</returns>
-    private DbCommand CreateCommand(CommandType commandType, string commandText, (string, object)[] parameters, int commandTimeout)
+    private SQLiteCommand CreateCommand(CommandType commandType, string commandText, (string, object)[] parameters)
     {
-        if (_commands.TryGetValue(commandText, out var command))
-        {
-            if (_transaction != null)
-            {
-                command.Transaction = _transaction;
-            }
-
-            if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    command.Parameters[parameter.Item1].Value = parameter.Item2;
-                }
-            }
-
-            return command;
-        }
-
-        command = _connection.CreateCommand();
-        command.CommandTimeout = commandTimeout;
+        var command = _connection.CreateCommand();
         command.CommandText = commandText;
         command.CommandType = commandType;
+        command.CommandTimeout = DefaultCommandTimeout;
+        command.Transaction = _transaction;
 
-        if (_transaction != null)
+        foreach (var parameter in parameters ?? [])
         {
-            command.Transaction = _transaction;
+            command.Parameters.AddWithValue(parameter.Item1, parameter.Item2);
         }
 
-        if (parameters != null)
-        {
-            foreach (var parameter in parameters)
-            {
-                command.Parameters.AddWithValue(parameter.Item1, parameter.Item2);
-            }
-        }
-
-        _commands.Add(commandText, command);
         return command;
     }
-
-    /// <summary>
-    /// Method to create a parameter
-    /// </summary>
-    /// <param name="parameterName">the parameter name</param>
-    /// <param name="dbType">the database type</param>
-    /// <param name="size">size of the parameter</param>
-    /// <param name="value">the value of the parameter</param>
-    /// <returns>the new parameter</returns>
-    public IDataParameter CreateParameter(string parameterName, DbType dbType, int size, object value)
-    {
-        return CreateParameter(parameterName, dbType, size, ParameterDirection.Input, value);
-    }
-
-    /// <summary>
-    /// Method to create a parameter
-    /// </summary>
-    /// <param name="parameterName">the parameter name</param>
-    /// <param name="dbType">the database type</param>
-    /// <param name="size">size of the parameter</param>
-    /// <param name="parameterDirection">the parameter direction</param>
-    /// <returns></returns>
-    public IDataParameter CreateParameter(string parameterName, DbType dbType, int size, ParameterDirection parameterDirection)
-    {
-        return CreateParameter(parameterName, dbType, size, parameterDirection, null);
-    }
-
-    /// <summary>
-    /// Method to create a parameter
-    /// </summary>
-    /// <param name="parameterName">the parameter name</param>
-    /// <param name="dbType">the database type</param>
-    /// <param name="parameterDirection">the parameter direction</param>
-    /// <param name="size">size of the parameter</param>
-    /// <param name="value">the value of the parameter</param>
-    /// <returns>the new parameter</returns>
-    public IDataParameter CreateParameter(string parameterName, DbType dbType, int size, ParameterDirection parameterDirection, object value)
-    {
-        var parameter = _factory.CreateParameter();
-        parameter.ParameterName = parameterName;
-        parameter.Direction = parameterDirection;
-        parameter.DbType = dbType;
-        parameter.Value = value;
-        parameter.Size = size;
-
-        return parameter;
-    }
-
     #endregion
 }
