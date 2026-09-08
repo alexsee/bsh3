@@ -708,8 +708,7 @@ static class BackupLogic
     public enum RunBackupMethod
     {
         Schedule,
-        Auto,
-        Manuell
+        Auto
     }
 
     public static void DoBackupWhenDriveIsAvailable(RunBackupMethod RunBackupDelegate)

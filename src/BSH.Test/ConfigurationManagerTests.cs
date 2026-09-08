@@ -42,7 +42,14 @@ public class ConfigurationManagerTests
         var configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
 
-        Assert.That(configurationManager.AutoBackup, Is.Empty);
+        Assert.That(configurationManager.TaskType, Is.EqualTo(TaskType.Auto));
+        Assert.That(configurationManager.MediumType, Is.EqualTo(MediaType.LocalDevice));
+        Assert.That(configurationManager.SourceFolder, Is.Empty);
+        Assert.That(configurationManager.BackupFolder, Is.Empty);
+        Assert.That(configurationManager.FtpPort, Is.EqualTo("21"));
+        Assert.That(configurationManager.Compression, Is.EqualTo(0));
+        Assert.That(configurationManager.Encrypt, Is.EqualTo(0));
+        Assert.That(configurationManager.IsConfigured, Is.EqualTo("0"));
     }
 
     [Test]

@@ -7,11 +7,6 @@ namespace Brightbits.BSH.Engine.Contracts;
 
 public interface IConfigurationManager
 {
-    string AutoBackup
-    {
-        get;
-        set;
-    }
     string BackupFolder
     {
         get;

@@ -31,18 +31,6 @@ public class DbClient : IDisposable
     /// </summary>
     public string ConnectionString => _connection.ConnectionString;
 
-    /// <summary>
-    /// Gets or sets the command timeout
-    /// </summary>
-    public int CommandTimeout
-    {
-        get; set;
-    }
-    public object ConfigurationManager
-    {
-        get;
-    }
-
     #endregion
 
     #region Construction / Destruction

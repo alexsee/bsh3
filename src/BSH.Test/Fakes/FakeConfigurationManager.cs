@@ -9,7 +9,6 @@ namespace BSH.Test.Fakes;
 
 public sealed class FakeConfigurationManager : IConfigurationManager
 {
-    public string AutoBackup { get; set; } = "";
     public string BackupFolder { get; set; } = "";
     public string BackupSize { get; set; } = "";
     public int Compression { get; set; }
