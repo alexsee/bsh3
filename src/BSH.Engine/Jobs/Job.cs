@@ -226,26 +226,12 @@ public abstract class Job
 
     public void AddObserver(IJobReport observer)
     {
-        try
-        {
-            observers.Add(observer);
-        }
-        catch
-        {
-            // ignore exception
-        }
+        observers.Add(observer);
     }
 
     public void RemoveObserver(IJobReport observer)
     {
-        try
-        {
-            observers.Remove(observer);
-        }
-        catch
-        {
-            // ignore exception
-        }
+        observers.Remove(observer);
     }
 
     /// <summary>

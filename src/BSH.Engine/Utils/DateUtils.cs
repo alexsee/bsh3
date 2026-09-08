@@ -9,26 +9,19 @@ public static class DateUtils
 {
     public static DateTime GetDateToWeekDay(DayOfWeek weekDay, DateTime date)
     {
-        if (date.DayOfWeek == weekDay)
-        {
-            return date;
-        }
-        else
-        {
-            return GetDateToWeekDay(weekDay, date.Subtract(new TimeSpan(1, 0, 0, 0)));
-        }
+        var daysBack = ((int)date.DayOfWeek - (int)weekDay + 7) % 7;
+        return date.AddDays(-daysBack);
     }
 
     public static DateTime GetDateToMonth(int day, DateTime date)
     {
-        if (date.Day == day)
+        var current = date;
+        while (current.Day != day)
         {
-            return date;
+            current = current.AddDays(-1);
         }
-        else
-        {
-            return GetDateToMonth(day, date.Subtract(new TimeSpan(1, 0, 0, 0)));
-        }
+
+        return current;
     }
 
     public static DateTime ReformatVersionDate(string date)

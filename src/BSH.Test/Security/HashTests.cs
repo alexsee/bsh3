@@ -13,4 +13,10 @@ public class HashTests
         var hash = Hash.GetMD5Hash("test");
         Assert.That(hash, Is.EqualTo("098f6bcd4621d373cade4e832627b4f6"));
     }
+
+    [Test]
+    public void GetMD5HashReturnsLowercaseHexForEmptyInput()
+    {
+        Assert.That(Hash.GetMD5Hash(""), Is.EqualTo("d41d8cd98f00b204e9800998ecf8427e"));
+    }
 }

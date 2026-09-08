@@ -132,20 +132,6 @@ public class DeleteJob : Job
             _logger.Error("{NumFiles} could not be deleted to device.", FileErrorList.Count);
         }
 
-        // refresh free diskspace
-        try
-        {
-            configurationManager.FreeSpace = storage.GetFreeSpace().ToString();
-
-            using var dbClient = dbClientFactory.CreateDbClient();
-            configurationManager.BackupSize = (await versionQueryRepository.GetTotalBackupFileSizeAsync(dbClient)).ToString();
-        }
-        catch (Exception ex)
-        {
-            // not important
-            _logger.Warning(ex, "Could not update free space variable due to exception.");
-        }
-
         // clean storage folders
         if (storage.Kind == StorageProviderKind.LocalFileSystem)
         {
