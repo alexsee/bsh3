@@ -59,11 +59,4 @@ public class DateUtilsTests
         Assert.That(result, Is.EqualTo(new DateTime(2026, 1, 31, 8, 0, 0)));
     }
 
-    [Test]
-    public void ReformatVersionDateParsesBackupVersionStamp()
-    {
-        var result = DateUtils.ReformatVersionDate("01-01-2021 00-00-00");
-
-        Assert.That(result, Is.EqualTo(new DateTime(2021, 1, 1, 0, 0, 0)));
-    }
 }

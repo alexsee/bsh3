@@ -23,17 +23,4 @@ public static class DateUtils
 
         return current;
     }
-
-    public static DateTime ReformatVersionDate(string date)
-    {
-        ArgumentNullException.ThrowIfNull(date);
-
-        date = date.Replace("-", "", StringComparison.OrdinalIgnoreCase).Replace(" ", "", StringComparison.OrdinalIgnoreCase);
-        date = date.Insert(2, ".");
-        date = date.Insert(5, ".");
-        date = date.Insert(10, " ");
-        date = date.Insert(13, ":");
-        date = date.Insert(16, ":");
-        return Convert.ToDateTime(date, System.Globalization.CultureInfo.CreateSpecificCulture("de-DE"));
-    }
 }

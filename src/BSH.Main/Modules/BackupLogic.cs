@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -597,7 +598,8 @@ static class BackupLogic
         }
 
         // backup is after the last backup
-        if (!string.IsNullOrEmpty(ConfigurationManager.LastBackupDone) && DateUtils.ReformatVersionDate(ConfigurationManager.LastBackupDone) >= date)
+        if (!string.IsNullOrEmpty(ConfigurationManager.LastBackupDone)
+            && DateTime.ParseExact(ConfigurationManager.LastBackupDone, "dd-MM-yyyy HH-mm-ss", CultureInfo.InvariantCulture) >= date)
         {
             return false;
         }

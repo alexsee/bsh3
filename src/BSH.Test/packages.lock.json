@@ -12,12 +12,6 @@
           "Microsoft.TestPlatform.TestHost": "18.8.1"
         }
       },
-      "Newtonsoft.Json": {
-        "type": "Direct",
-        "requested": "[13.0.4, )",
-        "resolved": "13.0.4",
-        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
-      },
       "NUnit": {
         "type": "Direct",
         "requested": "[4.6.1, )",
@@ -761,7 +755,6 @@
           "Microsoft.Extensions.Hosting": "[10.0.10, )",
           "Microsoft.WindowsAppSDK": "[2.4.0, )",
           "Microsoft.Xaml.Behaviors.WinUI.Managed": "[3.0.1, )",
-          "Newtonsoft.Json": "[13.0.4, )",
           "Serilog.Sinks.File": "[7.0.0, )",
           "WinUIEx": "[2.9.2, )"
         }
