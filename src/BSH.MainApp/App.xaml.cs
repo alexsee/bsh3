@@ -82,7 +82,7 @@ public partial class App : Application
         System.Globalization.CultureInfo.DefaultThreadCurrentCulture = germanCulture;
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = germanCulture;
 
-        var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
+        var version = ApplicationVersionInfo.GetDisplayVersion(Assembly.GetExecutingAssembly());
         AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home", version);
 
         _ = host.Value;
