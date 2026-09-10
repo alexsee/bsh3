@@ -31,7 +31,10 @@ public class DbMigrationService : IDbMigrationService
         }
 
         // check if we have a higher db version than supported
-        var dbVersion = int.Parse(configurationManager.DBVersion);
+        if (!int.TryParse(configurationManager.DBVersion, out var dbVersion))
+        {
+            throw new DatabaseIncompatibleException();
+        }
 
         if (dbVersion > 9)
         {

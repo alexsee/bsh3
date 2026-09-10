@@ -82,7 +82,9 @@ public class DeleteJob : Job
 
             KeepSystemAwake();
 
-            var version = int.Parse(Version);
+            var version = int.TryParse(Version, out var parsedVersion)
+                ? parsedVersion
+                : throw new ArgumentException("Invalid version ID", nameof(Version));
 
             // obtain files to delete
             using var files = versionQueryRepository.GetFilesToDeleteForVersion(dbClient, version);

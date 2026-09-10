@@ -313,7 +313,15 @@ public abstract class Job : IDisposable
     {
         try
         {
-            storage.UpdateStorageVersion(int.Parse(configurationManager.OldBackupPrevent));
+            if (int.TryParse(configurationManager.OldBackupPrevent, out var storageVersion))
+            {
+                storage.UpdateStorageVersion(storageVersion);
+            }
+            else
+            {
+                _logger.Warning("Stored backup version '{Version}' is not numeric; skipping storage version update.", configurationManager.OldBackupPrevent);
+            }
+
             storage.UploadDatabaseFile(dbClientFactory.DatabaseFile);
         }
         catch (Exception ex)

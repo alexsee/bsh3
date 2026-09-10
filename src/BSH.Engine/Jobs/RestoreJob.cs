@@ -103,7 +103,8 @@ public class RestoreJob : Job
             System.Data.Common.DbDataReader reader;
 
             // single file or path?
-            if (!string.IsNullOrEmpty(Path.GetFileName(File).Trim()))
+            var singleFileName = string.IsNullOrEmpty(File) ? string.Empty : (Path.GetFileName(File) ?? string.Empty).Trim();
+            if (!string.IsNullOrEmpty(singleFileName))
             {
                 var fileName = Path.GetFileName(File);
                 var filePath = Path.GetDirectoryName(File);
@@ -258,17 +259,32 @@ public class RestoreJob : Job
     /// <returns></returns>
     private static string GetFileDestination(List<string> destFolders, string fileDest)
     {
+        ArgumentNullException.ThrowIfNull(destFolders);
+        ArgumentNullException.ThrowIfNull(fileDest);
+
         if (destFolders.Count > 1)
         {
-            var folder = destFolders.Find(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\", StringComparison.OrdinalIgnoreCase));
-            var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower(), StringComparison.OrdinalIgnoreCase);
-            fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
+            var match = destFolders.Find(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\", StringComparison.OrdinalIgnoreCase));
+            if (match is null)
+            {
+                // stored path does not match any known source root; fall back to the first destination
+                fileDest = destFolders[0] + "\\" + fileDest.TrimStart('\\');
+            }
+            else
+            {
+                var needle = "\\" + Path.GetFileName(match) + "\\";
+                var idx = fileDest.IndexOf(needle, StringComparison.OrdinalIgnoreCase);
+                fileDest = idx >= 0
+                    ? match + "\\" + fileDest[(idx + needle.Length)..]
+                    : match + "\\" + fileDest.TrimStart('\\');
+            }
         }
-        else
+        else if (destFolders.Count == 1)
         {
-            // path found
-            fileDest = fileDest[(fileDest.IndexOf('\\', 2) + 1)..];
-            fileDest = destFolders[0] + "\\" + fileDest;
+            // strip the stored drive/root prefix ("\\C\\...") and re-root at the destination
+            var separator = fileDest.IndexOf('\\', 2);
+            var remainder = separator >= 0 ? fileDest[(separator + 1)..] : fileDest.TrimStart('\\');
+            fileDest = destFolders[0] + "\\" + remainder;
         }
 
         // correct path

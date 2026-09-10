@@ -187,7 +187,9 @@ public class BackupService : IBackupService
             configurationManager,
             versionQueryRepository)
         {
-            Version = int.Parse(version),
+            Version = int.TryParse(version, out var versionId)
+                ? versionId
+                : throw new ArgumentException("Invalid version ID", nameof(version)),
             File = file,
             Destination = destination,
             FileOverwrite = overwrite,

@@ -36,7 +36,7 @@ public class VersionQueryRepository : IVersionQueryRepository
             "AND filetable.filePath LIKE @path",
             parameters);
 
-        return int.Parse(result?.ToString() ?? "0");
+        return Convert.ToInt32(result ?? 0);
     }
 
     public async Task<DbDataReader> GetRestoreSingleFileAsync(DbClient dbClient, int versionId, string fileName, string filePath)
@@ -220,7 +220,7 @@ public class VersionQueryRepository : IVersionQueryRepository
             "WHERE fvt.fileType IN (5, 6)",
             null);
 
-        return int.Parse(result?.ToString() ?? "0");
+        return Convert.ToInt32(result ?? 0);
     }
 
     public async Task<DbDataReader> GetEditableFilesAsync(DbClient dbClient)

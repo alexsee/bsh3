@@ -114,7 +114,7 @@ public class QueryManager : IQueryManager
         using var dbClient = dbClientFactory.CreateDbClient();
         var result = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM versiontable WHERE versionStatus = 0");
 
-        return int.Parse(result.ToString());
+        return Convert.ToInt32(result ?? 0);
     }
 
     /// <summary>
@@ -767,7 +767,7 @@ public class QueryManager : IQueryManager
             return false;
         }
 
-        return int.Parse(result.ToString()) > 0;
+        return Convert.ToInt32(result) > 0;
     }
 
     /// <summary>
@@ -862,7 +862,7 @@ public class QueryManager : IQueryManager
             return 0;
         }
 
-        return int.Parse(result.ToString());
+        return Convert.ToInt32(result);
     }
 
     public async Task<double> GetTotalFileSizeAsync()
