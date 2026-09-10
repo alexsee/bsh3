@@ -15,6 +15,7 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
+using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -310,7 +311,6 @@ public class RestoreJob : Job
         ArgumentNullException.ThrowIfNull(storage);
 
         var localFilePath = Path.Combine(destination, reader.GetString("fileName"));
-        var fileType = reader.GetInt32("fileType");
 
         if (await ShouldSkipOverwriteAsync(localFilePath, destination, reader, warning))
         {
@@ -321,8 +321,8 @@ public class RestoreJob : Job
 
         try
         {
-            var remoteFilePath = BuildRemoteFilePath(reader);
-            CopyFromStorage(storage, fileType, localFilePath, remoteFilePath);
+            var remoteFilePath = StoragePath.BuildRemoteFilePath(reader);
+            StoragePath.CopyFromStorageByType(storage, reader.GetInt32("fileType").ToFileTypeKind(), localFilePath, remoteFilePath, Password);
         }
         catch (Exception ex)
         {
@@ -413,36 +413,6 @@ public class RestoreJob : Job
         catch (Exception ex)
         {
             throw new FileNotProcessedException(ex);
-        }
-    }
-
-    private static string BuildRemoteFilePath(IDataReader reader)
-    {
-        if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
-        {
-            return reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
-        }
-
-        return reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
-    }
-
-    private void CopyFromStorage(IStorageProvider storage, int fileType, string localFilePath, string remoteFilePath)
-    {
-        if (fileType == 1 || fileType == 3)
-        {
-            storage.CopyFileFromStorage(localFilePath, remoteFilePath);
-            return;
-        }
-
-        if (fileType == 2 || fileType == 4)
-        {
-            storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
-            return;
-        }
-
-        if (fileType == 5 || fileType == 6)
-        {
-            storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, Password);
         }
     }
 }

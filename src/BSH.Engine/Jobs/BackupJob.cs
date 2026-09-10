@@ -214,7 +214,7 @@ public class BackupJob : Job
                     ReportFileProgress(file.FileNamePath());
 
                     // search for database entry
-                    var filePath = "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\";
+                    var filePath = ToDatabaseFilePath(Path.GetFileName(file.FileRoot), file.FilePath);
                     var fileId = await backupMutationRepository.GetFileIdAsync(dbClient, file.FileName, filePath);
                     file.FileId = fileId?.ToString();
 
@@ -393,7 +393,7 @@ public class BackupJob : Job
         var copyCandidates = new List<(double FileSize, bool HasMatchingVersion)>(files.Count);
         foreach (var file in files)
         {
-            var filePath = "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\";
+            var filePath = ToDatabaseFilePath(Path.GetFileName(file.FileRoot), file.FilePath);
             var fileId = await backupMutationRepository.GetFileIdAsync(dbClient, file.FileName, filePath);
             if (!fileId.HasValue)
             {
@@ -423,7 +423,7 @@ public class BackupJob : Job
         foreach (var folder in emptyFolder)
         {
             // backup folder
-            var folderPath = "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\";
+            var folderPath = ToDatabaseFilePath(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath));
             var folderId = await backupMutationRepository.AddOrGetFolderIdAsync(dbClient, folderPath);
             await backupMutationRepository.AddFolderLinkAsync(dbClient, folderId, newVersionId);
         }
@@ -707,6 +707,15 @@ public class BackupJob : Job
     }
 
     /// <summary>
+    /// Builds the backslash-qualified database path for a file or folder
+    /// (e.g. "\C\Documents\").
+    /// </summary>
+    private static string ToDatabaseFilePath(string rootName, string relativePath)
+    {
+        return "\\" + Path.Combine(rootName, relativePath) + "\\";
+    }
+
+    /// <summary>
     /// Adds a new file version to the database.
     /// </summary>
     /// <param name="dbClient"></param>
@@ -723,30 +732,30 @@ public class BackupJob : Job
             file.FilePath += "\\";
         }
 
-        var fileType = 1;
+        var fileType = FileTypeKind.RegularCopy;
         if (storage.Kind == StorageProviderKind.LocalFileSystem)
         {
             if (compress)
             {
-                fileType = 2;
+                fileType = FileTypeKind.Compressed;
             }
 
             if (encrypt)
             {
-                fileType = 6;
+                fileType = FileTypeKind.Encrypted;
             }
         }
         else
         {
-            fileType = 3;
+            fileType = FileTypeKind.StoredCopy;
             if (compress)
             {
-                fileType = 4;
+                fileType = FileTypeKind.StoredCompressed;
             }
 
             if (encrypt)
             {
-                fileType = 5;
+                fileType = FileTypeKind.StoredEncrypted;
             }
         }
 
@@ -762,7 +771,7 @@ public class BackupJob : Job
             file.FileSize,
             file.FileDateCreated,
             file.FileDateModified,
-            fileType,
+            (int)fileType,
             longFileName);
     }
 }

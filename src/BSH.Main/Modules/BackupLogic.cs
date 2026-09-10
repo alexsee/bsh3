@@ -299,6 +299,9 @@ static class BackupLogic
             ConfigurationManager.DbStatus = "1";
         }
 
+        // cancel a running job first so it does not keep working while the system reports stopped
+        BackupController?.Cancel();
+
         // stop all systems
         StopFullAutomatedSystem();
         StopScheduleSystem();

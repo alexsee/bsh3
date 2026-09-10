@@ -12,6 +12,7 @@ using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Storage;
 
 namespace Brightbits.BSH.Engine;
 
@@ -604,12 +605,12 @@ public class QueryManager : IQueryManager
 
     private static string GetFileTypeDisplayName(string fileType)
     {
-        return fileType switch
+        return FileTypeKindExtensions.ParseFileTypeKind(fileType) switch
         {
-            "1" => "Regular copy",
-            "2" or "4" => "Compressed",
-            "3" => "Stored copy",
-            "5" or "6" => "Encrypted",
+            FileTypeKind.RegularCopy => "Regular copy",
+            FileTypeKind.Compressed or FileTypeKind.StoredCompressed => "Compressed",
+            FileTypeKind.StoredCopy => "Stored copy",
+            FileTypeKind.StoredEncrypted or FileTypeKind.Encrypted => "Encrypted",
             _ => "Unknown"
         };
     }
@@ -622,7 +623,7 @@ public class QueryManager : IQueryManager
     public string GetFileNameFromDrive(FileTableRow file)
     {
         // check if we can directly read file?
-        if (file.FileType == "1")
+        if (FileTypeKindExtensions.ParseFileTypeKind(file.FileType) == FileTypeKind.RegularCopy)
         {
             var folderPath = configurationManager.BackupFolder;
             folderPath = Path.Combine(folderPath, file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss"));
@@ -697,51 +698,21 @@ public class QueryManager : IQueryManager
 
     private (string result, bool temp) ResolveFileFromStorage(System.Data.Common.DbDataReader reader, IStorageProvider storage, string password)
     {
-        var fileType = reader.GetInt32("fileType");
-        if (fileType == 1)
+        var fileType = reader.GetInt32("fileType").ToFileTypeKind();
+        if (fileType == FileTypeKind.RegularCopy)
         {
             return (GetFileNameFromDrive(FileTableRow.FromReaderFileVersion(reader)), false);
         }
 
-        if (fileType < 2 || fileType > 6)
+        if (fileType == FileTypeKind.Unknown)
         {
             return (null, false);
         }
 
         var localFilePath = Path.Combine(Path.GetTempPath(), reader.GetString("fileName"));
-        var remoteFilePath = BuildRemoteFilePath(reader);
-        CopyFileByType(storage, fileType, localFilePath, remoteFilePath, password);
+        var remoteFilePath = StoragePath.BuildRemoteFilePath(reader);
+        StoragePath.CopyFromStorageByType(storage, fileType, localFilePath, remoteFilePath, password);
         return (localFilePath, true);
-    }
-
-    private static string BuildRemoteFilePath(System.Data.Common.DbDataReader reader)
-    {
-        if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
-        {
-            return reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
-        }
-
-        return reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
-    }
-
-    private static void CopyFileByType(IStorageProvider storage, int fileType, string localFilePath, string remoteFilePath, string password)
-    {
-        if (fileType == 3)
-        {
-            storage.CopyFileFromStorage(localFilePath, remoteFilePath);
-            return;
-        }
-
-        if (fileType == 2 || fileType == 4)
-        {
-            storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
-            return;
-        }
-
-        if (fileType == 5 || fileType == 6)
-        {
-            storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
-        }
     }
 
     /// <summary>
