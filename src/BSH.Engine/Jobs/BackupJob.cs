@@ -98,7 +98,7 @@ public class BackupJob : Job
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
     public async Task BackupAsync(CancellationToken token)
     {
-        Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
+        ApplyJobCulture();
 
         // report status
         _logger.Information("Begin backup", new { Title, FullBackup, Sources, SourceFolder });
@@ -142,7 +142,7 @@ public class BackupJob : Job
             storage.Open();
 
             // get backup version date
-            var newVersionDate = DateTime.Now.ToString("dd-MM-yyyy HH-mm-ss");
+            var newVersionDate = FormatVersionDate(DateTime.Now);
 
             // save current backup version, so we know in case of an error that something wrong happend
             configurationManager.LastVersionDate = newVersionDate;
@@ -319,7 +319,7 @@ public class BackupJob : Job
                 {
                     var lastVersion = await queryManager.GetLastBackupAsync();
 
-                    if (lastVersion != null && storage.RenameDirectory(lastVersion.CreationDate.ToString("dd-MM-yyyy HH-mm-ss"), newVersionDate))
+                    if (lastVersion != null && storage.RenameDirectory(FormatVersionDate(lastVersion.CreationDate), newVersionDate))
                     {
                         await backupMutationRepository.RenameVersionDateAsync(dbClient, long.Parse(lastVersion.Id), newVersionDate);
                     }
@@ -335,10 +335,7 @@ public class BackupJob : Job
             configurationManager.LastBackupDone = newVersionDate;
             configurationManager.LastVersionDate = "";
 
-            if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
-            {
-                configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
-            }
+            BumpStorageVersion();
         }
 
         // refresh free diskspace
@@ -555,7 +552,7 @@ public class BackupJob : Job
             _logger.Warning(ex, "Could not copy file {LocalFileName} due to IO error.", localFileName);
 
             // file does not exist anymore?
-            if (ex.GetType() == typeof(DirectoryNotFoundException) || ex.GetType() == typeof(FileNotFoundException))
+            if (ex is DirectoryNotFoundException or FileNotFoundException)
             {
                 throw new FileNotProcessedException(ex);
             }
@@ -639,7 +636,9 @@ public class BackupJob : Job
             return true;
         }
 
-        var excludedExtensions = configurationManager.ExcludeCompression.Split('|');
+        var excludedExtensions = new HashSet<string>(
+            configurationManager.ExcludeCompression.Split('|', StringSplitOptions.RemoveEmptyEntries),
+            StringComparer.OrdinalIgnoreCase);
         return !excludedExtensions.Contains(fileExt);
     }
 

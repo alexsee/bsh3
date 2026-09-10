@@ -238,6 +238,11 @@ public class FileSystemStorage : Storage, IStorageProvider
 
     protected virtual void Dispose(bool disposing)
     {
+        if (!disposing)
+        {
+            return;
+        }
+
         // Cleanup
 
         // are we connecting to a network share?

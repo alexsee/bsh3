@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -38,6 +40,9 @@ public abstract class Job : IDisposable
     private readonly List<IJobReport> observers = new();
     private bool disposed;
     private bool keepsSystemAwake;
+
+    private static readonly CultureInfo JobCulture = CultureInfo.GetCultureInfo("de-DE");
+    private const string VersionDateFormat = "dd-MM-yyyy HH-mm-ss";
 
     public Collection<FileExceptionEntry> FileErrorList
     {
@@ -232,6 +237,33 @@ public abstract class Job : IDisposable
     {
         Win32Stuff.KeepSystemAwake();
         keepsSystemAwake = true;
+    }
+
+    /// <summary>
+    /// Applies the shared job culture (de-DE) to the current thread.
+    /// </summary>
+    protected static void ApplyJobCulture()
+    {
+        Thread.CurrentThread.CurrentCulture = JobCulture;
+    }
+
+    /// <summary>
+    /// Formats a backup version date key (e.g. "01-02-2026 03-04-05").
+    /// </summary>
+    protected static string FormatVersionDate(DateTime value)
+    {
+        return value.ToString(VersionDateFormat, JobCulture);
+    }
+
+    /// <summary>
+    /// Bumps the stored backup version counter, if it holds a numeric value.
+    /// </summary>
+    protected void BumpStorageVersion()
+    {
+        if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
+        {
+            configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
+        }
     }
 
     /// <summary>

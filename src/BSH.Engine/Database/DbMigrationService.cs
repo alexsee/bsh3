@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -73,24 +75,34 @@ public class DbMigrationService : IDbMigrationService
         // Version 4 auf 5 aktualisieren
         if (configurationManager.DBVersion == "4")
         {
+            // materialize the rows first so the reader is closed before updating
+            var fileVersions = new List<(int FileVersionId, DateTime FileDateCreated, DateTime FileDateModified)>();
+            using (var sqlRead = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT fileversionid, filedatecreated, filedatemodified FROM fileversiontable", null))
+            {
+                while (await sqlRead.ReadAsync())
+                {
+                    fileVersions.Add((
+                        sqlRead.GetInt32(sqlRead.GetOrdinal("fileversionid")),
+                        sqlRead.GetDateTime(sqlRead.GetOrdinal("filedatecreated")),
+                        sqlRead.GetDateTime(sqlRead.GetOrdinal("filedatemodified"))));
+                }
+
+                await sqlRead.CloseAsync();
+            }
+
             using (var dbClient2 = dbClientFactory.CreateDbClient())
             {
                 dbClient2.BeginTransaction();
 
-                using (var sqlRead = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT fileversionid, filedatecreated, filedatemodified FROM fileversiontable", null))
+                foreach (var fileVersion in fileVersions)
                 {
-                    while (await sqlRead.ReadAsync())
-                    {
-                        var parameters = new (string, object)[] {
-                            ("fileversionid", sqlRead.GetInt32(sqlRead.GetOrdinal("fileversionid"))),
-                            ("filedatecreated", sqlRead.GetDateTime(sqlRead.GetOrdinal("filedatecreated"))),
-                            ("filedatemodified", sqlRead.GetDateTime(sqlRead.GetOrdinal("filedatemodified")))
-                        };
+                    var parameters = new (string, object)[] {
+                        ("fileversionid", fileVersion.FileVersionId),
+                        ("filedatecreated", fileVersion.FileDateCreated),
+                        ("filedatemodified", fileVersion.FileDateModified)
+                    };
 
-                        await dbClient2.ExecuteNonQueryAsync(CommandType.Text, "UPDATE fileversiontable SET filedatecreated = @filedatecreated, filedatemodified = @filedatemodified WHERE fileversionid = @fileversionid", parameters);
-                    }
-
-                    await sqlRead.CloseAsync();
+                    await dbClient2.ExecuteNonQueryAsync(CommandType.Text, "UPDATE fileversiontable SET filedatecreated = @filedatecreated, filedatemodified = @filedatemodified WHERE fileversionid = @fileversionid", parameters);
                 }
 
                 dbClient2.CommitTransaction();

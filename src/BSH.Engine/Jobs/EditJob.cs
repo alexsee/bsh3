@@ -54,7 +54,7 @@ public class EditJob : Job
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
     public async Task EditAsync(CancellationToken cancellationToken = default)
     {
-        Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+        ApplyJobCulture();
 
         // report status
         _logger.Information("Begin edit backup.");

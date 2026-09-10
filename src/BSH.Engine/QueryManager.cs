@@ -13,11 +13,14 @@ using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Storage;
+using Serilog;
 
 namespace Brightbits.BSH.Engine;
 
 public class QueryManager : IQueryManager
 {
+    private static readonly ILogger Logger = Log.ForContext<QueryManager>();
+
     private readonly IDbClientFactory dbClientFactory;
 
     private readonly IConfigurationManager configurationManager;
@@ -88,11 +91,15 @@ public class QueryManager : IQueryManager
     {
         var result = new List<VersionDetails>();
 
+        // ORDER BY direction is selected from fixed query strings (never concatenated from input).
+        const string versionsDesc = "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID DESC";
+        const string versionsAsc = "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID ASC";
+
         // obtain all backups
         using (var dbClient = dbClientFactory.CreateDbClient())
         using (var reader = dbClient.ExecuteDataReader(
             CommandType.Text,
-            "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID " + (desc ? "DESC" : "ASC")
+            desc ? versionsDesc : versionsAsc
             , null))
         {
             while (reader.Read())
@@ -263,8 +270,9 @@ public class QueryManager : IQueryManager
 
             return null;
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.Warning(ex, "Version navigation query failed.");
             return null;
         }
     }
@@ -305,8 +313,9 @@ public class QueryManager : IQueryManager
 
             return null;
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.Warning(ex, "Version navigation query failed.");
             return null;
         }
     }
@@ -345,8 +354,9 @@ public class QueryManager : IQueryManager
 
             return null;
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.Warning(ex, "Version navigation query failed.");
             return null;
         }
     }
@@ -387,8 +397,9 @@ public class QueryManager : IQueryManager
 
             return null;
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.Warning(ex, "Version navigation query failed.");
             return null;
         }
     }
@@ -764,7 +775,13 @@ public class QueryManager : IQueryManager
 
         foreach (var destination in destFolders)
         {
-            var directoryName = destination.Split('\\', StringSplitOptions.RemoveEmptyEntries)[^1];
+            var segments = destination.Split('\\', StringSplitOptions.RemoveEmptyEntries);
+            if (segments.Length == 0)
+            {
+                continue;
+            }
+
+            var directoryName = segments[^1];
 
             if (folder.StartsWith("\\" + directoryName + "\\", StringComparison.OrdinalIgnoreCase))
             {

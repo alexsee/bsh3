@@ -75,7 +75,7 @@ public class RestoreJob : Job
     /// <exception cref="DeviceNotReadyException"></exception>
     public async Task RestoreAsync(CancellationToken token)
     {
-        Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
+        ApplyJobCulture();
 
         // report status
         _logger.Information("Begin restore", new { Version, File, Destination });

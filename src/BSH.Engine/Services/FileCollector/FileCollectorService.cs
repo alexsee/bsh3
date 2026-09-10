@@ -14,8 +14,6 @@ namespace Brightbits.BSH.Engine.Services.FileCollector;
 
 public class FileCollectorService : IFileCollectorService
 {
-    private string root;
-
     public List<IFileExclusion> FileExclusionHandlers
     {
         get;
@@ -35,29 +33,27 @@ public class FileCollectorService : IFileCollectorService
 
     public List<FileTableRow> GetLocalFileList(string root, bool subFolders = true)
     {
-        this.root = root;
-
         var result = new List<FileTableRow>();
         EmptyFolders = new List<FolderTableRow>();
 
-        SeekFiles(new DirectoryInfo(root), result, subFolders);
+        SeekFiles(new DirectoryInfo(root), result, subFolders, root);
 
         return result;
     }
 
-    private void SeekFiles(DirectoryInfo root, List<FileTableRow> fileArray, bool subFolders)
+    private void SeekFiles(DirectoryInfo directory, List<FileTableRow> fileArray, bool subFolders, string baseRoot)
     {
         try
         {
             // get files
-            var files = root.GetFiles();
+            var files = directory.GetFiles();
             foreach (var fileEntry in files)
             {
                 var file = new FileTableRow()
                 {
                     FileName = fileEntry.Name,
-                    FilePath = IOUtils.GetRelativeFolder(fileEntry.DirectoryName, this.root),
-                    FileRoot = this.root,
+                    FilePath = IOUtils.GetRelativeFolder(fileEntry.DirectoryName, baseRoot),
+                    FileRoot = baseRoot,
                     FileDateCreated = fileEntry.CreationTimeUtc,
                     FileDateModified = fileEntry.LastWriteTimeUtc,
                     FileSize = fileEntry.Length,
@@ -78,12 +74,12 @@ public class FileCollectorService : IFileCollectorService
             }
 
             // scan subfolders
-            var folders = root.GetDirectories();
+            var folders = directory.GetDirectories();
 
             // empty folder?
             if (files.Length <= 0 && folders.Length <= 0)
             {
-                var f = new FolderTableRow(root.FullName, this.root);
+                var f = new FolderTableRow(directory.FullName, baseRoot);
                 EmptyFolders.Add(f);
             }
 
@@ -91,22 +87,30 @@ public class FileCollectorService : IFileCollectorService
             {
                 try
                 {
-                    if (FolderExclusionHandlers.Any(handler => handler.IsFolderFiltered(this.root, folder)))
+                    if (FolderExclusionHandlers.Any(handler => handler.IsFolderFiltered(baseRoot, folder)))
                     {
                         continue;
                     }
 
-                    SeekFiles(folder, fileArray, subFolders);
+                    SeekFiles(folder, fileArray, subFolders, baseRoot);
                 }
-                catch (Exception ex)
+                catch (IOException ex)
+                {
+                    Log.Warning(ex, "Directory {Directory} could not be accessed.", folder);
+                }
+                catch (UnauthorizedAccessException ex)
                 {
                     Log.Warning(ex, "Directory {Directory} could not be accessed.", folder);
                 }
             }
         }
-        catch (Exception ex)
+        catch (IOException ex)
         {
-            Log.Warning(ex, "Directory {Directory} could not be accessed.", root);
+            Log.Warning(ex, "Directory {Directory} could not be accessed.", directory);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Log.Warning(ex, "Directory {Directory} could not be accessed.", directory);
         }
     }
 }

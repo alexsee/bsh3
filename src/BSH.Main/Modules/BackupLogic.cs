@@ -223,7 +223,11 @@ static class BackupLogic
             }
 
             // check free space
-            if (ConfigurationManager.RemindSpace != "-1" && ConfigurationManager.FreeSpace != "0" && Convert.ToDouble(ConfigurationManager.FreeSpace) < Convert.ToDouble(ConfigurationManager.RemindSpace) * 1024L * 1024L)
+            if (double.TryParse(ConfigurationManager.RemindSpace, out var reminderMegabytes) &&
+                reminderMegabytes >= 0 &&
+                double.TryParse(ConfigurationManager.FreeSpace, out var freeBytes) &&
+                freeBytes != 0 &&
+                freeBytes < reminderMegabytes * 1024L * 1024L)
             {
                 NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_NO_DISKSPACE_LEFT_TITLE, Resources.INFO_NO_DISKSPACE_LEFT_TEXT, ToolTipIcon.Warning);
             }
@@ -241,7 +245,8 @@ static class BackupLogic
             }
 
             // remind user about last backup
-            if (!string.IsNullOrEmpty(ConfigurationManager.RemindAfterDays))
+            if (!string.IsNullOrEmpty(ConfigurationManager.RemindAfterDays) &&
+                int.TryParse(ConfigurationManager.RemindAfterDays, out var remindAfterDays))
             {
                 var lastBackup = await QueryManager.GetLastBackupAsync();
                 if (lastBackup != null)
@@ -249,7 +254,7 @@ static class BackupLogic
                     try
                     {
                         // check if backup is older than x-days
-                        if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > Convert.ToInt32(ConfigurationManager.RemindAfterDays) &&
+                        if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > remindAfterDays &&
                             QueryManager.GetVersions().Count > 0 &&
                             tmrUserReminder == null)
                         {
@@ -263,7 +268,7 @@ static class BackupLogic
                     }
                     catch
                     {
-                        ConfigurationManager.LastBackupDone = "";
+                        // ignore reminder errors; backup metadata must stay untouched here
                     }
                 }
             }
@@ -279,6 +284,12 @@ static class BackupLogic
         var tmr = (Timer)sender;
         tmr.Stop();
         tmr.Dispose();
+        tmrUserReminder = null;
+
+        if (!int.TryParse(ConfigurationManager.RemindAfterDays, out var remindAfterDays))
+        {
+            return;
+        }
 
         var lastBackup = await QueryManager.GetLastBackupAsync();
         if (lastBackup == null)
@@ -286,7 +297,7 @@ static class BackupLogic
             return;
         }
 
-        if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > 0)
+        if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > remindAfterDays)
         {
             NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_OLD_TITLE, string.Format(Resources.INFO_BACKUP_OLD_TEXT, DateTime.Now.Subtract(lastBackup.CreationDate).Days), ToolTipIcon.Info);
         }
@@ -306,9 +317,24 @@ static class BackupLogic
         StopFullAutomatedSystem();
         StopScheduleSystem();
         StopDoBackupWhenDriveIsAvailable();
+        StopUserReminder();
 
         // set status to deactivated
         StatusController.Current.SetSystemStatus(SystemStatus.DEACTIVATED);
+    }
+
+    private static void StopUserReminder()
+    {
+        var reminder = tmrUserReminder;
+        tmrUserReminder = null;
+
+        if (reminder == null)
+        {
+            return;
+        }
+
+        reminder.Stop();
+        reminder.Dispose();
     }
 
     private static PowerLineStatus LastBatteryStatus;
@@ -424,8 +450,19 @@ static class BackupLogic
 
     private static async Task RemoveOldBackups()
     {
-        var listDelete = ScheduleSettingsService.LoadPolicy()
-            .GetAutomaticVersionsToDelete(QueryManager.GetVersions(), DateTime.Now);
+        // obtain versions for deletion
+        var listDelete = new List<VersionDetails>();
+
+        try
+        {
+            listDelete.AddRange(ScheduleSettingsService.LoadPolicy()
+                .GetAutomaticVersionsToDelete(QueryManager.GetVersions(), DateTime.Now));
+        }
+        catch (Exception ex)
+        {
+            // although this is a major issue, we don't want the backup to fail
+            Log.Error(ex, "Could not determine backups for deletion");
+        }
 
         // delete old versions
         foreach (var version in listDelete)
