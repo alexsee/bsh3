@@ -614,7 +614,9 @@ public class ConfigurationManager : IConfigurationManager
     {
         var parameters = new (string, object)[]
         {
-            ("value", propertyName.Replace("_", ""))
+            // keys are persisted lowercase by SaveProperty, so look them up lowercase too
+            // (SQLite LIKE matched case-insensitively; = does not)
+            ("value", propertyName.Replace("_", "").ToLower())
         };
 
         return await dbClient.ExecuteScalarAsync(
