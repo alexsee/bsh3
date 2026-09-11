@@ -59,21 +59,20 @@ public static class StoragePath
     {
         ArgumentNullException.ThrowIfNull(storage);
 
-        if (kind.IsPlain())
+        switch (kind)
         {
-            storage.CopyFileFromStorage(localFilePath, remoteFilePath);
-            return;
-        }
-
-        if (kind.IsCompressed())
-        {
-            storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
-            return;
-        }
-
-        if (kind.IsEncrypted())
-        {
-            storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
+            case FileTypeKind.RegularCopy:
+            case FileTypeKind.StoredCopy:
+                storage.CopyFileFromStorage(localFilePath, remoteFilePath);
+                break;
+            case FileTypeKind.Compressed:
+            case FileTypeKind.StoredCompressed:
+                storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
+                break;
+            case FileTypeKind.StoredEncrypted:
+            case FileTypeKind.Encrypted:
+                storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
+                break;
         }
     }
 
@@ -85,21 +84,20 @@ public static class StoragePath
     {
         ArgumentNullException.ThrowIfNull(storage);
 
-        if (kind.IsPlain())
+        switch (kind)
         {
-            storage.DeleteFileFromStorage(remoteFile);
-            return;
-        }
-
-        if (kind.IsCompressed())
-        {
-            storage.DeleteFileFromStorageCompressed(remoteFile);
-            return;
-        }
-
-        if (kind.IsEncrypted())
-        {
-            storage.DeleteFileFromStorageEncrypted(remoteFile);
+            case FileTypeKind.RegularCopy:
+            case FileTypeKind.StoredCopy:
+                storage.DeleteFileFromStorage(remoteFile);
+                break;
+            case FileTypeKind.Compressed:
+            case FileTypeKind.StoredCompressed:
+                storage.DeleteFileFromStorageCompressed(remoteFile);
+                break;
+            case FileTypeKind.StoredEncrypted:
+            case FileTypeKind.Encrypted:
+                storage.DeleteFileFromStorageEncrypted(remoteFile);
+                break;
         }
     }
 }

@@ -20,6 +20,8 @@ namespace Brightbits.BSH.Engine;
 public class QueryManager : IQueryManager
 {
     private static readonly ILogger Logger = Log.ForContext<QueryManager>();
+    private const string VersionsDescendingQuery = "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID DESC";
+    private const string VersionsAscendingQuery = "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID ASC";
 
     private readonly IDbClientFactory dbClientFactory;
 
@@ -91,15 +93,11 @@ public class QueryManager : IQueryManager
     {
         var result = new List<VersionDetails>();
 
-        // ORDER BY direction is selected from fixed query strings (never concatenated from input).
-        const string versionsDesc = "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID DESC";
-        const string versionsAsc = "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID ASC";
-
         // obtain all backups
         using (var dbClient = dbClientFactory.CreateDbClient())
         using (var reader = dbClient.ExecuteDataReader(
             CommandType.Text,
-            desc ? versionsDesc : versionsAsc
+            desc ? VersionsDescendingQuery : VersionsAscendingQuery
             , null))
         {
             while (reader.Read())
