@@ -300,7 +300,8 @@ static class BackupLogic
         }
 
         // single wall-clock read; this is a calendar comparison, not a benchmark
-        var daysSinceLastBackup = DateTime.Now.Subtract(lastBackup.CreationDate).Days;
+        var now = DateTime.Now;
+        var daysSinceLastBackup = now.Subtract(lastBackup.CreationDate).Days;
         if (daysSinceLastBackup > remindAfterDays)
         {
             NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_OLD_TITLE, string.Format(Resources.INFO_BACKUP_OLD_TEXT, daysSinceLastBackup), ToolTipIcon.Info);
