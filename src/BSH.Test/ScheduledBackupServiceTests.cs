@@ -422,7 +422,7 @@ public class ScheduledBackupServiceTests
         public Task ModifyBackupAsync(bool statusDialog = true) => Task.CompletedTask;
     }
 
-    private sealed class StubQueryManager : IQueryManager
+    private class StubQueryManager : IQueryManager
     {
         public Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult("");
         public Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult("");
