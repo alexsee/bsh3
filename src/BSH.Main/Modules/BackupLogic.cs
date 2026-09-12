@@ -253,8 +253,10 @@ static class BackupLogic
                 {
                     try
                     {
-                        // check if backup is older than x-days
-                        if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > remindAfterDays &&
+                        // check if backup is older than x-days (single wall-clock read; this is a
+                        // calendar comparison, not a benchmark, so DateTime.Now is appropriate)
+                        var now = DateTime.Now;
+                        if (now.Subtract(lastBackup.CreationDate).Days > remindAfterDays &&
                             QueryManager.GetVersions().Count > 0 &&
                             tmrUserReminder == null)
                         {
@@ -297,9 +299,11 @@ static class BackupLogic
             return;
         }
 
-        if (DateTime.Now.Subtract(lastBackup.CreationDate).Days > remindAfterDays)
+        // single wall-clock read; this is a calendar comparison, not a benchmark
+        var daysSinceLastBackup = DateTime.Now.Subtract(lastBackup.CreationDate).Days;
+        if (daysSinceLastBackup > remindAfterDays)
         {
-            NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_OLD_TITLE, string.Format(Resources.INFO_BACKUP_OLD_TEXT, DateTime.Now.Subtract(lastBackup.CreationDate).Days), ToolTipIcon.Info);
+            NotificationController.Current.ShowIconBalloon(5000, Resources.INFO_BACKUP_OLD_TITLE, string.Format(Resources.INFO_BACKUP_OLD_TEXT, daysSinceLastBackup), ToolTipIcon.Info);
         }
     }
 

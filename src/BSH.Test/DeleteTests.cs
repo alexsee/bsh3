@@ -70,6 +70,15 @@ public class DeleteTests
     }
 
     [Test]
+    public void TestInvalidVersionIdThrowsArgumentException()
+    {
+        var storage = new RecordingDeleteStorage();
+        using var deleteJob = CreateDeleteJob(storage, "not-a-version");
+
+        Assert.ThrowsAsync<ArgumentException>(async () => await deleteJob.DeleteAsync());
+    }
+
+    [Test]
     public async Task TestDeleteRoutesByFileTypeAndUpdatesMetadata()
     {
         const string versionDate = "01-01-2021 00-00-00";

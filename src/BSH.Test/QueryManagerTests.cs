@@ -427,4 +427,28 @@ public class QueryManagerTests
         var result = await queryManager.GetTotalFileSizeAsync();
         Assert.That(result, Is.EqualTo(300d));
     }
+
+    [Test]
+    public async Task VersionNavigationReturnsNullWhenStartVersionIsInvalid()
+    {
+        Assert.That(await queryManager.GetBackVersionWhereFileAsync("not-a-version", "file1.txt"), Is.Null);
+        Assert.That(await queryManager.GetBackVersionWhereFilesInFolderAsync("not-a-version", "\\source_1\\"), Is.Null);
+        Assert.That(await queryManager.GetNextVersionWhereFileAsync("not-a-version", "file1.txt"), Is.Null);
+        Assert.That(await queryManager.GetNextVersionWhereFilesInFolderAsync("not-a-version", "\\source_1\\"), Is.Null);
+    }
+
+    [TestCase(2, "Compressed")]
+    [TestCase(4, "Compressed")]
+    [TestCase(3, "Stored copy")]
+    [TestCase(5, "Encrypted")]
+    [TestCase(6, "Encrypted")]
+    public async Task GetFileDetailsAsyncMapsStorageFileTypesToDisplayNames(int fileType, string expectedDisplayName)
+    {
+        await dbClientFactory.ExecuteNonQueryAsync($"UPDATE fileversiontable SET fileType = {fileType} WHERE fileversionID = 1");
+
+        var result = await queryManager.GetFileDetailsAsync("2", "file1.txt", "\\source_1\\");
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Type, Is.EqualTo(expectedDisplayName));
+    }
 }

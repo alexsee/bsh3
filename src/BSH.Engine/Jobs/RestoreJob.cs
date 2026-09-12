@@ -104,6 +104,8 @@ public class RestoreJob : Job
             System.Data.Common.DbDataReader reader;
 
             // single file or path?
+            // A null source means "restore everything below the root".
+            File ??= "\\";
             var singleFileName = string.IsNullOrEmpty(File) ? string.Empty : (Path.GetFileName(File) ?? string.Empty).Trim();
             if (!string.IsNullOrEmpty(singleFileName))
             {
@@ -263,35 +265,38 @@ public class RestoreJob : Job
         ArgumentNullException.ThrowIfNull(destFolders);
         ArgumentNullException.ThrowIfNull(fileDest);
 
+        // Stored file paths use the Windows directory separator (this application is Windows-only).
+        var separator = Path.DirectorySeparatorChar;
+
         if (destFolders.Count > 1)
         {
-            var match = destFolders.Find(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\", StringComparison.OrdinalIgnoreCase));
+            var match = destFolders.Find(folder => fileDest.StartsWith(separator + Path.GetFileName(folder) + separator, StringComparison.OrdinalIgnoreCase));
             if (match is null)
             {
                 // stored path does not match any known source root; fall back to the first destination
-                fileDest = destFolders[0] + "\\" + fileDest.TrimStart('\\');
+                fileDest = destFolders[0] + separator + fileDest.TrimStart(separator);
             }
             else
             {
-                var needle = "\\" + Path.GetFileName(match) + "\\";
+                var needle = separator + Path.GetFileName(match) + separator;
                 var idx = fileDest.IndexOf(needle, StringComparison.OrdinalIgnoreCase);
                 fileDest = idx >= 0
-                    ? match + "\\" + fileDest[(idx + needle.Length)..]
-                    : match + "\\" + fileDest.TrimStart('\\');
+                    ? match + separator + fileDest[(idx + needle.Length)..]
+                    : match + separator + fileDest.TrimStart(separator);
             }
         }
         else if (destFolders.Count == 1)
         {
             // strip the stored drive/root prefix ("\\C\\...") and re-root at the destination
-            var separator = fileDest.IndexOf('\\', 2);
-            var remainder = separator >= 0 ? fileDest[(separator + 1)..] : fileDest.TrimStart('\\');
-            fileDest = destFolders[0] + "\\" + remainder;
+            var separatorIndex = fileDest.IndexOf(separator, 2);
+            var remainder = separatorIndex >= 0 ? fileDest[(separatorIndex + 1)..] : fileDest.TrimStart(separator);
+            fileDest = destFolders[0] + separator + remainder;
         }
 
         // correct path
-        if (!fileDest.EndsWith('\\'))
+        if (!fileDest.EndsWith(separator))
         {
-            fileDest += "\\";
+            fileDest += separator;
         }
 
         return fileDest;

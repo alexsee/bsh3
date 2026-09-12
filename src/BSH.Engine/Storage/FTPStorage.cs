@@ -48,7 +48,7 @@ public class FtpStorage : Storage, IStorageProvider
         ArgumentNullException.ThrowIfNull(configurationManager);
 
         this.serverAddress = configurationManager.FtpHost;
-        this.serverPort = int.TryParse(configurationManager.FtpPort, out var serverPort) ? serverPort : 21;
+        this.serverPort = int.TryParse(configurationManager.FtpPort, out var parsedPort) ? parsedPort : 21;
         this.userName = configurationManager.FtpUser;
         this.password = configurationManager.FtpPass;
         this.folderPath = configurationManager.FtpFolder;

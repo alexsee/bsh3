@@ -237,7 +237,7 @@ public class DbClient : IDisposable
         }
         catch
         {
-            command.Dispose();
+            await command.DisposeAsync();
             throw;
         }
     }

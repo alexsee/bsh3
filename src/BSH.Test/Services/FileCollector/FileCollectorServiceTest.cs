@@ -4,6 +4,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using BSH.Test.Fakes;
@@ -167,4 +169,90 @@ public class FileCollectorServiceTraversalTests
         Assert.That(fileCollectorService.EmptyFolders.Select(folder => folder.Folder), Is.EqualTo([empty.FullName]));
     }
 
+    [Test]
+    public void GetLocalFileListSkipsSubFolderWhenExclusionThrowsIOException()
+    {
+        File.WriteAllText(Path.Combine(root, "root.txt"), "root");
+        var skipped = Directory.CreateDirectory(Path.Combine(root, "skipped"));
+        File.WriteAllText(Path.Combine(skipped.FullName, "skip.txt"), "skip");
+        fileCollectorService.FolderExclusionHandlers.Add(new ThrowingFolderExclusion(new IOException("simulated IO failure")));
+
+        var result = fileCollectorService.GetLocalFileList(root);
+
+        Assert.That(result.Select(file => file.FileName), Is.EqualTo(["root.txt"]));
+    }
+
+    [Test]
+    public void GetLocalFileListSkipsSubFolderWhenExclusionThrowsUnauthorizedAccess()
+    {
+        File.WriteAllText(Path.Combine(root, "root.txt"), "root");
+        var skipped = Directory.CreateDirectory(Path.Combine(root, "skipped"));
+        File.WriteAllText(Path.Combine(skipped.FullName, "skip.txt"), "skip");
+        fileCollectorService.FolderExclusionHandlers.Add(new ThrowingFolderExclusion(new UnauthorizedAccessException("simulated access failure")));
+
+        var result = fileCollectorService.GetLocalFileList(root);
+
+        Assert.That(result.Select(file => file.FileName), Is.EqualTo(["root.txt"]));
+    }
+
+    [Test]
+    public void GetLocalFileListReturnsEmptyWhenRootIsGone()
+    {
+        var staleRoot = Path.Combine(root, "stale");
+        Directory.CreateDirectory(staleRoot);
+        Directory.Delete(staleRoot);
+
+        var result = fileCollectorService.GetLocalFileList(staleRoot);
+
+        Assert.That(result, Is.Empty);
+    }
+
+    [Test]
+    public void GetLocalFileListSkipsInaccessibleRoot()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Directory ACLs can only be tested on Windows.");
+        }
+
+        var locked = Directory.CreateDirectory(Path.Combine(root, "locked"));
+        DenyReadAccess(locked.FullName);
+        try
+        {
+            var result = fileCollectorService.GetLocalFileList(locked.FullName);
+
+            Assert.That(result, Is.Empty);
+        }
+        finally
+        {
+            AllowReadAccess(locked.FullName);
+        }
+    }
+
+    private static void DenyReadAccess(string path)
+    {
+        var directory = new DirectoryInfo(path);
+        var security = directory.GetAccessControl();
+        security.AddAccessRule(new FileSystemAccessRule(
+            WindowsIdentity.GetCurrent().User!,
+            FileSystemRights.Read,
+            AccessControlType.Deny));
+        directory.SetAccessControl(security);
+    }
+
+    private static void AllowReadAccess(string path)
+    {
+        var directory = new DirectoryInfo(path);
+        var security = directory.GetAccessControl();
+        security.RemoveAccessRule(new FileSystemAccessRule(
+            WindowsIdentity.GetCurrent().User!,
+            FileSystemRights.Read,
+            AccessControlType.Deny));
+        directory.SetAccessControl(security);
+    }
+
+    private sealed class ThrowingFolderExclusion(Exception failure) : IFolderExclusion
+    {
+        public bool IsFolderFiltered(string root, DirectoryInfo directory) => throw failure;
+    }
 }

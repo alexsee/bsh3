@@ -20,6 +20,7 @@ namespace Brightbits.BSH.Engine;
 public class QueryManager : IQueryManager
 {
     private static readonly ILogger Logger = Log.ForContext<QueryManager>();
+    private const string VersionNavigationFailureMessage = "Version navigation query failed.";
     private const string VersionsDescendingQuery = "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID DESC";
     private const string VersionsAscendingQuery = "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID ASC";
 
@@ -270,7 +271,7 @@ public class QueryManager : IQueryManager
         }
         catch (Exception ex)
         {
-            Logger.Warning(ex, "Version navigation query failed.");
+            Logger.Warning(ex, VersionNavigationFailureMessage);
             return null;
         }
     }
@@ -313,7 +314,7 @@ public class QueryManager : IQueryManager
         }
         catch (Exception ex)
         {
-            Logger.Warning(ex, "Version navigation query failed.");
+            Logger.Warning(ex, VersionNavigationFailureMessage);
             return null;
         }
     }
@@ -354,7 +355,7 @@ public class QueryManager : IQueryManager
         }
         catch (Exception ex)
         {
-            Logger.Warning(ex, "Version navigation query failed.");
+            Logger.Warning(ex, VersionNavigationFailureMessage);
             return null;
         }
     }
@@ -397,7 +398,7 @@ public class QueryManager : IQueryManager
         }
         catch (Exception ex)
         {
-            Logger.Warning(ex, "Version navigation query failed.");
+            Logger.Warning(ex, VersionNavigationFailureMessage);
             return null;
         }
     }

@@ -95,4 +95,40 @@ public class EncryptionTests
             File.Delete(decodedFile);
         }
     }
+
+    [Test]
+    public void EncodeCleansUpPartialTargetEvenWhenDeleteFails()
+    {
+        var missingSource = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        var targetFile = Path.GetTempFileName();
+        File.WriteAllText(targetFile, "stale target");
+
+        try
+        {
+            using (new FileStream(targetFile, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            {
+                // deleting the locked target fails on Windows; elsewhere it succeeds silently
+                Assert.That(new Encryption().Encode(missingSource, targetFile, "password"), Is.False);
+            }
+        }
+        finally
+        {
+            TryDeleteBestEffort(targetFile);
+        }
+    }
+
+    private static void TryDeleteBestEffort(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+        catch
+        {
+            // locked files are released by the disposed stream above
+        }
+    }
 }

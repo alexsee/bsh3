@@ -52,7 +52,7 @@ namespace BSH.Test.Mocks
             CanWrite = canWrite;
         }
 
-        public StorageProviderKind Kind => StorageProviderKind.LocalFileSystem;
+        public StorageProviderKind Kind { get; set; } = StorageProviderKind.LocalFileSystem;
         public int CopyFileToStorageCalls { get; private set; }
         public int CopyFileToStorageCompressedCalls { get; private set; }
         public int CopyFileToStorageEncryptedCalls { get; private set; }

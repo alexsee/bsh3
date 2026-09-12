@@ -54,6 +54,17 @@ public class DatabaseSchemaUpgradeTests
         Assert.ThrowsAsync<DatabaseIncompatibleException>(async () => await migration.InitializeAsync());
     }
 
+    [Test]
+    public async Task InitializeAsync_ThrowsWhenDatabaseVersionIsNotNumeric()
+    {
+        await using var fixture = await SchemaUpgradeFixture.CreateAsync("1");
+        fixture.ConfigurationManager.DBVersion = "not-a-version";
+
+        var migration = new DbMigrationService(fixture.DbFactory, fixture.ConfigurationManager);
+
+        Assert.ThrowsAsync<DatabaseIncompatibleException>(async () => await migration.InitializeAsync());
+    }
+
     private sealed class SchemaUpgradeFixture : IAsyncDisposable
     {
         private SchemaUpgradeFixture(string directoryPath, IDbClientFactory dbFactory, ConfigurationManager configurationManager)
