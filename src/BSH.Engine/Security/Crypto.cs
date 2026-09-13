@@ -8,7 +8,7 @@ namespace Brightbits.BSH.Engine.Security;
 
 public static class Crypto
 {
-    static readonly byte[] entropy = Encoding.Unicode.GetBytes("vUNHSdlkflk+#sdFwe48p");
+    private static readonly byte[] Entropy = Encoding.Unicode.GetBytes("vUNHSdlkflk+#sdFwe48p");
 
     public static string EncryptString(string input)
     {
@@ -19,7 +19,7 @@ public static class Crypto
     {
         var encryptedData = System.Security.Cryptography.ProtectedData.Protect(
             Encoding.Unicode.GetBytes(input),
-            entropy,
+            Entropy,
             scope);
         return Convert.ToBase64String(encryptedData);
     }
@@ -45,7 +45,7 @@ public static class Crypto
         {
             var protectedData = System.Security.Cryptography.ProtectedData.Unprotect(
                 Convert.FromBase64String(encryptedData),
-                entropy,
+                Entropy,
                 scope);
             decryptedData = Encoding.Unicode.GetString(protectedData);
             return true;

@@ -158,7 +158,7 @@ public class ConfigurationManager : IConfigurationManager
         get => encryptPassMd5;
         set
         {
-            encryptPassMd5 = value; SaveProperty(nameof(EncryptPassMD5), value.ToString());
+            encryptPassMd5 = value; SaveProperty(nameof(EncryptPassMD5), value ?? "");
         }
     }
 
@@ -235,7 +235,7 @@ public class ConfigurationManager : IConfigurationManager
         get => freeSpace;
         set
         {
-            freeSpace = value; SaveProperty(nameof(FreeSpace), value.ToString());
+            freeSpace = value; SaveProperty(nameof(FreeSpace), value ?? "");
         }
     }
 
@@ -246,7 +246,7 @@ public class ConfigurationManager : IConfigurationManager
         get => remindSpace;
         set
         {
-            remindSpace = value; SaveProperty(nameof(RemindSpace), value.ToString());
+            remindSpace = value; SaveProperty(nameof(RemindSpace), value ?? "");
         }
     }
 
@@ -257,7 +257,7 @@ public class ConfigurationManager : IConfigurationManager
         get => doPastBackups;
         set
         {
-            doPastBackups = value; SaveProperty(nameof(DoPastBackups), value.ToString());
+            doPastBackups = value; SaveProperty(nameof(DoPastBackups), value ?? "");
         }
     }
 
@@ -268,7 +268,7 @@ public class ConfigurationManager : IConfigurationManager
         get => ftpHost;
         set
         {
-            ftpHost = value; SaveProperty(nameof(FtpHost), value.ToString());
+            ftpHost = value; SaveProperty(nameof(FtpHost), value ?? "");
         }
     }
 
@@ -279,7 +279,7 @@ public class ConfigurationManager : IConfigurationManager
         get => ftpUser;
         set
         {
-            ftpUser = value; SaveProperty(nameof(FtpUser), value.ToString());
+            ftpUser = value; SaveProperty(nameof(FtpUser), value ?? "");
         }
     }
 
@@ -302,7 +302,7 @@ public class ConfigurationManager : IConfigurationManager
         get => ftpFolder;
         set
         {
-            ftpFolder = value; SaveProperty(nameof(FtpFolder), value.ToString());
+            ftpFolder = value; SaveProperty(nameof(FtpFolder), value ?? "");
         }
     }
 
@@ -313,7 +313,7 @@ public class ConfigurationManager : IConfigurationManager
         get => ftpPort;
         set
         {
-            ftpPort = value; SaveProperty(nameof(FtpPort), value.ToString());
+            ftpPort = value; SaveProperty(nameof(FtpPort), value ?? "");
         }
     }
 
@@ -324,7 +324,7 @@ public class ConfigurationManager : IConfigurationManager
         get => string.IsNullOrEmpty(ftpCoding) ? "ISO-8859-1" : ftpCoding;
         set
         {
-            ftpCoding = value; SaveProperty(nameof(FtpCoding), value.ToString());
+            ftpCoding = value; SaveProperty(nameof(FtpCoding), value ?? "");
         }
     }
 
@@ -335,7 +335,7 @@ public class ConfigurationManager : IConfigurationManager
         get => string.IsNullOrEmpty(ftpEncryptionMode) ? "3" : ftpEncryptionMode;
         set
         {
-            ftpEncryptionMode = value; SaveProperty(nameof(FtpEncryptionMode), value.ToString());
+            ftpEncryptionMode = value; SaveProperty(nameof(FtpEncryptionMode), value ?? "");
         }
     }
 
@@ -346,7 +346,7 @@ public class ConfigurationManager : IConfigurationManager
         get => string.IsNullOrEmpty(ftpSslProtocols) ? "0" : ftpSslProtocols;
         set
         {
-            ftpSslProtocols = value; SaveProperty(nameof(FtpSslProtocols), value.ToString());
+            ftpSslProtocols = value; SaveProperty(nameof(FtpSslProtocols), value ?? "");
         }
     }
 
@@ -357,7 +357,7 @@ public class ConfigurationManager : IConfigurationManager
         get => isConfigured;
         set
         {
-            isConfigured = value; SaveProperty(nameof(IsConfigured), value.ToString());
+            isConfigured = value; SaveProperty(nameof(IsConfigured), value ?? "");
         }
     }
 
@@ -368,7 +368,7 @@ public class ConfigurationManager : IConfigurationManager
         get => dbStatus;
         set
         {
-            dbStatus = value; SaveProperty(nameof(DbStatus), value.ToString());
+            dbStatus = value; SaveProperty(nameof(DbStatus), value ?? "");
         }
     }
 
@@ -379,7 +379,7 @@ public class ConfigurationManager : IConfigurationManager
         get => deactivateAutoBackupsWhenAkku;
         set
         {
-            deactivateAutoBackupsWhenAkku = value; SaveProperty(nameof(DeativateAutoBackupsWhenAkku), value.ToString());
+            deactivateAutoBackupsWhenAkku = value; SaveProperty(nameof(DeativateAutoBackupsWhenAkku), value ?? "");
         }
     }
 
@@ -390,7 +390,7 @@ public class ConfigurationManager : IConfigurationManager
         get => intervallDelete;
         set
         {
-            intervallDelete = value; SaveProperty(nameof(IntervallDelete), value.ToString());
+            intervallDelete = value; SaveProperty(nameof(IntervallDelete), value ?? "");
         }
     }
 
@@ -401,7 +401,7 @@ public class ConfigurationManager : IConfigurationManager
         get => dbVersion;
         set
         {
-            dbVersion = value; SaveProperty(nameof(DBVersion), value.ToString());
+            dbVersion = value; SaveProperty(nameof(DBVersion), value ?? "");
         }
     }
 
@@ -412,7 +412,7 @@ public class ConfigurationManager : IConfigurationManager
         get => showLocalizedPath;
         set
         {
-            showLocalizedPath = value; SaveProperty(nameof(ShowLocalizedPath), value.ToString());
+            showLocalizedPath = value; SaveProperty(nameof(ShowLocalizedPath), value ?? "");
         }
     }
 
@@ -423,7 +423,7 @@ public class ConfigurationManager : IConfigurationManager
         get => infoBackupDone;
         set
         {
-            infoBackupDone = value; SaveProperty(nameof(InfoBackupDone), value.ToString());
+            infoBackupDone = value; SaveProperty(nameof(InfoBackupDone), value ?? "");
         }
     }
 
@@ -445,7 +445,7 @@ public class ConfigurationManager : IConfigurationManager
         get => backupSize;
         set
         {
-            backupSize = value; SaveProperty(nameof(BackupSize), value.ToString());
+            backupSize = value; SaveProperty(nameof(BackupSize), value ?? "");
         }
     }
 
@@ -456,7 +456,7 @@ public class ConfigurationManager : IConfigurationManager
         get => intervallAutoHourBackups;
         set
         {
-            intervallAutoHourBackups = value; SaveProperty(nameof(IntervallAutoHourBackups), value.ToString());
+            intervallAutoHourBackups = value; SaveProperty(nameof(IntervallAutoHourBackups), value ?? "");
         }
     }
 
@@ -467,7 +467,7 @@ public class ConfigurationManager : IConfigurationManager
         get => scheduleFullBackup;
         set
         {
-            scheduleFullBackup = value; SaveProperty(nameof(ScheduleFullBackup), value.ToString());
+            scheduleFullBackup = value; SaveProperty(nameof(ScheduleFullBackup), value ?? "");
         }
     }
 
@@ -478,7 +478,7 @@ public class ConfigurationManager : IConfigurationManager
         get => uncUserName;
         set
         {
-            uncUserName = value; SaveProperty(nameof(UNCUsername), value.ToString());
+            uncUserName = value; SaveProperty(nameof(UNCUsername), value ?? "");
         }
     }
 
@@ -489,7 +489,7 @@ public class ConfigurationManager : IConfigurationManager
         get => uncPassword;
         set
         {
-            uncPassword = value; SaveProperty(nameof(UNCPassword), value.ToString());
+            uncPassword = value; SaveProperty(nameof(UNCPassword), value ?? "");
         }
     }
 
@@ -500,7 +500,7 @@ public class ConfigurationManager : IConfigurationManager
         get => showWaitOnMediaAutoBackups;
         set
         {
-            showWaitOnMediaAutoBackups = value; SaveProperty(nameof(ShowWaitOnMediaAutoBackups), value.ToString());
+            showWaitOnMediaAutoBackups = value; SaveProperty(nameof(ShowWaitOnMediaAutoBackups), value ?? "");
         }
     }
 
@@ -614,12 +614,14 @@ public class ConfigurationManager : IConfigurationManager
     {
         var parameters = new (string, object)[]
         {
-            ("value", propertyName.Replace("_", ""))
+            // keys are persisted lowercase by SaveProperty, so look them up lowercase too
+            // (SQLite LIKE matched case-insensitively; = does not)
+            ("value", propertyName.Replace("_", "").ToLower())
         };
 
         return await dbClient.ExecuteScalarAsync(
             CommandType.Text,
-            "SELECT confValue FROM configuration WHERE confProperty LIKE @value LIMIT 1",
+            "SELECT confValue FROM configuration WHERE confProperty = @value LIMIT 1",
             parameters);
     }
 
@@ -653,7 +655,7 @@ public class ConfigurationManager : IConfigurationManager
 
         var parameters = new (string, object)[]
         {
-            ("value", value),
+            ("value", value ?? ""),
             ("prop", property.ToLower())
         };
 

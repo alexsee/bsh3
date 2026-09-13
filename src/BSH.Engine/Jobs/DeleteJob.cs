@@ -51,7 +51,7 @@ public class DeleteJob : Job
     public async Task DeleteAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
+        ApplyJobCulture();
 
         // report status
         _logger.Information("Begin delete backup.");
@@ -82,7 +82,9 @@ public class DeleteJob : Job
 
             KeepSystemAwake();
 
-            var version = int.Parse(Version);
+            var version = int.TryParse(Version, out var parsedVersion)
+                ? parsedVersion
+                : throw new ArgumentException("Invalid version ID.");
 
             // obtain files to delete
             using var files = versionQueryRepository.GetFilesToDeleteForVersion(dbClient, version);
@@ -159,10 +161,7 @@ public class DeleteJob : Job
         }
 
         // store database version
-        if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
-        {
-            configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
-        }
+        BumpStorageVersion();
 
         // refresh free diskspace
         await UpdateFreeDiskSpaceAsync();

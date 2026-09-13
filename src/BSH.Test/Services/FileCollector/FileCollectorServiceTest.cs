@@ -4,6 +4,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using BSH.Test.Fakes;
@@ -167,4 +169,78 @@ public class FileCollectorServiceTraversalTests
         Assert.That(fileCollectorService.EmptyFolders.Select(folder => folder.Folder), Is.EqualTo([empty.FullName]));
     }
 
+    [TestCase(typeof(IOException))]
+    [TestCase(typeof(UnauthorizedAccessException))]
+    public void GetLocalFileListSkipsSubFolderWhenExclusionThrows(Type failureType)
+    {
+        File.WriteAllText(Path.Combine(root, "root.txt"), "root");
+        var skipped = Directory.CreateDirectory(Path.Combine(root, "skipped"));
+        File.WriteAllText(Path.Combine(skipped.FullName, "skip.txt"), "skip");
+        fileCollectorService.FolderExclusionHandlers.Add(
+            new ThrowingFolderExclusion((Exception)Activator.CreateInstance(failureType, "simulated failure")));
+
+        var result = fileCollectorService.GetLocalFileList(root);
+
+        Assert.That(result.Select(file => file.FileName), Is.EqualTo(["root.txt"]));
+    }
+
+    [Test]
+    public void GetLocalFileListReturnsEmptyWhenRootIsGone()
+    {
+        var staleRoot = Path.Combine(root, "stale");
+        Directory.CreateDirectory(staleRoot);
+        Directory.Delete(staleRoot);
+
+        var result = fileCollectorService.GetLocalFileList(staleRoot);
+
+        Assert.That(result, Is.Empty);
+    }
+
+    [Test]
+    public void GetLocalFileListSkipsInaccessibleRoot()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Assert.Ignore("Directory ACLs can only be tested on Windows.");
+        }
+
+        var locked = Directory.CreateDirectory(Path.Combine(root, "locked"));
+        SetReadAccess(locked.FullName, deny: true);
+        try
+        {
+            var result = fileCollectorService.GetLocalFileList(locked.FullName);
+
+            Assert.That(result, Is.Empty);
+        }
+        finally
+        {
+            SetReadAccess(locked.FullName, deny: false);
+        }
+    }
+
+    private static void SetReadAccess(string path, bool deny)
+    {
+        var directory = new DirectoryInfo(path);
+        var security = directory.GetAccessControl();
+        var rule = new FileSystemAccessRule(
+            WindowsIdentity.GetCurrent().User!,
+            FileSystemRights.Read,
+            AccessControlType.Deny);
+
+        if (deny)
+        {
+            security.AddAccessRule(rule);
+        }
+        else
+        {
+            security.RemoveAccessRule(rule);
+        }
+
+        directory.SetAccessControl(security);
+    }
+
+    private sealed class ThrowingFolderExclusion(Exception failure) : IFolderExclusion
+    {
+        public bool IsFolderFiltered(string root, DirectoryInfo directory) => throw failure;
+    }
 }

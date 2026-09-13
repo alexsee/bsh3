@@ -44,7 +44,8 @@ public class WinUiOrchestrationParityTests
             scheduledBackupService,
             new TestQueryManager(),
             new TestNotificationService(),
-            new TestPowerStatusService { IsRunningOnBattery = true });
+            new TestPowerStatusService { IsRunningOnBattery = true },
+            new TestJobService());
 
         await service.StartAsync();
 
@@ -70,7 +71,8 @@ public class WinUiOrchestrationParityTests
             scheduledBackupService,
             new TestQueryManager(),
             new TestNotificationService(),
-            powerStatusService);
+            powerStatusService,
+            new TestJobService());
 
         await service.StartAsync();
         powerStatusService.SetIsRunningOnBattery(true);
@@ -99,7 +101,8 @@ public class WinUiOrchestrationParityTests
             scheduledBackupService,
             new TestQueryManager(),
             new TestNotificationService(),
-            new TestPowerStatusService { IsRunningOnBattery = true });
+            new TestPowerStatusService { IsRunningOnBattery = true },
+            new TestJobService());
 
         await service.RefreshAutomationAsync();
 
@@ -125,7 +128,8 @@ public class WinUiOrchestrationParityTests
             scheduledBackupService,
             new TestQueryManager(),
             new TestNotificationService(),
-            new TestPowerStatusService { IsRunningOnBattery = false });
+            new TestPowerStatusService { IsRunningOnBattery = false },
+            new TestJobService());
 
         await service.RefreshAutomationAsync();
 
@@ -149,7 +153,8 @@ public class WinUiOrchestrationParityTests
             scheduledBackupService,
             new TestQueryManager(),
             new TestNotificationService(),
-            new TestPowerStatusService());
+            new TestPowerStatusService(),
+            new TestJobService());
 
         await service.RefreshAutomationAsync();
 
@@ -174,7 +179,8 @@ public class WinUiOrchestrationParityTests
             scheduledBackupService,
             new TestQueryManager(),
             new TestNotificationService(),
-            new TestPowerStatusService { IsRunningOnBattery = false });
+            new TestPowerStatusService { IsRunningOnBattery = false },
+            new TestJobService());
 
         await service.RefreshAutomationAsync();
 
@@ -208,7 +214,8 @@ public class WinUiOrchestrationParityTests
             scheduledBackupService,
             new TestQueryManager(),
             notifications,
-            powerStatusService);
+            powerStatusService,
+            new TestJobService());
 
         await service.StartAsync();
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
@@ -240,7 +247,8 @@ public class WinUiOrchestrationParityTests
             scheduledBackupService,
             new TestQueryManager(),
             new TestNotificationService(),
-            powerStatusService);
+            powerStatusService,
+            new TestJobService());
 
         await service.StartAsync();
         configurationManager.DbStatus = "1";
@@ -268,7 +276,8 @@ public class WinUiOrchestrationParityTests
             new TestScheduledBackupService(),
             new TestQueryManager(),
             notifications,
-            new TestPowerStatusService());
+            new TestPowerStatusService(),
+            new TestJobService());
 
         await service.StartAsync();
 
@@ -296,12 +305,35 @@ public class WinUiOrchestrationParityTests
             new TestScheduledBackupService(),
             queryManager,
             notifications,
-            new TestPowerStatusService());
+            new TestPowerStatusService(),
+            new TestJobService());
 
         await service.StartAsync();
 
         Assert.That(notifications.Payloads, Has.Count.EqualTo(1));
         Assert.That(notifications.Payloads[0], Does.Contain("launch=\"action=overview\""));
+    }
+
+    [Test]
+    public async Task StopAsyncCancelsRunningJob()
+    {
+        var jobService = new TestJobService();
+        var scheduledBackupService = new TestScheduledBackupService();
+        var statusService = new TestStatusService();
+        var service = new OrchestrationService(
+            new FakeConfigurationManager(),
+            statusService,
+            scheduledBackupService,
+            new TestQueryManager(),
+            new TestNotificationService(),
+            new TestPowerStatusService(),
+            jobService);
+
+        await service.StopAsync();
+
+        Assert.That(jobService.CancelCalls, Is.EqualTo(1));
+        Assert.That(scheduledBackupService.StopCalls, Is.EqualTo(1));
+        Assert.That(statusService.SystemStatus, Is.EqualTo(SystemStatus.DEACTIVATED));
     }
 
     [TestCase(JobState.FINISHED, "INFO_BACKUP_SUCCESSFUL_TITLE", "action=overview")]
@@ -400,6 +432,23 @@ public class WinUiOrchestrationParityTests
             return Task.CompletedTask;
         }
         public void Stop() => StopCalls++;
+    }
+
+    private sealed class TestJobService : IJobService
+    {
+        public int CancelCalls { get; private set; }
+
+        public bool IsCancellationRequested => CancelCalls > 0;
+        public void Cancel() => CancelCalls++;
+        public Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(true);
+        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
+        public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
+        public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.FromResult(new JobSessionResult { Started = true });
+        public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
+        public Task<bool> RequestPassword() => Task.FromResult(true);
+        public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true) => Task.CompletedTask;
+        public Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true) => Task.CompletedTask;
+        public Task ModifyBackupAsync(bool statusDialog = true) => Task.CompletedTask;
     }
 
     private sealed class TestPowerStatusService : IPowerStatusService

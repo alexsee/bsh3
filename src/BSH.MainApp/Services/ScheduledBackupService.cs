@@ -141,8 +141,19 @@ public class ScheduledBackupService : IScheduledBackupService
 
     private async Task RemoveOldBackups()
     {
-        var listDelete = scheduleSettingsService.LoadPolicy()
-            .GetAutomaticVersionsToDelete(queryManager.GetVersions(), DateTime.Now);
+        // obtain versions for deletion
+        var listDelete = new List<VersionDetails>();
+
+        try
+        {
+            listDelete.AddRange(scheduleSettingsService.LoadPolicy()
+                .GetAutomaticVersionsToDelete(queryManager.GetVersions(), DateTime.Now));
+        }
+        catch (Exception ex)
+        {
+            // although this is a major issue, we don't want the backup to fail
+            Log.Error(ex, "Could not determine backups for deletion");
+        }
 
         // delete old versions
         foreach (var version in listDelete)

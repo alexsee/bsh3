@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -11,12 +12,14 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Humanizer;
+using Serilog;
 using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 
 public class StatusController : IJobReport
 {
+    private static readonly ILogger Logger = Log.ForContext<StatusController>();
     private static StatusController _statusController;
 
     public static StatusController Current
@@ -33,6 +36,7 @@ public class StatusController : IJobReport
     }
 
     private readonly List<IStatusReport> observers = new List<IStatusReport>();
+    private readonly object observersLock = new object();
 
     private RequestOverwriteResult lastFileOverwriteChoice = RequestOverwriteResult.None;
 
@@ -98,23 +102,20 @@ public class StatusController : IJobReport
     public void SetSystemStatus(SystemStatus status)
     {
         SystemStatus = status;
-        observers.ForEach(x => x.ReportSystemStatus(status));
+        NotifyObservers(x => x.ReportSystemStatus(status));
     }
 
     public void ReportAction(ActionType action, bool silent)
     {
         lastFileOverwriteChoice = RequestOverwriteResult.None;
         lastActionType = action;
-        observers.ForEach(x => x.ReportAction(action, silent));
+        NotifyObservers(x => x.ReportAction(action, silent));
     }
 
     public void ReportState(JobState jobState)
     {
         JobState = jobState;
-        foreach (var x in observers)
-        {
-            x.ReportState(jobState);
-        }
+        NotifyObservers(x => x.ReportState(jobState));
 
         // finished successfully
         if (jobState == JobState.FINISHED && lastActionType == ActionType.Backup && BackupLogic.ConfigurationManager.InfoBackupDone == "1")
@@ -132,20 +133,20 @@ public class StatusController : IJobReport
     {
         LastStatusTitle = title;
         LastStatusText = text;
-        observers.ForEach(x => x.ReportStatus(title, text));
+        NotifyObservers(x => x.ReportStatus(title, text));
     }
 
     public void ReportProgress(int total, int current)
     {
         LastProgressTotal = total;
         LastProgressCurrent = current;
-        observers.ForEach(x => x.ReportProgress(total, current));
+        NotifyObservers(x => x.ReportProgress(total, current));
     }
 
     public void ReportFileProgress(string file)
     {
         LastFileProgress = file;
-        observers.ForEach(x => x.ReportFileProgress(file));
+        NotifyObservers(x => x.ReportFileProgress(file));
     }
 
     public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)
@@ -216,12 +217,63 @@ public class StatusController : IJobReport
 
     public void AddObserver(IStatusReport jobReport, bool triggerLastState = false)
     {
-        observers.Add(jobReport);
+        ArgumentNullException.ThrowIfNull(jobReport);
+
+        lock (observersLock)
+        {
+            observers.Add(jobReport);
+        }
+
+        if (triggerLastState)
+        {
+            try
+            {
+                jobReport.ReportSystemStatus(SystemStatus);
+                jobReport.ReportState(JobState);
+
+                if (JobState == JobState.RUNNING)
+                {
+                    jobReport.ReportStatus(LastStatusTitle, LastStatusText);
+                    jobReport.ReportProgress(LastProgressTotal, LastProgressCurrent);
+                    jobReport.ReportFileProgress(LastFileProgress);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(ex, "Status observer replay failed.");
+            }
+        }
     }
 
     public void RemoveObserver(IStatusReport jobReport)
     {
-        observers.Remove(jobReport);
+        ArgumentNullException.ThrowIfNull(jobReport);
+
+        lock (observersLock)
+        {
+            observers.Remove(jobReport);
+        }
+    }
+
+    private void NotifyObservers(Action<IStatusReport> notify)
+    {
+        IStatusReport[] snapshot;
+        lock (observersLock)
+        {
+            snapshot = observers.ToArray();
+        }
+
+        foreach (var observer in snapshot)
+        {
+            try
+            {
+                notify(observer);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning(ex, "Status observer notification failed.");
+            }
+        }
     }
 
     public void ShowExceptionDialog()

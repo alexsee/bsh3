@@ -15,6 +15,7 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
+using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -74,7 +75,7 @@ public class RestoreJob : Job
     /// <exception cref="DeviceNotReadyException"></exception>
     public async Task RestoreAsync(CancellationToken token)
     {
-        Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
+        ApplyJobCulture();
 
         // report status
         _logger.Information("Begin restore", new { Version, File, Destination });
@@ -103,7 +104,10 @@ public class RestoreJob : Job
             System.Data.Common.DbDataReader reader;
 
             // single file or path?
-            if (!string.IsNullOrEmpty(Path.GetFileName(File).Trim()))
+            // A null source means "restore everything below the root".
+            File ??= "\\";
+            var singleFileName = string.IsNullOrEmpty(File) ? string.Empty : (Path.GetFileName(File) ?? string.Empty).Trim();
+            if (!string.IsNullOrEmpty(singleFileName))
             {
                 var fileName = Path.GetFileName(File);
                 var filePath = Path.GetDirectoryName(File);
@@ -258,23 +262,41 @@ public class RestoreJob : Job
     /// <returns></returns>
     private static string GetFileDestination(List<string> destFolders, string fileDest)
     {
+        ArgumentNullException.ThrowIfNull(destFolders);
+        ArgumentNullException.ThrowIfNull(fileDest);
+
+        // Stored file paths use the Windows directory separator (this application is Windows-only).
+        var separator = Path.DirectorySeparatorChar;
+
         if (destFolders.Count > 1)
         {
-            var folder = destFolders.Find(folder => fileDest.StartsWith("\\" + Path.GetFileName(folder) + "\\", StringComparison.OrdinalIgnoreCase));
-            var idx = fileDest.ToLower().IndexOf(("\\" + Path.GetFileName(folder) + "\\").ToLower(), StringComparison.OrdinalIgnoreCase);
-            fileDest = folder + "\\" + fileDest[(idx + Path.GetFileName(folder).Length + 2)..];
+            var match = destFolders.Find(folder => fileDest.StartsWith(separator + Path.GetFileName(folder) + separator, StringComparison.OrdinalIgnoreCase));
+            if (match is null)
+            {
+                // stored path does not match any known source root; fall back to the first destination
+                fileDest = destFolders[0] + separator + fileDest.TrimStart(separator);
+            }
+            else
+            {
+                var needle = separator + Path.GetFileName(match) + separator;
+                var idx = fileDest.IndexOf(needle, StringComparison.OrdinalIgnoreCase);
+                fileDest = idx >= 0
+                    ? match + separator + fileDest[(idx + needle.Length)..]
+                    : match + separator + fileDest.TrimStart(separator);
+            }
         }
-        else
+        else if (destFolders.Count == 1)
         {
-            // path found
-            fileDest = fileDest[(fileDest.IndexOf('\\', 2) + 1)..];
-            fileDest = destFolders[0] + "\\" + fileDest;
+            // strip the stored drive/root prefix ("\\C\\...") and re-root at the destination
+            var separatorIndex = fileDest.IndexOf(separator, 2);
+            var remainder = separatorIndex >= 0 ? fileDest[(separatorIndex + 1)..] : fileDest.TrimStart(separator);
+            fileDest = destFolders[0] + separator + remainder;
         }
 
         // correct path
-        if (!fileDest.EndsWith('\\'))
+        if (!fileDest.EndsWith(separator))
         {
-            fileDest += "\\";
+            fileDest += separator;
         }
 
         return fileDest;
@@ -294,7 +316,6 @@ public class RestoreJob : Job
         ArgumentNullException.ThrowIfNull(storage);
 
         var localFilePath = Path.Combine(destination, reader.GetString("fileName"));
-        var fileType = reader.GetInt32("fileType");
 
         if (await ShouldSkipOverwriteAsync(localFilePath, destination, reader, warning))
         {
@@ -305,8 +326,8 @@ public class RestoreJob : Job
 
         try
         {
-            var remoteFilePath = BuildRemoteFilePath(reader);
-            CopyFromStorage(storage, fileType, localFilePath, remoteFilePath);
+            var remoteFilePath = StoragePath.BuildRemoteFilePath(reader);
+            StoragePath.CopyFromStorageByType(storage, reader.GetInt32("fileType").ToFileTypeKind(), localFilePath, remoteFilePath, Password);
         }
         catch (Exception ex)
         {
@@ -397,36 +418,6 @@ public class RestoreJob : Job
         catch (Exception ex)
         {
             throw new FileNotProcessedException(ex);
-        }
-    }
-
-    private static string BuildRemoteFilePath(IDataReader reader)
-    {
-        if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
-        {
-            return reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
-        }
-
-        return reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
-    }
-
-    private void CopyFromStorage(IStorageProvider storage, int fileType, string localFilePath, string remoteFilePath)
-    {
-        if (fileType == 1 || fileType == 3)
-        {
-            storage.CopyFileFromStorage(localFilePath, remoteFilePath);
-            return;
-        }
-
-        if (fileType == 2 || fileType == 4)
-        {
-            storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
-            return;
-        }
-
-        if (fileType == 5 || fileType == 6)
-        {
-            storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, Password);
         }
     }
 }

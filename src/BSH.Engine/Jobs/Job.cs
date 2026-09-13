@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -12,6 +14,7 @@ using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -37,6 +40,9 @@ public abstract class Job : IDisposable
     private readonly List<IJobReport> observers = new();
     private bool disposed;
     private bool keepsSystemAwake;
+
+    private static readonly CultureInfo JobCulture = CultureInfo.GetCultureInfo("de-DE");
+    private const string VersionDateFormat = "dd-MM-yyyy HH-mm-ss";
 
     public Collection<FileExceptionEntry> FileErrorList
     {
@@ -75,15 +81,7 @@ public abstract class Job : IDisposable
     /// <returns></returns>
     protected FileExceptionEntry AddFileErrorToList(string versionDate, FileTableRow file, Exception ex)
     {
-        var fileExceptionEntry = new FileExceptionEntry()
-        {
-            Exception = ex,
-            File = file,
-            NewVersionDate = versionDate,
-        };
-
-        FileErrorList.Add(fileExceptionEntry);
-        return fileExceptionEntry;
+        return CreateFileErrorEntry(file, ex, versionDate, null);
     }
 
     /// <summary>
@@ -96,16 +94,7 @@ public abstract class Job : IDisposable
     /// <returns></returns>
     protected FileExceptionEntry AddFileErrorToList(string versionDate, long versionId, FileTableRow file, Exception ex)
     {
-        var fileExceptionEntry = new FileExceptionEntry()
-        {
-            Exception = ex,
-            File = file,
-            NewVersionDate = versionDate,
-            NewVersionId = versionId
-        };
-
-        FileErrorList.Add(fileExceptionEntry);
-        return fileExceptionEntry;
+        return CreateFileErrorEntry(file, ex, versionDate, versionId);
     }
 
     /// <summary>
@@ -116,96 +105,88 @@ public abstract class Job : IDisposable
     /// <returns></returns>
     protected FileExceptionEntry AddFileErrorToList(FileTableRow file, Exception ex)
     {
+        return CreateFileErrorEntry(file, ex, null, null);
+    }
+
+    private FileExceptionEntry CreateFileErrorEntry(FileTableRow file, Exception ex, string versionDate, long? versionId)
+    {
         var fileExceptionEntry = new FileExceptionEntry()
         {
             Exception = ex,
             File = file,
+            NewVersionDate = versionDate,
         };
+
+        if (versionId.HasValue)
+        {
+            fileExceptionEntry.NewVersionId = versionId.Value;
+        }
 
         FileErrorList.Add(fileExceptionEntry);
         return fileExceptionEntry;
     }
 
-    public void ReportState(JobState jobState)
+    private void ForEachObserver(Action<IJobReport> report)
     {
-        foreach (var observer in observers)
+        foreach (var observer in observers.ToArray())
         {
             try
             {
-                observer.ReportState(jobState);
+                report(observer);
             }
             catch
             {
                 // ignore exception
             }
         }
+    }
+
+    private async Task ForEachObserverAsync(Func<IJobReport, Task> report)
+    {
+        foreach (var observer in observers.ToArray())
+        {
+            try
+            {
+                await report(observer);
+            }
+            catch
+            {
+                // ignore exception
+            }
+        }
+    }
+
+    public void ReportState(JobState jobState)
+    {
+        ForEachObserver(observer => observer.ReportState(jobState));
     }
 
     protected void ReportStatus(string title, string text)
     {
-        foreach (var observer in observers)
-        {
-            try
-            {
-                observer.ReportStatus(title, text);
-            }
-            catch
-            {
-                // ignore exception
-            }
-        }
+        ForEachObserver(observer => observer.ReportStatus(title, text));
     }
 
     protected void ReportProgress(int total, int current)
     {
-        foreach (var observer in observers)
-        {
-            try
-            {
-                observer.ReportProgress(total, current);
-            }
-            catch
-            {
-                // ignore exception
-            }
-        }
+        ForEachObserver(observer => observer.ReportProgress(total, current));
     }
 
     protected void ReportFileProgress(string file)
     {
-        foreach (var observer in observers)
-        {
-            try
-            {
-                observer.ReportFileProgress(file);
-            }
-            catch
-            {
-                // ignore exception
-            }
-        }
+        ForEachObserver(observer => observer.ReportFileProgress(file));
     }
 
     protected void ReportExceptions(Collection<FileExceptionEntry> files)
     {
-        foreach (var observer in observers)
-        {
-            try
-            {
-                observer.ReportExceptions(files, this.silent);
-            }
-            catch
-            {
-                // ignore exception
-            }
-        }
+        ForEachObserver(observer => observer.ReportExceptions(files, this.silent));
     }
 
     protected async Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile)
     {
-        if (observers.Count > 0)
+        var snapshot = observers.ToArray();
+        if (snapshot.Length > 0)
         {
-            return await observers[0].RequestOverwrite(localFile, remoteFile);
+            return await snapshot[0].RequestOverwrite(localFile, remoteFile);
         }
 
         return RequestOverwriteResult.Overwrite;
@@ -213,26 +194,18 @@ public abstract class Job : IDisposable
 
     protected async Task RequestShowErrorInsufficientDiskSpaceAsync()
     {
-        foreach (var observer in observers)
-        {
-            try
-            {
-                await observer.RequestShowErrorInsufficientDiskSpaceAsync();
-            }
-            catch
-            {
-                // ignore exception
-            }
-        }
+        await ForEachObserverAsync(observer => observer.RequestShowErrorInsufficientDiskSpaceAsync());
     }
 
     public void AddObserver(IJobReport observer)
     {
+        ArgumentNullException.ThrowIfNull(observer);
         observers.Add(observer);
     }
 
     public void RemoveObserver(IJobReport observer)
     {
+        ArgumentNullException.ThrowIfNull(observer);
         observers.Remove(observer);
     }
 
@@ -267,16 +240,45 @@ public abstract class Job : IDisposable
     }
 
     /// <summary>
+    /// Applies the shared job culture (de-DE) to the current thread.
+    /// </summary>
+    protected static void ApplyJobCulture()
+    {
+        Thread.CurrentThread.CurrentCulture = JobCulture;
+    }
+
+    /// <summary>
+    /// Formats a backup version date key (e.g. "01-02-2026 03-04-05").
+    /// </summary>
+    protected static string FormatVersionDate(DateTime value)
+    {
+        return value.ToString(VersionDateFormat, JobCulture);
+    }
+
+    /// <summary>
+    /// Bumps the stored backup version counter, if it holds a numeric value.
+    /// </summary>
+    protected void BumpStorageVersion()
+    {
+        if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
+        {
+            configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
+        }
+    }
+
+    /// <summary>
     /// Deletes a single file from the backup device via the storage provider.
     /// </summary>
     /// <exception cref="FileNotProcessedException"></exception>
     protected void DeleteFileFromDevice(string fileName, string filePath, string longFileName, string versionDate, string fileType)
     {
+        var kind = FileTypeKindExtensions.ParseFileTypeKind(fileType);
+
         // determine remote file name
         string remoteFile;
-        if ((fileType == "1" || fileType == "2" || fileType == "6") && !string.IsNullOrEmpty(longFileName))
+        if (kind.UsesLongFileNameStorage() && !string.IsNullOrEmpty(longFileName))
         {
-            remoteFile = Path.Combine(versionDate, "_LONGFILES_", longFileName);
+            remoteFile = StoragePath.BuildLongFilePath(versionDate, longFileName);
         }
         else
         {
@@ -286,18 +288,7 @@ public abstract class Job : IDisposable
         // delete file
         try
         {
-            if (fileType == "1" || fileType == "3")
-            {
-                storage.DeleteFileFromStorage(remoteFile);
-            }
-            else if (fileType == "2" || fileType == "4")
-            {
-                storage.DeleteFileFromStorageCompressed(remoteFile);
-            }
-            else if (fileType == "5" || fileType == "6")
-            {
-                storage.DeleteFileFromStorageEncrypted(remoteFile);
-            }
+            StoragePath.DeleteFromStorageByType(storage, kind, remoteFile);
         }
         catch (Exception ex)
         {
@@ -313,7 +304,15 @@ public abstract class Job : IDisposable
     {
         try
         {
-            storage.UpdateStorageVersion(int.Parse(configurationManager.OldBackupPrevent));
+            if (int.TryParse(configurationManager.OldBackupPrevent, out var storageVersion))
+            {
+                storage.UpdateStorageVersion(storageVersion);
+            }
+            else
+            {
+                _logger.Warning("Stored backup version '{Version}' is not numeric; skipping storage version update.", configurationManager.OldBackupPrevent);
+            }
+
             storage.UploadDatabaseFile(dbClientFactory.DatabaseFile);
         }
         catch (Exception ex)

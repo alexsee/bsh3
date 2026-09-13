@@ -16,6 +16,7 @@ using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
+using Brightbits.BSH.Engine.Storage;
 using Serilog;
 
 namespace Brightbits.BSH.Engine.Jobs;
@@ -53,7 +54,7 @@ public class EditJob : Job
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
     public async Task EditAsync(CancellationToken cancellationToken = default)
     {
-        Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+        ApplyJobCulture();
 
         // report status
         _logger.Information("Begin edit backup.");
@@ -167,11 +168,11 @@ public class EditJob : Job
     /// <param name="fileVersionId"></param>
     private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, long fileVersionId)
     {
-        var decryptedFileType = fileType switch
+        var decryptedFileType = fileType.ToFileTypeKind() switch
         {
-            5 => 3,
-            6 => 1,
-            _ => (int?)null
+            FileTypeKind.StoredEncrypted => FileTypeKind.StoredCopy,
+            FileTypeKind.Encrypted => FileTypeKind.RegularCopy,
+            _ => (FileTypeKind?)null
         };
 
         if (decryptedFileType == null)
@@ -184,7 +185,7 @@ public class EditJob : Job
             throw new IOException($"Storage failed to decrypt '{remoteFile}'.");
         }
 
-        await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, decryptedFileType.Value);
+        await backupMutationRepository.UpdateFileVersionTypeAsync(dbClient, fileVersionId, (int)decryptedFileType.Value);
     }
 
     private sealed record EditableFile(
@@ -197,12 +198,7 @@ public class EditJob : Job
     {
         public string GetRemoteFilePath()
         {
-            if (!string.IsNullOrEmpty(LongFileName))
-            {
-                return VersionDate + "\\_LONGFILES_\\" + LongFileName;
-            }
-
-            return VersionDate + FilePath + FileName;
+            return StoragePath.BuildRemoteFilePath(VersionDate, FilePath, FileName, LongFileName);
         }
     }
 }

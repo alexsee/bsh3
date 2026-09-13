@@ -12,11 +12,18 @@ using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
+using Brightbits.BSH.Engine.Storage;
+using Serilog;
 
 namespace Brightbits.BSH.Engine;
 
 public class QueryManager : IQueryManager
 {
+    private static readonly ILogger Logger = Log.ForContext<QueryManager>();
+    private const string VersionNavigationFailureMessage = "Version navigation query failed.";
+    private const string VersionsDescendingQuery = "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID DESC";
+    private const string VersionsAscendingQuery = "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID ASC";
+
     private readonly IDbClientFactory dbClientFactory;
 
     private readonly IConfigurationManager configurationManager;
@@ -91,7 +98,7 @@ public class QueryManager : IQueryManager
         using (var dbClient = dbClientFactory.CreateDbClient())
         using (var reader = dbClient.ExecuteDataReader(
             CommandType.Text,
-            "SELECT v.*, (SELECT SUM(fileSize) FROM fileversiontable WHERE filepackage = v.versionid) AS versionSize FROM versiontable AS v WHERE v.versionStatus = 0 ORDER BY v.versionID " + (desc ? "DESC" : "ASC")
+            desc ? VersionsDescendingQuery : VersionsAscendingQuery
             , null))
         {
             while (reader.Read())
@@ -114,7 +121,7 @@ public class QueryManager : IQueryManager
         using var dbClient = dbClientFactory.CreateDbClient();
         var result = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM versiontable WHERE versionStatus = 0");
 
-        return int.Parse(result.ToString());
+        return Convert.ToInt32(result ?? 0);
     }
 
     /// <summary>
@@ -262,8 +269,9 @@ public class QueryManager : IQueryManager
 
             return null;
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.Warning(ex, VersionNavigationFailureMessage);
             return null;
         }
     }
@@ -304,8 +312,9 @@ public class QueryManager : IQueryManager
 
             return null;
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.Warning(ex, VersionNavigationFailureMessage);
             return null;
         }
     }
@@ -344,8 +353,9 @@ public class QueryManager : IQueryManager
 
             return null;
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.Warning(ex, VersionNavigationFailureMessage);
             return null;
         }
     }
@@ -386,8 +396,9 @@ public class QueryManager : IQueryManager
 
             return null;
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.Warning(ex, VersionNavigationFailureMessage);
             return null;
         }
     }
@@ -604,12 +615,12 @@ public class QueryManager : IQueryManager
 
     private static string GetFileTypeDisplayName(string fileType)
     {
-        return fileType switch
+        return FileTypeKindExtensions.ParseFileTypeKind(fileType) switch
         {
-            "1" => "Regular copy",
-            "2" or "4" => "Compressed",
-            "3" => "Stored copy",
-            "5" or "6" => "Encrypted",
+            FileTypeKind.RegularCopy => "Regular copy",
+            FileTypeKind.Compressed or FileTypeKind.StoredCompressed => "Compressed",
+            FileTypeKind.StoredCopy => "Stored copy",
+            FileTypeKind.StoredEncrypted or FileTypeKind.Encrypted => "Encrypted",
             _ => "Unknown"
         };
     }
@@ -622,7 +633,7 @@ public class QueryManager : IQueryManager
     public string GetFileNameFromDrive(FileTableRow file)
     {
         // check if we can directly read file?
-        if (file.FileType == "1")
+        if (FileTypeKindExtensions.ParseFileTypeKind(file.FileType) == FileTypeKind.RegularCopy)
         {
             var folderPath = configurationManager.BackupFolder;
             folderPath = Path.Combine(folderPath, file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss"));
@@ -697,51 +708,21 @@ public class QueryManager : IQueryManager
 
     private (string result, bool temp) ResolveFileFromStorage(System.Data.Common.DbDataReader reader, IStorageProvider storage, string password)
     {
-        var fileType = reader.GetInt32("fileType");
-        if (fileType == 1)
+        var fileType = reader.GetInt32("fileType").ToFileTypeKind();
+        if (fileType == FileTypeKind.RegularCopy)
         {
             return (GetFileNameFromDrive(FileTableRow.FromReaderFileVersion(reader)), false);
         }
 
-        if (fileType < 2 || fileType > 6)
+        if (fileType == FileTypeKind.Unknown)
         {
             return (null, false);
         }
 
         var localFilePath = Path.Combine(Path.GetTempPath(), reader.GetString("fileName"));
-        var remoteFilePath = BuildRemoteFilePath(reader);
-        CopyFileByType(storage, fileType, localFilePath, remoteFilePath, password);
+        var remoteFilePath = StoragePath.BuildRemoteFilePath(reader);
+        StoragePath.CopyFromStorageByType(storage, fileType, localFilePath, remoteFilePath, password);
         return (localFilePath, true);
-    }
-
-    private static string BuildRemoteFilePath(System.Data.Common.DbDataReader reader)
-    {
-        if (!string.IsNullOrEmpty(reader.GetString("longfilename")))
-        {
-            return reader.GetString("versionDate") + "\\_LONGFILES_\\" + reader.GetString("longfilename");
-        }
-
-        return reader.GetString("versionDate") + reader.GetString("filePath") + reader.GetString("fileName");
-    }
-
-    private static void CopyFileByType(IStorageProvider storage, int fileType, string localFilePath, string remoteFilePath, string password)
-    {
-        if (fileType == 3)
-        {
-            storage.CopyFileFromStorage(localFilePath, remoteFilePath);
-            return;
-        }
-
-        if (fileType == 2 || fileType == 4)
-        {
-            storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
-            return;
-        }
-
-        if (fileType == 5 || fileType == 6)
-        {
-            storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
-        }
     }
 
     /// <summary>
@@ -767,7 +748,7 @@ public class QueryManager : IQueryManager
             return false;
         }
 
-        return int.Parse(result.ToString()) > 0;
+        return Convert.ToInt32(result) > 0;
     }
 
     /// <summary>
@@ -793,7 +774,13 @@ public class QueryManager : IQueryManager
 
         foreach (var destination in destFolders)
         {
-            var directoryName = destination.Split('\\', StringSplitOptions.RemoveEmptyEntries)[^1];
+            var segments = destination.Split('\\', StringSplitOptions.RemoveEmptyEntries);
+            if (segments.Length == 0)
+            {
+                continue;
+            }
+
+            var directoryName = segments[^1];
 
             if (folder.StartsWith("\\" + directoryName + "\\", StringComparison.OrdinalIgnoreCase))
             {
@@ -862,7 +849,7 @@ public class QueryManager : IQueryManager
             return 0;
         }
 
-        return int.Parse(result.ToString());
+        return Convert.ToInt32(result);
     }
 
     public async Task<double> GetTotalFileSizeAsync()

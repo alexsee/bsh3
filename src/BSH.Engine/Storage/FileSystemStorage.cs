@@ -42,7 +42,7 @@ public class FileSystemStorage : Storage, IStorageProvider
         this.configurationManager = configurationManager;
         this.backupFolder = configurationManager.BackupFolder;
         this.volumeSerialNumber = configurationManager.MediaVolumeSerial;
-        this.currentStorageVersion = int.Parse(configurationManager.OldBackupPrevent);
+        this.currentStorageVersion = int.TryParse(configurationManager.OldBackupPrevent, out var storageVersion) ? storageVersion : 0;
         this.networkUserName = configurationManager.UNCUsername;
         this.networkPassword = configurationManager.UNCPassword;
 
@@ -238,6 +238,11 @@ public class FileSystemStorage : Storage, IStorageProvider
 
     protected virtual void Dispose(bool disposing)
     {
+        if (!disposing)
+        {
+            return;
+        }
+
         // Cleanup
 
         // are we connecting to a network share?
@@ -278,6 +283,7 @@ public class FileSystemStorage : Storage, IStorageProvider
     private void DisconnectToNetwork()
     {
         networkConnection?.Dispose();
+        networkConnection = null;
     }
 
     public bool UploadDatabaseFile(string databaseFile)
@@ -349,7 +355,14 @@ public class FileSystemStorage : Storage, IStorageProvider
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
         using var zipFile = ZipFile.OpenRead(remoteFilePath);
-        zipFile.GetEntry(Path.GetFileName(localFile)).ExtractToFile(GetLocalFileName(localFile), true);
+        var entry = zipFile.GetEntry(Path.GetFileName(localFile));
+        if (entry == null)
+        {
+            _logger.Warning("Zip archive {Archive} does not contain entry {Entry}.", remoteFilePath, Path.GetFileName(localFile));
+            return false;
+        }
+
+        entry.ExtractToFile(GetLocalFileName(localFile), true);
 
         return true;
     }

@@ -69,7 +69,7 @@ public class DeleteSingleJob : Job
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+        ApplyJobCulture();
 
         var scopedVersions = versionIds is { Count: > 0 } ? versionIds : null;
         LogDeleteStart(scopedVersions);
@@ -111,10 +111,7 @@ public class DeleteSingleJob : Job
 
         await UpdateFreeDiskSpaceAsync();
 
-        if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
-        {
-            configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
-        }
+        BumpStorageVersion();
 
         DbClientFactory.ClosePool();
         UpdateDatabaseOnStorage();

@@ -98,7 +98,7 @@ public class BackupJob : Job
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
     public async Task BackupAsync(CancellationToken token)
     {
-        Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("de-DE");
+        ApplyJobCulture();
 
         // report status
         _logger.Information("Begin backup", new { Title, FullBackup, Sources, SourceFolder });
@@ -142,7 +142,7 @@ public class BackupJob : Job
             storage.Open();
 
             // get backup version date
-            var newVersionDate = DateTime.Now.ToString("dd-MM-yyyy HH-mm-ss");
+            var newVersionDate = FormatVersionDate(DateTime.Now);
 
             // save current backup version, so we know in case of an error that something wrong happend
             configurationManager.LastVersionDate = newVersionDate;
@@ -214,7 +214,7 @@ public class BackupJob : Job
                     ReportFileProgress(file.FileNamePath());
 
                     // search for database entry
-                    var filePath = "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\";
+                    var filePath = ToDatabaseFilePath(Path.GetFileName(file.FileRoot), file.FilePath);
                     var fileId = await backupMutationRepository.GetFileIdAsync(dbClient, file.FileName, filePath);
                     file.FileId = fileId?.ToString();
 
@@ -319,7 +319,7 @@ public class BackupJob : Job
                 {
                     var lastVersion = await queryManager.GetLastBackupAsync();
 
-                    if (lastVersion != null && storage.RenameDirectory(lastVersion.CreationDate.ToString("dd-MM-yyyy HH-mm-ss"), newVersionDate))
+                    if (lastVersion != null && storage.RenameDirectory(FormatVersionDate(lastVersion.CreationDate), newVersionDate))
                     {
                         await backupMutationRepository.RenameVersionDateAsync(dbClient, long.Parse(lastVersion.Id), newVersionDate);
                     }
@@ -335,10 +335,7 @@ public class BackupJob : Job
             configurationManager.LastBackupDone = newVersionDate;
             configurationManager.LastVersionDate = "";
 
-            if (int.TryParse(configurationManager.OldBackupPrevent, out var databaseVersion))
-            {
-                configurationManager.OldBackupPrevent = (databaseVersion + 1).ToString();
-            }
+            BumpStorageVersion();
         }
 
         // refresh free diskspace
@@ -393,7 +390,7 @@ public class BackupJob : Job
         var copyCandidates = new List<(double FileSize, bool HasMatchingVersion)>(files.Count);
         foreach (var file in files)
         {
-            var filePath = "\\" + Path.Combine(Path.GetFileName(file.FileRoot), file.FilePath) + "\\";
+            var filePath = ToDatabaseFilePath(Path.GetFileName(file.FileRoot), file.FilePath);
             var fileId = await backupMutationRepository.GetFileIdAsync(dbClient, file.FileName, filePath);
             if (!fileId.HasValue)
             {
@@ -423,7 +420,7 @@ public class BackupJob : Job
         foreach (var folder in emptyFolder)
         {
             // backup folder
-            var folderPath = "\\" + Path.Combine(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath)) + "\\";
+            var folderPath = ToDatabaseFilePath(Path.GetFileName(folder.RootPath), IOUtils.GetRelativeFolder(folder.Folder, folder.RootPath));
             var folderId = await backupMutationRepository.AddOrGetFolderIdAsync(dbClient, folderPath);
             await backupMutationRepository.AddFolderLinkAsync(dbClient, folderId, newVersionId);
         }
@@ -555,7 +552,7 @@ public class BackupJob : Job
             _logger.Warning(ex, "Could not copy file {LocalFileName} due to IO error.", localFileName);
 
             // file does not exist anymore?
-            if (ex.GetType() == typeof(DirectoryNotFoundException) || ex.GetType() == typeof(FileNotFoundException))
+            if (ex is DirectoryNotFoundException or FileNotFoundException)
             {
                 throw new FileNotProcessedException(ex);
             }
@@ -639,7 +636,9 @@ public class BackupJob : Job
             return true;
         }
 
-        var excludedExtensions = configurationManager.ExcludeCompression.Split('|');
+        var excludedExtensions = new HashSet<string>(
+            configurationManager.ExcludeCompression.Split('|', StringSplitOptions.RemoveEmptyEntries),
+            StringComparer.OrdinalIgnoreCase);
         return !excludedExtensions.Contains(fileExt);
     }
 
@@ -707,6 +706,15 @@ public class BackupJob : Job
     }
 
     /// <summary>
+    /// Builds the backslash-qualified database path for a file or folder
+    /// (e.g. "\C\Documents\").
+    /// </summary>
+    private static string ToDatabaseFilePath(string rootName, string relativePath)
+    {
+        return "\\" + Path.Combine(rootName, relativePath) + "\\";
+    }
+
+    /// <summary>
     /// Adds a new file version to the database.
     /// </summary>
     /// <param name="dbClient"></param>
@@ -723,30 +731,30 @@ public class BackupJob : Job
             file.FilePath += "\\";
         }
 
-        var fileType = 1;
+        var fileType = FileTypeKind.RegularCopy;
         if (storage.Kind == StorageProviderKind.LocalFileSystem)
         {
             if (compress)
             {
-                fileType = 2;
+                fileType = FileTypeKind.Compressed;
             }
 
             if (encrypt)
             {
-                fileType = 6;
+                fileType = FileTypeKind.Encrypted;
             }
         }
         else
         {
-            fileType = 3;
+            fileType = FileTypeKind.StoredCopy;
             if (compress)
             {
-                fileType = 4;
+                fileType = FileTypeKind.StoredCompressed;
             }
 
             if (encrypt)
             {
-                fileType = 5;
+                fileType = FileTypeKind.StoredEncrypted;
             }
         }
 
@@ -762,7 +770,7 @@ public class BackupJob : Job
             file.FileSize,
             file.FileDateCreated,
             file.FileDateModified,
-            fileType,
+            (int)fileType,
             longFileName);
     }
 }

@@ -14,7 +14,7 @@ namespace Brightbits.BSH.Engine.Services.FileCollector;
 
 public class FileCollectorService : IFileCollectorService
 {
-    private string root;
+    private const string InaccessibleDirectoryMessage = "Directory {Directory} could not be accessed.";
 
     public List<IFileExclusion> FileExclusionHandlers
     {
@@ -35,41 +35,19 @@ public class FileCollectorService : IFileCollectorService
 
     public List<FileTableRow> GetLocalFileList(string root, bool subFolders = true)
     {
-        this.root = root;
-
         var result = new List<FileTableRow>();
         EmptyFolders = new List<FolderTableRow>();
 
-        SeekFiles(new DirectoryInfo(root), result, subFolders);
+        SeekFiles(new DirectoryInfo(root), result, subFolders, root);
 
         return result;
     }
 
-    private void SeekFiles(DirectoryInfo root, List<FileTableRow> fileArray, bool subFolders)
+    private void SeekFiles(DirectoryInfo directory, List<FileTableRow> fileArray, bool subFolders, string baseRoot)
     {
         try
         {
-            // get files
-            var files = root.GetFiles();
-            foreach (var fileEntry in files)
-            {
-                var file = new FileTableRow()
-                {
-                    FileName = fileEntry.Name,
-                    FilePath = IOUtils.GetRelativeFolder(fileEntry.DirectoryName, this.root),
-                    FileRoot = this.root,
-                    FileDateCreated = fileEntry.CreationTimeUtc,
-                    FileDateModified = fileEntry.LastWriteTimeUtc,
-                    FileSize = fileEntry.Length,
-                };
-
-                if (FileExclusionHandlers.Any(handler => handler.IsFileExcluded(file)))
-                {
-                    continue;
-                }
-
-                fileArray.Add(file);
-            }
+            var fileCount = CollectFiles(directory, fileArray, baseRoot);
 
             // search subfolders?
             if (!subFolders)
@@ -78,35 +56,75 @@ public class FileCollectorService : IFileCollectorService
             }
 
             // scan subfolders
-            var folders = root.GetDirectories();
+            var folders = directory.GetDirectories();
 
             // empty folder?
-            if (files.Length <= 0 && folders.Length <= 0)
+            if (fileCount <= 0 && folders.Length <= 0)
             {
-                var f = new FolderTableRow(root.FullName, this.root);
+                var f = new FolderTableRow(directory.FullName, baseRoot);
                 EmptyFolders.Add(f);
             }
 
             foreach (var folder in folders)
             {
-                try
-                {
-                    if (FolderExclusionHandlers.Any(handler => handler.IsFolderFiltered(this.root, folder)))
-                    {
-                        continue;
-                    }
-
-                    SeekFiles(folder, fileArray, subFolders);
-                }
-                catch (Exception ex)
-                {
-                    Log.Warning(ex, "Directory {Directory} could not be accessed.", folder);
-                }
+                SeekSubFolder(folder, fileArray, subFolders, baseRoot);
             }
         }
-        catch (Exception ex)
+        catch (IOException ex)
         {
-            Log.Warning(ex, "Directory {Directory} could not be accessed.", root);
+            Log.Warning(ex, InaccessibleDirectoryMessage, directory);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Log.Warning(ex, InaccessibleDirectoryMessage, directory);
+        }
+    }
+
+    private int CollectFiles(DirectoryInfo directory, List<FileTableRow> fileArray, string baseRoot)
+    {
+        // get files
+        var files = directory.GetFiles();
+        foreach (var fileEntry in files)
+        {
+            var file = new FileTableRow()
+            {
+                FileName = fileEntry.Name,
+                FilePath = IOUtils.GetRelativeFolder(fileEntry.DirectoryName, baseRoot),
+                FileRoot = baseRoot,
+                FileDateCreated = fileEntry.CreationTimeUtc,
+                FileDateModified = fileEntry.LastWriteTimeUtc,
+                FileSize = fileEntry.Length,
+            };
+
+            if (FileExclusionHandlers.Any(handler => handler.IsFileExcluded(file)))
+            {
+                continue;
+            }
+
+            fileArray.Add(file);
+        }
+
+        return files.Length;
+    }
+
+    private void SeekSubFolder(DirectoryInfo folder, List<FileTableRow> fileArray, bool subFolders, string baseRoot)
+    {
+        try
+        {
+            if (FolderExclusionHandlers.Any(handler => handler.IsFolderFiltered(baseRoot, folder)))
+            {
+                return;
+            }
+
+            SeekFiles(folder, fileArray, subFolders, baseRoot);
+        }
+        catch (IOException ex)
+        {
+            Log.Warning(ex, InaccessibleDirectoryMessage, folder);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Log.Warning(ex, InaccessibleDirectoryMessage, folder);
         }
     }
 }

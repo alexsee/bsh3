@@ -422,7 +422,7 @@ public class ScheduledBackupServiceTests
         public Task ModifyBackupAsync(bool statusDialog = true) => Task.CompletedTask;
     }
 
-    private sealed class StubQueryManager : IQueryManager
+    private class StubQueryManager : IQueryManager
     {
         public Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult("");
         public Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult("");
@@ -442,9 +442,37 @@ public class ScheduledBackupServiceTests
         public Task<double> GetTotalFileSizeAsync() => Task.FromResult(0d);
         public Task<VersionDetails> GetOldestBackupAsync() => Task.FromResult<VersionDetails>(null);
         public Task<VersionDetails> GetVersionByIdAsync(string id) => Task.FromResult<VersionDetails>(null);
-        public List<VersionDetails> GetVersions(bool desc = true) => [];
+        public virtual List<VersionDetails> GetVersions(bool desc = true) => [];
         public Task<List<FileTableRow>> GetVersionsByFileAsync(string fileName, string filePath) => Task.FromResult(new List<FileTableRow>());
         public Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500) => Task.FromResult(new List<FileTableRow>());
         public Task<bool> HasChangesOrNewAsync(string path, string versionId) => Task.FromResult(false);
+    }
+
+    [Test]
+    public async Task RemoveOldBackupsSurvivesVersionLookupFailure()
+    {
+        var configuration = new FakeConfigurationManager { TaskType = TaskType.Manual };
+        var scheduleRepository = new FakeScheduleRepository(Array.Empty<ScheduleEntry>());
+        var service = new ScheduledBackupService(
+            configuration,
+            new UnusedJobService(),
+            new ThrowingVersionsQueryManager(),
+            scheduleRepository,
+            new FakeSchedulerAdapterFactory(new FakeSchedulerAdapter()),
+            new ScheduleSettingsService(configuration, scheduleRepository),
+            new FakeMediaWatcherFactory());
+
+        var removeOldBackups = typeof(ScheduledBackupService).GetMethod(
+            "RemoveOldBackups",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        Assert.That(removeOldBackups, Is.Not.Null);
+
+        // the failure is logged and swallowed so the backup itself does not fail
+        Assert.DoesNotThrowAsync(async () => await (Task)removeOldBackups.Invoke(service, null));
+    }
+
+    private sealed class ThrowingVersionsQueryManager : StubQueryManager
+    {
+        public override List<VersionDetails> GetVersions(bool desc = true) => throw new InvalidOperationException("version lookup failed");
     }
 }
