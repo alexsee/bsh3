@@ -86,8 +86,6 @@ public class DbMigrationService : IDbMigrationService
                         sqlRead.GetDateTime(sqlRead.GetOrdinal("filedatecreated")),
                         sqlRead.GetDateTime(sqlRead.GetOrdinal("filedatemodified"))));
                 }
-
-                await sqlRead.CloseAsync();
             }
 
             using (var dbClient2 = dbClientFactory.CreateDbClient())

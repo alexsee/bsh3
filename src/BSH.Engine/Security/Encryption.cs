@@ -53,10 +53,7 @@ public class Encryption
     {
         try
         {
-            if (File.Exists(targetFile))
-            {
-                File.Delete(targetFile);
-            }
+            File.Delete(targetFile);
         }
         catch (Exception ex)
         {

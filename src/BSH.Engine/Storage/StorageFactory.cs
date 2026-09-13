@@ -18,10 +18,8 @@ public class StorageFactory : IStorageFactory
 
     public IStorageProvider GetCurrentStorageProvider()
     {
-        return configurationManager.MediumType switch
-        {
-            MediaType.FileTransferServer => new FtpStorage(configurationManager),
-            _ => new FileSystemStorage(configurationManager),
-        };
+        return configurationManager.MediumType == MediaType.FileTransferServer
+            ? new FtpStorage(configurationManager)
+            : new FileSystemStorage(configurationManager);
     }
 }

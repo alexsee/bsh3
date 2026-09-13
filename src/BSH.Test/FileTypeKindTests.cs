@@ -31,26 +31,14 @@ public class FileTypeKindTests
     [TestCase(null, FileTypeKind.Unknown)]
     [TestCase("abc", FileTypeKind.Unknown)]
     [TestCase("99", FileTypeKind.Unknown)]
-    public void ParseFileTypeKindHandlesStrings(string? value, FileTypeKind expected)
+    public void ToFileTypeKindHandlesStrings(string? value, FileTypeKind expected)
     {
-        Assert.That(FileTypeKindExtensions.ParseFileTypeKind(value!), Is.EqualTo(expected));
+        Assert.That(value!.ToFileTypeKind(), Is.EqualTo(expected));
     }
 
     [Test]
-    public void ClassificationHelpers()
+    public void UsesLongFileNameStorageIdentifiesLocalStorageKinds()
     {
-        Assert.That(FileTypeKind.RegularCopy.IsPlain(), Is.True);
-        Assert.That(FileTypeKind.StoredCopy.IsPlain(), Is.True);
-        Assert.That(FileTypeKind.Compressed.IsPlain(), Is.False);
-
-        Assert.That(FileTypeKind.Compressed.IsCompressed(), Is.True);
-        Assert.That(FileTypeKind.StoredCompressed.IsCompressed(), Is.True);
-        Assert.That(FileTypeKind.RegularCopy.IsCompressed(), Is.False);
-
-        Assert.That(FileTypeKind.StoredEncrypted.IsEncrypted(), Is.True);
-        Assert.That(FileTypeKind.Encrypted.IsEncrypted(), Is.True);
-        Assert.That(FileTypeKind.StoredCopy.IsEncrypted(), Is.False);
-
         Assert.That(FileTypeKind.RegularCopy.UsesLongFileNameStorage(), Is.True);
         Assert.That(FileTypeKind.Compressed.UsesLongFileNameStorage(), Is.True);
         Assert.That(FileTypeKind.Encrypted.UsesLongFileNameStorage(), Is.True);

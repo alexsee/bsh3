@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using Brightbits.BSH.Engine;
@@ -141,22 +142,20 @@ public class ScheduledBackupService : IScheduledBackupService
 
     private async Task RemoveOldBackups()
     {
-        // obtain versions for deletion
-        var listDelete = new List<VersionDetails>();
+        IReadOnlyList<VersionDetails> versionsToDelete;
 
         try
         {
-            listDelete.AddRange(scheduleSettingsService.LoadPolicy()
-                .GetAutomaticVersionsToDelete(queryManager.GetVersions(), DateTime.Now));
+            versionsToDelete = scheduleSettingsService.LoadPolicy()
+                .GetAutomaticVersionsToDelete(queryManager.GetVersions(), DateTime.Now);
         }
         catch (Exception ex)
         {
-            // although this is a major issue, we don't want the backup to fail
             Log.Error(ex, "Could not determine backups for deletion");
+            return;
         }
 
-        // delete old versions
-        foreach (var version in listDelete)
+        foreach (var version in versionsToDelete)
         {
             await jobService.DeleteBackupAsync(version.Id, false);
         }

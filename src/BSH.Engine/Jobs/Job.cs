@@ -272,7 +272,7 @@ public abstract class Job : IDisposable
     /// <exception cref="FileNotProcessedException"></exception>
     protected void DeleteFileFromDevice(string fileName, string filePath, string longFileName, string versionDate, string fileType)
     {
-        var kind = FileTypeKindExtensions.ParseFileTypeKind(fileType);
+        var kind = fileType.ToFileTypeKind();
 
         // determine remote file name
         string remoteFile;

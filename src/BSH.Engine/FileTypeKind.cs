@@ -42,24 +42,9 @@ public static class FileTypeKindExtensions
         return Enum.IsDefined(typeof(FileTypeKind), value) ? (FileTypeKind)value : FileTypeKind.Unknown;
     }
 
-    public static FileTypeKind ParseFileTypeKind(string value)
+    public static FileTypeKind ToFileTypeKind(this string value)
     {
         return int.TryParse(value, out var number) ? number.ToFileTypeKind() : FileTypeKind.Unknown;
-    }
-
-    public static bool IsPlain(this FileTypeKind kind)
-    {
-        return kind is FileTypeKind.RegularCopy or FileTypeKind.StoredCopy;
-    }
-
-    public static bool IsCompressed(this FileTypeKind kind)
-    {
-        return kind is FileTypeKind.Compressed or FileTypeKind.StoredCompressed;
-    }
-
-    public static bool IsEncrypted(this FileTypeKind kind)
-    {
-        return kind is FileTypeKind.StoredEncrypted or FileTypeKind.Encrypted;
     }
 
     /// <summary>

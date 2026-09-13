@@ -35,8 +35,8 @@ public class StatusController : IJobReport
         }
     }
 
-    private readonly List<IStatusReport> observers = new List<IStatusReport>();
-    private readonly object observersLock = new object();
+    private readonly List<IStatusReport> observers = new();
+    private readonly object observersLock = new();
 
     private RequestOverwriteResult lastFileOverwriteChoice = RequestOverwriteResult.None;
 

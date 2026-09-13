@@ -245,16 +245,13 @@ static class BackupLogic
             }
 
             // remind user about last backup
-            if (!string.IsNullOrEmpty(ConfigurationManager.RemindAfterDays) &&
-                int.TryParse(ConfigurationManager.RemindAfterDays, out var remindAfterDays))
+            if (int.TryParse(ConfigurationManager.RemindAfterDays, out var remindAfterDays))
             {
                 var lastBackup = await QueryManager.GetLastBackupAsync();
                 if (lastBackup != null)
                 {
                     try
                     {
-                        // check if backup is older than x-days (single wall-clock read; this is a
-                        // calendar comparison, not a benchmark, so DateTime.Now is appropriate)
                         var now = DateTime.Now;
                         if (now.Subtract(lastBackup.CreationDate).Days > remindAfterDays &&
                             QueryManager.GetVersions().Count > 0 &&
@@ -299,7 +296,6 @@ static class BackupLogic
             return;
         }
 
-        // single wall-clock read; this is a calendar comparison, not a benchmark
         var now = DateTime.Now;
         var daysSinceLastBackup = now.Subtract(lastBackup.CreationDate).Days;
         if (daysSinceLastBackup > remindAfterDays)
@@ -455,22 +451,20 @@ static class BackupLogic
 
     private static async Task RemoveOldBackups()
     {
-        // obtain versions for deletion
-        var listDelete = new List<VersionDetails>();
+        IReadOnlyList<VersionDetails> versionsToDelete;
 
         try
         {
-            listDelete.AddRange(ScheduleSettingsService.LoadPolicy()
-                .GetAutomaticVersionsToDelete(QueryManager.GetVersions(), DateTime.Now));
+            versionsToDelete = ScheduleSettingsService.LoadPolicy()
+                .GetAutomaticVersionsToDelete(QueryManager.GetVersions(), DateTime.Now);
         }
         catch (Exception ex)
         {
-            // although this is a major issue, we don't want the backup to fail
             Log.Error(ex, "Could not determine backups for deletion");
+            return;
         }
 
-        // delete old versions
-        foreach (var version in listDelete)
+        foreach (var version in versionsToDelete)
         {
             await BackupController.DeleteBackupAsync(version.Id, false);
         }

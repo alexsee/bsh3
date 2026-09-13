@@ -49,32 +49,24 @@ public class FileCollectorService : IFileCollectorService
         {
             var fileCount = CollectFiles(directory, fileArray, baseRoot);
 
-            // search subfolders?
             if (!subFolders)
             {
                 return;
             }
 
-            // scan subfolders
             var folders = directory.GetDirectories();
 
-            // empty folder?
-            if (fileCount <= 0 && folders.Length <= 0)
+            if (fileCount == 0 && folders.Length == 0)
             {
-                var f = new FolderTableRow(directory.FullName, baseRoot);
-                EmptyFolders.Add(f);
+                EmptyFolders.Add(new FolderTableRow(directory.FullName, baseRoot));
             }
 
             foreach (var folder in folders)
             {
-                SeekSubFolder(folder, fileArray, subFolders, baseRoot);
+                SeekSubFolder(folder, fileArray, baseRoot);
             }
         }
-        catch (IOException ex)
-        {
-            Log.Warning(ex, InaccessibleDirectoryMessage, directory);
-        }
-        catch (UnauthorizedAccessException ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             Log.Warning(ex, InaccessibleDirectoryMessage, directory);
         }
@@ -82,11 +74,10 @@ public class FileCollectorService : IFileCollectorService
 
     private int CollectFiles(DirectoryInfo directory, List<FileTableRow> fileArray, string baseRoot)
     {
-        // get files
         var files = directory.GetFiles();
         foreach (var fileEntry in files)
         {
-            var file = new FileTableRow()
+            var file = new FileTableRow
             {
                 FileName = fileEntry.Name,
                 FilePath = IOUtils.GetRelativeFolder(fileEntry.DirectoryName, baseRoot),
@@ -107,7 +98,7 @@ public class FileCollectorService : IFileCollectorService
         return files.Length;
     }
 
-    private void SeekSubFolder(DirectoryInfo folder, List<FileTableRow> fileArray, bool subFolders, string baseRoot)
+    private void SeekSubFolder(DirectoryInfo folder, List<FileTableRow> fileArray, string baseRoot)
     {
         try
         {
@@ -116,13 +107,9 @@ public class FileCollectorService : IFileCollectorService
                 return;
             }
 
-            SeekFiles(folder, fileArray, subFolders, baseRoot);
+            SeekFiles(folder, fileArray, true, baseRoot);
         }
-        catch (IOException ex)
-        {
-            Log.Warning(ex, InaccessibleDirectoryMessage, folder);
-        }
-        catch (UnauthorizedAccessException ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             Log.Warning(ex, InaccessibleDirectoryMessage, folder);
         }

@@ -615,7 +615,7 @@ public class QueryManager : IQueryManager
 
     private static string GetFileTypeDisplayName(string fileType)
     {
-        return FileTypeKindExtensions.ParseFileTypeKind(fileType) switch
+        return fileType.ToFileTypeKind() switch
         {
             FileTypeKind.RegularCopy => "Regular copy",
             FileTypeKind.Compressed or FileTypeKind.StoredCompressed => "Compressed",
@@ -633,7 +633,7 @@ public class QueryManager : IQueryManager
     public string GetFileNameFromDrive(FileTableRow file)
     {
         // check if we can directly read file?
-        if (FileTypeKindExtensions.ParseFileTypeKind(file.FileType) == FileTypeKind.RegularCopy)
+        if (file.FileType.ToFileTypeKind() == FileTypeKind.RegularCopy)
         {
             var folderPath = configurationManager.BackupFolder;
             folderPath = Path.Combine(folderPath, file.FileVersionDate.ToString("dd-MM-yyyy HH-mm-ss"));

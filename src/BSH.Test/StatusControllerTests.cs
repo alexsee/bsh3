@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Main;
@@ -136,12 +137,12 @@ public class StatusControllerTests
 
     private sealed class RecordingStatusReport : IStatusReport
     {
-        public System.Collections.Generic.List<SystemStatus> SystemStatuses { get; } = new();
-        public System.Collections.Generic.List<(ActionType Action, bool Silent)> Actions { get; } = new();
-        public System.Collections.Generic.List<JobState> States { get; } = new();
-        public System.Collections.Generic.List<(string Title, string Text)> Statuses { get; } = new();
-        public System.Collections.Generic.List<(int Total, int Current)> Progress { get; } = new();
-        public System.Collections.Generic.List<string> FileProgress { get; } = new();
+        public List<SystemStatus> SystemStatuses { get; } = new();
+        public List<(ActionType Action, bool Silent)> Actions { get; } = new();
+        public List<JobState> States { get; } = new();
+        public List<(string Title, string Text)> Statuses { get; } = new();
+        public List<(int Total, int Current)> Progress { get; } = new();
+        public List<string> FileProgress { get; } = new();
 
         public void ReportAction(ActionType action, bool silent) => Actions.Add((action, silent));
         public void ReportState(JobState jobState) => States.Add(jobState);

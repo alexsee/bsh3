@@ -87,10 +87,7 @@ public class FtpStorage : Storage, IStorageProvider
     {
         try
         {
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
+            File.Delete(path);
         }
         catch (Exception ex)
         {
@@ -316,8 +313,7 @@ public class FtpStorage : Storage, IStorageProvider
         try
         {
             // encrypt file
-            var crypto = new Encryption();
-            if (!crypto.Encode(GetLocalFileName(localFile), tmpFile, password))
+            if (!new Encryption().Encode(GetLocalFileName(localFile), tmpFile, password))
             {
                 return false;
             }
@@ -480,8 +476,7 @@ public class FtpStorage : Storage, IStorageProvider
                 return false;
             }
 
-            var crypto = new Encryption();
-            crypto.Decode(tmpFile, GetLocalFileName(localFile), password);
+            new Encryption().Decode(tmpFile, GetLocalFileName(localFile), password);
 
             return true;
         }

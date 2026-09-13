@@ -159,10 +159,7 @@ public class FtpStorageTests
     {
         try
         {
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
+            File.Delete(path);
         }
         catch
         {
