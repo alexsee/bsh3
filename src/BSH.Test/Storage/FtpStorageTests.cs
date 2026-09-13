@@ -44,8 +44,8 @@ public class FtpStorageTests
             OldBackupPrevent = "not-a-version"
         });
 
-        Assert.That(GetField<int>(storage, "serverPort"), Is.EqualTo(21));
-        Assert.That(GetField<int>(storage, "currentStorageVersion"), Is.EqualTo(0));
+        Assert.That(GetPrivateField<int>(storage, "serverPort"), Is.EqualTo(21));
+        Assert.That(GetPrivateField<int>(storage, "currentStorageVersion"), Is.EqualTo(0));
     }
 
     [Test]
@@ -58,15 +58,15 @@ public class FtpStorageTests
             OldBackupPrevent = "7"
         });
 
-        Assert.That(GetField<int>(storage, "serverPort"), Is.EqualTo(2121));
-        Assert.That(GetField<int>(storage, "currentStorageVersion"), Is.EqualTo(7));
+        Assert.That(GetPrivateField<int>(storage, "serverPort"), Is.EqualTo(2121));
+        Assert.That(GetPrivateField<int>(storage, "currentStorageVersion"), Is.EqualTo(7));
     }
 
     [Test]
     public void CreateUniqueTempFileReturnsUniqueNonExistentPaths()
     {
-        var first = InvokeCreateUniqueTempFile(".zip");
-        var second = InvokeCreateUniqueTempFile(".zip");
+        var first = InvokePrivate<string>("CreateUniqueTempFile", ".zip");
+        var second = InvokePrivate<string>("CreateUniqueTempFile", ".zip");
 
         Assert.That(first, Does.EndWith(".zip"));
         Assert.That(second, Does.EndWith(".zip"));
@@ -81,8 +81,8 @@ public class FtpStorageTests
         var existing = Path.Combine(temporaryDirectory, "stale.tmp");
         File.WriteAllText(existing, "stale");
 
-        Assert.DoesNotThrow(() => InvokeTryDeleteTempFile(Path.Combine(temporaryDirectory, "missing.tmp")));
-        Assert.DoesNotThrow(() => InvokeTryDeleteTempFile(existing));
+        Assert.DoesNotThrow(() => InvokePrivate<object>("TryDeleteTempFile", Path.Combine(temporaryDirectory, "missing.tmp")));
+        Assert.DoesNotThrow(() => InvokePrivate<object>("TryDeleteTempFile", existing));
         Assert.That(File.Exists(existing), Is.False);
     }
 
@@ -95,7 +95,7 @@ public class FtpStorageTests
         using (new FileStream(locked, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
         {
             // deletion fails on Windows (sharing violation); elsewhere it succeeds silently
-            Assert.DoesNotThrow(() => InvokeTryDeleteTempFile(locked));
+            Assert.DoesNotThrow(() => InvokePrivate<object>("TryDeleteTempFile", locked));
         }
 
         TryDeleteBestEffort(locked);
@@ -104,7 +104,7 @@ public class FtpStorageTests
     [Test]
     public void DisposeWithoutOpenDoesNotThrow()
     {
-        var storage = new FtpStorage("example.org", 21, "user", "pass", "/backups", "UTF-8", false, 0);
+        using var storage = CreateUnopenedStorage();
 
         Assert.DoesNotThrow(() => storage.Dispose());
     }
@@ -112,12 +112,11 @@ public class FtpStorageTests
     [Test]
     public void DisposeWithFinalizerPathIsNoOp()
     {
-        var storage = new FtpStorage("example.org", 21, "user", "pass", "/backups", "UTF-8", false, 0);
+        using var storage = CreateUnopenedStorage();
         var dispose = typeof(FtpStorage).GetMethod("Dispose", BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(bool)], null);
         Assert.That(dispose, Is.Not.Null);
 
         Assert.DoesNotThrow(() => dispose.Invoke(storage, [false]));
-        storage.Dispose();
     }
 
     [Test]
@@ -127,7 +126,7 @@ public class FtpStorageTests
         File.WriteAllText(source, "content");
         var localTarget = Path.Combine(temporaryDirectory, "target.bin");
 
-        using var storage = new FtpStorage("example.org", 21, "user", "pass", "/backups", "UTF-8", false, 0);
+        using var storage = CreateUnopenedStorage();
 
         // ftpClient is only created in Open(); without it every operation fails fast
         // while still cleaning up its unique temporary files via finally.
@@ -137,25 +136,23 @@ public class FtpStorageTests
         Assert.Throws<NullReferenceException>(() => storage.CopyFileFromStorageEncrypted(localTarget, "remote", "password"));
     }
 
-    private static T GetField<T>(FtpStorage storage, string name)
+    private static FtpStorage CreateUnopenedStorage()
+    {
+        return new FtpStorage("example.org", 21, "user", "pass", "/backups", "UTF-8", false, 0);
+    }
+
+    private static T GetPrivateField<T>(FtpStorage storage, string name)
     {
         var field = typeof(FtpStorage).GetField(name, BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.That(field, Is.Not.Null);
         return (T)field.GetValue(storage);
     }
 
-    private static string InvokeCreateUniqueTempFile(string suffix)
+    private static T InvokePrivate<T>(string name, params object[] args)
     {
-        var method = typeof(FtpStorage).GetMethod("CreateUniqueTempFile", BindingFlags.NonPublic | BindingFlags.Static);
+        var method = typeof(FtpStorage).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static);
         Assert.That(method, Is.Not.Null);
-        return (string)method.Invoke(null, [suffix]);
-    }
-
-    private static void InvokeTryDeleteTempFile(string path)
-    {
-        var method = typeof(FtpStorage).GetMethod("TryDeleteTempFile", BindingFlags.NonPublic | BindingFlags.Static);
-        Assert.That(method, Is.Not.Null);
-        method.Invoke(null, [path]);
+        return (T)method.Invoke(null, args);
     }
 
     private static void TryDeleteBestEffort(string path)

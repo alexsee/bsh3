@@ -1,6 +1,8 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System;
+using System.IO;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Test.Fakes;
@@ -13,12 +15,14 @@ namespace BSH.Test.Storage;
 /// </summary>
 public class StorageFactoryTests
 {
-    [Test]
-    public void FtpMediumSelectsFtpStorage()
+    [TestCase(MediaType.FileTransferServer, typeof(FtpStorage))]
+    [TestCase(MediaType.LocalDevice, typeof(FileSystemStorage))]
+    public void MediumSelectsExpectedStorageProvider(MediaType medium, Type expected)
     {
         var factory = new StorageFactory(new FakeConfigurationManager
         {
-            MediumType = MediaType.FileTransferServer,
+            MediumType = medium,
+            BackupFolder = Path.GetTempPath(),
             FtpHost = "example.org",
             FtpPort = "21",
             FtpUser = "user",
@@ -31,20 +35,6 @@ public class StorageFactoryTests
 
         using var provider = factory.GetCurrentStorageProvider();
 
-        Assert.That(provider, Is.InstanceOf<FtpStorage>());
-    }
-
-    [Test]
-    public void OtherMediaSelectLocalFileSystemStorage()
-    {
-        var factory = new StorageFactory(new FakeConfigurationManager
-        {
-            MediumType = MediaType.LocalDevice,
-            BackupFolder = System.IO.Path.GetTempPath()
-        });
-
-        using var provider = factory.GetCurrentStorageProvider();
-
-        Assert.That(provider, Is.InstanceOf<FileSystemStorage>());
+        Assert.That(provider, Is.InstanceOf(expected));
     }
 }

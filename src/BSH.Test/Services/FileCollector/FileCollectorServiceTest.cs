@@ -169,26 +169,15 @@ public class FileCollectorServiceTraversalTests
         Assert.That(fileCollectorService.EmptyFolders.Select(folder => folder.Folder), Is.EqualTo([empty.FullName]));
     }
 
-    [Test]
-    public void GetLocalFileListSkipsSubFolderWhenExclusionThrowsIOException()
+    [TestCase(typeof(IOException))]
+    [TestCase(typeof(UnauthorizedAccessException))]
+    public void GetLocalFileListSkipsSubFolderWhenExclusionThrows(Type failureType)
     {
         File.WriteAllText(Path.Combine(root, "root.txt"), "root");
         var skipped = Directory.CreateDirectory(Path.Combine(root, "skipped"));
         File.WriteAllText(Path.Combine(skipped.FullName, "skip.txt"), "skip");
-        fileCollectorService.FolderExclusionHandlers.Add(new ThrowingFolderExclusion(new IOException("simulated IO failure")));
-
-        var result = fileCollectorService.GetLocalFileList(root);
-
-        Assert.That(result.Select(file => file.FileName), Is.EqualTo(["root.txt"]));
-    }
-
-    [Test]
-    public void GetLocalFileListSkipsSubFolderWhenExclusionThrowsUnauthorizedAccess()
-    {
-        File.WriteAllText(Path.Combine(root, "root.txt"), "root");
-        var skipped = Directory.CreateDirectory(Path.Combine(root, "skipped"));
-        File.WriteAllText(Path.Combine(skipped.FullName, "skip.txt"), "skip");
-        fileCollectorService.FolderExclusionHandlers.Add(new ThrowingFolderExclusion(new UnauthorizedAccessException("simulated access failure")));
+        fileCollectorService.FolderExclusionHandlers.Add(
+            new ThrowingFolderExclusion((Exception)Activator.CreateInstance(failureType, "simulated failure")));
 
         var result = fileCollectorService.GetLocalFileList(root);
 
@@ -216,7 +205,7 @@ public class FileCollectorServiceTraversalTests
         }
 
         var locked = Directory.CreateDirectory(Path.Combine(root, "locked"));
-        DenyReadAccess(locked.FullName);
+        SetReadAccess(locked.FullName, deny: true);
         try
         {
             var result = fileCollectorService.GetLocalFileList(locked.FullName);
@@ -225,29 +214,28 @@ public class FileCollectorServiceTraversalTests
         }
         finally
         {
-            AllowReadAccess(locked.FullName);
+            SetReadAccess(locked.FullName, deny: false);
         }
     }
 
-    private static void DenyReadAccess(string path)
+    private static void SetReadAccess(string path, bool deny)
     {
         var directory = new DirectoryInfo(path);
         var security = directory.GetAccessControl();
-        security.AddAccessRule(new FileSystemAccessRule(
+        var rule = new FileSystemAccessRule(
             WindowsIdentity.GetCurrent().User!,
             FileSystemRights.Read,
-            AccessControlType.Deny));
-        directory.SetAccessControl(security);
-    }
+            AccessControlType.Deny);
 
-    private static void AllowReadAccess(string path)
-    {
-        var directory = new DirectoryInfo(path);
-        var security = directory.GetAccessControl();
-        security.RemoveAccessRule(new FileSystemAccessRule(
-            WindowsIdentity.GetCurrent().User!,
-            FileSystemRights.Read,
-            AccessControlType.Deny));
+        if (deny)
+        {
+            security.AddAccessRule(rule);
+        }
+        else
+        {
+            security.RemoveAccessRule(rule);
+        }
+
         directory.SetAccessControl(security);
     }
 

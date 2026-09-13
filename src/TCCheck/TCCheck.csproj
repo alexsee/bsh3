@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Nullable>disable</Nullable>
+    <NoWarn>$(NoWarn);CS8632</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="4.6.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj" />
+    <ProjectReference Include="..\BSH.Main\BSH.Main.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\BSH.Test\Fakes\**\*.cs" />
+    <Compile Include="..\BSH.Test\Mocks\**\*.cs" />
+    <Compile Include="..\BSH.Test\Helpers\**\*.cs" />
+    <Compile Include="..\BSH.Test\DbClientTests.cs" />
+    <Compile Include="..\BSH.Test\QueryManagerTests.cs" />
+    <Compile Include="..\BSH.Test\ConfigurationManagerTests.cs" />
+    <Compile Include="..\BSH.Test\JobTests.cs" />
+    <Compile Include="..\BSH.Test\RestoreJobDestinationTests.cs" />
+    <Compile Include="..\BSH.Test\RestoreTests.cs" />
+    <Compile Include="..\BSH.Test\Storage\StorageFactoryTests.cs" />
+    <Compile Include="..\BSH.Test\Storage\FtpStorageTests.cs" />
+    <Compile Include="..\BSH.Test\Storage\FileSystemStorageTests.cs" />
+    <Compile Include="..\BSH.Test\Services\SchedulerServiceTests.cs" />
+    <Compile Include="..\BSH.Test\Services\UsbWatchServiceTests.cs" />
+    <Compile Include="..\BSH.Test\Services\FileCollector\FileCollectorServiceTest.cs" />
+    <Compile Include="..\BSH.Test\FileTypeKindTests.cs" />
+    <Compile Include="..\BSH.Test\Security\EncryptionTests.cs" />
+    <Compile Include="..\BSH.Test\UncTargetProbeTests.cs" />
+    <Compile Include="..\BSH.Test\BackupTests.cs" />
+    <Compile Include="..\BSH.Test\EditTests.cs" />
+    <Compile Include="..\BSH.Test\DeleteTests.cs" />
+    <Compile Include="..\BSH.Test\DatabaseSchemaUpgradeTests.cs" />
+    <Compile Include="..\BSH.Test\StatusControllerTests.cs" />
+    <Compile Include="..\BSH.Test\NotificationControllerTests.cs" />
+  </ItemGroup>
+</Project>
