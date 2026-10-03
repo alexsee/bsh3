@@ -27,6 +27,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private readonly IBrowserDialogService browserDialogService;
     private readonly IBrowserPreviewService browserPreviewService;
     private readonly IBrowserViewPreferencesService viewPreferencesService;
+    private readonly Dictionary<string, Task<VersionChangeStatistics>> versionStatisticsCache = [];
     private BrowserContentMode contentMode = BrowserContentMode.Folder;
     private long contentRequestId;
     private long fileDetailsRequestId;
@@ -782,8 +783,34 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         await presentationService.ShowMainWindowAsync();
     }
 
+    public async Task<VersionChangeStatistics> GetVersionChangeStatisticsAsync(string versionId)
+    {
+        if (!versionStatisticsCache.TryGetValue(versionId, out var statisticsTask))
+        {
+            statisticsTask = queryManager.GetVersionChangeStatisticsAsync(versionId);
+            versionStatisticsCache.Add(versionId, statisticsTask);
+        }
+
+        try
+        {
+            return await statisticsTask;
+        }
+        catch
+        {
+            // A failed request must not evict a newer request started after a refresh.
+            if (versionStatisticsCache.TryGetValue(versionId, out var cachedTask)
+                && ReferenceEquals(cachedTask, statisticsTask))
+            {
+                versionStatisticsCache.Remove(versionId);
+            }
+
+            throw;
+        }
+    }
+
     private void LoadVersions()
     {
+        versionStatisticsCache.Clear();
         var backupVersions = queryManager.GetVersions(true);
 
         Versions.Clear();

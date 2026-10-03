@@ -27,6 +27,57 @@ namespace BSH.Test;
 public class BrowserViewModelTests
 {
     [Test]
+    public async Task VersionStatisticsReusePendingAndCompletedRequestsPerVersion()
+    {
+        var pending = new TaskCompletionSource<VersionChangeStatistics>();
+        var queryManager = new BrowserQueryManager { StatisticsTask = pending.Task };
+        var viewModel = CreateViewModel(queryManager);
+
+        var first = viewModel.GetVersionChangeStatisticsAsync("1");
+        var repeated = viewModel.GetVersionChangeStatisticsAsync("1");
+        pending.SetResult(new VersionChangeStatistics(1, 4, 5));
+
+        Assert.That(await first, Is.EqualTo(new VersionChangeStatistics(1, 4, 5)));
+        Assert.That(await repeated, Is.EqualTo(new VersionChangeStatistics(1, 4, 5)));
+        queryManager.StatisticsTask = Task.FromResult(new VersionChangeStatistics(2, 0, 0));
+        Assert.That(await viewModel.GetVersionChangeStatisticsAsync("1"), Is.EqualTo(new VersionChangeStatistics(1, 4, 5)));
+        Assert.That(await viewModel.GetVersionChangeStatisticsAsync("2"), Is.EqualTo(new VersionChangeStatistics(2, 0, 0)));
+        Assert.That(queryManager.StatisticsCalls, Is.EqualTo(new[] { "1", "2" }));
+    }
+
+    [Test]
+    public async Task RefreshInvalidatesVersionStatistics()
+    {
+        var queryManager = new BrowserQueryManager { StatisticsTask = Task.FromResult(new VersionChangeStatistics(1, 4, 5)) };
+        var viewModel = CreateViewModel(queryManager);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "source", FullPath = "source" });
+        await viewModel.GetVersionChangeStatisticsAsync("2");
+
+        queryManager.StatisticsTask = Task.FromResult(new VersionChangeStatistics(1, 4, 0));
+        await viewModel.RefreshCommand.ExecuteAsync(null);
+
+        Assert.That(await viewModel.GetVersionChangeStatisticsAsync("2"), Is.EqualTo(new VersionChangeStatistics(1, 4, 0)));
+        Assert.That(queryManager.StatisticsCalls, Is.EqualTo(new[] { "2", "2" }));
+    }
+
+    [Test]
+    public async Task FailedVersionStatisticsCanBeRetried()
+    {
+        var queryManager = new BrowserQueryManager
+        {
+            StatisticsTask = Task.FromException<VersionChangeStatistics>(new InvalidOperationException("Database unavailable"))
+        };
+        var viewModel = CreateViewModel(queryManager);
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await viewModel.GetVersionChangeStatisticsAsync("2"));
+
+        queryManager.StatisticsTask = Task.FromResult(new VersionChangeStatistics(1, 4, 5));
+
+        Assert.That(await viewModel.GetVersionChangeStatisticsAsync("2"), Is.EqualTo(new VersionChangeStatistics(1, 4, 5)));
+        Assert.That(queryManager.StatisticsCalls, Is.EqualTo(new[] { "2", "2" }));
+    }
+
+    [Test]
     public async Task InfoPaneShowsCurrentFolderWhenNoBrowserItemIsSelected()
     {
         var viewModel = CreateViewModel();
@@ -589,7 +640,13 @@ public class BrowserViewModelTests
 
         public string GetFileNameFromDrive(FileTableRow file) => file.FileName;
         public Task<(string, bool)> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password) => Task.FromResult((fileName, false));
-        public Task<VersionChangeStatistics> GetVersionChangeStatisticsAsync(string versionId) => throw new NotSupportedException();
+        public Task<VersionChangeStatistics> StatisticsTask { get; set; } = Task.FromResult(new VersionChangeStatistics(0, 0, 0));
+        public List<string> StatisticsCalls { get; } = [];
+        public Task<VersionChangeStatistics> GetVersionChangeStatisticsAsync(string versionId)
+        {
+            StatisticsCalls.Add(versionId);
+            return StatisticsTask;
+        }
         public Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult(FileDetails!);
         public Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path) => Task.FromResult(Files);
         public Task<List<string>> GetFolderListAsync(string version, string path) => Task.FromResult(new List<string>());
