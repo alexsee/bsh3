@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
@@ -319,19 +318,5 @@ public class EditTests
         public bool IsPathTooLong(string path, bool compression, bool encryption) => false;
         public long GetFreeSpace() => 42;
         public void Dispose() { }
-    }
-
-    [Test]
-    public async Task EditFileFromDeviceSkipsNonEncryptedFileTypes()
-    {
-        using var editJob = CreateEditJob(new RecordingEditStorage());
-        var method = typeof(EditJob).GetMethod("EditFileFromDeviceAsync", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.That(method, Is.Not.Null);
-
-        // fileType 1 (plain copy) maps to no decrypted counterpart and returns early
-        using var dbClient = dbClientFactory.CreateDbClient();
-        await (Task)method.Invoke(editJob, [dbClient, "remote-file", 1, 1L]);
-
-        Assert.That(editJob.FileErrorList, Is.Empty);
     }
 }

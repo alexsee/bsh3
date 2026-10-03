@@ -59,20 +59,20 @@ public static class StoragePath
     {
         ArgumentNullException.ThrowIfNull(storage);
 
-        switch (kind)
+        var copied = kind switch
         {
-            case FileTypeKind.RegularCopy:
-            case FileTypeKind.StoredCopy:
-                storage.CopyFileFromStorage(localFilePath, remoteFilePath);
-                break;
-            case FileTypeKind.Compressed:
-            case FileTypeKind.StoredCompressed:
-                storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath);
-                break;
-            case FileTypeKind.StoredEncrypted:
-            case FileTypeKind.Encrypted:
-                storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password);
-                break;
+            FileTypeKind.RegularCopy or FileTypeKind.StoredCopy =>
+                storage.CopyFileFromStorage(localFilePath, remoteFilePath),
+            FileTypeKind.Compressed or FileTypeKind.StoredCompressed =>
+                storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath),
+            FileTypeKind.StoredEncrypted or FileTypeKind.Encrypted =>
+                storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password),
+            _ => true,
+        };
+
+        if (!copied)
+        {
+            throw new IOException($"Storage failed to copy '{remoteFilePath}' to '{localFilePath}'.");
         }
     }
 

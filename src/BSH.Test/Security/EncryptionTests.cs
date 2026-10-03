@@ -55,16 +55,22 @@ public class EncryptionTests
         File.Delete(targetFile);
     }
 
-    [Test]
-    public void EncodeReturnsFalseWhenSourceFileIsMissing()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void MissingSourcePreservesExistingTarget(bool decrypt)
     {
         var encryption = new Encryption();
         var missingSource = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         var targetFile = Path.GetTempFileName();
+        File.WriteAllText(targetFile, "existing content");
 
         try
         {
-            Assert.That(encryption.Encode(missingSource, targetFile, "password"), Is.False);
+            var result = decrypt
+                ? encryption.Decode(missingSource, targetFile, "password")
+                : encryption.Encode(missingSource, targetFile, "password");
+            Assert.That(result, Is.False);
+            Assert.That(File.ReadAllText(targetFile), Is.EqualTo("existing content"));
         }
         finally
         {
@@ -87,6 +93,7 @@ public class EncryptionTests
 
             Assert.That(encryption.Encode(sourceFile, encryptedFile, "password"), Is.True);
             Assert.That(encryption.Decode(encryptedFile, decodedFile, "wrong-password"), Is.False);
+            Assert.That(File.Exists(decodedFile), Is.False);
         }
         finally
         {
@@ -97,9 +104,10 @@ public class EncryptionTests
     }
 
     [Test]
-    public void EncodeCleansUpPartialTargetEvenWhenDeleteFails()
+    public void EncodePreservesTargetWhenItCannotBeOpened()
     {
-        var missingSource = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        mTempFile = Path.GetTempFileName();
+        File.WriteAllText(mTempFile, "source content");
         var targetFile = Path.GetTempFileName();
         File.WriteAllText(targetFile, "stale target");
 
@@ -107,9 +115,9 @@ public class EncryptionTests
         {
             using (new FileStream(targetFile, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
             {
-                // deleting the locked target fails on Windows; elsewhere it succeeds silently
-                Assert.That(new Encryption().Encode(missingSource, targetFile, "password"), Is.False);
+                Assert.That(new Encryption().Encode(mTempFile, targetFile, "password"), Is.False);
             }
+            Assert.That(File.ReadAllText(targetFile), Is.EqualTo("stale target"));
         }
         finally
         {

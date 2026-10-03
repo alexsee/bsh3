@@ -111,20 +111,26 @@ public class DbClientTests
         Assert.DoesNotThrow(() => dbClient.Dispose());
     }
 
-    [Test]
-    public void ExecuteDataReaderDisposesCommandWhenExecutionFails()
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ExecuteDataReaderPropagatesSqlErrorsAndAllowsSubsequentReads(bool useAsync)
     {
         using var dbClient = CreateDbClient();
 
-        Assert.Throws<SQLiteException>(() => dbClient.ExecuteDataReader(CommandType.Text, "SELECT * FROM missing_table", null));
-    }
+        if (useAsync)
+        {
+            Assert.ThrowsAsync<SQLiteException>(async () => await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM missing_table", null));
+        }
+        else
+        {
+            Assert.Throws<SQLiteException>(() => dbClient.ExecuteDataReader(CommandType.Text, "SELECT * FROM missing_table", null));
+        }
 
-    [Test]
-    public void ExecuteDataReaderAsyncDisposesCommandWhenExecutionFails()
-    {
-        using var dbClient = CreateDbClient();
-
-        Assert.ThrowsAsync<SQLiteException>(async () => await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM missing_table", null));
+        using var reader = useAsync
+            ? await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT 42", null)
+            : dbClient.ExecuteDataReader(CommandType.Text, "SELECT 42", null);
+        Assert.That(reader.Read(), Is.True);
+        Assert.That(reader.GetInt32(0), Is.EqualTo(42));
     }
 
     private DbClient CreateDbClient()

@@ -3,7 +3,13 @@
 
 using System;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Test.Fakes;
 using NUnit.Framework;
@@ -31,6 +37,27 @@ public class FtpStorageTests
         if (Directory.Exists(temporaryDirectory))
         {
             Directory.Delete(temporaryDirectory, true);
+        }
+    }
+
+    [Test]
+    public async Task CheckMediumValidatesDownloadedVersionMarker()
+    {
+        // Exercise the real FTP transport, including controls that prove validation
+        // reached the downloaded marker rather than failing during connection setup.
+        foreach (var marker in new[] { "7", "", "8", "corrupt", "2147483648" })
+        {
+            await using var server = new VersionMarkerFtpServer(marker);
+            using var storage = new FtpStorage("127.0.0.1", server.Port, "user", "pass", "/backups", "UTF-8", false, 7);
+            if (marker is "7" or "")
+            {
+                Assert.That(await storage.CheckMedium(), Is.True, marker);
+            }
+            else
+            {
+                Assert.ThrowsAsync<DeviceContainsWrongStateException>(async () => await storage.CheckMedium(), marker);
+            }
+            Assert.That(server.MarkerDownloaded, Is.True, "The check must reach the remote version marker.");
         }
     }
 
@@ -164,6 +191,90 @@ public class FtpStorageTests
         catch
         {
             // ignore; teardown removes the directory
+        }
+    }
+
+    private sealed class VersionMarkerFtpServer : IAsyncDisposable
+    {
+        private readonly TcpListener listener = new(IPAddress.Loopback, 0);
+        private readonly CancellationTokenSource cancellation = new(TimeSpan.FromSeconds(15));
+        private readonly Task session;
+        private readonly byte[] marker;
+
+        public int Port => ((IPEndPoint)listener.LocalEndpoint).Port;
+        public bool MarkerDownloaded { get; private set; }
+
+        public VersionMarkerFtpServer(string marker)
+        {
+            this.marker = Encoding.UTF8.GetBytes(marker);
+            listener.Start();
+            session = RunAsync();
+        }
+
+        private async Task RunAsync()
+        {
+            using var client = await listener.AcceptTcpClientAsync(cancellation.Token);
+            using var stream = client.GetStream();
+            using var reader = new StreamReader(stream, Encoding.ASCII);
+            using var writer = new StreamWriter(stream, Encoding.ASCII) { AutoFlush = true, NewLine = "\r\n" };
+            TcpListener dataListener = null;
+            try
+            {
+                await writer.WriteLineAsync("220 Version marker fixture");
+                while (await reader.ReadLineAsync(cancellation.Token) is { } command)
+                {
+                    switch (command.Split(' ')[0])
+                    {
+                        case "USER": await writer.WriteLineAsync("331 Password required"); break;
+                        case "PASS": await writer.WriteLineAsync("230 Logged in"); break;
+                        case "SYST": await writer.WriteLineAsync("215 UNIX Type: L8"); break;
+                        case "FEAT": await writer.WriteLineAsync("211 No extensions"); break;
+                        case "PWD": await writer.WriteLineAsync("257 \"/\""); break;
+                        case "CWD": await writer.WriteLineAsync("250 Directory changed"); break;
+                        case "TYPE": await writer.WriteLineAsync("200 OK"); break;
+                        case "SIZE": await writer.WriteLineAsync($"213 {marker.Length}"); break;
+                        case "MDTM": await writer.WriteLineAsync("213 20260101000000"); break;
+                        case "EPSV":
+                        case "PASV":
+                            dataListener?.Stop();
+                            dataListener = new TcpListener(IPAddress.Loopback, 0);
+                            dataListener.Start();
+                            var port = ((IPEndPoint)dataListener.LocalEndpoint).Port;
+                            await writer.WriteLineAsync(command.StartsWith("EPSV", StringComparison.Ordinal)
+                                ? $"229 Entering Extended Passive Mode (|||{port}|)"
+                                : $"227 Entering Passive Mode (127,0,0,1,{port / 256},{port % 256})");
+                            break;
+                        case "NLST":
+                        case "RETR":
+                            await writer.WriteLineAsync("150 Opening data connection");
+                            using (var dataClient = await dataListener.AcceptTcpClientAsync(cancellation.Token))
+                            {
+                                var payload = command.StartsWith("NLST", StringComparison.Ordinal)
+                                    ? Encoding.ASCII.GetBytes("/backups/backup.bshv\r\n")
+                                    : marker;
+                                await dataClient.GetStream().WriteAsync(payload, cancellation.Token);
+                            }
+                            MarkerDownloaded |= command.StartsWith("RETR", StringComparison.Ordinal);
+                            await writer.WriteLineAsync("226 Transfer complete");
+                            break;
+                        case "QUIT": await writer.WriteLineAsync("221 Goodbye"); return;
+                        default: await writer.WriteLineAsync("502 Command not implemented"); break;
+                    }
+                }
+            }
+            finally
+            {
+                dataListener?.Stop();
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await cancellation.CancelAsync();
+            listener.Stop();
+            try { await session; }
+            catch (OperationCanceledException) { }
+            cancellation.Dispose();
         }
     }
 }

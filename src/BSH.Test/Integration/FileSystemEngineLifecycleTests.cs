@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
+using BSH.Test.Helpers;
 using BSH.Test.Mocks;
 using NUnit.Framework;
 
@@ -100,6 +102,33 @@ public class FileSystemEngineLifecycleTests
         {
             // Best-effort cleanup on Windows file locks.
         }
+    }
+
+    [Test]
+    public async Task RestoreMissingArchiveEntryReportsErrorAndRestoresOtherFiles()
+    {
+        configurationManager.Compression = 1;
+        WriteSourceFile("broken.txt", new string('b', 100));
+        WriteSourceFile("healthy.txt", "healthy content");
+        await RunBackupAsync();
+        var version = await queryManager.GetLastBackupAsync();
+        var archivePath = Directory.GetFiles(backupDir, "broken.txt.zip", SearchOption.AllDirectories)[0];
+        using (var archive = ZipFile.Open(archivePath, ZipArchiveMode.Update))
+        {
+            archive.GetEntry("broken.txt").Delete();
+            archive.CreateEntry("other.txt");
+        }
+
+        using var job = CreateRestoreJob(CreateStorage(), int.Parse(version.Id), restoreDir);
+        var observer = new JobReportStub();
+        job.AddObserver(observer);
+        await job.RestoreAsync(CancellationToken.None);
+
+        Assert.That(job.FileErrorList, Has.Count.EqualTo(1));
+        Assert.That(job.FileErrorList[0].File.FileName, Is.EqualTo("broken.txt"));
+        Assert.That(observer.ReportedStates, Does.Contain(JobState.ERROR));
+        Assert.That(File.Exists(Path.Combine(restoreDir, "broken.txt")), Is.False);
+        Assert.That(File.ReadAllText(Path.Combine(restoreDir, "healthy.txt")), Is.EqualTo("healthy content"));
     }
 
     [Test]

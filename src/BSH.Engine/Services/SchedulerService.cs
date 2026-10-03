@@ -22,9 +22,7 @@ public class SchedulerService : ISchedulerAdapter
 
     public void Start()
     {
-        // Keep the synchronous signature for callers, but avoid Task.Run(...).Wait()
-        // (sync-over-async wraps exceptions in AggregateException and can deadlock
-        // under a synchronization context).
+        // The async bridges must not capture the context of a blocked UI caller.
         StartAsync().GetAwaiter().GetResult();
     }
 
@@ -45,11 +43,11 @@ public class SchedulerService : ISchedulerAdapter
             };
 
             var factory = new StdSchedulerFactory(properties);
-            this.scheduler = await factory.GetScheduler();
+            this.scheduler = await factory.GetScheduler().ConfigureAwait(false);
         }
 
         // Start the scheduler if it's not running
-        await this.scheduler.Start();
+        await this.scheduler.Start().ConfigureAwait(false);
     }
 
     private static IJobDetail GetJob(Action action)
@@ -130,10 +128,10 @@ public class SchedulerService : ISchedulerAdapter
     {
         var result = DateTimeOffset.MaxValue;
 
-        var allTriggerKeys = await scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
+        var allTriggerKeys = await scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup()).ConfigureAwait(false);
         foreach (var triggerKey in allTriggerKeys)
         {
-            var trigger = await scheduler.GetTrigger(triggerKey);
+            var trigger = await scheduler.GetTrigger(triggerKey).ConfigureAwait(false);
             var nextFireTime = trigger?.GetNextFireTimeUtc();
 
             if (nextFireTime.HasValue && nextFireTime.Value < result)
@@ -157,7 +155,7 @@ public class SchedulerService : ISchedulerAdapter
 
     private async Task StopAsync()
     {
-        await scheduler.Shutdown();
+        await scheduler.Shutdown().ConfigureAwait(false);
         scheduler = null;
     }
 

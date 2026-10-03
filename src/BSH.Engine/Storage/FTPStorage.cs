@@ -231,10 +231,10 @@ public class FtpStorage : Storage, IStorageProvider
                     var versionId = await File.ReadAllTextAsync(localBackupVersionFile);
 
                     if (!string.IsNullOrEmpty(versionId)
-                        && int.TryParse(versionId, out var remoteVersion)
-                        && remoteVersion != currentStorageVersion)
+                        && (!int.TryParse(versionId, out var remoteVersion)
+                            || remoteVersion != currentStorageVersion))
                     {
-                        _logger.Warning("FTP server contains an inconsistent state. Version file contains a different version than the computers backup version.");
+                        _logger.Warning("FTP server contains an inconsistent state. Version file is invalid or differs from the computer's backup version.");
                         throw new DeviceContainsWrongStateException();
                     }
                 }

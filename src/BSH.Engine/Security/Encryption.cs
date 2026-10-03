@@ -28,6 +28,7 @@ public class Encryption
 
     private bool CryptFile(string sourceFile, string targetFile, string password, bool encrypt, int bufferSize)
     {
+        var outputCreated = false;
         try
         {
             DeriveKeyMaterial(password, out var key, out var iv);
@@ -36,6 +37,7 @@ public class Encryption
             using var transform = encrypt ? aes.CreateEncryptor(key, iv) : aes.CreateDecryptor(key, iv);
             using var inFileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var outFileStream = new FileStream(targetFile, FileMode.Create);
+            outputCreated = true;
             using var cryptStream = new CryptoStream(outFileStream, transform, CryptoStreamMode.Write);
             inFileStream.CopyTo(cryptStream, bufferSize);
 
@@ -44,7 +46,10 @@ public class Encryption
         catch (Exception ex)
         {
             Logger.Warning(ex, "File {SourceFile} could not be {Operation}.", sourceFile, encrypt ? "encrypted" : "decrypted");
-            TryDeletePartialFile(targetFile);
+            if (outputCreated)
+            {
+                TryDeletePartialFile(targetFile);
+            }
             return false;
         }
     }
