@@ -358,22 +358,6 @@ public class BrowserDialogService : IBrowserDialogService
         });
     }
 
-    public async Task ShowFileDetailsAsync(FileDetails fileDetails)
-    {
-        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
-        {
-            var dialog = new ContentDialog
-            {
-                XamlRoot = App.MainWindow.Content.XamlRoot,
-                Title = fileDetails.Name,
-                CloseButtonText = "MsgBox_Close".GetLocalized(),
-                Content = BuildFileDetailsContent(fileDetails)
-            };
-
-            await dialog.ShowAsync();
-        });
-    }
-
     public async Task<string?> PickRestoreDestinationFolderAsync()
     {
         // Cannot show dialogs or pickers without a live XamlRoot; treat as cancel.
@@ -409,49 +393,4 @@ public class BrowserDialogService : IBrowserDialogService
         }
     }
 
-    private static Grid BuildFileDetailsContent(FileDetails fileDetails)
-    {
-        var grid = new Grid
-        {
-            RowSpacing = 8,
-            ColumnSpacing = 16,
-            MaxWidth = 560
-        };
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
-        AddDetailsRow(grid, "Browser_FileDetails_RestorePath".GetLocalized(), fileDetails.RestorePath);
-        AddDetailsRow(grid, "Browser_FileDetails_Type".GetLocalized(), fileDetails.Type);
-        AddDetailsRow(grid, "Browser_Column_Size".GetLocalized(), string.Format("Browser_FileDetails_SizeBytes".GetLocalized() ?? "Browser_FileDetails_SizeBytes", fileDetails.Size.ToString("N0")));
-        AddDetailsRow(grid, "Browser_FileDetails_Created".GetLocalized(), fileDetails.Created.ToString("g"));
-        AddDetailsRow(grid, "Browser_FileDetails_Modified".GetLocalized(), fileDetails.Modified.ToString("g"));
-        AddDetailsRow(grid, "Browser_FileDetails_AvailableVersions".GetLocalized(), string.Join(Environment.NewLine, fileDetails.AvailableVersions.Select(x => $"{x.Id} - {x.CreationDate:g}")));
-
-        return grid;
-    }
-
-    private static void AddDetailsRow(Grid grid, string label, string value)
-    {
-        var row = grid.RowDefinitions.Count;
-        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-
-        var labelBlock = new TextBlock
-        {
-            Text = label,
-            FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
-        };
-        Grid.SetRow(labelBlock, row);
-        Grid.SetColumn(labelBlock, 0);
-
-        var valueBlock = new TextBlock
-        {
-            Text = value,
-            TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
-        };
-        Grid.SetRow(valueBlock, row);
-        Grid.SetColumn(valueBlock, 1);
-
-        grid.Children.Add(labelBlock);
-        grid.Children.Add(valueBlock);
-    }
 }

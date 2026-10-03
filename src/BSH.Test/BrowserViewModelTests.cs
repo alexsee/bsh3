@@ -27,6 +27,83 @@ namespace BSH.Test;
 public class BrowserViewModelTests
 {
     [Test]
+    public async Task InfoPaneShowsCurrentFolderWhenNoBrowserItemIsSelected()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.CurrentVersion = Version("2");
+        viewModel.ToggleInfoPane = true;
+
+        await viewModel.LoadVersionCommand.ExecuteAsync(null);
+
+        Assert.That(viewModel.CurrentItem, Is.Null);
+        Assert.That(viewModel.InfoPaneItem?.FullPath, Is.EqualTo("source"));
+
+        var file = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\", IsFile = true };
+        viewModel.CurrentItem = file;
+        Assert.That(viewModel.InfoPaneItem, Is.SameAs(file));
+
+        viewModel.CurrentItem = null;
+        Assert.That(viewModel.InfoPaneItem?.FullPath, Is.EqualTo("source"));
+
+        viewModel.SearchTerms = "missing";
+        await viewModel.CommitSearchCommand.ExecuteAsync(null);
+        Assert.That(viewModel.InfoPaneItem, Is.Null);
+    }
+
+    [Test]
+    public async Task RestoreFileVersionRestoresOnlySelectedFileFromRequestedVersion()
+    {
+        var older = Version("1");
+        var queryManager = new BrowserQueryManager
+        {
+            FileDetails = new FileDetails { AvailableVersions = [older] }
+        };
+        var jobs = new BrowserJobService();
+        var viewModel = CreateViewModel(queryManager, jobs);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.ToggleInfoPane = true;
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\docs\", IsFile = true };
+        viewModel.SelectedItems.Add(viewModel.CurrentItem);
+        viewModel.SelectedItems.Add(new FileOrFolderItem { Name = "other.txt", FullPath = @"\source\docs\", IsFile = true });
+
+        await viewModel.RestoreFileVersionCommand.ExecuteAsync(older);
+
+        Assert.That(jobs.SingleRestoreCalls, Is.EqualTo(new[] { ("1", @"\source\docs\report.txt", "") }));
+        Assert.That(jobs.BatchRestoreCalls, Is.Empty);
+        Assert.That(viewModel.CurrentVersion.Id, Is.EqualTo("2"));
+    }
+
+    [Test]
+    public async Task JumpToFileVersionLeavesSearchAndSelectsFileInItsFolder()
+    {
+        var older = Version("1");
+        var current = Version("2");
+        var file = new FileTableRow { FileName = "report.txt", FilePath = @"\source\docs\" };
+        var queryManager = new BrowserQueryManager
+        {
+            FileDetails = new FileDetails { AvailableVersions = [older, current] },
+            Files = [file],
+            SearchResults = [file]
+        };
+        var viewModel = CreateViewModel(queryManager);
+        viewModel.Versions.Add(current);
+        viewModel.Versions.Add(older);
+        viewModel.CurrentVersion = current;
+        viewModel.ToggleInfoPane = true;
+        viewModel.SearchTerms = "report";
+        await viewModel.CommitSearchCommand.ExecuteAsync(null);
+        viewModel.CurrentItem = viewModel.Items.Single();
+
+        await viewModel.JumpToFileVersionCommand.ExecuteAsync(Version("1"));
+
+        Assert.That(viewModel.CurrentVersion, Is.SameAs(older));
+        Assert.That(viewModel.IsSearchMode, Is.False);
+        Assert.That(viewModel.CurrentFolderPath.Last().FullPath, Is.EqualTo(@"source\docs"));
+        Assert.That(viewModel.CurrentItem?.Name, Is.EqualTo("report.txt"));
+        Assert.That(viewModel.CurrentItem?.FullPath, Is.EqualTo(@"\source\docs\"));
+    }
+
+    [Test]
     public async Task AddFolderToFavoritesPersistsSelectedFolder()
     {
         var favorites = new BrowserFavoritesService(new MemoryLocalSettingsService());
@@ -499,6 +576,7 @@ public class BrowserViewModelTests
         public (string Version, string Path)? NextFolderLookup { get; private set; }
         public (string Version, string Search)? NextFileLookup { get; private set; }
         public List<FileTableRow> Files { get; set; } = [];
+        public FileDetails? FileDetails { get; set; }
         public int GetVersionsCallCount { get; private set; }
 
         public Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult<string>(null);
@@ -511,7 +589,7 @@ public class BrowserViewModelTests
 
         public string GetFileNameFromDrive(FileTableRow file) => file.FileName;
         public Task<(string, bool)> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password) => Task.FromResult((fileName, false));
-        public Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult<FileDetails>(null);
+        public Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult(FileDetails!);
         public Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path) => Task.FromResult(Files);
         public Task<List<string>> GetFolderListAsync(string version, string path) => Task.FromResult(new List<string>());
         public Task<string> GetFullRestoreFolderAsync(string folder, string version) => Task.FromResult(folder);
@@ -629,7 +707,6 @@ public class BrowserViewModelTests
 
         public Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions) { MultiDeletePromptedVersions = versions.Select(x => x.Id).ToList(); return Task.FromResult(VersionsSelectedForDelete ?? []); }
         public Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite) => Task.FromResult<string?>(favorite.Name);
-        public Task ShowFileDetailsAsync(FileDetails fileDetails) => Task.CompletedTask;
         public Task<string?> PickRestoreDestinationFolderAsync()
         {
             DestinationPickerPrompted = true;

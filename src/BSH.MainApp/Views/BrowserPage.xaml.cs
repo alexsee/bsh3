@@ -2,12 +2,15 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Linq;
+using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Models;
+using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 
 namespace BSH.MainApp.Views;
 
@@ -74,5 +77,73 @@ public sealed partial class BrowserPage : Page
         {
             ViewModel.CurrentFavorite = item;
         }
+    }
+
+    private void VersionsListView_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    {
+        if (e.OriginalSource is FrameworkElement { DataContext: VersionDetails version }
+            && sender is ListView list)
+        {
+            list.SelectedItem = version;
+        }
+    }
+
+    private async void JumpToFileVersion_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: VersionDetails version })
+        {
+            await ViewModel.JumpToFileVersionCommand.ExecuteAsync(version);
+        }
+    }
+
+    private async void RestoreFileVersion_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: VersionDetails version })
+        {
+            await ViewModel.RestoreFileVersionCommand.ExecuteAsync(version);
+        }
+    }
+
+    private async void VersionToolTip_Opened(object sender, RoutedEventArgs e)
+    {
+        if (sender is not ToolTip { Content: VersionDetails version } tooltip
+            || FindVersionChangesPanel(tooltip) is not StackPanel panel)
+        {
+            return;
+        }
+
+        panel.Visibility = Visibility.Collapsed;
+        try
+        {
+            var statistics = await App.GetService<BrowserVersionStatisticsService>().GetChangesAsync(version.Id);
+            if (tooltip.IsOpen && ReferenceEquals(tooltip.Content, version))
+            {
+                panel.DataContext = statistics;
+                panel.Visibility = Visibility.Visible;
+            }
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Warning(ex, "Failed to load backup version change statistics");
+        }
+    }
+
+    private static StackPanel? FindVersionChangesPanel(DependencyObject element)
+    {
+        if (element is StackPanel { Name: "VersionChangesPanel" } panel)
+        {
+            return panel;
+        }
+
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(element); index++)
+        {
+            var result = FindVersionChangesPanel(VisualTreeHelper.GetChild(element, index));
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
     }
 }

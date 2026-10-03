@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="BSH.MainApp.Views.BrowserPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,45 +12,56 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        <converters:BrowserDateTimeConverter x:Key="BrowserDateTimeConverter" />
+        <DataTemplate x:Key="VersionToolTipContentTemplate" x:DataType="engine:VersionDetails">
+            <StackPanel MaxWidth="300" Spacing="8">
+                <TextBlock FontSize="14"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"
+                           Text="{x:Bind Title, Mode=OneWay}"
+                           Visibility="{x:Bind Title, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
+                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           TextWrapping="Wrap"
+                           Text="{x:Bind Description, Mode=OneWay}"
+                           Visibility="{x:Bind Description, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
+                <Grid ColumnSpacing="16" RowSpacing="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=Browser_Column_DateCreated}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{x:Bind CreationDate, Mode=OneWay, Converter={StaticResource BrowserDateTimeConverter}, ConverterParameter=Version}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=Browser_Column_Size}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind Size, Mode=OneWay, Converter={StaticResource FileSizeConverter}}" />
+                </Grid>
+                <StackPanel x:Name="VersionChangesPanel" Orientation="Horizontal" Spacing="12" Visibility="Collapsed">
+                    <TextBlock Text="{Binding AddedCount}" AutomationProperties.Name="{Binding AddedText}" Foreground="{ThemeResource SystemFillColorSuccessBrush}" />
+                    <TextBlock Text="{Binding ModifiedCount}" AutomationProperties.Name="{Binding ModifiedText}" Foreground="{ThemeResource SystemFillColorCautionBrush}" />
+                    <TextBlock Text="{Binding DeletedCount}" AutomationProperties.Name="{Binding DeletedText}" Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate x:Name="VersionTemplate" x:DataType="engine:VersionDetails">
             <Grid>
                 <ToolTipService.ToolTip>
-                    <ToolTip>
-                        <StackPanel MaxWidth="300" Spacing="8">
-                            <TextBlock FontSize="14"
-                                       FontWeight="SemiBold"
-                                       TextWrapping="Wrap"
-                                       Text="{x:Bind Title, Mode=OneWay}"
-                                       Visibility="{x:Bind Title, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
-                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                       TextWrapping="Wrap"
-                                       Text="{x:Bind Description, Mode=OneWay}"
-                                       Visibility="{x:Bind Description, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
-                            <Grid ColumnSpacing="16" RowSpacing="4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=Browser_Column_DateCreated}" />
-                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{x:Bind CreationDate, Mode=OneWay}" />
-                                <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=Browser_Column_Size}" />
-                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind Size, Mode=OneWay, Converter={StaticResource FileSizeConverter}}" />
-                            </Grid>
-                        </StackPanel>
-                    </ToolTip>
+                    <ToolTip Content="{x:Bind}" ContentTemplate="{StaticResource VersionToolTipContentTemplate}" Opened="VersionToolTip_Opened" />
                 </ToolTipService.ToolTip>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                <Grid Grid.Column="0" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
                     <FontIcon VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" Margin="0,0,10,0"/>
-                    <TextBlock VerticalAlignment="Center" Text="{x:Bind CreationDate, Mode=OneWay}" />
-                </StackPanel>
+                    <TextBlock Grid.Column="1" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{x:Bind CreationDate, Mode=OneWay, Converter={StaticResource BrowserDateTimeConverter}, ConverterParameter=Version}" />
+                </Grid>
                 <FontIcon Grid.Column="1" VerticalAlignment="Center" FontSize="16" FontFamily="Segoe MDL2 Assets" Glyph="&#xE72E;" Visibility="{x:Bind Stable, Mode=OneWay}" />
             </Grid>
         </DataTemplate>
@@ -98,6 +109,13 @@
             <Setter Property="Width" Value="36" />
             <Setter Property="Height" Value="32" />
             <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}"/>
+        </Style>
+
+        <Style x:Key="VersionActionButtonStyle" TargetType="Button" BasedOn="{StaticResource AddressToolbarButtonStyle}">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
         </Style>
 
         <Style
@@ -226,12 +244,26 @@
                         Margin="8,0,12,0"
                         ItemTemplate="{StaticResource VersionTemplate}" 
                         ItemsSource="{x:Bind ViewModel.Versions, Mode=OneWay}" 
-                        SelectedItem="{x:Bind ViewModel.CurrentVersion, Mode=TwoWay}">
+                        SelectedItem="{x:Bind ViewModel.CurrentVersion, Mode=TwoWay}"
+                        RightTapped="VersionsListView_RightTapped">
                             <i:Interaction.Behaviors>
                                 <i:EventTriggerBehavior EventName="SelectionChanged">
                                     <i:InvokeCommandAction Command="{x:Bind ViewModel.LoadVersionCommand}"/>
                                 </i:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
+                            <ListView.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllCommand}" Text="{helpers:ResourceString Name=Browser_RestoreAll}"/>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreAllToCommand}" Text="{helpers:ResourceString Name=Browser_RestoreAllTo}"/>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.AddFolderToFavoritesCommand}" Text="{helpers:ResourceString Name=Browser_AddToFolderFavorites}"/>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteSelectedContentCommand}" Icon="Delete" Text="{helpers:ResourceString Name=Browser_DeleteSelectedFromAllBackups}"/>
+                                    <MenuFlyoutSeparator />
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.EditBackupCommand}" Icon="Edit" Text="{helpers:ResourceString Name=Browser_EditBackup}" />
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteBackupCommand}" Icon="Delete" Text="{helpers:ResourceString Name=Browser_DeleteBackup}"/>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteMultipleBackupsCommand}" Icon="Delete" Text="{helpers:ResourceString Name=Browser_DeleteMultipleBackups}"/>
+                                    <MenuFlyoutItem Command="{x:Bind ViewModel.LockBackupCommand}" Text="{helpers:ResourceString Name=Browser_LockUnlockBackup}" />
+                                </MenuFlyout>
+                            </ListView.ContextFlyout>
                         </ListView>
                     </Grid>
                 </SplitView.Pane>
@@ -290,17 +322,6 @@
                             Width="Auto"
                             MinWidth="40"
                             ToolTipService.ToolTip="{helpers:ResourceString Name=Browser_QuickPreview}" />
-                            <AppBarButton 
-                            Command="{x:Bind ViewModel.ShowFilePropertiesCommand}" 
-                            Label="{helpers:ResourceString Name=Browser_Properties}"
-                            LabelPosition="Collapsed"
-                            Width="Auto"
-                            MinWidth="40"
-                        >
-                                <AppBarButton.Icon>
-                                    <FontIcon FontSize="16" Glyph="&#xe946;" />
-                                </AppBarButton.Icon>
-                            </AppBarButton>
                         </CommandBar>
 
                         <CommandBar
@@ -369,7 +390,6 @@
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.RestoreFileToCommand}" Text="{helpers:ResourceString Name=Browser_RestoreTo}" />
                                         <MenuFlyoutSeparator />
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.ShowFilePreviewCommand}" Text="{helpers:ResourceString Name=Browser_QuickPreview}" />
-                                        <MenuFlyoutItem Command="{x:Bind ViewModel.ShowFilePropertiesCommand}" Text="{helpers:ResourceString Name=Browser_Properties}" />
                                         <MenuFlyoutSeparator />
                                         <MenuFlyoutItem Command="{x:Bind ViewModel.DeleteSelectedContentCommand}" Text="{helpers:ResourceString Name=Browser_DeleteSelectedFromAllBackups}" />
                                     </MenuFlyout>
@@ -401,7 +421,7 @@
                                                 <Image Visibility="{x:Bind IsFile, Mode=OneWay}" Source="{x:Bind Icon16, Mode=OneWay}" Height="16" Width="16" Margin="0,0,10,0" />
                                                 <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{x:Bind DisplayName, Mode=OneWay}" />
                                             </StackPanel>
-                                            <TextBlock Visibility="{x:Bind IsFile, Mode=OneWay}" Grid.Column="1" VerticalAlignment="Center" Text="{x:Bind FileDateModified, Mode=OneWay}"/>
+                                            <TextBlock Visibility="{x:Bind IsFile, Mode=OneWay}" Grid.Column="1" VerticalAlignment="Center" Text="{x:Bind FileDateModified, Mode=OneWay, Converter={StaticResource BrowserDateTimeConverter}}"/>
                                             <TextBlock Visibility="{x:Bind IsFile, Mode=OneWay}" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Text="{x:Bind FileSize, Mode=OneWay, Converter={StaticResource FileSizeConverter}}"/>
                                         </Grid>
                                     </DataTemplate>
@@ -429,23 +449,72 @@
                     BorderThickness="1,0,0,0" 
                     Visibility="{x:Bind ViewModel.ToggleInfoPane, Mode=OneWay}"
                     Width="300">
-                        <StackPanel
-                        Orientation="Vertical"
-                        Spacing="8">
-                            <Image Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Source="{x:Bind ViewModel.CurrentItem.Icon64, Mode=OneWay}" Width="64" Height="64" HorizontalAlignment="Center" />
-                            <FontIcon Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}" VerticalAlignment="Center" FontSize="64" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B7;" />
-
-                            <TextBlock HorizontalAlignment="Center" FontWeight="Bold" Text="{x:Bind ViewModel.CurrentItem.Name, Mode=OneWay}" />
-
-                            <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Text="{helpers:ResourceString Name=Browser_Column_Path}" />
-                            <TextBlock Text="{x:Bind ViewModel.CurrentItem.FullPath, Mode=OneWay}" TextWrapping="Wrap" />
-
-                            <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Text="{helpers:ResourceString Name=Browser_Column_DateCreated}" />
-                            <TextBlock Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Text="{x:Bind ViewModel.CurrentItem.FileDateCreated, Mode=OneWay}" />
-
-                            <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Text="{helpers:ResourceString Name=Browser_Column_LastModified}" />
-                            <TextBlock Visibility="{x:Bind ViewModel.CurrentItem.IsFile, Mode=OneWay}" Text="{x:Bind ViewModel.CurrentItem.FileDateModified, Mode=OneWay}" />
-                        </StackPanel>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <!-- Keep content clear of WinUI's expanding overlay scrollbar. -->
+                            <StackPanel Spacing="8" Margin="0,0,16,0">
+                                <Image Visibility="{x:Bind ViewModel.InfoPaneItem.IsFile, Mode=OneWay}" Source="{x:Bind ViewModel.InfoPaneItem.Icon64, Mode=OneWay}" Width="64" Height="64" HorizontalAlignment="Center" />
+                                <FontIcon Visibility="{x:Bind ViewModel.InfoPaneItem.IsFile, Mode=OneWay, Converter={StaticResource VisibilityInvertConverter}}" FontSize="64" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B7;" />
+                                <TextBlock HorizontalAlignment="Center" FontWeight="Bold" TextWrapping="Wrap" Text="{x:Bind ViewModel.InfoPaneItem.Name, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Text="{helpers:ResourceString Name=Browser_Column_Path}" />
+                                <TextBlock Text="{x:Bind ViewModel.InfoPaneItem.FullPath, Mode=OneWay}" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                                <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.InfoPaneItem.IsFile, Mode=OneWay}">
+                                    <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Text="{helpers:ResourceString Name=Browser_Column_DateCreated}" />
+                                    <TextBlock Text="{x:Bind ViewModel.InfoPaneItem.FileDateCreated, Mode=OneWay, Converter={StaticResource BrowserDateTimeConverter}}" />
+                                    <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Text="{helpers:ResourceString Name=Browser_Column_LastModified}" />
+                                    <TextBlock Text="{x:Bind ViewModel.InfoPaneItem.FileDateModified, Mode=OneWay, Converter={StaticResource BrowserDateTimeConverter}}" />
+                                    <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Text="{helpers:ResourceString Name=Browser_Column_Size}" />
+                                    <TextBlock Text="{x:Bind ViewModel.InfoPaneItem.FileSize, Mode=OneWay, Converter={StaticResource FileSizeConverter}}" />
+                                    <ProgressRing IsActive="{x:Bind ViewModel.IsLoadingFileDetails, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsLoadingFileDetails, Mode=OneWay}" Width="24" Height="24" />
+                                    <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Text="{helpers:ResourceString Name=Browser_FileDetails_RestorePath}" />
+                                    <TextBlock Text="{x:Bind ViewModel.CurrentFileDetails.RestorePath, Mode=OneWay}" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                                    <TextBlock Style="{StaticResource InfoPaneTitleStyle}" Text="{helpers:ResourceString Name=Browser_FileDetails_AvailableVersions}" />
+                                    <ListView ItemsSource="{x:Bind ViewModel.CurrentFileDetails.AvailableVersions, Mode=OneWay}"
+                                              SelectionMode="None" MaxHeight="280" Padding="0"
+                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                        <ListView.ItemContainerStyle>
+                                            <Style TargetType="ListViewItem">
+                                                <Setter Property="Padding" Value="0" />
+                                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                <Setter Property="MinHeight" Value="0" />
+                                            </Style>
+                                        </ListView.ItemContainerStyle>
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="engine:VersionDetails">
+                                                <!-- The version list has its own overlay scrollbar. -->
+                                                <Grid ColumnSpacing="4" Padding="0,2,16,2">
+                                                    <ToolTipService.ToolTip>
+                                                        <ToolTip Content="{x:Bind}" ContentTemplate="{StaticResource VersionToolTipContentTemplate}" Opened="VersionToolTip_Opened" />
+                                                    </ToolTipService.ToolTip>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                                                        <TextBlock Text="{x:Bind CreationDate, Converter={StaticResource BrowserDateTimeConverter}, ConverterParameter=Version}" TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Text="{x:Bind Title}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                   TextWrapping="Wrap" Visibility="{x:Bind Title, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
+                                                    </StackPanel>
+                                                    <Button Grid.Column="1" Style="{StaticResource VersionActionButtonStyle}" VerticalAlignment="Top"
+                                                            ToolTipService.ToolTip="{helpers:ResourceString Name=Browser_FileDetails_JumpToVersion}"
+                                                            AutomationProperties.Name="{helpers:ResourceString Name=Browser_FileDetails_JumpToVersion}"
+                                                            Tag="{x:Bind}" Click="JumpToFileVersion_Click">
+                                                        <FontIcon FontSize="12" Glyph="&#xE72A;" />
+                                                    </Button>
+                                                    <Button Grid.Column="2" Style="{StaticResource VersionActionButtonStyle}" VerticalAlignment="Top"
+                                                            ToolTipService.ToolTip="{helpers:ResourceString Name=Browser_Restore}"
+                                                            AutomationProperties.Name="{helpers:ResourceString Name=Browser_Restore}"
+                                                            Tag="{x:Bind}" Click="RestoreFileVersion_Click">
+                                                        <FontIcon FontSize="12" Glyph="&#xE8C8;" />
+                                                    </Button>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
                     </Grid>
                 </Grid>
             </SplitView>

@@ -291,6 +291,7 @@ public partial class App : Application
             services.AddSingleton<IBrowserViewPreferencesService, BrowserViewPreferencesService>();
             services.AddSingleton<IBrowserContentService, BrowserContentService>();
             services.AddSingleton<IBrowserDialogService, BrowserDialogService>();
+            services.AddSingleton<BrowserVersionStatisticsService>();
             services.AddSingleton<IBrowserPreviewService, BrowserPreviewService>();
             services.AddSingleton<ISmartPreviewHost, SmartPreviewHost>();
             services.AddSingleton<IBackupTargetService, BackupTargetService>();
