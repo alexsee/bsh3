@@ -32,17 +32,22 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=Browser_Column_DateCreated}" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Text="{x:Bind CreationDate, Mode=OneWay, Converter={StaticResource BrowserDateTimeConverter}, ConverterParameter=Version}" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{helpers:ResourceString Name=Browser_Column_Size}" />
                     <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind Size, Mode=OneWay, Converter={StaticResource FileSizeConverter}}" />
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Text="{helpers:ResourceString Name=Browser_Version_Changes}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Visibility="{Binding Visibility, ElementName=VersionChangesPanel}" />
+                    <StackPanel x:Name="VersionChangesPanel" Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="12" Visibility="Collapsed">
+                        <TextBlock Text="{Binding AddedCount}" AutomationProperties.Name="{Binding AddedText}" Foreground="{ThemeResource SystemFillColorSuccessBrush}" />
+                        <TextBlock Text="{Binding ModifiedCount}" AutomationProperties.Name="{Binding ModifiedText}" Foreground="{ThemeResource SystemFillColorCautionBrush}" />
+                        <TextBlock Text="{Binding DeletedCount}" AutomationProperties.Name="{Binding DeletedText}" Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
+                    </StackPanel>
                 </Grid>
-                <StackPanel x:Name="VersionChangesPanel" Orientation="Horizontal" Spacing="12" Visibility="Collapsed">
-                    <TextBlock Text="{Binding AddedCount}" AutomationProperties.Name="{Binding AddedText}" Foreground="{ThemeResource SystemFillColorSuccessBrush}" />
-                    <TextBlock Text="{Binding ModifiedCount}" AutomationProperties.Name="{Binding ModifiedText}" Foreground="{ThemeResource SystemFillColorCautionBrush}" />
-                    <TextBlock Text="{Binding DeletedCount}" AutomationProperties.Name="{Binding DeletedText}" Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
-                </StackPanel>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Name="VersionTemplate" x:DataType="engine:VersionDetails">

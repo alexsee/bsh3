@@ -1507,7 +1507,7 @@ The medium will be automatically detected.</value>
     <value>Yesterday, {0}</value>
   </data>
   <data name="Browser_Version_Changes" xml:space="preserve">
-    <value>Changes since previous available backup</value>
+    <value>Changes</value>
   </data>
   <data name="Browser_Version_AddedFiles" xml:space="preserve">
     <value>+{0:N0} added files</value>

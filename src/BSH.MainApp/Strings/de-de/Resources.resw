@@ -1507,7 +1507,7 @@ Das Medium wird automatisch erkannt.</value>
     <value>Gestern, {0}</value>
   </data>
   <data name="Browser_Version_Changes" xml:space="preserve">
-    <value>Änderungen seit der vorherigen verfügbaren Sicherung</value>
+    <value>Änderungen</value>
   </data>
   <data name="Browser_Version_AddedFiles" xml:space="preserve">
     <value>+{0:N0} hinzugefügte Dateien</value>
