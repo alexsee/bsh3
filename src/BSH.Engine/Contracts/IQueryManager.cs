@@ -28,6 +28,7 @@ public interface IQueryManager
     Task<double> GetTotalFileSizeAsync();
     Task<VersionDetails> GetOldestBackupAsync();
     Task<VersionDetails> GetVersionByIdAsync(string id);
+    Task<VersionChangeStatistics> GetVersionChangeStatisticsAsync(string versionId);
     List<VersionDetails> GetVersions(bool desc = true);
     Task<List<FileTableRow>> GetVersionsByFileAsync(string fileName, string filePath);
     Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500);

@@ -2,9 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Linq;
+using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Models;
-using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
@@ -114,10 +114,10 @@ public sealed partial class BrowserPage : Page
         panel.Visibility = Visibility.Collapsed;
         try
         {
-            var statistics = await App.GetService<BrowserVersionStatisticsService>().GetChangesAsync(version.Id);
+            var statistics = await App.GetService<IQueryManager>().GetVersionChangeStatisticsAsync(version.Id);
             if (tooltip.IsOpen && ReferenceEquals(tooltip.Content, version))
             {
-                panel.DataContext = statistics;
+                panel.DataContext = new BrowserVersionChangeStatistics(statistics.Added, statistics.Modified, statistics.Deleted);
                 panel.Visibility = Visibility.Visible;
             }
         }

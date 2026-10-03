@@ -5,13 +5,15 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Database;
-using BSH.MainApp.Models;
-using BSH.MainApp.Services;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Models;
+using BSH.Test.Fakes;
+using BSH.Test.Mocks;
 using NUnit.Framework;
 
 namespace BSH.Test;
 
-public class BrowserVersionStatisticsServiceTests
+public class QueryManagerVersionStatisticsTests
 {
     private string databaseFile = null!;
     private DbClientFactory factory = null!;
@@ -55,10 +57,10 @@ public class BrowserVersionStatisticsServiceTests
     [TestCase("5", 0, 0, 4, TestName = "EmptyBackupCountsPreviousFilesAsDeleted")]
     public async Task ChangesMatchPreviousAvailableSnapshot(string version, long added, long modified, long deleted)
     {
-        var service = new BrowserVersionStatisticsService(factory);
+        var queryManager = new QueryManager(factory, new FakeConfigurationManager(), new StorageFactoryMock());
 
-        var changes = await service.GetChangesAsync(version);
+        var changes = await queryManager.GetVersionChangeStatisticsAsync(version);
 
-        Assert.That(changes, Is.EqualTo(new BrowserVersionChangeStatistics(added, modified, deleted)));
+        Assert.That(changes, Is.EqualTo(new VersionChangeStatistics(added, modified, deleted)));
     }
 }
