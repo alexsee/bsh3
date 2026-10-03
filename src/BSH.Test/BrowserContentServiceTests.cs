@@ -88,6 +88,7 @@ public class BrowserContentServiceTests
         public Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult<string>(null);
         public string GetFileNameFromDrive(FileTableRow file) => file.FileName;
         public Task<(string, bool)> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password) => Task.FromResult((fileName, false));
+        public Task<VersionChangeStatistics> GetVersionChangeStatisticsAsync(string versionId) => throw new System.NotSupportedException();
         public Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult<FileDetails>(null);
         public Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path) => Task.FromResult(new List<FileTableRow>());
         public Task<List<string>> GetFolderListAsync(string version, string path) => Task.FromResult(new List<string>());

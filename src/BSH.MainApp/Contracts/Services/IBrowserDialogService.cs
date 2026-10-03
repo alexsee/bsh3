@@ -19,7 +19,6 @@ public interface IBrowserDialogService
         FileOrFolderItem item,
         IReadOnlyList<VersionDetails> versions);
 
-    Task ShowFileDetailsAsync(FileDetails fileDetails);
     Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite);
 
     /// <summary>

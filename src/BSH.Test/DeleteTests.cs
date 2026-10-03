@@ -456,6 +456,7 @@ public class DeleteTests
             this.details = details;
         }
 
+        public Task<VersionChangeStatistics> GetVersionChangeStatisticsAsync(string versionId) => throw new NotSupportedException();
         public Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult(details);
         public Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult<string>(null);
         public Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult<string>(null);
