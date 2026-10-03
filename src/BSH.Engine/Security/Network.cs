@@ -26,6 +26,12 @@ public class NetworkConnection : IDisposable
         var auth = loc.Host;
         var segments = loc.Segments;
 
+        // A UNC path without a share (e.g. "\\host") has nothing to connect to.
+        if (segments.Length < 2)
+        {
+            return;
+        }
+
         // Config-stored passwords are DPAPI ciphertext; UI probes pass plaintext.
         var pw = passwordIsEncrypted
             ? Crypto.DecryptString(remotePassword, System.Security.Cryptography.DataProtectionScope.LocalMachine)

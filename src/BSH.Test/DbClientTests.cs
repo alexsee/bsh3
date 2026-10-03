@@ -5,6 +5,7 @@ using System;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Database;
 using NUnit.Framework;
@@ -77,6 +78,59 @@ public class DbClientTests
         using var secondReader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, select, null);
         Assert.That(await secondReader.ReadAsync(), Is.True);
         Assert.That(secondReader.GetString(0), Is.EqualTo("first"));
+    }
+
+    [Test]
+    public async Task DisposeRollsBackUncommittedTransaction()
+    {
+        using (var dbClient = CreateDbClient())
+        {
+            await dbClient.ExecuteNonQueryAsync("CREATE TABLE entries (value TEXT)");
+
+            dbClient.BeginTransaction();
+            await dbClient.ExecuteNonQueryAsync(CommandType.Text, "INSERT INTO entries (value) VALUES (@value)", new (string, object)[] { ("value", "uncommitted") });
+        }
+
+        using var verifyClient = CreateDbClient();
+        Assert.That(await verifyClient.ExecuteScalarAsync("SELECT COUNT(*) FROM entries"), Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task DisposeSurvivesFailingRollback()
+    {
+        using var dbClient = CreateDbClient();
+        await dbClient.ExecuteNonQueryAsync("CREATE TABLE entries (value TEXT)");
+        dbClient.BeginTransaction();
+
+        // break the underlying connection so the best-effort rollback in Dispose fails
+        var connection = (SQLiteConnection)typeof(DbClient)
+            .GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetValue(dbClient);
+        connection.Close();
+
+        Assert.DoesNotThrow(() => dbClient.Dispose());
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ExecuteDataReaderPropagatesSqlErrorsAndAllowsSubsequentReads(bool useAsync)
+    {
+        using var dbClient = CreateDbClient();
+
+        if (useAsync)
+        {
+            Assert.ThrowsAsync<SQLiteException>(async () => await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM missing_table", null));
+        }
+        else
+        {
+            Assert.Throws<SQLiteException>(() => dbClient.ExecuteDataReader(CommandType.Text, "SELECT * FROM missing_table", null));
+        }
+
+        using var reader = useAsync
+            ? await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT 42", null)
+            : dbClient.ExecuteDataReader(CommandType.Text, "SELECT 42", null);
+        Assert.That(reader.Read(), Is.True);
+        Assert.That(reader.GetInt32(0), Is.EqualTo(42));
     }
 
     private DbClient CreateDbClient()

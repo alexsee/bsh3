@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
 using System.Data.SQLite;
 using System.IO;
 using System.Threading.Tasks;
@@ -39,13 +38,11 @@ public class DbClientFactory : IDbClientFactory
     }
 
     /// <summary>
-    /// Cleans up all open data pools for the database and runs the garbage collection.
+    /// Clears all pooled database connections.
     /// </summary>
     public static void ClosePool()
     {
         SQLiteConnection.ClearAllPools();
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
     }
 
     private async Task CreateDatabaseAsync()

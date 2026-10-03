@@ -21,6 +21,9 @@ public class UsbWatchService : IMediaWatcher
 
     public void StartWatching()
     {
+        // stop a previous watcher first so repeated starts don't orphan it
+        StopWatching();
+
         ManagementEventWatcher current = null;
         try
         {
@@ -92,7 +95,7 @@ public class UsbWatchService : IMediaWatcher
         }
     }
 
-    public void WatcherDeviceChange(object sender, EventArrivedEventArgs e)
+    private void WatcherDeviceChange(object sender, EventArrivedEventArgs e)
     {
         if (e == null)
         {
@@ -102,6 +105,11 @@ public class UsbWatchService : IMediaWatcher
         try
         {
             var driveLetter = e.NewEvent.Properties["DriveName"]?.Value?.ToString();
+            if (string.IsNullOrEmpty(driveLetter))
+            {
+                return;
+            }
+
             DeviceAdded?.Invoke(this, driveLetter);
         }
         catch (Exception ex)

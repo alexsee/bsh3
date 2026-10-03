@@ -133,6 +133,20 @@ public class RestoreTests
     }
 
     [Test]
+    public async Task TestRestoreWithNullSourceRestoresEverythingBelowRoot()
+    {
+        const string versionDate = "01-01-2021 00-00-00";
+        await SeedVersionAsync(1, versionDate);
+        await SeedFileForVersionAsync(1, 1, 1, "plain.txt", @"\docs\", 1, "");
+
+        var storage = new StorageMock();
+        using var restoreJob = CreateRestoreJob(storage, file: null!);
+
+        Assert.DoesNotThrowAsync(async () => await restoreJob.RestoreAsync(CancellationToken.None));
+        Assert.That(storage.CopyFileFromStorageCalls, Is.EqualTo(1));
+    }
+
+    [Test]
     public async Task TestOverwriteDontCopySkipsExistingFile()
     {
         const string versionDate = "01-01-2021 00-00-00";

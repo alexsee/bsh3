@@ -16,6 +16,7 @@ public class OrchestrationService : IOrchestrationService
     private readonly IQueryManager queryManager;
     private readonly IAppNotificationService appNotificationService;
     private readonly IPowerStatusService powerStatusService;
+    private readonly IJobService jobService;
 
     public OrchestrationService(
         IConfigurationManager configurationManager,
@@ -23,7 +24,8 @@ public class OrchestrationService : IOrchestrationService
         IScheduledBackupService scheduledBackupService,
         IQueryManager queryManager,
         IAppNotificationService appNotificationService,
-        IPowerStatusService powerStatusService)
+        IPowerStatusService powerStatusService,
+        IJobService jobService)
     {
         this.configurationManager = configurationManager;
         this.statusService = statusService;
@@ -31,6 +33,7 @@ public class OrchestrationService : IOrchestrationService
         this.queryManager = queryManager;
         this.appNotificationService = appNotificationService;
         this.powerStatusService = powerStatusService;
+        this.jobService = jobService;
     }
 
     public async Task InitializeAsync()
@@ -84,6 +87,9 @@ public class OrchestrationService : IOrchestrationService
         {
             configurationManager.DbStatus = "1";
         }
+
+        // cancel a running job first so it does not keep working while the system reports stopped
+        jobService.Cancel();
 
         // stop all services
         scheduledBackupService.Stop();

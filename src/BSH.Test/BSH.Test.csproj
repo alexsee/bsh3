@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj" />
+    <ProjectReference Include="..\BSH.Main\BSH.Main.csproj" />
     <ProjectReference Include="..\BSH.MainApp\BSH.MainApp.csproj" />
   </ItemGroup>
 </Project>

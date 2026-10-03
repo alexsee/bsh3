@@ -3,6 +3,8 @@
 
 using System;
 using System.IO;
+using System.IO.Compression;
+using System.Reflection;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Test.Fakes;
@@ -104,5 +106,32 @@ public class FileSystemStorageTests
             BackupFolder = temporaryDirectory,
             OldBackupPrevent = "1"
         });
+    }
+
+    [Test]
+    public void CopyFileFromStorageCompressedReturnsFalseWhenEntryIsMissing()
+    {
+        const string remoteFile = "payload.bin";
+        using (var zipFile = ZipFile.Open(Path.Combine(temporaryDirectory, remoteFile + ".zip"), ZipArchiveMode.Create))
+        {
+            var entry = zipFile.CreateEntry("other.bin");
+            using var writer = new StreamWriter(entry.Open());
+            writer.Write("other content");
+        }
+
+        using var storage = CreateStorage();
+        var localFile = Path.Combine(temporaryDirectory, "restored", remoteFile);
+
+        Assert.That(storage.CopyFileFromStorageCompressed(localFile, remoteFile), Is.False);
+    }
+
+    [Test]
+    public void DisposeWithFinalizerPathIsNoOp()
+    {
+        using var storage = CreateStorage();
+        var dispose = typeof(FileSystemStorage).GetMethod("Dispose", BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(bool)], null);
+        Assert.That(dispose, Is.Not.Null);
+
+        Assert.DoesNotThrow(() => dispose.Invoke(storage, [false]));
     }
 }

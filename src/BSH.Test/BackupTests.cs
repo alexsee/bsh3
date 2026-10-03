@@ -15,6 +15,7 @@ using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
+using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
@@ -248,6 +249,54 @@ public class BackupTests
 
         Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(1));
         Assert.That(fs.CopyFileToStorageCompressedCalls, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task TestFtpStorageUsesStoredCopyFileType()
+    {
+        var fs = new StorageMock { Kind = StorageProviderKind.Ftp };
+        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+
+        var token = new CancellationTokenSource().Token;
+        await backupJob.BackupAsync(token);
+
+        Assert.That(await GetSingleFileTypeAsync(), Is.EqualTo(3));
+    }
+
+    [Test]
+    public async Task TestFtpStorageUsesStoredCompressedFileType()
+    {
+        configurationManager.Compression = 1;
+
+        var fs = new StorageMock { Kind = StorageProviderKind.Ftp };
+        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+
+        var token = new CancellationTokenSource().Token;
+        await backupJob.BackupAsync(token);
+
+        Assert.That(await GetSingleFileTypeAsync(), Is.EqualTo(4));
+    }
+
+    [Test]
+    public async Task TestFtpStorageUsesStoredEncryptedFileType()
+    {
+        configurationManager.Encrypt = 1;
+        configurationManager.EncryptPassMD5 = "cc03e747a6afbbcbf8be7668acfebee5";
+
+        var fs = new StorageMock { Kind = StorageProviderKind.Ftp };
+        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+        backupJob.Password = "test123";
+
+        var token = new CancellationTokenSource().Token;
+        await backupJob.BackupAsync(token);
+
+        Assert.That(await GetSingleFileTypeAsync(), Is.EqualTo(5));
+    }
+
+    private async Task<int> GetSingleFileTypeAsync()
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+        return Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileType FROM fileversiontable"));
     }
 
     [Test]

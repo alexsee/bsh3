@@ -160,4 +160,33 @@ public class ConfigurationManagerTests
         Assert.That(configurationManager.IsConfigured, Is.EqualTo("0"));
         Assert.That(configurationManager.SourceFolder, Is.Empty);
     }
+
+    [Test]
+    public async Task NullableBackedPropertiesPersistNullAsEmptyString()
+    {
+        var configurationManager = new ConfigurationManager(dbClientFactory);
+        await configurationManager.InitializeAsync();
+
+        configurationManager.RemindSpace = "512";
+        configurationManager.DbStatus = "1";
+        configurationManager.DeativateAutoBackupsWhenAkku = "0";
+        configurationManager.InfoBackupDone = "1";
+        configurationManager.ShowWaitOnMediaAutoBackups = "1";
+
+        // null assignments must not throw and persist as empty strings
+        configurationManager.RemindSpace = null!;
+        configurationManager.DbStatus = null!;
+        configurationManager.DeativateAutoBackupsWhenAkku = null!;
+        configurationManager.InfoBackupDone = null!;
+        configurationManager.ShowWaitOnMediaAutoBackups = null!;
+
+        var reloadedConfiguration = new ConfigurationManager(dbClientFactory);
+        await reloadedConfiguration.InitializeAsync();
+
+        Assert.That(reloadedConfiguration.RemindSpace, Is.Empty);
+        Assert.That(reloadedConfiguration.DbStatus, Is.Empty);
+        Assert.That(reloadedConfiguration.DeativateAutoBackupsWhenAkku, Is.Empty);
+        Assert.That(reloadedConfiguration.InfoBackupDone, Is.Empty);
+        Assert.That(reloadedConfiguration.ShowWaitOnMediaAutoBackups, Is.Empty);
+    }
 }

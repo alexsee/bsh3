@@ -146,8 +146,20 @@ public class DbClient : IDisposable
 
         _readerCommands.Clear();
 
-        _transaction?.Dispose();
-        _transaction = null;
+        if (_transaction != null)
+        {
+            try
+            {
+                _transaction.Rollback();
+            }
+            catch
+            {
+                // rollback best-effort during dispose; connection teardown rolls back anyway
+            }
+
+            _transaction.Dispose();
+            _transaction = null;
+        }
 
         _connection.Dispose();
         GC.SuppressFinalize(this);
@@ -191,8 +203,17 @@ public class DbClient : IDisposable
         OpenConnection();
 
         var command = CreateCommand(commandType, commandText, parameters);
-        _readerCommands.Add(command);
-        return command.ExecuteReader();
+        try
+        {
+            var reader = command.ExecuteReader();
+            _readerCommands.Add(command);
+            return reader;
+        }
+        catch
+        {
+            command.Dispose();
+            throw;
+        }
     }
 
     /// <summary>
@@ -208,8 +229,17 @@ public class DbClient : IDisposable
         await OpenConnectionAsync();
 
         var command = CreateCommand(commandType, commandText, parameters);
-        _readerCommands.Add(command);
-        return await command.ExecuteReaderAsync();
+        try
+        {
+            var reader = await command.ExecuteReaderAsync();
+            _readerCommands.Add(command);
+            return reader;
+        }
+        catch
+        {
+            await command.DisposeAsync();
+            throw;
+        }
     }
 
     public async Task<object> ExecuteScalarAsync(string commandText)

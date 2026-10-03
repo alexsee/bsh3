@@ -22,29 +22,32 @@ public class SchedulerService : ISchedulerAdapter
 
     public void Start()
     {
-        Task.Run(async () =>
+        // The async bridges must not capture the context of a blocked UI caller.
+        StartAsync().GetAwaiter().GetResult();
+    }
+
+    private async Task StartAsync()
+    {
+        // If scheduler exists and is shutdown, clear it
+        if (this.scheduler != null && this.scheduler.IsShutdown)
         {
-            // If scheduler exists and is shutdown, clear it
-            if (this.scheduler != null && this.scheduler.IsShutdown)
-            {
-                this.scheduler = null;
-            }
+            this.scheduler = null;
+        }
 
-            // Only create a new scheduler if we don't have one
-            if (this.scheduler == null)
-            {
-                var properties = new NameValueCollection {
-                    { "quartz.threadPool.threadCount", "1" },
-                    { "quartz.threadPool.maxConcurrency", "1" }
-                };
+        // Only create a new scheduler if we don't have one
+        if (this.scheduler == null)
+        {
+            var properties = new NameValueCollection {
+                { "quartz.threadPool.threadCount", "1" },
+                { "quartz.threadPool.maxConcurrency", "1" }
+            };
 
-                var factory = new StdSchedulerFactory(properties);
-                this.scheduler = await factory.GetScheduler();
-            }
+            var factory = new StdSchedulerFactory(properties);
+            this.scheduler = await factory.GetScheduler().ConfigureAwait(false);
+        }
 
-            // Start the scheduler if it's not running
-            await this.scheduler.Start();
-        }).Wait();
+        // Start the scheduler if it's not running
+        await this.scheduler.Start().ConfigureAwait(false);
     }
 
     private static IJobDetail GetJob(Action action)
@@ -116,23 +119,28 @@ public class SchedulerService : ISchedulerAdapter
 
     public DateTime GetNextRun()
     {
-        var result = DateTimeOffset.MaxValue;
-
-        Task.Run(async () =>
-        {
-            var allTriggerKeys = await scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
-            foreach (var triggerKey in allTriggerKeys)
-            {
-                var trigger = await scheduler.GetTrigger(triggerKey);
-
-                if (trigger.GetNextFireTimeUtc() < result)
-                {
-                    result = trigger.GetNextFireTimeUtc().Value;
-                }
-            }
-        }).Wait();
+        var result = GetNextRunAsync().GetAwaiter().GetResult();
 
         return result.LocalDateTime;
+    }
+
+    private async Task<DateTimeOffset> GetNextRunAsync()
+    {
+        var result = DateTimeOffset.MaxValue;
+
+        var allTriggerKeys = await scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup()).ConfigureAwait(false);
+        foreach (var triggerKey in allTriggerKeys)
+        {
+            var trigger = await scheduler.GetTrigger(triggerKey).ConfigureAwait(false);
+            var nextFireTime = trigger?.GetNextFireTimeUtc();
+
+            if (nextFireTime.HasValue && nextFireTime.Value < result)
+            {
+                result = nextFireTime.Value;
+            }
+        }
+
+        return result;
     }
 
     public void Stop()
@@ -142,11 +150,13 @@ public class SchedulerService : ISchedulerAdapter
             return;
         }
 
-        Task.Run(async () =>
-        {
-            await scheduler.Shutdown();
-            scheduler = null;
-        }).Wait();
+        StopAsync().GetAwaiter().GetResult();
+    }
+
+    private async Task StopAsync()
+    {
+        await scheduler.Shutdown().ConfigureAwait(false);
+        scheduler = null;
     }
 
     private sealed class RunActionJob : IJob
@@ -156,7 +166,7 @@ public class SchedulerService : ISchedulerAdapter
             await Task.Run(() =>
             {
                 var action = context.MergedJobDataMap["action"] as Action;
-                action();
+                action?.Invoke();
             });
         }
     }

@@ -83,4 +83,13 @@ public class UncTargetProbeTests
             plaintext);
         Assert.That(mistypedConnection.RemoteShare, Is.Null);
     }
+
+    [Test]
+    public void NetworkConnectionSkipsHostWithoutShare()
+    {
+        // A UNC path without a share (e.g. "\\host") has nothing to connect to.
+        using var connection = new NetworkConnection(@"\\host", "user", "password", passwordIsEncrypted: false);
+
+        Assert.That(connection.RemoteShare, Is.Null);
+    }
 }

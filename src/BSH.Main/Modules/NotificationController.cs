@@ -252,7 +252,16 @@ public class NotificationController : IStatusReport
 
     public void ReportSystemStatus(SystemStatus systemStatus)
     {
-        SynchronizationContext.Current.Send((cancellationToken) => ReportSystemStatus_Safe(systemStatus), systemStatus);
+        // SynchronizationContext.Current is null on thread-pool threads (scheduler/power
+        // callbacks), so marshal via the tray control like ReportState does.
+        try
+        {
+            systemTrayIconContextMenu.Invoke(new Action(() => ReportSystemStatus_Safe(systemStatus)));
+        }
+        catch (Exception)
+        {
+            // raise no error
+        }
     }
 
     public void ReportSystemStatus_Safe(SystemStatus systemStatus)
