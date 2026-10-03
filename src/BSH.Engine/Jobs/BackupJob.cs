@@ -731,31 +731,19 @@ public class BackupJob : Job
             file.FilePath += "\\";
         }
 
-        var fileType = FileTypeKind.RegularCopy;
-        if (storage.Kind == StorageProviderKind.LocalFileSystem)
+        var isLocalStorage = storage.Kind == StorageProviderKind.LocalFileSystem;
+        FileTypeKind fileType;
+        if (encrypt)
         {
-            if (compress)
-            {
-                fileType = FileTypeKind.Compressed;
-            }
-
-            if (encrypt)
-            {
-                fileType = FileTypeKind.Encrypted;
-            }
+            fileType = isLocalStorage ? FileTypeKind.Encrypted : FileTypeKind.StoredEncrypted;
+        }
+        else if (compress)
+        {
+            fileType = isLocalStorage ? FileTypeKind.Compressed : FileTypeKind.StoredCompressed;
         }
         else
         {
-            fileType = FileTypeKind.StoredCopy;
-            if (compress)
-            {
-                fileType = FileTypeKind.StoredCompressed;
-            }
-
-            if (encrypt)
-            {
-                fileType = FileTypeKind.StoredEncrypted;
-            }
+            fileType = isLocalStorage ? FileTypeKind.RegularCopy : FileTypeKind.StoredCopy;
         }
 
         if (!long.TryParse(file.FileId, out var fileId))

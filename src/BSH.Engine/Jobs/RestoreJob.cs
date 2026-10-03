@@ -106,10 +106,9 @@ public class RestoreJob : Job
             // single file or path?
             // A null source means "restore everything below the root".
             File ??= "\\";
-            var singleFileName = string.IsNullOrEmpty(File) ? string.Empty : (Path.GetFileName(File) ?? string.Empty).Trim();
-            if (!string.IsNullOrEmpty(singleFileName))
+            var sourceFileName = Path.GetFileName(File);
+            if (!string.IsNullOrWhiteSpace(sourceFileName))
             {
-                var fileName = Path.GetFileName(File);
                 var filePath = Path.GetDirectoryName(File);
 
                 if (!filePath.EndsWith('\\'))
@@ -123,7 +122,7 @@ public class RestoreJob : Job
                 }
 
                 countFiles = 1;
-                reader = await versionQueryRepository.GetRestoreSingleFileAsync(dbClient, Version, fileName, filePath);
+                reader = await versionQueryRepository.GetRestoreSingleFileAsync(dbClient, Version, sourceFileName, filePath);
             }
             else
             {
@@ -278,11 +277,8 @@ public class RestoreJob : Job
             }
             else
             {
-                var needle = separator + Path.GetFileName(match) + separator;
-                var idx = fileDest.IndexOf(needle, StringComparison.OrdinalIgnoreCase);
-                fileDest = idx >= 0
-                    ? match + separator + fileDest[(idx + needle.Length)..]
-                    : match + separator + fileDest.TrimStart(separator);
+                var sourcePrefix = separator + Path.GetFileName(match) + separator;
+                fileDest = match + separator + fileDest[sourcePrefix.Length..];
             }
         }
         else if (destFolders.Count == 1)
