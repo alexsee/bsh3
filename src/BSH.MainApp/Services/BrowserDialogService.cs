@@ -392,5 +392,4 @@ public class BrowserDialogService : IBrowserDialogService
             return null;
         }
     }
-
 }

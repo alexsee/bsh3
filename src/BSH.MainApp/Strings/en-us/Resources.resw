@@ -174,20 +174,8 @@ This feature is currently not available because the quick preview could not be f
   <data name="Browser_FileDetails_AvailableVersions" xml:space="preserve">
     <value>Available versions</value>
   </data>
-  <data name="Browser_FileDetails_Created" xml:space="preserve">
-    <value>Created</value>
-  </data>
-  <data name="Browser_FileDetails_Modified" xml:space="preserve">
-    <value>Modified</value>
-  </data>
   <data name="Browser_FileDetails_RestorePath" xml:space="preserve">
     <value>Restore path</value>
-  </data>
-  <data name="Browser_FileDetails_SizeBytes" xml:space="preserve">
-    <value>{0} bytes</value>
-  </data>
-  <data name="Browser_FileDetails_Type" xml:space="preserve">
-    <value>Type</value>
   </data>
   <data name="Browser_LockUnlockBackup" xml:space="preserve">
     <value>Lock/unlock backup</value>

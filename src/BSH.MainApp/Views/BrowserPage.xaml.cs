@@ -6,11 +6,10 @@ using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Models;
 using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
-
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 
 namespace BSH.MainApp.Views;
 
@@ -107,7 +106,7 @@ public sealed partial class BrowserPage : Page
     private async void VersionToolTip_Opened(object sender, RoutedEventArgs e)
     {
         if (sender is not ToolTip { Content: VersionDetails version } tooltip
-            || FindVersionChangesPanel(tooltip) is not StackPanel panel)
+            || tooltip.FindDescendant<StackPanel>(static panel => panel.Name == "VersionChangesPanel") is not StackPanel panel)
         {
             return;
         }
@@ -126,24 +125,5 @@ public sealed partial class BrowserPage : Page
         {
             Serilog.Log.Warning(ex, "Failed to load backup version change statistics");
         }
-    }
-
-    private static StackPanel? FindVersionChangesPanel(DependencyObject element)
-    {
-        if (element is StackPanel { Name: "VersionChangesPanel" } panel)
-        {
-            return panel;
-        }
-
-        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(element); index++)
-        {
-            var result = FindVersionChangesPanel(VisualTreeHelper.GetChild(element, index));
-            if (result != null)
-            {
-                return result;
-            }
-        }
-
-        return null;
     }
 }
