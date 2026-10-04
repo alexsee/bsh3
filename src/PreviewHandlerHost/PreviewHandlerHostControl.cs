@@ -8,17 +8,6 @@ using C4F.DevKit.PreviewHandler.PreviewHandlerFramework;
 
 namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
 {
-    /// <summary>
-    /// This control is dependent on the managed framework for preview handlers implemented by Stephen Toub
-    /// and published in the December 2006 issue of MSDN Magazine.  http://msdn.microsoft.com/msdnmag/issues/07/01/PreviewHandlers/default.aspx
-    /// In this article, he implements a managed wrapper to the COM Preview Handler interfaces IPreviewHandler, IInitializeWithFile and IInitializeWithStream
-    /// 
-    /// In this class, we look up the registered preview handler for a given file extension, using reflection, instantiate an instance of the handler.
-    /// We then check if the handler is a Stream or File Handler by checking which interface is implemented.  We then initialize the handler, pass a handle to 
-    /// our control and the bounds of our control, and call DoPreview (part of the IPreviewHandler interface)
-    /// 
-    /// Developed by Ryan Powers - Clarity Consulting - http://www.claritycon.com
-    /// </summary>
     [ToolboxItem(true), ToolboxBitmap(typeof(PreviewHandlerHostControl))]
     public partial class PreviewHandlerHostControl : UserControl
     {
