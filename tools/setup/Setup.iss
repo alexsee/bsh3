@@ -56,6 +56,7 @@ Filename: "sc"; Parameters: "delete ""Backup Service Home-Dienst"""; WorkingDir:
 Source: "..\..\output\*"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\output\de\*"; DestDir: "{app}\de"; Flags: ignoreversion
 Source: "..\..\output\de-DE\*"; DestDir: "{app}\de-DE"; Flags: ignoreversion
+Source: "..\..\output\en\*"; DestDir: "{app}\en"; Flags: ignoreversion
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);

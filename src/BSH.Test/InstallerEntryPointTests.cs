@@ -51,6 +51,19 @@ public class InstallerEntryPointTests
     }
 
     [Test]
+    public void WinFormsInstallerInstallsEnglishSatellitesTheSameWayAsGerman()
+    {
+        var files = GetIssSection(WinFormsSetupIssPath, "[Files]");
+        const string germanSatellite =
+            @"Source: ""..\..\output\de\*""; DestDir: ""{app}\de""; Flags: ignoreversion";
+        const string englishSatellite =
+            @"Source: ""..\..\output\en\*""; DestDir: ""{app}\en""; Flags: ignoreversion";
+
+        Assert.That(files, Does.Contain(germanSatellite));
+        Assert.That(files, Does.Contain(englishSatellite));
+    }
+
+    [Test]
     public void WinUiInstallerStartMenuLaunchesWinUiShell()
     {
         var icons = GetIssSection(WinUiSetupIssPath, "[Icons]");
