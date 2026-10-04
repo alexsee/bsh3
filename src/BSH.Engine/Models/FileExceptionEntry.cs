@@ -16,14 +16,4 @@ public class FileExceptionEntry
     {
         get; set;
     }
-
-    public long NewVersionId
-    {
-        get; set;
-    }
-
-    public string NewVersionDate
-    {
-        get; set;
-    }
 }

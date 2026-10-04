@@ -117,7 +117,7 @@ public class DeleteJob : Job
                 catch (Exception ex)
                 {
                     // file not deleted
-                    var fileExceptionEntry = AddFileErrorToList(file["versionDate"].ToString(), new FileTableRow() { FileName = file["fileName"].ToString(), FilePath = file["filePath"].ToString() }, ex);
+                    var fileExceptionEntry = AddFileErrorToList(new FileTableRow() { FileName = file["fileName"].ToString(), FilePath = file["filePath"].ToString() }, ex);
 
                     _logger.Error(ex.InnerException, "File {FileName} could not be deleted. {Exception}", file["fileName"].ToString(), fileExceptionEntry);
                 }

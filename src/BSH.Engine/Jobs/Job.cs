@@ -75,52 +75,16 @@ public abstract class Job : IDisposable
     /// <summary>
     /// Adds the given exception to the file exception list.
     /// </summary>
-    /// <param name="versionDate">The version date of the backup.</param>
-    /// <param name="file">The file that could not be copied.</param>
-    /// <param name="ex">The exception that occured.</param>
-    /// <returns></returns>
-    protected FileExceptionEntry AddFileErrorToList(string versionDate, FileTableRow file, Exception ex)
-    {
-        return CreateFileErrorEntry(file, ex, versionDate, null);
-    }
-
-    /// <summary>
-    /// Adds the given exception to the file exception list.
-    /// </summary>
-    /// <param name="versionDate">The version date of the backup.</param>
-    /// <param name="versionId">The version id of the backup.</param>
-    /// <param name="file">The file that could not be copied.</param>
-    /// <param name="ex">The exception that occured.</param>
-    /// <returns></returns>
-    protected FileExceptionEntry AddFileErrorToList(string versionDate, long versionId, FileTableRow file, Exception ex)
-    {
-        return CreateFileErrorEntry(file, ex, versionDate, versionId);
-    }
-
-    /// <summary>
-    /// Adds the given exception to the file exception list.
-    /// </summary>
     /// <param name="file">The file that could not be copied.</param>
     /// <param name="ex">The exception that occured.</param>
     /// <returns></returns>
     protected FileExceptionEntry AddFileErrorToList(FileTableRow file, Exception ex)
     {
-        return CreateFileErrorEntry(file, ex, null, null);
-    }
-
-    private FileExceptionEntry CreateFileErrorEntry(FileTableRow file, Exception ex, string versionDate, long? versionId)
-    {
         var fileExceptionEntry = new FileExceptionEntry()
         {
             Exception = ex,
-            File = file,
-            NewVersionDate = versionDate,
+            File = file
         };
-
-        if (versionId.HasValue)
-        {
-            fileExceptionEntry.NewVersionId = versionId.Value;
-        }
 
         FileErrorList.Add(fileExceptionEntry);
         return fileExceptionEntry;
@@ -201,12 +165,6 @@ public abstract class Job : IDisposable
     {
         ArgumentNullException.ThrowIfNull(observer);
         observers.Add(observer);
-    }
-
-    public void RemoveObserver(IJobReport observer)
-    {
-        ArgumentNullException.ThrowIfNull(observer);
-        observers.Remove(observer);
     }
 
     public void Dispose()

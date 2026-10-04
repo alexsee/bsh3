@@ -260,7 +260,7 @@ public class BackupJob : Job
                 }
                 catch (FileNotProcessedException ex)
                 {
-                    var fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
+                    var fileExceptionEntry = AddFileErrorToList(file, ex);
                     _logger.Error(ex.InnerException, "File {FileName} could not be backuped. {Exception}", file.FileNamePath(), fileExceptionEntry);
 
                     if (ex.RequestCancel)
@@ -273,7 +273,7 @@ public class BackupJob : Job
                 }
                 catch (Exception ex)
                 {
-                    var fileExceptionEntry = AddFileErrorToList(newVersionDate, newVersionId, file, ex);
+                    var fileExceptionEntry = AddFileErrorToList(file, ex);
                     _logger.Error(ex.InnerException, "File {FileName} could not be backuped. {Exception}", file.FileNamePath(), fileExceptionEntry);
                 }
 

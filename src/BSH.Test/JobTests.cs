@@ -29,7 +29,6 @@ public class JobTests
         using var job = CreateTestJob(context);
 
         Assert.Throws<ArgumentNullException>(() => job.AddObserver(null!));
-        Assert.Throws<ArgumentNullException>(() => job.RemoveObserver(null!));
     }
 
     [Test]

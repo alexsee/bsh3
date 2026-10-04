@@ -26,15 +26,6 @@ public class DbClient : IDisposable
 
     #endregion
 
-    #region Properties
-
-    /// <summary>
-    /// Gets the connection string
-    /// </summary>
-    public string ConnectionString => _connection.ConnectionString;
-
-    #endregion
-
     #region Construction / Destruction
 
     /// <summary>

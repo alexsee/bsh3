@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Brightbits.BSH.Engine.Models;
 
@@ -93,12 +92,6 @@ public sealed class ScheduleSettings
     public bool DeleteSchedule(ScheduleEntry entry)
     {
         return Entries.Remove(entry);
-    }
-
-    public bool DeleteSchedule(DateTime date, ScheduleEntryKind kind)
-    {
-        var entry = Entries.FirstOrDefault(x => x.Type == (int)kind && x.Date == date);
-        return entry != null && Entries.Remove(entry);
     }
 
     private static DateTime GetWeeklyDate(DateTime baseDate, TimeSpan startTime, DayOfWeek weeklyDay)
