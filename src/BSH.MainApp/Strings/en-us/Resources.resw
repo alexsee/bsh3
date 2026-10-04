@@ -41,25 +41,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppDescription" xml:space="preserve">
-    <value>BSH.MainApp</value>
-  </data>
   <data name="AppDisplayName" xml:space="preserve">
     <value>Backup Service Home</value>
-  </data>
-  <data name="AppNotificationSamplePayload" xml:space="preserve">
-    <value>&lt;toast launch="action=ToastClick"&gt;
-  &lt;visual&gt;
-    &lt;binding template="ToastGeneric"&gt;
-      &lt;text&gt;App Notification&lt;/text&gt;
-      &lt;text&gt;&lt;/text&gt;
-      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
-    &lt;/binding&gt;
-  &lt;/visual&gt;
-  &lt;actions&gt;
-    &lt;action content="Settings" arguments="action=Settings"/&gt;
-  &lt;/actions&gt;
-&lt;/toast&gt;</value>
   </data>
   <data name="ApplicationUpdate_UpToDate_Text" xml:space="preserve">
     <value>You are already using the latest version.</value>
@@ -108,9 +91,6 @@
   </data>
   <data name="Browser_DeleteFromAll_Folder" xml:space="preserve">
     <value>folder</value>
-  </data>
-  <data name="Browser_DeleteFromAll_Title" xml:space="preserve">
-    <value>Delete from all backups</value>
   </data>
   <data name="Browser_DeleteFromRange_All" xml:space="preserve">
     <value>From all backups</value>
@@ -309,9 +289,6 @@ This feature is currently not available because the quick preview could not be f
   <data name="CreateBackup_Title_Scheduled" xml:space="preserve">
     <value>Automatic backup</value>
   </data>
-  <data name="DATETIME_FORMAT" xml:space="preserve">
-    <value>dd. MMM yyyy hh:mm</value>
-  </data>
   <data name="EditBackup_Title" xml:space="preserve">
     <value>Edit Backup</value>
   </data>
@@ -323,18 +300,6 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="Filter_AddFolder" xml:space="preserve">
     <value>Add Folder</value>
-  </data>
-  <data name="Filter_Column_Extension" xml:space="preserve">
-    <value>Extension</value>
-  </data>
-  <data name="Filter_Column_File" xml:space="preserve">
-    <value>File</value>
-  </data>
-  <data name="Filter_Column_Folder" xml:space="preserve">
-    <value>Folder</value>
-  </data>
-  <data name="Filter_Column_Pattern" xml:space="preserve">
-    <value>Pattern</value>
   </data>
   <data name="Filter_Description" xml:space="preserve">
     <value>Choose the files, folders, file types, size limits, or name patterns that Backup Service Home should skip during backups.</value>
@@ -359,9 +324,6 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="Filter_IncludeSystemFolders" xml:space="preserve">
     <value>Include folders marked as System (e.g. Nextcloud sync folders)</value>
-  </data>
-  <data name="Filter_InvalidRegex" xml:space="preserve">
-    <value>Invalid regular expression. Fix the pattern before saving it.</value>
   </data>
   <data name="Filter_RegexDoesNotMatch" xml:space="preserve">
     <value>Test input does not match</value>
@@ -498,12 +460,6 @@ This feature is currently not available because the quick preview could not be f
   <data name="MainView_NonePlanned" xml:space="preserve">
     <value>None planned</value>
   </data>
-  <data name="MainView_Off" xml:space="preserve">
-    <value>Off</value>
-  </data>
-  <data name="MainView_On" xml:space="preserve">
-    <value>On</value>
-  </data>
   <data name="MainView_ScheduleWarning_NoEntries" xml:space="preserve">
     <value>Scheduled backups are enabled but no schedule is set.</value>
   </data>
@@ -525,9 +481,6 @@ This feature is currently not available because the quick preview could not be f
   <data name="MainView_TotalSizeBackuped" xml:space="preserve">
     <value>Total size backuped</value>
   </data>
-  <data name="Main_Title.Text" xml:space="preserve">
-    <value>Main</value>
-  </data>
   <data name="MediaType_FileTransferServer" xml:space="preserve">
     <value>File Transfer Protocol (FTP)</value>
   </data>
@@ -545,9 +498,6 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="MsgBox_Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="MsgBox_Change" xml:space="preserve">
-    <value>Change</value>
   </data>
   <data name="MsgBox_Close" xml:space="preserve">
     <value>Close</value>
@@ -1044,9 +994,6 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Settings</value>
-  </data>
-  <data name="Setup_FirstBackup_Title" xml:space="preserve">
-    <value>First backup</value>
   </data>
   <data name="Setup_FtpConnectionSuccessful_Text" xml:space="preserve">
     <value>The FTP connection was verified successfully.</value>

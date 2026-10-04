@@ -41,25 +41,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppDescription" xml:space="preserve">
-    <value>BSH.MainApp</value>
-  </data>
   <data name="AppDisplayName" xml:space="preserve">
     <value>Backup Service Home</value>
-  </data>
-  <data name="AppNotificationSamplePayload" xml:space="preserve">
-    <value>&lt;toast launch="action=ToastClick"&gt;
-  &lt;visual&gt;
-    &lt;binding template="ToastGeneric"&gt;
-      &lt;text&gt;App-Benachrichtigung&lt;/text&gt;
-      &lt;text&gt;&lt;/text&gt;
-      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
-    &lt;/binding&gt;
-  &lt;/visual&gt;
-  &lt;actions&gt;
-    &lt;action content="Einstellungen" arguments="action=Settings"/&gt;
-  &lt;/actions&gt;
-&lt;/toast&gt;</value>
   </data>
   <data name="ApplicationUpdate_UpToDate_Text" xml:space="preserve">
     <value>Sie verwenden bereits die neueste Version.</value>
@@ -108,9 +91,6 @@
   </data>
   <data name="Browser_DeleteFromAll_Folder" xml:space="preserve">
     <value>Ordner</value>
-  </data>
-  <data name="Browser_DeleteFromAll_Title" xml:space="preserve">
-    <value>Aus allen Sicherungen löschen</value>
   </data>
   <data name="Browser_DeleteFromRange_All" xml:space="preserve">
     <value>Aus allen Sicherungen</value>
@@ -309,9 +289,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="CreateBackup_Title_Scheduled" xml:space="preserve">
     <value>Automatische Sicherung</value>
   </data>
-  <data name="DATETIME_FORMAT" xml:space="preserve">
-    <value>dd. MMM yyyy HH:mm</value>
-  </data>
   <data name="EditBackup_Title" xml:space="preserve">
     <value>Sicherung bearbeiten</value>
   </data>
@@ -323,18 +300,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   </data>
   <data name="Filter_AddFolder" xml:space="preserve">
     <value>Ordner hinzufügen</value>
-  </data>
-  <data name="Filter_Column_Extension" xml:space="preserve">
-    <value>Erweiterung</value>
-  </data>
-  <data name="Filter_Column_File" xml:space="preserve">
-    <value>Datei</value>
-  </data>
-  <data name="Filter_Column_Folder" xml:space="preserve">
-    <value>Ordner</value>
-  </data>
-  <data name="Filter_Column_Pattern" xml:space="preserve">
-    <value>Muster</value>
   </data>
   <data name="Filter_Description" xml:space="preserve">
     <value>Wählen Sie Dateien, Ordner, Dateitypen, Größenlimits oder Namensmuster aus, die Backup Service Home bei Sicherungen überspringen soll.</value>
@@ -359,9 +324,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   </data>
   <data name="Filter_IncludeSystemFolders" xml:space="preserve">
     <value>Als System markierte Ordner einbeziehen (z. B. Nextcloud-Sync-Ordner)</value>
-  </data>
-  <data name="Filter_InvalidRegex" xml:space="preserve">
-    <value>Ungültiger regulärer Ausdruck. Korrigieren Sie das Muster, bevor Sie es speichern.</value>
   </data>
   <data name="Filter_RegexDoesNotMatch" xml:space="preserve">
     <value>Testeingabe stimmt nicht überein</value>
@@ -498,12 +460,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="MainView_NonePlanned" xml:space="preserve">
     <value>keines geplant</value>
   </data>
-  <data name="MainView_Off" xml:space="preserve">
-    <value>Aus</value>
-  </data>
-  <data name="MainView_On" xml:space="preserve">
-    <value>Ein</value>
-  </data>
   <data name="MainView_ScheduleWarning_NoEntries" xml:space="preserve">
     <value>Für geplante Sicherungen ist kein Zeitplan eingerichtet.</value>
   </data>
@@ -525,9 +481,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="MainView_TotalSizeBackuped" xml:space="preserve">
     <value>Gesamtgröße gesichert</value>
   </data>
-  <data name="Main_Title.Text" xml:space="preserve">
-    <value>Übersicht</value>
-  </data>
   <data name="MediaType_FileTransferServer" xml:space="preserve">
     <value>File Transfer Protocol (FTP)</value>
   </data>
@@ -545,9 +498,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   </data>
   <data name="MsgBox_Cancel" xml:space="preserve">
     <value>Abbrechen</value>
-  </data>
-  <data name="MsgBox_Change" xml:space="preserve">
-    <value>Ändern</value>
   </data>
   <data name="MsgBox_Close" xml:space="preserve">
     <value>Schließen</value>
@@ -1044,9 +994,6 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Einstellungen</value>
-  </data>
-  <data name="Setup_FirstBackup_Title" xml:space="preserve">
-    <value>Erste Sicherung</value>
   </data>
   <data name="Setup_FtpConnectionSuccessful_Text" xml:space="preserve">
     <value>Die FTP-Verbindung wurde erfolgreich überprüft.</value>
