@@ -14,7 +14,7 @@ It covers `BSH.Engine` job execution plus orchestration in both UI shells (`BSH.
 - Keep all backup semantics in one engine (`BSH.Engine`) used by both shells.
 - Present a uniform job lifecycle (`JobState`, `IJobReport`) regardless of operation type.
 - Support cancelable long-running jobs with user-visible progress and conflict handling.
-- Support multiple storage backends via `IStorage` without branching in callers.
+- Support multiple storage backends via `IStorageProvider` without branching in callers.
 - Keep DB metadata and storage payload updates consistent through transactional phases.
 
 ## Non-goals
@@ -29,9 +29,9 @@ It covers `BSH.Engine` job execution plus orchestration in both UI shells (`BSH.
 - WinForms shell: `BSH.Main.Modules.BackupController` + `StatusController` + `BackupLogic`.
 
 Responsibilities:
-- gate execution (one active task, media available, password available)
-- own cancellation token lifecycle
-- invoke engine service (`IBackupService`)
+- call `JobRuntime` and `JobSessionRunner` for preflight (one active task, media available, password available)
+- cancel through `JobRuntime.Cancel`; `JobRuntime.PrepareAsync` creates the `CancellationTokenSource`
+- `JobSessionRunner` invokes `IBackupService`
 - coordinate UI affordances (status window, overwrite prompts, exception dialogs)
 
 ### 2) Engine service layer (shared)
@@ -39,7 +39,7 @@ Responsibilities:
 - It constructs concrete job objects (`BackupJob`, `RestoreJob`, `DeleteJob`, `DeleteSingleJob`, `EditJob`) and attaches an `IJobReport` observer.
 
 Responsibilities:
-- run one engine task at a time (`currentTask` guard)
+- run one engine task at a time (`jobActive` guard on `currentTaskSync`)
 - construct jobs with storage/db/query/config dependencies
 - dispatch operation intent (`ActionType`) to observers
 
@@ -54,8 +54,9 @@ Responsibilities:
 
 ### 4) Infrastructure boundaries
 - DB boundary: `IDbClientFactory` / `DbClient` (`System.Data.SQLite`).
-- Storage boundary: `IStorage` implementations (`FileSystemStorage`, `FtpStorage`) via `StorageFactory`.
-- Optional VSS boundary: `VolumeShadowCopyService` -> named pipe RPC (`IVSSRemoteObject`) -> `BSH.Service`.
+- Version, mutation, and schedule writes: `Repo/BackupMutationRepository` and `Repo/ScheduleRepository`. Jobs read versions through `Repo/VersionQueryRepository` and `QueryManager`. Job classes do not contain SQL. `QueryManager` still does.
+- Storage boundary: `IStorageProvider` implementations (`FileSystemStorage`, `FtpStorage`) via `StorageFactory`.
+- Optional VSS boundary: `VolumeShadowCopyClient` (`IVssClient`) -> named pipe RPC (`IVSSRemoteObject`) -> `BSH.Service`.
 
 ## Core contracts and state model
 
@@ -66,9 +67,9 @@ Responsibilities:
 
 ### Job states
 `JobState` values:
-- `NOT_STARTED`
+- `NOT_STARTED` (zero value; `StatusService.JobState` and `StatusController.JobState` stay here until the first `ReportState`)
 - `RUNNING`
-- `CANCELED` (defined but currently not emitted by concrete jobs)
+- `CANCELED` (emitted by `BackupJob`, `RestoreJob`, and `JobSessionRunner`)
 - `ERROR`
 - `FINISHED`
 
@@ -101,13 +102,10 @@ Restore/delete/edit jobs must preserve this mapping.
 ## End-to-end flows
 
 ### A) Manual backup flow
-1. Shell service/controller creates a new cancellation token.
-2. Preconditions:
-- no active task (`StatusService.IsTaskRunning` / `StatusController.IsTaskRunning`)
-- media reachable (`CheckMediaAsync`, optionally wait dialog)
-- password available if encryption enabled
-3. Shell invokes `IBackupService.StartBackup(...)` with `IJobReport`.
-4. `BackupService` creates `BackupJob` and starts background task.
+1. `JobService` or `BackupController` calls `JobSessionRunner.RunSingleBackupAsync`.
+2. `JobRuntime.PrepareAsync` refuses a second active task (`StatusService.IsTaskRunning` / `StatusController.IsTaskRunning`), checks media (`CheckMediaAsync`, optionally a wait dialog), and creates the `CancellationTokenSource`. `JobSessionRunner` resolves the password when encryption is enabled.
+3. `JobSessionRunner` invokes `IBackupService.StartBackup(...)` with `IJobReport`.
+4. `BackupService` creates `BackupJob` and starts it with `Task.Run`.
 5. `BackupJob` executes phases:
 - check medium, validate source folder
 - begin DB transaction
@@ -130,7 +128,7 @@ Restore/delete/edit jobs must preserve this mapping.
 6. Observer receives final `JobState` and exception list.
 
 ### B) Restore flow
-1. Shell validates preconditions and calls `StartRestore`.
+1. `JobSessionRunner.RunSingleRestoreAsync` / `RunBatchRestoreAsync` runs `JobRuntime` preflight, then calls `StartRestore`.
 2. `RestoreJob` resolves target set:
 - single file restore (name/path filter)
 - folder restore (`filePath LIKE ...`)
@@ -146,7 +144,7 @@ Restore/delete/edit jobs must preserve this mapping.
 6. Emit final state (`ERROR` if any file failures else `FINISHED`).
 
 ### C) Delete version flow
-1. Shell calls `StartDelete(version)`.
+1. `JobSessionRunner.RunSingleDeleteAsync` / `RunBatchDeleteAsync` calls `StartDelete` after `JobRuntime` preflight.
 2. `DeleteJob`:
 - medium check, open storage, begin DB transaction
 - query file versions unique to the target version
@@ -160,7 +158,7 @@ Restore/delete/edit jobs must preserve this mapping.
 3. Emit exceptions and terminal state.
 
 ### D) Delete single file(s) across versions
-1. Shell calls `StartDeleteSingle(fileFilter, pathFilter)`.
+1. `JobSessionRunner.RunSingleDeleteSingleAsync` calls `StartDeleteSingle` after `JobRuntime` preflight.
 2. `DeleteSingleJob`:
 - resolves `fileID` set by exact file or path filter
 - deletes all corresponding physical versions from storage
@@ -169,7 +167,7 @@ Restore/delete/edit jobs must preserve this mapping.
 - emits aggregated errors
 
 ### E) Modify/decrypt flow
-1. Shell calls `StartEdit` after password precondition.
+1. `JobService.ModifyBackupAsync` and `BackupController.ModifyBackupAsync` call `JobSessionRunner.RunSingleModifyAsync`, which resolves the password during preflight and then calls `StartEdit`.
 2. `EditJob` iterates all backup files and decrypts encrypted payloads in place (`storage.DecryptOnStorage`).
 3. It rewrites `fileType` values from encrypted variants to plain variants.
 4. Sets configuration encryption flags to disabled and uploads DB update.
@@ -191,11 +189,11 @@ Restore/delete/edit jobs must preserve this mapping.
 - In addition to scheduler triggers, legacy shell can start backup when backup drive appears (`UsbWatchService`, `DoBackupWhenDriveIsAvailable`).
 
 ## Concurrency and cancellation model
-- One active engine task is enforced in `BackupService` via `currentTask` status checks.
-- Shells independently guard against concurrent starts using status services/controllers.
-- Cancellation is cooperative via `CancellationTokenSource` created per operation run.
+- One active engine task is enforced in `BackupService` via the `jobActive` flag (`currentTaskSync`).
+- `JobRuntime.PrepareAsync` also refuses a start when `StatusService.IsTaskRunning` / `StatusController.IsTaskRunning` is true, or when a session is already active.
+- `JobRuntime` creates a `CancellationTokenSource` for each prepared session. Shells cancel through `JobRuntime.Cancel`.
 - `BackupJob` and `RestoreJob` poll for cancellation during per-file loops.
-- Multi-item shell loops (multi-restore, multi-delete) break when cancellation is signaled.
+- Multi-item loops in `JobSessionRunner` (batch restore, batch delete) break when cancellation is signaled.
 
 ## Error handling and recovery behavior
 
@@ -215,27 +213,21 @@ Restore/delete/edit jobs must preserve this mapping.
 
 ## Architectural invariants
 - Concrete jobs never directly call UI frameworks; all UI interaction is through `IJobReport` callbacks.
-- Storage-specific behavior is isolated to `IStorage` implementations; job code selects by capability/type mapping, not by ad-hoc shell logic.
+- Storage-specific behavior is isolated to `IStorageProvider` implementations; job code selects by capability/type mapping, not by ad-hoc shell logic.
 - Job metadata is persisted in SQLite before becoming visible to user queries.
 - Backup source selection and exclusion policies are evaluated before copy, not during restore.
 - Database upload to backup medium is part of job completion for mutating operations.
 
 ## Extension points
-- Add new storage backends by implementing `IStorage` and extending `StorageFactory`.
+- Add new storage backends by implementing `IStorageProvider` and extending `StorageFactory`.
 - Add/adjust file/folder exclusion behavior via `IFileExclusion` / `IFolderExclusion` in file collector setup.
 - Add new job types by extending `Job` and wiring through `IBackupService` + shell orchestration.
 - Add new observer consumers by implementing shell `IStatusReport` and registering with status service/controller.
 
 ## Known design debt and risks
-- `BackupService` uses `Task.Factory.StartNew(async ...)` in multiple methods, which produces nested task behavior and non-obvious completion semantics.
-- `JobState.CANCELED` exists but current concrete jobs typically signal cancellation as `FINISHED` plus canceled status text.
-- There is duplication between WinForms and WinUI orchestration logic (media/password/preflight, batch loops).
-- `DeleteSingleJob` uses `_LONG_FILES` while other jobs use `_LONGFILES_`; this inconsistency can affect long-path cleanup correctness.
-- Some SQL in jobs is string-interpolated; query composition should continue moving toward parameterized forms for safety and maintainability.
+- `JobService` and `BackupController` still mirror each other's session-wrapper methods. Media checks, password resolution, cancellation tokens, and batch loops are in `JobRuntime` and `JobSessionRunner`.
 
 ## Suggested future refactors
-1. Replace `StartNew(async ...)` with `Task.Run`/direct async pipelines and normalize task-return semantics.
-2. Introduce a shared shell-agnostic orchestration helper to remove WinForms/WinUI duplication.
-3. Standardize cancellation terminal state (`CANCELED`) and telemetry around abort reasons.
-4. Centralize file path conventions (`_LONGFILES_` and naming rules) in one utility.
-5. Separate retention policy logic from scheduling trigger plumbing for simpler testing.
+1. Centralize the `_LONGFILES_` path convention. `StoragePath` already builds it, and `BackupJob` and `QueryManager` still contain the same folder name.
+
+Already in the tree: `BackupService` starts jobs with `Task.Run`; `JobRuntime` and `JobSessionRunner` are the shared preflight path; `BackupJob`, `RestoreJob`, and `JobSessionRunner` emit `JobState.CANCELED`; retention decisions are in `SchedulePolicy`.

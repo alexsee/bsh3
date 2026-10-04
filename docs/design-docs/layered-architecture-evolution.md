@@ -81,8 +81,11 @@ Responsibility:
 - query/read models and command/write repositories
 
 Current mapping:
-- `DbClient`, `DbClientFactory`, `DbMigrationService`
-- large query/write logic currently in `QueryManager` and partially in job classes
+- `DbClient`, `DbClientFactory`, `DbMigrationService` (`Database/`)
+- version, mutation, and schedule writes in `Repo/BackupMutationRepository` and `Repo/ScheduleRepository`
+- jobs read versions through `Repo/VersionQueryRepository` and `QueryManager`
+- `QueryManager` still contains SQL
+- job classes do not contain SQL
 
 Target rule:
 - Repo owns SQL and transaction boundaries
@@ -107,7 +110,10 @@ Responsibility:
 - deterministic orchestration host used by both shells and scheduled triggers
 
 Current mapping:
-- split between `BackupService`, job classes, `JobService`, `BackupController`, `StatusService`/`StatusController`
+- `JobRuntime` and `JobSessionRunner` (`Runtime/`) run preflight and the session for both shells
+- `BSH.MainApp/Services/JobService.cs` and `BSH.Main/Modules/BackupController.cs` call them
+- `BackupService` constructs the concrete jobs and starts them with `Task.Run`
+- `StatusService` / `StatusController` receive `IJobReport` updates
 
 Target rule:
 - Runtime is the single engine for executing Service commands
@@ -140,7 +146,9 @@ Responsibility:
 - adapters to external systems: storage, scheduler, VSS service, OS notifications, media watching
 
 Current mapping:
-- `Storage/*`, `SchedulerService`, `VolumeShadowCopyService`, `UsbWatchService`
+- `IStorageProvider`, implemented by `FileSystemStorage` and `FtpStorage` (`Storage/*`)
+- `ISchedulerAdapter` (`SchedulerService`), `IVssClient` (`VolumeShadowCopyClient`), `IMediaWatcher` (`UsbWatchService`)
+- ports in `Providers/Ports/`
 - `BSH.Service` / `BSH.Service.Shared` for VSS IPC
 
 Target rule:
@@ -173,37 +181,34 @@ Transitional note:
 ## Migration plan (incremental)
 
 ### Phase 1: Boundary declaration (no behavior change)
-- Introduce folders/namespaces reflecting target layers inside `BSH.Engine`.
-- Add explicit interfaces for provider ports (`IStorageProvider`, `IVssClient`, `ISchedulerAdapter`, `IMediaWatcher`).
-- Move direct UI calls out of engine paths into status/event ports.
+Already in `BSH.Engine`:
+- Folders `Repo/`, `Runtime/`, and `Providers/Ports/`.
+- Provider ports `IStorageProvider`, `IVssClient`, `ISchedulerAdapter`, and `IMediaWatcher`.
+- Job UI calls go through `IJobReport` and `IJobSessionPresenter`. `BSH.Engine` has no WinUI or WinForms framework reference.
 
-Exit criteria:
-- Engine compiles with no UI-framework references.
+The project split under "Proposed target project layout" remains future work.
 
 ### Phase 2: Runtime unification
-- Create a single runtime execution pipeline (`JobRuntime`) used by both WinUI and WinForms.
-- Move duplicated preflight logic (media/password/cancellation gating) from `JobService` and `BackupController` into Runtime.
-- Normalize terminal states (use `CANCELED` explicitly).
-
-Exit criteria:
-- Same use-case path is used by manual and scheduled runs.
+Already in the tree:
+- `JobRuntime` and `JobSessionRunner` are called by `JobService` and `BackupController`.
+- Preflight (media, password, cancellation gating) runs there for manual and scheduled backups.
+- `BackupJob`, `RestoreJob`, and `JobSessionRunner` report `JobState.CANCELED`.
 
 ### Phase 3: Repo extraction
-- Move SQL and transaction logic out of job classes into repository classes.
-- Split read/write concerns:
-  - version query repo
-  - backup mutation repo
-  - schedule repo
-
-Exit criteria:
-- Job/use-case classes contain no raw SQL.
+Already in the tree:
+- `Repo/VersionQueryRepository`, `Repo/BackupMutationRepository`, and `Repo/ScheduleRepository`.
+- Job classes contain no SQL.
+- `QueryManager` still contains SQL.
 
 ### Phase 4: Provider isolation
-- Move concrete storage/scheduler/VSS/USB implementations behind adapter interfaces.
-- Keep `BSH.Service` boundary as a provider implementation detail.
+Already in the tree:
+- `FileSystemStorage` and `FtpStorage` implement `IStorageProvider`.
+- `SchedulerService` implements `ISchedulerAdapter`.
+- `VolumeShadowCopyClient` implements `IVssClient`.
+- `UsbWatchService` implements `IMediaWatcher`.
+- `BSH.Service` remains the VSS process boundary.
 
-Exit criteria:
-- Service layer depends only on provider interfaces.
+`BackupService` also depends on `IQueryManager`, `IDbClientFactory`, and the repo interfaces.
 
 ### Phase 5: App wiring cleanup
 - Restrict DI registration and concrete instantiation to composition roots.
@@ -241,27 +246,26 @@ Exit criteria:
 Implementation suggestion:
 - add architecture tests (for example with NetArchTest or custom Roslyn analyzers) to enforce namespace/project dependency rules.
 
-## Practical first refactor targets in this repository
+## Refactors already in this repository
 
-1. Extract shared preflight orchestration from:
-- `BSH.MainApp.Services.JobService`
-- `BSH.Main.Modules.BackupController`
+1. Shared preflight runs in `JobRuntime` and `JobSessionRunner`, called from:
+- `BSH.MainApp.Services.JobService` (`BSH.MainApp/Services/JobService.cs`)
+- `BSH.Main.Modules.BackupController` (`BSH.Main/Modules/BackupController.cs`)
 
-2. Isolate SQL from:
-- `BSH.Engine.Jobs.BackupJob`
-- `BSH.Engine.Jobs.RestoreJob`
-- `BSH.Engine.Jobs.DeleteJob`
-- `BSH.Engine.Jobs.DeleteSingleJob`
+2. Version, mutation, and schedule SQL lives in `src/BSH.Engine/Repo/`:
+- `VersionQueryRepository`
+- `BackupMutationRepository`
+- `ScheduleRepository`
 
-3. Introduce provider ports around:
-- `BSH.Engine.Storage.*`
-- `BSH.Engine.Services.SchedulerService`
-- `BSH.Engine.Services.VolumeShadowCopyService`
-- `BSH.Engine.Services.UsbWatchService`
+Job classes do not contain SQL. `QueryManager` still does.
 
-4. Normalize state semantics across both shells:
-- use `JobState.CANCELED` for cancellation terminal path
-- keep error aggregation behavior consistent
+3. Provider ports in `BSH.Engine/Providers/Ports/`:
+- `IStorageProvider` (`FileSystemStorage`, `FtpStorage`)
+- `ISchedulerAdapter` (`SchedulerService`)
+- `IVssClient` (`VolumeShadowCopyClient`)
+- `IMediaWatcher` (`UsbWatchService`)
+
+4. `JobState.CANCELED` is reported by `BackupJob`, `RestoreJob`, and `JobSessionRunner`. `JobState.NOT_STARTED` is still the zero value used as idle before the first `ReportState`.
 
 ## Outcome
 After these phases, the codebase has:
