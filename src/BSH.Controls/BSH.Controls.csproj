@@ -36,9 +36,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Preview\Files\csharp.css" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj" />
   </ItemGroup>
 </Project>

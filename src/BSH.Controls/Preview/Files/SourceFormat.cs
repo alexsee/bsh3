@@ -22,7 +22,6 @@
 
 using System;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -53,7 +52,6 @@ namespace Manoli.Utils.CSharpFormat
             TabSpaces = 4;
             LineNumbers = false;
             Alternate = false;
-            EmbedStyleSheet = false;
         }
 
         /// <summary>
@@ -88,66 +86,12 @@ namespace Manoli.Utils.CSharpFormat
         }
 
         /// <summary>
-        /// Enables or disables the embedded CSS style sheet.
-        /// </summary>
-        /// <value>When <b>true</b>, the CSS &lt;style&gt; element is included 
-        /// in the HTML output. The default is <b>false</b>.</value>
-        public bool EmbedStyleSheet
-        {
-            get; set;
-        }
-
-        /// <overloads>Transform source code to HTML 4.01.</overloads>
-        /// 
-        /// <summary>
-        /// Transforms a source code stream to HTML 4.01.
-        /// </summary>
-        /// <param name="source">Source code stream.</param>
-        /// <returns>A string containing the HTML formatted code.</returns>
-        public string FormatCode(Stream source)
-        {
-            StreamReader reader = new(source);
-            string s = reader.ReadToEnd();
-            reader.Close();
-            return FormatCode(s, LineNumbers, Alternate, EmbedStyleSheet, false);
-        }
-
-        /// <summary>
         /// Transforms a source code string to HTML 4.01.
         /// </summary>
         /// <returns>A string containing the HTML formatted code.</returns>
         public string FormatCode(string source)
         {
-            return FormatCode(source, LineNumbers, Alternate, EmbedStyleSheet, false);
-        }
-
-        /// <summary>
-        /// Allows formatting a part of the code in a different language,
-        /// for example a JavaScript block inside an HTML file.
-        /// </summary>
-        public string FormatSubCode(string source)
-        {
-            return FormatCode(source, false, false, false, true);
-        }
-
-        /// <summary>
-        /// Gets the CSS stylesheet as a stream.
-        /// </summary>
-        /// <returns>A text <see cref="Stream"/> of the CSS definitions.</returns>
-        public static Stream GetCssStream()
-        {
-            return Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                "Manoli.Utils.CSharpFormat.csharp.css");
-        }
-
-        /// <summary>
-        /// Gets the CSS stylesheet as a string.
-        /// </summary>
-        /// <returns>A string containing the CSS definitions.</returns>
-        public static string GetCssString()
-        {
-            StreamReader reader = new(GetCssStream());
-            return reader.ReadToEnd();
+            return FormatCode(source, LineNumbers, Alternate, false);
         }
 
         /// <summary>
@@ -169,7 +113,7 @@ namespace Manoli.Utils.CSharpFormat
 
         //does the formatting job
         private string FormatCode(string source, bool lineNumbers,
-            bool alternate, bool embedStyleSheet, bool subCode)
+            bool alternate, bool subCode)
         {
             //replace special characters
             StringBuilder sb = new(source);
@@ -186,13 +130,6 @@ namespace Manoli.Utils.CSharpFormat
             source = CodeRegex.Replace(sb.ToString(), new MatchEvaluator(this.MatchEval));
 
             sb = new StringBuilder();
-
-            if (embedStyleSheet)
-            {
-                sb.Append("<style type=\"text/css\">\n");
-                sb.Append(GetCssString());
-                sb.Append("</style>\n");
-            }
 
             if (lineNumbers || alternate) //we have to process the code line by line
             {
