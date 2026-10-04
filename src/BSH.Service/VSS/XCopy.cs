@@ -26,76 +26,34 @@ public class XCopy
 {
     public static void Copy(string source, string destination, bool overwrite, bool nobuffering)
     {
-        new XCopy().CopyInternal(source, destination, overwrite, nobuffering, null);
+        new XCopy().CopyInternal(source, destination, overwrite, nobuffering);
     }
-
-    public static void Copy(string source, string destination, bool overwrite, bool nobuffering, EventHandler<ProgressChangedEventArgs>? handler)
-    {
-        new XCopy().CopyInternal(source, destination, overwrite, nobuffering, handler);
-    }
-
-    private event EventHandler? Completed;
-    private event EventHandler<ProgressChangedEventArgs>? ProgressChanged;
 
     private int IsCancelled;
-    private int FilePercentCompleted;
 
     private XCopy()
     {
         IsCancelled = 0;
     }
 
-    private void CopyInternal(string source, string destination, bool overwrite, bool nobuffering, EventHandler<ProgressChangedEventArgs>? handler)
+    private void CopyInternal(string source, string destination, bool overwrite, bool nobuffering)
     {
-        try
+        var copyFileFlags = CopyFileFlags.COPY_FILE_RESTARTABLE;
+        if (!overwrite)
         {
-            var copyFileFlags = CopyFileFlags.COPY_FILE_RESTARTABLE;
-            if (!overwrite)
-            {
-                copyFileFlags |= CopyFileFlags.COPY_FILE_FAIL_IF_EXISTS;
-            }
-
-            if (nobuffering)
-            {
-                copyFileFlags |= CopyFileFlags.COPY_FILE_NO_BUFFERING;
-            }
-
-            if (handler != null)
-            {
-                ProgressChanged += handler;
-            }
-
-            var result = CopyFileEx(source, destination, new CopyProgressRoutine(CopyProgressHandler), IntPtr.Zero, ref IsCancelled, copyFileFlags);
-            if (!result)
-            {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-            }
+            copyFileFlags |= CopyFileFlags.COPY_FILE_FAIL_IF_EXISTS;
         }
-        catch (Exception)
+
+        if (nobuffering)
         {
-            if (handler != null)
-            {
-                ProgressChanged -= handler;
-            }
-
-            throw;
+            copyFileFlags |= CopyFileFlags.COPY_FILE_NO_BUFFERING;
         }
-    }
 
-    private void OnProgressChanged(double percent)
-    {
-        // only raise an event when progress has changed
-        if ((int)percent > FilePercentCompleted)
+        var result = CopyFileEx(source, destination, new CopyProgressRoutine(CopyProgressHandler), IntPtr.Zero, ref IsCancelled, copyFileFlags);
+        if (!result)
         {
-            FilePercentCompleted = (int)percent;
-
-            ProgressChanged?.Invoke(this, new ProgressChangedEventArgs(FilePercentCompleted, null));
+            throw new Win32Exception(Marshal.GetLastWin32Error());
         }
-    }
-
-    private void OnCompleted()
-    {
-        Completed?.Invoke(this, EventArgs.Empty);
     }
 
     #region PInvoke
@@ -109,16 +67,12 @@ public class XCopy
 
     private enum CopyProgressResult : uint
     {
-        PROGRESS_CONTINUE = 0,
-        PROGRESS_CANCEL = 1,
-        PROGRESS_STOP = 2,
-        PROGRESS_QUIET = 3
+        PROGRESS_CONTINUE = 0
     }
 
     private enum CopyProgressCallbackReason : uint
     {
-        CALLBACK_CHUNK_FINISHED = 0x00000000,
-        CALLBACK_STREAM_SWITCH = 0x00000001
+        CALLBACK_CHUNK_FINISHED = 0x00000000
     }
 
     [Flags]
@@ -126,24 +80,12 @@ public class XCopy
     {
         COPY_FILE_FAIL_IF_EXISTS = 0x00000001,
         COPY_FILE_NO_BUFFERING = 0x00001000,
-        COPY_FILE_RESTARTABLE = 0x00000002,
-        COPY_FILE_OPEN_SOURCE_FOR_WRITE = 0x00000004,
-        COPY_FILE_ALLOW_DECRYPTED_DESTINATION = 0x00000008
+        COPY_FILE_RESTARTABLE = 0x00000002
     }
 
     private CopyProgressResult CopyProgressHandler(long total, long transferred, long streamSize, long streamByteTrans, uint dwStreamNumber,
                                                    CopyProgressCallbackReason reason, IntPtr hSourceFile, IntPtr hDestinationFile, IntPtr lpData)
     {
-        if (reason == CopyProgressCallbackReason.CALLBACK_CHUNK_FINISHED)
-        {
-            OnProgressChanged((transferred / (double)total) * 100.0);
-        }
-
-        if (transferred >= total)
-        {
-            OnCompleted();
-        }
-
         return CopyProgressResult.PROGRESS_CONTINUE;
     }
 
