@@ -10,13 +10,13 @@ official build/test/release pipeline runs exclusively on `windows-latest`
 ## Cursor Cloud specific instructions
 
 The Cursor Cloud VM is **Linux**, but every project targets a Windows TFM
-(`net10.0-windows` / `net10.0-windows10.0.22621.0`). Full development (running the GUI
+(`net10.0-windows`; `BSH.MainApp` and `BSH.Test` target `net10.0-windows10.0.26100.0`). Full development (running the GUI
 shells, running the test suite, VSS, MSIX packaging) requires Windows. This environment
 supports building most of the solution and running the core engine's data/security
 layers, which is enough for engine-level development.
 
 ### Toolchain
-- .NET SDK `10.0.302` (pinned in `src/global.json`) is installed at `~/.dotnet` and added
+- .NET SDK `10.0.400` (pinned in `src/global.json`) is installed at `~/.dotnet` and added
   to `PATH`/`DOTNET_ROOT` via `~/.bashrc`. The startup update script runs `dotnet restore`.
 - Run all `dotnet` commands from the `src/` directory (that is where the `.sln` lives).
 

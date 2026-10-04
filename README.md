@@ -18,7 +18,7 @@
 
 ## About
 
-Backup Service Home 3 is a free, simple to use, and open source file backup software for Windows based on the Microsoft .NET Framework and written in C#.
+Backup Service Home 3 is a free, simple to use, and open source file backup software for Windows based on SDK-style .NET (`net10.0-windows`) and written in C#.
 It will let you back up your important files on your computer without having to know technical jargon.
 Whether it's pictures, documents, music or videos.
 With the built-in backup browser, restoring your files is a breeze.
