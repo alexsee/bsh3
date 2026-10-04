@@ -3,7 +3,6 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <StartupObject>SmartPreview.Program</StartupObject>
-    <MyType>WindowsFormsWithCustomSubMain</MyType>
     <LangVersion>latest</LangVersion>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
@@ -28,22 +27,6 @@
     <Version>3.9.0.3</Version>
   </PropertyGroup>
   <ItemGroup>
-    <Import Include="Microsoft.VisualBasic" />
-    <Import Include="System" />
-    <Import Include="System.Collections" />
-    <Import Include="System.Collections.Generic" />
-    <Import Include="System.Data" />
-    <Import Include="System.Drawing" />
-    <Import Include="System.Diagnostics" />
-    <Import Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="My Project\Application.myapp">
-      <Generator>MyApplicationCodeGenerator</Generator>
-      <LastGenOutput>Application.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\BSH.Controls\BSH.Controls.csproj" />
     <ProjectReference Include="..\PreviewHandlerFramework\PreviewHandlerFramework.csproj" />
     <ProjectReference Include="..\PreviewHandlerHost\PreviewHandlerHost.csproj" />
@@ -62,9 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Humanizer.Core.de" Version="3.0.10" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="My Project\Resources.resx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

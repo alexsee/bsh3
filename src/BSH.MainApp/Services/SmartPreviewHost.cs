@@ -16,7 +16,7 @@ public class SmartPreviewHost : ISmartPreviewHost
             throw new FileNotFoundException("SmartPreview.exe was not found.", executablePath);
         }
 
-        var arguments = " -file:\"" + filePath + "\"" + (isTemporary ? " -c" : "");
+        var arguments = " -file:\"" + filePath + "\"";
         var process = Process.Start(new ProcessStartInfo(executablePath, arguments)
         {
             WindowStyle = ProcessWindowStyle.Normal
