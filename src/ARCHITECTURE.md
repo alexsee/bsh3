@@ -21,9 +21,10 @@ This document is intentionally stable and high-level. Use symbol search for the 
   - Facade-style contracts: `IBackupService`, `IConfigurationManager`, `IQueryManager`, `IDbClientFactory`, `IStorageFactory`.
   - Main implementations: `BackupService`, `ConfigurationManager`, `QueryManager`, `DbClientFactory`, `StorageFactory`.
   - Job pipeline: base `Job` plus `BackupJob`, `RestoreJob`, `DeleteJob`, `EditJob`, `DeleteSingleJob`.
+  - Session preflight: `JobRuntime` and `JobSessionRunner` (`Runtime/`). `JobService` and `BackupController` call them; they call `IBackupService`.
   - Reporting boundary: `IJobReport` and `JobState`/`ActionType` updates from engine to UI.
-  - Persistence: `Database/*` (SQLite setup and migrations in `DbClientFactory` and `DbMigrationService`).
-  - Storage adapters: `Storage/*` (`IStorage`, `FileSystemStorage`, `FtpStorage`).
+  - Persistence: `Database/*` (SQLite setup and migrations in `DbClientFactory` and `DbMigrationService`). Version, mutation, and schedule writes are in `Repo/` (`BackupMutationRepository`, `ScheduleRepository`). Jobs read versions through `VersionQueryRepository` and `QueryManager`. `QueryManager` still contains SQL.
+  - Storage adapters: `FileSystemStorage` and `FtpStorage` (`Storage/*`) implement `IStorageProvider`.
   - Scheduling and device helpers: `SchedulerService`, `UsbWatchService`, `VolumeShadowCopyClient`.
   - File discovery/exclusion: `Services/FileCollector/*`.
   - Security utilities: `Security/Encryption`, `Security/Hash`, `Security/Crypto`.
@@ -47,7 +48,7 @@ This document is intentionally stable and high-level. Use symbol search for the 
 ## Architectural invariants and boundaries
 - `BSH.Engine` is the business core; UI projects are orchestration/presentation layers around it.
 - Backup operations are modeled as jobs (`BackupJob`, `RestoreJob`, `DeleteJob`, etc.) and are launched through `IBackupService`.
-- Storage medium differences are isolated behind `IStorage` + `StorageFactory`; call sites should not branch on filesystem vs FTP behavior.
+- Storage medium differences are isolated behind `IStorageProvider` + `StorageFactory`; call sites should not branch on filesystem vs FTP behavior.
 - VSS access is a process boundary: engine code calls `VolumeShadowCopyClient`, which talks to `BSH.Service` through `IVSSRemoteObject` over named pipes.
 - Schema creation/migration ownership lives in `BSH.Engine.Database` (`DbClientFactory`, `DbMigrationService`); keep schema evolution there.
 - Progress/UI feedback crosses a boundary through `IJobReport`; engine jobs should stay UI-framework-agnostic.
