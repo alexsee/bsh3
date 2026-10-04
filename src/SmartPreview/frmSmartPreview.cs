@@ -91,7 +91,7 @@ public partial class frmSmartPreview
         }
     }
 
-    public bool ShowPreview(string fileName, bool showFailed = false)
+    public bool ShowPreview(string fileName)
     {
         try
         {

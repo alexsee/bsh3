@@ -1131,7 +1131,7 @@ public partial class frmBrowser : IStatusReport
                 var password = BackupLogic.BackupService.GetPassword();
                 var tmpFile = await BackupLogic.QueryManager.GetFileNameFromDriveAsync(int.Parse(selectedVersion.Id), lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString(), password);
 
-                var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"" + (tmpFile.Item2 ? " -c" : ""));
+                var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"");
                 procInfo.WindowStyle = ProcessWindowStyle.Normal;
 
                 var proc = Process.Start(procInfo);

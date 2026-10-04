@@ -57,7 +57,7 @@ public partial class frmFileProperties
             var password = BackupLogic.BackupService.GetPassword();
             var tmpFile = await BackupLogic.QueryManager.GetFileNameFromDriveAsync(id, lblFileName.Text, CurrentFileFolder, password);
 
-            var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"" + (tmpFile.Item2 ? " -c" : ""));
+            var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"");
             procInfo.WindowStyle = ProcessWindowStyle.Normal;
 
             var proc = Process.Start(procInfo);
