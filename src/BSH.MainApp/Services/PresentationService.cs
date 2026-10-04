@@ -100,7 +100,7 @@ public class PresentationService : IPresentationService
 
     public async Task ShowAboutWindowAsync()
     {
-        var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
+        var version = ApplicationVersionInfo.GetDisplayVersion(Assembly.GetExecutingAssembly());
 
         await ShowMessageBoxAsync(
             "Support_About".GetLocalized(),
