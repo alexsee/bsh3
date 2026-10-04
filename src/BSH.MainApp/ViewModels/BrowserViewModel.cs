@@ -27,8 +27,10 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private readonly IBrowserDialogService browserDialogService;
     private readonly IBrowserPreviewService browserPreviewService;
     private readonly IBrowserViewPreferencesService viewPreferencesService;
+    private readonly Dictionary<string, Task<VersionChangeStatistics>> versionStatisticsCache = [];
     private BrowserContentMode contentMode = BrowserContentMode.Folder;
     private long contentRequestId;
+    private long fileDetailsRequestId;
     private bool suppressSearchTermsChanged;
     private bool suppressInfoPaneChanged;
     private bool suppressFavoriteChanged;
@@ -42,6 +44,9 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [NotifyCanExecuteChangedFor(nameof(DeleteMultipleBackupsCommand))]
     [NotifyCanExecuteChangedFor(nameof(NavigateToPreviousVersionCommand))]
     [NotifyCanExecuteChangedFor(nameof(NavigateToNextVersionCommand))]
+    [NotifyCanExecuteChangedFor(nameof(EditBackupCommand))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteBackupCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LockBackupCommand))]
     private VersionDetails? currentVersion;
 
     [ObservableProperty]
@@ -50,10 +55,15 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [NotifyCanExecuteChangedFor(nameof(RestoreAllCommand))]
     [NotifyCanExecuteChangedFor(nameof(RestoreAllToCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowFilePreviewCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ShowFilePropertiesCommand))]
     [NotifyCanExecuteChangedFor(nameof(AddFolderToFavoritesCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteSelectedContentCommand))]
     private FileOrFolderItem? currentItem;
+
+    [ObservableProperty]
+    private FileDetails? currentFileDetails;
+
+    [ObservableProperty]
+    private bool isLoadingFileDetails;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RenameFavoriteCommand))]
@@ -94,6 +104,9 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     public ObservableCollection<VersionDetails> Versions { get; set; } = [];
 
+    public FileOrFolderItem? InfoPaneItem => CurrentItem
+        ?? (contentMode == BrowserContentMode.Folder ? CurrentFolderPath.LastOrDefault() : null);
+
     public BrowserViewModel(
         IQueryManager queryManager,
         IJobService jobService,
@@ -113,10 +126,12 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         this.browserPreviewService = browserPreviewService;
         this.viewPreferencesService = viewPreferencesService;
         SelectedItems.CollectionChanged += OnSelectedItemsChanged;
+        CurrentFolderPath.CollectionChanged += (_, _) => OnPropertyChanged(nameof(InfoPaneItem));
     }
 
     partial void OnToggleInfoPaneChanged(bool value)
     {
+        _ = LoadFileDetailsAsync();
         if (suppressInfoPaneChanged)
         {
             return;
@@ -151,6 +166,56 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         catch
         {
             // Preference persistence must not disrupt browsing.
+        }
+    }
+
+    partial void OnCurrentItemChanged(FileOrFolderItem? value)
+    {
+        OnPropertyChanged(nameof(InfoPaneItem));
+        _ = LoadFileDetailsAsync();
+    }
+
+    partial void OnCurrentVersionChanged(VersionDetails? value) => _ = LoadFileDetailsAsync();
+
+    private async Task LoadFileDetailsAsync()
+    {
+        var requestId = Interlocked.Increment(ref fileDetailsRequestId);
+        var item = CurrentItem;
+        var version = CurrentVersion;
+        CurrentFileDetails = null;
+        IsLoadingFileDetails = ToggleInfoPane && item?.IsFile == true && version != null;
+        if (!IsLoadingFileDetails || item == null || version == null)
+        {
+            return;
+        }
+
+        try
+        {
+            var details = await queryManager.GetFileDetailsAsync(version.Id, item.Name, item.FullPath);
+            if (requestId != Interlocked.Read(ref fileDetailsRequestId))
+            {
+                return;
+            }
+
+            if (details != null)
+            {
+                details.AvailableVersions = details.AvailableVersions
+                    .Select(availableVersion => Versions.FirstOrDefault(candidate => candidate.Id == availableVersion.Id) ?? availableVersion)
+                    .ToArray();
+            }
+
+            CurrentFileDetails = details;
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Error(ex, "Failed to load backup browser file details");
+        }
+        finally
+        {
+            if (requestId == Interlocked.Read(ref fileDetailsRequestId))
+            {
+                IsLoadingFileDetails = false;
+            }
         }
     }
 
@@ -454,19 +519,50 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         return "\\" + path + "\\";
     }
 
-    [RelayCommand(CanExecute = nameof(HasFileSelected))]
-    private async Task ShowFileProperties()
+    [RelayCommand]
+    private async Task JumpToFileVersion(VersionDetails version)
     {
-        if (CurrentItem == null || CurrentVersion == null)
+        var item = CurrentItem;
+        var matchingVersion = Versions.FirstOrDefault(x => x.Id == version.Id);
+        if (item?.IsFile != true || matchingVersion == null
+            || CurrentFileDetails?.AvailableVersions.Any(x => x.Id == version.Id) != true)
         {
             return;
         }
 
-        var fileDetails = await queryManager.GetFileDetailsAsync(CurrentVersion.Id, CurrentItem.Name, CurrentItem.FullPath);
-        if (fileDetails != null)
+        SetCurrentVersionWithoutLoading(matchingVersion);
+
+        var requestId = BeginContentRequest();
+        await LoadFavoritesAsync();
+        if (!IsCurrentContentRequest(requestId) || CurrentVersion != matchingVersion)
         {
-            await browserDialogService.ShowFileDetailsAsync(fileDetails);
+            return;
         }
+
+        var folderPath = item.FullPath.Trim('\\');
+        if (Favorites.Count > 0)
+        {
+            SelectFavoriteForPath(folderPath);
+        }
+        ClearSearchTerms();
+        await LoadFolderAsync(version.Id, folderPath, requestId);
+        if (IsCurrentContentRequest(requestId))
+        {
+            RestorePreservedItem(item);
+        }
+    }
+
+    [RelayCommand]
+    private async Task RestoreFileVersion(VersionDetails version)
+    {
+        var item = CurrentItem;
+        if (item?.IsFile != true
+            || CurrentFileDetails?.AvailableVersions.Any(x => x.Id == version.Id) != true)
+        {
+            return;
+        }
+
+        await jobService.RestoreBackupAsync(version.Id, ToRestorePath(item), string.Empty);
     }
 
     [RelayCommand(CanExecute = nameof(HasFileSelected))]
@@ -687,8 +783,34 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         await presentationService.ShowMainWindowAsync();
     }
 
+    public async Task<VersionChangeStatistics> GetVersionChangeStatisticsAsync(string versionId)
+    {
+        if (!versionStatisticsCache.TryGetValue(versionId, out var statisticsTask))
+        {
+            statisticsTask = queryManager.GetVersionChangeStatisticsAsync(versionId);
+            versionStatisticsCache.Add(versionId, statisticsTask);
+        }
+
+        try
+        {
+            return await statisticsTask;
+        }
+        catch
+        {
+            // A failed request must not evict a newer request started after a refresh.
+            if (versionStatisticsCache.TryGetValue(versionId, out var cachedTask)
+                && ReferenceEquals(cachedTask, statisticsTask))
+            {
+                versionStatisticsCache.Remove(versionId);
+            }
+
+            throw;
+        }
+    }
+
     private void LoadVersions()
     {
+        versionStatisticsCache.Clear();
         var backupVersions = queryManager.GetVersions(true);
 
         Versions.Clear();
@@ -773,6 +895,19 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             ?? preservedItem;
     }
 
+    private void SetCurrentVersionWithoutLoading(VersionDetails version)
+    {
+        suppressVersionSelectionChanged = true;
+        try
+        {
+            CurrentVersion = version;
+        }
+        finally
+        {
+            suppressVersionSelectionChanged = false;
+        }
+    }
+
     private async Task NavigateToContainingVersionAsync(bool previous)
     {
         if (CurrentVersion == null)
@@ -814,15 +949,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        suppressVersionSelectionChanged = true;
-        try
-        {
-            CurrentVersion = matchingVersion;
-        }
-        finally
-        {
-            suppressVersionSelectionChanged = false;
-        }
+        SetCurrentVersionWithoutLoading(matchingVersion);
 
         await LoadVersionCoreAsync();
     }
@@ -914,6 +1041,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     private void NotifyContentCommandsChanged()
     {
+        OnPropertyChanged(nameof(InfoPaneItem));
         LoadVersionCommand.NotifyCanExecuteChanged();
         LoadFolderCommand.NotifyCanExecuteChanged();
         UpFolderCommand.NotifyCanExecuteChanged();
@@ -949,6 +1077,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
     public void OnNavigatedFrom()
     {
+        Interlocked.Increment(ref fileDetailsRequestId);
         browserContentService.ClearIconCache();
     }
 }
