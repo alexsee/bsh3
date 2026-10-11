@@ -8,24 +8,21 @@ using Microsoft.Windows.AppNotifications;
 
 namespace BSH.MainApp.Notifications;
 
-public class AppNotificationService : IAppNotificationService
+public class AppNotificationService : IAppNotificationService, IDisposable
 {
     private readonly INavigationService _navigationService;
+    private bool _isRegistered;
 
     public AppNotificationService(INavigationService navigationService)
     {
         _navigationService = navigationService;
     }
 
-    ~AppNotificationService()
-    {
-        Unregister();
-    }
-
     public void Initialize()
     {
         AppNotificationManager.Default.NotificationInvoked += OnNotificationInvoked;
         AppNotificationManager.Default.Register();
+        _isRegistered = true;
     }
 
     public void OnNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
@@ -64,6 +61,19 @@ public class AppNotificationService : IAppNotificationService
 
     public void Unregister()
     {
+        if (!_isRegistered)
+        {
+            return;
+        }
+
+        _isRegistered = false;
+        AppNotificationManager.Default.NotificationInvoked -= OnNotificationInvoked;
         AppNotificationManager.Default.Unregister();
+    }
+
+    public void Dispose()
+    {
+        Unregister();
+        GC.SuppressFinalize(this);
     }
 }
