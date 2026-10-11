@@ -21,17 +21,9 @@ public class ActivationService : IActivationService
 
     public async Task ActivateAsync(object? activationArgs)
     {
-        // Execute tasks before activation.
-        await InitializeAsync();
-
-        // Handle activation via ActivationHandlers.
         await HandleActivationAsync(activationArgs);
 
-        // Activate the MainWindow.
         App.MainWindow.Activate();
-
-        // Execute tasks after activation.
-        await StartupAsync();
     }
 
     private async Task HandleActivationAsync(object? activationArgs)
@@ -47,15 +39,5 @@ public class ActivationService : IActivationService
         {
             await _defaultHandler.HandleAsync(activationArgs);
         }
-    }
-
-    private async Task InitializeAsync()
-    {
-        await Task.CompletedTask;
-    }
-
-    private async Task StartupAsync()
-    {
-        await Task.CompletedTask;
     }
 }
