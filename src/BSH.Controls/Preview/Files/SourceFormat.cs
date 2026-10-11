@@ -20,6 +20,8 @@
  */
 #endregion
 
+// Altered for Backup Service Home: removed the unused private sub-code mode.
+
 using System;
 using System.IO;
 using System.Text;
@@ -91,7 +93,7 @@ namespace Manoli.Utils.CSharpFormat
         /// <returns>A string containing the HTML formatted code.</returns>
         public string FormatCode(string source)
         {
-            return FormatCode(source, LineNumbers, Alternate, false);
+            return FormatCode(source, LineNumbers, Alternate);
         }
 
         /// <summary>
@@ -111,20 +113,16 @@ namespace Manoli.Utils.CSharpFormat
         /// <returns>A string containing the HTML code fragment.</returns>
         protected abstract string MatchEval(Match match);
 
-        //does the formatting job
         private string FormatCode(string source, bool lineNumbers,
-            bool alternate, bool subCode)
+            bool alternate)
         {
             //replace special characters
             StringBuilder sb = new(source);
 
-            if (!subCode)
-            {
-                sb.Replace("&", "&amp;");
-                sb.Replace("<", "&lt;");
-                sb.Replace(">", "&gt;");
-                sb.Replace("\t", string.Empty.PadRight(TabSpaces));
-            }
+            sb.Replace("&", "&amp;");
+            sb.Replace("<", "&lt;");
+            sb.Replace(">", "&gt;");
+            sb.Replace("\t", string.Empty.PadRight(TabSpaces));
 
             //color the code
             source = CodeRegex.Replace(sb.ToString(), new MatchEvaluator(this.MatchEval));
@@ -133,10 +131,7 @@ namespace Manoli.Utils.CSharpFormat
 
             if (lineNumbers || alternate) //we have to process the code line by line
             {
-                if (!subCode)
-                {
-                    sb.Append("<div class=\"csharpcode\">\n");
-                }
+                sb.Append("<div class=\"csharpcode\">\n");
 
                 StringReader reader = new(source);
                 int i = 0;
@@ -175,25 +170,16 @@ namespace Manoli.Utils.CSharpFormat
                     sb.Append("</pre>\n");
                 }
                 reader.Close();
-                if (!subCode)
-                {
-                    sb.Append("</div>");
-                }
+                sb.Append("</div>");
             }
             else
             {
                 //have to use a <pre> because IE below ver 6 does not understand 
                 //the "white-space: pre" CSS value
-                if (!subCode)
-                {
-                    sb.Append("<pre class=\"csharpcode\">\n");
-                }
+                sb.Append("<pre class=\"csharpcode\">\n");
 
                 sb.Append(source);
-                if (!subCode)
-                {
-                    sb.Append("</pre>");
-                }
+                sb.Append("</pre>");
             }
 
             return sb.ToString();

@@ -20,6 +20,8 @@
  */
 #endregion
 
+// Altered for Backup Service Home: removed contradictory CaseSensitive documentation.
+
 
 namespace Manoli.Utils.CSharpFormat
 {
@@ -31,7 +33,6 @@ namespace Manoli.Utils.CSharpFormat
         /// <summary>
         /// Determines if the language is case sensitive.
         /// </summary>
-        /// <value>Always <b>true</b>, since VB is not case sensitive.</value>
         public override bool CaseSensitive
         {
             get
