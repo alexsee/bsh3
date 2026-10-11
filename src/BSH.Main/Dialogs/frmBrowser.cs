@@ -1081,29 +1081,30 @@ public partial class frmBrowser : IStatusReport
 
     private async void VersionBearbeitenToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        // edit version
+        var version = selectedVersion;
         using var dlgEditVersion = new frmEditVersion();
-        using var dbClient = BackupLogic.DbClientFactory.CreateDbClient();
-        using (var dbRead = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT * FROM versiontable WHERE versionID = " + selectedVersion.Id, null))
-        {
-            if (await dbRead.ReadAsync())
-            {
-                dlgEditVersion.txtTitle.Text = dbRead.GetString("versionTitle");
-                dlgEditVersion.txtDescription.Text = dbRead.GetString("versionDescription");
-            }
-
-            await dbRead.CloseAsync();
-        }
+        dlgEditVersion.txtTitle.Text = version.Title;
+        dlgEditVersion.txtDescription.Text = version.Description;
 
         if (dlgEditVersion.ShowDialog(this) == DialogResult.OK)
         {
-            await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE versiontable SET versionTitle = '" + dlgEditVersion.txtTitle.Text + "', versionDescription = '" + dlgEditVersion.txtDescription.Text + "' WHERE versionID = " + selectedVersion.Id);
+            var details = new VersionDetails
+            {
+                Title = dlgEditVersion.txtTitle.Text,
+                Description = dlgEditVersion.txtDescription.Text
+            };
+            await BackupLogic.BackupService.UpdateVersionAsync(version.Id, details);
+            version.Title = details.Title;
+            version.Description = details.Description;
+
             foreach (var entry in AVersionList1.Items)
             {
-                if ((entry.VersionID ?? "") == (selectedVersion.Id ?? ""))
+                if ((entry.VersionID ?? "") == (version.Id ?? ""))
                 {
-                    entry.ToolTipTitle = dlgEditVersion.txtTitle.Text;
-                    entry.ToolTip = string.Format(Resources.DLG_BACKUPBROWSER_TT_VERSION_SIMPLE, entry.VersionDate, dlgEditVersion.txtDescription.Text).Trim();
+                    entry.Version.Title = details.Title;
+                    entry.Version.Description = details.Description;
+                    entry.ToolTipTitle = details.Title;
+                    entry.ToolTip = string.Format(Resources.DLG_BACKUPBROWSER_TT_VERSION_SIMPLE, entry.VersionDate, details.Description).Trim();
                     break;
                 }
             }
