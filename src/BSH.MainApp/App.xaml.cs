@@ -38,14 +38,8 @@ using Windows.UI.Popups;
 
 namespace BSH.MainApp;
 
-// To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application
 {
-    // The .NET Generic Host provides dependency injection, configuration, logging, and other services.
-    // https://docs.microsoft.com/dotnet/core/extensions/generic-host
-    // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
-    // https://docs.microsoft.com/dotnet/core/extensions/configuration
-    // https://docs.microsoft.com/dotnet/core/extensions/logging
     // Built on first GetService call. WinUI can raise OnLaunched before App() assigns fields.
     private static readonly Lazy<IHost> host = new(CreateHost);
 
