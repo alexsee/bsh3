@@ -91,6 +91,23 @@ public partial class frmSmartPreview
         }
     }
 
+    private void ShowSourcePreview(string fileName, string fileExt)
+    {
+        var previewItem = new WebBrowser();
+        Manoli.Utils.CSharpFormat.SourceFormat code = fileExt switch
+        {
+            ".vb" => new Manoli.Utils.CSharpFormat.VisualBasicFormat(),
+            ".cs" => new Manoli.Utils.CSharpFormat.CSharpFormat(),
+            ".sql" => new Manoli.Utils.CSharpFormat.TsqlFormat(),
+            _ => new Manoli.Utils.CSharpFormat.JavaScriptFormat()
+        };
+        var source = System.IO.File.ReadAllText(fileName);
+        previewItem.DocumentText = "<style>" + My.Resources.Resources.csharp + "</style>\r\n" + code.FormatCode(source);
+        plContent.Controls.Add(previewItem);
+        previewItem.Dock = DockStyle.Fill;
+        previewItem.WebBrowserShortcutsEnabled = false;
+    }
+
     public bool ShowPreview(string fileName)
     {
         try
@@ -184,50 +201,11 @@ public partial class frmSmartPreview
 
                 // source code
                 case ".vb":
-                    {
-                        var previewItem = new WebBrowser();
-                        var code = new Manoli.Utils.CSharpFormat.VisualBasicFormat();
-                        string rdr = System.IO.File.ReadAllText(fileName);
-                        previewItem.DocumentText = "<style>" + My.Resources.Resources.csharp + "</style>\r\n" + code.FormatCode(rdr);
-                        plContent.Controls.Add(previewItem);
-                        previewItem.Dock = DockStyle.Fill;
-                        previewItem.WebBrowserShortcutsEnabled = false;
-                        break;
-                    }
-
                 case ".cs":
-                    {
-                        var previewItem = new WebBrowser();
-                        var code = new Manoli.Utils.CSharpFormat.CSharpFormat();
-                        string rdr = System.IO.File.ReadAllText(fileName);
-                        previewItem.DocumentText = "<style>" + My.Resources.Resources.csharp + "</style>\r\n" + code.FormatCode(rdr);
-                        plContent.Controls.Add(previewItem);
-                        previewItem.Dock = DockStyle.Fill;
-                        previewItem.WebBrowserShortcutsEnabled = false;
-                        break;
-                    }
-
                 case ".sql":
-                    {
-                        var previewItem = new WebBrowser();
-                        var code = new Manoli.Utils.CSharpFormat.TsqlFormat();
-                        string rdr = System.IO.File.ReadAllText(fileName);
-                        previewItem.DocumentText = "<style>" + My.Resources.Resources.csharp + "</style>\r\n" + code.FormatCode(rdr);
-                        plContent.Controls.Add(previewItem);
-                        previewItem.Dock = DockStyle.Fill;
-                        previewItem.WebBrowserShortcutsEnabled = false;
-                        break;
-                    }
-
                 case ".js":
                     {
-                        var previewItem = new WebBrowser();
-                        var code = new Manoli.Utils.CSharpFormat.JavaScriptFormat();
-                        string rdr = System.IO.File.ReadAllText(fileName);
-                        previewItem.DocumentText = "<style>" + My.Resources.Resources.csharp + "</style>\r\n" + code.FormatCode(rdr);
-                        plContent.Controls.Add(previewItem);
-                        previewItem.Dock = DockStyle.Fill;
-                        previewItem.WebBrowserShortcutsEnabled = false;
+                        ShowSourcePreview(fileName, fileExt);
                         break;
                     }
 
