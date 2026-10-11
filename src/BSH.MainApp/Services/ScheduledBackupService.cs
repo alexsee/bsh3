@@ -47,14 +47,8 @@ public class ScheduledBackupService : IScheduledBackupService
         mediaArrivalWatch = new MediaArrivalBackupWatch(configurationManager, mediaWatcherFactory);
     }
 
-    public async Task InitializeAsync()
-    {
-
-    }
-
     public async Task StartAsync()
     {
-        // automatic or scheduled backups
         if (configurationManager.TaskType == TaskType.Auto)
         {
             StartFullAutomatedSystem();
@@ -67,8 +61,13 @@ public class ScheduledBackupService : IScheduledBackupService
 
     public void Stop()
     {
-        StopFullAutomatedSystem();
-        StopScheduleSystem();
+        if (schedulerService != null)
+        {
+            schedulerService.Stop();
+            schedulerService = null;
+            Log.Information("Backup scheduler is stopped.");
+        }
+
         mediaArrivalWatch.Stop();
     }
 
@@ -94,24 +93,11 @@ public class ScheduledBackupService : IScheduledBackupService
     {
         Log.Information("Service for \"Full automatic backup\" is started.");
 
-        // start scheduler
         schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
         schedulerService.ScheduleAutoBackup(async () => await RunAutoBackup());
 
         WatchForDueBackup(RunAutoBackup);
-    }
-
-    private void StopFullAutomatedSystem()
-    {
-        // stop scheduler
-        if (schedulerService == null)
-        {
-            return;
-        }
-
-        schedulerService.Stop();
-        Log.Information("Service for \"Full automatic backup\" is stopped.");
     }
 
     private async Task RunAutoBackup()
@@ -169,11 +155,9 @@ public class ScheduledBackupService : IScheduledBackupService
     {
         Log.Information("Service for \"Scheduled backups\" is started.");
 
-        // start scheduler
         schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
 
-        // read scheduler entries in database
         var schedules = await scheduleRepository.GetSchedulesAsync();
         foreach (var schedule in schedules)
         {
@@ -198,7 +182,7 @@ public class ScheduledBackupService : IScheduledBackupService
                 // daily
 
                 // catch up old backup?
-                if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
+                if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
                 {
                     schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                     WatchForDueBackup(thScheduleSysRunBackup);
@@ -214,7 +198,7 @@ public class ScheduledBackupService : IScheduledBackupService
                 if (DateTime.Now.DayOfWeek == scheduleDate.DayOfWeek)
                 {
                     // backup was performed already earlier
-                    if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
+                    if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
                     {
                         schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                         WatchForDueBackup(thScheduleSysRunBackup);
@@ -231,7 +215,7 @@ public class ScheduledBackupService : IScheduledBackupService
                         if (versionDate.Subtract(checkDate).Days < 0)
                         {
                             // backup was performed already earlier
-                            if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
+                            if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
                             {
                                 schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                                 WatchForDueBackup(thScheduleSysRunBackup);
@@ -257,7 +241,7 @@ public class ScheduledBackupService : IScheduledBackupService
                 if (DateTime.Now.Day == scheduleDate.Day)
                 {
                     // backup was performed already earlier
-                    if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
+                    if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
                     {
                         schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                         WatchForDueBackup(thScheduleSysRunBackup);
@@ -265,7 +249,6 @@ public class ScheduledBackupService : IScheduledBackupService
                 }
                 else
                 {
-                    // check of backup was done the last 7 days
                     var versions = queryManager.GetVersions(true);
                     var checkDate = DateUtils.GetDateToMonth(scheduleDate.Day, DateTime.Now);
 
@@ -274,7 +257,7 @@ public class ScheduledBackupService : IScheduledBackupService
                         // backup was performed already earlier
                         if (versionDate.Subtract(checkDate).Days < 0)
                         {
-                            if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay), true))
+                            if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
                             {
                                 schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
                                 WatchForDueBackup(thScheduleSysRunBackup);
@@ -296,48 +279,28 @@ public class ScheduledBackupService : IScheduledBackupService
 
     }
 
-    private bool DoPastBackup(DateTime date, bool orOlder = false)
+    private bool DoPastBackup(DateTime date)
     {
         if (configurationManager.DoPastBackups != "1")
         {
             return false;
         }
 
-        // backup is after the last backup
         if (!string.IsNullOrEmpty(configurationManager.LastBackupDone)
             && DateTime.ParseExact(configurationManager.LastBackupDone, "dd-MM-yyyy HH-mm-ss", CultureInfo.InvariantCulture) >= date)
         {
             return false;
         }
 
-        // check if this backup was performed
         foreach (var versionDate in queryManager.GetVersions().Select(x => x.CreationDate))
         {
-            if (orOlder)
-            {
-                if (versionDate >= date)
-                {
-                    return false;
-                }
-            }
-            else if (versionDate > date.AddMinutes(-5) && versionDate < date.AddMinutes(5))
+            if (versionDate >= date)
             {
                 return false;
             }
         }
 
-        // backup must be performed
         return true;
-    }
-
-    private void StopScheduleSystem()
-    {
-        if (schedulerService != null)
-        {
-            Log.Information("Service for \"Scheduled backups\" is stopped.");
-            schedulerService.Stop();
-            schedulerService = null;
-        }
     }
 
     private async Task thScheduleSysRunBackup()

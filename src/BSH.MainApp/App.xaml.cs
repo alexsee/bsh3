@@ -158,9 +158,6 @@ public partial class App : Application
         await App.GetService<IConfigurationManager>().InitializeAsync();
         await App.GetService<IDbMigrationService>().InitializeAsync();
 
-        // init scheduled backups
-        await App.GetService<IScheduledBackupService>().InitializeAsync();
-
         // start application
         App.GetService<IStatusService>().Initialize();
 

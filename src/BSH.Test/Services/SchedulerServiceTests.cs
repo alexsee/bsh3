@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Services;
 using NUnit.Framework;
+using Quartz;
 using Quartz.Impl;
 using Quartz.Listener;
 
@@ -31,6 +33,57 @@ public class SchedulerServiceTests
             var nextRun = service.GetNextRun();
 
             Assert.That(nextRun, Is.EqualTo(DateTime.Now.AddHours(1)).Within(TimeSpan.FromMinutes(2)));
+        }
+        finally
+        {
+            service.Stop();
+        }
+    }
+
+    private static IEnumerable<TestCaseData> Registrations()
+    {
+        var time = DateTime.Now.AddHours(1);
+        yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleAutoBackup(() => { }))).SetArgDisplayNames("Auto");
+        yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleOnce(() => { }, time))).SetArgDisplayNames("Once");
+        yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleHourly(() => { }, time))).SetArgDisplayNames("Hourly");
+        yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleDaily(() => { }, time))).SetArgDisplayNames("Daily");
+        yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleWeekly(() => { }, time))).SetArgDisplayNames("Weekly");
+        yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleMonthly(() => { }, time))).SetArgDisplayNames("Monthly");
+    }
+
+    [TestCaseSource(nameof(Registrations))]
+    public void RegistrationCompletesBeforeReturning(Action<SchedulerService> register)
+    {
+        var service = new SchedulerService();
+        service.Start();
+        try
+        {
+            var scheduler = new StdSchedulerFactory().GetScheduler("QuartzScheduler").GetAwaiter().GetResult();
+            var listener = new AsynchronousRegistrationListener();
+            scheduler.ListenerManager.AddSchedulerListener(listener);
+
+            register(service);
+
+            Assert.That(listener.Completed, Is.True, "Registration must observe the asynchronous Quartz completion.");
+            Assert.That(service.GetNextRun(), Is.LessThan(DateTime.Now.AddYears(1)));
+        }
+        finally
+        {
+            service.Stop();
+        }
+    }
+
+    [TestCaseSource(nameof(Registrations))]
+    public void RegistrationPropagatesSchedulerFailure(Action<SchedulerService> register)
+    {
+        var service = new SchedulerService();
+        service.Start();
+        try
+        {
+            var scheduler = new StdSchedulerFactory().GetScheduler("QuartzScheduler").GetAwaiter().GetResult();
+            scheduler.Shutdown().GetAwaiter().GetResult();
+
+            Assert.Throws<SchedulerException>(() => register(service));
         }
         finally
         {
@@ -76,6 +129,11 @@ public class SchedulerServiceTests
                 service.Start();
                 var scheduler = new StdSchedulerFactory().GetScheduler("QuartzScheduler").GetAwaiter().GetResult();
                 scheduler.ListenerManager.AddSchedulerListener(new AsynchronousShutdownListener());
+                scheduler.ListenerManager.AddSchedulerListener(new AsynchronousRegistrationListener());
+                foreach (var registration in Registrations())
+                {
+                    ((Action<SchedulerService>)registration.Arguments[0])(service);
+                }
                 service.GetNextRun();
             }
             catch (Exception ex)
@@ -118,6 +176,17 @@ public class SchedulerServiceTests
             {
                 callback();
             }
+        }
+    }
+
+    private sealed class AsynchronousRegistrationListener : SchedulerListenerSupport
+    {
+        public bool Completed { get; private set; }
+
+        public override async Task JobScheduled(ITrigger trigger, CancellationToken cancellationToken = default)
+        {
+            await Task.Delay(50, cancellationToken).ConfigureAwait(false);
+            Completed = true;
         }
     }
 

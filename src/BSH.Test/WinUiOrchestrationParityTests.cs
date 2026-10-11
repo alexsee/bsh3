@@ -425,7 +425,6 @@ public class WinUiOrchestrationParityTests
 
         public DateTime GetNextBackupDate() => DateTime.MaxValue;
         public Task<bool> HasScheduleEntriesAsync() => Task.FromResult(false);
-        public Task InitializeAsync() => Task.CompletedTask;
         public Task StartAsync()
         {
             StartCalls++;
