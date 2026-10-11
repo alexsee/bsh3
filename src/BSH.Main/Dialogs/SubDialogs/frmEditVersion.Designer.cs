@@ -37,10 +37,8 @@ namespace Brightbits.BSH.Main
             Label2 = new Label();
             Label3 = new Label();
             txtTitle = new TextBox();
-            txtTitle.TextChanged += new EventHandler(txtTitle_TextChanged);
             Label4 = new Label();
             txtDescription = new TextBox();
-            txtDescription.TextChanged += new EventHandler(txtDescription_TextChanged);
             Panel1.SuspendLayout();
             SuspendLayout();
             // 
