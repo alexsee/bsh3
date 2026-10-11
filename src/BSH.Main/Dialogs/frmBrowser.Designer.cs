@@ -11,6 +11,11 @@ namespace Brightbits.BSH.Main
         [DebuggerNonUserCode()]
         protected override void Dispose(bool disposing)
         {
+            if (disposing)
+            {
+                CancelSearch();
+            }
+
             if (disposing && components is object)
             {
                 components.Dispose();
@@ -117,7 +122,6 @@ namespace Brightbits.BSH.Main
             lblIntegrityCheck = new Label();
             Label4 = new Label();
             imgFileType = new PictureBox();
-            bgrWorkSearch = new System.ComponentModel.BackgroundWorker();
             AllesWiederherstellenToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)SplitContainer1).BeginInit();
             SplitContainer1.Panel1.SuspendLayout();
@@ -877,13 +881,6 @@ namespace Brightbits.BSH.Main
             imgFileType.TabStop = false;
             ttMain.SetToolTip(imgFileType, resources.GetString("imgFileType.ToolTip"));
             // 
-            // bgrWorkSearch
-            // 
-            bgrWorkSearch.WorkerReportsProgress = true;
-            bgrWorkSearch.WorkerSupportsCancellation = true;
-            bgrWorkSearch.DoWork += bgrWorkSearch_DoWork;
-            bgrWorkSearch.RunWorkerCompleted += bgrWorkSearch_RunWorkerCompleted;
-            // 
             // AllesWiederherstellenToolStripMenuItem
             // 
             resources.ApplyResources(AllesWiederherstellenToolStripMenuItem, "AllesWiederherstellenToolStripMenuItem");
@@ -998,7 +995,6 @@ namespace Brightbits.BSH.Main
         internal ToolStripMenuItem ZuOrdnerfavoritenHinzufügenToolStripMenuItem;
         internal ContextMenuStrip cmnuFavorits;
         internal ToolStripMenuItem LöschenToolStripMenuItem;
-        internal System.ComponentModel.BackgroundWorker bgrWorkSearch;
         internal Panel plGlass;
         internal ToolStripMenuItem VersionAlsStabilMarkierenToolStripMenuItem;
         internal Button cmdTakeMeLater;

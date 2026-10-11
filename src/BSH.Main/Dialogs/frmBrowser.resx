@@ -537,17 +537,11 @@
   <data name="&gt;&gt;flpSize.Name" xml:space="preserve">
     <value>flpSize</value>
   </data>
-  <data name="&gt;&gt;bgrWorkSearch.Name" xml:space="preserve">
-    <value>bgrWorkSearch</value>
-  </data>
   <data name="DetailsansichtToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>249, 36</value>
   </data>
   <data name="ListenansichtToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>249, 36</value>
-  </data>
-  <data name="&gt;&gt;bgrWorkSearch.Type" xml:space="preserve">
-    <value>System.ComponentModel.BackgroundWorker, System.ComponentModel.EventBasedAsync, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="&gt;&gt;lblIntegrityCheck.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -2632,9 +2626,6 @@ wiederhergestellt werden soll.</value>
   </metadata>
   <metadata name="ilFolder.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
-  </metadata>
-  <metadata name="bgrWorkSearch.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>979, 17</value>
   </metadata>
   <metadata name="cmnuFavorits.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>759, 17</value>
