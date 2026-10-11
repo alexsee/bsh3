@@ -17,8 +17,8 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
-using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
+using BSH.Test.Helpers;
 using BSH.Test.Mocks;
 using NUnit.Framework;
 
@@ -34,25 +34,16 @@ public class BackupTests
     private IBackupMutationRepository backupMutationRepository;
     private VssClientMock vssClient;
 
-    private IBackupService backupService;
+    private string rootDir;
 
     [SetUp]
     public async Task Setup()
     {
-        if (dbClientFactory != null)
-        {
-            DbClientFactory.ClosePool();
-            this.dbClientFactory = null;
-        }
-
-        // start with clean database
-        if (File.Exists("testdb.db"))
-        {
-            File.Delete("testdb.db");
-        }
+        rootDir = Path.Combine(Path.GetTempPath(), "BSH.Test", $"backup-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(rootDir);
 
         dbClientFactory = new DbClientFactory();
-        await dbClientFactory.InitializeAsync(Environment.CurrentDirectory + "\\testdb.db");
+        await dbClientFactory.InitializeAsync(Path.Combine(rootDir, "testdb.db"));
 
         configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
@@ -79,8 +70,13 @@ public class BackupTests
                 }
             }
         );
+    }
 
-        backupService = new BackupService(configurationManager, queryManager, dbClientFactory, storageFactory, vssClient, fileCollectorServiceFactory, versionQueryRepository, backupMutationRepository);
+    [TearDown]
+    public void Cleanup()
+    {
+        DbClientFactory.ClosePool();
+        TempDirectory.DeleteBestEffort(rootDir);
     }
 
     [Test]
@@ -225,7 +221,7 @@ public class BackupTests
         configurationManager.Compression = 1;
 
         var fs = new StorageMock();
-        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+        using var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
 
         var token = new CancellationTokenSource().Token;
         await backupJob.BackupAsync(token);
@@ -241,7 +237,7 @@ public class BackupTests
         configurationManager.EncryptPassMD5 = "cc03e747a6afbbcbf8be7668acfebee5";
 
         var fs = new StorageMock();
-        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+        using var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
         backupJob.Password = "test123";
 
         var token = new CancellationTokenSource().Token;
@@ -255,7 +251,7 @@ public class BackupTests
     public async Task TestFtpStorageUsesStoredCopyFileType()
     {
         var fs = new StorageMock { Kind = StorageProviderKind.Ftp };
-        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+        using var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
 
         var token = new CancellationTokenSource().Token;
         await backupJob.BackupAsync(token);
@@ -269,7 +265,7 @@ public class BackupTests
         configurationManager.Compression = 1;
 
         var fs = new StorageMock { Kind = StorageProviderKind.Ftp };
-        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+        using var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
 
         var token = new CancellationTokenSource().Token;
         await backupJob.BackupAsync(token);
@@ -284,7 +280,7 @@ public class BackupTests
         configurationManager.EncryptPassMD5 = "cc03e747a6afbbcbf8be7668acfebee5";
 
         var fs = new StorageMock { Kind = StorageProviderKind.Ftp };
-        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+        using var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
         backupJob.Password = "test123";
 
         var token = new CancellationTokenSource().Token;
@@ -303,7 +299,7 @@ public class BackupTests
     public async Task TestUsesLongFilePathFallbackWhenPathIsTooLong()
     {
         var fs = new StorageMock(pathTooLong: true);
-        var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
+        using var backupJob = CreateBackupJobForSingleTempFile(fs, new VssClientMock(), ".txt");
 
         var token = new CancellationTokenSource().Token;
         await backupJob.BackupAsync(token);
@@ -316,7 +312,7 @@ public class BackupTests
     {
         var vss = new VssClientMock(shouldCopy: true);
         var fs = new StorageMock(throwIoOnFirstRegularCopy: true);
-        var backupJob = CreateBackupJobForSingleTempFile(fs, vss, ".txt");
+        using var backupJob = CreateBackupJobForSingleTempFile(fs, vss, ".txt");
 
         var token = new CancellationTokenSource().Token;
         await backupJob.BackupAsync(token);
@@ -658,19 +654,17 @@ public class BackupTests
                 }
             });
 
-        using var backupJob = new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vss, versionQueryRepository, backupMutationRepository)
+        return new BackupJob(storage, dbClientFactory, queryManager, configurationManager, fileCollectorServiceFactory, vss, versionQueryRepository, backupMutationRepository)
         {
             SourceFolder = fileInfo.DirectoryName,
             Title = "Blub",
             Description = "",
         };
-
-        return backupJob;
     }
 
-    private static string CreateTempFile(string extension)
+    private string CreateTempFile(string extension)
     {
-        var testFilesDir = Path.Combine(Environment.CurrentDirectory, "testfiles");
+        var testFilesDir = Path.Combine(rootDir, "testfiles");
         Directory.CreateDirectory(testFilesDir);
 
         var testFile = Path.Combine(testFilesDir, $"{Guid.NewGuid()}{extension}");
