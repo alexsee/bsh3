@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using C4F.DevKit.PreviewHandler.PreviewHandlerFramework;
 
@@ -13,6 +14,7 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
     {
         private string _filePath;
         private object _comInstance = null;
+        private Stream _previewStream;
         private Boolean _hasHandler = true;
 
         public PreviewHandlerHostControl()
@@ -35,9 +37,16 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
             set
             {
                 _filePath = value;
-                if (value != null && !IsDesignTime())
+                if (!IsDesignTime())
                 {
-                    GeneratePreview();
+                    if (value == null)
+                    {
+                        Unload();
+                    }
+                    else
+                    {
+                        GeneratePreview();
+                    }
                 }
             }
         }
@@ -57,17 +66,47 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
 
         public void Unload()
         {
+            var comInstance = _comInstance;
+            var stream = _previewStream;
+            _comInstance = null;
+            _previewStream = null;
+            _hasHandler = false;
+
             try
             {
-                if (_comInstance != null)
+                if (comInstance != null)
                 {
-                    ((IPreviewHandler)_comInstance).Unload();
+                    ((IPreviewHandler)comInstance).Unload();
                 }
             }
             catch
             {
                 // Unload can fail if the COM preview handler is already torn down.
             }
+            finally
+            {
+                try
+                {
+                    if (comInstance != null)
+                    {
+                        Marshal.ReleaseComObject(comInstance);
+                    }
+                }
+                finally
+                {
+                    stream?.Dispose();
+                }
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Unload();
+                components?.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         /// <summary>
@@ -81,10 +120,7 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
         private void GeneratePreview()
         {
             lblMessage.Visible = false;
-            if (_comInstance != null)
-            {
-                ((IPreviewHandler)_comInstance).Unload();
-            }
+            Unload();
 
             RECT r;
             r.top = 0;
@@ -122,12 +158,12 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
                 {
                     fileInitializer.Initialize(_filePath, 0);
                 }
-                else if (_comInstance is IInitializeWithStream)
+                else if (_comInstance is IInitializeWithStream streamInitializer)
                 {
                     if (File.Exists(_filePath))
                     {
-                        StreamWrapper stream = new StreamWrapper(File.Open(_filePath, FileMode.Open));
-                        ((C4F.DevKit.PreviewHandler.PreviewHandlerFramework.IInitializeWithStream)_comInstance).Initialize(stream, 0);
+                        _previewStream = File.Open(_filePath, FileMode.Open);
+                        streamInitializer.Initialize(new StreamWrapper(_previewStream), 0);
                     }
                     else
                     {
@@ -136,10 +172,11 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
                 }
                 ((IPreviewHandler)_comInstance).SetWindow(this.Handle, ref r);
                 ((IPreviewHandler)_comInstance).DoPreview();
+                _hasHandler = true;
             }
             catch (Exception ex)
             {
-                _comInstance = null;
+                Unload();
                 lblMessage.Visible = true;
                 lblMessage.Text = "Keine Vorschau verfügbar - " + ex.Message;
                 _hasHandler = false;

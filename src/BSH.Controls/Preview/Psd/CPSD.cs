@@ -46,7 +46,7 @@ namespace SimplePsd
         {
             int nErrorCode = 0; // No errors
 
-            FileStream stream = new FileStream(strPathName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var stream = new FileStream(strPathName, FileMode.Open, FileAccess.Read, FileShare.Read);
 
             if (!stream.SafeFileHandle.IsInvalid)
             {
