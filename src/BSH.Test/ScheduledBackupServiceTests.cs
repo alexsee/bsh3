@@ -157,7 +157,7 @@ public class ScheduledBackupServiceTests
         service.Stop();
         await service.StartAsync();
 
-        Assert.That(factory.Adapter.StopCalls, Is.GreaterThanOrEqualTo(1));
+        Assert.That(factory.Adapter.StopCalls, Is.EqualTo(1));
         Assert.That(factory.CreateCalls, Is.EqualTo(1));
         Assert.That(service.GetNextBackupDate(), Is.EqualTo(DateTime.MaxValue));
     }
@@ -206,6 +206,72 @@ public class ScheduledBackupServiceTests
 
         Assert.That(scheduler.ScheduleOnceCalls, Is.EqualTo(0));
         Assert.That(scheduler.ScheduleDailyCalls, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task StopEndsMediaWatchAndAllowsRestart()
+    {
+        var mediaFactory = new FakeMediaWatcherFactory();
+        var scheduler = new RecordingSchedulerAdapterFactory();
+        var jobs = new RecordingJobService { MediaAvailable = true };
+        var configuration = new FakeConfigurationManager
+        {
+            TaskType = TaskType.Auto,
+            MediumType = MediaType.LocalDevice,
+            BackupFolder = @"E:\Backups"
+        };
+        var repository = new EmptyScheduleRepository();
+        var service = new ScheduledBackupService(
+            configuration, jobs, new StubQueryManager(), repository, scheduler,
+            new ScheduleSettingsService(configuration, repository), mediaFactory);
+
+        await service.StartAsync();
+        service.Stop();
+        service.Stop();
+        mediaFactory.Watcher.Arrive("E:");
+
+        Assert.That(scheduler.Adapter.StopCalls, Is.EqualTo(1));
+        Assert.That(service.GetNextBackupDate(), Is.EqualTo(DateTime.MaxValue));
+        Assert.That(mediaFactory.Watcher.StopWatchingCount, Is.EqualTo(1));
+        Assert.That(jobs.CreateBackupCalls, Is.EqualTo(0));
+
+        await service.StartAsync();
+        Assert.That(scheduler.CreateCalls, Is.EqualTo(2));
+        Assert.That(mediaFactory.Watcher.StartWatchingCount, Is.EqualTo(2));
+        service.Stop();
+
+        Assert.That(scheduler.Adapter.StopCalls, Is.EqualTo(2));
+        Assert.That(mediaFactory.Watcher.StopWatchingCount, Is.EqualTo(2));
+    }
+
+    [TestCase(-1, 1)]
+    [TestCase(0, 0)]
+    [TestCase(1, 0)]
+    public async Task ScheduledDailyCatchUpDependsOnExistingVersionDate(int minutesFromSchedule, int expectedCatchUps)
+    {
+        var scheduler = new FakeSchedulerAdapter();
+        var configuration = new FakeConfigurationManager
+        {
+            TaskType = TaskType.Schedule,
+            MediumType = MediaType.FileTransferServer,
+            DoPastBackups = "1"
+        };
+        var date = DateTime.Today;
+        var repository = new FakeScheduleRepository([new ScheduleEntry { Type = 3, Date = date }]);
+        var query = new StubQueryManager
+        {
+            Versions = [new VersionDetails { CreationDate = date.AddMinutes(minutesFromSchedule) }]
+        };
+        var service = new ScheduledBackupService(
+            configuration, new RecordingJobService(), query, repository,
+            new FakeSchedulerAdapterFactory(scheduler), new ScheduleSettingsService(configuration, repository),
+            new FakeMediaWatcherFactory());
+
+        await service.StartAsync();
+
+        Assert.That(scheduler.ScheduleOnceCalls, Is.EqualTo(expectedCatchUps));
+        Assert.That(scheduler.ScheduleDailyCalls, Is.EqualTo(1));
+        service.Stop();
     }
 
     private static ScheduledBackupService CreateService(
@@ -442,7 +508,8 @@ public class ScheduledBackupServiceTests
         public Task<double> GetTotalFileSizeAsync() => Task.FromResult(0d);
         public Task<VersionDetails> GetOldestBackupAsync() => Task.FromResult<VersionDetails>(null);
         public Task<VersionDetails> GetVersionByIdAsync(string id) => Task.FromResult<VersionDetails>(null);
-        public virtual List<VersionDetails> GetVersions(bool desc = true) => [];
+        public List<VersionDetails> Versions { get; init; } = [];
+        public virtual List<VersionDetails> GetVersions(bool desc = true) => Versions;
         public Task<List<FileTableRow>> GetVersionsByFileAsync(string fileName, string filePath) => Task.FromResult(new List<FileTableRow>());
         public Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500) => Task.FromResult(new List<FileTableRow>());
         public Task<bool> HasChangesOrNewAsync(string path, string versionId) => Task.FromResult(false);

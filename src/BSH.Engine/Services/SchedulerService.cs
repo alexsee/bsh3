@@ -15,11 +15,6 @@ public class SchedulerService : ISchedulerAdapter
 {
     private IScheduler scheduler;
 
-    public SchedulerService()
-    {
-
-    }
-
     public void Start()
     {
         // The async bridges must not capture the context of a blocked UI caller.
@@ -28,13 +23,11 @@ public class SchedulerService : ISchedulerAdapter
 
     private async Task StartAsync()
     {
-        // If scheduler exists and is shutdown, clear it
         if (this.scheduler != null && this.scheduler.IsShutdown)
         {
             this.scheduler = null;
         }
 
-        // Only create a new scheduler if we don't have one
         if (this.scheduler == null)
         {
             var properties = new NameValueCollection {
@@ -46,13 +39,11 @@ public class SchedulerService : ISchedulerAdapter
             this.scheduler = await factory.GetScheduler().ConfigureAwait(false);
         }
 
-        // Start the scheduler if it's not running
         await this.scheduler.Start().ConfigureAwait(false);
     }
 
     private static IJobDetail GetJob(Action action)
     {
-        // define the job and tie it to our HelloJob class
         var job = JobBuilder.Create<RunActionJob>()
             .SetJobData(new JobDataMap
             {
@@ -69,7 +60,7 @@ public class SchedulerService : ISchedulerAdapter
             .WithCronSchedule("0 0 * * * ?")
             .Build();
 
-        scheduler.ScheduleJob(GetJob(action), trigger);
+        scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
     public void ScheduleOnce(Action action, DateTime time)
@@ -78,7 +69,7 @@ public class SchedulerService : ISchedulerAdapter
             .StartAt(time)
             .Build();
 
-        scheduler.ScheduleJob(GetJob(action), trigger);
+        scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
     public void ScheduleHourly(Action action, DateTime time)
@@ -87,7 +78,7 @@ public class SchedulerService : ISchedulerAdapter
             .WithCronSchedule("0 " + time.Minute + " * * * ?")
             .Build();
 
-        scheduler.ScheduleJob(GetJob(action), trigger);
+        scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
     public void ScheduleDaily(Action action, DateTime time)
@@ -96,7 +87,7 @@ public class SchedulerService : ISchedulerAdapter
             .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(time.Hour, time.Minute))
             .Build();
 
-        scheduler.ScheduleJob(GetJob(action), trigger);
+        scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
     public void ScheduleWeekly(Action action, DateTime time)
@@ -105,7 +96,7 @@ public class SchedulerService : ISchedulerAdapter
             .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(time.DayOfWeek, time.Hour, time.Minute))
             .Build();
 
-        scheduler.ScheduleJob(GetJob(action), trigger);
+        scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
     public void ScheduleMonthly(Action action, DateTime time)
@@ -114,7 +105,7 @@ public class SchedulerService : ISchedulerAdapter
             .WithSchedule(CronScheduleBuilder.MonthlyOnDayAndHourAndMinute(time.Day, time.Hour, time.Minute))
             .Build();
 
-        scheduler.ScheduleJob(GetJob(action), trigger);
+        scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
     public DateTime GetNextRun()
