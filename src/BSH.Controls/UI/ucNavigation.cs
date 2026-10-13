@@ -25,6 +25,7 @@ namespace Brightbits.BSH.Main
         public ucNavigation()
         {
             InitializeComponent();
+            flpNavi.ControlRemoved += ItemRemoved;
         }
 
         public event ItemClickEventHandler ItemClick;
@@ -33,8 +34,12 @@ namespace Brightbits.BSH.Main
 
         public void CreateNavi(string CompletePath, bool NoClick = false)
         {
-            // clear all controls
-            flpNavi.Controls.Clear();
+            while (flpNavi.Controls.Count > 0)
+            {
+                var entry = flpNavi.Controls[0];
+                flpNavi.Controls.Remove(entry);
+                entry.Dispose();
+            }
 
             // construct new path controls
             string[] sPath = txtPath.Text.Split('\\');
@@ -82,9 +87,24 @@ namespace Brightbits.BSH.Main
             ucNavigation_Resize(null, null);
         }
 
-        private void event_ItemClick(string sPath)
+        private void ItemRemoved(object sender, ControlEventArgs e)
         {
-            ItemClick?.Invoke(sPath);
+            if (e.Control is ucNavigationItem entry)
+            {
+                entry.ItemClick -= event_ItemClick;
+            }
+        }
+
+        private async void event_ItemClick(string sPath)
+        {
+            var handlers = ItemClick;
+            if (handlers != null)
+            {
+                foreach (ItemClickEventHandler handler in handlers.GetInvocationList())
+                {
+                    await handler(sPath);
+                }
+            }
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]

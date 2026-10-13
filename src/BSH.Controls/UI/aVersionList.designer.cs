@@ -12,6 +12,18 @@ namespace Brightbits.BSH.Main
         [DebuggerNonUserCode()]
         protected override void Dispose(bool disposing)
         {
+            if (disposing)
+            {
+                // Parent disposal does not raise ControlRemoved for child controls.
+                foreach (Control control in flpMain.Controls)
+                {
+                    if (control is aVersionListItem entry)
+                    {
+                        entry.ItemClick -= ItemClick_Handler;
+                    }
+                }
+            }
+
             if (disposing && components is object)
             {
                 components.Dispose();

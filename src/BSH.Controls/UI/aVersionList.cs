@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -33,23 +34,36 @@ namespace Brightbits.BSH.Main
         public aVersionList()
         {
             InitializeComponent();
+            flpMain.ControlAdded += ItemAdded;
+            flpMain.ControlRemoved += ItemRemoved;
         }
 
         public void DrawItems()
         {
-            // draw items
-            flpMain.Controls.Clear();
-            int flpMainHeight = 0;
+            foreach (var entry in flpMain.Controls.OfType<aVersionListItem>().ToArray())
+            {
+                if (!Items.Contains(entry))
+                {
+                    flpMain.Controls.Remove(entry);
+                    entry.Dispose();
+                }
+            }
+
+            var flpMainHeight = 0;
             flpMain.Width = plMain.Width;
 
-            foreach (aVersionListItem entry in Items)
+            for (var i = 0; i < Items.Count; i++)
             {
-                // set up items
+                var entry = Items[i];
                 entry.Width = flpMain.Width - 6;
                 entry.Margin = new Padding(3, 0, 3, 0);
-                entry.ItemClick += ItemClick_Handler;
 
-                flpMain.Controls.Add(entry);
+                if (!flpMain.Controls.Contains(entry))
+                {
+                    flpMain.Controls.Add(entry);
+                }
+
+                flpMain.Controls.SetChildIndex(entry, i);
                 flpMainHeight += 40;
             }
 
@@ -58,54 +72,64 @@ namespace Brightbits.BSH.Main
 
         public void DeactivateAll()
         {
-            foreach (Control entry in flpMain.Controls)
+            foreach (var entry in flpMain.Controls.OfType<aVersionListItem>())
             {
-                try
-                {
-                    aVersionListItem ItemControl = (aVersionListItem)entry;
-                    ItemControl.Deactivate();
-                }
-                catch
-                {
-                    // ignore error
-                }
+                entry.Deactivate();
             }
         }
 
-        public void SelectItem(string versionID, bool click = true)
+        public async void SelectItem(string versionID, bool click = true)
         {
-            // jump to corresponding item
-            foreach (var control in flpMain.Controls)
+            foreach (var entry in flpMain.Controls.OfType<aVersionListItem>())
             {
-                try
+                if ((entry.VersionID ?? "") == (versionID ?? ""))
                 {
-                    aVersionListItem ItemControl = (aVersionListItem)control;
-                    if ((ItemControl.VersionID ?? "") == (versionID ?? ""))
+                    flpMain.ScrollControlIntoView(entry);
+                    DeactivateAll();
+                    entry.Activate();
+
+                    if (click)
                     {
-                        flpMain.ScrollControlIntoView(ItemControl);
-                        DeactivateAll();
-                        ItemControl.Activate();
-
-                        if (click)
-                        {
-                            ItemClick?.Invoke(ItemControl);
-                        }
-                        return;
+                        await RaiseItemClickAsync(entry);
                     }
-                }
-                catch
-                {
-                    // ignore error
+                    return;
                 }
             }
         }
 
-        private void ItemClick_Handler(aVersionListItem sender)
+        private void ItemAdded(object sender, ControlEventArgs e)
         {
-            // Handler weitergeben
+            if (e.Control is aVersionListItem entry)
+            {
+                entry.ItemClick += ItemClick_Handler;
+            }
+        }
+
+        private void ItemRemoved(object sender, ControlEventArgs e)
+        {
+            if (e.Control is aVersionListItem entry)
+            {
+                entry.ItemClick -= ItemClick_Handler;
+            }
+        }
+
+        private async void ItemClick_Handler(aVersionListItem sender)
+        {
             DeactivateAll();
             sender.Activate();
-            ItemClick?.Invoke(sender);
+            await RaiseItemClickAsync(sender);
+        }
+
+        private async Task RaiseItemClickAsync(aVersionListItem sender)
+        {
+            var handlers = ItemClick;
+            if (handlers != null)
+            {
+                foreach (ItemClickEventHandler handler in handlers.GetInvocationList())
+                {
+                    await handler(sender);
+                }
+            }
         }
 
         private void aVersionList_Load(object sender, EventArgs e)
