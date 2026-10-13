@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Brightbits.BSH.Controls.UI;
@@ -64,6 +65,9 @@ public partial class frmBrowser : IStatusReport
     /// <returns></returns>
     public async Task ChangeVersionAsync(VersionDetails version)
     {
+        CancelSearch();
+        bSearch = false;
+
         // set version
         selectedVersion = version;
         VersionAlsStabilMarkierenToolStripMenuItem.Checked = version.Stable;
@@ -275,6 +279,9 @@ public partial class frmBrowser : IStatusReport
             return;
         }
 
+        CancelSearch();
+        bSearch = false;
+
         // update UI
         lvFiles.BeginUpdate();
         lvFiles.Items.Clear();
@@ -434,6 +441,8 @@ public partial class frmBrowser : IStatusReport
 
     private void frmBrowser_FormClosing(object sender, FormClosingEventArgs e)
     {
+        CancelSearch();
+
         try
         {
             StoreColumnSizes();
@@ -1182,7 +1191,7 @@ public partial class frmBrowser : IStatusReport
         }
     }
 
-    private bool searchIsBusy = false;
+    private CancellationTokenSource searchCancellation;
 
     private async void txtSearch_KeyDown(object sender, KeyEventArgs e)
     {
@@ -1192,57 +1201,9 @@ public partial class frmBrowser : IStatusReport
         }
 
         e.SuppressKeyPress = true;
-
-        // Suche starten
-        if (txtSearch.Tag.ToString() == "search")
+        if (txtSearch.Tag.ToString() != "search")
         {
-            return;
-        }
-
-        // Nur starten, wenn der Benutzer etwas eingegeben aht
-        if (!string.IsNullOrEmpty(txtSearch.Text))
-        {
-            if (searchIsBusy)
-            {
-                return;
-            }
-
-            searchIsBusy = true;
-
-            // Zuvor alten Prozess abbrechen
-            bgrWorkSearch.CancelAsync();
-            while (bgrWorkSearch.IsBusy)
-            {
-                Application.DoEvents();
-            }
-
-            lvFiles.Items.Clear();
-
-            // Nun neuen Prozess starten
-            bSearch = true;
-            bgrWorkSearch.RunWorkerAsync();
-            searchIsBusy = false;
-        }
-        else
-        {
-            if (searchIsBusy)
-            {
-                return;
-            }
-
-            searchIsBusy = true;
-
-            // Zuvor alten Prozess abbrechen
-            bgrWorkSearch.CancelAsync();
-            while (bgrWorkSearch.IsBusy)
-            {
-                Application.DoEvents();
-            }
-
-            lvFiles.Items.Clear();
-            searchIsBusy = false;
-            bSearch = false;
-            await OpenFolderAsync(selectedFolder);
+            await SearchAsync();
         }
     }
 
@@ -1265,25 +1226,26 @@ public partial class frmBrowser : IStatusReport
             return;
         }
 
-        // Zuvor alten Prozess abbrechen
-        bgrWorkSearch.CancelAsync();
-        while (bgrWorkSearch.IsBusy)
-        {
-            Application.DoEvents();
-        }
-
-        lvFiles.Items.Clear();
-        bSearch = false;
-        await OpenFolderAsync(selectedFolder);
+        await SearchAsync();
     }
 
-    private delegate void ThreadSafe_UcNav_Callback();
-
-    private void ThreadSafe_UcNav()
+    private void CancelSearch()
     {
-        AVersionList1.SelectItem(selectedVersion.Id, false);
-        UcNav.Path = string.Format(Resources.DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT, txtSearch.Text);
-        UcNav.PathLocalized = string.Format(Resources.DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT, txtSearch.Text);
+        if (searchCancellation == null)
+        {
+            return;
+        }
+
+        searchCancellation.Cancel();
+        searchCancellation = null;
+        LCFiles.LoadingCircleControl.Active = false;
+    }
+
+    private void UpdateSearchNavigation(string searchText, string versionId)
+    {
+        AVersionList1.SelectItem(versionId, false);
+        UcNav.Path = string.Format(Resources.DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT, searchText);
+        UcNav.PathLocalized = UcNav.Path;
         UcNav.CreateNavi("", true);
         lblFileName.Text = Resources.DLG_BACKUPBROWSER_SEARCH_RESULT_TEXT;
         lblFileType.Text = "";
@@ -1298,76 +1260,116 @@ public partial class frmBrowser : IStatusReport
         WiederherstellenToolStripMenuItem1.Enabled = false;
     }
 
-    private async void bgrWorkSearch_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+    private async Task SearchAsync(Func<string, string, Task<string>> findVersion = null)
     {
-        System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+        var searchText = txtSearch.Text;
+        var version = selectedVersion;
+        CancelSearch();
 
-        // update UI
-        LCFiles.LoadingCircleControl.Active = true;
-        bSearch = true;
-
-        // select new version
-        Invoke(new ThreadSafe_UcNav_Callback(ThreadSafe_UcNav));
-
-        // retrieve folder list from database
-        using var dbClient = BackupLogic.DbClientFactory.CreateDbClient();
-        var searchParameters = new (string, object)[] {
-            ("filePath", "%" + txtSearch.Text + "%"),
-            ("fileName", "%" + txtSearch.Text + "%"),
-            ("versionID", long.Parse(selectedVersion.Id))
-        };
-
-        using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT filelink.versionID, filetable.fileID, filetable.fileName, filetable.filePath, fileversiontable.fileSize, fileversiontable.fileDateCreated, fileversiontable.fileDateModified, fileversiontable.filePackage, fileversiontable.fileType, fileversiontable.fileStatus, fileversiontable.longfilename, versionDate FROM filetable, fileversiontable, filelink, versiontable WHERE (filetable.filePath LIKE @filePath OR filetable.fileName LIKE @fileName) AND filelink.versionID = @versionID AND filelink.fileversionID = fileversiontable.fileversionID AND filetable.fileID = fileversiontable.fileID AND versiontable.versionID = fileversiontable.filePackage LIMIT 300", searchParameters);
-        var resultList = new List<ListViewItem>();
-
-        // fill folder list
-        while (await reader.ReadAsync() && !bgrWorkSearch.CancellationPending)
+        if (string.IsNullOrEmpty(searchText))
         {
-            var file = FileTableRow.FromReaderFile(reader);
-
-            // add file
-            var newEntry = new ListViewItem();
-            newEntry.Text = file.FileName;
-
-            // populate file attributes
-            newEntry.SubItems.Add(CreateFileSizeListViewSubItem(file.FileSize));
-            newEntry.SubItems.Add(CreateStringListViewSubItem(""));
-            newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
-            newEntry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
-            newEntry.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")"));
-            newEntry.Tag = file.FilePath;
-
-            // retrieve file icon
-            GetImageKey(file, newEntry);
-
-            newEntry.Group = lvFiles.Groups["Dateien"];
-            resultList.Add(newEntry);
-        }
-
-        e.Result = resultList;
-
-        await reader.CloseAsync();
-    }
-
-    private void bgrWorkSearch_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
-    {
-        if (e.Result == null)
-        {
+            await OpenFolderAsync(selectedFolder);
             return;
         }
 
-        // update UI
-        lvFiles.BeginUpdate();
+        using var cancellation = new CancellationTokenSource();
+        searchCancellation = cancellation;
+        var token = cancellation.Token;
+        bSearch = true;
+        LCFiles.LoadingCircleControl.Active = true;
 
-        // fill list
-        foreach (var entry in (List<ListViewItem>)e.Result)
+        try
         {
-            lvFiles.Items.Add(entry);
-        }
+            if (findVersion == null)
+            {
+                lvFiles.Items.Clear();
+                UpdateSearchNavigation(searchText, version.Id);
+            }
 
-        lvFiles.EndUpdate();
-        ThreadSafe_UcNav();
-        LCFiles.LoadingCircleControl.Active = false;
+            var result = await Task.Run(async () =>
+            {
+                if (findVersion != null)
+                {
+                    var versionId = await findVersion(version.Id, searchText);
+                    token.ThrowIfCancellationRequested();
+                    if (versionId == null)
+                    {
+                        return (Version: version, Files: (List<FileTableRow>)null);
+                    }
+
+                    version = await BackupLogic.QueryManager.GetVersionByIdAsync(versionId);
+                    token.ThrowIfCancellationRequested();
+                }
+
+                using var dbClient = BackupLogic.DbClientFactory.CreateDbClient();
+                var searchParameters = new (string, object)[]
+                {
+                    ("filePath", "%" + searchText + "%"),
+                    ("fileName", "%" + searchText + "%"),
+                    ("versionID", long.Parse(version.Id))
+                };
+                using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, "SELECT filelink.versionID, filetable.fileID, filetable.fileName, filetable.filePath, fileversiontable.fileSize, fileversiontable.fileDateCreated, fileversiontable.fileDateModified, fileversiontable.filePackage, fileversiontable.fileType, fileversiontable.fileStatus, fileversiontable.longfilename, versionDate FROM filetable, fileversiontable, filelink, versiontable WHERE (filetable.filePath LIKE @filePath OR filetable.fileName LIKE @fileName) AND filelink.versionID = @versionID AND filelink.fileversionID = fileversiontable.fileversionID AND filetable.fileID = fileversiontable.fileID AND versiontable.versionID = fileversiontable.filePackage LIMIT 300", searchParameters);
+                var files = new List<FileTableRow>();
+                token.ThrowIfCancellationRequested();
+                while (await reader.ReadAsync(token))
+                {
+                    token.ThrowIfCancellationRequested();
+                    files.Add(FileTableRow.FromReaderFile(reader));
+                }
+
+                return (Version: version, Files: files);
+            }, token);
+
+            token.ThrowIfCancellationRequested();
+            if (result.Files == null)
+            {
+                return;
+            }
+
+            selectedVersion = result.Version;
+            UpdateSearchNavigation(searchText, selectedVersion.Id);
+            lvFiles.BeginUpdate();
+            try
+            {
+                lvFiles.Items.Clear();
+                foreach (var file in result.Files)
+                {
+                    var entry = new ListViewItem(file.FileName);
+                    entry.SubItems.Add(CreateFileSizeListViewSubItem(file.FileSize));
+                    entry.SubItems.Add(CreateStringListViewSubItem(""));
+                    entry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateModified.ToLocalTime()));
+                    entry.SubItems.Add(CreateDateTimeListViewSubItem(file.FileDateCreated.ToLocalTime()));
+                    entry.SubItems.Add(CreateStringListViewSubItem(file.FilePackage + " (" + file.FileVersionDate.ToString(UiFormatUtils.DATE_FORMAT_LONG) + ")"));
+                    entry.Tag = file.FilePath;
+                    GetImageKey(file, entry);
+                    entry.Group = lvFiles.Groups["Dateien"];
+                    lvFiles.Items.Add(entry);
+                }
+            }
+            finally
+            {
+                lvFiles.EndUpdate();
+            }
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        {
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Exception during backup browser search.");
+            if (!token.IsCancellationRequested)
+            {
+                tsslblStatus.Text = Resources.DLG_BACKUPBROWSER_MSG_ERROR_ERROR_LOAD;
+            }
+        }
+        finally
+        {
+            if (searchCancellation == cancellation)
+            {
+                searchCancellation = null;
+                LCFiles.LoadingCircleControl.Active = false;
+            }
+        }
     }
 
     private async Task UcNav_ItemClick(string sPath)
@@ -1445,35 +1447,7 @@ public partial class frmBrowser : IStatusReport
     {
         if (bSearch)
         {
-            if (searchIsBusy)
-            {
-                return;
-            }
-
-            // Zuvor alten Prozess abbrechen
-            bgrWorkSearch.CancelAsync();
-            while (bgrWorkSearch.IsBusy)
-            {
-                Application.DoEvents();
-            }
-
-            // Version suchen, in der die Datei ist
-            var backupVersion = await BackupLogic.QueryManager.GetBackVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
-            if (backupVersion == null)
-            {
-                return;
-            }
-
-            selectedVersion = await BackupLogic.QueryManager.GetVersionByIdAsync(backupVersion);
-
-            // Alles leeren
-            lvFiles.Items.Clear();
-
-            // Nun neuen Prozess starten
-            bSearch = true;
-            searchIsBusy = true;
-            bgrWorkSearch.RunWorkerAsync();
-            searchIsBusy = false;
+            await SearchAsync(BackupLogic.QueryManager.GetBackVersionWhereFileAsync);
         }
         else
         {
@@ -1491,33 +1465,7 @@ public partial class frmBrowser : IStatusReport
     {
         if (bSearch)
         {
-            if (searchIsBusy)
-            {
-                return;
-            }
-
-            // Zuvor alten Prozess abbrechen
-            bgrWorkSearch.CancelAsync();
-            while (bgrWorkSearch.IsBusy)
-            {
-                Application.DoEvents();
-            }
-
-            // Version suchen, in der die Datei ist
-            var backupVersion = await BackupLogic.QueryManager.GetNextVersionWhereFileAsync(selectedVersion.Id, txtSearch.Text);
-            if (backupVersion == null)
-            {
-                return;
-            }
-
-            selectedVersion = await BackupLogic.QueryManager.GetVersionByIdAsync(backupVersion);
-            lvFiles.Items.Clear();
-
-            // Nun neuen Prozess starten
-            bSearch = true;
-            searchIsBusy = true;
-            bgrWorkSearch.RunWorkerAsync();
-            searchIsBusy = false;
+            await SearchAsync(BackupLogic.QueryManager.GetNextVersionWhereFileAsync);
         }
         else
         {
