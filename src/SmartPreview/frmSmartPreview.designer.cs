@@ -8,18 +8,6 @@ namespace SmartPreview
     public partial class frmSmartPreview : Form
     {
 
-        // Form overrides dispose to clean up the component list.
-        [DebuggerNonUserCode()]
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && components is object)
-            {
-                components.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
         // Required by the Windows Form Designer
         private System.ComponentModel.IContainer components;
 
@@ -197,10 +185,6 @@ namespace SmartPreview
             // Add any initialization after the InitializeComponent() call.
             InitMediaPlayer();
 
-        }
-
-        ~frmSmartPreview()
-        {
         }
 
         internal Panel Panel1;

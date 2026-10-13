@@ -12,8 +12,57 @@ namespace SmartPreview;
 
 public partial class frmSmartPreview
 {
+    private PictureBox imagePreview;
     private ElementHost elementHost;
     private System.Windows.Controls.MediaElement mediaPlayer;
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            ClearPreviewImage();
+            ClearImage(picIcon);
+            components?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+
+    private static void ClearImage(PictureBox pictureBox)
+    {
+        if (pictureBox == null)
+        {
+            return;
+        }
+
+        var image = pictureBox.Image;
+        pictureBox.Image = null;
+        image?.Dispose();
+    }
+
+    private void ClearPreviewImage()
+    {
+        ClearImage(imagePreview);
+        imagePreview?.Dispose();
+        imagePreview = null;
+    }
+
+    private static Image LoadPsdImage(string fileName)
+    {
+        var psd = new SimplePsd.CPSD();
+        try
+        {
+            psd.Load(fileName);
+            return Image.FromHbitmap(psd.GetHBitmap());
+        }
+        finally
+        {
+            var bitmap = psd.GetHBitmap();
+            if (bitmap != IntPtr.Zero)
+            {
+                SimplePsd.WinInvoke32.DeleteObject(bitmap);
+            }
+        }
+    }
 
     public void InitMediaPlayer()
     {
@@ -46,8 +95,6 @@ public partial class frmSmartPreview
 
     private void lblClose_Click(object sender, EventArgs e)
     {
-        phhcMain.Unload();
-        phhcMain.Dispose();
         Close();
         Dispose();
     }
@@ -112,6 +159,9 @@ public partial class frmSmartPreview
     {
         try
         {
+            phhcMain.Unload();
+            ClearPreviewImage();
+            ClearImage(picIcon);
             var fileExt = System.IO.Path.GetExtension(fileName).ToLower();
 
             switch (fileExt)
@@ -124,31 +174,29 @@ public partial class frmSmartPreview
                 case ".jpeg":
                 case ".wmf":
                     {
-                        var previewItem = new PictureBox();
-                        previewItem.Image = Image.FromFile(fileName);
-                        if (previewItem.Image.Width > Width || previewItem.Height > Height)
+                        imagePreview = new PictureBox();
+                        imagePreview.Image = Image.FromFile(fileName);
+                        if (imagePreview.Image.Width > Width || imagePreview.Height > Height)
                         {
-                            previewItem.SizeMode = PictureBoxSizeMode.Zoom;
+                            imagePreview.SizeMode = PictureBoxSizeMode.Zoom;
                         }
                         else
                         {
-                            previewItem.SizeMode = PictureBoxSizeMode.CenterImage;
+                            imagePreview.SizeMode = PictureBoxSizeMode.CenterImage;
                         }
 
-                        plContent.Controls.Add(previewItem);
-                        previewItem.Dock = DockStyle.Fill;
+                        plContent.Controls.Add(imagePreview);
+                        imagePreview.Dock = DockStyle.Fill;
                         break;
                     }
 
                 case ".psd":
                     {
-                        var previewItem = new PictureBox();
-                        var psd = new SimplePsd.CPSD();
-                        psd.Load(fileName);
-                        previewItem.Image = Image.FromHbitmap(psd.GetHBitmap());
-                        previewItem.SizeMode = PictureBoxSizeMode.Zoom;
-                        plContent.Controls.Add(previewItem);
-                        previewItem.Dock = DockStyle.Fill;
+                        imagePreview = new PictureBox();
+                        imagePreview.Image = LoadPsdImage(fileName);
+                        imagePreview.SizeMode = PictureBoxSizeMode.Zoom;
+                        plContent.Controls.Add(imagePreview);
+                        imagePreview.Dock = DockStyle.Fill;
                         break;
                     }
 
@@ -226,7 +274,10 @@ public partial class frmSmartPreview
                                 try
                                 {
                                     lblFileName.Text = System.IO.Path.GetFileName(fileName);
-                                    picIcon.Image = Icon.ExtractAssociatedIcon(fileName).ToBitmap();
+                                    using var icon = Icon.ExtractAssociatedIcon(fileName);
+                                    var iconImage = icon.ToBitmap();
+                                    ClearImage(picIcon);
+                                    picIcon.Image = iconImage;
 
                                     // retrieve file type
                                     SHGetFileInfo(fileName, 0, out SHFILEINFO shFi, (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(SHFILEINFO)), (uint)SHGFI.SHGFI_TYPENAME);
@@ -278,7 +329,7 @@ public partial class frmSmartPreview
         }
         catch
         {
-            // ignore error
+            ClearPreviewImage();
         }
 
         return default;
