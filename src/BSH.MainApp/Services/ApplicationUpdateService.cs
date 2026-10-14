@@ -139,6 +139,6 @@ public sealed class ApplicationUpdateService : IUpdateService
 
     private static string GetApplicationVersion()
     {
-        return Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0.0";
+        return ApplicationVersionInfo.GetDisplayVersion(Assembly.GetExecutingAssembly());
     }
 }
