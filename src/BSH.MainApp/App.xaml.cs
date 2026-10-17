@@ -78,7 +78,7 @@ public partial class App : Application
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = germanCulture;
 
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
-        AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home Preview", version);
+        AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home 4", version);
 
         _ = host.Value;
 
@@ -173,13 +173,10 @@ public partial class App : Application
         previewInstance = gate;
 
         var databaseOpened = await PreviewAppStartup.OpenDatabaseAsync(
-            async () =>
-            {
-                // init database, read configuration, and perform potential schema migrations
-                await App.GetService<IDbClientFactory>().InitializeAsync(DatabaseFile);
-                await App.GetService<IConfigurationManager>().InitializeAsync();
-                await App.GetService<IDbMigrationService>().InitializeAsync();
-            },
+            DatabaseFile,
+            App.GetService<IDbClientFactory>(),
+            App.GetService<IConfigurationManager>(),
+            App.GetService<IDbMigrationService>(),
             NativeMessage.Show,
             PreviewAppStartup.LocalizedOrFallback);
         if (!databaseOpened)

@@ -3,16 +3,60 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
+using System.IO;
 using System.Threading.Tasks;
-using Brightbits.BSH.Engine.Exceptions;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Runtime;
 using BSH.MainApp;
+using BSH.Test.Helpers;
 using NUnit.Framework;
 
 namespace BSH.Test;
 
 public class PreviewAppStartupTests
 {
+    [TestCase("10")]
+    [TestCase("not-a-version")]
+    public async Task StartupRejectsAnUnsupportedSchemaBeforeChangingConfiguration(string schemaVersion)
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "BSH.Test", "preview-startup-" + Guid.NewGuid().ToString("N"));
+        var database = Path.Combine(directory, "backupservicehome.bshdb");
+        try
+        {
+            await LegacyBackupDatabaseBuilder.CreateAsync(database, schemaVersion);
+            var factory = new DbClientFactory();
+            await factory.InitializeAsync(database);
+            await factory.ExecuteNonQueryAsync("INSERT INTO configuration VALUES ('ftppass', 'legacy-plaintext');");
+            DbClientFactory.ClosePool();
+            var before = await File.ReadAllBytesAsync(database);
+            var configuration = new ConfigurationManager(factory);
+            var migration = new DbMigrationService(factory, configuration);
+            var messages = new List<string>();
+
+            var result = await PreviewAppStartup.OpenDatabaseAsync(
+                database,
+                factory,
+                configuration,
+                migration,
+                (_, text) => messages.Add(text),
+                (_, fallback) => fallback);
+
+            Assert.That(result, Is.False);
+            Assert.That(messages, Has.Count.EqualTo(1));
+            Assert.That(messages[0], Does.Contain("newer"));
+            DbClientFactory.ClosePool();
+            Assert.That(await File.ReadAllBytesAsync(database), Is.EqualTo(before));
+            Assert.That(Directory.GetFiles(directory, "*.bak"), Is.Empty);
+        }
+        finally
+        {
+            DbClientFactory.ClosePool();
+            TempDirectory.DeleteBestEffort(directory);
+        }
+    }
+
     [Test]
     public void SecondLaunchExitsWithoutADialog()
     {
@@ -57,7 +101,7 @@ public class PreviewAppStartupTests
             (key, fallback) => fallback);
 
         Assert.That(action, Is.EqualTo(PreviewLaunchAction.Exit));
-        Assert.That(caption, Is.EqualTo("Backup Service Home 3 Preview"));
+        Assert.That(caption, Is.EqualTo("Backup Service Home 4"));
         Assert.That(text, Does.Contain("already running"));
     }
 
@@ -73,43 +117,63 @@ public class PreviewAppStartupTests
         Assert.That(action, Is.EqualTo(PreviewLaunchAction.Continue));
     }
 
-    [Test]
-    public async Task ANewerDatabaseIsRefusedAndLeftUnopened()
+    [TestCase(null)]
+    [TestCase("8")]
+    [TestCase("9")]
+    public async Task ACompatibleDatabaseOpens(string schemaVersion)
     {
-        var opened = false;
-        string text = null;
-        var result = await PreviewAppStartup.OpenDatabaseAsync(
-            () =>
+        var directory = Path.Combine(Path.GetTempPath(), "BSH.Test", "preview-compatible-" + Guid.NewGuid().ToString("N"));
+        var database = Path.Combine(directory, "backupservicehome.bshdb");
+        try
+        {
+            if (schemaVersion != null)
             {
-                opened = true;
-                throw new DatabaseIncompatibleException();
-            },
-            (_, shownText) => text = shownText,
-            (_, fallback) => fallback);
+                await LegacyBackupDatabaseBuilder.CreateAsync(database, schemaVersion);
+            }
 
-        Assert.That(result, Is.False);
-        Assert.That(opened, Is.True);
-        Assert.That(text, Does.Contain("newer"));
+            var factory = new DbClientFactory();
+            var configuration = new ConfigurationManager(factory);
+            var result = await PreviewAppStartup.OpenDatabaseAsync(
+                database,
+                factory,
+                configuration,
+                new DbMigrationService(factory, configuration),
+                (_, _) => Assert.Fail("A compatible database does not show a dialog."),
+                (_, fallback) => fallback);
+
+            Assert.That(result, Is.True);
+            Assert.That(configuration.DBVersion, Is.EqualTo("9"));
+            Assert.That(Directory.GetFiles(directory, "*.bak"), Has.Length.EqualTo(schemaVersion == "8" ? 1 : 0));
+        }
+        finally
+        {
+            DbClientFactory.ClosePool();
+            TempDirectory.DeleteBestEffort(directory);
+        }
     }
 
     [Test]
-    public async Task ACompatibleDatabaseOpens()
+    public async Task OtherDatabaseErrorsAreNotHidden()
     {
-        var result = await PreviewAppStartup.OpenDatabaseAsync(
-            () => Task.CompletedTask,
-            (_, _) => Assert.Fail("A compatible database does not show a dialog."),
-            (_, fallback) => fallback);
-
-        Assert.That(result, Is.True);
-    }
-
-    [Test]
-    public void OtherDatabaseErrorsAreNotHidden()
-    {
-        Assert.ThrowsAsync<InvalidOperationException>(async () => await PreviewAppStartup.OpenDatabaseAsync(
-            () => throw new InvalidOperationException("disk"),
-            (_, _) => { },
-            (_, fallback) => fallback));
+        var database = Path.GetTempFileName();
+        try
+        {
+            await File.WriteAllTextAsync(database, "not a database");
+            var factory = new DbClientFactory();
+            var configuration = new ConfigurationManager(factory);
+            Assert.ThrowsAsync<SQLiteException>(async () => await PreviewAppStartup.OpenDatabaseAsync(
+                database,
+                factory,
+                configuration,
+                new DbMigrationService(factory, configuration),
+                (_, _) => Assert.Fail("Storage errors must propagate."),
+                (_, fallback) => fallback));
+        }
+        finally
+        {
+            DbClientFactory.ClosePool();
+            File.Delete(database);
+        }
     }
 
     [Test]
@@ -127,7 +191,7 @@ public class PreviewAppStartupTests
     [Test]
     public void MissingResourcesUseTheFallbackText()
     {
-        var value = PreviewAppStartup.LocalizedOrFallback("Preview_EngineBusy_Title", "Backup Service Home 3 Preview");
+        var value = PreviewAppStartup.LocalizedOrFallback("Preview_EngineBusy_Title", "Backup Service Home 4");
         Assert.That(value, Is.Not.Empty);
     }
 }

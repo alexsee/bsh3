@@ -70,7 +70,7 @@ public class InstallerEntryPointTests
         var icons = GetIssSection(WinUiSetupIssPath, "[Icons]");
 
         Assert.That(icons, Does.Match(
-            @"Name:\s*""\{group\}\\Backup Service Home 3 Preview"";\s*Filename:\s*""\{app\}\\BSH\.MainApp\.exe"""));
+            @"Name:\s*""\{group\}\\Backup Service Home 4"";\s*Filename:\s*""\{app\}\\BSH\.MainApp\.exe"""));
         Assert.That(icons, Does.Not.Contain(@"BSH.Main.exe"));
     }
 
@@ -126,12 +126,12 @@ public class InstallerEntryPointTests
         var preview = GetIssSection(WinUiSetupIssPath, "[Setup]");
         var stable = GetIssSection(WinFormsSetupIssPath, "[Setup]");
 
-        Assert.That(preview, Does.Contain(@"DefaultDirName={pf}\Alexosoft\Backup Service Home 3 Preview"));
-        Assert.That(preview, Does.Contain("DefaultGroupName=Backup Service Home 3 Preview"));
+        Assert.That(preview, Does.Contain(@"DefaultDirName={pf}\Alexosoft\Backup Service Home 4"));
+        Assert.That(preview, Does.Contain("DefaultGroupName=Backup Service Home 4"));
         Assert.That(preview, Does.Contain("AppMutex=BackupServiceHome3Preview"));
         Assert.That(preview, Does.Contain("AppID={{8F4C2B1A-7E63-4D9A-B5C0-6A1E9D3F47B2}}"));
         Assert.That(stable, Does.Contain(@"DefaultDirName={pf}\Alexosoft\Backup Service Home 3"));
-        Assert.That(stable, Does.Not.Contain("Backup Service Home 3 Preview"));
+        Assert.That(stable, Does.Not.Contain("Backup Service Home 4"));
         Assert.That(stable, Does.Contain("AppMutex=BackupServiceHome3"));
         Assert.That(stable, Does.Contain("AppID={{5979B77A-9AE6-4E75-AED8-283C5E16C02D}}"));
     }

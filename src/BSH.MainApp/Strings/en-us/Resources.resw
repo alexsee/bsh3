@@ -42,7 +42,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AppDisplayName" xml:space="preserve">
-    <value>Backup Service Home 3 Preview</value>
+    <value>Backup Service Home 4</value>
   </data>
   <data name="ApplicationUpdate_CheckFailed_Text" xml:space="preserve">
     <value>Could not check for updates</value>
@@ -60,10 +60,10 @@
     <value>This database was written by a newer Backup Service Home and was not opened. Install a newer version.</value>
   </data>
   <data name="Preview_DatabaseTooNew_Title" xml:space="preserve">
-    <value>Backup Service Home 3 Preview</value>
+    <value>Backup Service Home 4</value>
   </data>
   <data name="Preview_EngineBusy_Title" xml:space="preserve">
-    <value>Backup Service Home 3 Preview</value>
+    <value>Backup Service Home 4</value>
   </data>
   <data name="Browser_AddToFolderFavorites" xml:space="preserve">
     <value>Add to folder favorites</value>
@@ -404,7 +404,7 @@ This feature is currently not available because the quick preview could not be f
     <value>Backup medium not available.</value>
   </data>
   <data name="MSG_NO_UPDATE_FOUND_TEXT" xml:space="preserve">
-    <value>You are on the latest version of Backup Service Home 3. No updates were found.</value>
+    <value>You are on the latest version of Backup Service Home 4. No updates were found.</value>
   </data>
   <data name="MSG_NO_UPDATE_FOUND_TITLE" xml:space="preserve">
     <value>No updates found</value>
@@ -1299,10 +1299,10 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
     <value>Shutdown</value>
   </data>
   <data name="Support_About" xml:space="preserve">
-    <value>About Backup Service Home 3 Preview</value>
+    <value>About Backup Service Home 4</value>
   </data>
   <data name="Support_About_Text" xml:space="preserve">
-    <value>Backup Service Home 3 Preview
+    <value>Backup Service Home 4
 Version {0}</value>
   </data>
   <data name="Support_CheckForUpdates" xml:space="preserve">
@@ -1453,7 +1453,7 @@ Version {0}</value>
     <value>Backup Service Home is waiting for medium...</value>
   </data>
   <data name="WaitForMedium_Text" xml:space="preserve">
-    <value>Backup Service Home 3 is waiting for the backup medium to continue with the planned action. Connect this medium to your computer now.
+    <value>Backup Service Home 4 is waiting for the backup medium to continue with the planned action. Connect this medium to your computer now.
 The medium will be automatically detected.</value>
   </data>
   <data name="WaitForMedium_Title" xml:space="preserve">

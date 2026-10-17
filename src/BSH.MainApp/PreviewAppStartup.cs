@@ -1,6 +1,9 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Runtime;
 using CommunityToolkit.WinUI;
@@ -40,7 +43,7 @@ public static class PreviewAppStartup
             else
             {
                 showMessage(
-                    localize("Preview_EngineBusy_Title", "Backup Service Home 3 Preview"),
+                    localize("Preview_EngineBusy_Title", "Backup Service Home 4"),
                     localize(
                         "Preview_EngineBusy_Text",
                         "Backup Service Home is already running. Preview uses the same database and will not start while that app is running."));
@@ -53,19 +56,26 @@ public static class PreviewAppStartup
     }
 
     public static async Task<bool> OpenDatabaseAsync(
-        Func<Task> initialize,
+        string databaseFile,
+        IDbClientFactory dbClientFactory,
+        IConfigurationManager configurationManager,
+        IDbMigrationService migrationService,
         Action<string, string> showMessage,
         Func<string, string, string> localize)
     {
         try
         {
-            await initialize();
+            // Loading configuration can persist values, including legacy passwords.
+            await SchemaCompatibility.CheckExistingDatabaseAsync(databaseFile);
+            await dbClientFactory.InitializeAsync(databaseFile);
+            await configurationManager.InitializeAsync();
+            await migrationService.InitializeAsync();
             return true;
         }
         catch (DatabaseIncompatibleException)
         {
             showMessage(
-                localize("Preview_DatabaseTooNew_Title", "Backup Service Home 3 Preview"),
+                localize("Preview_DatabaseTooNew_Title", "Backup Service Home 4"),
                 localize(
                     "Preview_DatabaseTooNew_Text",
                     "This database was written by a newer Backup Service Home and was not opened. Install a newer version."));

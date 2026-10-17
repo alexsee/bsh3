@@ -54,8 +54,14 @@ if ($winUiIss -match 'Backup Service Home-Dienst') {
 Assert-Contains $winUiIss 'AppMutex=BackupServiceHome3Preview' `
     "Setup-WinUI.iss AppMutex must be the Preview instance mutex."
 
-Assert-Contains $winUiIss 'Backup Service Home 3 Preview' `
+Assert-Contains $winUiIss 'AppName=Backup Service Home 4' `
     "Setup-WinUI.iss must install side by side under its own name."
+
+Assert-Contains $winUiIss 'DefaultDirName={pf}\Alexosoft\Backup Service Home 4' `
+    "Setup-WinUI.iss must use its own installation directory."
+
+Assert-Contains $winUiIss 'DefaultGroupName=Backup Service Home 4' `
+    "Setup-WinUI.iss must use its own Start Menu group."
 
 Assert-Contains $winUiIss 'preview-vss.pipe' `
     "Setup-WinUI.iss must ship the Preview VSS pipe name."

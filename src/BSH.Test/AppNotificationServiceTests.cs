@@ -91,29 +91,12 @@ public class AppNotificationServiceTests
             new UnusedNavigation(),
             register: () => { },
             detach: () => { },
-            showPayload: _ => throw new InvalidOperationException("show"));
+            showPayload: _ => throw new InvalidOperationException("show"),
+            unregister: () => { });
 
         service.Initialize();
         Assert.That(service.Show("<toast/>"), Is.False);
         service.Dispose();
-    }
-
-    [Test]
-    public void PlatformShowIsAttemptedOnceNotificationsAreMarkedRegistered()
-    {
-        var service = new AppNotificationService(new UnusedNavigation());
-        service.MarkRegisteredForTests();
-
-        Assert.DoesNotThrow(() => service.Show("<toast/>"));
-
-        try
-        {
-            service.Dispose();
-        }
-        catch (Exception)
-        {
-            // Unregister is best-effort in a process without an app identity.
-        }
     }
 
     private sealed class UnusedNavigation : INavigationService

@@ -1,6 +1,12 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Data;
+using System.Data.SQLite;
+using System.IO;
+using System.Threading.Tasks;
+using Brightbits.BSH.Engine.Exceptions;
+
 namespace Brightbits.BSH.Engine.Database;
 
 /// <summary>
@@ -10,6 +16,32 @@ namespace Brightbits.BSH.Engine.Database;
 public static class SchemaCompatibility
 {
     public const int SupportedSchemaVersion = 9;
+
+    public static async Task CheckExistingDatabaseAsync(string databaseFile)
+    {
+        if (!File.Exists(databaseFile))
+        {
+            return;
+        }
+
+        var connectionString = new SQLiteConnectionStringBuilder
+        {
+            DataSource = databaseFile,
+            ReadOnly = true,
+            FailIfMissing = true
+        };
+        using var dbClient = new DbClient(connectionString.ToString());
+        var value = await dbClient.ExecuteScalarAsync(
+            CommandType.Text,
+            "SELECT confValue FROM configuration WHERE confProperty = 'dbversion' LIMIT 1",
+            null);
+        var version = value?.ToString();
+        if (!string.IsNullOrEmpty(version)
+            && (!int.TryParse(version, out var parsedVersion) || parsedVersion > SupportedSchemaVersion))
+        {
+            throw new DatabaseIncompatibleException();
+        }
+    }
 
     public static bool IsNewerThanSupported(string dbVersion)
     {

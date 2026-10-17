@@ -13,12 +13,27 @@ using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels;
 using BSH.Test.Fakes;
+using Microsoft.UI.Dispatching;
 using NUnit.Framework;
 
 namespace BSH.Test;
 
 public class MainViewModelSystemToggleTests
 {
+    private DispatcherQueueController dispatcher;
+
+    [SetUp]
+    public void CreateDispatcher()
+    {
+        dispatcher = DispatcherQueueController.CreateOnDedicatedThread();
+    }
+
+    [TearDown]
+    public async Task ShutDownDispatcher()
+    {
+        await dispatcher.ShutdownQueueAsync();
+    }
+
     [Test]
     public async Task OverviewReflectsTheSavedSystemStateWithoutStartingIt()
     {
@@ -90,13 +105,32 @@ public class MainViewModelSystemToggleTests
     }
 
     [Test]
-    public void OverviewUpdatesSurviveACallbackFailure()
+    public async Task OverviewUpdatesSurviveACallbackFailure()
     {
-        Assert.DoesNotThrowAsync(() => MainViewModel.RunOverviewUpdateForTests(
-            () => throw new InvalidOperationException("ui")));
+        var configuration = new FakeConfigurationManager { DbStatus = "0" };
+        var viewModel = Create(configuration, new ScriptedOrchestration(configuration), new ToggleStatusService());
+        System.ComponentModel.PropertyChangedEventHandler failUpdate = (_, _) => throw new InvalidOperationException("ui");
+        viewModel.PropertyChanged += failUpdate;
+
+        viewModel.ReportState(JobState.RUNNING);
+        await DrainDispatcherAsync();
+        Assert.That(viewModel.ProgressGridVisibility, Is.False);
+
+        viewModel.PropertyChanged -= failUpdate;
+        viewModel.ReportState(JobState.RUNNING);
+        await DrainDispatcherAsync();
+        Assert.That(viewModel.ProgressGridVisibility, Is.True);
+        Assert.That(viewModel.NextBackupGridVisibility, Is.False);
     }
 
-    private static MainViewModel Create(
+    private async Task DrainDispatcherAsync()
+    {
+        var drained = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Assert.That(dispatcher.DispatcherQueue.TryEnqueue(() => drained.SetResult()), Is.True);
+        await drained.Task.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    private MainViewModel Create(
         IConfigurationManager configuration,
         IOrchestrationService orchestration,
         IStatusService status)
@@ -109,7 +143,7 @@ public class MainViewModelSystemToggleTests
             scheduledBackupService: null,
             configurationManager: configuration,
             orchestrationService: orchestration,
-            dispatcherQueue: null);
+            dispatcherQueue: dispatcher.DispatcherQueue);
     }
 
     private static async Task WaitUntil(Func<bool> condition)

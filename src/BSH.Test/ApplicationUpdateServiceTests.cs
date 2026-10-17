@@ -176,7 +176,7 @@ public class ApplicationUpdateServiceTests
     }
 
     [Test]
-    public async Task InitializeAsyncIdentifiesThePreviewBuild()
+    public async Task InitializeAsyncIdentifiesTheProductAndDisablesErrorDialogs()
     {
         var service = CreateService();
 
@@ -184,7 +184,7 @@ public class ApplicationUpdateServiceTests
         await service.InitializeAsync(() => { });
 
         Assert.That(AutoUpdater.ReportErrors, Is.False);
-        Assert.That(AutoUpdater.HttpUserAgent, Does.Contain("Preview"));
+        Assert.That(AutoUpdater.HttpUserAgent, Does.StartWith("Backup Service Home 4/"));
     }
 
     [Test]

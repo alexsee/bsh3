@@ -18,7 +18,7 @@ public sealed class CompletionActionService : ICompletionActionService
         {
             case TaskCompleteAction.ShutdownPC:
                 logger.Debug("Computer will be shutdown after task has finished.");
-                Process.Start("shutdown.exe", "-s -t 60 -c \"Backup Service Home 3 task finished.\"");
+                Process.Start("shutdown.exe", "-s -t 60 -c \"Backup Service Home 4 task finished.\"");
                 break;
             case TaskCompleteAction.HibernatePC:
                 logger.Debug("Computer will be hibernated after task has finished.");

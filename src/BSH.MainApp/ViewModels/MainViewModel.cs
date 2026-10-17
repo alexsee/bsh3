@@ -103,14 +103,14 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         IScheduledBackupService scheduledBackupService,
         IConfigurationManager configurationManager,
         IOrchestrationService orchestrationService,
-        DispatcherQueue? dispatcherQueue)
+        DispatcherQueue dispatcherQueue)
     {
         this.presentationService = presentationService;
         this.statusService = statusService;
         this.queryManager = queryManager;
         this.jobService = jobService;
         this.scheduledBackupService = scheduledBackupService;
-        this.dispatcherQueue = dispatcherQueue!;
+        this.dispatcherQueue = dispatcherQueue;
         this.configurationManager = configurationManager;
         this.orchestrationService = orchestrationService;
         this.statusService.AddObserver(this, true);
@@ -299,14 +299,6 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     private void EnqueueUi(Func<Task> action)
     {
-#pragma warning disable CS8073 // Tests pass a null queue so overview updates can run inline.
-        if (dispatcherQueue == null)
-#pragma warning restore CS8073
-        {
-            _ = RunOverviewUpdateAsync(action);
-            return;
-        }
-
         dispatcherQueue.TryEnqueue(async () =>
         {
             try
@@ -318,23 +310,6 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
                 Logger.Warning(ex, "Overview UI update failed.");
             }
         });
-    }
-
-    internal static Task RunOverviewUpdateForTests(Func<Task> action)
-    {
-        return RunOverviewUpdateAsync(action);
-    }
-
-    private static async Task RunOverviewUpdateAsync(Func<Task> action)
-    {
-        try
-        {
-            await action();
-        }
-        catch (Exception ex)
-        {
-            Logger.Warning(ex, "Overview UI update failed.");
-        }
     }
 
     private void ApplySystemStatus(SystemStatus systemStatus)

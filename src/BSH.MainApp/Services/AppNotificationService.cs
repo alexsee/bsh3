@@ -39,11 +39,6 @@ public class AppNotificationService : IAppNotificationService, IDisposable
         unregisterNotifications = unregister ?? UnregisterFromPlatform;
     }
 
-    internal void MarkRegisteredForTests()
-    {
-        _isRegistered = true;
-    }
-
     public void Initialize()
     {
         try

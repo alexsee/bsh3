@@ -7,21 +7,10 @@ namespace BSH.MainApp;
 
 internal static class NativeMessage
 {
-    /// <summary>
-    /// Tests replace this so a dialog cannot block the process.
-    /// </summary>
-    internal static Action<string, string>? ShowOverride;
-
     public static void Show(string caption, string text)
     {
         try
         {
-            if (ShowOverride != null)
-            {
-                ShowOverride(caption, text);
-                return;
-            }
-
             _ = MessageBox(IntPtr.Zero, text, caption, 0x00000030);
         }
         catch (Exception)

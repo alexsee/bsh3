@@ -53,7 +53,7 @@ public sealed class ApplicationUpdateService : IUpdateService
 
         var uniqueUserId = await GetOrCreateUniqueUserIdAsync();
         AutoUpdater.ReportErrors = false;
-        AutoUpdater.HttpUserAgent = $"Backup Service Home Preview/{GetApplicationVersion()} {uniqueUserId}";
+        AutoUpdater.HttpUserAgent = $"Backup Service Home 4/{GetApplicationVersion()} {uniqueUserId}";
         AutoUpdater.TopMost = true;
         AutoUpdater.ApplicationExitEvent += () => onApplicationExitRequested();
         EnsureEventsHooked();

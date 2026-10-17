@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Services;
+using BSH.Test.Fakes;
 using NUnit.Framework;
 
 namespace BSH.Test;

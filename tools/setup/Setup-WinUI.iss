@@ -4,14 +4,14 @@
 ; Install and uninstall only touch the Preview service, not the stable VSS service.
 
 [Setup]
-AppName=Backup Service Home 3 Preview
-AppVerName=Backup Service Home 3 Preview {#ApplicationVersion}
+AppName=Backup Service Home 4
+AppVerName=Backup Service Home 4 {#ApplicationVersion}
 AppPublisher=Alexander Seeliger Software
 AppPublisherURL=https://www.brightbits.de/
 AppSupportURL=https://www.brightbits.de/
 AppUpdatesURL=https://www.brightbits.de/
-DefaultDirName={pf}\Alexosoft\Backup Service Home 3 Preview
-DefaultGroupName=Backup Service Home 3 Preview
+DefaultDirName={pf}\Alexosoft\Backup Service Home 4
+DefaultGroupName=Backup Service Home 4
 LicenseFile=apache-license-2.0.rtf
 OutputDir=output
 OutputBaseFilename=backupservicehome-{#ApplicationVersion}-winui-win64
@@ -42,14 +42,14 @@ Name: "disableStableAutostart"; Description: "Automatischen Start der stabilen V
 Name: german; MessagesFile: compiler:Languages\German.isl
 
 [Icons]
-Name: "{group}\Backup Service Home 3 Preview"; Filename: "{app}\BSH.MainApp.exe"
+Name: "{group}\Backup Service Home 4"; Filename: "{app}\BSH.MainApp.exe"
 
 [Run]
 Filename: "net"; Parameters: "stop ""Backup Service Home Preview-Dienst"""; Flags: runhidden
 Filename: "sc"; Parameters: "create ""Backup Service Home Preview-Dienst"" binpath=""{app}\BSH.Service.exe"" start=auto"; WorkingDir: "{app}"; Flags: runhidden runascurrentuser; StatusMsg: "Backup Service Home Preview-Dienst wird eingerichtet..."
 Filename: "sc"; Parameters: "config ""Backup Service Home Preview-Dienst"" binpath=""{app}\BSH.Service.exe"" start=auto"; WorkingDir: "{app}"; Flags: runhidden runascurrentuser
 Filename: "net"; Parameters: "start ""Backup Service Home Preview-Dienst"""; Flags: runascurrentuser runhidden; StatusMsg: "Backup Service Home Preview-Dienst wird gestartet..."
-Filename: "{app}\BSH.MainApp.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,Backup Service Home 3 Preview}"
+Filename: "{app}\BSH.MainApp.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,Backup Service Home 4}"
 
 [Registry]
 ; Inno encodes a literal quote as a doubled quote. The value below is "{app}\BSH.MainApp.exe" -autostart,
