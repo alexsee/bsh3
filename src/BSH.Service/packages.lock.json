@@ -69,9 +69,9 @@
       },
       "ServiceWire": {
         "type": "Direct",
-        "requested": "[5.6.0, )",
-        "resolved": "5.6.0",
-        "contentHash": "Gv8yXwbmQnq64DdtvvFTPrDA+zqbx3CheefOXiWDmZMNQ9U1xlZ3+ythzzvmDQxZG/kAha0j/1M+xjlabOchfQ=="
+        "requested": "[7.0.0, )",
+        "resolved": "7.0.0",
+        "contentHash": "9xrmaQy75ZDU9OQirbiOxBTSP7JSreD96Z89GjUw/C48CvmD7GGQxfI30uS/VBCsEvhqnMiQI665ZLVhHzlOCA=="
       },
       "AlphaVSS.Native.NetCore": {
         "type": "Transitive",

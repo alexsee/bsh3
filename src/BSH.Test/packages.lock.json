@@ -35,6 +35,19 @@
           "Microsoft.Testing.Platform.MSBuild": "2.1.0"
         }
       },
+      "AlphaVSS": {
+        "type": "Transitive",
+        "resolved": "2.0.3",
+        "contentHash": "XN7wk1WcWCqifpNqe4hEBAhk4ykTre25SvA+fVDFMk0fZSUJk0hj2VyYD9rTawVYSftG7f4xlyX5wSfn7mb/aA==",
+        "dependencies": {
+          "AlphaVSS.Native.NetCore": "[2.0.3]"
+        }
+      },
+      "AlphaVSS.Native.NetCore": {
+        "type": "Transitive",
+        "resolved": "2.0.3",
+        "contentHash": "hUJThzRUMfcNBjnCX6u0CvNj4wlyeAlB59hnP4IWgcsRrCXqEOcXriLekGy765JZTg4Re4iErA28j7OnbA08Wg=="
+      },
       "Autoupdater.NET.Official": {
         "type": "Transitive",
         "resolved": "1.9.3",
@@ -333,6 +346,16 @@
           "Microsoft.Extensions.Diagnostics.Abstractions": "10.0.13",
           "Microsoft.Extensions.FileProviders.Abstractions": "10.0.13",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.13"
+        }
+      },
+      "Microsoft.Extensions.Hosting.WindowsServices": {
+        "type": "Transitive",
+        "resolved": "10.0.13",
+        "contentHash": "sk3VNcYEmgwYGPF4ze/112jpaeDKSsKGhmEZ8IlhOR8F6JT+1DYaZUb14jobVXiKhuXWIKcYXV7mkSPeA4dc3g==",
+        "dependencies": {
+          "Microsoft.Extensions.Hosting": "10.0.13",
+          "Microsoft.Extensions.Logging.EventLog": "10.0.13",
+          "System.ServiceProcess.ServiceController": "10.0.13"
         }
       },
       "Microsoft.Extensions.Logging": {
@@ -686,8 +709,8 @@
       },
       "ServiceWire": {
         "type": "Transitive",
-        "resolved": "5.6.0",
-        "contentHash": "Gv8yXwbmQnq64DdtvvFTPrDA+zqbx3CheefOXiWDmZMNQ9U1xlZ3+ythzzvmDQxZG/kAha0j/1M+xjlabOchfQ=="
+        "resolved": "7.0.0",
+        "contentHash": "9xrmaQy75ZDU9OQirbiOxBTSP7JSreD96Z89GjUw/C48CvmD7GGQxfI30uS/VBCsEvhqnMiQI665ZLVhHzlOCA=="
       },
       "Stub.System.Data.SQLite.Core.NetStandard": {
         "type": "Transitive",
@@ -747,6 +770,14 @@
         "resolved": "10.0.13",
         "contentHash": "aUSmC6cPjFLSE0rDTsmkR3wvUOnscqewebOaaELEToh12sNmoltZqT3f0C81mJ1zhxKjWco25soHTvYwsXCsUw=="
       },
+      "System.ServiceProcess.ServiceController": {
+        "type": "Transitive",
+        "resolved": "10.0.13",
+        "contentHash": "0Zh/U/1+hy1MCxx1BTikJi4L5o1Ys6VhB8PKlTNOB4/n2d6ua2+TuoD6T7xN9RV0uiOGod575pQrUSTXg+aYGQ==",
+        "dependencies": {
+          "System.Diagnostics.EventLog": "10.0.13"
+        }
+      },
       "WinUIEx": {
         "type": "Transitive",
         "resolved": "2.9.3",
@@ -771,7 +802,7 @@
           "Quartz": "[3.15.1, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Extensions.Logging": "[10.0.0, )",
-          "ServiceWire": "[5.6.0, )",
+          "ServiceWire": "[7.0.0, )",
           "System.Configuration.ConfigurationManager": "[10.0.13, )",
           "System.Data.SQLite.Core": "[1.0.119, )",
           "System.Management": "[10.0.13, )",
@@ -808,11 +839,28 @@
           "WinUIEx": "[2.9.3, )"
         }
       },
+      "bsh.service": {
+        "type": "Project",
+        "dependencies": {
+          "AlphaVSS": "[2.0.3, )",
+          "BSH.Service.Shared": "[3.9.0.3, )",
+          "Microsoft.Extensions.Hosting": "[10.0.13, )",
+          "Microsoft.Extensions.Hosting.WindowsServices": "[10.0.13, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.0.13, )",
+          "Serilog": "[4.4.0, )",
+          "ServiceWire": "[7.0.0, )"
+        }
+      },
       "bsh.service.shared": {
         "type": "Project"
       }
     },
     "net10.0-windows10.0.26100/win-x64": {
+      "AlphaVSS.Native.NetCore": {
+        "type": "Transitive",
+        "resolved": "2.0.3",
+        "contentHash": "hUJThzRUMfcNBjnCX6u0CvNj4wlyeAlB59hnP4IWgcsRrCXqEOcXriLekGy765JZTg4Re4iErA28j7OnbA08Wg=="
+      },
       "Microsoft.Web.WebView2": {
         "type": "Transitive",
         "resolved": "1.0.4078.44",
@@ -856,6 +904,14 @@
         "contentHash": "cL8qiJmJtlSIcAoZH4s07VTxTdddvEP12MFeM+KBZagn4CuD/0SFQsmKn5g9MLfiSrYjdAxIwOTO0kATY9A0UA==",
         "dependencies": {
           "System.CodeDom": "10.0.13"
+        }
+      },
+      "System.ServiceProcess.ServiceController": {
+        "type": "Transitive",
+        "resolved": "10.0.13",
+        "contentHash": "0Zh/U/1+hy1MCxx1BTikJi4L5o1Ys6VhB8PKlTNOB4/n2d6ua2+TuoD6T7xN9RV0uiOGod575pQrUSTXg+aYGQ==",
+        "dependencies": {
+          "System.Diagnostics.EventLog": "10.0.13"
         }
       }
     }
