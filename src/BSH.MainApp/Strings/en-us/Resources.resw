@@ -298,23 +298,14 @@ This feature is currently not available because the quick preview could not be f
   <data name="EditBackup_WindowTitle" xml:space="preserve">
     <value>Create Backup</value>
   </data>
-  <data name="Filter_AddFiles" xml:space="preserve">
-    <value>Add File(s)</value>
-  </data>
-  <data name="Filter_AddFolder" xml:space="preserve">
-    <value>Add Folder</value>
-  </data>
   <data name="Filter_Description" xml:space="preserve">
-    <value>Choose the files, folders, file types, size limits, or name patterns that Backup Service Home should skip during backups.</value>
+    <value>Backups skip everything listed here. Files that are already in earlier backups stay there.</value>
   </data>
   <data name="Filter_EnterExtension" xml:space="preserve">
     <value>Enter extension (without dot)</value>
   </data>
   <data name="Filter_EnterRegex" xml:space="preserve">
     <value>Enter regular expression (e.g. .*\.tmp$)</value>
-  </data>
-  <data name="Filter_ExcludeLargerThan" xml:space="preserve">
-    <value>Exclude files larger than this size</value>
   </data>
   <data name="Filter_FileNotInSources" xml:space="preserve">
     <value>Selected file is not within the configured source folders.</value>
@@ -324,9 +315,6 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="Filter_Heading" xml:space="preserve">
     <value>Exclude files and folders</value>
-  </data>
-  <data name="Filter_IncludeSystemFolders" xml:space="preserve">
-    <value>Include folders marked as System (e.g. Nextcloud sync folders)</value>
   </data>
   <data name="Filter_RegexDoesNotMatch" xml:space="preserve">
     <value>Test input does not match</value>
@@ -345,21 +333,6 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="Filter_MaximumFileSizeUnit" xml:space="preserve">
     <value>Unit</value>
-  </data>
-  <data name="Filter_Tab_FileTypes" xml:space="preserve">
-    <value>File types</value>
-  </data>
-  <data name="Filter_Tab_Files" xml:space="preserve">
-    <value>Files</value>
-  </data>
-  <data name="Filter_Tab_Folders" xml:space="preserve">
-    <value>Folders</value>
-  </data>
-  <data name="Filter_Tab_MaxFileSize" xml:space="preserve">
-    <value>Max file size</value>
-  </data>
-  <data name="Filter_Tab_Regex" xml:space="preserve">
-    <value>Regular expressions</value>
   </data>
   <data name="Filter_Title" xml:space="preserve">
     <value>Exclude items</value>
@@ -1683,5 +1656,56 @@ The medium will be automatically detected.</value>
   </data>
   <data name="Schedule_Summary_KeepInterval" xml:space="preserve">
     <value>Backups older than {0} {1} are deleted</value>
+  </data>
+  <data name="Filter_Rules_Header" xml:space="preserve">
+    <value>Excluded items</value>
+  </data>
+  <data name="Filter_AddExclusion" xml:space="preserve">
+    <value>Add exclusion</value>
+  </data>
+  <data name="Filter_Add_Folder" xml:space="preserve">
+    <value>Folder…</value>
+  </data>
+  <data name="Filter_Add_Files" xml:space="preserve">
+    <value>Files…</value>
+  </data>
+  <data name="Filter_Add_FileType" xml:space="preserve">
+    <value>File type</value>
+  </data>
+  <data name="Filter_Add_Pattern" xml:space="preserve">
+    <value>Name pattern (advanced)</value>
+  </data>
+  <data name="Filter_Rules_Empty" xml:space="preserve">
+    <value>Nothing is excluded. Everything in your source folders is backed up.</value>
+  </data>
+  <data name="Filter_Kind_Folder" xml:space="preserve">
+    <value>Folder</value>
+  </data>
+  <data name="Filter_Kind_File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Filter_Kind_FileType" xml:space="preserve">
+    <value>File type</value>
+  </data>
+  <data name="Filter_Kind_Pattern" xml:space="preserve">
+    <value>Pattern</value>
+  </data>
+  <data name="Filter_RemoveRule" xml:space="preserve">
+    <value>Remove exclusion</value>
+  </data>
+  <data name="Filter_FileType_Hint" xml:space="preserve">
+    <value>For example tmp or iso. Every file with this extension is skipped.</value>
+  </data>
+  <data name="Filter_Pattern_Hint" xml:space="preserve">
+    <value>A regular expression that is matched against file and folder paths. Use the test field to check it before adding.</value>
+  </data>
+  <data name="Filter_SkipLargerThan" xml:space="preserve">
+    <value>Skip files larger than</value>
+  </data>
+  <data name="Filter_SystemFolders_Header" xml:space="preserve">
+    <value>Back up folders marked as system</value>
+  </data>
+  <data name="Filter_SystemFolders_Description" xml:space="preserve">
+    <value>Some apps, like Nextcloud, mark their sync folders as system folders. These are skipped unless you turn this on.</value>
   </data>
 </root>
