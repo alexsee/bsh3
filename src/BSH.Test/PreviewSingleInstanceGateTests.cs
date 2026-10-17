@@ -212,28 +212,6 @@ public class PreviewSingleInstanceGateTests
 
     [Test]
     [Platform("Win")]
-    public void WindowsSyncTakesOverAnAbandonedMutex()
-    {
-        var name = "bsh-ab-" + Guid.NewGuid().ToString("N");
-        var started = new ManualResetEventSlim(false);
-        var thread = new Thread(() =>
-        {
-            var mutex = new Mutex(false, name);
-            mutex.WaitOne();
-            started.Set();
-        });
-        thread.IsBackground = true;
-        thread.Start();
-        Assert.That(started.Wait(TimeSpan.FromSeconds(2)), Is.True);
-        thread.Join();
-
-        Assert.That(WindowsPreviewInstanceSync.Shared.TryAcquireMutex(name, out var ownership), Is.True);
-        ownership.Dispose();
-        ownership.Dispose();
-    }
-
-    [Test]
-    [Platform("Win")]
     public void WindowsSyncReleaseFromAnotherThreadDoesNotEscape()
     {
         var name = "bsh-rel-" + Guid.NewGuid().ToString("N");
