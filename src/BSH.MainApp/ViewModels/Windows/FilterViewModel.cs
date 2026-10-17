@@ -4,11 +4,14 @@
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using Brightbits.BSH.Engine.Contracts;
+using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using Microsoft.UI;
 using Microsoft.Windows.Storage.Pickers;
+
+using MaxFileSizeSetting = Brightbits.BSH.Engine.Services.FileCollector.MaxFileSize;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -42,11 +45,20 @@ public partial class FilterViewModel : ObservableObject
         set => SetProperty(ref includeSystemFolders, value);
     }
 
-    private decimal excludeFileBigger;
-    public decimal ExcludeFileBigger
+    public IReadOnlyList<FileSizeUnit> MaxFileSizeUnits { get; } = [FileSizeUnit.MB, FileSizeUnit.GB];
+
+    private double maxFileSize;
+    public double MaxFileSize
     {
-        get => excludeFileBigger;
-        set => SetProperty(ref excludeFileBigger, value);
+        get => maxFileSize;
+        set => SetProperty(ref maxFileSize, double.IsNaN(value) ? 0 : value);
+    }
+
+    private FileSizeUnit maxFileSizeUnit = FileSizeUnit.MB;
+    public FileSizeUnit MaxFileSizeUnit
+    {
+        get => maxFileSizeUnit;
+        set => SetProperty(ref maxFileSizeUnit, value);
     }
 
     private string? fileTypeInputText;
@@ -230,8 +242,17 @@ public partial class FilterViewModel : ObservableObject
             RegexPatterns.Add(entry);
         }
 
-        ExcludeFilesBigger = decimal.TryParse(configurationManager.ExcludeFileBigger, out var maxFileSize);
-        ExcludeFileBigger = ExcludeFilesBigger ? maxFileSize : 0;
+        ExcludeFilesBigger = MaxFileSizeSetting.TryGetMegabytes(configurationManager.ExcludeFileBigger, out var megabytes);
+        if (ExcludeFilesBigger && megabytes >= 1024 && megabytes % 1024 == 0)
+        {
+            MaxFileSizeUnit = FileSizeUnit.GB;
+            MaxFileSize = (double)(megabytes / 1024);
+        }
+        else
+        {
+            MaxFileSizeUnit = FileSizeUnit.MB;
+            MaxFileSize = ExcludeFilesBigger ? (double)megabytes : 0;
+        }
         IncludeSystemFolders = configurationManager.IncludeSystemFolders == "1";
     }
 
@@ -241,7 +262,10 @@ public partial class FilterViewModel : ObservableObject
         configurationManager.ExcludeFile = string.Join("|", ExcludeFiles.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
         configurationManager.ExcludeFileTypes = string.Join("|", ExcludeFileTypes.Select(x => x.Trim().TrimStart('*').TrimStart('.')).Where(x => !string.IsNullOrEmpty(x)));
         configurationManager.ExcludeMask = string.Join("|", RegexPatterns.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
-        configurationManager.ExcludeFileBigger = ExcludeFilesBigger && ExcludeFileBigger > 0 ? ExcludeFileBigger.ToString() : string.Empty;
+        var configuredMegabytes = (decimal)MaxFileSize * (MaxFileSizeUnit == FileSizeUnit.GB ? 1024 : 1);
+        configurationManager.ExcludeFileBigger = ExcludeFilesBigger
+            ? MaxFileSizeSetting.FromMegabytes(configuredMegabytes)
+            : string.Empty;
         configurationManager.IncludeSystemFolders = IncludeSystemFolders ? "1" : "0";
     }
 

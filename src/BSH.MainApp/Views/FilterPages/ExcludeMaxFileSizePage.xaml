@@ -14,13 +14,20 @@
                   Content="{helpers:ResourceString Name=Filter_ExcludeLargerThan}"
                   IsChecked="{Binding ExcludeFilesBigger, Mode=TwoWay}" />
 
-        <NumberBox Grid.Row="1"
-                   Width="420"
-                   HorizontalAlignment="Left"
-                   Header="{helpers:ResourceString Name=Filter_MaximumFileSize}"
-                   IsEnabled="{Binding ExcludeFilesBigger}"
-                   Minimum="0"
-                   SpinButtonPlacementMode="Inline"
-                   Value="{Binding ExcludeFileBigger, Mode=TwoWay}" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+            <NumberBox Width="200"
+                       Header="{helpers:ResourceString Name=Filter_MaximumFileSize}"
+                       IsEnabled="{Binding ExcludeFilesBigger}"
+                       Minimum="1"
+                       SmallChange="1"
+                       SpinButtonPlacementMode="Inline"
+                       Value="{Binding MaxFileSize, Mode=TwoWay}" />
+            <ComboBox Width="90"
+                      VerticalAlignment="Bottom"
+                      AutomationProperties.Name="{helpers:ResourceString Name=Filter_MaximumFileSizeUnit}"
+                      IsEnabled="{Binding ExcludeFilesBigger}"
+                      ItemsSource="{Binding MaxFileSizeUnits}"
+                      SelectedItem="{Binding MaxFileSizeUnit, Mode=TwoWay}" />
+        </StackPanel>
     </Grid>
 </Page>

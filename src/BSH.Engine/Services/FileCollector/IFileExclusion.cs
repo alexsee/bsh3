@@ -80,8 +80,8 @@ public class SizeFileExclusion(IConfigurationManager configurationManager) : IFi
 
     public bool IsFileExcluded(FileTableRow file)
     {
-        // file size filter
-        if (!string.IsNullOrEmpty(configurationManager.ExcludeFileBigger) && file.FileSize > long.Parse(configurationManager.ExcludeFileBigger))
+        // ExcludeFileBigger has always been entered and stored as megabytes.
+        if (MaxFileSize.TryGetBytes(configurationManager.ExcludeFileBigger, out var limitBytes) && file.FileSize > limitBytes)
         {
             _logger.Debug("{FileName} was ignored due to file size filter.", file.FileNamePath());
             return true;

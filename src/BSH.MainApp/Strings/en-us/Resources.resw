@@ -343,6 +343,9 @@ This feature is currently not available because the quick preview could not be f
   <data name="Filter_MaximumFileSize" xml:space="preserve">
     <value>Maximum file size</value>
   </data>
+  <data name="Filter_MaximumFileSizeUnit" xml:space="preserve">
+    <value>Unit</value>
+  </data>
   <data name="Filter_Tab_FileTypes" xml:space="preserve">
     <value>File types</value>
   </data>
