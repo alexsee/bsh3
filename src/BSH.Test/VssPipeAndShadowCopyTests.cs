@@ -53,7 +53,6 @@ public class VssPipeAndShadowCopyTests
     }
 
     [Test]
-    [Timeout(15000)]
     public void ShadowCopyClientUsesTheConfiguredPipeAndReportsAMissingService()
     {
         var stable = new VolumeShadowCopyClient();

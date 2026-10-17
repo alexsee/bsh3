@@ -129,14 +129,31 @@ public class PreviewSingleInstanceGateTests
 
         try
         {
-            var second = PreviewSingleInstanceGate.Acquire(
-                () => { },
-                out _,
-                names.Preview,
-                names.Engine,
-                names.EventName,
-                sync);
+            // A Windows mutex is recursive for the thread that already owns it.
+            // The second launch has to come from another thread, as a second process would.
+            PreviewStartupResult second = default;
+            Exception error = null;
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    second = PreviewSingleInstanceGate.Acquire(
+                        () => { },
+                        out _,
+                        names.Preview,
+                        names.Engine,
+                        names.EventName,
+                        sync);
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+            });
+            thread.Start();
+            thread.Join();
 
+            Assert.That(error, Is.Null);
             Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
             Assert.That(activated.Wait(TimeSpan.FromSeconds(2)), Is.True);
         }
