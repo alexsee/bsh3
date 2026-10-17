@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Linq;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels;
