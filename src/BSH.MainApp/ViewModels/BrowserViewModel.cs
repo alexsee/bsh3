@@ -183,12 +183,13 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         var item = CurrentItem;
         var version = CurrentVersion;
         CurrentFileDetails = null;
-        IsLoadingFileDetails = ToggleInfoPane && item?.IsFile == true && version != null;
-        if (!IsLoadingFileDetails || item == null || version == null)
+        if (!ToggleInfoPane || item is not { IsFile: true } || version == null)
         {
+            IsLoadingFileDetails = false;
             return;
         }
 
+        IsLoadingFileDetails = true;
         try
         {
             var details = await queryManager.GetFileDetailsAsync(version.Id, item.Name, item.FullPath);

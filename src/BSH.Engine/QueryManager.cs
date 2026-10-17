@@ -43,17 +43,17 @@ public class QueryManager : IQueryManager
     {
         using var dbClient = dbClientFactory.CreateDbClient();
         using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, """
-            WITH previous_version AS (
-                SELECT MAX(versionID) AS id FROM versiontable
-                WHERE versionID < @version AND versionStatus = 0
-            ), current_files AS (
+            WITH current_files AS (
                 SELECT DISTINCT f.fileID, f.fileSize, f.fileDateModified
                 FROM filelink l JOIN fileversiontable f ON f.fileversionID = l.fileversionID
                 WHERE l.versionID = @version
             ), previous_files AS (
                 SELECT DISTINCT f.fileID, f.fileSize, f.fileDateModified
                 FROM filelink l JOIN fileversiontable f ON f.fileversionID = l.fileversionID
-                WHERE l.versionID = (SELECT id FROM previous_version)
+                WHERE l.versionID = (
+                    SELECT MAX(versionID) FROM versiontable
+                    WHERE versionID < @version AND versionStatus = 0
+                )
             )
             SELECT
                 (SELECT COUNT(*) FROM current_files c
