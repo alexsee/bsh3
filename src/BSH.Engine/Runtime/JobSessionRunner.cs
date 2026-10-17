@@ -65,13 +65,15 @@ public sealed class JobSessionRunner
     private readonly Func<bool> shouldResolvePassword;
     private readonly Func<string> expectedPasswordHashProvider;
     private readonly IStoredPasswordAdapter storedPasswordAdapter;
+    private readonly BackupResultRecorder backupResultRecorder;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JobSessionRunner"/> class.
     /// </summary>
     /// <param name="backupService">Backup engine service used to execute backup operations.</param>
     /// <param name="jobRuntime">Shared runtime responsible for session preparation and cancellation lifecycle.</param>
-    public JobSessionRunner(IBackupService backupService, JobRuntime jobRuntime, Func<bool> shouldResolvePassword = null, Func<string> expectedPasswordHashProvider = null, IStoredPasswordAdapter storedPasswordAdapter = null)
+    /// <param name="backupResultRecorder">Optional recorder that persists the outcome of each backup run.</param>
+    public JobSessionRunner(IBackupService backupService, JobRuntime jobRuntime, Func<bool> shouldResolvePassword = null, Func<string> expectedPasswordHashProvider = null, IStoredPasswordAdapter storedPasswordAdapter = null, BackupResultRecorder backupResultRecorder = null)
     {
         ArgumentNullException.ThrowIfNull(backupService);
         ArgumentNullException.ThrowIfNull(jobRuntime);
@@ -81,6 +83,7 @@ public sealed class JobSessionRunner
         this.shouldResolvePassword = shouldResolvePassword ?? (() => false);
         this.expectedPasswordHashProvider = expectedPasswordHashProvider ?? (() => string.Empty);
         this.storedPasswordAdapter = storedPasswordAdapter;
+        this.backupResultRecorder = backupResultRecorder;
     }
 
     /// <summary>
@@ -94,7 +97,10 @@ public sealed class JobSessionRunner
         bool fullBackup = false,
         string sourceFolders = "")
     {
-        return await RunSingleOperationAsync(
+        var checkpoint = backupResultRecorder?.CaptureCheckpoint();
+        BackupSessionObservation observation = null;
+
+        var result = await RunSingleOperationAsync(
             ActionType.Backup,
             presenter,
             statusDialog,
@@ -102,7 +108,11 @@ public sealed class JobSessionRunner
             async (jobReport, cancellationToken) =>
             {
                 await backupService.StartBackup(title, description, jobReport, cancellationToken, fullBackup, sourceFolders, !statusDialog);
-            });
+            },
+            completed => observation = completed);
+
+        backupResultRecorder?.Record(checkpoint, observation ?? new BackupSessionObservation { Result = result });
+        return result;
     }
 
     /// <summary>
@@ -244,7 +254,8 @@ public sealed class JobSessionRunner
         IJobSessionPresenter presenter,
         bool statusDialog,
         bool requirePassword,
-        Func<IJobReport, CancellationToken, Task> startAsync)
+        Func<IJobReport, CancellationToken, Task> startAsync,
+        Action<BackupSessionObservation> onCompleted = null)
     {
         ArgumentNullException.ThrowIfNull(presenter);
         ArgumentNullException.ThrowIfNull(startAsync);
@@ -286,13 +297,23 @@ public sealed class JobSessionRunner
                 trackingJobReport.ReportExceptions(new Collection<FileExceptionEntry> { new() { Exception = ex } }, !statusDialog);
             }
 
-            return new JobSessionResult()
+            var result = new JobSessionResult()
             {
                 Started = true,
                 Canceled = operationCanceled || cancellationToken.IsCancellationRequested || trackingJobReport.WasCanceled,
                 HasErrors = trackingJobReport.HasErrors,
                 Failure = JobSessionStartFailure.None
             };
+
+            onCompleted?.Invoke(new BackupSessionObservation
+            {
+                Result = result,
+                CanceledByUser = operationCanceled || cancellationToken.IsCancellationRequested,
+                InsufficientDiskSpaceReported = trackingJobReport.InsufficientDiskSpaceReported,
+                Errors = trackingJobReport.Errors
+            });
+
+            return result;
         }
         catch (Exception ex)
         {
@@ -502,6 +523,8 @@ public sealed class JobSessionRunner
 
         public bool HasErrors { get; private set; }
         public bool WasCanceled { get; private set; }
+        public bool InsufficientDiskSpaceReported { get; private set; }
+        public List<FileExceptionEntry> Errors { get; } = [];
 
         public TrackingJobReport(IJobReport report)
         {
@@ -526,12 +549,17 @@ public sealed class JobSessionRunner
         public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent)
         {
             HasErrors |= files.Count > 0;
+            Errors.AddRange(files);
             report.ReportExceptions(files, silent);
         }
 
         public Task<RequestOverwriteResult> RequestOverwrite(FileTableRow localFile, FileTableRow remoteFile) =>
             report.RequestOverwrite(localFile, remoteFile);
 
-        public Task RequestShowErrorInsufficientDiskSpaceAsync() => report.RequestShowErrorInsufficientDiskSpaceAsync();
+        public Task RequestShowErrorInsufficientDiskSpaceAsync()
+        {
+            InsufficientDiskSpaceReported = true;
+            return report.RequestShowErrorInsufficientDiskSpaceAsync();
+        }
     }
 }

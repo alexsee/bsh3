@@ -424,9 +424,6 @@ This feature is currently not available because the quick preview could not be f
   <data name="MSG_TASK_RUNNING_TITLE" xml:space="preserve">
     <value>Other task in progress</value>
   </data>
-  <data name="MainView_Available" xml:space="preserve">
-    <value>Available:</value>
-  </data>
   <data name="MainView_BackupMode" xml:space="preserve">
     <value>Backup mode:</value>
   </data>
@@ -439,35 +436,11 @@ This feature is currently not available because the quick preview could not be f
   <data name="MainView_BackupMode_Scheduled" xml:space="preserve">
     <value>Scheduled backups</value>
   </data>
-  <data name="MainView_Backups" xml:space="preserve">
-    <value>Backups</value>
-  </data>
   <data name="MainView_BtnCreateBackup_Title" xml:space="preserve">
     <value>Manual backup</value>
   </data>
   <data name="MainView_Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="MainView_DiskspaceFullExpected" xml:space="preserve">
-    <value>Diskspace full expected on:</value>
-  </data>
-  <data name="MainView_DiskspaceUnpredictable" xml:space="preserve">
-    <value>currently unpredictable</value>
-  </data>
-  <data name="MainView_Files" xml:space="preserve">
-    <value>Files</value>
-  </data>
-  <data name="MainView_LastBackup" xml:space="preserve">
-    <value>Last Backup:</value>
-  </data>
-  <data name="MainView_NextBackup" xml:space="preserve">
-    <value>Next Backup:</value>
-  </data>
-  <data name="MainView_NonePlanned" xml:space="preserve">
-    <value>None planned</value>
-  </data>
-  <data name="MainView_ScheduleWarning_NoEntries" xml:space="preserve">
-    <value>Scheduled backups are enabled but no schedule is set.</value>
   </data>
   <data name="MainView_StartBackup" xml:space="preserve">
     <value>Start Backup</value>
@@ -480,21 +453,6 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="MainView_SystemToggle" xml:space="preserve">
     <value>Backup system</value>
-  </data>
-  <data name="MainView_SystemStatus_BatteryPaused" xml:space="preserve">
-    <value>Battery operation. No backups are being performed.</value>
-  </data>
-  <data name="MainView_SystemStatus_Deactivated" xml:space="preserve">
-    <value>Automatic backup is deactivated.</value>
-  </data>
-  <data name="MainView_SystemStatus_NotConfigured" xml:space="preserve">
-    <value>Backup Service Home is not configured yet.</value>
-  </data>
-  <data name="MainView_SystemStatus_Running" xml:space="preserve">
-    <value>Backup Service Home is running normally.</value>
-  </data>
-  <data name="MainView_TotalSizeBackuped" xml:space="preserve">
-    <value>Total size backuped</value>
   </data>
   <data name="MediaType_FileTransferServer" xml:space="preserve">
     <value>File Transfer Protocol (FTP)</value>
@@ -1482,5 +1440,212 @@ The medium will be automatically detected.</value>
   </data>
   <data name="Browser_Version_DeletedFiles" xml:space="preserve">
     <value>−{0:N0} deleted files</value>
+  </data>
+  <data name="Overview_Protected_Title" xml:space="preserve">
+    <value>Your files are protected</value>
+  </data>
+  <data name="Overview_LastBackupAt" xml:space="preserve">
+    <value>Last backup: {0}.</value>
+  </data>
+  <data name="Overview_NextBackupAt" xml:space="preserve">
+    <value>Next backup: {0}.</value>
+  </data>
+  <data name="Overview_BackupFailed_Title" xml:space="preserve">
+    <value>Last backup failed</value>
+  </data>
+  <data name="Overview_BackupFailed_Text" xml:space="preserve">
+    <value>Your latest changes are not backed up. Last successful backup: {0}.</value>
+  </data>
+  <data name="Overview_BackupFailed_TextNoBackup" xml:space="preserve">
+    <value>None of your files are backed up yet.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_DeviceNotReady" xml:space="preserve">
+    <value>The backup location could not be reached. Make sure it is connected and try again.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_DiskSpace" xml:space="preserve">
+    <value>There was not enough free space at the backup location. Delete old backups or choose a larger drive.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_Files" xml:space="preserve">
+    <value>{0} files could not be backed up.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_Other" xml:space="preserve">
+    <value>The backup stopped because of an error: {0}</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_Unknown" xml:space="preserve">
+    <value>The backup stopped because of an error. Try again, or check the event log for details.</value>
+  </data>
+  <data name="Overview_LocationUnavailable_Title" xml:space="preserve">
+    <value>Backup location not available</value>
+  </data>
+  <data name="Overview_LocationUnavailable_Text" xml:space="preserve">
+    <value>Backups can&apos;t run until the backup location is connected.</value>
+  </data>
+  <data name="Overview_LocationUnavailable_Action" xml:space="preserve">
+    <value>Connect the backup drive, or choose a different backup location.</value>
+  </data>
+  <data name="Overview_Overdue_Title" xml:space="preserve">
+    <value>No backup for {0} days</value>
+  </data>
+  <data name="Overview_Overdue_Text" xml:space="preserve">
+    <value>You asked to be reminded after {0} days without a backup.</value>
+  </data>
+  <data name="Overview_Overdue_Action" xml:space="preserve">
+    <value>Back up now to protect your recent changes.</value>
+  </data>
+  <data name="Overview_NoBackup_Title" xml:space="preserve">
+    <value>No backup yet</value>
+  </data>
+  <data name="Overview_NoBackup_Text" xml:space="preserve">
+    <value>None of your files are backed up yet.</value>
+  </data>
+  <data name="Overview_NoBackup_Action" xml:space="preserve">
+    <value>Start your first backup now.</value>
+  </data>
+  <data name="Overview_ScheduleEmpty_Title" xml:space="preserve">
+    <value>No backup times set</value>
+  </data>
+  <data name="Overview_ScheduleEmpty_Text" xml:space="preserve">
+    <value>Scheduled backups are on, but no backup times are set, so no backups will run.</value>
+  </data>
+  <data name="Overview_ScheduleEmpty_Action" xml:space="preserve">
+    <value>Add at least one backup time.</value>
+  </data>
+  <data name="Overview_FilesSkipped_Title" xml:space="preserve">
+    <value>Last backup finished, but {0} files were skipped</value>
+  </data>
+  <data name="Overview_FilesSkipped_Text" xml:space="preserve">
+    <value>All other files were backed up: {0}.</value>
+  </data>
+  <data name="Overview_FilesSkipped_Action" xml:space="preserve">
+    <value>{0} files could not be read. They were often open in another app; close it and back up again.</value>
+  </data>
+  <data name="Overview_LowSpace_Title" xml:space="preserve">
+    <value>Backup location is almost full</value>
+  </data>
+  <data name="Overview_LowSpace_Text" xml:space="preserve">
+    <value>Only {0} free. New backups fail once it is full.</value>
+  </data>
+  <data name="Overview_LowSpace_Action" xml:space="preserve">
+    <value>Delete old backups or choose a larger drive.</value>
+  </data>
+  <data name="Overview_TurnedOff_Title" xml:space="preserve">
+    <value>Backups are turned off</value>
+  </data>
+  <data name="Overview_TurnedOff_Text" xml:space="preserve">
+    <value>No automatic or scheduled backups will run.</value>
+  </data>
+  <data name="Overview_TurnedOff_Action" xml:space="preserve">
+    <value>Turn backups back on to stay protected.</value>
+  </data>
+  <data name="Overview_Battery_Title" xml:space="preserve">
+    <value>Backups paused on battery</value>
+  </data>
+  <data name="Overview_Battery_Text" xml:space="preserve">
+    <value>Backups continue when your device is plugged in.</value>
+  </data>
+  <data name="Overview_NotConfigured_Title" xml:space="preserve">
+    <value>Backup Service Home is not set up yet</value>
+  </data>
+  <data name="Overview_NotConfigured_Text" xml:space="preserve">
+    <value>Choose what to back up and where to store it.</value>
+  </data>
+  <data name="Overview_WhatToDo" xml:space="preserve">
+    <value>What to do</value>
+  </data>
+  <data name="Overview_Button_BackUpNow" xml:space="preserve">
+    <value>Back up now</value>
+  </data>
+  <data name="Overview_Button_ViewFiles" xml:space="preserve">
+    <value>View files</value>
+  </data>
+  <data name="Overview_Button_ManageBackups" xml:space="preserve">
+    <value>Manage backups</value>
+  </data>
+  <data name="Overview_Button_ChangeLocation" xml:space="preserve">
+    <value>Change location</value>
+  </data>
+  <data name="Overview_Button_SetSchedule" xml:space="preserve">
+    <value>Set schedule</value>
+  </data>
+  <data name="Overview_Button_TurnOn" xml:space="preserve">
+    <value>Turn on</value>
+  </data>
+  <data name="Overview_LastBackup_Header" xml:space="preserve">
+    <value>Last backup</value>
+  </data>
+  <data name="Overview_LastBackup_Browse" xml:space="preserve">
+    <value>Browse files</value>
+  </data>
+  <data name="Overview_LastBackup_When" xml:space="preserve">
+    <value>When</value>
+  </data>
+  <data name="Overview_LastBackup_Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="Overview_LastBackup_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Overview_LastBackup_None" xml:space="preserve">
+    <value>No backup has been made yet.</value>
+  </data>
+  <data name="Overview_Result_Succeeded" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Overview_Result_CompletedWithErrors" xml:space="preserve">
+    <value>Completed, {0} files skipped</value>
+  </data>
+  <data name="Overview_Result_Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="Overview_Changes_Added" xml:space="preserve">
+    <value>{0:N0} new</value>
+  </data>
+  <data name="Overview_Changes_Modified" xml:space="preserve">
+    <value>{0:N0} changed</value>
+  </data>
+  <data name="Overview_Changes_Deleted" xml:space="preserve">
+    <value>{0:N0} deleted</value>
+  </data>
+  <data name="Overview_Location_Header" xml:space="preserve">
+    <value>Backup location</value>
+  </data>
+  <data name="Overview_Location_Local" xml:space="preserve">
+    <value>Drive or folder</value>
+  </data>
+  <data name="Overview_Location_Ftp" xml:space="preserve">
+    <value>FTP server</value>
+  </data>
+  <data name="Overview_Location_Free" xml:space="preserve">
+    <value>{0} free</value>
+  </data>
+  <data name="Overview_Location_FreeUnknown" xml:space="preserve">
+    <value>Free space is checked after the next backup.</value>
+  </data>
+  <data name="Overview_Location_LowHint" xml:space="preserve">
+    <value>Below your {0} warning limit</value>
+  </data>
+  <data name="Overview_Location_Checking" xml:space="preserve">
+    <value>Checking connection…</value>
+  </data>
+  <data name="Overview_Location_Available" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="Overview_Location_Unavailable" xml:space="preserve">
+    <value>Not connected</value>
+  </data>
+  <data name="Overview_Totals" xml:space="preserve">
+    <value>In total: {0:N0} backups · {1:N0} files · {2}</value>
+  </data>
+  <data name="Overview_ModeAndNext" xml:space="preserve">
+    <value>{0} · Next backup: {1}</value>
+  </data>
+  <data name="Overview_FailedFiles_Title" xml:space="preserve">
+    <value>Files that could not be backed up</value>
+  </data>
+  <data name="Overview_FailedFiles_More" xml:space="preserve">
+    <value>…and {0:N0} more. The event log lists all of them.</value>
+  </data>
+  <data name="Overview_BackupsToggle" xml:space="preserve">
+    <value>Backups</value>
   </data>
 </root>

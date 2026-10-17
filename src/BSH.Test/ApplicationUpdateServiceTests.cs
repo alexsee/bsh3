@@ -337,6 +337,7 @@ public class ApplicationUpdateServiceTests
         public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);
         public Task ShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
         public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
+        public Task ShowLastBackupFailedFilesAsync(LastBackupResult result) => Task.CompletedTask;
         public Task ShowMainWindowAsync() => Task.CompletedTask;
         public Task ShowStatusWindowAsync() => Task.CompletedTask;
         public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;

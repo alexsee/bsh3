@@ -28,6 +28,7 @@ public interface IPresentationService
     Task<bool> ShowDeleteBackupWindowAsync();
     Task ShowErrorInsufficientDiskSpaceAsync();
     Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files);
+    Task ShowLastBackupFailedFilesAsync(LastBackupResult result);
     Task ShowMainWindowAsync();
     Task ShowStatusWindowAsync();
     Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1);

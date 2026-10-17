@@ -69,8 +69,8 @@ public class JobService : IJobService, IDisposable
             this.jobRuntime,
             () => this.configurationManager.Encrypt == 1,
             () => this.configurationManager.EncryptPassMD5,
-            storedPasswordAdapter);
-
+            storedPasswordAdapter,
+            new BackupResultRecorder(this.configurationManager));
     }
 
     private MediaWaitMode SelectMediaWaitMode(bool silent)

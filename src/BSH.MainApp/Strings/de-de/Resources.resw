@@ -424,9 +424,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="MSG_TASK_RUNNING_TITLE" xml:space="preserve">
     <value>Andere Sicherungsaufgabe in Bearbeitung</value>
   </data>
-  <data name="MainView_Available" xml:space="preserve">
-    <value>Verfügbar:</value>
-  </data>
   <data name="MainView_BackupMode" xml:space="preserve">
     <value>Sicherungsmodus:</value>
   </data>
@@ -439,35 +436,11 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="MainView_BackupMode_Scheduled" xml:space="preserve">
     <value>Zeitplanbasierte Sicherungen</value>
   </data>
-  <data name="MainView_Backups" xml:space="preserve">
-    <value>Sicherungen</value>
-  </data>
   <data name="MainView_BtnCreateBackup_Title" xml:space="preserve">
     <value>Manuelle Sicherung</value>
   </data>
   <data name="MainView_Cancel" xml:space="preserve">
     <value>Abbrechen</value>
-  </data>
-  <data name="MainView_DiskspaceFullExpected" xml:space="preserve">
-    <value>Voraussichtlich voll am:</value>
-  </data>
-  <data name="MainView_DiskspaceUnpredictable" xml:space="preserve">
-    <value>noch nicht vorhersehbar</value>
-  </data>
-  <data name="MainView_Files" xml:space="preserve">
-    <value>Dateien</value>
-  </data>
-  <data name="MainView_LastBackup" xml:space="preserve">
-    <value>Letzte Sicherung:</value>
-  </data>
-  <data name="MainView_NextBackup" xml:space="preserve">
-    <value>Nächste Sicherung:</value>
-  </data>
-  <data name="MainView_NonePlanned" xml:space="preserve">
-    <value>keines geplant</value>
-  </data>
-  <data name="MainView_ScheduleWarning_NoEntries" xml:space="preserve">
-    <value>Für geplante Sicherungen ist kein Zeitplan eingerichtet.</value>
   </data>
   <data name="MainView_StartBackup" xml:space="preserve">
     <value>Sicherung starten</value>
@@ -480,21 +453,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   </data>
   <data name="MainView_SystemToggle" xml:space="preserve">
     <value>Sicherungssystem</value>
-  </data>
-  <data name="MainView_SystemStatus_BatteryPaused" xml:space="preserve">
-    <value>Batteriebetrieb. Es werden keine Sicherungen durchgeführt.</value>
-  </data>
-  <data name="MainView_SystemStatus_Deactivated" xml:space="preserve">
-    <value>Automatische Sicherung ist deaktiviert.</value>
-  </data>
-  <data name="MainView_SystemStatus_NotConfigured" xml:space="preserve">
-    <value>Backup Service Home ist noch nicht konfiguriert.</value>
-  </data>
-  <data name="MainView_SystemStatus_Running" xml:space="preserve">
-    <value>Backup Service Home wird ordnungsgemäß ausgeführt.</value>
-  </data>
-  <data name="MainView_TotalSizeBackuped" xml:space="preserve">
-    <value>Gesamtgröße gesichert</value>
   </data>
   <data name="MediaType_FileTransferServer" xml:space="preserve">
     <value>File Transfer Protocol (FTP)</value>
@@ -1482,5 +1440,212 @@ Das Medium wird automatisch erkannt.</value>
   </data>
   <data name="Browser_Version_DeletedFiles" xml:space="preserve">
     <value>−{0:N0} gelöschte Dateien</value>
+  </data>
+  <data name="Overview_Protected_Title" xml:space="preserve">
+    <value>Ihre Dateien sind geschützt</value>
+  </data>
+  <data name="Overview_LastBackupAt" xml:space="preserve">
+    <value>Letzte Sicherung: {0}.</value>
+  </data>
+  <data name="Overview_NextBackupAt" xml:space="preserve">
+    <value>Nächste Sicherung: {0}.</value>
+  </data>
+  <data name="Overview_BackupFailed_Title" xml:space="preserve">
+    <value>Letzte Sicherung fehlgeschlagen</value>
+  </data>
+  <data name="Overview_BackupFailed_Text" xml:space="preserve">
+    <value>Ihre neuesten Änderungen sind nicht gesichert. Letzte erfolgreiche Sicherung: {0}.</value>
+  </data>
+  <data name="Overview_BackupFailed_TextNoBackup" xml:space="preserve">
+    <value>Noch keine Ihrer Dateien ist gesichert.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_DeviceNotReady" xml:space="preserve">
+    <value>Das Sicherungsziel war nicht erreichbar. Stellen Sie sicher, dass es verbunden ist, und versuchen Sie es erneut.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_DiskSpace" xml:space="preserve">
+    <value>Am Sicherungsziel war nicht genug Speicherplatz frei. Löschen Sie alte Sicherungen oder wählen Sie ein größeres Laufwerk.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_Files" xml:space="preserve">
+    <value>{0} Dateien konnten nicht gesichert werden.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_Other" xml:space="preserve">
+    <value>Die Sicherung wurde wegen eines Fehlers abgebrochen: {0}</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_Unknown" xml:space="preserve">
+    <value>Die Sicherung wurde wegen eines Fehlers abgebrochen. Versuchen Sie es erneut oder sehen Sie im Ereignisprotokoll nach.</value>
+  </data>
+  <data name="Overview_LocationUnavailable_Title" xml:space="preserve">
+    <value>Sicherungsziel nicht verfügbar</value>
+  </data>
+  <data name="Overview_LocationUnavailable_Text" xml:space="preserve">
+    <value>Sicherungen können erst laufen, wenn das Sicherungsziel verbunden ist.</value>
+  </data>
+  <data name="Overview_LocationUnavailable_Action" xml:space="preserve">
+    <value>Verbinden Sie das Sicherungslaufwerk oder wählen Sie ein anderes Sicherungsziel.</value>
+  </data>
+  <data name="Overview_Overdue_Title" xml:space="preserve">
+    <value>Seit {0} Tagen keine Sicherung</value>
+  </data>
+  <data name="Overview_Overdue_Text" xml:space="preserve">
+    <value>Sie möchten nach {0} Tagen ohne Sicherung erinnert werden.</value>
+  </data>
+  <data name="Overview_Overdue_Action" xml:space="preserve">
+    <value>Sichern Sie jetzt, um Ihre letzten Änderungen zu schützen.</value>
+  </data>
+  <data name="Overview_NoBackup_Title" xml:space="preserve">
+    <value>Noch keine Sicherung</value>
+  </data>
+  <data name="Overview_NoBackup_Text" xml:space="preserve">
+    <value>Noch keine Ihrer Dateien ist gesichert.</value>
+  </data>
+  <data name="Overview_NoBackup_Action" xml:space="preserve">
+    <value>Starten Sie jetzt Ihre erste Sicherung.</value>
+  </data>
+  <data name="Overview_ScheduleEmpty_Title" xml:space="preserve">
+    <value>Keine Sicherungszeiten festgelegt</value>
+  </data>
+  <data name="Overview_ScheduleEmpty_Text" xml:space="preserve">
+    <value>Geplante Sicherungen sind aktiv, aber es sind keine Zeiten festgelegt. Daher laufen keine Sicherungen.</value>
+  </data>
+  <data name="Overview_ScheduleEmpty_Action" xml:space="preserve">
+    <value>Fügen Sie mindestens eine Sicherungszeit hinzu.</value>
+  </data>
+  <data name="Overview_FilesSkipped_Title" xml:space="preserve">
+    <value>Letzte Sicherung abgeschlossen, aber {0} Dateien wurden übersprungen</value>
+  </data>
+  <data name="Overview_FilesSkipped_Text" xml:space="preserve">
+    <value>Alle anderen Dateien wurden gesichert: {0}.</value>
+  </data>
+  <data name="Overview_FilesSkipped_Action" xml:space="preserve">
+    <value>{0} Dateien konnten nicht gelesen werden. Oft waren sie in einer anderen App geöffnet; schließen Sie diese und sichern Sie erneut.</value>
+  </data>
+  <data name="Overview_LowSpace_Title" xml:space="preserve">
+    <value>Sicherungsziel ist fast voll</value>
+  </data>
+  <data name="Overview_LowSpace_Text" xml:space="preserve">
+    <value>Nur noch {0} frei. Neue Sicherungen schlagen fehl, sobald es voll ist.</value>
+  </data>
+  <data name="Overview_LowSpace_Action" xml:space="preserve">
+    <value>Löschen Sie alte Sicherungen oder wählen Sie ein größeres Laufwerk.</value>
+  </data>
+  <data name="Overview_TurnedOff_Title" xml:space="preserve">
+    <value>Sicherungen sind ausgeschaltet</value>
+  </data>
+  <data name="Overview_TurnedOff_Text" xml:space="preserve">
+    <value>Es laufen keine automatischen oder geplanten Sicherungen.</value>
+  </data>
+  <data name="Overview_TurnedOff_Action" xml:space="preserve">
+    <value>Schalten Sie Sicherungen wieder ein, um geschützt zu bleiben.</value>
+  </data>
+  <data name="Overview_Battery_Title" xml:space="preserve">
+    <value>Sicherungen im Akkubetrieb pausiert</value>
+  </data>
+  <data name="Overview_Battery_Text" xml:space="preserve">
+    <value>Sicherungen werden fortgesetzt, sobald Ihr Gerät am Strom angeschlossen ist.</value>
+  </data>
+  <data name="Overview_NotConfigured_Title" xml:space="preserve">
+    <value>Backup Service Home ist noch nicht eingerichtet</value>
+  </data>
+  <data name="Overview_NotConfigured_Text" xml:space="preserve">
+    <value>Wählen Sie aus, was gesichert und wo es gespeichert werden soll.</value>
+  </data>
+  <data name="Overview_WhatToDo" xml:space="preserve">
+    <value>Was zu tun ist</value>
+  </data>
+  <data name="Overview_Button_BackUpNow" xml:space="preserve">
+    <value>Jetzt sichern</value>
+  </data>
+  <data name="Overview_Button_ViewFiles" xml:space="preserve">
+    <value>Dateien anzeigen</value>
+  </data>
+  <data name="Overview_Button_ManageBackups" xml:space="preserve">
+    <value>Sicherungen verwalten</value>
+  </data>
+  <data name="Overview_Button_ChangeLocation" xml:space="preserve">
+    <value>Ziel ändern</value>
+  </data>
+  <data name="Overview_Button_SetSchedule" xml:space="preserve">
+    <value>Zeitplan festlegen</value>
+  </data>
+  <data name="Overview_Button_TurnOn" xml:space="preserve">
+    <value>Einschalten</value>
+  </data>
+  <data name="Overview_LastBackup_Header" xml:space="preserve">
+    <value>Letzte Sicherung</value>
+  </data>
+  <data name="Overview_LastBackup_Browse" xml:space="preserve">
+    <value>Dateien durchsuchen</value>
+  </data>
+  <data name="Overview_LastBackup_When" xml:space="preserve">
+    <value>Wann</value>
+  </data>
+  <data name="Overview_LastBackup_Result" xml:space="preserve">
+    <value>Ergebnis</value>
+  </data>
+  <data name="Overview_LastBackup_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Overview_LastBackup_None" xml:space="preserve">
+    <value>Es wurde noch keine Sicherung erstellt.</value>
+  </data>
+  <data name="Overview_Result_Succeeded" xml:space="preserve">
+    <value>Abgeschlossen</value>
+  </data>
+  <data name="Overview_Result_CompletedWithErrors" xml:space="preserve">
+    <value>Abgeschlossen, {0} Dateien übersprungen</value>
+  </data>
+  <data name="Overview_Result_Failed" xml:space="preserve">
+    <value>Fehlgeschlagen</value>
+  </data>
+  <data name="Overview_Changes_Added" xml:space="preserve">
+    <value>{0:N0} neu</value>
+  </data>
+  <data name="Overview_Changes_Modified" xml:space="preserve">
+    <value>{0:N0} geändert</value>
+  </data>
+  <data name="Overview_Changes_Deleted" xml:space="preserve">
+    <value>{0:N0} gelöscht</value>
+  </data>
+  <data name="Overview_Location_Header" xml:space="preserve">
+    <value>Sicherungsziel</value>
+  </data>
+  <data name="Overview_Location_Local" xml:space="preserve">
+    <value>Laufwerk oder Ordner</value>
+  </data>
+  <data name="Overview_Location_Ftp" xml:space="preserve">
+    <value>FTP-Server</value>
+  </data>
+  <data name="Overview_Location_Free" xml:space="preserve">
+    <value>{0} frei</value>
+  </data>
+  <data name="Overview_Location_FreeUnknown" xml:space="preserve">
+    <value>Der freie Speicherplatz wird nach der nächsten Sicherung ermittelt.</value>
+  </data>
+  <data name="Overview_Location_LowHint" xml:space="preserve">
+    <value>Unter Ihrer Warngrenze von {0}</value>
+  </data>
+  <data name="Overview_Location_Checking" xml:space="preserve">
+    <value>Verbindung wird geprüft…</value>
+  </data>
+  <data name="Overview_Location_Available" xml:space="preserve">
+    <value>Verbunden</value>
+  </data>
+  <data name="Overview_Location_Unavailable" xml:space="preserve">
+    <value>Nicht verbunden</value>
+  </data>
+  <data name="Overview_Totals" xml:space="preserve">
+    <value>Insgesamt: {0:N0} Sicherungen · {1:N0} Dateien · {2}</value>
+  </data>
+  <data name="Overview_ModeAndNext" xml:space="preserve">
+    <value>{0} · Nächste Sicherung: {1}</value>
+  </data>
+  <data name="Overview_FailedFiles_Title" xml:space="preserve">
+    <value>Dateien, die nicht gesichert werden konnten</value>
+  </data>
+  <data name="Overview_FailedFiles_More" xml:space="preserve">
+    <value>…und {0:N0} weitere. Das Ereignisprotokoll listet alle auf.</value>
+  </data>
+  <data name="Overview_BackupsToggle" xml:space="preserve">
+    <value>Sicherungen</value>
   </data>
 </root>
