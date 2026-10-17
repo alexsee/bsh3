@@ -27,6 +27,7 @@ public sealed class ApplicationUpdateService : IUpdateService
     private readonly ILocalSettingsService localSettingsService;
     private readonly Func<IPresentationService> presentationServiceFactory;
     private readonly Action<string> startUpdateCheck;
+    private readonly Action<UpdateInfoEventArgs> showUpdateForm;
     private readonly ConcurrentQueue<bool> pendingNotifyWhenUpToDate = new();
     private bool eventsHooked;
     private bool initialized;
@@ -34,11 +35,13 @@ public sealed class ApplicationUpdateService : IUpdateService
     public ApplicationUpdateService(
         ILocalSettingsService localSettingsService,
         Func<IPresentationService>? presentationServiceFactory = null,
-        Action<string>? startUpdateCheck = null)
+        Action<string>? startUpdateCheck = null,
+        Action<UpdateInfoEventArgs>? showUpdateForm = null)
     {
         this.localSettingsService = localSettingsService;
         this.presentationServiceFactory = presentationServiceFactory ?? (() => App.GetService<IPresentationService>());
         this.startUpdateCheck = startUpdateCheck ?? (feedUrl => AutoUpdater.Start(feedUrl));
+        this.showUpdateForm = showUpdateForm ?? AutoUpdater.ShowUpdateForm;
     }
 
     public async Task InitializeAsync(Action onApplicationExitRequested)
@@ -134,7 +137,7 @@ public sealed class ApplicationUpdateService : IUpdateService
         return failed && notifyWhenUpToDate;
     }
 
-    private void OnCheckForUpdate(UpdateInfoEventArgs args)
+    internal void OnCheckForUpdate(UpdateInfoEventArgs args)
     {
         pendingNotifyWhenUpToDate.TryDequeue(out var notifyWhenUpToDate);
         var failed = args.Error != null;
@@ -142,9 +145,9 @@ public sealed class ApplicationUpdateService : IUpdateService
         if (ShouldShowUpToDateDialog(args.IsUpdateAvailable, failed, notifyWhenUpToDate))
         {
             _ = presentationServiceFactory().ShowMessageBoxAsync(
-                "MSG_NO_UPDATE_FOUND_TITLE".GetLocalized(),
-                "ApplicationUpdate_UpToDate_Text".GetLocalized(),
-                [new UICommand("MsgBox_OK".GetLocalized())]);
+                "MSG_NO_UPDATE_FOUND_TITLE".GetLocalized() ?? string.Empty,
+                "ApplicationUpdate_UpToDate_Text".GetLocalized() ?? string.Empty,
+                [new UICommand("MsgBox_OK".GetLocalized() ?? string.Empty)]);
             return;
         }
 
@@ -154,9 +157,9 @@ public sealed class ApplicationUpdateService : IUpdateService
             if (ShouldShowCheckFailedDialog(failed, notifyWhenUpToDate))
             {
                 _ = presentationServiceFactory().ShowMessageBoxAsync(
-                    "ApplicationUpdate_CheckFailed_Title".GetLocalized(),
-                    "ApplicationUpdate_CheckFailed_Text".GetLocalized(),
-                    [new UICommand("MsgBox_OK".GetLocalized())]);
+                    "ApplicationUpdate_CheckFailed_Title".GetLocalized() ?? string.Empty,
+                    "ApplicationUpdate_CheckFailed_Text".GetLocalized() ?? string.Empty,
+                    [new UICommand("MsgBox_OK".GetLocalized() ?? string.Empty)]);
             }
 
             return;
@@ -167,7 +170,7 @@ public sealed class ApplicationUpdateService : IUpdateService
             return;
         }
 
-        AutoUpdater.ShowUpdateForm(args);
+        showUpdateForm(args);
     }
 
     private static string GetApplicationVersion()

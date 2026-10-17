@@ -8,6 +8,7 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Exceptions;
+using BSH.Test.Fakes;
 using BSH.Test.Helpers;
 using BSH.Test.Mocks;
 using NUnit.Framework;
@@ -99,6 +100,56 @@ public class DatabaseSchemaUpgradeTests
         var migration = new DbMigrationService(fixture.DbFactory, fixture.ConfigurationManager);
 
         Assert.ThrowsAsync<DatabaseIncompatibleException>(async () => await migration.InitializeAsync());
+    }
+
+    [Test]
+    public async Task InitializeAsync_StillBacksUpWhenTheCheckpointFails()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "bsh-checkpoint-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        var database = Path.Combine(directory, "backupservicehome.bshdb");
+        await File.WriteAllTextAsync(database, "database");
+
+        try
+        {
+            var configuration = new FakeConfigurationManager { DBVersion = "8" };
+            var migration = new DbMigrationService(new ThrowingDbClientFactory(database), configuration);
+
+            Assert.ThrowsAsync<IOException>(async () => await migration.InitializeAsync());
+
+            Assert.That(Directory.GetFiles(directory, "*.bak"), Has.Length.EqualTo(1));
+            Assert.That(configuration.DBVersion, Is.EqualTo("8"));
+            Assert.That(await File.ReadAllTextAsync(database), Is.EqualTo("database"));
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    private sealed class ThrowingDbClientFactory : IDbClientFactory
+    {
+        public ThrowingDbClientFactory(string databaseFile)
+        {
+            DatabaseFile = databaseFile;
+        }
+
+        public string DatabaseFile { get; }
+
+        public DbClient CreateDbClient()
+        {
+            throw new IOException("database is busy");
+        }
+
+        public Task InitializeAsync(string databaseFile)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task ExecuteNonQueryAsync(string query)
+        {
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class SchemaUpgradeFixture : IAsyncDisposable

@@ -9,7 +9,6 @@ using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Runtime;
@@ -161,49 +160,30 @@ public partial class App : Application
         var startup = PreviewSingleInstanceGate.Acquire(
             onActivateRequested: () => uiQueue.TryEnqueue(BringPreviewToFront),
             out var gate);
-        if (startup == PreviewStartupResult.ActivateExisting)
+        if (PreviewAppStartup.Decide(
+            startup,
+            PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs()),
+            NativeMessage.Show,
+            PreviewAppStartup.LocalizedOrFallback) == PreviewLaunchAction.Exit)
         {
-            ExitApplication();
-            return;
-        }
-
-        if (startup == PreviewStartupResult.BlockedByOtherEngine)
-        {
-            if (PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs()))
-            {
-                Log.Information("Preview autostart exited because the stable app already holds the shared database.");
-            }
-            else
-            {
-                NativeMessage.Show(LocalizedOrFallback(
-                    "Preview_EngineBusy_Title",
-                    "Backup Service Home 3 Preview"),
-                    LocalizedOrFallback(
-                        "Preview_EngineBusy_Text",
-                        "Backup Service Home is already running. Preview uses the same database and will not start while that app is running."));
-            }
-
             ExitApplication();
             return;
         }
 
         previewInstance = gate;
 
-        try
+        var databaseOpened = await PreviewAppStartup.OpenDatabaseAsync(
+            async () =>
+            {
+                // init database, read configuration, and perform potential schema migrations
+                await App.GetService<IDbClientFactory>().InitializeAsync(DatabaseFile);
+                await App.GetService<IConfigurationManager>().InitializeAsync();
+                await App.GetService<IDbMigrationService>().InitializeAsync();
+            },
+            NativeMessage.Show,
+            PreviewAppStartup.LocalizedOrFallback);
+        if (!databaseOpened)
         {
-            // init database, read configuration, and perform potential schema migrations
-            await App.GetService<IDbClientFactory>().InitializeAsync(DatabaseFile);
-            await App.GetService<IConfigurationManager>().InitializeAsync();
-            await App.GetService<IDbMigrationService>().InitializeAsync();
-        }
-        catch (DatabaseIncompatibleException)
-        {
-            NativeMessage.Show(LocalizedOrFallback(
-                "Preview_DatabaseTooNew_Title",
-                "Backup Service Home 3 Preview"),
-                LocalizedOrFallback(
-                    "Preview_DatabaseTooNew_Text",
-                    "This database was written by a newer Backup Service Home and was not opened. Install a newer version."));
             ExitApplication();
             return;
         }
@@ -224,28 +204,15 @@ public partial class App : Application
 
     private static void BringPreviewToFront()
     {
-        try
-        {
-            var window = mainWindow;
-            if (window == null)
+        var window = mainWindow;
+        PreviewAppStartup.BringToFront(window == null
+            ? null
+            : () =>
             {
-                return;
-            }
-
-            window.AppWindow.Show();
-            window.Activate();
-            window.AppWindow.MoveInZOrderAtTop();
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Could not bring the Preview window to the front.");
-        }
-    }
-
-    private static string LocalizedOrFallback(string key, string fallback)
-    {
-        var value = key.GetLocalized();
-        return string.IsNullOrEmpty(value) || value == key ? fallback : value;
+                window.AppWindow.Show();
+                window.Activate();
+                window.AppWindow.MoveInZOrderAtTop();
+            });
     }
 
     private static void OnAutoUpdaterApplicationExit()

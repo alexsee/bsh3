@@ -14,19 +14,41 @@ public class AppNotificationService : IAppNotificationService, IDisposable
     private static readonly ILogger Logger = Log.ForContext<AppNotificationService>();
 
     private readonly INavigationService _navigationService;
+    private readonly Action registerNotifications;
+    private readonly Action detachNotifications;
+    private readonly Action unregisterNotifications;
+    private readonly Func<string, bool> showNotification;
     private bool _isRegistered;
 
     public AppNotificationService(INavigationService navigationService)
+        : this(navigationService, register: null, detach: null, showPayload: null, unregister: null)
+    {
+    }
+
+    internal AppNotificationService(
+        INavigationService navigationService,
+        Action? register,
+        Action? detach,
+        Func<string, bool>? showPayload,
+        Action? unregister = null)
     {
         _navigationService = navigationService;
+        registerNotifications = register ?? RegisterWithPlatform;
+        detachNotifications = detach ?? DetachFromPlatform;
+        showNotification = showPayload ?? ShowWithPlatform;
+        unregisterNotifications = unregister ?? UnregisterFromPlatform;
+    }
+
+    internal void MarkRegisteredForTests()
+    {
+        _isRegistered = true;
     }
 
     public void Initialize()
     {
         try
         {
-            AppNotificationManager.Default.NotificationInvoked += OnNotificationInvoked;
-            AppNotificationManager.Default.Register();
+            registerNotifications();
             _isRegistered = true;
         }
         catch (Exception ex)
@@ -34,7 +56,7 @@ public class AppNotificationService : IAppNotificationService, IDisposable
             _isRegistered = false;
             try
             {
-                AppNotificationManager.Default.NotificationInvoked -= OnNotificationInvoked;
+                detachNotifications();
             }
             catch (Exception)
             {
@@ -43,6 +65,30 @@ public class AppNotificationService : IAppNotificationService, IDisposable
 
             Logger.Warning(ex, "App notifications could not be registered.");
         }
+    }
+
+    private void RegisterWithPlatform()
+    {
+        AppNotificationManager.Default.NotificationInvoked += OnNotificationInvoked;
+        AppNotificationManager.Default.Register();
+    }
+
+    private void DetachFromPlatform()
+    {
+        AppNotificationManager.Default.NotificationInvoked -= OnNotificationInvoked;
+    }
+
+    private void UnregisterFromPlatform()
+    {
+        AppNotificationManager.Default.NotificationInvoked -= OnNotificationInvoked;
+        AppNotificationManager.Default.Unregister();
+    }
+
+    private static bool ShowWithPlatform(string payload)
+    {
+        var appNotification = new AppNotification(payload);
+        AppNotificationManager.Default.Show(appNotification);
+        return appNotification.Id != 0;
     }
 
     public void OnNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
@@ -59,9 +105,7 @@ public class AppNotificationService : IAppNotificationService, IDisposable
 
         try
         {
-            var appNotification = new AppNotification(payload);
-            AppNotificationManager.Default.Show(appNotification);
-            return appNotification.Id != 0;
+            return showNotification(payload);
         }
         catch (Exception ex)
         {
@@ -100,8 +144,7 @@ public class AppNotificationService : IAppNotificationService, IDisposable
         }
 
         _isRegistered = false;
-        AppNotificationManager.Default.NotificationInvoked -= OnNotificationInvoked;
-        AppNotificationManager.Default.Unregister();
+        unregisterNotifications();
     }
 
     public void Dispose()

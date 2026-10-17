@@ -47,6 +47,9 @@
 		</ProjectReference>
 	</ItemGroup>
 	<ItemGroup>
+		<InternalsVisibleTo Include="BSH.Test" />
+	</ItemGroup>
+	<ItemGroup>
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

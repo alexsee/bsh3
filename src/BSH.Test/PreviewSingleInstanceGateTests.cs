@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Services;
 using NUnit.Framework;
@@ -97,6 +98,179 @@ public class PreviewSingleInstanceGateTests
             sync);
         Assert.That(second, Is.EqualTo(PreviewStartupResult.Started));
         next.Dispose();
+        next.Dispose();
+    }
+
+    [Test]
+    public void AcquireRejectsAMissingCallback()
+    {
+        var sync = new InMemoryPreviewInstanceSync();
+        Assert.Throws<ArgumentNullException>(() =>
+            PreviewSingleInstanceGate.Acquire(null, out _, "preview", "engine", "activate", sync));
+        Assert.Throws<ArgumentNullException>(() =>
+            PreviewSingleInstanceGate.Acquire(() => { }, out _, "preview", "engine", "activate", null));
+    }
+
+    [Test]
+    [Platform("Win")]
+    public void WindowsSyncSignalsTheRunningPreview()
+    {
+        var names = UniqueNames();
+        var sync = WindowsPreviewInstanceSync.Shared;
+        var activated = new ManualResetEventSlim(false);
+        var first = PreviewSingleInstanceGate.Acquire(
+            () => activated.Set(),
+            out var gate,
+            names.Preview,
+            names.Engine,
+            names.EventName,
+            sync);
+        Assert.That(first, Is.EqualTo(PreviewStartupResult.Started));
+
+        try
+        {
+            var second = PreviewSingleInstanceGate.Acquire(
+                () => { },
+                out _,
+                names.Preview,
+                names.Engine,
+                names.EventName,
+                sync);
+
+            Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
+            Assert.That(activated.Wait(TimeSpan.FromSeconds(2)), Is.True);
+        }
+        finally
+        {
+            gate.Dispose();
+        }
+    }
+
+    [Test]
+    [Platform("Win")]
+    public void WindowsSyncBlocksAndReleasesThePreviewMutex()
+    {
+        var names = UniqueNames();
+        var sync = WindowsPreviewInstanceSync.Shared;
+        var held = new ManualResetEventSlim(false);
+        var release = new ManualResetEventSlim(false);
+        var thread = new Thread(() =>
+        {
+            Assert.That(sync.TryAcquireMutex(names.Engine, out var ownership), Is.True);
+            held.Set();
+            release.Wait();
+            ownership.Dispose();
+        });
+        thread.Start();
+        Assert.That(held.Wait(TimeSpan.FromSeconds(2)), Is.True);
+
+        try
+        {
+            var blocked = PreviewSingleInstanceGate.Acquire(
+                () => { },
+                out var gate,
+                names.Preview,
+                names.Engine,
+                names.EventName,
+                sync);
+            Assert.That(blocked, Is.EqualTo(PreviewStartupResult.BlockedByOtherEngine));
+            Assert.That(gate, Is.Null);
+        }
+        finally
+        {
+            release.Set();
+            thread.Join();
+        }
+
+        var started = PreviewSingleInstanceGate.Acquire(
+            () => { },
+            out var next,
+            names.Preview,
+            names.Engine,
+            names.EventName,
+            sync);
+        Assert.That(started, Is.EqualTo(PreviewStartupResult.Started));
+        next.Dispose();
+    }
+
+    [Test]
+    [Platform("Win")]
+    public void WindowsSyncTakesOverAnAbandonedMutex()
+    {
+        var name = "bsh-ab-" + Guid.NewGuid().ToString("N");
+        var started = new ManualResetEventSlim(false);
+        var thread = new Thread(() =>
+        {
+            var mutex = new Mutex(false, name);
+            mutex.WaitOne();
+            started.Set();
+        });
+        thread.IsBackground = true;
+        thread.Start();
+        Assert.That(started.Wait(TimeSpan.FromSeconds(2)), Is.True);
+        thread.Join();
+
+        Assert.That(WindowsPreviewInstanceSync.Shared.TryAcquireMutex(name, out var ownership), Is.True);
+        ownership.Dispose();
+        ownership.Dispose();
+    }
+
+    [Test]
+    [Platform("Win")]
+    public void WindowsSyncReleaseFromAnotherThreadDoesNotEscape()
+    {
+        var name = "bsh-rel-" + Guid.NewGuid().ToString("N");
+        Assert.That(WindowsPreviewInstanceSync.Shared.TryAcquireMutex(name, out var ownership), Is.True);
+        var thread = new Thread(() => ownership.Dispose());
+        thread.Start();
+        thread.Join();
+    }
+
+    [Test]
+    [Platform("Win")]
+    public void WindowsSyncIgnoresActivationCallbackFailures()
+    {
+        var name = "bsh-ev-" + Guid.NewGuid().ToString("N");
+        var called = new ManualResetEventSlim(false);
+        var listener = WindowsPreviewInstanceSync.Shared.Listen(name, () =>
+        {
+            called.Set();
+            throw new InvalidOperationException("activation failed");
+        });
+
+        try
+        {
+            WindowsPreviewInstanceSync.Shared.Signal(name);
+            Assert.That(called.Wait(TimeSpan.FromSeconds(2)), Is.True);
+            Thread.Sleep(100);
+        }
+        finally
+        {
+            listener.Dispose();
+        }
+    }
+
+    [Test]
+    [Platform("Win")]
+    public void WindowsSyncGivesUpWhenTheActivateEventDoesNotExist()
+    {
+        WindowsPreviewInstanceSync.Shared.Signal("missing-" + Guid.NewGuid().ToString("N"));
+    }
+
+    [Test]
+    [Platform("Win")]
+    public void ProductionMutexNamesCanBeAcquired()
+    {
+        var result = PreviewSingleInstanceGate.Acquire(() => { }, out var gate);
+        try
+        {
+            Assert.That(result, Is.EqualTo(PreviewStartupResult.Started));
+            Assert.That(gate, Is.Not.Null);
+        }
+        finally
+        {
+            gate?.Dispose();
+        }
     }
 
     [Test]
