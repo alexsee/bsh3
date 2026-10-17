@@ -123,6 +123,25 @@ public class MainViewModelSystemToggleTests
         Assert.That(viewModel.NextBackupGridVisibility, Is.False);
     }
 
+    [Test]
+    public async Task RunningJob_HidesActionsUntilItEnds()
+    {
+        var configuration = new FakeConfigurationManager { DbStatus = "0" };
+        var status = new ToggleStatusService { SystemStatus = SystemStatus.ACTIVATED };
+        var viewModel = Create(configuration, new ScriptedOrchestration(configuration), status);
+        Assert.That(viewModel.HasActionItems, Is.True, "no backup yet offers Back up now");
+
+        status.JobState = JobState.RUNNING;
+        viewModel.ReportState(JobState.RUNNING);
+        await DrainDispatcherAsync();
+        Assert.That(viewModel.HasActionItems, Is.False);
+        Assert.That(viewModel.ActionItems, Is.Empty);
+
+        status.JobState = JobState.CANCELED;
+        viewModel.ReportState(JobState.CANCELED);
+        await WaitUntil(() => viewModel.HasActionItems);
+    }
+
     private async Task DrainDispatcherAsync()
     {
         var drained = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);

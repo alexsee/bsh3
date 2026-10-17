@@ -46,6 +46,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     private bool hasScheduleEntries;
     private bool? isBackupLocationAvailable;
     private SystemStatus systemStatus;
+    private ActionType currentAction = ActionType.Backup;
 
     [ObservableProperty]
     private OverviewSeverity severity = OverviewSeverity.Protected;
@@ -299,6 +300,20 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         var issues = OverviewStatusEvaluator.Evaluate(inputs);
         Severity = OverviewStatusEvaluator.GetOverallSeverity(issues);
 
+        ActionItems.Clear();
+        if (statusService.JobState == JobState.RUNNING)
+        {
+            StatusTitle = currentAction switch
+            {
+                ActionType.Backup => "Overview_Running_Backup_Title".GetLocalized(),
+                ActionType.Restore => "Overview_Running_Restore_Title".GetLocalized(),
+                _ => "Overview_Running_Other_Title".GetLocalized(),
+            };
+            StatusText = "Overview_Running_Text".GetLocalized();
+            HasActionItems = false;
+            return;
+        }
+
         if (issues.Count == 0)
         {
             StatusTitle = "Overview_Protected_Title".GetLocalized();
@@ -310,7 +325,6 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
             StatusText = GetIssueText(issues[0], inputs);
         }
 
-        ActionItems.Clear();
         foreach (var issue in issues.Where(issue => issue.Action != OverviewAction.None))
         {
             ActionItems.Add(new OverviewActionItem(
@@ -582,6 +596,14 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     public void ReportAction(ActionType action, bool silent)
     {
+        EnqueueUi(() =>
+        {
+            currentAction = action;
+            if (statusService.JobState == JobState.RUNNING)
+            {
+                ApplyStatus();
+            }
+        });
     }
 
     public void ReportState(JobState jobState)
@@ -606,11 +628,13 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
                     value => CurrentProgressValue = value);
                 NextBackupGridVisibility = false;
                 ProgressGridVisibility = true;
+                ApplyStatus();
                 return;
             }
 
             NextBackupGridVisibility = true;
             ProgressGridVisibility = false;
+            ApplyStatus();
 
             if (jobState is JobState.FINISHED or JobState.ERROR or JobState.CANCELED)
             {

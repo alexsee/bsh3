@@ -108,41 +108,45 @@
 
                         <TextBlock Text="{helpers:ResourceString Name=Schedule_AddTime}" />
                         <StackPanel Orientation="Horizontal" Spacing="12">
-                            <ComboBox Width="160"
+                            <ComboBox MinWidth="180"
+                                      VerticalAlignment="Bottom"
                                       Header="{helpers:ResourceString Name=Schedule_Repeat}"
                                       ItemTemplate="{StaticResource ScheduleOptionTemplate}"
                                       ItemsSource="{x:Bind ViewModel.ScheduleKinds}"
                                       SelectedItem="{Binding SelectedScheduleKind, Mode=TwoWay}" />
-                            <DatePicker Width="160"
-                                        MinWidth="0"
+                            <DatePicker VerticalAlignment="Bottom"
                                         Header="{helpers:ResourceString Name=Schedule_Date}"
                                         Date="{Binding StartDate, Mode=TwoWay}"
                                         Visibility="{x:Bind ViewModel.ShowDatePicker, Mode=OneWay}" />
-                            <ComboBox Width="160"
+                            <ComboBox MinWidth="180"
+                                      VerticalAlignment="Bottom"
                                       Header="{helpers:ResourceString Name=Schedule_Day}"
                                       ItemTemplate="{StaticResource ScheduleOptionTemplate}"
                                       ItemsSource="{x:Bind ViewModel.WeeklyDays}"
                                       SelectedItem="{Binding SelectedWeeklyDay, Mode=TwoWay}"
                                       Visibility="{x:Bind ViewModel.ShowWeeklyDayPicker, Mode=OneWay}" />
                             <NumberBox Width="160"
+                                       VerticalAlignment="Bottom"
                                        Header="{helpers:ResourceString Name=Schedule_DayOfMonth}"
                                        Maximum="31"
                                        Minimum="1"
                                        SpinButtonPlacementMode="Inline"
                                        Value="{Binding SelectedMonthlyDay, Mode=TwoWay}"
                                        Visibility="{x:Bind ViewModel.ShowMonthlyDayPicker, Mode=OneWay}" />
-                            <TimePicker Width="160"
-                                        MinWidth="0"
-                                        Header="{helpers:ResourceString Name=Schedule_Time}"
-                                        Time="{Binding StartTime, Mode=TwoWay}"
-                                        Visibility="{x:Bind ViewModel.ShowTimePicker, Mode=OneWay}" />
                             <NumberBox Width="160"
+                                       VerticalAlignment="Bottom"
                                        Header="{helpers:ResourceString Name=Schedule_Minute}"
                                        Maximum="59"
                                        Minimum="0"
                                        SpinButtonPlacementMode="Inline"
                                        Value="{Binding SelectedMinute, Mode=TwoWay}"
                                        Visibility="{x:Bind ViewModel.ShowMinutePicker, Mode=OneWay}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TimePicker VerticalAlignment="Bottom"
+                                        Header="{helpers:ResourceString Name=Schedule_Time}"
+                                        Time="{Binding StartTime, Mode=TwoWay}"
+                                        Visibility="{x:Bind ViewModel.ShowTimePicker, Mode=OneWay}" />
                             <Button MinWidth="100"
                                     VerticalAlignment="Bottom"
                                     Command="{Binding AddScheduleCommand}"

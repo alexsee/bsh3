@@ -1708,4 +1708,16 @@ The medium will be automatically detected.</value>
   <data name="Filter_SystemFolders_Description" xml:space="preserve">
     <value>Some apps, like Nextcloud, mark their sync folders as system folders. These are skipped unless you turn this on.</value>
   </data>
+  <data name="Overview_Running_Backup_Title" xml:space="preserve">
+    <value>Backing up your files…</value>
+  </data>
+  <data name="Overview_Running_Restore_Title" xml:space="preserve">
+    <value>Restoring files…</value>
+  </data>
+  <data name="Overview_Running_Other_Title" xml:space="preserve">
+    <value>Updating your backups…</value>
+  </data>
+  <data name="Overview_Running_Text" xml:space="preserve">
+    <value>You can keep working while this runs. Progress is shown below.</value>
+  </data>
 </root>

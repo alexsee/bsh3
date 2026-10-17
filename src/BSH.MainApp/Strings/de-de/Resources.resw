@@ -1708,4 +1708,16 @@ Das Medium wird automatisch erkannt.</value>
   <data name="Filter_SystemFolders_Description" xml:space="preserve">
     <value>Manche Apps, z. B. Nextcloud, markieren ihre Synchronisierungsordner als Systemordner. Diese werden übersprungen, sofern Sie dies nicht einschalten.</value>
   </data>
+  <data name="Overview_Running_Backup_Title" xml:space="preserve">
+    <value>Ihre Dateien werden gesichert…</value>
+  </data>
+  <data name="Overview_Running_Restore_Title" xml:space="preserve">
+    <value>Dateien werden wiederhergestellt…</value>
+  </data>
+  <data name="Overview_Running_Other_Title" xml:space="preserve">
+    <value>Ihre Sicherungen werden aktualisiert…</value>
+  </data>
+  <data name="Overview_Running_Text" xml:space="preserve">
+    <value>Sie können währenddessen weiterarbeiten. Der Fortschritt wird unten angezeigt.</value>
+  </data>
 </root>
