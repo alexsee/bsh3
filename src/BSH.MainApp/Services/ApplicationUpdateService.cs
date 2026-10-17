@@ -127,50 +127,38 @@ public sealed class ApplicationUpdateService : IUpdateService
         AutoUpdater.CheckForUpdateEvent += OnCheckForUpdate;
     }
 
-    public static bool ShouldShowUpToDateDialog(bool isUpdateAvailable, bool failed, bool notifyWhenUpToDate)
-    {
-        return notifyWhenUpToDate && !isUpdateAvailable && !failed;
-    }
-
-    public static bool ShouldShowCheckFailedDialog(bool failed, bool notifyWhenUpToDate)
-    {
-        return failed && notifyWhenUpToDate;
-    }
-
     internal void OnCheckForUpdate(UpdateInfoEventArgs args)
     {
         pendingNotifyWhenUpToDate.TryDequeue(out var notifyWhenUpToDate);
-        var failed = args.Error != null;
-
-        if (ShouldShowUpToDateDialog(args.IsUpdateAvailable, failed, notifyWhenUpToDate))
-        {
-            _ = presentationServiceFactory().ShowMessageBoxAsync(
-                "MSG_NO_UPDATE_FOUND_TITLE".GetLocalized() ?? string.Empty,
-                "ApplicationUpdate_UpToDate_Text".GetLocalized() ?? string.Empty,
-                [new UICommand("MsgBox_OK".GetLocalized() ?? string.Empty)]);
-            return;
-        }
-
-        if (failed)
+        if (args.Error != null)
         {
             Log.Warning(args.Error, "Update check failed.");
-            if (ShouldShowCheckFailedDialog(failed, notifyWhenUpToDate))
+            if (notifyWhenUpToDate)
             {
-                _ = presentationServiceFactory().ShowMessageBoxAsync(
-                    "ApplicationUpdate_CheckFailed_Title".GetLocalized() ?? string.Empty,
-                    "ApplicationUpdate_CheckFailed_Text".GetLocalized() ?? string.Empty,
-                    [new UICommand("MsgBox_OK".GetLocalized() ?? string.Empty)]);
+                ShowMessage("ApplicationUpdate_CheckFailed_Title", "ApplicationUpdate_CheckFailed_Text");
             }
 
             return;
         }
 
-        if (!args.IsUpdateAvailable)
+        if (args.IsUpdateAvailable)
         {
+            showUpdateForm(args);
             return;
         }
 
-        showUpdateForm(args);
+        if (notifyWhenUpToDate)
+        {
+            ShowMessage("MSG_NO_UPDATE_FOUND_TITLE", "ApplicationUpdate_UpToDate_Text");
+        }
+    }
+
+    private void ShowMessage(string titleKey, string textKey)
+    {
+        _ = presentationServiceFactory().ShowMessageBoxAsync(
+            titleKey.GetLocalized() ?? string.Empty,
+            textKey.GetLocalized() ?? string.Empty,
+            [new UICommand("MsgBox_OK".GetLocalized() ?? string.Empty)]);
     }
 
     private static string GetApplicationVersion()

@@ -809,8 +809,6 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool downloadBetaUpdates;
 
-    public bool ShowDownloadBetaSetting => false;
-
     void InitEnhancedSettings()
     {
         suppressEnhancedSettingsPersistence = true;

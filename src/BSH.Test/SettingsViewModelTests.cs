@@ -492,14 +492,6 @@ public class SettingsViewModelTests
     }
 
     [Test]
-    public void PreviewHidesTheDownloadBetaSetting()
-    {
-        var harness = CreateHarness(new FakeConfigurationManager());
-
-        Assert.That(harness.ViewModel.ShowDownloadBetaSetting, Is.False);
-    }
-
-    [Test]
     public void LoadingTaskTypeDoesNotRefreshAutomation()
     {
         var configuration = new FakeConfigurationManager { TaskType = TaskType.Auto };

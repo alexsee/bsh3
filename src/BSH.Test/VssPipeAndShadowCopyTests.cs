@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using Brightbits.BSH.Engine.Services;
+using BSH.Service.Shared;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -13,8 +14,8 @@ public class VssPipeAndShadowCopyTests
     [Test]
     public void BlankOrOversizedPipeNamesStayOnTheStablePipe()
     {
-        Assert.That(VssConnection.ResolveInstalledPipe(null), Is.EqualTo(VssConnection.StablePipeName));
-        Assert.That(VssConnection.ResolveInstalledPipe("   "), Is.EqualTo(VssConnection.StablePipeName));
+        Assert.That(VssPipeNames.ReadInstalledPipeName(null), Is.EqualTo(VssPipeNames.Stable));
+        Assert.That(VssPipeNames.ReadInstalledPipeName("   "), Is.EqualTo(VssPipeNames.Stable));
 
         var directory = Path.Combine(Path.GetTempPath(), "bsh-pipe-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
@@ -22,10 +23,10 @@ public class VssPipeAndShadowCopyTests
         try
         {
             File.WriteAllText(Path.Combine(directory, "vss.pipe"), "   \n");
-            Assert.That(VssConnection.ResolveInstalledPipe(directory), Is.EqualTo(VssConnection.StablePipeName));
+            Assert.That(VssPipeNames.ReadInstalledPipeName(directory), Is.EqualTo(VssPipeNames.Stable));
 
             File.WriteAllText(Path.Combine(directory, "vss.pipe"), new string('a', 81));
-            Assert.That(VssConnection.ResolveInstalledPipe(directory), Is.EqualTo(VssConnection.StablePipeName));
+            Assert.That(VssPipeNames.ReadInstalledPipeName(directory), Is.EqualTo(VssPipeNames.Stable));
         }
         finally
         {
@@ -44,7 +45,7 @@ public class VssPipeAndShadowCopyTests
         try
         {
             using var locked = new FileStream(pipeFile, FileMode.Open, FileAccess.Read, FileShare.None);
-            Assert.That(VssConnection.ResolveInstalledPipe(directory), Is.EqualTo(VssConnection.StablePipeName));
+            Assert.That(VssPipeNames.ReadInstalledPipeName(directory), Is.EqualTo(VssPipeNames.Stable));
         }
         finally
         {

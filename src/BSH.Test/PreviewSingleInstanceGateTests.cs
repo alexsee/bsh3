@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 using Brightbits.BSH.Engine.Runtime;
-using Brightbits.BSH.Engine.Services;
+using BSH.Service.Shared;
 using BSH.Test.Fakes;
 using NUnit.Framework;
 
@@ -277,7 +277,7 @@ public class PreviewSingleInstanceGateTests
 
         try
         {
-            Assert.That(VssConnection.ResolveInstalledPipe(directory), Is.EqualTo(VssConnection.StablePipeName));
+            Assert.That(VssPipeNames.ReadInstalledPipeName(directory), Is.EqualTo(VssPipeNames.Stable));
         }
         finally
         {
@@ -294,8 +294,8 @@ public class PreviewSingleInstanceGateTests
 
         try
         {
-            Assert.That(VssConnection.ResolveInstalledPipe(directory), Is.EqualTo(VssConnection.PreviewPipeName));
-            Assert.That(VssConnection.ResolveInstalledPipe(directory), Is.Not.EqualTo(VssConnection.StablePipeName));
+            Assert.That(VssPipeNames.ReadInstalledPipeName(directory), Is.EqualTo(VssPipeNames.Preview));
+            Assert.That(VssPipeNames.ReadInstalledPipeName(directory), Is.Not.EqualTo(VssPipeNames.Stable));
         }
         finally
         {
@@ -312,7 +312,7 @@ public class PreviewSingleInstanceGateTests
 
         try
         {
-            Assert.That(VssConnection.ResolveInstalledPipe(directory), Is.EqualTo(VssConnection.StablePipeName));
+            Assert.That(VssPipeNames.ReadInstalledPipeName(directory), Is.EqualTo(VssPipeNames.Stable));
         }
         finally
         {

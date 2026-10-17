@@ -9,14 +9,7 @@ internal static class NativeMessage
 {
     public static void Show(string caption, string text)
     {
-        try
-        {
-            _ = MessageBox(IntPtr.Zero, text, caption, 0x00000030);
-        }
-        catch (Exception)
-        {
-            // The process is about to exit. A missing dialog must not crash startup.
-        }
+        _ = MessageBox(IntPtr.Zero, text, caption, 0x00000030);
     }
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]

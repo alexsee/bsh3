@@ -11,48 +11,35 @@ using Serilog;
 
 namespace BSH.MainApp;
 
-public enum PreviewLaunchAction
-{
-    Continue,
-    Exit
-}
-
 /// <summary>
 /// Startup decisions for the WinUI Preview. Kept separate from <see cref="App"/>
 /// so tests can run them without a window or a second process.
 /// </summary>
 public static class PreviewAppStartup
 {
-    public static PreviewLaunchAction Decide(
+    public static bool ShouldExit(
         PreviewStartupResult startup,
         bool autoStart,
         Action<string, string> showMessage,
         Func<string, string, string> localize)
     {
-        if (startup == PreviewStartupResult.ActivateExisting)
+        if (startup != PreviewStartupResult.BlockedByOtherEngine)
         {
-            return PreviewLaunchAction.Exit;
+            return startup == PreviewStartupResult.ActivateExisting;
         }
 
-        if (startup == PreviewStartupResult.BlockedByOtherEngine)
+        if (autoStart)
         {
-            if (autoStart)
-            {
-                Log.Information("Preview autostart exited because the stable app already holds the shared database.");
-            }
-            else
-            {
-                showMessage(
-                    localize("Preview_EngineBusy_Title", "Backup Service Home 4"),
-                    localize(
-                        "Preview_EngineBusy_Text",
-                        "Backup Service Home is already running. Preview uses the same database and will not start while that app is running."));
-            }
-
-            return PreviewLaunchAction.Exit;
+            Log.Information("Preview autostart exited because the stable app already holds the shared database.");
+            return true;
         }
 
-        return PreviewLaunchAction.Continue;
+        showMessage(
+            localize("Preview_EngineBusy_Title", "Backup Service Home 4"),
+            localize(
+                "Preview_EngineBusy_Text",
+                "Backup Service Home is already running. Preview uses the same database and will not start while that app is running."));
+        return true;
     }
 
     public static async Task<bool> OpenDatabaseAsync(
@@ -80,23 +67,6 @@ public static class PreviewAppStartup
                     "Preview_DatabaseTooNew_Text",
                     "This database was written by a newer Backup Service Home and was not opened. Install a newer version."));
             return false;
-        }
-    }
-
-    public static void BringToFront(Action? activate)
-    {
-        try
-        {
-            if (activate == null)
-            {
-                return;
-            }
-
-            activate();
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Could not bring the Preview window to the front.");
         }
     }
 

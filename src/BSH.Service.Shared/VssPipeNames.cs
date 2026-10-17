@@ -24,7 +24,7 @@ public static class VssPipeNames
         }
 
         var trimmed = candidate.Trim();
-        if (trimmed.Length is 0 or > 80)
+        if (trimmed.Length > 80)
         {
             return Stable;
         }
@@ -53,13 +53,7 @@ public static class VssPipeNames
 
         try
         {
-            var path = Path.Combine(directory, PipeFileName);
-            if (!File.Exists(path))
-            {
-                return Stable;
-            }
-
-            return Normalize(File.ReadAllText(path));
+            return Normalize(File.ReadAllText(Path.Combine(directory, PipeFileName)));
         }
         catch (IOException)
         {

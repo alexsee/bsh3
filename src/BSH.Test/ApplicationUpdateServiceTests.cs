@@ -49,29 +49,23 @@ public class ApplicationUpdateServiceTests
         Assert.That(await settings.ReadSettingAsync<bool>(ApplicationUpdateService.AutoSearchUpdatesSettingKey), Is.False);
     }
 
-    [Test]
-    public async Task CheckAsyncUsesStableFeedByDefault()
-    {
-        var started = new List<(string Url, bool Notify)>();
-        var service = CreateService(startUpdateCheck: url => started.Add((url, true)));
-
-        await service.CheckAsync(notifyWhenUpToDate: true);
-
-        Assert.That(started, Has.Count.EqualTo(1));
-        Assert.That(started[0].Url, Is.EqualTo(ApplicationUpdateService.PreviewUpdateFeedUrl));
-    }
-
-    [Test]
-    public async Task CheckAsyncUsesBetaFeedWhenEnabled()
+    [TestCase(null)]
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CheckAsyncAlwaysUsesThePreviewFeed(bool? downloadBeta)
     {
         var settings = new TestLocalSettingsService();
-        await settings.SaveSettingAsync(ApplicationUpdateService.DownloadBetaSettingKey, true);
+        if (downloadBeta.HasValue)
+        {
+            await settings.SaveSettingAsync(ApplicationUpdateService.DownloadBetaSettingKey, downloadBeta.Value);
+        }
+
         var started = new List<string>();
-        var service = CreateService(settings, url => started.Add(url));
+        var service = CreateService(settings, started.Add);
 
         await service.CheckAsync(notifyWhenUpToDate: true);
 
-        Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.PreviewUpdateFeedUrl }));
+        Assert.That(started, Is.EqualTo(new[] { "https://updates.brightbits.de/backup_service_home/v4/auto_updater_beta.xml" }));
     }
 
     [Test]
@@ -98,33 +92,6 @@ public class ApplicationUpdateServiceTests
         await service.MaybeCheckOnStartupAsync();
 
         Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.PreviewUpdateFeedUrl }));
-    }
-
-    [Test]
-    public void FailedUpdateCheckDoesNotShowUpToDateDialog()
-    {
-        Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: true, notifyWhenUpToDate: false), Is.False);
-        Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: true, notifyWhenUpToDate: true), Is.False);
-        Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: false, notifyWhenUpToDate: false), Is.False);
-        Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: false, notifyWhenUpToDate: true), Is.True);
-        Assert.That(ApplicationUpdateService.ShouldShowCheckFailedDialog(failed: true, notifyWhenUpToDate: true), Is.True);
-        Assert.That(ApplicationUpdateService.ShouldShowCheckFailedDialog(failed: true, notifyWhenUpToDate: false), Is.False);
-        Assert.That(ApplicationUpdateService.ShouldShowCheckFailedDialog(failed: false, notifyWhenUpToDate: true), Is.False);
-    }
-
-    [Test]
-    public async Task PreviewCheckUsesWinUiFeedEvenWhenBetaToggleIsOff()
-    {
-        var settings = new TestLocalSettingsService();
-        await settings.SaveSettingAsync(ApplicationUpdateService.DownloadBetaSettingKey, false);
-        var started = new List<string>();
-        var service = CreateService(settings, started.Add);
-
-        await service.CheckAsync(notifyWhenUpToDate: false);
-
-        Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.PreviewUpdateFeedUrl }));
-        Assert.That(ApplicationUpdateService.PreviewUpdateFeedUrl, Does.Contain("auto_updater_beta.xml"));
-        Assert.That(ApplicationUpdateService.PreviewUpdateFeedUrl, Is.Not.EqualTo(ApplicationUpdateService.StableUpdateFeedUrl));
     }
 
     [Test]

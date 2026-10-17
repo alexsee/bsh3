@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Brightbits.BSH.Engine.Runtime;
 
@@ -12,20 +13,8 @@ public static class PreviewLaunch
 
     public static bool IsAutoStart(IEnumerable<string> args)
     {
-        if (args == null)
-        {
-            return false;
-        }
-
-        foreach (var arg in args)
-        {
-            if (string.Equals(arg, AutoStartArgument, StringComparison.OrdinalIgnoreCase)
-                || string.Equals(arg, "/autostart", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return args != null && args.Any(arg =>
+            string.Equals(arg, AutoStartArgument, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(arg, "/autostart", StringComparison.OrdinalIgnoreCase));
     }
 }

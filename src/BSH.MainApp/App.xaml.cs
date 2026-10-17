@@ -26,6 +26,7 @@ using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
 using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Views;
+using BSH.Service.Shared;
 using CommunityToolkit.WinUI;
 using H.NotifyIcon;
 using Microsoft.Extensions.DependencyInjection;
@@ -151,20 +152,14 @@ public partial class App : Application
         base.OnLaunched(args);
 
         var uiQueue = DispatcherQueue.GetForCurrentThread();
-        if (uiQueue == null)
-        {
-            ExitApplication();
-            return;
-        }
-
         var startup = PreviewSingleInstanceGate.Acquire(
             onActivateRequested: () => uiQueue.TryEnqueue(BringPreviewToFront),
             out var gate);
-        if (PreviewAppStartup.Decide(
+        if (PreviewAppStartup.ShouldExit(
             startup,
             PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs()),
             NativeMessage.Show,
-            PreviewAppStartup.LocalizedOrFallback) == PreviewLaunchAction.Exit)
+            PreviewAppStartup.LocalizedOrFallback))
         {
             ExitApplication();
             return;
@@ -202,14 +197,21 @@ public partial class App : Application
     private static void BringPreviewToFront()
     {
         var window = mainWindow;
-        PreviewAppStartup.BringToFront(window == null
-            ? null
-            : () =>
-            {
-                window.AppWindow.Show();
-                window.Activate();
-                window.AppWindow.MoveInZOrderAtTop();
-            });
+        if (window == null)
+        {
+            return;
+        }
+
+        try
+        {
+            window.AppWindow.Show();
+            window.Activate();
+            window.AppWindow.MoveInZOrderAtTop();
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Could not bring the Preview window to the front.");
+        }
     }
 
     private static void OnAutoUpdaterApplicationExit()
@@ -369,7 +371,7 @@ public partial class App : Application
             services.AddSingleton<ScheduleSettingsService>();
 
             services.AddSingleton<IVssClient>(_ => new VolumeShadowCopyClient(
-                VssConnection.ResolveInstalledPipe(AppContext.BaseDirectory)));
+                VssPipeNames.ReadInstalledPipeName(AppContext.BaseDirectory)));
             services.AddSingleton<ISchedulerAdapterFactory, SchedulerAdapterFactory>();
             services.AddSingleton<IMediaWatcherFactory, MediaWatcherFactory>();
             services.AddSingleton<IFileCollectorServiceFactory, FileCollectorServiceFactory>();

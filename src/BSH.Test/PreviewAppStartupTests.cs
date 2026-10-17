@@ -61,13 +61,13 @@ public class PreviewAppStartupTests
     public void SecondLaunchExitsWithoutADialog()
     {
         var messages = new List<string>();
-        var action = PreviewAppStartup.Decide(
+        var shouldExit = PreviewAppStartup.ShouldExit(
             PreviewStartupResult.ActivateExisting,
             autoStart: false,
             (caption, text) => messages.Add(caption + text),
             (key, fallback) => fallback);
 
-        Assert.That(action, Is.EqualTo(PreviewLaunchAction.Exit));
+        Assert.That(shouldExit, Is.True);
         Assert.That(messages, Is.Empty);
     }
 
@@ -75,13 +75,13 @@ public class PreviewAppStartupTests
     public void AutoStartExitsQuietlyWhenTheStableAppHoldsTheDatabase()
     {
         var messages = new List<string>();
-        var action = PreviewAppStartup.Decide(
+        var shouldExit = PreviewAppStartup.ShouldExit(
             PreviewStartupResult.BlockedByOtherEngine,
             autoStart: true,
             (caption, text) => messages.Add(text),
             (key, fallback) => fallback);
 
-        Assert.That(action, Is.EqualTo(PreviewLaunchAction.Exit));
+        Assert.That(shouldExit, Is.True);
         Assert.That(messages, Is.Empty);
     }
 
@@ -90,7 +90,7 @@ public class PreviewAppStartupTests
     {
         string caption = null;
         string text = null;
-        var action = PreviewAppStartup.Decide(
+        var shouldExit = PreviewAppStartup.ShouldExit(
             PreviewStartupResult.BlockedByOtherEngine,
             autoStart: false,
             (shownCaption, shownText) =>
@@ -100,7 +100,7 @@ public class PreviewAppStartupTests
             },
             (key, fallback) => fallback);
 
-        Assert.That(action, Is.EqualTo(PreviewLaunchAction.Exit));
+        Assert.That(shouldExit, Is.True);
         Assert.That(caption, Is.EqualTo("Backup Service Home 4"));
         Assert.That(text, Does.Contain("already running"));
     }
@@ -108,13 +108,13 @@ public class PreviewAppStartupTests
     [Test]
     public void AFreeMutexContinuesStartup()
     {
-        var action = PreviewAppStartup.Decide(
+        var shouldExit = PreviewAppStartup.ShouldExit(
             PreviewStartupResult.Started,
             autoStart: false,
             (_, _) => Assert.Fail("No dialog is shown when Preview can start."),
             (_, fallback) => fallback);
 
-        Assert.That(action, Is.EqualTo(PreviewLaunchAction.Continue));
+        Assert.That(shouldExit, Is.False);
     }
 
     [TestCase(null)]
@@ -174,18 +174,6 @@ public class PreviewAppStartupTests
             DbClientFactory.ClosePool();
             File.Delete(database);
         }
-    }
-
-    [Test]
-    public void BringToFrontIgnoresAMissingWindowAndSwallowsActivationErrors()
-    {
-        Assert.DoesNotThrow(() => PreviewAppStartup.BringToFront(null));
-
-        var activated = false;
-        PreviewAppStartup.BringToFront(() => activated = true);
-        Assert.That(activated, Is.True);
-
-        Assert.DoesNotThrow(() => PreviewAppStartup.BringToFront(() => throw new InvalidOperationException("no window")));
     }
 
     [Test]

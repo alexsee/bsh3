@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using Serilog;
 
 namespace Brightbits.BSH.Engine.Runtime;
 
@@ -131,9 +132,7 @@ public sealed class WindowsPreviewInstanceSync : IPreviewInstanceSync
     public IDisposable Listen(string name, Action onSignal)
     {
         var handle = new EventWaitHandle(false, EventResetMode.AutoReset, name);
-        var listener = new EventListener(handle, onSignal);
-        listener.Start();
-        return listener;
+        return new EventListener(handle, onSignal);
     }
 
     public void Signal(string name)
@@ -187,8 +186,8 @@ public sealed class WindowsPreviewInstanceSync : IPreviewInstanceSync
     {
         private readonly EventWaitHandle handle;
         private readonly Action onSignal;
-        private readonly CancellationTokenSource stop = new();
         private readonly Thread thread;
+        private volatile bool stopped;
 
         public EventListener(EventWaitHandle handle, Action onSignal)
         {
@@ -199,16 +198,12 @@ public sealed class WindowsPreviewInstanceSync : IPreviewInstanceSync
                 IsBackground = true,
                 Name = "PreviewActivate"
             };
-        }
-
-        public void Start()
-        {
             thread.Start();
         }
 
         public void Dispose()
         {
-            stop.Cancel();
+            stopped = true;
             try
             {
                 handle.Set();
@@ -223,35 +218,33 @@ public sealed class WindowsPreviewInstanceSync : IPreviewInstanceSync
             }
 
             handle.Dispose();
-            stop.Dispose();
         }
 
         private void Listen()
         {
-            while (!stop.IsCancellationRequested)
+            while (!stopped)
             {
-                var signaled = false;
                 try
                 {
-                    signaled = handle.WaitOne(TimeSpan.FromMilliseconds(250));
+                    handle.WaitOne();
                 }
                 catch (ObjectDisposedException)
                 {
                     break;
                 }
 
-                if (!signaled || stop.IsCancellationRequested)
+                if (stopped)
                 {
-                    continue;
+                    break;
                 }
 
                 try
                 {
                     onSignal();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // Activation is best-effort. The running instance stays up.
+                    Log.Warning(ex, "Could not bring the Preview window to the front.");
                 }
             }
         }

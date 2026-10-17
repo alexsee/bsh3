@@ -29,7 +29,6 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     private readonly DispatcherQueue dispatcherQueue;
     private readonly IConfigurationManager configurationManager;
     private readonly IOrchestrationService orchestrationService;
-    private bool suppressSystemEnabledPersistence;
     private bool systemToggleInFlight;
 
     [ObservableProperty]
@@ -284,16 +283,10 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     private void EnqueueUi(Action action)
     {
-        dispatcherQueue.TryEnqueue(() =>
+        EnqueueUi(() =>
         {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                Logger.Warning(ex, "Overview UI update failed.");
-            }
+            action();
+            return Task.CompletedTask;
         });
     }
 
@@ -326,11 +319,6 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     partial void OnIsSystemEnabledChanged(bool value)
     {
-        if (suppressSystemEnabledPersistence)
-        {
-            return;
-        }
-
         _ = ApplySystemEnabledAsync(value);
     }
 
@@ -367,18 +355,10 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     private void SyncSystemEnabledFromConfiguration()
     {
-        var enabled = configurationManager.DbStatus == "0";
         if (!systemToggleInFlight)
         {
             CanToggleSystem = statusService.JobState != JobState.RUNNING;
         }
-        if (IsSystemEnabled == enabled)
-        {
-            return;
-        }
-
-        suppressSystemEnabledPersistence = true;
-        IsSystemEnabled = enabled;
-        suppressSystemEnabledPersistence = false;
+        SetProperty(ref isSystemEnabled, configurationManager.DbStatus == "0", nameof(IsSystemEnabled));
     }
 }

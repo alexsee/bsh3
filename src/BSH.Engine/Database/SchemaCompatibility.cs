@@ -35,26 +35,21 @@ public static class SchemaCompatibility
             CommandType.Text,
             "SELECT confValue FROM configuration WHERE confProperty = 'dbversion' LIMIT 1",
             null);
-        var version = value?.ToString();
-        if (!string.IsNullOrEmpty(version)
-            && (!int.TryParse(version, out var parsedVersion) || parsedVersion > SupportedSchemaVersion))
-        {
-            throw new DatabaseIncompatibleException();
-        }
+        ParseSupportedVersion(value?.ToString());
     }
 
-    public static bool IsNewerThanSupported(string dbVersion)
-    {
-        return int.TryParse(dbVersion, out var version) && version > SupportedSchemaVersion;
-    }
-
-    public static bool WillChangeSchema(string dbVersion)
+    public static int ParseSupportedVersion(string dbVersion)
     {
         if (string.IsNullOrEmpty(dbVersion))
         {
-            return true;
+            return 1;
         }
 
-        return int.TryParse(dbVersion, out var version) && version < SupportedSchemaVersion;
+        if (!int.TryParse(dbVersion, out var version) || version > SupportedSchemaVersion)
+        {
+            throw new DatabaseIncompatibleException();
+        }
+
+        return version;
     }
 }

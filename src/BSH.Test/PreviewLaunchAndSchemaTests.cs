@@ -21,18 +21,6 @@ public class PreviewLaunchAndSchemaTests
     }
 
     [Test]
-    public void SchemaLevelMatchesTheShippedStableDatabase()
-    {
-        Assert.That(SchemaCompatibility.SupportedSchemaVersion, Is.EqualTo(9));
-        Assert.That(SchemaCompatibility.WillChangeSchema("9"), Is.False);
-        Assert.That(SchemaCompatibility.WillChangeSchema("8"), Is.True);
-        Assert.That(SchemaCompatibility.WillChangeSchema(null), Is.True);
-        Assert.That(SchemaCompatibility.IsNewerThanSupported("10"), Is.True);
-        Assert.That(SchemaCompatibility.IsNewerThanSupported("9"), Is.False);
-        Assert.That(SchemaCompatibility.WillChangeSchema("newer"), Is.False);
-    }
-
-    [Test]
     public void TimestampedBackupSitsNextToTheDatabase()
     {
         var directory = Path.Combine(Path.GetTempPath(), "bsh-backup-" + Guid.NewGuid().ToString("N"));

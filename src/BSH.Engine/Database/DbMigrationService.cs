@@ -7,7 +7,6 @@ using System.Data;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Exceptions;
 
 namespace Brightbits.BSH.Engine.Database;
 
@@ -24,14 +23,8 @@ public class DbMigrationService : IDbMigrationService
 
     public async Task InitializeAsync()
     {
-        var rawVersion = configurationManager.DBVersion;
-        if (SchemaCompatibility.IsNewerThanSupported(rawVersion)
-            || (!string.IsNullOrEmpty(rawVersion) && !int.TryParse(rawVersion, out _)))
-        {
-            throw new DatabaseIncompatibleException();
-        }
-
-        if (SchemaCompatibility.WillChangeSchema(rawVersion))
+        var dbVersion = SchemaCompatibility.ParseSupportedVersion(configurationManager.DBVersion);
+        if (dbVersion < SchemaCompatibility.SupportedSchemaVersion)
         {
             await CheckpointAsync();
             DatabaseFileBackup.CreateTimestampedCopy(dbClientFactory.DatabaseFile, DateTime.Now);
@@ -43,11 +36,6 @@ public class DbMigrationService : IDbMigrationService
         if (string.IsNullOrEmpty(configurationManager.DBVersion))
         {
             configurationManager.DBVersion = "1";
-        }
-
-        if (!int.TryParse(configurationManager.DBVersion, out var dbVersion) || dbVersion > SchemaCompatibility.SupportedSchemaVersion)
-        {
-            throw new DatabaseIncompatibleException();
         }
 
         // Version 1 auf 2 aktualisieren
