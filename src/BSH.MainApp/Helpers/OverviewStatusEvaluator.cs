@@ -109,7 +109,7 @@ public static class OverviewStatusEvaluator
         return inputs.RemindAfterDays is int days && days > 0 && GetDaysSinceLastBackup(inputs) > days;
     }
 
-    private static bool IsLowOnDiskSpace(OverviewInputs inputs)
+    public static bool IsLowOnDiskSpace(OverviewInputs inputs)
     {
         return inputs.RemindSpaceMegabytes is double megabytes
             && megabytes >= 0

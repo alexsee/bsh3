@@ -2,10 +2,15 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts;
@@ -149,10 +154,25 @@ public class MainViewModelSystemToggleTests
         await drained.Task.WaitAsync(TimeSpan.FromSeconds(5));
     }
 
+    [Test]
+    public async Task WrongStateBackupDevice_ShowsLocationWarning()
+    {
+        var configuration = new FakeConfigurationManager { DbStatus = "0" };
+        var viewModel = Create(configuration, new ScriptedOrchestration(configuration),
+            new ToggleStatusService { SystemStatus = SystemStatus.ACTIVATED }, new WrongStateBackupService());
+
+        viewModel.OnNavigatedTo(null);
+
+        await WaitUntil(() => viewModel.LocationConnectionSeverity == OverviewSeverity.Error);
+        await DrainDispatcherAsync();
+        Assert.That(viewModel.ActionItems.Any(item => item.Kind == OverviewIssueKind.BackupLocationUnavailable), Is.True);
+    }
+
     private MainViewModel Create(
         IConfigurationManager configuration,
         IOrchestrationService orchestration,
-        IStatusService status)
+        IStatusService status,
+        IBackupService backupService = null)
     {
         return new MainViewModel(
             presentationService: null,
@@ -162,7 +182,24 @@ public class MainViewModelSystemToggleTests
             scheduledBackupService: null,
             configurationManager: configuration,
             orchestrationService: orchestration,
-            dispatcherQueue: dispatcher.DispatcherQueue);
+            dispatcherQueue: dispatcher.DispatcherQueue,
+            backupService: backupService);
+    }
+
+    private sealed class WrongStateBackupService : IBackupService
+    {
+        public Task<bool> CheckMedia(bool quickCheck = false) => throw new DeviceContainsWrongStateException();
+        public string GetPassword() => throw new NotSupportedException();
+        public bool HasPassword() => throw new NotSupportedException();
+        public void SetPassword(string password) => throw new NotSupportedException();
+        public Task SetStableAsync(string version, bool stable) => throw new NotSupportedException();
+        public Task UpdateVersionAsync(string version, VersionDetails details) => throw new NotSupportedException();
+        public void UpdateDatabaseFile(string databaseFile) => throw new NotSupportedException();
+        public Task StartBackup(string title, string description, IJobReport report, CancellationToken token, bool fullBackup = false, string sources = "", bool silent = false) => throw new NotSupportedException();
+        public Task StartDelete(string version, IJobReport report, CancellationToken token, bool silent = false) => throw new NotSupportedException();
+        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport report, CancellationToken token, bool silent = false, IReadOnlyList<int> versionIds = null) => throw new NotSupportedException();
+        public Task StartEdit(IJobReport report, CancellationToken token, bool silent = false) => throw new NotSupportedException();
+        public Task StartRestore(string version, string file, string destination, IJobReport report, CancellationToken token, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => throw new NotSupportedException();
     }
 
     private static async Task WaitUntil(Func<bool> condition)

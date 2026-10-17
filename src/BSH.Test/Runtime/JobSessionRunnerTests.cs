@@ -560,13 +560,25 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_RecordsSucceededResult()
     {
         var configuration = new FakeConfigurationManager();
+        LastBackupResult resultAtCompletion = null;
+        var presenter = new JobReportStub
+        {
+            OnReportState = state =>
+            {
+                if (state == JobState.FINISHED)
+                {
+                    resultAtCompletion = LastBackupResult.FromJson(configuration.LastBackupResult);
+                }
+            }
+        };
         var result = await RunRecordedBackupAsync(configuration, (report, _) =>
         {
             configuration.LastBackupDone = "17-10-2026 16-00-00";
             report.ReportState(JobState.FINISHED);
             return Task.CompletedTask;
-        });
+        }, presenter);
 
+        Assert.That(resultAtCompletion?.Outcome, Is.EqualTo(BackupOutcome.Succeeded), "completion observers must see the saved result");
         Assert.That(result.Outcome, Is.EqualTo(BackupOutcome.Succeeded));
         Assert.That(result.FailedFileCount, Is.Zero);
     }
@@ -656,23 +668,26 @@ public class JobSessionRunnerTests
         using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var runner = new JobSessionRunner(backupService, jobRuntime, backupResultRecorder: new BackupResultRecorder(configuration));
 
-        await runner.RunSingleBackupAsync("title", "description", new JobReportStub(), statusDialog: false);
+        var presenter = new JobReportStub();
+        await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: false);
 
         var result = LastBackupResult.FromJson(configuration.LastBackupResult);
         Assert.That(result.Outcome, Is.EqualTo(BackupOutcome.Failed));
         Assert.That(result.FailureReason, Is.EqualTo(BackupFailureReason.DeviceNotReady));
+        Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.ERROR }));
     }
 
     private static async Task<LastBackupResult> RunRecordedBackupAsync(
         FakeConfigurationManager configuration,
-        Func<IJobReport, CancellationToken, Task> onStartBackup)
+        Func<IJobReport, CancellationToken, Task> onStartBackup,
+        JobReportStub presenter = null)
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, OnStartBackup = onStartBackup };
         using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
         var recorder = new BackupResultRecorder(configuration, () => new DateTime(2026, 10, 17, 16, 0, 0));
         var runner = new JobSessionRunner(backupService, jobRuntime, backupResultRecorder: recorder);
 
-        await runner.RunSingleBackupAsync("title", "description", new JobReportStub(), statusDialog: false);
+        await runner.RunSingleBackupAsync("title", "description", presenter ?? new JobReportStub(), statusDialog: false);
 
         return recorder.Load();
     }
@@ -777,8 +792,13 @@ public class JobSessionRunnerTests
 
     private sealed class JobReportStub : IJobSessionPresenter
     {
+        public Action<JobState> OnReportState { get; set; }
         public void ReportAction(ActionType action, bool silent) { }
-        public void ReportState(JobState jobState) => ReportedStates.Add(jobState);
+        public void ReportState(JobState jobState)
+        {
+            ReportedStates.Add(jobState);
+            OnReportState?.Invoke(jobState);
+        }
         public void ReportStatus(string title, string text) { }
         public void ReportProgress(int total, int current) => ProgressUpdates.Add($"{total}/{current}");
         public void ReportFileProgress(string file) { }

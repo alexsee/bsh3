@@ -6,6 +6,7 @@ using System.Globalization;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts;
@@ -257,6 +258,10 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         try
         {
             available = await Task.Run(() => backupService.CheckMedia(quickCheck: true));
+        }
+        catch (Exception ex) when (ex is DeviceNotReadyException or DeviceContainsWrongStateException)
+        {
+            available = false;
         }
         catch (Exception ex)
         {
@@ -515,7 +520,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
         var freeBytes = GetFreeSpaceBytes();
         var inputs = BuildInputs();
-        IsFreeSpaceLow = inputs.RemindSpaceMegabytes is double limit && limit >= 0 && freeBytes > 0 && freeBytes < limit * 1024d * 1024d;
+        IsFreeSpaceLow = OverviewStatusEvaluator.IsLowOnDiskSpace(inputs);
         FreeSpaceText = freeBytes > 0
             ? Format("Overview_Location_Free", freeBytes.Bytes().Humanize())
             : "Overview_Location_FreeUnknown".GetLocalized();

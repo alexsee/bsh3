@@ -112,6 +112,15 @@ public sealed class JobSessionRunner
             completed => observation = completed);
 
         backupResultRecorder?.Record(checkpoint, observation ?? new BackupSessionObservation { Result = result });
+        if (backupResultRecorder != null && (result.Started || result.Failure == JobSessionStartFailure.DeviceNotReady))
+        {
+            if (!result.Started)
+            {
+                presenter.ReportAction(ActionType.Backup, !statusDialog);
+            }
+            // Completion observers refresh the overview, so publish only after the result is saved.
+            presenter.ReportState(result.Canceled ? JobState.CANCELED : result.Succeeded ? JobState.FINISHED : JobState.ERROR);
+        }
         return result;
     }
 
@@ -278,7 +287,7 @@ public sealed class JobSessionRunner
             }
 
             var operationCanceled = false;
-            var trackingJobReport = new TrackingJobReport(presenter);
+            var trackingJobReport = new TrackingJobReport(presenter, deferCompletion: action == ActionType.Backup && backupResultRecorder != null);
 
             try
             {
@@ -520,15 +529,17 @@ public sealed class JobSessionRunner
     private sealed class TrackingJobReport : IJobReport
     {
         private readonly IJobReport report;
+        private readonly bool deferCompletion;
 
         public bool HasErrors { get; private set; }
         public bool WasCanceled { get; private set; }
         public bool InsufficientDiskSpaceReported { get; private set; }
         public List<FileExceptionEntry> Errors { get; } = [];
 
-        public TrackingJobReport(IJobReport report)
+        public TrackingJobReport(IJobReport report, bool deferCompletion)
         {
             this.report = report;
+            this.deferCompletion = deferCompletion;
         }
 
         public void ReportAction(ActionType action, bool silent) => report.ReportAction(action, silent);
@@ -537,7 +548,10 @@ public sealed class JobSessionRunner
         {
             HasErrors |= jobState == JobState.ERROR;
             WasCanceled |= jobState == JobState.CANCELED;
-            report.ReportState(jobState);
+            if (!deferCompletion || jobState is not (JobState.FINISHED or JobState.ERROR or JobState.CANCELED))
+            {
+                report.ReportState(jobState);
+            }
         }
 
         public void ReportStatus(string title, string text) => report.ReportStatus(title, text);
