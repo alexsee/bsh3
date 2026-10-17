@@ -47,7 +47,7 @@
         x:Key="TrayIcon"
         Visibility="Visible"
         ToolTipText="{helpers:ResourceString Name=AppDisplayName}"
-        ContextMenuMode="SecondWindow"
+        ContextMenuMode="PopupMenu"
         LeftClickCommand="{StaticResource ShowMainWindowCommand}"
         NoLeftClickDelay="True"
         IconSource="ms-appx:///Assets/app_ico.ico"

@@ -246,7 +246,7 @@ public partial class App : Application
         startManualBackupExtendedCommand.ExecuteRequested += startManualBackupExtendedCommand_ExecuteRequested;
 
         TrayIcon = (TaskbarIcon)Resources["TrayIcon"];
-        TrayIcon.ForceCreate();
+        TrayIcon.ForceCreate(enablesEfficiencyMode: true);
     }
 
     private async void StartManualBackupCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
