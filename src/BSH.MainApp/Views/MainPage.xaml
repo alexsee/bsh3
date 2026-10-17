@@ -39,6 +39,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0"
@@ -68,6 +69,15 @@
                                Text="{x:Bind ViewModel.ScheduleWarningText, Mode=OneWay}"
                                Visibility="{x:Bind ViewModel.ScheduleWarningVisible, Mode=OneWay}" />
                 </StackPanel>
+
+                <ToggleSwitch Grid.Column="2"
+                              MinWidth="140"
+                              VerticalAlignment="Center"
+                              IsEnabled="{x:Bind ViewModel.CanToggleSystem, Mode=OneWay}"
+                              IsOn="{x:Bind ViewModel.IsSystemEnabled, Mode=TwoWay}"
+                              Header="{helpers:ResourceString Name=MainView_SystemToggle}"
+                              OnContent="{helpers:ResourceString Name=MainView_SystemOn}"
+                              OffContent="{helpers:ResourceString Name=MainView_SystemOff}" />
             </Grid>
 
             <!-- Consolidated details + statistics card -->

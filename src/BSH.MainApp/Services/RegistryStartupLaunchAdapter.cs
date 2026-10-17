@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Security;
+using Brightbits.BSH.Engine.Runtime;
 using BSH.MainApp.Contracts.Services;
 using Microsoft.Win32;
 
@@ -9,7 +10,7 @@ namespace BSH.MainApp.Services;
 
 public sealed class RegistryStartupLaunchAdapter : IStartupLaunchAdapter
 {
-    public const string ValueName = "BackupServiceHome3Run";
+    public const string ValueName = "BackupServiceHome3PreviewRun";
     private const string RunKeyPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
 
     private readonly Func<string> getExecutablePath;
@@ -46,7 +47,7 @@ public sealed class RegistryStartupLaunchAdapter : IStartupLaunchAdapter
                 using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true)
                     ?? throw new InvalidOperationException("Unable to open startup registry key.");
                 var executablePath = getExecutablePath();
-                key.SetValue(ValueName, $"\"{executablePath}\" -delayedstart");
+                key.SetValue(ValueName, $"\"{executablePath}\" {PreviewLaunch.AutoStartArgument}");
             }
             else
             {

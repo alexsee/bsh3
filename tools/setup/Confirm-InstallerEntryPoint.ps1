@@ -44,6 +44,38 @@ Assert-Contains $winFormsIss '{app}\BSH.Service.exe' `
 Assert-Contains $winUiIss '{app}\BSH.Service.exe' `
     "Setup-WinUI.iss must still register the VSS helper service (BSH.Service.exe)."
 
+Assert-Contains $winUiIss 'Backup Service Home Preview-Dienst' `
+    "Setup-WinUI.iss must register its own VSS service."
+
+if ($winUiIss -match 'Backup Service Home-Dienst') {
+    throw "Setup-WinUI.iss must not stop or delete the stable VSS service (Backup Service Home-Dienst)."
+}
+
+Assert-Contains $winUiIss 'AppMutex=BackupServiceHome3Preview' `
+    "Setup-WinUI.iss AppMutex must be the Preview instance mutex."
+
+Assert-Contains $winUiIss 'AppName=Backup Service Home 4' `
+    "Setup-WinUI.iss must install side by side under its own name."
+
+Assert-Contains $winUiIss 'DefaultDirName={pf}\Alexosoft\Backup Service Home 4' `
+    "Setup-WinUI.iss must use its own installation directory."
+
+Assert-Contains $winUiIss 'DefaultGroupName=Backup Service Home 4' `
+    "Setup-WinUI.iss must use its own Start Menu group."
+
+Assert-Contains $winUiIss 'preview-vss.pipe' `
+    "Setup-WinUI.iss must ship the Preview VSS pipe name."
+
+Assert-Contains $winUiIss '-autostart' `
+    "Setup-WinUI.iss must start the Preview with -autostart."
+
+Assert-Contains $winUiIss 'disableStableAutostart' `
+    "Setup-WinUI.iss must offer to disable the stable autostart value."
+
+if ($winUiIss -notmatch 'Excludes: "BSH\.Main\.exe') {
+    throw "Setup-WinUI.iss must not ship BSH.Main.exe."
+}
+
 Assert-File (Join-Path $publishDir "BSH.MainApp.exe") `
     "Release publish did not include the unpackaged WinUI shell (BSH.MainApp.exe) in $publishDir."
 

@@ -6,6 +6,7 @@ using System.Reflection;
 using AutoUpdaterDotNET;
 using BSH.MainApp.Contracts.Services;
 using CommunityToolkit.WinUI;
+using Serilog;
 using Windows.UI.Popups;
 
 namespace BSH.MainApp.Services;
@@ -18,9 +19,15 @@ public sealed class ApplicationUpdateService : IUpdateService
     public const string StableUpdateFeedUrl = "https://updates.brightbits.de/backup_service_home/v4/auto_updater.xml";
     public const string BetaUpdateFeedUrl = "https://updates.brightbits.de/backup_service_home/v4/auto_updater_beta.xml";
 
+    /// <summary>
+    /// Preview builds only offer the WinUI beta artifact. The stable v4 feed is not used.
+    /// </summary>
+    public const string PreviewUpdateFeedUrl = BetaUpdateFeedUrl;
+
     private readonly ILocalSettingsService localSettingsService;
     private readonly Func<IPresentationService> presentationServiceFactory;
     private readonly Action<string> startUpdateCheck;
+    private readonly Action<UpdateInfoEventArgs> showUpdateForm;
     private readonly ConcurrentQueue<bool> pendingNotifyWhenUpToDate = new();
     private bool eventsHooked;
     private bool initialized;
@@ -28,11 +35,13 @@ public sealed class ApplicationUpdateService : IUpdateService
     public ApplicationUpdateService(
         ILocalSettingsService localSettingsService,
         Func<IPresentationService>? presentationServiceFactory = null,
-        Action<string>? startUpdateCheck = null)
+        Action<string>? startUpdateCheck = null,
+        Action<UpdateInfoEventArgs>? showUpdateForm = null)
     {
         this.localSettingsService = localSettingsService;
         this.presentationServiceFactory = presentationServiceFactory ?? (() => App.GetService<IPresentationService>());
         this.startUpdateCheck = startUpdateCheck ?? (feedUrl => AutoUpdater.Start(feedUrl));
+        this.showUpdateForm = showUpdateForm ?? AutoUpdater.ShowUpdateForm;
     }
 
     public async Task InitializeAsync(Action onApplicationExitRequested)
@@ -43,19 +52,20 @@ public sealed class ApplicationUpdateService : IUpdateService
         }
 
         var uniqueUserId = await GetOrCreateUniqueUserIdAsync();
-        AutoUpdater.HttpUserAgent = $"Backup Service Home/{GetApplicationVersion()} {uniqueUserId}";
+        AutoUpdater.ReportErrors = false;
+        AutoUpdater.HttpUserAgent = $"Backup Service Home 4/{GetApplicationVersion()} {uniqueUserId}";
         AutoUpdater.TopMost = true;
         AutoUpdater.ApplicationExitEvent += () => onApplicationExitRequested();
         EnsureEventsHooked();
         initialized = true;
     }
 
-    public async Task CheckAsync(bool notifyWhenUpToDate)
+    public Task CheckAsync(bool notifyWhenUpToDate)
     {
-        var feedUrl = await GetDownloadBetaAsync() ? BetaUpdateFeedUrl : StableUpdateFeedUrl;
         pendingNotifyWhenUpToDate.Enqueue(notifyWhenUpToDate);
         EnsureEventsHooked();
-        startUpdateCheck(feedUrl);
+        startUpdateCheck(PreviewUpdateFeedUrl);
+        return Task.CompletedTask;
     }
 
     public async Task MaybeCheckOnStartupAsync()
@@ -117,24 +127,38 @@ public sealed class ApplicationUpdateService : IUpdateService
         AutoUpdater.CheckForUpdateEvent += OnCheckForUpdate;
     }
 
-    private void OnCheckForUpdate(UpdateInfoEventArgs args)
+    internal void OnCheckForUpdate(UpdateInfoEventArgs args)
     {
         pendingNotifyWhenUpToDate.TryDequeue(out var notifyWhenUpToDate);
-
-        if (!args.IsUpdateAvailable)
+        if (args.Error != null)
         {
+            Log.Warning(args.Error, "Update check failed.");
             if (notifyWhenUpToDate)
             {
-                _ = presentationServiceFactory().ShowMessageBoxAsync(
-                    "MSG_NO_UPDATE_FOUND_TITLE".GetLocalized(),
-                    "ApplicationUpdate_UpToDate_Text".GetLocalized(),
-                    [new UICommand("MsgBox_OK".GetLocalized())]);
+                ShowMessage("ApplicationUpdate_CheckFailed_Title", "ApplicationUpdate_CheckFailed_Text");
             }
 
             return;
         }
 
-        AutoUpdater.ShowUpdateForm(args);
+        if (args.IsUpdateAvailable)
+        {
+            showUpdateForm(args);
+            return;
+        }
+
+        if (notifyWhenUpToDate)
+        {
+            ShowMessage("MSG_NO_UPDATE_FOUND_TITLE", "ApplicationUpdate_UpToDate_Text");
+        }
+    }
+
+    private void ShowMessage(string titleKey, string textKey)
+    {
+        _ = presentationServiceFactory().ShowMessageBoxAsync(
+            titleKey.GetLocalized() ?? string.Empty,
+            textKey.GetLocalized() ?? string.Empty,
+            [new UICommand("MsgBox_OK".GetLocalized() ?? string.Empty)]);
     }
 
     private static string GetApplicationVersion()

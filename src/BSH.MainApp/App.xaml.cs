@@ -11,6 +11,7 @@ using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
+using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Services.FileCollector;
@@ -25,6 +26,7 @@ using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
 using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Views;
+using BSH.Service.Shared;
 using CommunityToolkit.WinUI;
 using H.NotifyIcon;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,7 +79,7 @@ public partial class App : Application
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = germanCulture;
 
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
-        AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home", version);
+        AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home 4", version);
 
         _ = host.Value;
 
@@ -143,14 +145,40 @@ public partial class App : Application
         ExitApplication();
     }
 
+    private static PreviewSingleInstanceGate? previewInstance;
+
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
 
-        // init database, read configuration, and perform potential schema migrations
-        await App.GetService<IDbClientFactory>().InitializeAsync(DatabaseFile);
-        await App.GetService<IConfigurationManager>().InitializeAsync();
-        await App.GetService<IDbMigrationService>().InitializeAsync();
+        var uiQueue = DispatcherQueue.GetForCurrentThread();
+        var startup = PreviewSingleInstanceGate.Acquire(
+            onActivateRequested: () => uiQueue.TryEnqueue(BringPreviewToFront),
+            out var gate);
+        if (PreviewAppStartup.ShouldExit(
+            startup,
+            PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs()),
+            NativeMessage.Show,
+            PreviewAppStartup.LocalizedOrFallback))
+        {
+            ExitApplication();
+            return;
+        }
+
+        previewInstance = gate;
+
+        var databaseOpened = await PreviewAppStartup.OpenDatabaseAsync(
+            DatabaseFile,
+            App.GetService<IDbClientFactory>(),
+            App.GetService<IConfigurationManager>(),
+            App.GetService<IDbMigrationService>(),
+            NativeMessage.Show,
+            PreviewAppStartup.LocalizedOrFallback);
+        if (!databaseOpened)
+        {
+            ExitApplication();
+            return;
+        }
 
         // start application
         App.GetService<IStatusService>().Initialize();
@@ -164,6 +192,26 @@ public partial class App : Application
         await updateService.MaybeCheckOnStartupAsync();
 
         await App.GetService<IActivationService>().ActivateAsync(args);
+    }
+
+    private static void BringPreviewToFront()
+    {
+        var window = mainWindow;
+        if (window == null)
+        {
+            return;
+        }
+
+        try
+        {
+            window.AppWindow.Show();
+            window.Activate();
+            window.AppWindow.MoveInZOrderAtTop();
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Could not bring the Preview window to the front.");
+        }
     }
 
     private static void OnAutoUpdaterApplicationExit()
@@ -252,6 +300,17 @@ public partial class App : Application
             host.Value.Dispose();
         }
 
+        try
+        {
+            previewInstance?.Dispose();
+        }
+        catch
+        {
+            // Releasing the instance mutexes must not block process exit.
+        }
+
+        previewInstance = null;
+
         Environment.Exit(0);
     }
 
@@ -311,7 +370,8 @@ public partial class App : Application
             services.AddSingleton<IScheduleRepository, ScheduleRepository>();
             services.AddSingleton<ScheduleSettingsService>();
 
-            services.AddSingleton<IVssClient, VolumeShadowCopyClient>();
+            services.AddSingleton<IVssClient>(_ => new VolumeShadowCopyClient(
+                VssPipeNames.ReadInstalledPipeName(AppContext.BaseDirectory)));
             services.AddSingleton<ISchedulerAdapterFactory, SchedulerAdapterFactory>();
             services.AddSingleton<IMediaWatcherFactory, MediaWatcherFactory>();
             services.AddSingleton<IFileCollectorServiceFactory, FileCollectorServiceFactory>();

@@ -280,7 +280,10 @@ public class BrowserDialogService : IBrowserDialogService
             Version = version;
         }
 
-        public VersionDetails Version { get; }
+        public VersionDetails Version
+        {
+            get;
+        }
 
         public string Caption => Version.CreationDate.ToLocalTime().ToString("g");
     }

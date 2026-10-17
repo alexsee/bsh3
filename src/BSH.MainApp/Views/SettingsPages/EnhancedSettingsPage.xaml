@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="BSH.MainApp.Views.SettingsPages.EnhancedSettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -85,13 +85,6 @@
                         <FontIcon Glyph="&#xE895;" />
                     </toolkit:SettingsCard.HeaderIcon>
                     <ToggleSwitch IsOn="{Binding AutomaticallyCheckForUpdates, Mode=TwoWay}" />
-                </toolkit:SettingsCard>
-
-                <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Enhanced_DownloadBeta}" Description="{helpers:ResourceString Name=Settings_Enhanced_DownloadBetaDescription}">
-                    <toolkit:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE945;" />
-                    </toolkit:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{Binding DownloadBetaUpdates, Mode=TwoWay}" />
                 </toolkit:SettingsCard>
             </StackPanel>
         </ScrollViewer>

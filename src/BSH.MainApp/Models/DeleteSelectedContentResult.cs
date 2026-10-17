@@ -1,9 +1,6 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Collections.Generic;
-
 namespace BSH.MainApp.Models;
 
 /// <summary>
@@ -24,9 +21,15 @@ public sealed class DeleteSelectedContentResult
         };
     }
 
-    public bool IsCancelled { get; init; }
+    public bool IsCancelled
+    {
+        get; init;
+    }
 
-    public bool DeleteFromAllVersions { get; init; }
+    public bool DeleteFromAllVersions
+    {
+        get; init;
+    }
 
     public IReadOnlyList<string> VersionIds { get; init; } = Array.Empty<string>();
 }

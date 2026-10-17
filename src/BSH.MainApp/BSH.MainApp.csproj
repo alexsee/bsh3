@@ -16,7 +16,9 @@
 		<WindowsPackageType>None</WindowsPackageType>
 		<WindowsAppSDKSelfContained Condition="'$(SelfContained)' == 'true'">true</WindowsAppSDKSelfContained>
 		<UseRidGraph>true</UseRidGraph>
-		<Version>3.9.0.3</Version>
+		<Product>Backup Service Home 4</Product>
+		<AssemblyTitle>Backup Service Home 4</AssemblyTitle>
+		<Version>4.0.0.0</Version>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
@@ -45,6 +47,9 @@
 		<ProjectReference Include="..\BSH.Engine\BSH.Engine.csproj">
 			<Private>True</Private>
 		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="BSH.Test" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="appsettings.json">

@@ -4,11 +4,18 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoUpdaterDotNET;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Models;
 using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels.Windows;
+using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
+using Windows.UI.Popups;
 
 namespace BSH.Test;
 
@@ -42,29 +49,23 @@ public class ApplicationUpdateServiceTests
         Assert.That(await settings.ReadSettingAsync<bool>(ApplicationUpdateService.AutoSearchUpdatesSettingKey), Is.False);
     }
 
-    [Test]
-    public async Task CheckAsyncUsesStableFeedByDefault()
-    {
-        var started = new List<(string Url, bool Notify)>();
-        var service = CreateService(startUpdateCheck: url => started.Add((url, true)));
-
-        await service.CheckAsync(notifyWhenUpToDate: true);
-
-        Assert.That(started, Has.Count.EqualTo(1));
-        Assert.That(started[0].Url, Is.EqualTo(ApplicationUpdateService.StableUpdateFeedUrl));
-    }
-
-    [Test]
-    public async Task CheckAsyncUsesBetaFeedWhenEnabled()
+    [TestCase(null)]
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CheckAsyncAlwaysUsesThePreviewFeed(bool? downloadBeta)
     {
         var settings = new TestLocalSettingsService();
-        await settings.SaveSettingAsync(ApplicationUpdateService.DownloadBetaSettingKey, true);
+        if (downloadBeta.HasValue)
+        {
+            await settings.SaveSettingAsync(ApplicationUpdateService.DownloadBetaSettingKey, downloadBeta.Value);
+        }
+
         var started = new List<string>();
-        var service = CreateService(settings, url => started.Add(url));
+        var service = CreateService(settings, started.Add);
 
         await service.CheckAsync(notifyWhenUpToDate: true);
 
-        Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.BetaUpdateFeedUrl }));
+        Assert.That(started, Is.EqualTo(new[] { "https://updates.brightbits.de/backup_service_home/v4/auto_updater_beta.xml" }));
     }
 
     [Test]
@@ -90,7 +91,7 @@ public class ApplicationUpdateServiceTests
 
         await service.MaybeCheckOnStartupAsync();
 
-        Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.StableUpdateFeedUrl }));
+        Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.PreviewUpdateFeedUrl }));
     }
 
     [Test]
@@ -139,6 +140,91 @@ public class ApplicationUpdateServiceTests
         Assert.That(updates.ResetUniqueUserIdCalls, Is.EqualTo(1));
         Assert.That(passwords.StoreCalls, Is.EqualTo(1));
         Assert.That(passwords.LastStoredPassword, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
+    public async Task InitializeAsyncIdentifiesTheProductAndDisablesErrorDialogs()
+    {
+        var service = CreateService();
+
+        await service.InitializeAsync(() => { });
+        await service.InitializeAsync(() => { });
+
+        Assert.That(AutoUpdater.ReportErrors, Is.False);
+        Assert.That(AutoUpdater.HttpUserAgent, Does.StartWith("Backup Service Home 4/"));
+    }
+
+    [Test]
+    public async Task ManualCheckShowsADialogWhenTheFeedCannotBeRead()
+    {
+        var dialogs = new List<(string Title, string Content)>();
+        var forms = new List<UpdateInfoEventArgs>();
+        var service = CreateCheckService(dialogs, forms);
+
+        await service.CheckAsync(notifyWhenUpToDate: true);
+        service.OnCheckForUpdate(new UpdateInfoEventArgs
+        {
+            Error = new InvalidOperationException("404"),
+            IsUpdateAvailable = false
+        });
+
+        Assert.That(dialogs, Has.Count.EqualTo(1));
+        Assert.That(forms, Is.Empty);
+    }
+
+    [Test]
+    public void BackgroundCheckStaysSilentWhenTheFeedCannotBeRead()
+    {
+        var dialogs = new List<(string Title, string Content)>();
+        var forms = new List<UpdateInfoEventArgs>();
+        var service = CreateCheckService(dialogs, forms);
+
+        service.OnCheckForUpdate(new UpdateInfoEventArgs
+        {
+            Error = new InvalidOperationException("404"),
+            IsUpdateAvailable = false
+        });
+
+        Assert.That(dialogs, Is.Empty);
+        Assert.That(forms, Is.Empty);
+    }
+
+    [Test]
+    public async Task ManualCheckShowsADialogWhenTheInstallationIsCurrent()
+    {
+        var dialogs = new List<(string Title, string Content)>();
+        var service = CreateCheckService(dialogs, new List<UpdateInfoEventArgs>());
+
+        await service.CheckAsync(notifyWhenUpToDate: true);
+        service.OnCheckForUpdate(new UpdateInfoEventArgs { IsUpdateAvailable = false });
+
+        Assert.That(dialogs, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public async Task AnAvailableUpdateOpensTheUpdateForm()
+    {
+        var dialogs = new List<(string Title, string Content)>();
+        var forms = new List<UpdateInfoEventArgs>();
+        var service = CreateCheckService(dialogs, forms);
+
+        await service.CheckAsync(notifyWhenUpToDate: false);
+        var args = new UpdateInfoEventArgs { IsUpdateAvailable = true };
+        service.OnCheckForUpdate(args);
+
+        Assert.That(dialogs, Is.Empty);
+        Assert.That(forms, Is.EqualTo(new[] { args }));
+    }
+
+    private static ApplicationUpdateService CreateCheckService(
+        List<(string Title, string Content)> dialogs,
+        List<UpdateInfoEventArgs> forms)
+    {
+        return new ApplicationUpdateService(
+            new TestLocalSettingsService(),
+            () => new RecordingPresentation(dialogs),
+            _ => { },
+            forms.Add);
     }
 
     private static ApplicationUpdateService CreateService(
@@ -218,5 +304,43 @@ public class ApplicationUpdateServiceTests
             LastStoredPassword = password;
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class RecordingPresentation : IPresentationService
+    {
+        private readonly List<(string Title, string Content)> dialogs;
+
+        public RecordingPresentation(List<(string Title, string Content)> dialogs)
+        {
+            this.dialogs = dialogs;
+        }
+
+        public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
+        {
+            dialogs.Add((title, content));
+            return Task.FromResult(ContentDialogResult.None);
+        }
+
+        public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
+        public Task CloseMainWindowAsync() => Task.CompletedTask;
+        public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
+        public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
+        public Task OpenHelpSupportAsync() => Task.CompletedTask;
+        public Task<(string? password, bool persist)> RequestPasswordAsync() => Task.FromResult<(string?, bool)>((null, false));
+        public Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile) => Task.FromResult(RequestOverwriteResult.None);
+        public Task ResetConfigurationAsync() => Task.CompletedTask;
+        public Task ShowAboutWindowAsync() => Task.CompletedTask;
+        public Task ShowBackupBrowserWindowAsync() => Task.CompletedTask;
+        public Task ShowCompressionExclusionsWindowAsync() => Task.CompletedTask;
+        public Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync() => Task.FromResult((false, new NewBackupViewModel()));
+        public Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel) => Task.FromResult((false, backupViewModel));
+        public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);
+        public Task ShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
+        public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
+        public Task ShowMainWindowAsync() => Task.CompletedTask;
+        public Task ShowStatusWindowAsync() => Task.CompletedTask;
+        public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
+        public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
+        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 }

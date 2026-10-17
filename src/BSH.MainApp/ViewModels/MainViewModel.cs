@@ -28,6 +28,8 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     private readonly IScheduledBackupService scheduledBackupService;
     private readonly DispatcherQueue dispatcherQueue;
     private readonly IConfigurationManager configurationManager;
+    private readonly IOrchestrationService orchestrationService;
+    private bool systemToggleInFlight;
 
     [ObservableProperty]
     private string? lastBackupDate;
@@ -86,6 +88,12 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     [ObservableProperty]
     private string? systemStatusText;
 
+    [ObservableProperty]
+    private bool isSystemEnabled;
+
+    [ObservableProperty]
+    private bool canToggleSystem = true;
+
     public MainViewModel(
         IPresentationService presentationService,
         IStatusService statusService,
@@ -93,6 +101,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         IJobService jobService,
         IScheduledBackupService scheduledBackupService,
         IConfigurationManager configurationManager,
+        IOrchestrationService orchestrationService,
         DispatcherQueue dispatcherQueue)
     {
         this.presentationService = presentationService;
@@ -102,6 +111,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         this.scheduledBackupService = scheduledBackupService;
         this.dispatcherQueue = dispatcherQueue;
         this.configurationManager = configurationManager;
+        this.orchestrationService = orchestrationService;
         this.statusService.AddObserver(this, true);
         // Apply immediately so the overview has status text before the first dispatcher tick.
         ApplySystemStatus(this.statusService.SystemStatus);
@@ -192,6 +202,10 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     {
         EnqueueUi(async () =>
         {
+            if (!systemToggleInFlight)
+            {
+                CanToggleSystem = jobState != JobState.RUNNING;
+            }
             if (jobState == JobState.RUNNING)
             {
                 CurrentFileText = null;
@@ -269,16 +283,10 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     private void EnqueueUi(Action action)
     {
-        dispatcherQueue.TryEnqueue(() =>
+        EnqueueUi(() =>
         {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                Logger.Warning(ex, "Overview UI update failed.");
-            }
+            action();
+            return Task.CompletedTask;
         });
     }
 
@@ -306,5 +314,51 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
             SystemStatus.NOT_CONFIGURED => "MainView_SystemStatus_NotConfigured".GetLocalized(),
             _ => "MainView_SystemStatus_Running".GetLocalized(),
         };
+        SyncSystemEnabledFromConfiguration();
+    }
+
+    partial void OnIsSystemEnabledChanged(bool value)
+    {
+        _ = ApplySystemEnabledAsync(value);
+    }
+
+    private async Task ApplySystemEnabledAsync(bool enabled)
+    {
+        if (systemToggleInFlight)
+        {
+            return;
+        }
+
+        systemToggleInFlight = true;
+        CanToggleSystem = false;
+        try
+        {
+            if (enabled)
+            {
+                await orchestrationService.StartAsync(turnOn: true);
+            }
+            else
+            {
+                await orchestrationService.StopAsync(turnOff: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, "Could not change the backup system state.");
+        }
+        finally
+        {
+            systemToggleInFlight = false;
+            SyncSystemEnabledFromConfiguration();
+        }
+    }
+
+    private void SyncSystemEnabledFromConfiguration()
+    {
+        if (!systemToggleInFlight)
+        {
+            CanToggleSystem = statusService.JobState != JobState.RUNNING;
+        }
+        SetProperty(ref isSystemEnabled, configurationManager.DbStatus == "0", nameof(IsSystemEnabled));
     }
 }

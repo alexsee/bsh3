@@ -7,7 +7,6 @@ using System.Data;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Exceptions;
 
 namespace Brightbits.BSH.Engine.Database;
 
@@ -24,23 +23,19 @@ public class DbMigrationService : IDbMigrationService
 
     public async Task InitializeAsync()
     {
+        var dbVersion = SchemaCompatibility.ParseSupportedVersion(configurationManager.DBVersion);
+        if (dbVersion < SchemaCompatibility.SupportedSchemaVersion)
+        {
+            await CheckpointAsync();
+            DatabaseFileBackup.CreateTimestampedCopy(dbClientFactory.DatabaseFile, DateTime.Now);
+        }
+
         using var dbClient = dbClientFactory.CreateDbClient();
 
         // no version at all
         if (string.IsNullOrEmpty(configurationManager.DBVersion))
         {
             configurationManager.DBVersion = "1";
-        }
-
-        // check if we have a higher db version than supported
-        if (!int.TryParse(configurationManager.DBVersion, out var dbVersion))
-        {
-            throw new DatabaseIncompatibleException();
-        }
-
-        if (dbVersion > 9)
-        {
-            throw new DatabaseIncompatibleException();
         }
 
         // Version 1 auf 2 aktualisieren
@@ -136,6 +131,19 @@ public class DbMigrationService : IDbMigrationService
         {
             await dbClient.ExecuteNonQueryAsync("PRAGMA journal_mode=WAL;");
             configurationManager.DBVersion = "9";
+        }
+    }
+
+    private async Task CheckpointAsync()
+    {
+        try
+        {
+            using var dbClient = dbClientFactory.CreateDbClient();
+            await dbClient.ExecuteNonQueryAsync("PRAGMA wal_checkpoint(TRUNCATE);");
+        }
+        catch (Exception)
+        {
+            // The file copy still runs, including any WAL sidecar.
         }
     }
 }

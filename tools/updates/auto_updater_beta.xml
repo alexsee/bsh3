@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Template for the WinUI Preview update feed.
+  Upload this document to:
+  https://updates.brightbits.de/backup_service_home/v4/auto_updater_beta.xml
+  See tools/updates/README.md.
+-->
+<item>
+  <version>REPLACE_WITH_VERSION</version>
+  <url>https://download.brightbits.de/backupservicehome-REPLACE_WITH_VERSION-winui-win64.exe</url>
+  <changelog>https://github.com/alexsee/bsh3/releases</changelog>
+  <mandatory>false</mandatory>
+</item>

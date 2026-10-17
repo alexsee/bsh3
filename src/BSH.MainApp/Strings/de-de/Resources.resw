@@ -42,10 +42,28 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AppDisplayName" xml:space="preserve">
-    <value>Backup Service Home</value>
+    <value>Backup Service Home 4</value>
+  </data>
+  <data name="ApplicationUpdate_CheckFailed_Text" xml:space="preserve">
+    <value>Update-Prüfung nicht möglich</value>
+  </data>
+  <data name="ApplicationUpdate_CheckFailed_Title" xml:space="preserve">
+    <value>Update-Prüfung nicht möglich</value>
   </data>
   <data name="ApplicationUpdate_UpToDate_Text" xml:space="preserve">
     <value>Sie verwenden bereits die neueste Version.</value>
+  </data>
+  <data name="Preview_EngineBusy_Text" xml:space="preserve">
+    <value>Backup Service Home läuft bereits. Die Vorschau verwendet dieselbe Datenbank und startet nicht, solange die andere App geöffnet ist.</value>
+  </data>
+  <data name="Preview_DatabaseTooNew_Text" xml:space="preserve">
+    <value>Diese Datenbank stammt von einer neueren Backup Service Home-Version und wurde nicht geöffnet. Installieren Sie eine neuere Version.</value>
+  </data>
+  <data name="Preview_DatabaseTooNew_Title" xml:space="preserve">
+    <value>Backup Service Home 4</value>
+  </data>
+  <data name="Preview_EngineBusy_Title" xml:space="preserve">
+    <value>Backup Service Home 4</value>
   </data>
   <data name="Browser_AddToFolderFavorites" xml:space="preserve">
     <value>Zu Ordnerfavoriten hinzufügen</value>
@@ -386,7 +404,7 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
     <value>Sicherungsmedium nicht bereit</value>
   </data>
   <data name="MSG_NO_UPDATE_FOUND_TEXT" xml:space="preserve">
-    <value>Sie sind auf der neusten Version von Backup Service Home 3. Es wurden keine Aktualisierungen gefunden.</value>
+    <value>Sie sind auf der neusten Version von Backup Service Home 4. Es wurden keine Aktualisierungen gefunden.</value>
   </data>
   <data name="MSG_NO_UPDATE_FOUND_TITLE" xml:space="preserve">
     <value>Keine Aktualisierungen gefunden</value>
@@ -450,6 +468,15 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   </data>
   <data name="MainView_StartBackup" xml:space="preserve">
     <value>Sicherung starten</value>
+  </data>
+  <data name="MainView_SystemOff" xml:space="preserve">
+    <value>Aus</value>
+  </data>
+  <data name="MainView_SystemOn" xml:space="preserve">
+    <value>Ein</value>
+  </data>
+  <data name="MainView_SystemToggle" xml:space="preserve">
+    <value>Sicherungssystem</value>
   </data>
   <data name="MainView_SystemStatus_BatteryPaused" xml:space="preserve">
     <value>Batteriebetrieb. Es werden keine Sicherungen durchgeführt.</value>
@@ -777,7 +804,7 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
     <value>Beta-Aktualisierungen herunterladen</value>
   </data>
   <data name="Settings_Enhanced_DownloadBetaDescription" xml:space="preserve">
-    <value>Vorabversionen bei der Suche nach Aktualisierungen einbeziehen</value>
+    <value>Die Vorschau bezieht Aktualisierungen vom WinUI-Vorschau-Feed</value>
   </data>
   <data name="Settings_Enhanced_LaunchAtStartup" xml:space="preserve">
     <value>Beim Windows-Start starten</value>
@@ -1272,10 +1299,10 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
     <value>Herunterfahren</value>
   </data>
   <data name="Support_About" xml:space="preserve">
-    <value>Über Backup Service Home 3</value>
+    <value>Über Backup Service Home 4</value>
   </data>
   <data name="Support_About_Text" xml:space="preserve">
-    <value>Backup Service Home 3
+    <value>Backup Service Home 4
 Version {0}</value>
   </data>
   <data name="Support_CheckForUpdates" xml:space="preserve">
@@ -1426,7 +1453,7 @@ Version {0}</value>
     <value>Backup Service Home wartet auf das Medium...</value>
   </data>
   <data name="WaitForMedium_Text" xml:space="preserve">
-    <value>Backup Service Home 3 wartet auf das Sicherungsmedium, um die geplante Aktion fortzusetzen. Verbinden Sie dieses Medium jetzt mit Ihrem Computer.
+    <value>Backup Service Home 4 wartet auf das Sicherungsmedium, um die geplante Aktion fortzusetzen. Verbinden Sie dieses Medium jetzt mit Ihrem Computer.
 Das Medium wird automatisch erkannt.</value>
   </data>
   <data name="WaitForMedium_Title" xml:space="preserve">

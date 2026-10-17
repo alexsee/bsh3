@@ -35,7 +35,7 @@
                     <NavigationViewItem x:Name="nviOptions" Content="{helpers:ResourceString Name=Settings_Nav_BackupOptions}" />
                     <NavigationViewItem x:Name="nviEnhanced" Content="{helpers:ResourceString Name=Settings_Nav_Behavior}" />
                 </NavigationView.MenuItems>
-                <Frame Margin="0,20,0,0" x:Name="contentFrame" />
+                <Frame Padding="0,20,0,0" x:Name="contentFrame" Background="{ThemeResource AppPageBackgroundBrush}" />
             </NavigationView>
         </Grid>
     </Grid>
