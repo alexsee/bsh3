@@ -129,6 +129,11 @@ public sealed class ApplicationUpdateService : IUpdateService
         return notifyWhenUpToDate && !isUpdateAvailable && !failed;
     }
 
+    public static bool ShouldShowCheckFailedDialog(bool failed, bool notifyWhenUpToDate)
+    {
+        return failed && notifyWhenUpToDate;
+    }
+
     private void OnCheckForUpdate(UpdateInfoEventArgs args)
     {
         pendingNotifyWhenUpToDate.TryDequeue(out var notifyWhenUpToDate);
@@ -143,13 +148,22 @@ public sealed class ApplicationUpdateService : IUpdateService
             return;
         }
 
-        if (failed || !args.IsUpdateAvailable)
+        if (failed)
         {
-            if (failed)
+            Log.Warning(args.Error, "Update check failed.");
+            if (ShouldShowCheckFailedDialog(failed, notifyWhenUpToDate))
             {
-                Log.Warning(args.Error, "Update check failed.");
+                _ = presentationServiceFactory().ShowMessageBoxAsync(
+                    "ApplicationUpdate_CheckFailed_Title".GetLocalized(),
+                    "ApplicationUpdate_CheckFailed_Text".GetLocalized(),
+                    [new UICommand("MsgBox_OK".GetLocalized())]);
             }
 
+            return;
+        }
+
+        if (!args.IsUpdateAvailable)
+        {
             return;
         }
 

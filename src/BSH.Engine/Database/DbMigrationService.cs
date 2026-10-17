@@ -24,6 +24,19 @@ public class DbMigrationService : IDbMigrationService
 
     public async Task InitializeAsync()
     {
+        var rawVersion = configurationManager.DBVersion;
+        if (SchemaCompatibility.IsNewerThanSupported(rawVersion)
+            || (!string.IsNullOrEmpty(rawVersion) && !int.TryParse(rawVersion, out _)))
+        {
+            throw new DatabaseIncompatibleException();
+        }
+
+        if (SchemaCompatibility.WillChangeSchema(rawVersion))
+        {
+            await CheckpointAsync();
+            DatabaseFileBackup.CreateTimestampedCopy(dbClientFactory.DatabaseFile, DateTime.Now);
+        }
+
         using var dbClient = dbClientFactory.CreateDbClient();
 
         // no version at all
@@ -32,13 +45,7 @@ public class DbMigrationService : IDbMigrationService
             configurationManager.DBVersion = "1";
         }
 
-        // check if we have a higher db version than supported
-        if (!int.TryParse(configurationManager.DBVersion, out var dbVersion))
-        {
-            throw new DatabaseIncompatibleException();
-        }
-
-        if (dbVersion > 9)
+        if (!int.TryParse(configurationManager.DBVersion, out var dbVersion) || dbVersion > SchemaCompatibility.SupportedSchemaVersion)
         {
             throw new DatabaseIncompatibleException();
         }
@@ -136,6 +143,19 @@ public class DbMigrationService : IDbMigrationService
         {
             await dbClient.ExecuteNonQueryAsync("PRAGMA journal_mode=WAL;");
             configurationManager.DBVersion = "9";
+        }
+    }
+
+    private async Task CheckpointAsync()
+    {
+        try
+        {
+            using var dbClient = dbClientFactory.CreateDbClient();
+            await dbClient.ExecuteNonQueryAsync("PRAGMA wal_checkpoint(TRUNCATE);");
+        }
+        catch (Exception)
+        {
+            // The file copy still runs, including any WAL sidecar.
         }
     }
 }

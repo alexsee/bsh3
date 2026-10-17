@@ -100,6 +100,9 @@ public class ApplicationUpdateServiceTests
         Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: true, notifyWhenUpToDate: true), Is.False);
         Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: false, notifyWhenUpToDate: false), Is.False);
         Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: false, notifyWhenUpToDate: true), Is.True);
+        Assert.That(ApplicationUpdateService.ShouldShowCheckFailedDialog(failed: true, notifyWhenUpToDate: true), Is.True);
+        Assert.That(ApplicationUpdateService.ShouldShowCheckFailedDialog(failed: true, notifyWhenUpToDate: false), Is.False);
+        Assert.That(ApplicationUpdateService.ShouldShowCheckFailedDialog(failed: false, notifyWhenUpToDate: true), Is.False);
     }
 
     [Test]

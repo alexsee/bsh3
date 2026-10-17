@@ -89,8 +89,11 @@ public class InstallerEntryPointTests
         var registry = GetIssSection(WinUiSetupIssPath, "[Registry]");
 
         Assert.That(registry, Does.Contain(@"ValueName: ""BackupServiceHome3PreviewRun"""));
-        Assert.That(registry, Does.Contain(@"ValueData: """"{app}\BSH.MainApp.exe"""""));
-        Assert.That(registry, Does.Not.Contain(@"ValueName: ""BackupServiceHome3Run"""));
+        // Inno doubled quotes: the script text """{app}\BSH.MainApp.exe"" -autostart"
+        // is the registry value "{app}\BSH.MainApp.exe" -autostart, expanded to
+        // "C:\...\BSH.MainApp.exe" -autostart.
+        Assert.That(registry, Does.Contain(@"ValueData: """"""{app}\BSH.MainApp.exe"""" -autostart"""));
+        Assert.That(registry, Does.Contain(@"ValueName: ""BackupServiceHome3Run""; Tasks: disableStableAutostart; Flags: deletevalue"));
         Assert.That(registry, Does.Not.Contain(@"BSH.Main.exe"));
     }
 
@@ -160,8 +163,10 @@ public class InstallerEntryPointTests
         var feed = File.ReadAllText(Path.Combine(RepoRoot, "tools", "updates", "auto_updater_beta.xml"));
         var readme = File.ReadAllText(Path.Combine(RepoRoot, "tools", "updates", "README.md"));
 
-        Assert.That(feed, Does.Contain("-winui-win64.exe"));
-        Assert.That(feed, Does.Not.Contain("backupservicehome-3.9.0.3-win64.exe"));
+        Assert.That(feed, Does.Contain("backupservicehome-REPLACE_WITH_VERSION-winui-win64.exe"));
+        Assert.That(feed, Does.Contain("<version>REPLACE_WITH_VERSION</version>"));
+        Assert.That(feed, Does.Not.Contain("3.9.0.3"));
+        Assert.That(readme, Does.Contain("REPLACE_WITH_VERSION"));
         Assert.That(readme, Does.Contain("auto_updater_beta.xml"));
         Assert.That(ApplicationUpdateService.PreviewUpdateFeedUrl, Does.EndWith("v4/auto_updater_beta.xml"));
     }

@@ -60,6 +60,12 @@ Assert-Contains $winUiIss 'Backup Service Home 3 Preview' `
 Assert-Contains $winUiIss 'preview-vss.pipe' `
     "Setup-WinUI.iss must ship the Preview VSS pipe name."
 
+Assert-Contains $winUiIss '-autostart' `
+    "Setup-WinUI.iss must start the Preview with -autostart."
+
+Assert-Contains $winUiIss 'disableStableAutostart' `
+    "Setup-WinUI.iss must offer to disable the stable autostart value."
+
 if ($winUiIss -notmatch 'Excludes: "BSH\.Main\.exe') {
     throw "Setup-WinUI.iss must not ship BSH.Main.exe."
 }

@@ -35,6 +35,9 @@ AppMutex=BackupServiceHome3Preview
 UsePreviousAppDir=true
 DisableWelcomePage=false
 
+[Tasks]
+Name: "disableStableAutostart"; Description: "Automatischen Start der stabilen Version deaktivieren"; Flags: checkedonce
+
 [Languages]
 Name: german; MessagesFile: compiler:Languages\German.isl
 
@@ -49,7 +52,10 @@ Filename: "net"; Parameters: "start ""Backup Service Home Preview-Dienst"""; Fla
 Filename: "{app}\BSH.MainApp.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,Backup Service Home 3 Preview}"
 
 [Registry]
-Root: "HKCU"; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "BackupServiceHome3PreviewRun"; ValueData: """{app}\BSH.MainApp.exe"""; Flags: uninsdeletevalue
+; Inno encodes a literal quote as a doubled quote. The value below is "{app}\BSH.MainApp.exe" -autostart,
+; which Windows stores as "C:\...\BSH.MainApp.exe" -autostart.
+Root: "HKCU"; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "BackupServiceHome3PreviewRun"; ValueData: """{app}\BSH.MainApp.exe"" -autostart"; Flags: uninsdeletevalue
+Root: "HKCU"; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: none; ValueName: "BackupServiceHome3Run"; Tasks: disableStableAutostart; Flags: deletevalue
 
 [UninstallRun]
 Filename: "net"; Parameters: "stop ""Backup Service Home Preview-Dienst"""; Flags: runhidden

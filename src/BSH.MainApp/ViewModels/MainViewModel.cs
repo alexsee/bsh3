@@ -30,6 +30,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     private readonly IConfigurationManager configurationManager;
     private readonly IOrchestrationService orchestrationService;
     private bool suppressSystemEnabledPersistence;
+    private bool systemToggleInFlight;
 
     [ObservableProperty]
     private string? lastBackupDate;
@@ -202,7 +203,10 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     {
         EnqueueUi(async () =>
         {
-            CanToggleSystem = jobState != JobState.RUNNING;
+            if (!systemToggleInFlight)
+            {
+                CanToggleSystem = jobState != JobState.RUNNING;
+            }
             if (jobState == JobState.RUNNING)
             {
                 CurrentFileText = null;
@@ -332,6 +336,13 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     private async Task ApplySystemEnabledAsync(bool enabled)
     {
+        if (systemToggleInFlight)
+        {
+            return;
+        }
+
+        systemToggleInFlight = true;
+        CanToggleSystem = false;
         try
         {
             if (enabled)
@@ -349,6 +360,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         }
         finally
         {
+            systemToggleInFlight = false;
             SyncSystemEnabledFromConfiguration();
         }
     }
@@ -356,7 +368,10 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     private void SyncSystemEnabledFromConfiguration()
     {
         var enabled = configurationManager.DbStatus == "0";
-        CanToggleSystem = statusService.JobState != JobState.RUNNING;
+        if (!systemToggleInFlight)
+        {
+            CanToggleSystem = statusService.JobState != JobState.RUNNING;
+        }
         if (IsSystemEnabled == enabled)
         {
             return;

@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:BSH.MainApp.ViewModels"
     xmlns:helpers="using:BSH.MainApp.Helpers"
+    xmlns:converters="using:BSH.MainApp.Converters"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
     mc:Ignorable="d"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
@@ -13,6 +14,7 @@
 
     <Page.Resources>
         <x:Double x:Key="SettingsCardSpacing">3</x:Double>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
         <Style
             x:Key="SettingsSectionHeaderTextBlockStyle"
@@ -87,7 +89,7 @@
                     <ToggleSwitch IsOn="{Binding AutomaticallyCheckForUpdates, Mode=TwoWay}" />
                 </toolkit:SettingsCard>
 
-                <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Enhanced_DownloadBeta}" Description="{helpers:ResourceString Name=Settings_Enhanced_DownloadBetaDescription}">
+                <toolkit:SettingsCard Header="{helpers:ResourceString Name=Settings_Enhanced_DownloadBeta}" Description="{helpers:ResourceString Name=Settings_Enhanced_DownloadBetaDescription}" Visibility="{Binding ShowDownloadBetaSetting, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <toolkit:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE945;" />
                     </toolkit:SettingsCard.HeaderIcon>

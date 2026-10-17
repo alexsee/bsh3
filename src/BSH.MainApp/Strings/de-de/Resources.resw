@@ -44,11 +44,23 @@
   <data name="AppDisplayName" xml:space="preserve">
     <value>Backup Service Home 3 Preview</value>
   </data>
+  <data name="ApplicationUpdate_CheckFailed_Text" xml:space="preserve">
+    <value>Update-Prüfung nicht möglich</value>
+  </data>
+  <data name="ApplicationUpdate_CheckFailed_Title" xml:space="preserve">
+    <value>Update-Prüfung nicht möglich</value>
+  </data>
   <data name="ApplicationUpdate_UpToDate_Text" xml:space="preserve">
     <value>Sie verwenden bereits die neueste Version.</value>
   </data>
   <data name="Preview_EngineBusy_Text" xml:space="preserve">
     <value>Backup Service Home läuft bereits. Die Vorschau verwendet dieselbe Datenbank und startet nicht, solange die andere App geöffnet ist.</value>
+  </data>
+  <data name="Preview_DatabaseTooNew_Text" xml:space="preserve">
+    <value>Diese Datenbank stammt von einer neueren Backup Service Home-Version und wurde nicht geöffnet. Installieren Sie eine neuere Version.</value>
+  </data>
+  <data name="Preview_DatabaseTooNew_Title" xml:space="preserve">
+    <value>Backup Service Home 3 Preview</value>
   </data>
   <data name="Preview_EngineBusy_Title" xml:space="preserve">
     <value>Backup Service Home 3 Preview</value>

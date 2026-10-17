@@ -48,10 +48,46 @@ public class DatabaseSchemaUpgradeTests
     public async Task InitializeAsync_ThrowsWhenDatabaseVersionIsNewerThanSupported()
     {
         await using var fixture = await SchemaUpgradeFixture.CreateAsync("99");
+        var before = await File.ReadAllBytesAsync(fixture.DatabasePath);
 
         var migration = new DbMigrationService(fixture.DbFactory, fixture.ConfigurationManager);
 
         Assert.ThrowsAsync<DatabaseIncompatibleException>(async () => await migration.InitializeAsync());
+        Assert.That(Directory.GetFiles(fixture.DirectoryPath, "*.bak"), Is.Empty);
+        Assert.That(await File.ReadAllBytesAsync(fixture.DatabasePath), Is.EqualTo(before));
+        Assert.That(fixture.ConfigurationManager.DBVersion, Is.EqualTo("99"));
+    }
+
+    [Test]
+    public async Task InitializeAsync_BacksUpDatabaseBeforeChangingSchema()
+    {
+        await using var fixture = await SchemaUpgradeFixture.CreateAsync("8");
+
+        var migration = new DbMigrationService(fixture.DbFactory, fixture.ConfigurationManager);
+        await migration.InitializeAsync();
+
+        var backups = Directory.GetFiles(fixture.DirectoryPath, "*.bshdb.*.bak");
+        Assert.That(backups, Has.Length.EqualTo(1));
+
+        var backupFactory = new DbClientFactory();
+        await backupFactory.InitializeAsync(backups[0]);
+        var backupConfiguration = new ConfigurationManager(backupFactory);
+        await backupConfiguration.InitializeAsync();
+
+        Assert.That(backupConfiguration.DBVersion, Is.EqualTo("8"));
+        Assert.That(fixture.ConfigurationManager.DBVersion, Is.EqualTo(LegacyBackupDatabaseBuilder.CurrentSchemaVersion));
+    }
+
+    [Test]
+    public async Task InitializeAsync_DoesNotBackUpCurrentSchema()
+    {
+        await using var fixture = await SchemaUpgradeFixture.CreateAsync(LegacyBackupDatabaseBuilder.CurrentSchemaVersion);
+
+        var migration = new DbMigrationService(fixture.DbFactory, fixture.ConfigurationManager);
+        await migration.InitializeAsync();
+
+        Assert.That(Directory.GetFiles(fixture.DirectoryPath, "*.bak"), Is.Empty);
+        Assert.That(fixture.ConfigurationManager.DBVersion, Is.EqualTo(LegacyBackupDatabaseBuilder.CurrentSchemaVersion));
     }
 
     [Test]
@@ -75,6 +111,8 @@ public class DatabaseSchemaUpgradeTests
         }
 
         public string DirectoryPath { get; }
+
+        public string DatabasePath => Path.Combine(DirectoryPath, "backupservicehome.bshdb");
 
         public IDbClientFactory DbFactory { get; }
 
