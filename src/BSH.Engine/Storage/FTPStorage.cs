@@ -173,7 +173,7 @@ public class FtpStorage : Storage, IStorageProvider
         }
 
         // check if folder exists
-        if (!client.DirectoryExists(folderPath.GetFtpPath()))
+        if (!client.DirectoryExists(GetFtpPath(folderPath)))
         {
             client.Disconnect();
             return false;
@@ -212,14 +212,14 @@ public class FtpStorage : Storage, IStorageProvider
             }
 
             // check if folder exists
-            if (!await client.DirectoryExists(folderPath.GetFtpPath()))
+            if (!await client.DirectoryExists(GetFtpPath(folderPath)))
             {
                 _logger.Warning("FTP server does not have the specified folder.");
                 return false;
             }
 
             // check if backup.bshv file exists
-            var remoteBackupVersionFile = Combine(folderPath, "backup.bshv").GetFtpPath();
+            var remoteBackupVersionFile = GetFtpPath(Combine(folderPath, "backup.bshv"));
             var localBackupVersionFile = CreateUniqueTempFile(".bshv");
 
             if (await client.FileExists(remoteBackupVersionFile))
@@ -275,7 +275,7 @@ public class FtpStorage : Storage, IStorageProvider
     public bool CopyFileToStorage(string localFile, string remoteFile)
     {
         // create directory if not exists
-        var remoteFilePath = Combine(folderPath, remoteFile).GetFtpPath();
+        var remoteFilePath = GetFtpPath(Combine(folderPath, remoteFile));
         var result = ftpClient.UploadFile(GetLocalFileName(localFile), remoteFilePath, FtpRemoteExists.Overwrite, true);
         return result == FtpStatus.Success;
     }
@@ -283,7 +283,7 @@ public class FtpStorage : Storage, IStorageProvider
     public bool CopyFileToStorageCompressed(string localFile, string remoteFile)
     {
         // create directory if not exists
-        var remoteFilePath = Combine(folderPath, remoteFile + ".zip").GetFtpPath();
+        var remoteFilePath = GetFtpPath(Combine(folderPath, remoteFile + ".zip"));
         var tmpFile = CreateUniqueTempFile(".zip");
 
         try
@@ -306,7 +306,7 @@ public class FtpStorage : Storage, IStorageProvider
     public bool CopyFileToStorageEncrypted(string localFile, string remoteFile, string password)
     {
         // create directory if not exists
-        var remoteFilePath = Combine(folderPath, remoteFile + ".enc").GetFtpPath();
+        var remoteFilePath = GetFtpPath(Combine(folderPath, remoteFile + ".enc"));
 
         var tmpFile = CreateUniqueTempFile(".enc");
 
@@ -393,7 +393,11 @@ public class FtpStorage : Storage, IStorageProvider
         {
             File.WriteAllText(tmpFile, versionId.ToString());
 
-            ftpClient.UploadFile(tmpFile, Combine(folderPath, "backup.bshv").GetFtpPath(), FtpRemoteExists.Overwrite);
+            var result = ftpClient.UploadFile(tmpFile, GetFtpPath(Combine(folderPath, "backup.bshv")), FtpRemoteExists.Overwrite);
+            if (result != FtpStatus.Success)
+            {
+                throw new IOException("The backup version file could not be uploaded to the FTP server.");
+            }
         }
         finally
         {
@@ -403,13 +407,13 @@ public class FtpStorage : Storage, IStorageProvider
 
     public bool UploadDatabaseFile(string databaseFile)
     {
-        var result = ftpClient.UploadFile(databaseFile, Combine(folderPath, "backup.bshdb").GetFtpPath());
+        var result = ftpClient.UploadFile(databaseFile, GetFtpPath(Combine(folderPath, "backup.bshdb")));
         return result == FtpStatus.Success;
     }
 
     public bool CopyFileFromStorage(string localFile, string remoteFile)
     {
-        var remoteFilePath = Combine(folderPath, remoteFile).GetFtpPath();
+        var remoteFilePath = GetFtpPath(Combine(folderPath, remoteFile));
 
         // create directory if not exists
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
@@ -420,7 +424,7 @@ public class FtpStorage : Storage, IStorageProvider
 
     public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
     {
-        var remoteFilePath = Combine(folderPath, remoteFile + ".zip").GetFtpPath();
+        var remoteFilePath = GetFtpPath(Combine(folderPath, remoteFile + ".zip"));
 
         // create directory if not exists
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
@@ -459,12 +463,13 @@ public class FtpStorage : Storage, IStorageProvider
 
     public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
     {
-        var remoteFilePath = Combine(folderPath, remoteFile + ".enc").GetFtpPath();
+        var remoteFilePath = GetFtpPath(Combine(folderPath, remoteFile + ".enc"));
 
         // create directory if not exists
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
         var tmpFile = CreateUniqueTempFile(".enc");
+        var decryptedFile = CreateUniqueTempFile(".tmp");
 
         try
         {
@@ -476,19 +481,24 @@ public class FtpStorage : Storage, IStorageProvider
                 return false;
             }
 
-            new Encryption().Decode(tmpFile, GetLocalFileName(localFile), password);
+            if (!new Encryption().Decode(tmpFile, decryptedFile, password))
+            {
+                return false;
+            }
 
+            File.Copy(decryptedFile, GetLocalFileName(localFile), true);
             return true;
         }
         finally
         {
             TryDeleteTempFile(tmpFile);
+            TryDeleteTempFile(decryptedFile);
         }
     }
 
     public bool DeleteFileFromStorage(string remoteFile)
     {
-        var remoteFilePath = Combine(folderPath, remoteFile).GetFtpPath();
+        var remoteFilePath = GetFtpPath(Combine(folderPath, remoteFile));
         ftpClient.DeleteFile(remoteFilePath);
 
         return true;
@@ -506,20 +516,20 @@ public class FtpStorage : Storage, IStorageProvider
 
     public bool DeleteDirectory(string remoteDirectory)
     {
-        ftpClient.DeleteDirectory(Combine(folderPath, remoteDirectory).GetFtpPath());
+        ftpClient.DeleteDirectory(GetFtpPath(Combine(folderPath, remoteDirectory)));
         return true;
     }
 
     public bool RenameDirectory(string remoteDirectorySource, string remoteDirectoryTarget)
     {
-        return ftpClient.MoveDirectory(Combine(folderPath, remoteDirectorySource).GetFtpPath(),
-            Combine(folderPath, remoteDirectoryTarget).GetFtpPath());
+        return ftpClient.MoveDirectory(GetFtpPath(Combine(folderPath, remoteDirectorySource)),
+            GetFtpPath(Combine(folderPath, remoteDirectoryTarget)));
     }
 
     public bool DecryptOnStorage(string remoteFile, string password)
     {
-        var remoteFilePath = Combine(folderPath, remoteFile + ".enc").GetFtpPath();
-        var remoteFilePathDecrypted = Combine(folderPath, remoteFile).GetFtpPath();
+        var remoteFilePath = GetFtpPath(Combine(folderPath, remoteFile + ".enc"));
+        var remoteFilePathDecrypted = GetFtpPath(Combine(folderPath, remoteFile));
 
         var temporaryDirectory = Path.Combine(Path.GetTempPath(), "bsh-decrypt-" + Guid.NewGuid().ToString("N"));
         var encryptedTemporaryFile = Path.Combine(temporaryDirectory, "payload.enc");
@@ -570,7 +580,7 @@ public class FtpStorage : Storage, IStorageProvider
 
     public bool FileExists(string remoteFile)
     {
-        var remoteFilePath = Combine(folderPath, remoteFile).GetFtpPath();
+        var remoteFilePath = GetFtpPath(Combine(folderPath, remoteFile));
         return ftpClient.FileExists(remoteFilePath);
     }
 
@@ -586,6 +596,6 @@ public class FtpStorage : Storage, IStorageProvider
 
     public static string GetFtpPath(string path)
     {
-        return path.GetFtpPath();
+        return SanitizerModule.SanitizeSlashes(path);
     }
 }

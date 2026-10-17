@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Exceptions;
+using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Test.Fakes;
 using NUnit.Framework;
@@ -59,6 +60,69 @@ public class FtpStorageTests
             }
             Assert.That(server.MarkerDownloaded, Is.True, "The check must reach the remote version marker.");
         }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task EncryptedRestoreReportsInvalidEncryptedData(bool destinationExists)
+    {
+        await using var server = new VersionMarkerFtpServer("invalid encrypted data");
+        using var storage = new FtpStorage("127.0.0.1", server.Port, "user", "pass", "/backups", "UTF-8", false, 7);
+        storage.Open();
+        var destination = Path.Combine(temporaryDirectory, "restored.txt");
+        if (destinationExists)
+        {
+            await File.WriteAllTextAsync(destination, "original contents");
+        }
+
+        var restored = storage.CopyFileFromStorageEncrypted(destination, "file", "password");
+
+        Assert.That(server.MarkerDownloaded, Is.True, "The encrypted payload must reach the decryption step.");
+        Assert.That(restored, Is.False);
+        if (destinationExists)
+        {
+            Assert.That(await File.ReadAllTextAsync(destination), Is.EqualTo("original contents"));
+        }
+        else
+        {
+            Assert.That(File.Exists(destination), Is.False);
+        }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task VersionUpdateReportsTransferResult(bool rejectUpload)
+    {
+        await using var server = new VersionMarkerFtpServer("7", rejectUploads: rejectUpload);
+        using var storage = new FtpStorage("127.0.0.1", server.Port, "user", "pass", "/backups", "UTF-8", false, 7);
+        storage.Open();
+
+        if (rejectUpload)
+        {
+            Assert.Throws<IOException>(() => storage.UpdateStorageVersion(8));
+        }
+        else
+        {
+            Assert.DoesNotThrow(() => storage.UpdateStorageVersion(8));
+        }
+        Assert.That(server.UploadReceived, Is.True, "The version marker must reach the FTP server.");
+    }
+
+    [Test]
+    public async Task EncryptedRestoreReplacesDestinationAfterSuccessfulDecryption()
+    {
+        var source = Path.Combine(temporaryDirectory, "source.txt");
+        var encrypted = Path.Combine(temporaryDirectory, "source.enc");
+        var destination = Path.Combine(temporaryDirectory, "restored.txt");
+        await File.WriteAllTextAsync(source, "restored contents");
+        await File.WriteAllTextAsync(destination, "original contents");
+        Assert.That(new Encryption().Encode(source, encrypted, "password"), Is.True);
+        await using var server = new VersionMarkerFtpServer(await File.ReadAllBytesAsync(encrypted));
+        using var storage = new FtpStorage("127.0.0.1", server.Port, "user", "pass", "/backups", "UTF-8", false, 7);
+        storage.Open();
+
+        Assert.That(storage.CopyFileFromStorageEncrypted(destination, "file", "password"), Is.True);
+        Assert.That(await File.ReadAllTextAsync(destination), Is.EqualTo("restored contents"));
     }
 
     [Test]
@@ -200,13 +264,21 @@ public class FtpStorageTests
         private readonly CancellationTokenSource cancellation = new(TimeSpan.FromSeconds(15));
         private readonly Task session;
         private readonly byte[] marker;
+        private readonly bool rejectUploads;
 
         public int Port => ((IPEndPoint)listener.LocalEndpoint).Port;
         public bool MarkerDownloaded { get; private set; }
+        public bool UploadReceived { get; private set; }
 
-        public VersionMarkerFtpServer(string marker)
+        public VersionMarkerFtpServer(string marker, bool rejectUploads = false)
+            : this(Encoding.UTF8.GetBytes(marker), rejectUploads)
         {
-            this.marker = Encoding.UTF8.GetBytes(marker);
+        }
+
+        public VersionMarkerFtpServer(byte[] marker, bool rejectUploads = false)
+        {
+            this.marker = marker;
+            this.rejectUploads = rejectUploads;
             listener.Start();
             session = RunAsync();
         }
@@ -232,6 +304,7 @@ public class FtpStorageTests
                         case "PWD": await writer.WriteLineAsync("257 \"/\""); break;
                         case "CWD": await writer.WriteLineAsync("250 Directory changed"); break;
                         case "TYPE": await writer.WriteLineAsync("200 OK"); break;
+                        case "DELE": await writer.WriteLineAsync("250 File deleted"); break;
                         case "SIZE": await writer.WriteLineAsync($"213 {marker.Length}"); break;
                         case "MDTM": await writer.WriteLineAsync("213 20260101000000"); break;
                         case "EPSV":
@@ -243,6 +316,15 @@ public class FtpStorageTests
                             await writer.WriteLineAsync(command.StartsWith("EPSV", StringComparison.Ordinal)
                                 ? $"229 Entering Extended Passive Mode (|||{port}|)"
                                 : $"227 Entering Passive Mode (127,0,0,1,{port / 256},{port % 256})");
+                            break;
+                        case "STOR":
+                            await writer.WriteLineAsync("150 Opening data connection");
+                            using (var uploadClient = await dataListener.AcceptTcpClientAsync(cancellation.Token))
+                            {
+                                await uploadClient.GetStream().CopyToAsync(Stream.Null, cancellation.Token);
+                            }
+                            UploadReceived = true;
+                            await writer.WriteLineAsync(rejectUploads ? "550 Upload rejected" : "226 Transfer complete");
                             break;
                         case "NLST":
                         case "RETR":
