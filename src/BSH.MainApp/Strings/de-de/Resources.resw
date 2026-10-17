@@ -587,20 +587,11 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   <data name="Password_Title" xml:space="preserve">
     <value>Kennwort erforderlich</value>
   </data>
-  <data name="Schedule_BackupTimes" xml:space="preserve">
-    <value>Sicherungszeiten</value>
-  </data>
-  <data name="Schedule_BackupTimesDescription" xml:space="preserve">
-    <value>Fügen Sie einmalige oder wiederkehrende Sicherungseinträge hinzu.</value>
-  </data>
   <data name="Schedule_CreateFullBackupAfterInterval" xml:space="preserve">
     <value>Vollständige Sicherung nach einem Intervall erstellen</value>
   </data>
   <data name="Schedule_Date" xml:space="preserve">
     <value>Datum</value>
-  </data>
-  <data name="Schedule_DateTime" xml:space="preserve">
-    <value>Datum / Uhrzeit</value>
   </data>
   <data name="Schedule_Day" xml:space="preserve">
     <value>Tag</value>
@@ -617,32 +608,11 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   <data name="Schedule_DeleteInterval" xml:space="preserve">
     <value>Löschintervall</value>
   </data>
-  <data name="Schedule_FullBackups" xml:space="preserve">
-    <value>Vollständige Sicherungen</value>
-  </data>
-  <data name="Schedule_FullBackupsDescription" xml:space="preserve">
-    <value>Steuern Sie geplante vollständige Sicherungen und den Umgang mit verpassten Sicherungen.</value>
-  </data>
-  <data name="Schedule_Help_Daily" xml:space="preserve">
-    <value>Jeden Tag zur ausgewählten Uhrzeit ausführen.</value>
-  </data>
-  <data name="Schedule_Help_Hourly" xml:space="preserve">
-    <value>Jede Stunde zur ausgewählten Minute ausführen.</value>
-  </data>
-  <data name="Schedule_Help_Monthly" xml:space="preserve">
-    <value>Jeden Monat am ausgewählten Tag und zur ausgewählten Uhrzeit ausführen.</value>
-  </data>
-  <data name="Schedule_Help_Once" xml:space="preserve">
-    <value>Einmalig am ausgewählten Datum und zur ausgewählten Uhrzeit ausführen.</value>
-  </data>
-  <data name="Schedule_Help_Weekly" xml:space="preserve">
-    <value>Jede Woche am ausgewählten Tag und zur ausgewählten Uhrzeit ausführen.</value>
-  </data>
   <data name="Schedule_HourlyBackupThreshold" xml:space="preserve">
     <value>Schwellenwert für stündliche Sicherungen</value>
   </data>
   <data name="Schedule_NoEntries" xml:space="preserve">
-    <value>Noch keine Sicherungszeiten. Fügen Sie oben den ersten Eintrag hinzu.</value>
+    <value>Noch keine Sicherungszeiten. Fügen Sie unten die erste hinzu.</value>
   </data>
   <data name="Schedule_Kind_Daily" xml:space="preserve">
     <value>Täglich</value>
@@ -665,9 +635,6 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   <data name="Schedule_Minute" xml:space="preserve">
     <value>Minute</value>
   </data>
-  <data name="Schedule_Mode" xml:space="preserve">
-    <value>Modus</value>
-  </data>
   <data name="Schedule_PerformMissedLater" xml:space="preserve">
     <value>Verpasste geplante Sicherungen später ausführen</value>
   </data>
@@ -676,9 +643,6 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   </data>
   <data name="Schedule_Retention" xml:space="preserve">
     <value>Aufbewahrung</value>
-  </data>
-  <data name="Schedule_RetentionDescription" xml:space="preserve">
-    <value>Legen Sie fest, wie lange geplante Sicherungsversionen verfügbar bleiben.</value>
   </data>
   <data name="Schedule_RetentionMode_Automatic" xml:space="preserve">
     <value>Automatisch</value>
@@ -690,22 +654,16 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
     <value>Keine</value>
   </data>
   <data name="Schedule_RetentionUnit_Day" xml:space="preserve">
-    <value>Tag</value>
+    <value>Tage</value>
   </data>
   <data name="Schedule_RetentionUnit_Hour" xml:space="preserve">
-    <value>Stunde</value>
+    <value>Stunden</value>
   </data>
   <data name="Schedule_RetentionUnit_Week" xml:space="preserve">
-    <value>Woche</value>
+    <value>Wochen</value>
   </data>
   <data name="Schedule_Subtitle" xml:space="preserve">
-    <value>Erstellen Sie Zeitplaneinträge und legen Sie fest, wie geplante Sicherungen aufbewahrt werden.</value>
-  </data>
-  <data name="Schedule_Text_AtMinute" xml:space="preserve">
-    <value>Zur Minute {0}</value>
-  </data>
-  <data name="Schedule_Text_DayOfMonth" xml:space="preserve">
-    <value>Tag {0}, {1}</value>
+    <value>Legen Sie fest, wann gesichert wird und wie lange alte Sicherungen aufbewahrt werden.</value>
   </data>
   <data name="Schedule_Time" xml:space="preserve">
     <value>Uhrzeit</value>
@@ -1647,5 +1605,83 @@ Das Medium wird automatisch erkannt.</value>
   </data>
   <data name="Overview_BackupsToggle" xml:space="preserve">
     <value>Sicherungen</value>
+  </data>
+  <data name="Schedule_Entry_Once" xml:space="preserve">
+    <value>Einmalig am {0}</value>
+  </data>
+  <data name="Schedule_Entry_Hourly" xml:space="preserve">
+    <value>Jede Stunde zur Minute {0}</value>
+  </data>
+  <data name="Schedule_Entry_Daily" xml:space="preserve">
+    <value>Jeden Tag um {0}</value>
+  </data>
+  <data name="Schedule_Entry_Weekly" xml:space="preserve">
+    <value>Jeden {0} um {1}</value>
+  </data>
+  <data name="Schedule_Entry_Monthly" xml:space="preserve">
+    <value>Jeden Monat am {0}. um {1}</value>
+  </data>
+  <data name="Schedule_NextBackup" xml:space="preserve">
+    <value>Nächste Sicherung: {0}</value>
+  </data>
+  <data name="Schedule_NoTimesWarning" xml:space="preserve">
+    <value>Noch keine Sicherungszeiten. Fügen Sie mindestens eine hinzu, sonst werden keine Sicherungen erstellt.</value>
+  </data>
+  <data name="Schedule_NoUpcoming" xml:space="preserve">
+    <value>Keine dieser Sicherungszeiten wird erneut ausgeführt. Fügen Sie eine wiederkehrende Zeit hinzu, damit weiter gesichert wird.</value>
+  </data>
+  <data name="Schedule_Section_When" xml:space="preserve">
+    <value>Wann gesichert wird</value>
+  </data>
+  <data name="Schedule_AddTime" xml:space="preserve">
+    <value>Sicherungszeit hinzufügen</value>
+  </data>
+  <data name="Schedule_RemoveTime" xml:space="preserve">
+    <value>Sicherungszeit entfernen</value>
+  </data>
+  <data name="Schedule_Section_Keep" xml:space="preserve">
+    <value>Welche Sicherungen behalten werden</value>
+  </data>
+  <data name="Schedule_Keep_Auto" xml:space="preserve">
+    <value>Alte Sicherungen automatisch ausdünnen (empfohlen)</value>
+  </data>
+  <data name="Schedule_Keep_AutoBefore" xml:space="preserve">
+    <value>Jede Sicherung der letzten</value>
+  </data>
+  <data name="Schedule_Keep_AutoAfter" xml:space="preserve">
+    <value>Stunden behalten, danach die neueste pro Tag für einen Monat, danach eine pro Woche.</value>
+  </data>
+  <data name="Schedule_Keep_Interval" xml:space="preserve">
+    <value>Sicherungen nach einer festen Zeit löschen</value>
+  </data>
+  <data name="Schedule_Keep_IntervalBefore" xml:space="preserve">
+    <value>Sicherungen löschen, die älter sind als</value>
+  </data>
+  <data name="Schedule_Keep_All" xml:space="preserve">
+    <value>Alle Sicherungen behalten</value>
+  </data>
+  <data name="Schedule_Keep_AllDescription" xml:space="preserve">
+    <value>Es wird nichts automatisch gelöscht. Das Sicherungslaufwerk kann sich mit der Zeit füllen.</value>
+  </data>
+  <data name="Schedule_Keep_StableNote" xml:space="preserve">
+    <value>Als stabil markierte Sicherungen werden immer behalten.</value>
+  </data>
+  <data name="Schedule_Advanced" xml:space="preserve">
+    <value>Erweitert</value>
+  </data>
+  <data name="Schedule_Summary_None" xml:space="preserve">
+    <value>Noch keine Sicherungszeiten festgelegt</value>
+  </data>
+  <data name="Schedule_Summary_Times" xml:space="preserve">
+    <value>{0} Sicherungszeiten</value>
+  </data>
+  <data name="Schedule_Summary_KeepAll" xml:space="preserve">
+    <value>Alle Sicherungen werden behalten</value>
+  </data>
+  <data name="Schedule_Summary_KeepAuto" xml:space="preserve">
+    <value>Alte Sicherungen werden automatisch ausgedünnt</value>
+  </data>
+  <data name="Schedule_Summary_KeepInterval" xml:space="preserve">
+    <value>Sicherungen älter als {0} {1} werden gelöscht</value>
   </data>
 </root>
