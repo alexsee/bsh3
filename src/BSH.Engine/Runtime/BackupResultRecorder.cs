@@ -89,16 +89,16 @@ public sealed class BackupResultRecorder
         }
 
         var fileErrors = observation.Errors.Where(entry => entry.File != null).ToList();
-        var jobErrors = observation.Errors.Where(entry => entry.File == null).ToList();
+        var jobError = observation.Errors.FirstOrDefault(entry => entry.File == null);
 
         if (observation.InsufficientDiskSpaceReported)
         {
             return CreateFailure(BackupFailureReason.InsufficientDiskSpace, "", fileErrors);
         }
 
-        if (jobErrors.Count > 0)
+        if (jobError != null)
         {
-            var exception = jobErrors[0].Exception;
+            var exception = jobError.Exception;
             var reason = exception is DeviceNotReadyException or DeviceContainsWrongStateException
                 ? BackupFailureReason.DeviceNotReady
                 : BackupFailureReason.Other;

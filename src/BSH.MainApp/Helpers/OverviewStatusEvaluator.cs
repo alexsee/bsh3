@@ -73,10 +73,7 @@ public static class OverviewStatusEvaluator
 
         // Stable sort: severity first, then the order above.
         return issues
-            .Select((issue, index) => (issue, index))
-            .OrderByDescending(entry => entry.issue.Severity)
-            .ThenBy(entry => entry.index)
-            .Select(entry => entry.issue)
+            .OrderByDescending(issue => issue.Severity)
             .ToList();
     }
 

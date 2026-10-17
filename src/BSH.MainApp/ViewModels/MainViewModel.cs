@@ -332,12 +332,7 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
         foreach (var issue in issues.Where(issue => issue.Action != OverviewAction.None))
         {
-            ActionItems.Add(new OverviewActionItem(
-                issue.Kind,
-                issue.Severity,
-                GetActionText(issue, inputs),
-                GetActionButtonText(issue.Action),
-                GetActionCommand(issue.Action)));
+            ActionItems.Add(CreateActionItem(issue, inputs));
         }
 
         HasActionItems = ActionItems.Count > 0;
@@ -423,30 +418,24 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         };
     }
 
-    private static string GetActionButtonText(OverviewAction action)
+    private OverviewActionItem CreateActionItem(OverviewIssue issue, OverviewInputs inputs)
     {
-        return action switch
+        (string? buttonText, IRelayCommand command) = issue.Action switch
         {
-            OverviewAction.ViewFailedFiles => "Overview_Button_ViewFiles".GetLocalized(),
-            OverviewAction.ManageBackups => "Overview_Button_ManageBackups".GetLocalized(),
-            OverviewAction.ChangeBackupLocation => "Overview_Button_ChangeLocation".GetLocalized(),
-            OverviewAction.SetSchedule => "Overview_Button_SetSchedule".GetLocalized(),
-            OverviewAction.TurnOn => "Overview_Button_TurnOn".GetLocalized(),
-            _ => "Overview_Button_BackUpNow".GetLocalized(),
+            OverviewAction.ViewFailedFiles => ("Overview_Button_ViewFiles".GetLocalized(), ViewFailedFilesCommand),
+            OverviewAction.ManageBackups => ("Overview_Button_ManageBackups".GetLocalized(), BrowseBackupsCommand),
+            OverviewAction.ChangeBackupLocation => ("Overview_Button_ChangeLocation".GetLocalized(), ChangeBackupLocationCommand),
+            OverviewAction.SetSchedule => ("Overview_Button_SetSchedule".GetLocalized(), SetScheduleCommand),
+            OverviewAction.TurnOn => ("Overview_Button_TurnOn".GetLocalized(), TurnOnCommand),
+            _ => ("Overview_Button_BackUpNow".GetLocalized(), BackUpNowCommand),
         };
-    }
 
-    private IRelayCommand GetActionCommand(OverviewAction action)
-    {
-        return action switch
-        {
-            OverviewAction.ViewFailedFiles => ViewFailedFilesCommand,
-            OverviewAction.ManageBackups => BrowseBackupsCommand,
-            OverviewAction.ChangeBackupLocation => ChangeBackupLocationCommand,
-            OverviewAction.SetSchedule => SetScheduleCommand,
-            OverviewAction.TurnOn => TurnOnCommand,
-            _ => BackUpNowCommand,
-        };
+        return new OverviewActionItem(
+            issue.Kind,
+            issue.Severity,
+            GetActionText(issue, inputs),
+            buttonText,
+            command);
     }
 
     private void ApplyLastBackup(VersionChangeStatistics? statistics)

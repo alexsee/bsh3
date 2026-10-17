@@ -10,7 +10,7 @@ namespace BSH.MainApp.Windows;
 
 public sealed partial class ScheduleEditorWindow : WindowEx
 {
-    private bool closeRequested;
+    private readonly ModalCloseHandler closeHandler = new();
 
     public ScheduleEditorViewModel ViewModel
     {
@@ -35,21 +35,11 @@ public sealed partial class ScheduleEditorWindow : WindowEx
 
         Activate();
         this.CenterOnMainWindow();
-        var result = await ViewModel.TaskCompletionSource.Task;
-
-        // Save/Cancel complete the TCS while the window is still open; chrome close
-        // (title-bar X / Alt+F4) already closed the window via the Closed handler.
-        if (!closeRequested)
-        {
-            Close();
-        }
-
-        return result;
+        return await closeHandler.AwaitThenCloseAsync(ViewModel.TaskCompletionSource.Task, Close);
     }
 
     private void OnClosed(object sender, WindowEventArgs args)
     {
-        closeRequested = true;
-        ViewModel.TaskCompletionSource.TrySetResult(false);
+        closeHandler.HandleClosed(() => ViewModel.TaskCompletionSource.TrySetResult(false));
     }
 }

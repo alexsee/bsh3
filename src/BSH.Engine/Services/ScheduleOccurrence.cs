@@ -19,9 +19,7 @@ public static class ScheduleOccurrence
 
         return entries
             .Select(entry => GetNext(entry, now))
-            .Where(next => next.HasValue)
-            .OrderBy(next => next)
-            .FirstOrDefault();
+            .Min();
     }
 
     public static DateTime? GetNext(ScheduleEntry entry, DateTime now)

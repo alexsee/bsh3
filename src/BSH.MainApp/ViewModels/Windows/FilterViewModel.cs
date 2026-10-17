@@ -133,60 +133,27 @@ public partial class FilterViewModel : ObservableObject
         private set => SetProperty(ref isRegexTestNoMatch, value);
     }
 
-    public IRelayCommand AddFolderCommand
-    {
-        get;
-    }
+    public IRelayCommand AddFolderCommand { get; }
 
-    public IRelayCommand AddFileCommand
-    {
-        get;
-    }
+    public IRelayCommand AddFileCommand { get; }
 
-    public IRelayCommand AddFileTypeCommand
-    {
-        get;
-    }
+    public IRelayCommand AddFileTypeCommand { get; }
 
-    public IRelayCommand AddRegexCommand
-    {
-        get;
-    }
+    public IRelayCommand AddRegexCommand { get; }
 
-    public IRelayCommand ShowAddFileTypeCommand
-    {
-        get;
-    }
+    public IRelayCommand ShowAddFileTypeCommand { get; }
 
-    public IRelayCommand ShowAddPatternCommand
-    {
-        get;
-    }
+    public IRelayCommand ShowAddPatternCommand { get; }
 
-    public IRelayCommand CancelAddCommand
-    {
-        get;
-    }
+    public IRelayCommand CancelAddCommand { get; }
 
-    public IRelayCommand SaveCommand
-    {
-        get;
-    }
+    public IRelayCommand SaveCommand { get; }
 
-    public IRelayCommand CancelCommand
-    {
-        get;
-    }
+    public IRelayCommand CancelCommand { get; }
 
-    public IAsyncRelayCommand BrowseFolderCommand
-    {
-        get;
-    }
+    public IAsyncRelayCommand BrowseFolderCommand { get; }
 
-    public IAsyncRelayCommand BrowseFileCommand
-    {
-        get;
-    }
+    public IAsyncRelayCommand BrowseFileCommand { get; }
 
     public WindowId ParentWindowId
     {
@@ -205,7 +172,7 @@ public partial class FilterViewModel : ObservableObject
         ShowAddPatternCommand = new RelayCommand(() => ShowAddPanel(fileType: false));
         CancelAddCommand = new RelayCommand(CloseAddPanels);
         SaveCommand = new RelayCommand(Save);
-        CancelCommand = new RelayCommand(Cancel);
+        CancelCommand = new RelayCommand(OnWindowClosed);
         BrowseFolderCommand = new AsyncRelayCommand(BrowseFolderAsync);
         BrowseFileCommand = new AsyncRelayCommand(BrowseFileAsync);
 
@@ -262,20 +229,14 @@ public partial class FilterViewModel : ObservableObject
     public void LoadFromConfiguration()
     {
         ExcludeFolders.Clear();
-        foreach (var entry in (configurationManager.ExcludeFolder ?? string.Empty)
-            .Split('|', StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => x.Trim())
-            .Where(x => !string.IsNullOrEmpty(x))
+        foreach (var entry in SplitExclusions(configurationManager.ExcludeFolder)
             .Distinct(StringComparer.OrdinalIgnoreCase))
         {
             ExcludeFolders.Add(entry);
         }
 
         ExcludeFiles.Clear();
-        foreach (var entry in (configurationManager.ExcludeFile ?? string.Empty)
-            .Split('|', StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => x.Trim())
-            .Where(x => !string.IsNullOrEmpty(x))
+        foreach (var entry in SplitExclusions(configurationManager.ExcludeFile)
             .Distinct(StringComparer.OrdinalIgnoreCase))
         {
             ExcludeFiles.Add(entry);
@@ -292,10 +253,7 @@ public partial class FilterViewModel : ObservableObject
         }
 
         RegexPatterns.Clear();
-        foreach (var entry in (configurationManager.ExcludeMask ?? string.Empty)
-            .Split('|', StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => x.Trim())
-            .Where(x => !string.IsNullOrEmpty(x))
+        foreach (var entry in SplitExclusions(configurationManager.ExcludeMask)
             .Distinct(StringComparer.Ordinal))
         {
             RegexPatterns.Add(entry);
@@ -326,6 +284,14 @@ public partial class FilterViewModel : ObservableObject
             ? MaxFileSizeSetting.FromMegabytes(configuredMegabytes)
             : string.Empty;
         configurationManager.IncludeSystemFolders = IncludeSystemFolders ? "1" : "0";
+    }
+
+    private static IEnumerable<string> SplitExclusions(string? value)
+    {
+        return (value ?? string.Empty)
+            .Split('|', StringSplitOptions.RemoveEmptyEntries)
+            .Select(entry => entry.Trim())
+            .Where(entry => !string.IsNullOrEmpty(entry));
     }
 
     private IReadOnlyList<string> GetSourceFolders()
@@ -552,11 +518,6 @@ public partial class FilterViewModel : ObservableObject
     public void OnWindowClosed()
     {
         TaskCompletionSource.TrySetResult(false);
-    }
-
-    private void Cancel()
-    {
-        OnWindowClosed();
     }
 
     private async Task BrowseFolderAsync()

@@ -119,7 +119,13 @@ public sealed class JobSessionRunner
                 presenter.ReportAction(ActionType.Backup, !statusDialog);
             }
             // Completion observers refresh the overview, so publish only after the result is saved.
-            presenter.ReportState(result.Canceled ? JobState.CANCELED : result.Succeeded ? JobState.FINISHED : JobState.ERROR);
+            var finalState = result switch
+            {
+                { Canceled: true } => JobState.CANCELED,
+                { Succeeded: true } => JobState.FINISHED,
+                _ => JobState.ERROR
+            };
+            presenter.ReportState(finalState);
         }
         return result;
     }
