@@ -16,6 +16,7 @@ using System.IO.Pipes;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using BSH.Service.Shared;
+using ServiceWire;
 using ServiceWire.NamedPipes;
 
 namespace BSH.Service
@@ -34,6 +35,18 @@ namespace BSH.Service
                 PipeAccessRights.ReadWrite,
                 AccessControlType.Allow
             ));
+
+            // Preserve cross-user client access while allowing the service to create
+            // further pipe instances, including when installed under a custom account.
+            _pipeSecurity.AddAccessRule(new PipeAccessRule(
+                new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
+                PipeAccessRights.FullControl,
+                AccessControlType.Allow));
+            using var identity = WindowsIdentity.GetCurrent();
+            _pipeSecurity.AddAccessRule(new PipeAccessRule(
+                identity.User ?? throw new InvalidOperationException("The service account has no Windows SID."),
+                PipeAccessRights.FullControl,
+                AccessControlType.Allow));
         }
 
         public NamedPipeServerStream Create(string pipeName, PipeDirection direction, int maxNumberOfServerInstances,
@@ -44,35 +57,45 @@ namespace BSH.Service
         }
     }
 
-    public sealed class WindowsBackgroundService : IHostedService
+    public sealed class WindowsBackgroundService : BackgroundService
     {
-        private readonly Task _completedTask = Task.CompletedTask;
-
         private readonly NpHost host;
 
         private readonly IVSSRemoteObject remoteObject;
 
-        public WindowsBackgroundService()
+        public WindowsBackgroundService(ILogger<WindowsBackgroundService> logger)
         {
             // init remote object
             remoteObject = new VSSService();
 
             // Preview installs a vss.pipe beside this exe so it does not bind the stable pipe.
             var pipeName = VssPipeNames.ReadInstalledPipeName(AppContext.BaseDirectory);
-            host = new NpHost(pipeName, streamFactory: new CustomNamedPipeServerStreamFactory());
+            host = new NpHost(pipeName, log: new ServiceWireLogger(logger),
+                streamFactory: new CustomNamedPipeServerStreamFactory());
             host.AddService(remoteObject);
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            host.Open();
-            return _completedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            host.Close();
-            return _completedTask;
+            try
+            {
+                host.Open();
+                using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+                do
+                {
+                    // A listener failure happens on ServiceWire's own thread. Surface
+                    // it to the host so the Windows service cannot stay silently broken.
+                    if (host.Status == HostStatus.Faulted)
+                    {
+                        throw new InvalidOperationException($"The VSS pipe listener '{host.PipeName}' failed. See the ServiceWire log for details.");
+                    }
+                }
+                while (await timer.WaitForNextTickAsync(stoppingToken));
+            }
+            finally
+            {
+                host.Close();
+            }
         }
     }
 }
