@@ -51,7 +51,7 @@ public class ApplicationUpdateServiceTests
         await service.CheckAsync(notifyWhenUpToDate: true);
 
         Assert.That(started, Has.Count.EqualTo(1));
-        Assert.That(started[0].Url, Is.EqualTo(ApplicationUpdateService.StableUpdateFeedUrl));
+        Assert.That(started[0].Url, Is.EqualTo(ApplicationUpdateService.PreviewUpdateFeedUrl));
     }
 
     [Test]
@@ -64,7 +64,7 @@ public class ApplicationUpdateServiceTests
 
         await service.CheckAsync(notifyWhenUpToDate: true);
 
-        Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.BetaUpdateFeedUrl }));
+        Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.PreviewUpdateFeedUrl }));
     }
 
     [Test]
@@ -90,7 +90,31 @@ public class ApplicationUpdateServiceTests
 
         await service.MaybeCheckOnStartupAsync();
 
-        Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.StableUpdateFeedUrl }));
+        Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.PreviewUpdateFeedUrl }));
+    }
+
+    [Test]
+    public void FailedUpdateCheckDoesNotShowUpToDateDialog()
+    {
+        Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: true, notifyWhenUpToDate: false), Is.False);
+        Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: true, notifyWhenUpToDate: true), Is.False);
+        Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: false, notifyWhenUpToDate: false), Is.False);
+        Assert.That(ApplicationUpdateService.ShouldShowUpToDateDialog(isUpdateAvailable: false, failed: false, notifyWhenUpToDate: true), Is.True);
+    }
+
+    [Test]
+    public async Task PreviewCheckUsesWinUiFeedEvenWhenBetaToggleIsOff()
+    {
+        var settings = new TestLocalSettingsService();
+        await settings.SaveSettingAsync(ApplicationUpdateService.DownloadBetaSettingKey, false);
+        var started = new List<string>();
+        var service = CreateService(settings, started.Add);
+
+        await service.CheckAsync(notifyWhenUpToDate: false);
+
+        Assert.That(started, Is.EqualTo(new[] { ApplicationUpdateService.PreviewUpdateFeedUrl }));
+        Assert.That(ApplicationUpdateService.PreviewUpdateFeedUrl, Does.Contain("auto_updater_beta.xml"));
+        Assert.That(ApplicationUpdateService.PreviewUpdateFeedUrl, Is.Not.EqualTo(ApplicationUpdateService.StableUpdateFeedUrl));
     }
 
     [Test]

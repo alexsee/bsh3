@@ -12,6 +12,18 @@ namespace Brightbits.BSH.Engine.Services;
 
 public sealed class VolumeShadowCopyClient : IVssClient
 {
+    private readonly string pipeName;
+
+    public VolumeShadowCopyClient()
+        : this(VssPipeNames.Stable)
+    {
+    }
+
+    public VolumeShadowCopyClient(string pipeName)
+    {
+        this.pipeName = VssPipeNames.Normalize(pipeName);
+    }
+
     public bool CopyFile(string fileName, string destFileName)
     {
         ArgumentNullException.ThrowIfNull(fileName);
@@ -19,7 +31,7 @@ public sealed class VolumeShadowCopyClient : IVssClient
 
         try
         {
-            using var npClient = new NpClient<IVSSRemoteObject>(new NpEndPoint("backupservicehome"));
+            using var npClient = new NpClient<IVSSRemoteObject>(new NpEndPoint(pipeName));
 
             var serviceFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             var destination = destFileName.Replace("\\\\", "\\", StringComparison.OrdinalIgnoreCase);

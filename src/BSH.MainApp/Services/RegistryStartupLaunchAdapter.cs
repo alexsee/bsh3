@@ -9,7 +9,7 @@ namespace BSH.MainApp.Services;
 
 public sealed class RegistryStartupLaunchAdapter : IStartupLaunchAdapter
 {
-    public const string ValueName = "BackupServiceHome3Run";
+    public const string ValueName = "BackupServiceHome3PreviewRun";
     private const string RunKeyPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
 
     private readonly Func<string> getExecutablePath;

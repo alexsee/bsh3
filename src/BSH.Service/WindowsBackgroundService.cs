@@ -57,8 +57,9 @@ namespace BSH.Service
             // init remote object
             remoteObject = new VSSService();
 
-            // create remote rpc server
-            host = new NpHost("backupservicehome", streamFactory: new CustomNamedPipeServerStreamFactory());
+            // Preview installs a vss.pipe beside this exe so it does not bind the stable pipe.
+            var pipeName = VssPipeNames.ReadInstalledPipeName(AppContext.BaseDirectory);
+            host = new NpHost(pipeName, streamFactory: new CustomNamedPipeServerStreamFactory());
             host.AddService(remoteObject);
         }
 

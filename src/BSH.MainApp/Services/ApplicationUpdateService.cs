@@ -6,6 +6,7 @@ using System.Reflection;
 using AutoUpdaterDotNET;
 using BSH.MainApp.Contracts.Services;
 using CommunityToolkit.WinUI;
+using Serilog;
 using Windows.UI.Popups;
 
 namespace BSH.MainApp.Services;
@@ -17,6 +18,11 @@ public sealed class ApplicationUpdateService : IUpdateService
     public const string AutoSearchUpdatesSettingKey = "AutoSearchUpdates";
     public const string StableUpdateFeedUrl = "https://updates.brightbits.de/backup_service_home/v4/auto_updater.xml";
     public const string BetaUpdateFeedUrl = "https://updates.brightbits.de/backup_service_home/v4/auto_updater_beta.xml";
+
+    /// <summary>
+    /// Preview builds only offer the WinUI beta artifact. The stable v4 feed is not used.
+    /// </summary>
+    public const string PreviewUpdateFeedUrl = BetaUpdateFeedUrl;
 
     private readonly ILocalSettingsService localSettingsService;
     private readonly Func<IPresentationService> presentationServiceFactory;
@@ -43,19 +49,20 @@ public sealed class ApplicationUpdateService : IUpdateService
         }
 
         var uniqueUserId = await GetOrCreateUniqueUserIdAsync();
-        AutoUpdater.HttpUserAgent = $"Backup Service Home/{GetApplicationVersion()} {uniqueUserId}";
+        AutoUpdater.ReportErrors = false;
+        AutoUpdater.HttpUserAgent = $"Backup Service Home Preview/{GetApplicationVersion()} {uniqueUserId}";
         AutoUpdater.TopMost = true;
         AutoUpdater.ApplicationExitEvent += () => onApplicationExitRequested();
         EnsureEventsHooked();
         initialized = true;
     }
 
-    public async Task CheckAsync(bool notifyWhenUpToDate)
+    public Task CheckAsync(bool notifyWhenUpToDate)
     {
-        var feedUrl = await GetDownloadBetaAsync() ? BetaUpdateFeedUrl : StableUpdateFeedUrl;
         pendingNotifyWhenUpToDate.Enqueue(notifyWhenUpToDate);
         EnsureEventsHooked();
-        startUpdateCheck(feedUrl);
+        startUpdateCheck(PreviewUpdateFeedUrl);
+        return Task.CompletedTask;
     }
 
     public async Task MaybeCheckOnStartupAsync()
@@ -117,18 +124,30 @@ public sealed class ApplicationUpdateService : IUpdateService
         AutoUpdater.CheckForUpdateEvent += OnCheckForUpdate;
     }
 
+    public static bool ShouldShowUpToDateDialog(bool isUpdateAvailable, bool failed, bool notifyWhenUpToDate)
+    {
+        return notifyWhenUpToDate && !isUpdateAvailable && !failed;
+    }
+
     private void OnCheckForUpdate(UpdateInfoEventArgs args)
     {
         pendingNotifyWhenUpToDate.TryDequeue(out var notifyWhenUpToDate);
+        var failed = args.Error != null;
 
-        if (!args.IsUpdateAvailable)
+        if (ShouldShowUpToDateDialog(args.IsUpdateAvailable, failed, notifyWhenUpToDate))
         {
-            if (notifyWhenUpToDate)
+            _ = presentationServiceFactory().ShowMessageBoxAsync(
+                "MSG_NO_UPDATE_FOUND_TITLE".GetLocalized(),
+                "ApplicationUpdate_UpToDate_Text".GetLocalized(),
+                [new UICommand("MsgBox_OK".GetLocalized())]);
+            return;
+        }
+
+        if (failed || !args.IsUpdateAvailable)
+        {
+            if (failed)
             {
-                _ = presentationServiceFactory().ShowMessageBoxAsync(
-                    "MSG_NO_UPDATE_FOUND_TITLE".GetLocalized(),
-                    "ApplicationUpdate_UpToDate_Text".GetLocalized(),
-                    [new UICommand("MsgBox_OK".GetLocalized())]);
+                Log.Warning(args.Error, "Update check failed.");
             }
 
             return;

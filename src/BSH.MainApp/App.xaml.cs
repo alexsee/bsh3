@@ -11,6 +11,7 @@ using Brightbits.BSH.Engine.Contracts.Storage;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
+using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Services.FileCollector;
@@ -77,7 +78,7 @@ public partial class App : Application
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = germanCulture;
 
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
-        AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home", version);
+        AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home Preview", version);
 
         _ = host.Value;
 
@@ -143,9 +144,41 @@ public partial class App : Application
         ExitApplication();
     }
 
+    private static PreviewSingleInstanceGate? previewInstance;
+
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+
+        var uiQueue = DispatcherQueue.GetForCurrentThread();
+        if (uiQueue == null)
+        {
+            ExitApplication();
+            return;
+        }
+
+        var startup = PreviewSingleInstanceGate.Acquire(
+            onActivateRequested: () => uiQueue.TryEnqueue(BringPreviewToFront),
+            out var gate);
+        if (startup == PreviewStartupResult.ActivateExisting)
+        {
+            ExitApplication();
+            return;
+        }
+
+        if (startup == PreviewStartupResult.BlockedByOtherEngine)
+        {
+            NativeMessage.Show(LocalizedOrFallback(
+                "Preview_EngineBusy_Title",
+                "Backup Service Home 3 Preview"),
+                LocalizedOrFallback(
+                    "Preview_EngineBusy_Text",
+                    "Backup Service Home is already running. Preview uses the same database and will not start while that app is running."));
+            ExitApplication();
+            return;
+        }
+
+        previewInstance = gate;
 
         // init database, read configuration, and perform potential schema migrations
         await App.GetService<IDbClientFactory>().InitializeAsync(DatabaseFile);
@@ -164,6 +197,20 @@ public partial class App : Application
         await updateService.MaybeCheckOnStartupAsync();
 
         await App.GetService<IActivationService>().ActivateAsync(args);
+    }
+
+    private static void BringPreviewToFront()
+    {
+        var window = MainWindow;
+        window.AppWindow.Show();
+        window.Activate();
+        window.AppWindow.MoveInZOrderAtTop();
+    }
+
+    private static string LocalizedOrFallback(string key, string fallback)
+    {
+        var value = key.GetLocalized();
+        return string.IsNullOrEmpty(value) || value == key ? fallback : value;
     }
 
     private static void OnAutoUpdaterApplicationExit()
@@ -252,6 +299,17 @@ public partial class App : Application
             host.Value.Dispose();
         }
 
+        try
+        {
+            previewInstance?.Dispose();
+        }
+        catch
+        {
+            // Releasing the instance mutexes must not block process exit.
+        }
+
+        previewInstance = null;
+
         Environment.Exit(0);
     }
 
@@ -311,7 +369,8 @@ public partial class App : Application
             services.AddSingleton<IScheduleRepository, ScheduleRepository>();
             services.AddSingleton<ScheduleSettingsService>();
 
-            services.AddSingleton<IVssClient, VolumeShadowCopyClient>();
+            services.AddSingleton<IVssClient>(_ => new VolumeShadowCopyClient(
+                VssConnection.ResolveInstalledPipe(AppContext.BaseDirectory)));
             services.AddSingleton<ISchedulerAdapterFactory, SchedulerAdapterFactory>();
             services.AddSingleton<IMediaWatcherFactory, MediaWatcherFactory>();
             services.AddSingleton<IFileCollectorServiceFactory, FileCollectorServiceFactory>();

@@ -44,6 +44,26 @@ Assert-Contains $winFormsIss '{app}\BSH.Service.exe' `
 Assert-Contains $winUiIss '{app}\BSH.Service.exe' `
     "Setup-WinUI.iss must still register the VSS helper service (BSH.Service.exe)."
 
+Assert-Contains $winUiIss 'Backup Service Home Preview-Dienst' `
+    "Setup-WinUI.iss must register its own VSS service."
+
+if ($winUiIss -match 'Backup Service Home-Dienst') {
+    throw "Setup-WinUI.iss must not stop or delete the stable VSS service (Backup Service Home-Dienst)."
+}
+
+Assert-Contains $winUiIss 'AppMutex=BackupServiceHome3Preview' `
+    "Setup-WinUI.iss AppMutex must be the Preview instance mutex."
+
+Assert-Contains $winUiIss 'Backup Service Home 3 Preview' `
+    "Setup-WinUI.iss must install side by side under its own name."
+
+Assert-Contains $winUiIss 'preview-vss.pipe' `
+    "Setup-WinUI.iss must ship the Preview VSS pipe name."
+
+if ($winUiIss -notmatch 'Excludes: "BSH\.Main\.exe') {
+    throw "Setup-WinUI.iss must not ship BSH.Main.exe."
+}
+
 Assert-File (Join-Path $publishDir "BSH.MainApp.exe") `
     "Release publish did not include the unpackaged WinUI shell (BSH.MainApp.exe) in $publishDir."
 

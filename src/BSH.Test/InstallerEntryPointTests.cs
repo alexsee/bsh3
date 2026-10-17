@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using BSH.MainApp.Services;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -69,7 +70,7 @@ public class InstallerEntryPointTests
         var icons = GetIssSection(WinUiSetupIssPath, "[Icons]");
 
         Assert.That(icons, Does.Match(
-            @"Name:\s*""\{group\}\\Backup Service Home"";\s*Filename:\s*""\{app\}\\BSH\.MainApp\.exe"""));
+            @"Name:\s*""\{group\}\\Backup Service Home 3 Preview"";\s*Filename:\s*""\{app\}\\BSH\.MainApp\.exe"""));
         Assert.That(icons, Does.Not.Contain(@"BSH.Main.exe"));
     }
 
@@ -87,20 +88,59 @@ public class InstallerEntryPointTests
     {
         var registry = GetIssSection(WinUiSetupIssPath, "[Registry]");
 
-        Assert.That(registry, Does.Contain(@"ValueName: ""BackupServiceHome3Run""; ValueData: ""{app}\BSH.MainApp.exe"""));
+        Assert.That(registry, Does.Contain(@"ValueName: ""BackupServiceHome3PreviewRun"""));
+        Assert.That(registry, Does.Contain(@"ValueData: """"{app}\BSH.MainApp.exe"""""));
+        Assert.That(registry, Does.Not.Contain(@"ValueName: ""BackupServiceHome3Run"""));
         Assert.That(registry, Does.Not.Contain(@"BSH.Main.exe"));
     }
 
     [Test]
     public void BothInstallersRegisterAndStartVssService()
     {
-        foreach (var setupIssPath in new[] { WinFormsSetupIssPath, WinUiSetupIssPath })
-        {
-            var run = GetIssSection(setupIssPath, "[Run]");
+        var winFormsRun = GetIssSection(WinFormsSetupIssPath, "[Run]");
+        Assert.That(winFormsRun, Does.Contain("binpath=\"\"{app}\\BSH.Service.exe\"\" start=auto"));
+        Assert.That(winFormsRun, Does.Contain("Parameters: \"start \"\"Backup Service Home-Dienst\"\""));
 
-            Assert.That(run, Does.Contain("binpath=\"\"{app}\\BSH.Service.exe\"\" start=auto"));
-            Assert.That(run, Does.Contain("Parameters: \"start \"\"Backup Service Home-Dienst\"\""));
-        }
+        var winUiRun = GetIssSection(WinUiSetupIssPath, "[Run]");
+        Assert.That(winUiRun, Does.Contain("binpath=\"\"{app}\\BSH.Service.exe\"\" start=auto"));
+        Assert.That(winUiRun, Does.Contain("Parameters: \"start \"\"Backup Service Home Preview-Dienst\"\""));
+        Assert.That(winUiRun, Does.Not.Contain("Backup Service Home-Dienst"));
+    }
+
+    [Test]
+    public void WinUiInstallerDoesNotRemoveTheStableVssService()
+    {
+        var text = File.ReadAllText(WinUiSetupIssPath);
+
+        Assert.That(text, Does.Not.Contain("Backup Service Home-Dienst"));
+        Assert.That(text, Does.Contain("Backup Service Home Preview-Dienst"));
+        Assert.That(GetIssSection(WinUiSetupIssPath, "[UninstallRun]"), Does.Contain("delete \"\"Backup Service Home Preview-Dienst\"\""));
+    }
+
+    [Test]
+    public void WinUiInstallerIsSideBySideWithTheStableProduct()
+    {
+        var preview = GetIssSection(WinUiSetupIssPath, "[Setup]");
+        var stable = GetIssSection(WinFormsSetupIssPath, "[Setup]");
+
+        Assert.That(preview, Does.Contain(@"DefaultDirName={pf}\Alexosoft\Backup Service Home 3 Preview"));
+        Assert.That(preview, Does.Contain("DefaultGroupName=Backup Service Home 3 Preview"));
+        Assert.That(preview, Does.Contain("AppMutex=BackupServiceHome3Preview"));
+        Assert.That(preview, Does.Contain("AppID={{8F4C2B1A-7E63-4D9A-B5C0-6A1E9D3F47B2}}"));
+        Assert.That(stable, Does.Contain(@"DefaultDirName={pf}\Alexosoft\Backup Service Home 3"));
+        Assert.That(stable, Does.Not.Contain("Backup Service Home 3 Preview"));
+        Assert.That(stable, Does.Contain("AppMutex=BackupServiceHome3"));
+        Assert.That(stable, Does.Contain("AppID={{5979B77A-9AE6-4E75-AED8-283C5E16C02D}}"));
+    }
+
+    [Test]
+    public void WinUiInstallerOmitsTheWinFormsShell()
+    {
+        var files = GetIssSection(WinUiSetupIssPath, "[Files]");
+
+        Assert.That(files, Does.Contain("Excludes: \"BSH.Main.exe,BSH.Main.deps.json,BSH.Main.runtimeconfig.json,BSH.Main.pdb,BSH.Main.resources.dll\""));
+        Assert.That(files, Does.Contain(@"Source: ""preview-vss.pipe""; DestDir: ""{app}""; DestName: ""vss.pipe"""));
+        Assert.That(File.ReadAllText(Path.Combine(RepoRoot, "tools", "setup", "preview-vss.pipe")).Trim(), Is.EqualTo("backupservicehome-preview"));
     }
 
     [Test]
@@ -112,6 +152,18 @@ public class InstallerEntryPointTests
         Assert.That(setup, Does.Contain("OutputBaseFilename=backupservicehome-{#ApplicationVersion}-winui-win64"));
         Assert.That(winFormsSetup, Does.Contain("OutputBaseFilename=backupservicehome-{#ApplicationVersion}-win64"));
         Assert.That(winFormsSetup, Does.Not.Contain("-winui-win64"));
+    }
+
+    [Test]
+    public void PreviewUpdateFeedTemplateServesTheWinUiInstaller()
+    {
+        var feed = File.ReadAllText(Path.Combine(RepoRoot, "tools", "updates", "auto_updater_beta.xml"));
+        var readme = File.ReadAllText(Path.Combine(RepoRoot, "tools", "updates", "README.md"));
+
+        Assert.That(feed, Does.Contain("-winui-win64.exe"));
+        Assert.That(feed, Does.Not.Contain("backupservicehome-3.9.0.3-win64.exe"));
+        Assert.That(readme, Does.Contain("auto_updater_beta.xml"));
+        Assert.That(ApplicationUpdateService.PreviewUpdateFeedUrl, Does.EndWith("v4/auto_updater_beta.xml"));
     }
 
     [Test]
@@ -140,7 +192,7 @@ public class InstallerEntryPointTests
 
         Assert.That(
             files,
-            Does.Contain(@"Source: ""..\..\output\*""; DestDir: ""{app}""; Flags: ignoreversion recursesubdirs createallsubdirs"));
+            Does.Contain(@"Source: ""..\..\output\*""; DestDir: ""{app}""; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: ""BSH.Main.exe,BSH.Main.deps.json,BSH.Main.runtimeconfig.json,BSH.Main.pdb,BSH.Main.resources.dll"""));
     }
 
     [Test]
