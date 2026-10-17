@@ -154,20 +154,8 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="Browser_FileDetails_AvailableVersions" xml:space="preserve">
     <value>Verfügbare Versionen</value>
   </data>
-  <data name="Browser_FileDetails_Created" xml:space="preserve">
-    <value>Erstellt</value>
-  </data>
-  <data name="Browser_FileDetails_Modified" xml:space="preserve">
-    <value>Geändert</value>
-  </data>
   <data name="Browser_FileDetails_RestorePath" xml:space="preserve">
     <value>Wiederherstellungspfad</value>
-  </data>
-  <data name="Browser_FileDetails_SizeBytes" xml:space="preserve">
-    <value>{0} Bytes</value>
-  </data>
-  <data name="Browser_FileDetails_Type" xml:space="preserve">
-    <value>Typ</value>
   </data>
   <data name="Browser_LockUnlockBackup" xml:space="preserve">
     <value>Sicherung sperren/entsperren</value>
@@ -195,9 +183,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   </data>
   <data name="Browser_PreviousVersion_Tooltip" xml:space="preserve">
     <value>Eine frühere Version anzeigen</value>
-  </data>
-  <data name="Browser_Properties" xml:space="preserve">
-    <value>Eigenschaften</value>
   </data>
   <data name="Browser_QuickPreview" xml:space="preserve">
     <value>Schnellvorschau</value>
@@ -1446,5 +1431,26 @@ Das Medium wird automatisch erkannt.</value>
   </data>
   <data name="WaitForMedium_Title" xml:space="preserve">
     <value>Backup Service Home wartet auf das Medium</value>
+  </data>
+  <data name="Browser_FileDetails_JumpToVersion" xml:space="preserve">
+    <value>Zur Version</value>
+  </data>
+  <data name="Browser_Date_Today" xml:space="preserve">
+    <value>Heute, {0}</value>
+  </data>
+  <data name="Browser_Date_Yesterday" xml:space="preserve">
+    <value>Gestern, {0}</value>
+  </data>
+  <data name="Browser_Version_Changes" xml:space="preserve">
+    <value>Änderungen</value>
+  </data>
+  <data name="Browser_Version_AddedFiles" xml:space="preserve">
+    <value>+{0:N0} hinzugefügte Dateien</value>
+  </data>
+  <data name="Browser_Version_ModifiedFiles" xml:space="preserve">
+    <value>~{0:N0} geänderte Dateien</value>
+  </data>
+  <data name="Browser_Version_DeletedFiles" xml:space="preserve">
+    <value>−{0:N0} gelöschte Dateien</value>
   </data>
 </root>
