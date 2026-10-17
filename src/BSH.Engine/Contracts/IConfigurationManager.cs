@@ -157,6 +157,11 @@ public interface IConfigurationManager
         get;
         set;
     }
+    string LastBackupResult
+    {
+        get;
+        set;
+    }
     string LastVersionDate
     {
         get;

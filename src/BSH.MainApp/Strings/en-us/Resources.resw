@@ -298,23 +298,14 @@ This feature is currently not available because the quick preview could not be f
   <data name="EditBackup_WindowTitle" xml:space="preserve">
     <value>Create Backup</value>
   </data>
-  <data name="Filter_AddFiles" xml:space="preserve">
-    <value>Add File(s)</value>
-  </data>
-  <data name="Filter_AddFolder" xml:space="preserve">
-    <value>Add Folder</value>
-  </data>
   <data name="Filter_Description" xml:space="preserve">
-    <value>Choose the files, folders, file types, size limits, or name patterns that Backup Service Home should skip during backups.</value>
+    <value>Backups skip everything listed here. Files that are already in earlier backups stay there.</value>
   </data>
   <data name="Filter_EnterExtension" xml:space="preserve">
     <value>Enter extension (without dot)</value>
   </data>
   <data name="Filter_EnterRegex" xml:space="preserve">
     <value>Enter regular expression (e.g. .*\.tmp$)</value>
-  </data>
-  <data name="Filter_ExcludeLargerThan" xml:space="preserve">
-    <value>Exclude files larger than this size</value>
   </data>
   <data name="Filter_FileNotInSources" xml:space="preserve">
     <value>Selected file is not within the configured source folders.</value>
@@ -324,9 +315,6 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="Filter_Heading" xml:space="preserve">
     <value>Exclude files and folders</value>
-  </data>
-  <data name="Filter_IncludeSystemFolders" xml:space="preserve">
-    <value>Include folders marked as System (e.g. Nextcloud sync folders)</value>
   </data>
   <data name="Filter_RegexDoesNotMatch" xml:space="preserve">
     <value>Test input does not match</value>
@@ -343,20 +331,8 @@ This feature is currently not available because the quick preview could not be f
   <data name="Filter_MaximumFileSize" xml:space="preserve">
     <value>Maximum file size</value>
   </data>
-  <data name="Filter_Tab_FileTypes" xml:space="preserve">
-    <value>File types</value>
-  </data>
-  <data name="Filter_Tab_Files" xml:space="preserve">
-    <value>Files</value>
-  </data>
-  <data name="Filter_Tab_Folders" xml:space="preserve">
-    <value>Folders</value>
-  </data>
-  <data name="Filter_Tab_MaxFileSize" xml:space="preserve">
-    <value>Max file size</value>
-  </data>
-  <data name="Filter_Tab_Regex" xml:space="preserve">
-    <value>Regular expressions</value>
+  <data name="Filter_MaximumFileSizeUnit" xml:space="preserve">
+    <value>Unit</value>
   </data>
   <data name="Filter_Title" xml:space="preserve">
     <value>Exclude items</value>
@@ -421,9 +397,6 @@ This feature is currently not available because the quick preview could not be f
   <data name="MSG_TASK_RUNNING_TITLE" xml:space="preserve">
     <value>Other task in progress</value>
   </data>
-  <data name="MainView_Available" xml:space="preserve">
-    <value>Available:</value>
-  </data>
   <data name="MainView_BackupMode" xml:space="preserve">
     <value>Backup mode:</value>
   </data>
@@ -436,35 +409,11 @@ This feature is currently not available because the quick preview could not be f
   <data name="MainView_BackupMode_Scheduled" xml:space="preserve">
     <value>Scheduled backups</value>
   </data>
-  <data name="MainView_Backups" xml:space="preserve">
-    <value>Backups</value>
-  </data>
   <data name="MainView_BtnCreateBackup_Title" xml:space="preserve">
     <value>Manual backup</value>
   </data>
   <data name="MainView_Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="MainView_DiskspaceFullExpected" xml:space="preserve">
-    <value>Diskspace full expected on:</value>
-  </data>
-  <data name="MainView_DiskspaceUnpredictable" xml:space="preserve">
-    <value>currently unpredictable</value>
-  </data>
-  <data name="MainView_Files" xml:space="preserve">
-    <value>Files</value>
-  </data>
-  <data name="MainView_LastBackup" xml:space="preserve">
-    <value>Last Backup:</value>
-  </data>
-  <data name="MainView_NextBackup" xml:space="preserve">
-    <value>Next Backup:</value>
-  </data>
-  <data name="MainView_NonePlanned" xml:space="preserve">
-    <value>None planned</value>
-  </data>
-  <data name="MainView_ScheduleWarning_NoEntries" xml:space="preserve">
-    <value>Scheduled backups are enabled but no schedule is set.</value>
   </data>
   <data name="MainView_StartBackup" xml:space="preserve">
     <value>Start Backup</value>
@@ -477,21 +426,6 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="MainView_SystemToggle" xml:space="preserve">
     <value>Backup system</value>
-  </data>
-  <data name="MainView_SystemStatus_BatteryPaused" xml:space="preserve">
-    <value>Battery operation. No backups are being performed.</value>
-  </data>
-  <data name="MainView_SystemStatus_Deactivated" xml:space="preserve">
-    <value>Automatic backup is deactivated.</value>
-  </data>
-  <data name="MainView_SystemStatus_NotConfigured" xml:space="preserve">
-    <value>Backup Service Home is not configured yet.</value>
-  </data>
-  <data name="MainView_SystemStatus_Running" xml:space="preserve">
-    <value>Backup Service Home is running normally.</value>
-  </data>
-  <data name="MainView_TotalSizeBackuped" xml:space="preserve">
-    <value>Total size backuped</value>
   </data>
   <data name="MediaType_FileTransferServer" xml:space="preserve">
     <value>File Transfer Protocol (FTP)</value>
@@ -626,20 +560,11 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   <data name="Password_Title" xml:space="preserve">
     <value>Password required</value>
   </data>
-  <data name="Schedule_BackupTimes" xml:space="preserve">
-    <value>Backup times</value>
-  </data>
-  <data name="Schedule_BackupTimesDescription" xml:space="preserve">
-    <value>Add one-time or recurring backup entries.</value>
-  </data>
   <data name="Schedule_CreateFullBackupAfterInterval" xml:space="preserve">
     <value>Create full backup after an interval</value>
   </data>
   <data name="Schedule_Date" xml:space="preserve">
     <value>Date</value>
-  </data>
-  <data name="Schedule_DateTime" xml:space="preserve">
-    <value>Date / time</value>
   </data>
   <data name="Schedule_Day" xml:space="preserve">
     <value>Day</value>
@@ -656,32 +581,11 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   <data name="Schedule_DeleteInterval" xml:space="preserve">
     <value>Delete interval</value>
   </data>
-  <data name="Schedule_FullBackups" xml:space="preserve">
-    <value>Full backups</value>
-  </data>
-  <data name="Schedule_FullBackupsDescription" xml:space="preserve">
-    <value>Control scheduled full backups and missed backup handling.</value>
-  </data>
-  <data name="Schedule_Help_Daily" xml:space="preserve">
-    <value>Run every day at the selected time.</value>
-  </data>
-  <data name="Schedule_Help_Hourly" xml:space="preserve">
-    <value>Run every hour at the selected minute.</value>
-  </data>
-  <data name="Schedule_Help_Monthly" xml:space="preserve">
-    <value>Run every month on the selected day and time.</value>
-  </data>
-  <data name="Schedule_Help_Once" xml:space="preserve">
-    <value>Run once on the selected date and time.</value>
-  </data>
-  <data name="Schedule_Help_Weekly" xml:space="preserve">
-    <value>Run every week on the selected day and time.</value>
-  </data>
   <data name="Schedule_HourlyBackupThreshold" xml:space="preserve">
     <value>Hourly backup threshold</value>
   </data>
   <data name="Schedule_NoEntries" xml:space="preserve">
-    <value>No backup times yet. Use the controls above to add the first one.</value>
+    <value>No backup times yet. Add the first one below.</value>
   </data>
   <data name="Schedule_Kind_Daily" xml:space="preserve">
     <value>Daily</value>
@@ -704,9 +608,6 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   <data name="Schedule_Minute" xml:space="preserve">
     <value>Minute</value>
   </data>
-  <data name="Schedule_Mode" xml:space="preserve">
-    <value>Mode</value>
-  </data>
   <data name="Schedule_PerformMissedLater" xml:space="preserve">
     <value>Perform missed scheduled backups later</value>
   </data>
@@ -715,9 +616,6 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   </data>
   <data name="Schedule_Retention" xml:space="preserve">
     <value>Retention</value>
-  </data>
-  <data name="Schedule_RetentionDescription" xml:space="preserve">
-    <value>Choose how long scheduled backup versions stay available.</value>
   </data>
   <data name="Schedule_RetentionMode_Automatic" xml:space="preserve">
     <value>Automatic</value>
@@ -729,22 +627,16 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
     <value>None</value>
   </data>
   <data name="Schedule_RetentionUnit_Day" xml:space="preserve">
-    <value>Day</value>
+    <value>days</value>
   </data>
   <data name="Schedule_RetentionUnit_Hour" xml:space="preserve">
-    <value>Hour</value>
+    <value>hours</value>
   </data>
   <data name="Schedule_RetentionUnit_Week" xml:space="preserve">
-    <value>Week</value>
+    <value>weeks</value>
   </data>
   <data name="Schedule_Subtitle" xml:space="preserve">
-    <value>Create schedule entries and choose how scheduled backups are retained.</value>
-  </data>
-  <data name="Schedule_Text_AtMinute" xml:space="preserve">
-    <value>At minute {0}</value>
-  </data>
-  <data name="Schedule_Text_DayOfMonth" xml:space="preserve">
-    <value>Day {0}, {1}</value>
+    <value>Choose when backups run and how long old backups are kept.</value>
   </data>
   <data name="Schedule_Time" xml:space="preserve">
     <value>Time</value>
@@ -1479,5 +1371,353 @@ The medium will be automatically detected.</value>
   </data>
   <data name="Browser_Version_DeletedFiles" xml:space="preserve">
     <value>−{0:N0} deleted files</value>
+  </data>
+  <data name="Overview_Protected_Title" xml:space="preserve">
+    <value>Your files are protected</value>
+  </data>
+  <data name="Overview_LastBackupAt" xml:space="preserve">
+    <value>Last backup: {0}.</value>
+  </data>
+  <data name="Overview_NextBackupAt" xml:space="preserve">
+    <value>Next backup: {0}.</value>
+  </data>
+  <data name="Overview_BackupFailed_Title" xml:space="preserve">
+    <value>Last backup failed</value>
+  </data>
+  <data name="Overview_BackupFailed_Text" xml:space="preserve">
+    <value>Your latest changes are not backed up. Last successful backup: {0}.</value>
+  </data>
+  <data name="Overview_BackupFailed_TextNoBackup" xml:space="preserve">
+    <value>None of your files are backed up yet.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_DeviceNotReady" xml:space="preserve">
+    <value>The backup location could not be reached. Make sure it is connected and try again.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_DiskSpace" xml:space="preserve">
+    <value>There was not enough free space at the backup location. Delete old backups or choose a larger drive.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_Files" xml:space="preserve">
+    <value>{0} files could not be backed up.</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_Other" xml:space="preserve">
+    <value>The backup stopped because of an error: {0}</value>
+  </data>
+  <data name="Overview_BackupFailed_Action_Unknown" xml:space="preserve">
+    <value>The backup stopped because of an error. Try again, or check the event log for details.</value>
+  </data>
+  <data name="Overview_LocationUnavailable_Title" xml:space="preserve">
+    <value>Backup location not available</value>
+  </data>
+  <data name="Overview_LocationUnavailable_Text" xml:space="preserve">
+    <value>Backups can&apos;t run until the backup location is connected.</value>
+  </data>
+  <data name="Overview_LocationUnavailable_Action" xml:space="preserve">
+    <value>Connect the backup drive, or choose a different backup location.</value>
+  </data>
+  <data name="Overview_Overdue_Title" xml:space="preserve">
+    <value>No backup for {0} days</value>
+  </data>
+  <data name="Overview_Overdue_Text" xml:space="preserve">
+    <value>You asked to be reminded after {0} days without a backup.</value>
+  </data>
+  <data name="Overview_Overdue_Action" xml:space="preserve">
+    <value>Back up now to protect your recent changes.</value>
+  </data>
+  <data name="Overview_NoBackup_Title" xml:space="preserve">
+    <value>No backup yet</value>
+  </data>
+  <data name="Overview_NoBackup_Text" xml:space="preserve">
+    <value>None of your files are backed up yet.</value>
+  </data>
+  <data name="Overview_NoBackup_Action" xml:space="preserve">
+    <value>Start your first backup now.</value>
+  </data>
+  <data name="Overview_ScheduleEmpty_Title" xml:space="preserve">
+    <value>No backup times set</value>
+  </data>
+  <data name="Overview_ScheduleEmpty_Text" xml:space="preserve">
+    <value>Scheduled backups are on, but no backup times are set, so no backups will run.</value>
+  </data>
+  <data name="Overview_ScheduleEmpty_Action" xml:space="preserve">
+    <value>Add at least one backup time.</value>
+  </data>
+  <data name="Overview_FilesSkipped_Title" xml:space="preserve">
+    <value>Last backup finished, but {0} files were skipped</value>
+  </data>
+  <data name="Overview_FilesSkipped_Text" xml:space="preserve">
+    <value>All other files were backed up: {0}.</value>
+  </data>
+  <data name="Overview_FilesSkipped_Action" xml:space="preserve">
+    <value>{0} files could not be read. They were often open in another app; close it and back up again.</value>
+  </data>
+  <data name="Overview_LowSpace_Title" xml:space="preserve">
+    <value>Backup location is almost full</value>
+  </data>
+  <data name="Overview_LowSpace_Text" xml:space="preserve">
+    <value>Only {0} free. New backups fail once it is full.</value>
+  </data>
+  <data name="Overview_LowSpace_Action" xml:space="preserve">
+    <value>Delete old backups or choose a larger drive.</value>
+  </data>
+  <data name="Overview_TurnedOff_Title" xml:space="preserve">
+    <value>Backups are turned off</value>
+  </data>
+  <data name="Overview_TurnedOff_Text" xml:space="preserve">
+    <value>No automatic or scheduled backups will run.</value>
+  </data>
+  <data name="Overview_TurnedOff_Action" xml:space="preserve">
+    <value>Turn backups back on to stay protected.</value>
+  </data>
+  <data name="Overview_Battery_Title" xml:space="preserve">
+    <value>Backups paused on battery</value>
+  </data>
+  <data name="Overview_Battery_Text" xml:space="preserve">
+    <value>Backups continue when your device is plugged in.</value>
+  </data>
+  <data name="Overview_NotConfigured_Title" xml:space="preserve">
+    <value>Backup Service Home is not set up yet</value>
+  </data>
+  <data name="Overview_NotConfigured_Text" xml:space="preserve">
+    <value>Choose what to back up and where to store it.</value>
+  </data>
+  <data name="Overview_WhatToDo" xml:space="preserve">
+    <value>What to do</value>
+  </data>
+  <data name="Overview_Button_BackUpNow" xml:space="preserve">
+    <value>Back up now</value>
+  </data>
+  <data name="Overview_Button_ViewFiles" xml:space="preserve">
+    <value>View files</value>
+  </data>
+  <data name="Overview_Button_ManageBackups" xml:space="preserve">
+    <value>Manage backups</value>
+  </data>
+  <data name="Overview_Button_ChangeLocation" xml:space="preserve">
+    <value>Change location</value>
+  </data>
+  <data name="Overview_Button_SetSchedule" xml:space="preserve">
+    <value>Set schedule</value>
+  </data>
+  <data name="Overview_Button_TurnOn" xml:space="preserve">
+    <value>Turn on</value>
+  </data>
+  <data name="Overview_LastBackup_Header" xml:space="preserve">
+    <value>Last backup</value>
+  </data>
+  <data name="Overview_LastBackup_Browse" xml:space="preserve">
+    <value>Browse files</value>
+  </data>
+  <data name="Overview_LastBackup_When" xml:space="preserve">
+    <value>When</value>
+  </data>
+  <data name="Overview_LastBackup_Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="Overview_LastBackup_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Overview_LastBackup_None" xml:space="preserve">
+    <value>No backup has been made yet.</value>
+  </data>
+  <data name="Overview_Result_Succeeded" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Overview_Result_CompletedWithErrors" xml:space="preserve">
+    <value>Completed, {0} files skipped</value>
+  </data>
+  <data name="Overview_Result_Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="Overview_Changes_Added" xml:space="preserve">
+    <value>{0:N0} new</value>
+  </data>
+  <data name="Overview_Changes_Modified" xml:space="preserve">
+    <value>{0:N0} changed</value>
+  </data>
+  <data name="Overview_Changes_Deleted" xml:space="preserve">
+    <value>{0:N0} deleted</value>
+  </data>
+  <data name="Overview_Location_Header" xml:space="preserve">
+    <value>Backup location</value>
+  </data>
+  <data name="Overview_Location_Local" xml:space="preserve">
+    <value>Drive or folder</value>
+  </data>
+  <data name="Overview_Location_Ftp" xml:space="preserve">
+    <value>FTP server</value>
+  </data>
+  <data name="Overview_Location_Free" xml:space="preserve">
+    <value>{0} free</value>
+  </data>
+  <data name="Overview_Location_FreeUnknown" xml:space="preserve">
+    <value>Free space is checked after the next backup.</value>
+  </data>
+  <data name="Overview_Location_LowHint" xml:space="preserve">
+    <value>Below your {0} warning limit</value>
+  </data>
+  <data name="Overview_Location_Checking" xml:space="preserve">
+    <value>Checking connection…</value>
+  </data>
+  <data name="Overview_Location_Available" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="Overview_Location_Unavailable" xml:space="preserve">
+    <value>Not connected</value>
+  </data>
+  <data name="Overview_Totals" xml:space="preserve">
+    <value>In total: {0:N0} backups · {1:N0} files · {2}</value>
+  </data>
+  <data name="Overview_ModeAndNext" xml:space="preserve">
+    <value>{0} · Next backup: {1}</value>
+  </data>
+  <data name="Overview_FailedFiles_Title" xml:space="preserve">
+    <value>Files that could not be backed up</value>
+  </data>
+  <data name="Overview_FailedFiles_More" xml:space="preserve">
+    <value>…and {0:N0} more. The event log lists all of them.</value>
+  </data>
+  <data name="Overview_BackupsToggle" xml:space="preserve">
+    <value>Backups</value>
+  </data>
+  <data name="Schedule_Entry_Once" xml:space="preserve">
+    <value>Once on {0}</value>
+  </data>
+  <data name="Schedule_Entry_Hourly" xml:space="preserve">
+    <value>Every hour at minute {0}</value>
+  </data>
+  <data name="Schedule_Entry_Daily" xml:space="preserve">
+    <value>Every day at {0}</value>
+  </data>
+  <data name="Schedule_Entry_Weekly" xml:space="preserve">
+    <value>Every {0} at {1}</value>
+  </data>
+  <data name="Schedule_Entry_Monthly" xml:space="preserve">
+    <value>Every month on day {0} at {1}</value>
+  </data>
+  <data name="Schedule_NextBackup" xml:space="preserve">
+    <value>Next backup: {0}</value>
+  </data>
+  <data name="Schedule_NoTimesWarning" xml:space="preserve">
+    <value>No backup times yet. Add at least one, otherwise no backups will run.</value>
+  </data>
+  <data name="Schedule_NoUpcoming" xml:space="preserve">
+    <value>None of these backup times will run again. Add a repeating time so backups continue.</value>
+  </data>
+  <data name="Schedule_Section_When" xml:space="preserve">
+    <value>When to back up</value>
+  </data>
+  <data name="Schedule_AddTime" xml:space="preserve">
+    <value>Add a backup time</value>
+  </data>
+  <data name="Schedule_RemoveTime" xml:space="preserve">
+    <value>Remove backup time</value>
+  </data>
+  <data name="Schedule_Section_Keep" xml:space="preserve">
+    <value>Which backups to keep</value>
+  </data>
+  <data name="Schedule_Keep_Auto" xml:space="preserve">
+    <value>Thin out old backups automatically (recommended)</value>
+  </data>
+  <data name="Schedule_Keep_AutoBefore" xml:space="preserve">
+    <value>Keep every backup from the last</value>
+  </data>
+  <data name="Schedule_Keep_AutoAfter" xml:space="preserve">
+    <value>hours, then the newest one per day for a month, then one per week.</value>
+  </data>
+  <data name="Schedule_Keep_Interval" xml:space="preserve">
+    <value>Delete backups after a fixed time</value>
+  </data>
+  <data name="Schedule_Keep_IntervalBefore" xml:space="preserve">
+    <value>Delete backups older than</value>
+  </data>
+  <data name="Schedule_Keep_All" xml:space="preserve">
+    <value>Keep all backups</value>
+  </data>
+  <data name="Schedule_Keep_AllDescription" xml:space="preserve">
+    <value>Nothing is deleted automatically. The backup drive can fill up over time.</value>
+  </data>
+  <data name="Schedule_Keep_StableNote" xml:space="preserve">
+    <value>Backups you marked as stable are always kept.</value>
+  </data>
+  <data name="Schedule_Advanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="Schedule_Summary_None" xml:space="preserve">
+    <value>No backup times set yet</value>
+  </data>
+  <data name="Schedule_Summary_Times" xml:space="preserve">
+    <value>{0} backup times</value>
+  </data>
+  <data name="Schedule_Summary_KeepAll" xml:space="preserve">
+    <value>All backups kept</value>
+  </data>
+  <data name="Schedule_Summary_KeepAuto" xml:space="preserve">
+    <value>Old backups thinned out automatically</value>
+  </data>
+  <data name="Schedule_Summary_KeepInterval" xml:space="preserve">
+    <value>Backups older than {0} {1} are deleted</value>
+  </data>
+  <data name="Filter_Rules_Header" xml:space="preserve">
+    <value>Excluded items</value>
+  </data>
+  <data name="Filter_AddExclusion" xml:space="preserve">
+    <value>Add exclusion</value>
+  </data>
+  <data name="Filter_Add_Folder" xml:space="preserve">
+    <value>Folder…</value>
+  </data>
+  <data name="Filter_Add_Files" xml:space="preserve">
+    <value>Files…</value>
+  </data>
+  <data name="Filter_Add_FileType" xml:space="preserve">
+    <value>File type</value>
+  </data>
+  <data name="Filter_Add_Pattern" xml:space="preserve">
+    <value>Name pattern (advanced)</value>
+  </data>
+  <data name="Filter_Rules_Empty" xml:space="preserve">
+    <value>Nothing is excluded. Everything in your source folders is backed up.</value>
+  </data>
+  <data name="Filter_Kind_Folder" xml:space="preserve">
+    <value>Folder</value>
+  </data>
+  <data name="Filter_Kind_File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Filter_Kind_FileType" xml:space="preserve">
+    <value>File type</value>
+  </data>
+  <data name="Filter_Kind_Pattern" xml:space="preserve">
+    <value>Pattern</value>
+  </data>
+  <data name="Filter_RemoveRule" xml:space="preserve">
+    <value>Remove exclusion</value>
+  </data>
+  <data name="Filter_FileType_Hint" xml:space="preserve">
+    <value>For example tmp or iso. Every file with this extension is skipped.</value>
+  </data>
+  <data name="Filter_Pattern_Hint" xml:space="preserve">
+    <value>A regular expression that is matched against file and folder paths. Use the test field to check it before adding.</value>
+  </data>
+  <data name="Filter_SkipLargerThan" xml:space="preserve">
+    <value>Skip files larger than</value>
+  </data>
+  <data name="Filter_SystemFolders_Header" xml:space="preserve">
+    <value>Back up folders marked as system</value>
+  </data>
+  <data name="Filter_SystemFolders_Description" xml:space="preserve">
+    <value>Some apps, like Nextcloud, mark their sync folders as system folders. These are skipped unless you turn this on.</value>
+  </data>
+  <data name="Overview_Running_Backup_Title" xml:space="preserve">
+    <value>Backing up your files…</value>
+  </data>
+  <data name="Overview_Running_Restore_Title" xml:space="preserve">
+    <value>Restoring files…</value>
+  </data>
+  <data name="Overview_Running_Other_Title" xml:space="preserve">
+    <value>Updating your backups…</value>
+  </data>
+  <data name="Overview_Running_Text" xml:space="preserve">
+    <value>You can keep working while this runs. Progress is shown below.</value>
   </data>
 </root>

@@ -2,11 +2,13 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections.ObjectModel;
+using System.Globalization;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Services;
 using BSH.MainApp.Contracts.Services;
+using BSH.MainApp.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
@@ -18,6 +20,7 @@ public partial class ScheduleEditorViewModel : ObservableObject
     private readonly ScheduleSettingsService scheduleSettingsService;
     private readonly IConfigurationManager configurationManager;
     private readonly IOrchestrationService orchestrationService;
+    private readonly Func<DateTime> clock;
 
     private ScheduleSettings settings = new();
 
@@ -52,16 +55,6 @@ public partial class ScheduleEditorViewModel : ObservableObject
         DayOfWeek.Sunday
     ];
 
-    public IReadOnlyList<ScheduleRetentionMode> RetentionModes
-    {
-        get;
-    } =
-    [
-        ScheduleRetentionMode.None,
-        ScheduleRetentionMode.Automatic,
-        ScheduleRetentionMode.Interval
-    ];
-
     public IReadOnlyList<ScheduleRetentionIntervalUnit> RetentionIntervalUnits
     {
         get;
@@ -83,7 +76,6 @@ public partial class ScheduleEditorViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowMonthlyDayPicker))]
     [NotifyPropertyChangedFor(nameof(ShowTimePicker))]
     [NotifyPropertyChangedFor(nameof(ShowMinutePicker))]
-    [NotifyPropertyChangedFor(nameof(AddScheduleHelpText))]
     private ScheduleEntryKind selectedScheduleKind = ScheduleEntryKind.Daily;
 
     [ObservableProperty]
@@ -102,13 +94,16 @@ public partial class ScheduleEditorViewModel : ObservableObject
     private int selectedMonthlyDay = 1;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(DeleteScheduleCommand))]
-    private ScheduleEditorEntryViewModel? selectedEntry;
+    [NotifyPropertyChangedFor(nameof(IsKeepAll))]
+    [NotifyPropertyChangedFor(nameof(IsKeepAutomatic))]
+    [NotifyPropertyChangedFor(nameof(IsKeepInterval))]
+    private ScheduleRetentionMode retentionMode = ScheduleRetentionMode.None;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowAutomaticRetentionOptions))]
-    [NotifyPropertyChangedFor(nameof(ShowIntervalRetentionOptions))]
-    private ScheduleRetentionMode retentionMode = ScheduleRetentionMode.None;
+    private string? nextBackupText;
+
+    [ObservableProperty]
+    private bool hasScheduleWarning;
 
     [ObservableProperty]
     private ScheduleRetentionIntervalUnit retentionIntervalUnit = ScheduleRetentionIntervalUnit.Day;
@@ -139,32 +134,38 @@ public partial class ScheduleEditorViewModel : ObservableObject
 
     public bool ShowMinutePicker => SelectedScheduleKind == ScheduleEntryKind.Hourly;
 
-    public bool ShowAutomaticRetentionOptions => RetentionMode == ScheduleRetentionMode.Automatic;
+    public bool IsKeepAll
+    {
+        get => RetentionMode == ScheduleRetentionMode.None;
+        set => SelectRetentionMode(value, ScheduleRetentionMode.None);
+    }
 
-    public bool ShowIntervalRetentionOptions => RetentionMode == ScheduleRetentionMode.Interval;
+    public bool IsKeepAutomatic
+    {
+        get => RetentionMode == ScheduleRetentionMode.Automatic;
+        set => SelectRetentionMode(value, ScheduleRetentionMode.Automatic);
+    }
+
+    public bool IsKeepInterval
+    {
+        get => RetentionMode == ScheduleRetentionMode.Interval;
+        set => SelectRetentionMode(value, ScheduleRetentionMode.Interval);
+    }
 
     public bool ShowFullBackupInterval => EnableScheduledFullBackups;
 
     public bool HasNoEntries => Entries.Count == 0;
 
-    public string AddScheduleHelpText => SelectedScheduleKind switch
-    {
-        ScheduleEntryKind.Once => "Schedule_Help_Once".GetLocalized(),
-        ScheduleEntryKind.Hourly => "Schedule_Help_Hourly".GetLocalized(),
-        ScheduleEntryKind.Daily => "Schedule_Help_Daily".GetLocalized(),
-        ScheduleEntryKind.Weekly => "Schedule_Help_Weekly".GetLocalized(),
-        ScheduleEntryKind.Monthly => "Schedule_Help_Monthly".GetLocalized(),
-        _ => string.Empty,
-    };
-
     public ScheduleEditorViewModel(
         ScheduleSettingsService scheduleSettingsService,
         IConfigurationManager configurationManager,
-        IOrchestrationService orchestrationService)
+        IOrchestrationService orchestrationService,
+        Func<DateTime>? clock = null)
     {
         this.scheduleSettingsService = scheduleSettingsService;
         this.configurationManager = configurationManager;
         this.orchestrationService = orchestrationService;
+        this.clock = clock ?? (() => DateTime.Now);
     }
 
     public async Task InitializeAsync()
@@ -197,16 +198,9 @@ public partial class ScheduleEditorViewModel : ObservableObject
         LoadEntries();
     }
 
-    [RelayCommand(CanExecute = nameof(CanDeleteSchedule))]
-    private void DeleteSchedule()
+    private void DeleteSchedule(ScheduleEntry entry)
     {
-        if (SelectedEntry == null)
-        {
-            return;
-        }
-
-        settings.DeleteSchedule(SelectedEntry.Entry);
-        SelectedEntry = null;
+        settings.DeleteSchedule(entry);
         LoadEntries();
     }
 
@@ -237,16 +231,39 @@ public partial class ScheduleEditorViewModel : ObservableObject
         TaskCompletionSource.TrySetResult(false);
     }
 
-    private bool CanDeleteSchedule() => SelectedEntry != null;
+    private void SelectRetentionMode(bool selected, ScheduleRetentionMode mode)
+    {
+        if (selected)
+        {
+            RetentionMode = mode;
+        }
+    }
 
     private void LoadEntries()
     {
         Entries.Clear();
         foreach (var entry in settings.Entries.OrderBy(x => x.Type).ThenBy(x => x.Date))
         {
-            Entries.Add(new ScheduleEditorEntryViewModel(entry));
+            Entries.Add(new ScheduleEditorEntryViewModel(entry, new RelayCommand(() => DeleteSchedule(entry))));
         }
 
         OnPropertyChanged(nameof(HasNoEntries));
+        UpdateNextBackup();
+    }
+
+    private void UpdateNextBackup()
+    {
+        if (settings.Entries.Count == 0)
+        {
+            NextBackupText = "Schedule_NoTimesWarning".GetLocalized();
+            HasScheduleWarning = true;
+            return;
+        }
+
+        var next = ScheduleOccurrence.GetNext(settings.Entries, clock());
+        HasScheduleWarning = next == null;
+        NextBackupText = next == null
+            ? "Schedule_NoUpcoming".GetLocalized()
+            : string.Format(CultureInfo.CurrentCulture, "Schedule_NextBackup".GetLocalized() ?? "Schedule_NextBackup", next.Value.HumanizeDate());
     }
 }

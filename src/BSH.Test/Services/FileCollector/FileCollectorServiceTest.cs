@@ -45,14 +45,23 @@ public class FileExclusionTests
     }
 
     [Test]
-    public void SizeFileExclusionMatchesConfiguredLimit()
+    public void SizeFileExclusionTreatsConfiguredLimitAsMegabytes()
     {
-        configurationManager.ExcludeFileBigger = "10240";
-        var file = CreateWindowsFile("test.bin", fileSize: 10241);
-        var otherFile = CreateWindowsFile("test.bin", fileSize: 10240);
+        configurationManager.ExcludeFileBigger = "10";
+        var file = CreateWindowsFile("test.bin", fileSize: 10 * 1024 * 1024 + 1);
+        var otherFile = CreateWindowsFile("test.bin", fileSize: 10 * 1024 * 1024);
 
         Assert.That(new SizeFileExclusion(configurationManager).IsFileExcluded(file), Is.True);
         Assert.That(new SizeFileExclusion(configurationManager).IsFileExcluded(otherFile), Is.False);
+    }
+
+    [Test]
+    public void SizeFileExclusionIgnoresUnreadableLimit()
+    {
+        configurationManager.ExcludeFileBigger = "not a number";
+        var file = CreateWindowsFile("test.bin", fileSize: 10 * 1024 * 1024);
+
+        Assert.That(new SizeFileExclusion(configurationManager).IsFileExcluded(file), Is.False);
     }
 
     [Test]

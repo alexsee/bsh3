@@ -1,17 +1,18 @@
 // Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Globalization;
+using System.Windows.Input;
 using Brightbits.BSH.Engine.Models;
-using CommunityToolkit.WinUI;
+using BSH.MainApp.Helpers;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
 public sealed class ScheduleEditorEntryViewModel
 {
-    public ScheduleEditorEntryViewModel(ScheduleEntry entry)
+    public ScheduleEditorEntryViewModel(ScheduleEntry entry, ICommand deleteCommand)
     {
         Entry = entry;
+        DeleteCommand = deleteCommand;
     }
 
     public ScheduleEntry Entry
@@ -19,19 +20,14 @@ public sealed class ScheduleEditorEntryViewModel
         get;
     }
 
+    public ICommand DeleteCommand
+    {
+        get;
+    }
+
     public ScheduleEntryKind Kind => (ScheduleEntryKind)Entry.Type;
 
-    public string RepeatText => ScheduleEditorDisplayText.GetScheduleKind(Kind);
+    public string Text => ScheduleEditorDisplayText.DescribeEntry(Entry);
 
-    public string ScheduleText => Kind switch
-    {
-        ScheduleEntryKind.Once => Entry.Date.ToString("g", CultureInfo.CurrentCulture),
-        ScheduleEntryKind.Hourly => string.Format("Schedule_Text_AtMinute".GetLocalized() ?? "Schedule_Text_AtMinute", Entry.Date.Minute.ToString("00", CultureInfo.CurrentCulture)),
-        ScheduleEntryKind.Daily => Entry.Date.ToString("t", CultureInfo.CurrentCulture),
-        ScheduleEntryKind.Weekly => $"{Entry.Date:dddd}, {Entry.Date:t}",
-        ScheduleEntryKind.Monthly => string.Format("Schedule_Text_DayOfMonth".GetLocalized() ?? "Schedule_Text_DayOfMonth", Entry.Date.Day, Entry.Date.ToString("t", CultureInfo.CurrentCulture)),
-        _ => Entry.Date.ToString("g", CultureInfo.CurrentCulture),
-    };
-
-    public string AccessibleText => $"{RepeatText}: {ScheduleText}";
+    public string Glyph => Kind == ScheduleEntryKind.Once ? "\uE787" : "\uE895";
 }

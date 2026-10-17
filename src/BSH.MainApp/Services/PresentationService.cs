@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
@@ -14,6 +15,7 @@ using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Windows;
 using CommunityToolkit.WinUI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Popups;
 
@@ -181,24 +183,55 @@ public class PresentationService : IPresentationService
 
     public async Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files)
     {
-        if (files.Count == 0)
+        var items = files
+            .Select(entry => entry.File == null
+                ? GetExceptionMessage(entry)
+                : $"{entry.File.FileNamePath()}{Environment.NewLine}{GetExceptionMessage(entry)}")
+            .ToList();
+
+        await ShowFailedFilesDialogAsync("Status_FilesNotCopied_Title".GetLocalized(), items, null);
+    }
+
+    public async Task ShowLastBackupFailedFilesAsync(LastBackupResult result)
+    {
+        var items = result.FailedFiles
+            .Select(file => string.IsNullOrWhiteSpace(file.Message) ? file.Path : $"{file.Path}{Environment.NewLine}{file.Message}")
+            .ToList();
+        var hidden = result.FailedFileCount - items.Count;
+        var footer = hidden > 0
+            ? string.Format(CultureInfo.CurrentCulture, "Overview_FailedFiles_More".GetLocalized(), hidden)
+            : null;
+
+        await ShowFailedFilesDialogAsync("Overview_FailedFiles_Title".GetLocalized(), items, footer);
+    }
+
+    private static async Task ShowFailedFilesDialogAsync(string title, IReadOnlyList<string> items, string? footer)
+    {
+        if (items.Count == 0)
         {
             return;
         }
 
         await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
-            var list = new ListView
+            var content = new StackPanel { Spacing = 8 };
+            content.Children.Add(new ListView
             {
                 MaxHeight = 360,
-                ItemsSource = files.Select(entry => $"{entry.File.FileNamePath()}{Environment.NewLine}{GetExceptionMessage(entry)}").ToList()
-            };
+                SelectionMode = ListViewSelectionMode.None,
+                ItemsSource = items
+            });
+
+            if (footer != null)
+            {
+                content.Children.Add(new TextBlock { Text = footer, TextWrapping = TextWrapping.Wrap });
+            }
 
             var dialog = new ContentDialog
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
-                Title = "Status_FilesNotCopied_Title".GetLocalized(),
-                Content = list,
+                Title = title,
+                Content = content,
                 PrimaryButtonText = "MsgBox_OK".GetLocalized()
             };
 

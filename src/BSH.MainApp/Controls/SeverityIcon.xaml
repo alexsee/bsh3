@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="BSH.MainApp.Controls.SeverityIcon"
+    x:Name="Root"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    IsTabStop="False"
+    mc:Ignorable="d">
+
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="SeverityStates">
+                <VisualState x:Name="Protected">
+                    <VisualState.Setters>
+                        <Setter Target="Circle.Fill" Value="{ThemeResource SystemFillColorSuccessBackgroundBrush}" />
+                        <Setter Target="Icon.Foreground" Value="{ThemeResource SystemFillColorSuccessBrush}" />
+                        <Setter Target="Icon.Glyph" Value="&#xE73E;" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Paused">
+                    <VisualState.Setters>
+                        <Setter Target="Circle.Fill" Value="{ThemeResource SystemFillColorNeutralBackgroundBrush}" />
+                        <Setter Target="Icon.Foreground" Value="{ThemeResource SystemFillColorNeutralBrush}" />
+                        <Setter Target="Icon.Glyph" Value="&#xE769;" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Warning">
+                    <VisualState.Setters>
+                        <Setter Target="Circle.Fill" Value="{ThemeResource SystemFillColorCautionBackgroundBrush}" />
+                        <Setter Target="Icon.Foreground" Value="{ThemeResource SystemFillColorCautionBrush}" />
+                        <Setter Target="Icon.Glyph" Value="&#xE7BA;" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Error">
+                    <VisualState.Setters>
+                        <Setter Target="Circle.Fill" Value="{ThemeResource SystemFillColorCriticalBackgroundBrush}" />
+                        <Setter Target="Icon.Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}" />
+                        <Setter Target="Icon.Glyph" Value="&#xE711;" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="NotConfigured">
+                    <VisualState.Setters>
+                        <Setter Target="Circle.Fill" Value="{ThemeResource SystemFillColorAttentionBackgroundBrush}" />
+                        <Setter Target="Icon.Foreground" Value="{ThemeResource SystemFillColorAttentionBrush}" />
+                        <Setter Target="Icon.Glyph" Value="&#xE713;" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Ellipse x:Name="Circle" />
+        <FontIcon x:Name="Icon"
+                  FontSize="{x:Bind IconSize, Mode=OneWay}"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center" />
+    </Grid>
+</UserControl>

@@ -96,6 +96,17 @@ public class ConfigurationManager : IConfigurationManager
         }
     }
 
+    private string lastBackupResult = "";
+
+    public string LastBackupResult
+    {
+        get => lastBackupResult;
+        set
+        {
+            lastBackupResult = value; SaveProperty(nameof(LastBackupResult), value);
+        }
+    }
+
     private string lastVersionDate = "";
 
     public string LastVersionDate
@@ -571,6 +582,7 @@ public class ConfigurationManager : IConfigurationManager
         medium = "1";
         mediumType = "1";
         lastBackupDone = "";
+        lastBackupResult = "";
         lastVersionDate = "";
         oldBackupPrevent = "0";
         compression = 0;

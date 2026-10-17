@@ -39,6 +39,7 @@ public sealed class FakeConfigurationManager : IConfigurationManager
     public string IntervallDelete { get; set; } = "";
     public string IsConfigured { get; set; } = "";
     public string LastBackupDone { get; set; } = "";
+    public string LastBackupResult { get; set; } = "";
     public string LastVersionDate { get; set; } = "";
     public string MediaVolumeSerial { get; set; } = "";
     public string Medium { get; set; } = "";

@@ -4,11 +4,14 @@
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using Brightbits.BSH.Engine.Contracts;
+using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using Microsoft.UI;
 using Microsoft.Windows.Storage.Pickers;
+
+using MaxFileSizeSetting = Brightbits.BSH.Engine.Services.FileCollector.MaxFileSize;
 
 namespace BSH.MainApp.ViewModels.Windows;
 
@@ -28,6 +31,24 @@ public partial class FilterViewModel : ObservableObject
 
     public ObservableCollection<string> RegexPatterns { get; } = [];
 
+    public ObservableCollection<ExclusionRuleViewModel> Rules { get; } = [];
+
+    public bool HasNoRules => Rules.Count == 0;
+
+    private bool isAddingFileType;
+    public bool IsAddingFileType
+    {
+        get => isAddingFileType;
+        private set => SetProperty(ref isAddingFileType, value);
+    }
+
+    private bool isAddingPattern;
+    public bool IsAddingPattern
+    {
+        get => isAddingPattern;
+        private set => SetProperty(ref isAddingPattern, value);
+    }
+
     private bool excludeFilesBigger;
     public bool ExcludeFilesBigger
     {
@@ -42,11 +63,20 @@ public partial class FilterViewModel : ObservableObject
         set => SetProperty(ref includeSystemFolders, value);
     }
 
-    private decimal excludeFileBigger;
-    public decimal ExcludeFileBigger
+    public IReadOnlyList<FileSizeUnit> MaxFileSizeUnits { get; } = [FileSizeUnit.MB, FileSizeUnit.GB];
+
+    private double maxFileSize;
+    public double MaxFileSize
     {
-        get => excludeFileBigger;
-        set => SetProperty(ref excludeFileBigger, value);
+        get => maxFileSize;
+        set => SetProperty(ref maxFileSize, double.IsNaN(value) ? 0 : value);
+    }
+
+    private FileSizeUnit maxFileSizeUnit = FileSizeUnit.MB;
+    public FileSizeUnit MaxFileSizeUnit
+    {
+        get => maxFileSizeUnit;
+        set => SetProperty(ref maxFileSizeUnit, value);
     }
 
     private string? fileTypeInputText;
@@ -103,65 +133,27 @@ public partial class FilterViewModel : ObservableObject
         private set => SetProperty(ref isRegexTestNoMatch, value);
     }
 
-    public IRelayCommand AddFolderCommand
-    {
-        get;
-    }
+    public IRelayCommand AddFolderCommand { get; }
 
-    public IRelayCommand RemoveFolderCommand
-    {
-        get;
-    }
+    public IRelayCommand AddFileCommand { get; }
 
-    public IRelayCommand AddFileCommand
-    {
-        get;
-    }
+    public IRelayCommand AddFileTypeCommand { get; }
 
-    public IRelayCommand RemoveFileCommand
-    {
-        get;
-    }
+    public IRelayCommand AddRegexCommand { get; }
 
-    public IRelayCommand AddFileTypeCommand
-    {
-        get;
-    }
+    public IRelayCommand ShowAddFileTypeCommand { get; }
 
-    public IRelayCommand RemoveFileTypeCommand
-    {
-        get;
-    }
+    public IRelayCommand ShowAddPatternCommand { get; }
 
-    public IRelayCommand AddRegexCommand
-    {
-        get;
-    }
+    public IRelayCommand CancelAddCommand { get; }
 
-    public IRelayCommand RemoveRegexCommand
-    {
-        get;
-    }
+    public IRelayCommand SaveCommand { get; }
 
-    public IRelayCommand SaveCommand
-    {
-        get;
-    }
+    public IRelayCommand CancelCommand { get; }
 
-    public IRelayCommand CancelCommand
-    {
-        get;
-    }
+    public IAsyncRelayCommand BrowseFolderCommand { get; }
 
-    public IAsyncRelayCommand BrowseFolderCommand
-    {
-        get;
-    }
-
-    public IAsyncRelayCommand BrowseFileCommand
-    {
-        get;
-    }
+    public IAsyncRelayCommand BrowseFileCommand { get; }
 
     public WindowId ParentWindowId
     {
@@ -173,38 +165,78 @@ public partial class FilterViewModel : ObservableObject
         this.configurationManager = configurationManager;
 
         AddFolderCommand = new RelayCommand<string?>(AddFolder);
-        RemoveFolderCommand = new RelayCommand(RemoveFolder, CanRemoveFolder);
         AddFileCommand = new RelayCommand<string?>(AddFile);
-        RemoveFileCommand = new RelayCommand(RemoveFile, CanRemoveFile);
         AddFileTypeCommand = new RelayCommand<string?>(AddFileType, CanAddFileType);
-        RemoveFileTypeCommand = new RelayCommand(RemoveFileType, CanRemoveFileType);
         AddRegexCommand = new RelayCommand<string?>(AddRegex, CanAddRegex);
-        RemoveRegexCommand = new RelayCommand(RemoveRegex, CanRemoveRegex);
+        ShowAddFileTypeCommand = new RelayCommand(() => ShowAddPanel(fileType: true));
+        ShowAddPatternCommand = new RelayCommand(() => ShowAddPanel(fileType: false));
+        CancelAddCommand = new RelayCommand(CloseAddPanels);
         SaveCommand = new RelayCommand(Save);
-        CancelCommand = new RelayCommand(Cancel);
+        CancelCommand = new RelayCommand(OnWindowClosed);
         BrowseFolderCommand = new AsyncRelayCommand(BrowseFolderAsync);
         BrowseFileCommand = new AsyncRelayCommand(BrowseFileAsync);
 
+        ExcludeFolders.CollectionChanged += (_, _) => RebuildRules();
+        ExcludeFiles.CollectionChanged += (_, _) => RebuildRules();
+        ExcludeFileTypes.CollectionChanged += (_, _) => RebuildRules();
+        RegexPatterns.CollectionChanged += (_, _) => RebuildRules();
+
         LoadFromConfiguration();
+    }
+
+    private void RebuildRules()
+    {
+        Rules.Clear();
+        AddRules(ExclusionRuleKind.Folder, ExcludeFolders);
+        AddRules(ExclusionRuleKind.File, ExcludeFiles);
+        AddRules(ExclusionRuleKind.FileType, ExcludeFileTypes);
+        AddRules(ExclusionRuleKind.Pattern, RegexPatterns);
+        OnPropertyChanged(nameof(HasNoRules));
+    }
+
+    private void AddRules(ExclusionRuleKind kind, ObservableCollection<string> source)
+    {
+        foreach (var value in source)
+        {
+            Rules.Add(new ExclusionRuleViewModel(kind, value, new RelayCommand(() => RemoveRule(source, value))));
+        }
+    }
+
+    private void RemoveRule(ObservableCollection<string> source, string value)
+    {
+        source.Remove(value);
+        if (ReferenceEquals(source, ExcludeFileTypes))
+        {
+            AddFileTypeCommand.NotifyCanExecuteChanged();
+        }
+    }
+
+    private void ShowAddPanel(bool fileType)
+    {
+        IsAddingFileType = fileType;
+        IsAddingPattern = !fileType;
+    }
+
+    private void CloseAddPanels()
+    {
+        IsAddingFileType = false;
+        IsAddingPattern = false;
+        FileTypeInputText = null;
+        RegexInputText = null;
+        RegexTestInputText = null;
     }
 
     public void LoadFromConfiguration()
     {
         ExcludeFolders.Clear();
-        foreach (var entry in (configurationManager.ExcludeFolder ?? string.Empty)
-            .Split('|', StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => x.Trim())
-            .Where(x => !string.IsNullOrEmpty(x))
+        foreach (var entry in SplitExclusions(configurationManager.ExcludeFolder)
             .Distinct(StringComparer.OrdinalIgnoreCase))
         {
             ExcludeFolders.Add(entry);
         }
 
         ExcludeFiles.Clear();
-        foreach (var entry in (configurationManager.ExcludeFile ?? string.Empty)
-            .Split('|', StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => x.Trim())
-            .Where(x => !string.IsNullOrEmpty(x))
+        foreach (var entry in SplitExclusions(configurationManager.ExcludeFile)
             .Distinct(StringComparer.OrdinalIgnoreCase))
         {
             ExcludeFiles.Add(entry);
@@ -221,17 +253,23 @@ public partial class FilterViewModel : ObservableObject
         }
 
         RegexPatterns.Clear();
-        foreach (var entry in (configurationManager.ExcludeMask ?? string.Empty)
-            .Split('|', StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => x.Trim())
-            .Where(x => !string.IsNullOrEmpty(x))
+        foreach (var entry in SplitExclusions(configurationManager.ExcludeMask)
             .Distinct(StringComparer.Ordinal))
         {
             RegexPatterns.Add(entry);
         }
 
-        ExcludeFilesBigger = decimal.TryParse(configurationManager.ExcludeFileBigger, out var maxFileSize);
-        ExcludeFileBigger = ExcludeFilesBigger ? maxFileSize : 0;
+        ExcludeFilesBigger = MaxFileSizeSetting.TryGetMegabytes(configurationManager.ExcludeFileBigger, out var megabytes);
+        if (ExcludeFilesBigger && megabytes >= 1024 && megabytes % 1024 == 0)
+        {
+            MaxFileSizeUnit = FileSizeUnit.GB;
+            MaxFileSize = (double)(megabytes / 1024);
+        }
+        else
+        {
+            MaxFileSizeUnit = FileSizeUnit.MB;
+            MaxFileSize = ExcludeFilesBigger ? (double)megabytes : 0;
+        }
         IncludeSystemFolders = configurationManager.IncludeSystemFolders == "1";
     }
 
@@ -241,60 +279,19 @@ public partial class FilterViewModel : ObservableObject
         configurationManager.ExcludeFile = string.Join("|", ExcludeFiles.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
         configurationManager.ExcludeFileTypes = string.Join("|", ExcludeFileTypes.Select(x => x.Trim().TrimStart('*').TrimStart('.')).Where(x => !string.IsNullOrEmpty(x)));
         configurationManager.ExcludeMask = string.Join("|", RegexPatterns.Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
-        configurationManager.ExcludeFileBigger = ExcludeFilesBigger && ExcludeFileBigger > 0 ? ExcludeFileBigger.ToString() : string.Empty;
+        var configuredMegabytes = (decimal)MaxFileSize * (MaxFileSizeUnit == FileSizeUnit.GB ? 1024 : 1);
+        configurationManager.ExcludeFileBigger = ExcludeFilesBigger
+            ? MaxFileSizeSetting.FromMegabytes(configuredMegabytes)
+            : string.Empty;
         configurationManager.IncludeSystemFolders = IncludeSystemFolders ? "1" : "0";
     }
 
-    private string? selectedFolder;
-    public string? SelectedFolder
+    private static IEnumerable<string> SplitExclusions(string? value)
     {
-        get => selectedFolder;
-        set
-        {
-            if (SetProperty(ref selectedFolder, value))
-            {
-                RemoveFolderCommand.NotifyCanExecuteChanged();
-            }
-        }
-    }
-
-    private string? selectedFile;
-    public string? SelectedFile
-    {
-        get => selectedFile;
-        set
-        {
-            if (SetProperty(ref selectedFile, value))
-            {
-                RemoveFileCommand.NotifyCanExecuteChanged();
-            }
-        }
-    }
-
-    private string? selectedFileType;
-    public string? SelectedFileType
-    {
-        get => selectedFileType;
-        set
-        {
-            if (SetProperty(ref selectedFileType, value))
-            {
-                RemoveFileTypeCommand.NotifyCanExecuteChanged();
-            }
-        }
-    }
-
-    private string? selectedRegexPattern;
-    public string? SelectedRegexPattern
-    {
-        get => selectedRegexPattern;
-        set
-        {
-            if (SetProperty(ref selectedRegexPattern, value))
-            {
-                RemoveRegexCommand.NotifyCanExecuteChanged();
-            }
-        }
+        return (value ?? string.Empty)
+            .Split('|', StringSplitOptions.RemoveEmptyEntries)
+            .Select(entry => entry.Trim())
+            .Where(entry => !string.IsNullOrEmpty(entry));
     }
 
     private IReadOnlyList<string> GetSourceFolders()
@@ -373,19 +370,6 @@ public partial class FilterViewModel : ObservableObject
         ExcludeFolders.Add(trimmed);
     }
 
-    private void RemoveFolder()
-    {
-        if (SelectedFolder == null)
-        {
-            return;
-        }
-
-        ExcludeFolders.Remove(SelectedFolder);
-        SelectedFolder = null;
-    }
-
-    private bool CanRemoveFolder() => !string.IsNullOrEmpty(SelectedFolder);
-
     private void AddFile(string? file)
     {
         var trimmed = file?.Trim();
@@ -408,19 +392,6 @@ public partial class FilterViewModel : ObservableObject
         ExcludeFiles.Add(trimmed);
     }
 
-    private void RemoveFile()
-    {
-        if (SelectedFile == null)
-        {
-            return;
-        }
-
-        ExcludeFiles.Remove(SelectedFile);
-        SelectedFile = null;
-    }
-
-    private bool CanRemoveFile() => !string.IsNullOrEmpty(SelectedFile);
-
     private void AddFileType(string? fileType)
     {
         var trimmed = NormalizeFileType(fileType);
@@ -436,7 +407,7 @@ public partial class FilterViewModel : ObservableObject
 
         ExcludeFileTypes.Add(trimmed);
 
-        FileTypeInputText = null;
+        CloseAddPanels();
     }
 
     private bool CanAddFileType(string? fileType)
@@ -457,20 +428,6 @@ public partial class FilterViewModel : ObservableObject
             && Regex.IsMatch(fileType, "^[A-Za-z0-9]+$", RegexOptions.None, TimeSpan.FromSeconds(10));
     }
 
-    private void RemoveFileType()
-    {
-        if (SelectedFileType == null)
-        {
-            return;
-        }
-
-        ExcludeFileTypes.Remove(SelectedFileType);
-        SelectedFileType = null;
-        AddFileTypeCommand.NotifyCanExecuteChanged();
-    }
-
-    private bool CanRemoveFileType() => !string.IsNullOrEmpty(SelectedFileType);
-
     private void AddRegex(string? regex)
     {
         if (!TryCreateRegexes(regex, out var regexes))
@@ -489,7 +446,7 @@ public partial class FilterViewModel : ObservableObject
             RegexPatterns.Add(line);
         }
 
-        RegexInputText = null;
+        CloseAddPanels();
     }
 
     private static bool CanAddRegex(string? regex)
@@ -552,19 +509,6 @@ public partial class FilterViewModel : ObservableObject
         ValidationFailed?.Invoke(resourceName.GetLocalized() ?? resourceName);
     }
 
-    private void RemoveRegex()
-    {
-        if (SelectedRegexPattern == null)
-        {
-            return;
-        }
-
-        RegexPatterns.Remove(SelectedRegexPattern);
-        SelectedRegexPattern = null;
-    }
-
-    private bool CanRemoveRegex() => !string.IsNullOrEmpty(SelectedRegexPattern);
-
     private void Save()
     {
         SaveToConfiguration();
@@ -574,11 +518,6 @@ public partial class FilterViewModel : ObservableObject
     public void OnWindowClosed()
     {
         TaskCompletionSource.TrySetResult(false);
-    }
-
-    private void Cancel()
-    {
-        OnWindowClosed();
     }
 
     private async Task BrowseFolderAsync()

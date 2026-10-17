@@ -62,6 +62,12 @@
                                                  Content="{helpers:ResourceString Name=Settings_Mode_Scheduled}" />
                                     <TextBlock Margin="29,0,0,0" TextWrapping="WrapWholeWords"
                                                Text="{helpers:ResourceString Name=Settings_Mode_ScheduledDescription}" />
+                                    <StackPanel Margin="29,6,0,0" Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontSize="12" Glyph="&#xE787;" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                        <TextBlock FontWeight="SemiBold"
+                                                   TextWrapping="WrapWholeWords"
+                                                   Text="{x:Bind ViewModel.ScheduleSummary, Mode=OneWay}" />
+                                    </StackPanel>
                                 </StackPanel>
                             </toolkit:SettingsCard.Header>
                             <Button Command="{x:Bind ViewModel.ShowScheduleEditorWindowCommand}" Content="{helpers:ResourceString Name=Settings_Mode_SetSchedule}" />

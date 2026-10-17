@@ -10,10 +10,10 @@
     mc:Ignorable="d"
     Title="{helpers:ResourceString Name=Filter_Title}"
     TaskBarIcon="{StaticResource AppIcon}"
-    Height="650"
-    Width="850"
-	MinHeight="650"
-	MinWidth="850"
+    Height="720"
+    Width="820"
+    MinHeight="560"
+    MinWidth="720"
     IsResizable="True"
     IsMaximizable="False"
     IsMinimizable="False"
@@ -21,61 +21,219 @@
 
     <Grid Background="{ThemeResource AppPageBackgroundBrush}"
           d:DataContext="{d:DesignInstance Type=viewmodels:FilterViewModel}">
+        <Grid.Resources>
+            <Style x:Key="FilterCardStyle" TargetType="Border">
+                <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+                <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="20" />
+            </Style>
+            <Style x:Key="FilterHintStyle" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+                <Setter Property="TextWrapping" Value="WrapWholeWords" />
+            </Style>
+        </Grid.Resources>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="30" RowSpacing="15">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Spacing="12">
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <FontIcon FontSize="22" Glyph="&#xE71C;" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
-                    <TextBlock VerticalAlignment="Center" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Filter_Heading}" />
+        <ScrollViewer Grid.Row="0">
+            <StackPanel Margin="30,28,30,24" Spacing="16">
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon FontSize="22" Glyph="&#xE71C;" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
+                        <TextBlock VerticalAlignment="Center" FontSize="24" FontWeight="SemiBold" Text="{helpers:ResourceString Name=Filter_Heading}" />
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource FilterHintStyle}" Text="{helpers:ResourceString Name=Filter_Description}" />
                 </StackPanel>
-                <TextBlock MaxWidth="760"
-                           HorizontalAlignment="Left"
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           Text="{helpers:ResourceString Name=Filter_Description}"
-                           TextWrapping="WrapWholeWords" />
+
+                <!-- Everything that is skipped, in one list -->
+                <Border Style="{StaticResource FilterCardStyle}">
+                    <StackPanel Spacing="12">
+                        <Grid>
+                            <TextBlock VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       AutomationProperties.HeadingLevel="Level2"
+                                       Text="{helpers:ResourceString Name=Filter_Rules_Header}" />
+                            <DropDownButton HorizontalAlignment="Right">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon FontSize="14" Glyph="&#xE710;" />
+                                    <TextBlock Text="{helpers:ResourceString Name=Filter_AddExclusion}" />
+                                </StackPanel>
+                                <DropDownButton.Flyout>
+                                    <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                        <MenuFlyoutItem Text="{helpers:ResourceString Name=Filter_Add_Folder}" Command="{x:Bind ViewModel.BrowseFolderCommand}">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE8B7;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutItem Text="{helpers:ResourceString Name=Filter_Add_Files}" Command="{x:Bind ViewModel.BrowseFileCommand}">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE8A5;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutItem Text="{helpers:ResourceString Name=Filter_Add_FileType}" Command="{x:Bind ViewModel.ShowAddFileTypeCommand}">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE8EC;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutSeparator />
+                                        <MenuFlyoutItem Text="{helpers:ResourceString Name=Filter_Add_Pattern}" Command="{x:Bind ViewModel.ShowAddPatternCommand}">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE943;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                    </MenuFlyout>
+                                </DropDownButton.Flyout>
+                            </DropDownButton>
+                        </Grid>
+
+                        <!-- Inline editor for a file type -->
+                        <Border Padding="16"
+                                CornerRadius="6"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                Visibility="{x:Bind ViewModel.IsAddingFileType, Mode=OneWay}">
+                            <StackPanel Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBox Width="220"
+                                             Header="{helpers:ResourceString Name=Filter_Add_FileType}"
+                                             PlaceholderText="{helpers:ResourceString Name=Filter_EnterExtension}"
+                                             Text="{x:Bind ViewModel.FileTypeInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <Button VerticalAlignment="Bottom"
+                                            Style="{StaticResource AccentButtonStyle}"
+                                            Content="{helpers:ResourceString Name=MsgBox_Add}"
+                                            Command="{x:Bind ViewModel.AddFileTypeCommand}"
+                                            CommandParameter="{x:Bind ViewModel.FileTypeInputText, Mode=OneWay}" />
+                                    <Button VerticalAlignment="Bottom"
+                                            Content="{helpers:ResourceString Name=MainView_Cancel}"
+                                            Command="{x:Bind ViewModel.CancelAddCommand}" />
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource FilterHintStyle}" Text="{helpers:ResourceString Name=Filter_FileType_Hint}" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Inline editor for a name pattern -->
+                        <Border Padding="16"
+                                CornerRadius="6"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                Visibility="{x:Bind ViewModel.IsAddingPattern, Mode=OneWay}">
+                            <StackPanel Spacing="8">
+                                <TextBox Header="{helpers:ResourceString Name=Filter_Add_Pattern}"
+                                         PlaceholderText="{helpers:ResourceString Name=Filter_EnterRegex}"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         MinHeight="64"
+                                         Text="{x:Bind ViewModel.RegexInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Style="{StaticResource FilterHintStyle}" Text="{helpers:ResourceString Name=Filter_Pattern_Hint}" />
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox PlaceholderText="{helpers:ResourceString Name=Filter_RegexTestInput}"
+                                             AutomationProperties.Name="{helpers:ResourceString Name=Filter_RegexTestInput}"
+                                             Text="{x:Bind ViewModel.RegexTestInputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <Grid Grid.Column="1" Width="24" VerticalAlignment="Center">
+                                        <FontIcon Glyph="&#xE73E;"
+                                                  Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                                                  AutomationProperties.Name="{helpers:ResourceString Name=Filter_RegexMatches}"
+                                                  ToolTipService.ToolTip="{helpers:ResourceString Name=Filter_RegexMatches}"
+                                                  Visibility="{x:Bind ViewModel.IsRegexTestMatch, Mode=OneWay}" />
+                                        <FontIcon Glyph="&#xE711;"
+                                                  Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                  AutomationProperties.Name="{helpers:ResourceString Name=Filter_RegexDoesNotMatch}"
+                                                  ToolTipService.ToolTip="{helpers:ResourceString Name=Filter_RegexDoesNotMatch}"
+                                                  Visibility="{x:Bind ViewModel.IsRegexTestNoMatch, Mode=OneWay}" />
+                                    </Grid>
+                                </Grid>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Style="{StaticResource AccentButtonStyle}"
+                                            Content="{helpers:ResourceString Name=MsgBox_Add}"
+                                            Command="{x:Bind ViewModel.AddRegexCommand}"
+                                            CommandParameter="{x:Bind ViewModel.RegexInputText, Mode=OneWay}" />
+                                    <Button Content="{helpers:ResourceString Name=MainView_Cancel}"
+                                            Command="{x:Bind ViewModel.CancelAddCommand}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Style="{StaticResource FilterHintStyle}"
+                                   Text="{helpers:ResourceString Name=Filter_Rules_Empty}"
+                                   Visibility="{x:Bind ViewModel.HasNoRules, Mode=OneWay}" />
+
+                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.Rules}">
+                            <ItemsRepeater.Layout>
+                                <StackLayout Spacing="4" />
+                            </ItemsRepeater.Layout>
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:ExclusionRuleViewModel">
+                                    <Grid MinHeight="40"
+                                          Padding="12,4,4,4"
+                                          ColumnSpacing="12"
+                                          CornerRadius="4"
+                                          Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                          AutomationProperties.Name="{x:Bind AccessibleText}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon FontSize="14" Glyph="{x:Bind Glyph}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind KindText}" />
+                                        <TextBlock Grid.Column="2"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Text="{x:Bind DisplayValue}"
+                                                   ToolTipService.ToolTip="{x:Bind DisplayValue}" />
+                                        <Button Grid.Column="3"
+                                                Style="{StaticResource SubtleButtonStyle}"
+                                                Command="{x:Bind RemoveCommand}"
+                                                AutomationProperties.Name="{helpers:ResourceString Name=Filter_RemoveRule}"
+                                                ToolTipService.ToolTip="{helpers:ResourceString Name=Filter_RemoveRule}">
+                                            <FontIcon FontSize="14" Glyph="&#xE74D;" />
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </StackPanel>
+                </Border>
+
+                <!-- Large files -->
+                <Border Style="{StaticResource FilterCardStyle}">
+                    <StackPanel Spacing="8">
+                        <ToggleSwitch Header="{helpers:ResourceString Name=Filter_SkipLargerThan}"
+                                      IsOn="{x:Bind ViewModel.ExcludeFilesBigger, Mode=TwoWay}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <NumberBox Width="140"
+                                       Minimum="1"
+                                       SpinButtonPlacementMode="Compact"
+                                       IsEnabled="{x:Bind ViewModel.ExcludeFilesBigger, Mode=OneWay}"
+                                       AutomationProperties.Name="{helpers:ResourceString Name=Filter_MaximumFileSize}"
+                                       Value="{x:Bind ViewModel.MaxFileSize, Mode=TwoWay}" />
+                            <ComboBox MinWidth="90"
+                                      IsEnabled="{x:Bind ViewModel.ExcludeFilesBigger, Mode=OneWay}"
+                                      AutomationProperties.Name="{helpers:ResourceString Name=Filter_MaximumFileSizeUnit}"
+                                      ItemsSource="{x:Bind ViewModel.MaxFileSizeUnits}"
+                                      SelectedItem="{Binding MaxFileSizeUnit, Mode=TwoWay}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- System folders -->
+                <Border Style="{StaticResource FilterCardStyle}">
+                    <StackPanel Spacing="4">
+                        <ToggleSwitch Header="{helpers:ResourceString Name=Filter_SystemFolders_Header}"
+                                      IsOn="{x:Bind ViewModel.IncludeSystemFolders, Mode=TwoWay}" />
+                        <TextBlock Style="{StaticResource FilterHintStyle}" Text="{helpers:ResourceString Name=Filter_SystemFolders_Description}" />
+                    </StackPanel>
+                </Border>
             </StackPanel>
-
-            <SelectorBar x:Name="FilterSelectorBar"
-                         Grid.Row="1"
-                         SelectionChanged="FilterSelectorBar_SelectionChanged">
-                <SelectorBarItem x:Name="FilesItem" Text="{helpers:ResourceString Name=Filter_Tab_Files}">
-                    <SelectorBarItem.Icon>
-                        <FontIcon Glyph="&#xE8A5;" />
-                    </SelectorBarItem.Icon>
-                </SelectorBarItem>
-                <SelectorBarItem x:Name="FoldersItem" Text="{helpers:ResourceString Name=Filter_Tab_Folders}">
-                    <SelectorBarItem.Icon>
-                        <FontIcon Glyph="&#xE8B7;" />
-                    </SelectorBarItem.Icon>
-                </SelectorBarItem>
-                <SelectorBarItem x:Name="FileTypesItem" Text="{helpers:ResourceString Name=Filter_Tab_FileTypes}">
-                    <SelectorBarItem.Icon>
-                        <FontIcon Glyph="&#xE8EC;" />
-                    </SelectorBarItem.Icon>
-                </SelectorBarItem>
-                <SelectorBarItem x:Name="MaxFileSizeItem" Text="{helpers:ResourceString Name=Filter_Tab_MaxFileSize}">
-                    <SelectorBarItem.Icon>
-                        <FontIcon Glyph="&#xE8E4;" />
-                    </SelectorBarItem.Icon>
-                </SelectorBarItem>
-                <SelectorBarItem x:Name="RegexItem" Text="{helpers:ResourceString Name=Filter_Tab_Regex}">
-                    <SelectorBarItem.Icon>
-                        <FontIcon Glyph="&#xE943;" />
-                    </SelectorBarItem.Icon>
-                </SelectorBarItem>
-            </SelectorBar>
-
-            <Frame x:Name="ContentFrame" Grid.Row="2" Margin="0,4,0,0" />
-        </Grid>
+        </ScrollViewer>
 
         <Grid Grid.Row="1"
               Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}" Padding="30,10" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">

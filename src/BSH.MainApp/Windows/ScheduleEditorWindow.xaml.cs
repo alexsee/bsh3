@@ -10,7 +10,7 @@ namespace BSH.MainApp.Windows;
 
 public sealed partial class ScheduleEditorWindow : WindowEx
 {
-    private bool closeRequested;
+    private readonly ModalCloseHandler closeHandler = new();
 
     public ScheduleEditorViewModel ViewModel
     {
@@ -22,9 +22,11 @@ public sealed partial class ScheduleEditorWindow : WindowEx
         InitializeComponent();
         ((FrameworkElement)Content).DataContext = ViewModel;
         Closed += OnClosed;
+    }
 
-        ScheduleSelectorBar.SelectedItem = BackupTimesItem;
-        ShowSelectedPanel();
+    public static InfoBarSeverity ToSeverity(bool hasWarning)
+    {
+        return hasWarning ? InfoBarSeverity.Warning : InfoBarSeverity.Informational;
     }
 
     public async Task<bool> ShowDialogAsync()
@@ -33,39 +35,11 @@ public sealed partial class ScheduleEditorWindow : WindowEx
 
         Activate();
         this.CenterOnMainWindow();
-        var result = await ViewModel.TaskCompletionSource.Task;
-
-        // Save/Cancel complete the TCS while the window is still open; chrome close
-        // (title-bar X / Alt+F4) already closed the window via the Closed handler.
-        if (!closeRequested)
-        {
-            Close();
-        }
-
-        return result;
+        return await closeHandler.AwaitThenCloseAsync(ViewModel.TaskCompletionSource.Task, Close);
     }
 
     private void OnClosed(object sender, WindowEventArgs args)
     {
-        closeRequested = true;
-        ViewModel.TaskCompletionSource.TrySetResult(false);
-    }
-
-    private void ScheduleSelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
-    {
-        ShowSelectedPanel();
-    }
-
-    private void ShowSelectedPanel()
-    {
-        BackupTimesPanel.Visibility = ReferenceEquals(ScheduleSelectorBar.SelectedItem, BackupTimesItem)
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-        RetentionPanel.Visibility = ReferenceEquals(ScheduleSelectorBar.SelectedItem, RetentionItem)
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-        FullBackupsPanel.Visibility = ReferenceEquals(ScheduleSelectorBar.SelectedItem, FullBackupsItem)
-            ? Visibility.Visible
-            : Visibility.Collapsed;
+        closeHandler.HandleClosed(() => ViewModel.TaskCompletionSource.TrySetResult(false));
     }
 }

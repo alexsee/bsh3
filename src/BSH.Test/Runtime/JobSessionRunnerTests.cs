@@ -14,6 +14,7 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using Brightbits.BSH.Engine.Security;
+using BSH.Test.Fakes;
 using NUnit.Framework;
 
 namespace BSH.Test.Runtime;
@@ -555,6 +556,151 @@ public class JobSessionRunnerTests
         Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.RUNNING, JobState.ERROR }));
     }
 
+    [Test]
+    public async Task RunSingleBackupAsync_RecordsSucceededResult()
+    {
+        var configuration = new FakeConfigurationManager();
+        LastBackupResult resultAtCompletion = null;
+        var presenter = new JobReportStub
+        {
+            OnReportState = state =>
+            {
+                if (state == JobState.FINISHED)
+                {
+                    resultAtCompletion = LastBackupResult.FromJson(configuration.LastBackupResult);
+                }
+            }
+        };
+        var result = await RunRecordedBackupAsync(configuration, (report, _) =>
+        {
+            configuration.LastBackupDone = "17-10-2026 16-00-00";
+            report.ReportState(JobState.FINISHED);
+            return Task.CompletedTask;
+        }, presenter);
+
+        Assert.That(resultAtCompletion?.Outcome, Is.EqualTo(BackupOutcome.Succeeded), "completion observers must see the saved result");
+        Assert.That(result.Outcome, Is.EqualTo(BackupOutcome.Succeeded));
+        Assert.That(result.FailedFileCount, Is.Zero);
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_RecordsCompletedWithErrors_WhenVersionWasWrittenDespiteFileErrors()
+    {
+        var configuration = new FakeConfigurationManager { LastBackupDone = "16-10-2026 20-00-00" };
+        var result = await RunRecordedBackupAsync(configuration, (report, _) =>
+        {
+            configuration.LastBackupDone = "17-10-2026 16-00-00";
+            report.ReportExceptions(new Collection<FileExceptionEntry> { CreateFileError("locked.pst", "File is in use") }, true);
+            report.ReportState(JobState.ERROR);
+            return Task.CompletedTask;
+        });
+
+        Assert.That(result.Outcome, Is.EqualTo(BackupOutcome.CompletedWithErrors));
+        Assert.That(result.FailedFileCount, Is.EqualTo(1));
+        Assert.That(result.FailedFiles[0].Path, Does.EndWith("locked.pst"));
+        Assert.That(result.FailedFiles[0].Message, Is.EqualTo("File is in use"));
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_RecordsFailure_WhenFileErrorsRolledBackTheVersion()
+    {
+        var configuration = new FakeConfigurationManager { LastBackupDone = "16-10-2026 20-00-00" };
+        var result = await RunRecordedBackupAsync(configuration, (report, _) =>
+        {
+            report.ReportExceptions(new Collection<FileExceptionEntry> { CreateFileError("a.txt", "Access denied") }, true);
+            report.ReportState(JobState.ERROR);
+            return Task.CompletedTask;
+        });
+
+        Assert.That(result.Outcome, Is.EqualTo(BackupOutcome.Failed));
+        Assert.That(result.FailureReason, Is.EqualTo(BackupFailureReason.Other));
+        Assert.That(result.FailedFileCount, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_RecordsDeviceNotReady_WhenJobThrowsDeviceNotReady()
+    {
+        var configuration = new FakeConfigurationManager();
+        var result = await RunRecordedBackupAsync(configuration, (_, _) => throw new DeviceNotReadyException());
+
+        Assert.That(result.Outcome, Is.EqualTo(BackupOutcome.Failed));
+        Assert.That(result.FailureReason, Is.EqualTo(BackupFailureReason.DeviceNotReady));
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_RecordsInsufficientDiskSpace_WhenJobAbortsForSpace()
+    {
+        var configuration = new FakeConfigurationManager();
+        var result = await RunRecordedBackupAsync(configuration, async (report, _) =>
+        {
+            await report.RequestShowErrorInsufficientDiskSpaceAsync();
+            report.ReportState(JobState.CANCELED);
+        });
+
+        Assert.That(result.Outcome, Is.EqualTo(BackupOutcome.Failed));
+        Assert.That(result.FailureReason, Is.EqualTo(BackupFailureReason.InsufficientDiskSpace));
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_KeepsPreviousResult_WhenUserCancels()
+    {
+        var previous = new LastBackupResult { Outcome = BackupOutcome.Succeeded, CompletedAt = new DateTime(2026, 10, 16) };
+        var configuration = new FakeConfigurationManager { LastBackupResult = previous.ToJson() };
+        var backupService = new BackupServiceStub { CheckMediaResult = true };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        var runner = new JobSessionRunner(backupService, jobRuntime, backupResultRecorder: new BackupResultRecorder(configuration));
+        backupService.OnStartBackup = (_, _) =>
+        {
+            jobRuntime.Cancel();
+            return Task.CompletedTask;
+        };
+
+        await runner.RunSingleBackupAsync("title", "description", new JobReportStub(), statusDialog: false);
+
+        Assert.That(configuration.LastBackupResult, Is.EqualTo(previous.ToJson()));
+    }
+
+    [Test]
+    public async Task RunSingleBackupAsync_RecordsDeviceNotReady_WhenSessionCannotStart()
+    {
+        var configuration = new FakeConfigurationManager();
+        var backupService = new BackupServiceStub { CheckMediaResult = false };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        var runner = new JobSessionRunner(backupService, jobRuntime, backupResultRecorder: new BackupResultRecorder(configuration));
+
+        var presenter = new JobReportStub();
+        await runner.RunSingleBackupAsync("title", "description", presenter, statusDialog: false);
+
+        var result = LastBackupResult.FromJson(configuration.LastBackupResult);
+        Assert.That(result.Outcome, Is.EqualTo(BackupOutcome.Failed));
+        Assert.That(result.FailureReason, Is.EqualTo(BackupFailureReason.DeviceNotReady));
+        Assert.That(presenter.ReportedStates, Is.EqualTo(new[] { JobState.ERROR }));
+    }
+
+    private static async Task<LastBackupResult> RunRecordedBackupAsync(
+        FakeConfigurationManager configuration,
+        Func<IJobReport, CancellationToken, Task> onStartBackup,
+        JobReportStub presenter = null)
+    {
+        var backupService = new BackupServiceStub { CheckMediaResult = true, OnStartBackup = onStartBackup };
+        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        var recorder = new BackupResultRecorder(configuration, () => new DateTime(2026, 10, 17, 16, 0, 0));
+        var runner = new JobSessionRunner(backupService, jobRuntime, backupResultRecorder: recorder);
+
+        await runner.RunSingleBackupAsync("title", "description", presenter ?? new JobReportStub(), statusDialog: false);
+
+        return recorder.Load();
+    }
+
+    private static FileExceptionEntry CreateFileError(string fileName, string message)
+    {
+        return new FileExceptionEntry
+        {
+            File = new FileTableRow { FileName = fileName, FilePath = "Docs", FileRoot = @"C:\Users\Anna" },
+            Exception = new FileNotProcessedException(new InvalidOperationException(message))
+        };
+    }
+
     private sealed class BackupServiceStub : IBackupService
     {
         public bool CheckMediaResult { get; set; } = true;
@@ -646,8 +792,13 @@ public class JobSessionRunnerTests
 
     private sealed class JobReportStub : IJobSessionPresenter
     {
+        public Action<JobState> OnReportState { get; set; }
         public void ReportAction(ActionType action, bool silent) { }
-        public void ReportState(JobState jobState) => ReportedStates.Add(jobState);
+        public void ReportState(JobState jobState)
+        {
+            ReportedStates.Add(jobState);
+            OnReportState?.Invoke(jobState);
+        }
         public void ReportStatus(string title, string text) { }
         public void ReportProgress(int total, int current) => ProgressUpdates.Add($"{total}/{current}");
         public void ReportFileProgress(string file) { }

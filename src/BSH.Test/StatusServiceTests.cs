@@ -97,6 +97,7 @@ public class StatusServiceTests
         public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);
         public Task ShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
         public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
+        public Task ShowLastBackupFailedFilesAsync(LastBackupResult result) => Task.CompletedTask;
         public Task ShowMainWindowAsync() => Task.CompletedTask;
         public Task ShowStatusWindowAsync() => Task.CompletedTask;
         public Task<Microsoft.UI.Xaml.Controls.ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<Windows.UI.Popups.IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(Microsoft.UI.Xaml.Controls.ContentDialogResult.None);

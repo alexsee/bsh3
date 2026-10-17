@@ -1,12 +1,18 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Collections.ObjectModel;
+using System.Globalization;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
+using Brightbits.BSH.Engine.Contracts.Services;
+using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
+using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
+using BSH.MainApp.Helpers;
 using BSH.MainApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -19,6 +25,8 @@ namespace BSH.MainApp.ViewModels;
 
 public partial class MainViewModel : ObservableObject, INavigationAware, IStatusReport
 {
+    private const string BrowserPageKey = "BSH.MainApp.ViewModels.BrowserViewModel";
+
     private static readonly ILogger Logger = Log.ForContext<MainViewModel>();
 
     private readonly IPresentationService presentationService;
@@ -29,34 +37,88 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     private readonly DispatcherQueue dispatcherQueue;
     private readonly IConfigurationManager configurationManager;
     private readonly IOrchestrationService orchestrationService;
+    private readonly IBackupService? backupService;
+    private readonly INavigationService? navigationService;
     private bool systemToggleInFlight;
+    private int refreshGeneration;
+
+    private LastBackupResult? lastResult;
+    private VersionDetails? lastVersion;
+    private bool hasScheduleEntries;
+    private bool? isBackupLocationAvailable;
+    private SystemStatus systemStatus;
+    private ActionType currentAction = ActionType.Backup;
 
     [ObservableProperty]
-    private string? lastBackupDate;
+    private OverviewSeverity severity = OverviewSeverity.Protected;
 
     [ObservableProperty]
-    private string? nextBackupDate;
+    private string? statusTitle;
 
     [ObservableProperty]
-    private string? backupMode;
+    private string? statusText;
+
+    public ObservableCollection<OverviewActionItem> ActionItems { get; } = [];
 
     [ObservableProperty]
-    private string? availableDiskSpace;
+    private bool hasActionItems;
 
     [ObservableProperty]
-    private string? totalFilesBackuped;
+    private bool hasLastBackup;
 
     [ObservableProperty]
-    private string? totalBackups;
+    private string? lastBackupWhen;
 
     [ObservableProperty]
-    private string? totalFileSize;
+    private string? lastBackupResultText;
 
     [ObservableProperty]
-    private string? scheduleWarningText;
+    private OverviewSeverity lastBackupResultSeverity = OverviewSeverity.Protected;
 
     [ObservableProperty]
-    private bool scheduleWarningVisible;
+    private string? lastBackupName;
+
+    [ObservableProperty]
+    private bool hasLastBackupName;
+
+    [ObservableProperty]
+    private bool hasChangeStatistics;
+
+    [ObservableProperty]
+    private string? addedFilesText;
+
+    [ObservableProperty]
+    private string? modifiedFilesText;
+
+    [ObservableProperty]
+    private string? deletedFilesText;
+
+    [ObservableProperty]
+    private string? locationKindText;
+
+    [ObservableProperty]
+    private string? locationPath;
+
+    [ObservableProperty]
+    private string? locationConnectionText;
+
+    [ObservableProperty]
+    private OverviewSeverity locationConnectionSeverity = OverviewSeverity.Protected;
+
+    [ObservableProperty]
+    private string? freeSpaceText;
+
+    [ObservableProperty]
+    private string? freeSpaceHint;
+
+    [ObservableProperty]
+    private bool isFreeSpaceLow;
+
+    [ObservableProperty]
+    private string? totalsText;
+
+    [ObservableProperty]
+    private string? modeAndNextBackupText;
 
     [ObservableProperty]
     private bool nextBackupGridVisibility = true;
@@ -86,9 +148,6 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     private string? progressCountText;
 
     [ObservableProperty]
-    private string? systemStatusText;
-
-    [ObservableProperty]
     private bool isSystemEnabled;
 
     [ObservableProperty]
@@ -102,7 +161,9 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         IScheduledBackupService scheduledBackupService,
         IConfigurationManager configurationManager,
         IOrchestrationService orchestrationService,
-        DispatcherQueue dispatcherQueue)
+        DispatcherQueue dispatcherQueue,
+        IBackupService? backupService = null,
+        INavigationService? navigationService = null)
     {
         this.presentationService = presentationService;
         this.statusService = statusService;
@@ -112,6 +173,8 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         this.dispatcherQueue = dispatcherQueue;
         this.configurationManager = configurationManager;
         this.orchestrationService = orchestrationService;
+        this.backupService = backupService;
+        this.navigationService = navigationService;
         this.statusService.AddObserver(this, true);
         // Apply immediately so the overview has status text before the first dispatcher tick.
         ApplySystemStatus(this.statusService.SystemStatus);
@@ -119,7 +182,14 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     public async void OnNavigatedTo(object parameter)
     {
-        await UpdateBackupStatsAsync();
+        try
+        {
+            await RefreshAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, "Could not load the overview.");
+        }
     }
 
     public void OnNavigatedFrom()
@@ -127,55 +197,335 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         this.statusService.RemoveObserver(this);
     }
 
-    private async Task UpdateBackupStatsAsync()
+    private async Task RefreshAsync()
     {
-        // set backup dates
-        var lastBackup = await queryManager.GetLastBackupAsync();
-        if (lastBackup != null)
+        var generation = ++refreshGeneration;
+
+        var version = queryManager == null ? null : await queryManager.GetLastBackupAsync();
+        var result = LastBackupResult.FromJson(configurationManager.LastBackupResult);
+        if (result != null && version != null && result.CompletedAt < version.CreationDate)
         {
-            LastBackupDate = lastBackup.CreationDate.HumanizeDate();
+            // A newer version was written by something that did not record a result.
+            result = null;
         }
 
-        // set configuration
-        var hasScheduleWarning = false;
+        var scheduleEntries = configurationManager.TaskType == TaskType.Schedule
+            && scheduledBackupService != null
+            && await scheduledBackupService.HasScheduleEntriesAsync();
 
-        if (configurationManager.TaskType == TaskType.Auto)
+        VersionChangeStatistics? statistics = null;
+        if (version != null && result?.Outcome != BackupOutcome.Failed && queryManager != null)
         {
-            NextBackupDate = scheduledBackupService.GetNextBackupDate().HumanizeDate();
-            BackupMode = "MainView_BackupMode_Automatic".GetLocalized();
+            statistics = await queryManager.GetVersionChangeStatisticsAsync(version.Id);
         }
-        else if (configurationManager.TaskType == TaskType.Schedule)
+
+        string? totals = null;
+        if (queryManager != null)
         {
-            NextBackupDate = scheduledBackupService.GetNextBackupDate().HumanizeDate();
-            BackupMode = "MainView_BackupMode_Scheduled".GetLocalized();
-            hasScheduleWarning = !await scheduledBackupService.HasScheduleEntriesAsync();
+            var versions = await queryManager.GetNumberOfVersionsAsync();
+            var files = await queryManager.GetNumberOfFilesAsync();
+            var size = await queryManager.GetTotalFileSizeAsync();
+            totals = versions == 0
+                ? null
+                : Format("Overview_Totals", versions, files, size.Bytes().Humanize());
+        }
+
+        if (generation != refreshGeneration)
+        {
+            return;
+        }
+
+        lastVersion = version;
+        lastResult = result;
+        hasScheduleEntries = scheduleEntries;
+        TotalsText = totals;
+        ApplyLastBackup(statistics);
+        ApplyModeAndNextBackup();
+        ApplyLocation();
+        ApplyStatus();
+
+        _ = CheckBackupLocationAsync(generation);
+    }
+
+    private async Task CheckBackupLocationAsync(int generation)
+    {
+        if (backupService == null || statusService.JobState == JobState.RUNNING)
+        {
+            return;
+        }
+
+        bool available;
+        try
+        {
+            available = await Task.Run(() => backupService.CheckMedia(quickCheck: true));
+        }
+        catch (Exception ex) when (ex is DeviceNotReadyException or DeviceContainsWrongStateException)
+        {
+            available = false;
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, "Could not check the backup location.");
+            return;
+        }
+
+        EnqueueUi(() =>
+        {
+            if (generation != refreshGeneration)
+            {
+                return;
+            }
+
+            isBackupLocationAvailable = available;
+            ApplyLocation();
+            ApplyStatus();
+        });
+    }
+
+    private OverviewInputs BuildInputs()
+    {
+        return new OverviewInputs
+        {
+            SystemStatus = systemStatus,
+            TaskType = configurationManager.TaskType,
+            LastResult = lastResult,
+            LastBackupDate = lastVersion?.CreationDate,
+            RemindAfterDays = int.TryParse(configurationManager.RemindAfterDays, out var days) ? days : null,
+            HasScheduleEntries = hasScheduleEntries,
+            IsBackupLocationAvailable = isBackupLocationAvailable,
+            FreeSpaceBytes = GetFreeSpaceBytes(),
+            RemindSpaceMegabytes = double.TryParse(configurationManager.RemindSpace, NumberStyles.Float, CultureInfo.InvariantCulture, out var megabytes) ? megabytes : null,
+            Now = DateTime.Now,
+        };
+    }
+
+    private void ApplyStatus()
+    {
+        var inputs = BuildInputs();
+        var issues = OverviewStatusEvaluator.Evaluate(inputs);
+        Severity = OverviewStatusEvaluator.GetOverallSeverity(issues);
+
+        ActionItems.Clear();
+        if (statusService.JobState == JobState.RUNNING)
+        {
+            StatusTitle = currentAction switch
+            {
+                ActionType.Backup => "Overview_Running_Backup_Title".GetLocalized(),
+                ActionType.Restore => "Overview_Running_Restore_Title".GetLocalized(),
+                _ => "Overview_Running_Other_Title".GetLocalized(),
+            };
+            StatusText = "Overview_Running_Text".GetLocalized();
+            HasActionItems = false;
+            return;
+        }
+
+        if (issues.Count == 0)
+        {
+            StatusTitle = "Overview_Protected_Title".GetLocalized();
+            StatusText = GetProtectedText();
         }
         else
         {
-            NextBackupDate = "MainView_NonePlanned".GetLocalized();
-            BackupMode = "MainView_BackupMode_Manual".GetLocalized();
+            StatusTitle = GetIssueTitle(issues[0], inputs);
+            StatusText = GetIssueText(issues[0], inputs);
         }
 
-        if (hasScheduleWarning)
+        foreach (var issue in issues.Where(issue => issue.Action != OverviewAction.None))
         {
-            ScheduleWarningText = "MainView_ScheduleWarning_NoEntries".GetLocalized();
-            ScheduleWarningVisible = true;
+            ActionItems.Add(CreateActionItem(issue, inputs));
+        }
+
+        HasActionItems = ActionItems.Count > 0;
+    }
+
+    private string GetProtectedText()
+    {
+        var text = lastVersion == null ? "" : Format("Overview_LastBackupAt", lastVersion.CreationDate.HumanizeDate());
+        if (configurationManager.TaskType != TaskType.Manual && scheduledBackupService != null)
+        {
+            text += " " + Format("Overview_NextBackupAt", scheduledBackupService.GetNextBackupDate().HumanizeDate());
+        }
+
+        return text.Trim();
+    }
+
+    private string GetIssueTitle(OverviewIssue issue, OverviewInputs inputs)
+    {
+        return issue.Kind switch
+        {
+            OverviewIssueKind.BackupFailed => "Overview_BackupFailed_Title".GetLocalized(),
+            OverviewIssueKind.BackupLocationUnavailable => "Overview_LocationUnavailable_Title".GetLocalized(),
+            OverviewIssueKind.BackupOverdue => Format("Overview_Overdue_Title", OverviewStatusEvaluator.GetDaysSinceLastBackup(inputs)),
+            OverviewIssueKind.NoBackupYet => "Overview_NoBackup_Title".GetLocalized(),
+            OverviewIssueKind.ScheduleEmpty => "Overview_ScheduleEmpty_Title".GetLocalized(),
+            OverviewIssueKind.FilesSkipped => Format("Overview_FilesSkipped_Title", lastResult?.FailedFileCount ?? 0),
+            OverviewIssueKind.LowDiskSpace => "Overview_LowSpace_Title".GetLocalized(),
+            OverviewIssueKind.TurnedOff => "Overview_TurnedOff_Title".GetLocalized(),
+            OverviewIssueKind.PausedOnBattery => "Overview_Battery_Title".GetLocalized(),
+            _ => "Overview_NotConfigured_Title".GetLocalized(),
+        };
+    }
+
+    private string GetIssueText(OverviewIssue issue, OverviewInputs inputs)
+    {
+        return issue.Kind switch
+        {
+            OverviewIssueKind.BackupFailed => lastVersion == null
+                ? "Overview_BackupFailed_TextNoBackup".GetLocalized()
+                : Format("Overview_BackupFailed_Text", lastVersion.CreationDate.HumanizeDate()),
+            OverviewIssueKind.BackupLocationUnavailable => "Overview_LocationUnavailable_Text".GetLocalized(),
+            OverviewIssueKind.BackupOverdue => Format("Overview_Overdue_Text", inputs.RemindAfterDays ?? 0),
+            OverviewIssueKind.NoBackupYet => "Overview_NoBackup_Text".GetLocalized(),
+            OverviewIssueKind.ScheduleEmpty => "Overview_ScheduleEmpty_Text".GetLocalized(),
+            OverviewIssueKind.FilesSkipped => Format("Overview_FilesSkipped_Text", (lastResult?.CompletedAt ?? DateTime.Now).HumanizeDate()),
+            OverviewIssueKind.LowDiskSpace => Format("Overview_LowSpace_Text", inputs.FreeSpaceBytes.Bytes().Humanize()),
+            OverviewIssueKind.TurnedOff => "Overview_TurnedOff_Text".GetLocalized(),
+            OverviewIssueKind.PausedOnBattery => "Overview_Battery_Text".GetLocalized(),
+            _ => "Overview_NotConfigured_Text".GetLocalized(),
+        };
+    }
+
+    private string GetActionText(OverviewIssue issue, OverviewInputs inputs)
+    {
+        return issue.Kind switch
+        {
+            OverviewIssueKind.BackupFailed => GetFailureActionText(),
+            OverviewIssueKind.BackupLocationUnavailable => "Overview_LocationUnavailable_Action".GetLocalized(),
+            OverviewIssueKind.BackupOverdue => "Overview_Overdue_Action".GetLocalized(),
+            OverviewIssueKind.NoBackupYet => "Overview_NoBackup_Action".GetLocalized(),
+            OverviewIssueKind.ScheduleEmpty => "Overview_ScheduleEmpty_Action".GetLocalized(),
+            OverviewIssueKind.FilesSkipped => Format("Overview_FilesSkipped_Action", lastResult?.FailedFileCount ?? 0),
+            OverviewIssueKind.LowDiskSpace => "Overview_LowSpace_Action".GetLocalized(),
+            OverviewIssueKind.TurnedOff => "Overview_TurnedOff_Action".GetLocalized(),
+            _ => GetIssueText(issue, inputs),
+        };
+    }
+
+    private string GetFailureActionText()
+    {
+        if (lastResult == null)
+        {
+            return "Overview_BackupFailed_Action_Unknown".GetLocalized();
+        }
+
+        return lastResult.FailureReason switch
+        {
+            BackupFailureReason.DeviceNotReady => "Overview_BackupFailed_Action_DeviceNotReady".GetLocalized(),
+            BackupFailureReason.InsufficientDiskSpace => "Overview_BackupFailed_Action_DiskSpace".GetLocalized(),
+            _ when lastResult.FailedFileCount > 0 => Format("Overview_BackupFailed_Action_Files", lastResult.FailedFileCount),
+            _ when !string.IsNullOrWhiteSpace(lastResult.FailureMessage) => Format("Overview_BackupFailed_Action_Other", lastResult.FailureMessage),
+            _ => "Overview_BackupFailed_Action_Unknown".GetLocalized(),
+        };
+    }
+
+    private OverviewActionItem CreateActionItem(OverviewIssue issue, OverviewInputs inputs)
+    {
+        (string? buttonText, IRelayCommand command) = issue.Action switch
+        {
+            OverviewAction.ViewFailedFiles => ("Overview_Button_ViewFiles".GetLocalized(), ViewFailedFilesCommand),
+            OverviewAction.ManageBackups => ("Overview_Button_ManageBackups".GetLocalized(), BrowseBackupsCommand),
+            OverviewAction.ChangeBackupLocation => ("Overview_Button_ChangeLocation".GetLocalized(), ChangeBackupLocationCommand),
+            OverviewAction.SetSchedule => ("Overview_Button_SetSchedule".GetLocalized(), SetScheduleCommand),
+            OverviewAction.TurnOn => ("Overview_Button_TurnOn".GetLocalized(), TurnOnCommand),
+            _ => ("Overview_Button_BackUpNow".GetLocalized(), BackUpNowCommand),
+        };
+
+        return new OverviewActionItem(
+            issue.Kind,
+            issue.Severity,
+            GetActionText(issue, inputs),
+            buttonText,
+            command);
+    }
+
+    private void ApplyLastBackup(VersionChangeStatistics? statistics)
+    {
+        HasLastBackup = lastVersion != null || lastResult != null;
+
+        var when = lastResult?.CompletedAt ?? lastVersion?.CreationDate;
+        LastBackupWhen = when?.HumanizeDate();
+
+        var outcome = lastResult?.Outcome ?? BackupOutcome.Succeeded;
+        LastBackupResultSeverity = outcome switch
+        {
+            BackupOutcome.Failed => OverviewSeverity.Error,
+            BackupOutcome.CompletedWithErrors => OverviewSeverity.Warning,
+            _ => OverviewSeverity.Protected,
+        };
+        LastBackupResultText = outcome switch
+        {
+            BackupOutcome.Failed => "Overview_Result_Failed".GetLocalized(),
+            BackupOutcome.CompletedWithErrors => Format("Overview_Result_CompletedWithErrors", lastResult!.FailedFileCount),
+            _ => "Overview_Result_Succeeded".GetLocalized(),
+        };
+
+        var versionBelongsToResult = lastVersion != null && outcome != BackupOutcome.Failed;
+        LastBackupName = versionBelongsToResult ? lastVersion!.Title : null;
+        HasLastBackupName = !string.IsNullOrWhiteSpace(LastBackupName);
+
+        HasChangeStatistics = versionBelongsToResult && statistics != null;
+        AddedFilesText = statistics == null ? null : Format("Overview_Changes_Added", statistics.Added);
+        ModifiedFilesText = statistics == null ? null : Format("Overview_Changes_Modified", statistics.Modified);
+        DeletedFilesText = statistics == null ? null : Format("Overview_Changes_Deleted", statistics.Deleted);
+    }
+
+    private void ApplyModeAndNextBackup()
+    {
+        var mode = configurationManager.TaskType switch
+        {
+            TaskType.Auto => "MainView_BackupMode_Automatic".GetLocalized(),
+            TaskType.Schedule => "MainView_BackupMode_Scheduled".GetLocalized(),
+            _ => "MainView_BackupMode_Manual".GetLocalized(),
+        };
+
+        if (configurationManager.TaskType == TaskType.Manual || scheduledBackupService == null)
+        {
+            ModeAndNextBackupText = mode;
+            return;
+        }
+
+        ModeAndNextBackupText = Format("Overview_ModeAndNext", mode, scheduledBackupService.GetNextBackupDate().HumanizeDate());
+    }
+
+    private void ApplyLocation()
+    {
+        if (configurationManager.MediumType == MediaType.FileTransferServer)
+        {
+            LocationKindText = "Overview_Location_Ftp".GetLocalized();
+            LocationPath = $"ftp://{configurationManager.FtpHost}{configurationManager.FtpFolder}";
         }
         else
         {
-            ScheduleWarningText = "";
-            ScheduleWarningVisible = false;
+            LocationKindText = "Overview_Location_Local".GetLocalized();
+            LocationPath = configurationManager.BackupFolder;
         }
 
-        AvailableDiskSpace = string.IsNullOrEmpty(configurationManager.FreeSpace)
-            ? ""
-            : double.Parse(configurationManager.FreeSpace, System.Globalization.CultureInfo.InvariantCulture)
-                .Bytes()
-                .Humanize();
+        (LocationConnectionText, LocationConnectionSeverity) = isBackupLocationAvailable switch
+        {
+            true => ("Overview_Location_Available".GetLocalized(), OverviewSeverity.Protected),
+            false => ("Overview_Location_Unavailable".GetLocalized(), OverviewSeverity.Error),
+            null => ("Overview_Location_Checking".GetLocalized(), OverviewSeverity.Paused),
+        };
 
-        TotalFilesBackuped = (await queryManager.GetNumberOfFilesAsync()).ToString("g");
-        TotalFileSize = (await queryManager.GetTotalFileSizeAsync()).Bytes().Humanize();
-        TotalBackups = (await queryManager.GetNumberOfVersionsAsync()).ToString("g");
+        var freeBytes = GetFreeSpaceBytes();
+        var inputs = BuildInputs();
+        IsFreeSpaceLow = OverviewStatusEvaluator.IsLowOnDiskSpace(inputs);
+        FreeSpaceText = freeBytes > 0
+            ? Format("Overview_Location_Free", freeBytes.Bytes().Humanize())
+            : "Overview_Location_FreeUnknown".GetLocalized();
+        FreeSpaceHint = IsFreeSpaceLow
+            ? Format("Overview_Location_LowHint", (inputs.RemindSpaceMegabytes!.Value * 1024d * 1024d).Bytes().Humanize())
+            : null;
+    }
+
+    private double GetFreeSpaceBytes()
+    {
+        return double.TryParse(configurationManager.FreeSpace, NumberStyles.Float, CultureInfo.InvariantCulture, out var bytes) ? bytes : 0;
+    }
+
+    private static string Format(string resourceKey, params object[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, resourceKey.GetLocalized() ?? resourceKey, args);
     }
 
     [RelayCommand]
@@ -189,6 +539,50 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
     }
 
     [RelayCommand]
+    private async Task BackUpNow()
+    {
+        await jobService.CreateBackupAsync("CreateBackup_Title_Manual".GetLocalized(), "", true);
+    }
+
+    [RelayCommand]
+    private async Task ViewFailedFiles()
+    {
+        if (lastResult != null)
+        {
+            await presentationService.ShowLastBackupFailedFilesAsync(lastResult);
+        }
+    }
+
+    [RelayCommand]
+    private void BrowseBackups()
+    {
+        (navigationService ?? App.GetService<INavigationService>()).NavigateTo(BrowserPageKey);
+    }
+
+    [RelayCommand]
+    private async Task ChangeBackupLocation()
+    {
+        if (await presentationService.ShowSwitchStorageWindowAsync())
+        {
+            isBackupLocationAvailable = null;
+            await RefreshAsync();
+        }
+    }
+
+    [RelayCommand]
+    private async Task SetSchedule()
+    {
+        await presentationService.ShowScheduleEditorWindowAsync();
+        await RefreshAsync();
+    }
+
+    [RelayCommand]
+    private void TurnOn()
+    {
+        IsSystemEnabled = true;
+    }
+
+    [RelayCommand]
     private void CancelBackup()
     {
         jobService.Cancel();
@@ -196,6 +590,14 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
 
     public void ReportAction(ActionType action, bool silent)
     {
+        EnqueueUi(() =>
+        {
+            currentAction = action;
+            if (statusService.JobState == JobState.RUNNING)
+            {
+                ApplyStatus();
+            }
+        });
     }
 
     public void ReportState(JobState jobState)
@@ -220,23 +622,26 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
                     value => CurrentProgressValue = value);
                 NextBackupGridVisibility = false;
                 ProgressGridVisibility = true;
+                ApplyStatus();
                 return;
-            }
-
-            if (jobState == JobState.FINISHED)
-            {
-                try
-                {
-                    await UpdateBackupStatsAsync();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Warning(ex, "Could not refresh overview statistics after backup.");
-                }
             }
 
             NextBackupGridVisibility = true;
             ProgressGridVisibility = false;
+            ApplyStatus();
+
+            if (jobState is JobState.FINISHED or JobState.ERROR or JobState.CANCELED)
+            {
+                try
+                {
+                    isBackupLocationAvailable = null;
+                    await RefreshAsync();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warning(ex, "Could not refresh the overview after a job.");
+                }
+            }
         });
     }
 
@@ -305,16 +710,11 @@ public partial class MainViewModel : ObservableObject, INavigationAware, IStatus
         });
     }
 
-    private void ApplySystemStatus(SystemStatus systemStatus)
+    private void ApplySystemStatus(SystemStatus status)
     {
-        SystemStatusText = systemStatus switch
-        {
-            SystemStatus.PAUSED_DUE_TO_BATTERY => "MainView_SystemStatus_BatteryPaused".GetLocalized(),
-            SystemStatus.DEACTIVATED => "MainView_SystemStatus_Deactivated".GetLocalized(),
-            SystemStatus.NOT_CONFIGURED => "MainView_SystemStatus_NotConfigured".GetLocalized(),
-            _ => "MainView_SystemStatus_Running".GetLocalized(),
-        };
+        systemStatus = status;
         SyncSystemEnabledFromConfiguration();
+        ApplyStatus();
     }
 
     partial void OnIsSystemEnabledChanged(bool value)

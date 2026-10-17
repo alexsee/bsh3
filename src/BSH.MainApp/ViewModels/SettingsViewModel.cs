@@ -9,6 +9,7 @@ using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
+using BSH.MainApp.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
@@ -29,6 +30,8 @@ public enum ModeType
 
 public partial class SettingsViewModel : ObservableObject, INavigationAware
 {
+    private static readonly Serilog.ILogger Logger = Serilog.Log.ForContext<SettingsViewModel>();
+
     private readonly IConfigurationManager configurationManager;
     private readonly IPresentationService presentationController;
     private readonly IJobService jobService;
@@ -38,6 +41,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IOrchestrationService orchestrationService;
     private readonly IStartupLaunchAdapter startupLaunchAdapter;
     private readonly IUpdateService updateService;
+    private readonly ScheduleSettingsService? scheduleSettingsService;
     private bool suppressEnhancedSettingsPersistence;
     private bool suppressTargetSettingsPersistence;
     private const string RemindSpaceOffSentinel = "-1";
@@ -740,10 +744,31 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool stopBackupWhenBatteryMode;
 
+    [ObservableProperty]
+    private string? scheduleSummary;
+
     private void InitModeSettings()
     {
         this.TaskType = this.configurationManager.TaskType;
         this.StopBackupWhenBatteryMode = this.configurationManager.DeativateAutoBackupsWhenAkku == "1";
+        _ = LoadScheduleSummaryAsync();
+    }
+
+    private async Task LoadScheduleSummaryAsync()
+    {
+        if (scheduleSettingsService == null)
+        {
+            return;
+        }
+
+        try
+        {
+            ScheduleSummary = ScheduleEditorDisplayText.Summarize(await scheduleSettingsService.LoadAsync());
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, "Could not load the schedule summary.");
+        }
     }
 
     partial void OnStopBackupWhenBatteryModeChanged(bool oldValue, bool newValue)
@@ -773,6 +798,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private async Task ShowScheduleEditorWindow()
     {
         await this.presentationController.ShowScheduleEditorWindowAsync();
+        await LoadScheduleSummaryAsync();
     }
 
     #endregion
@@ -971,8 +997,10 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         ISwitchStorageService switchStorageService,
         IOrchestrationService orchestrationService,
         IStartupLaunchAdapter startupLaunchAdapter,
-        IUpdateService updateService)
+        IUpdateService updateService,
+        ScheduleSettingsService? scheduleSettingsService = null)
     {
+        this.scheduleSettingsService = scheduleSettingsService;
         this.configurationManager = configurationManager;
         this.presentationController = presentationService;
         this.jobService = jobService;
