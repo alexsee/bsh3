@@ -6,8 +6,8 @@
   See tools/updates/README.md.
 -->
 <item>
-  <version>REPLACE_WITH_VERSION</version>
-  <url>https://download.brightbits.de/backupservicehome-REPLACE_WITH_VERSION-win64.exe</url>
+  <version>4.0.0.0</version>
+  <url>https://download.brightbits.de/backupservicehome-4.0.0-beta1-win64.exe</url>
   <changelog>https://github.com/alexsee/bsh3/releases</changelog>
   <mandatory>false</mandatory>
 </item>

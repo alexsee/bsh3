@@ -129,6 +129,23 @@ if ($Channel -eq "stable") {
     return
 }
 
+# AutoUpdater.NET opens a WinForms WebView2 dialog even in the WinUI shell.
+# The WinRT native Core DLL has the same filename as the managed .NET assembly,
+# so file existence alone cannot validate this dependency.
+foreach ($assemblyName in @("Microsoft.Web.WebView2.Core", "Microsoft.Web.WebView2.WinForms")) {
+    $assemblyPath = Join-Path $previewDir "$assemblyName.dll"
+    Assert-File $assemblyPath "Preview updater is missing $assemblyName.dll."
+    try {
+        $identity = [Reflection.AssemblyName]::GetAssemblyName($assemblyPath)
+    }
+    catch {
+        throw "Preview updater requires the managed $assemblyName.dll: $($_.Exception.Message)"
+    }
+    if ($identity.Name -ne $assemblyName) {
+        throw "Unexpected assembly identity in $assemblyPath`: $($identity.FullName)"
+    }
+}
+
 Assert-File (Join-Path $previewDir "Microsoft.WindowsAppRuntime.Insights.Resource.dll") `
     "Preview payload must include Microsoft.WindowsAppRuntime.Insights.Resource.dll beside BSH.MainApp.exe."
 
