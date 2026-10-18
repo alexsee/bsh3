@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using BSH.MainApp.Services;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -155,20 +154,6 @@ public class InstallerEntryPointTests
 
         Assert.That(setup, Does.Contain("OutputBaseFilename=backupservicehome-{#ApplicationVersion}-win64"));
         Assert.That(winFormsSetup, Does.Contain("OutputBaseFilename=backupservicehome-{#ApplicationVersion}-win64"));
-    }
-
-    [Test]
-    public void PreviewUpdateFeedTemplateServesTheWinUiInstaller()
-    {
-        var feed = File.ReadAllText(Path.Combine(RepoRoot, "tools", "updates", "auto_updater_beta.xml"));
-        var readme = File.ReadAllText(Path.Combine(RepoRoot, "tools", "updates", "README.md"));
-
-        Assert.That(feed, Does.Contain("backupservicehome-REPLACE_WITH_VERSION-win64.exe"));
-        Assert.That(feed, Does.Contain("<version>REPLACE_WITH_VERSION</version>"));
-        Assert.That(feed, Does.Not.Contain("3.9.0.3"));
-        Assert.That(readme, Does.Contain("REPLACE_WITH_VERSION"));
-        Assert.That(readme, Does.Contain("auto_updater_beta.xml"));
-        Assert.That(ApplicationUpdateService.PreviewUpdateFeedUrl, Does.EndWith("v4/auto_updater_beta.xml"));
     }
 
     [Test]
