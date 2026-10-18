@@ -705,8 +705,6 @@ public class SettingsViewModelTests
         public Task MaybeCheckOnStartupAsync() => Task.CompletedTask;
         public Task<bool> GetAutoSearchEnabledAsync() => Task.FromResult(true);
         public Task SetAutoSearchEnabledAsync(bool enabled) => Task.CompletedTask;
-        public Task<bool> GetDownloadBetaAsync() => Task.FromResult(false);
-        public Task SetDownloadBetaAsync(bool enabled) => Task.CompletedTask;
         public Task<string> ResetUniqueUserIdAsync() => Task.FromResult("");
     }
 }

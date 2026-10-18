@@ -15,9 +15,5 @@ public interface IUpdateService
 
     Task SetAutoSearchEnabledAsync(bool enabled);
 
-    Task<bool> GetDownloadBetaAsync();
-
-    Task SetDownloadBetaAsync(bool enabled);
-
     Task<string> ResetUniqueUserIdAsync();
 }

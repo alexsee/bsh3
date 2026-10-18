@@ -692,12 +692,6 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   <data name="Settings_Enhanced_DiskspaceLowerThan" xml:space="preserve">
     <value>Speicherplatz niedriger als</value>
   </data>
-  <data name="Settings_Enhanced_DownloadBeta" xml:space="preserve">
-    <value>Beta-Aktualisierungen herunterladen</value>
-  </data>
-  <data name="Settings_Enhanced_DownloadBetaDescription" xml:space="preserve">
-    <value>Die Vorschau bezieht Aktualisierungen vom WinUI-Vorschau-Feed</value>
-  </data>
   <data name="Settings_Enhanced_LaunchAtStartup" xml:space="preserve">
     <value>Beim Windows-Start starten</value>
   </data>
