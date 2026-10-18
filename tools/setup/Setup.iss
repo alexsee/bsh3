@@ -53,10 +53,7 @@ Filename: "net"; Parameters: "stop ""Backup Service Home-Dienst"""; Flags: runhi
 Filename: "sc"; Parameters: "delete ""Backup Service Home-Dienst"""; WorkingDir: "{app}"; Flags: runhidden
 
 [Files]
-Source: "..\..\output\*"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\output\de\*"; DestDir: "{app}\de"; Flags: ignoreversion
-Source: "..\..\output\de-DE\*"; DestDir: "{app}\de-DE"; Flags: ignoreversion
-Source: "..\..\output\en\*"; DestDir: "{app}\en"; Flags: ignoreversion
+Source: "..\..\output\stable\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);

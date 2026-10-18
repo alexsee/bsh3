@@ -7,7 +7,7 @@
 -->
 <item>
   <version>REPLACE_WITH_VERSION</version>
-  <url>https://download.brightbits.de/backupservicehome-REPLACE_WITH_VERSION-winui-win64.exe</url>
+  <url>https://download.brightbits.de/backupservicehome-REPLACE_WITH_VERSION-win64.exe</url>
   <changelog>https://github.com/alexsee/bsh3/releases</changelog>
   <mandatory>false</mandatory>
 </item>

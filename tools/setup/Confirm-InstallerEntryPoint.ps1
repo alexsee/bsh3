@@ -1,7 +1,11 @@
-# Confirms a release-style publish plus both installer scripts.
+# Confirms the selected payload plus the installer entry points.
 param(
     [Parameter(Mandatory = $true)]
-    [string] $PublishDir
+    [string] $PublishDir,
+
+    [Parameter(Mandatory = $true)]
+    [ValidateSet("stable", "preview")]
+    [string] $Channel
 )
 
 $ErrorActionPreference = "Stop"
@@ -9,6 +13,8 @@ $ErrorActionPreference = "Stop"
 $winFormsIssPath = Join-Path $PSScriptRoot "Setup.iss"
 $winUiIssPath = Join-Path $PSScriptRoot "Setup-WinUI.iss"
 $publishDir = Resolve-Path $PublishDir
+$stableDir = Join-Path $publishDir "stable"
+$previewDir = Join-Path $publishDir "preview"
 $winFormsIss = Get-Content -Raw -Path $winFormsIssPath
 $winUiIss = Get-Content -Raw -Path $winUiIssPath
 
@@ -57,7 +63,13 @@ Assert-Contains $winUiIss 'AppMutex=BackupServiceHome3Preview' `
 Assert-Contains $winUiIss 'AppName=Backup Service Home 4' `
     "Setup-WinUI.iss must install side by side under its own name."
 
-Assert-Contains $winUiIss 'DefaultDirName={pf}\Alexosoft\Backup Service Home 4' `
+Assert-Contains $winUiIss 'ArchitecturesAllowed=x64compatible' `
+    "Setup-WinUI.iss must require an x64-compatible system."
+
+Assert-Contains $winUiIss 'ArchitecturesInstallIn64BitMode=x64compatible' `
+    "Setup-WinUI.iss must enable 64-bit installation mode."
+
+Assert-Contains $winUiIss 'DefaultDirName={commonpf64}\brightbits\Backup Service Home 4' `
     "Setup-WinUI.iss must use its own installation directory."
 
 Assert-Contains $winUiIss 'DefaultGroupName=Backup Service Home 4' `
@@ -72,18 +84,58 @@ Assert-Contains $winUiIss '-autostart' `
 Assert-Contains $winUiIss 'disableStableAutostart' `
     "Setup-WinUI.iss must offer to disable the stable autostart value."
 
-if ($winUiIss -notmatch 'Excludes: "BSH\.Main\.exe') {
-    throw "Setup-WinUI.iss must not ship BSH.Main.exe."
+Assert-Contains $winFormsIss 'Source: "..\..\output\stable\*"' `
+    "Setup.iss must package only the stable payload."
+Assert-Contains $winUiIss 'Source: "..\..\output\preview\*"' `
+    "Setup-WinUI.iss must package only the preview payload."
+
+foreach ($payload in @(
+    @{ Channel = "stable"; Directory = $stableDir; Shell = "BSH.Main"; OtherShell = "BSH.MainApp" },
+    @{ Channel = "preview"; Directory = $previewDir; Shell = "BSH.MainApp"; OtherShell = "BSH.Main" }
+) | Where-Object { $_.Channel -eq $Channel }) {
+    Assert-File $payload.Directory "Publish directory is missing: $($payload.Directory)"
+
+    foreach ($executable in @($payload.Shell, "BSH.Service", "SmartPreview")) {
+        foreach ($extension in @("exe", "dll", "deps.json", "runtimeconfig.json")) {
+            $file = Join-Path $payload.Directory "$executable.$extension"
+            Assert-File $file "Release payload is missing $file."
+        }
+    }
+
+    Assert-File (Join-Path $payload.Directory "BSH.Engine.dll") `
+        "Release payload is missing the shared backup engine in $($payload.Directory)."
+
+    $unexpected = @(Get-ChildItem -LiteralPath $payload.Directory -Recurse -File |
+        Where-Object {
+            $_.Name -like "$($payload.OtherShell).*" -or
+            $_.Name -like "BSH.Test.*" -or
+            $_.Name -like "testhost.*" -or
+            $_.Name -like "nunit*" -or
+            $_.Name -like "Microsoft.Windows.AI.*" -or
+            $_.Extension -eq ".pdb"
+        })
+    if ($unexpected.Count -gt 0) {
+        throw "Unexpected files in $($payload.Directory): $($unexpected.FullName -join ', ')"
+    }
 }
 
-Assert-File (Join-Path $publishDir "BSH.MainApp.exe") `
-    "Release publish did not include the unpackaged WinUI shell (BSH.MainApp.exe) in $publishDir."
+if ($Channel -eq "stable") {
+    $stableWinUiFiles = @(Get-ChildItem -LiteralPath $stableDir -Recurse -File |
+        Where-Object { $_.Name -like "Microsoft.WindowsAppRuntime*" -or $_.Name -eq "Microsoft.ui.xaml.dll" })
+    if ($stableWinUiFiles.Count -gt 0) {
+        throw "Stable payload contains Windows App Runtime files: $($stableWinUiFiles.FullName -join ', ')"
+    }
+    Write-Host "Stable payload validated: Setup.iss -> BSH.Main.exe."
+    return
+}
 
-Assert-File (Join-Path $publishDir "BSH.Main.exe") `
-    "Release publish must still build the WinForms shell (BSH.Main.exe) in $publishDir."
+Assert-File (Join-Path $previewDir "Microsoft.WindowsAppRuntime.Insights.Resource.dll") `
+    "Preview payload must include Microsoft.WindowsAppRuntime.Insights.Resource.dll beside BSH.MainApp.exe."
 
-Assert-File (Join-Path $publishDir "BSH.Service.exe") `
-    "Release publish did not include the VSS helper (BSH.Service.exe) in $publishDir."
+foreach ($asset in @("Assets\app_ico.ico", "Assets\app_logo.png")) {
+    Assert-File (Join-Path $previewDir $asset) `
+        "Preview payload is missing the runtime asset $asset."
+}
 
 $requiredRuntimeFiles = @(
     "Microsoft.WindowsAppRuntime.dll"
@@ -94,11 +146,11 @@ $requiredRuntimeFiles = @(
 $runtimeRoot = $null
 
 foreach ($fileName in $requiredRuntimeFiles) {
-    $runtimeFile = Get-ChildItem -LiteralPath $publishDir -Filter $fileName -Recurse |
+    $runtimeFile = Get-ChildItem -LiteralPath $previewDir -Filter $fileName -Recurse -File |
         Select-Object -First 1
 
     if (-not $runtimeFile) {
-        throw "Release publish did not include the Windows App Runtime file $fileName in $publishDir."
+        throw "Release publish did not include the Windows App Runtime file $fileName in $previewDir."
     }
 
     if ($fileName -eq "Microsoft.WindowsAppRuntime.dll") {
@@ -106,5 +158,5 @@ foreach ($fileName in $requiredRuntimeFiles) {
     }
 }
 
-Write-Host "Shipped installers: WinForms (Setup.iss -> BSH.Main.exe) and WinUI (Setup-WinUI.iss -> BSH.MainApp.exe)."
+Write-Host "Preview payload validated: Setup-WinUI.iss -> BSH.MainApp.exe."
 Write-Host "Windows App Runtime: $runtimeRoot"

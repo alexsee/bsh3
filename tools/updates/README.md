@@ -6,7 +6,7 @@ The Preview app checks this URL only:
 
 That URL returned HTTP 404 when this feed was added. Upload `tools/updates/auto_updater_beta.xml` to that path after each Preview release.
 
-The `<url>` value must be the Inno artifact whose name ends in `-winui-win64.exe` (the file `tools/setup/Setup-WinUI.iss` writes, also attached to the GitHub release). Host the executable on `download.brightbits.de` or another public URL, then put that URL in `<url>`. Do not point the feed at the stable WinForms installer (`backupservicehome-<version>-win64.exe`).
+The `<url>` value must point to the Preview installer built by `tools/setup/Setup-WinUI.iss`, named `backupservicehome-<version>-win64.exe` and attached to the `preview-v<version>` GitHub release. Host the executable on `download.brightbits.de` or another public URL, then put that URL in `<url>`. Stable and Preview installers use the same filename format, so select the artifact from the Preview release.
 
 Replace `REPLACE_WITH_VERSION` in both `<version>` and `<url>` before uploading. It must be a version AutoUpdater.NET can compare, and it must be greater than the assembly version of the installed Preview (`<Version>` in `src/BSH.MainApp/BSH.MainApp.csproj`, or the release tag such as `3.9.6`). Do not upload the placeholder unchanged. A version that is not newer than the installed build is not offered.
 

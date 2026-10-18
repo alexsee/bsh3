@@ -1,16 +1,24 @@
-# input
-$build_version=$args[0]
-$info_version=$args[1]
+param(
+    [Parameter(Mandatory = $true)]
+    [string] $BuildVersion,
 
-# build project
-dotnet publish -c Release -o ../output -a x64 --self-contained /p:Version="$build_version" /p:FileVersion="$info_version"
+    [Parameter(Mandatory = $true)]
+    [string] $InfoVersion,
 
-# remove pdb
-rm -R ../output/*.pdb
+    [Parameter(Mandatory = $true)]
+    [ValidateSet("stable", "preview")]
+    [string] $Channel,
 
-# confirm both installer scripts still ship: WinForms (Setup.iss) and WinUI (Setup-WinUI.iss)
-& "$PSScriptRoot\..\tools\setup\Confirm-InstallerEntryPoint.ps1" -PublishDir "$PSScriptRoot\..\output"
+    [switch] $NoRestore
+)
 
-# build innosetup artifacts for both shells
-iscc.exe "..\tools\setup\Setup.iss" /DApplicationVersion=$build_version /DApplicationInfoVersion=$info_version
-iscc.exe "..\tools\setup\Setup-WinUI.iss" /DApplicationVersion=$build_version /DApplicationInfoVersion=$info_version
+$ErrorActionPreference = "Stop"
+
+& "$PSScriptRoot\publish-release.ps1" -BuildVersion $BuildVersion -InfoVersion $InfoVersion -Channel $Channel -NoRestore:$NoRestore
+
+$installers = @{ stable = "Setup.iss"; preview = "Setup-WinUI.iss" }
+$installer = $installers[$Channel]
+& iscc.exe "$PSScriptRoot\..\tools\setup\$installer" /DApplicationVersion=$BuildVersion /DApplicationInfoVersion=$InfoVersion
+if ($LASTEXITCODE -ne 0) {
+    throw "Building $installer failed with exit code $LASTEXITCODE."
+}
