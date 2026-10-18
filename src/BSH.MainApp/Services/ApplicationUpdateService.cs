@@ -14,7 +14,6 @@ namespace BSH.MainApp.Services;
 public sealed class ApplicationUpdateService : IUpdateService
 {
     public const string UniqueUserIdSettingKey = "UniqueUserId";
-    public const string DownloadBetaSettingKey = "DownloadBeta";
     public const string AutoSearchUpdatesSettingKey = "AutoSearchUpdates";
     public const string StableUpdateFeedUrl = "https://updates.brightbits.de/backup_service_home/v4/auto_updater.xml";
     public const string BetaUpdateFeedUrl = "https://updates.brightbits.de/backup_service_home/v4/auto_updater_beta.xml";
@@ -86,16 +85,6 @@ public sealed class ApplicationUpdateService : IUpdateService
     public Task SetAutoSearchEnabledAsync(bool enabled)
     {
         return localSettingsService.SaveSettingAsync(AutoSearchUpdatesSettingKey, enabled);
-    }
-
-    public async Task<bool> GetDownloadBetaAsync()
-    {
-        return await localSettingsService.ReadSettingAsync<bool?>(DownloadBetaSettingKey) ?? false;
-    }
-
-    public Task SetDownloadBetaAsync(bool enabled)
-    {
-        return localSettingsService.SaveSettingAsync(DownloadBetaSettingKey, enabled);
     }
 
     public async Task<string> ResetUniqueUserIdAsync()

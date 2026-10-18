@@ -22,20 +22,6 @@ namespace BSH.Test;
 public class ApplicationUpdateServiceTests
 {
     [Test]
-    public async Task DownloadBetaPreferenceIsPersisted()
-    {
-        var settings = new TestLocalSettingsService();
-        var service = CreateService(settings);
-
-        Assert.That(await service.GetDownloadBetaAsync(), Is.False);
-
-        await service.SetDownloadBetaAsync(true);
-
-        Assert.That(await service.GetDownloadBetaAsync(), Is.True);
-        Assert.That(await settings.ReadSettingAsync<bool>(ApplicationUpdateService.DownloadBetaSettingKey), Is.True);
-    }
-
-    [Test]
     public async Task AutoSearchPreferenceDefaultsToTrueAndIsPersisted()
     {
         var settings = new TestLocalSettingsService();
@@ -57,7 +43,7 @@ public class ApplicationUpdateServiceTests
         var settings = new TestLocalSettingsService();
         if (downloadBeta.HasValue)
         {
-            await settings.SaveSettingAsync(ApplicationUpdateService.DownloadBetaSettingKey, downloadBeta.Value);
+            await settings.SaveSettingAsync("DownloadBeta", downloadBeta.Value);
         }
 
         var started = new List<string>();
@@ -281,8 +267,6 @@ public class ApplicationUpdateServiceTests
         public Task MaybeCheckOnStartupAsync() => Task.CompletedTask;
         public Task<bool> GetAutoSearchEnabledAsync() => Task.FromResult(true);
         public Task SetAutoSearchEnabledAsync(bool enabled) => Task.CompletedTask;
-        public Task<bool> GetDownloadBetaAsync() => Task.FromResult(false);
-        public Task SetDownloadBetaAsync(bool enabled) => Task.CompletedTask;
 
         public Task<string> ResetUniqueUserIdAsync()
         {

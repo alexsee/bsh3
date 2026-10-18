@@ -692,12 +692,6 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   <data name="Settings_Enhanced_DiskspaceLowerThan" xml:space="preserve">
     <value>Diskspace lower than</value>
   </data>
-  <data name="Settings_Enhanced_DownloadBeta" xml:space="preserve">
-    <value>Download beta updates</value>
-  </data>
-  <data name="Settings_Enhanced_DownloadBetaDescription" xml:space="preserve">
-    <value>Preview updates are offered from the WinUI preview feed</value>
-  </data>
   <data name="Settings_Enhanced_LaunchAtStartup" xml:space="preserve">
     <value>Launch at Windows startup</value>
   </data>

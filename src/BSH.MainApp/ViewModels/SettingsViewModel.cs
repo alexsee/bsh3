@@ -832,9 +832,6 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool automaticallyCheckForUpdates = true;
 
-    [ObservableProperty]
-    private bool downloadBetaUpdates;
-
     void InitEnhancedSettings()
     {
         suppressEnhancedSettingsPersistence = true;
@@ -865,13 +862,11 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private async Task LoadUpdateSettingsAsync()
     {
         var autoSearch = await updateService.GetAutoSearchEnabledAsync();
-        var downloadBeta = await updateService.GetDownloadBetaAsync();
 
         suppressEnhancedSettingsPersistence = true;
         try
         {
             AutomaticallyCheckForUpdates = autoSearch;
-            DownloadBetaUpdates = downloadBeta;
         }
         finally
         {
@@ -974,16 +969,6 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
 
         _ = updateService.SetAutoSearchEnabledAsync(newValue);
-    }
-
-    partial void OnDownloadBetaUpdatesChanged(bool oldValue, bool newValue)
-    {
-        if (suppressEnhancedSettingsPersistence || oldValue == newValue)
-        {
-            return;
-        }
-
-        _ = updateService.SetDownloadBetaAsync(newValue);
     }
 
     #endregion
