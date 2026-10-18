@@ -1,11 +1,25 @@
-name: Release stable version
+name: Release selected version
 
 on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-beta[0-9]+'
+      - 'preview-v[0-9]+.[0-9]+.[0-9]+'
+      - 'preview-v[0-9]+.[0-9]+.[0-9]+-beta[0-9]+'
   workflow_dispatch:
+    inputs:
+      channel:
+        description: Application to package
+        required: true
+        type: choice
+        options:
+          - stable
+          - preview
+      version:
+        description: 'Application version (for example, 3.9.4 or 4.0.0-beta1)'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -22,13 +36,32 @@ jobs:
 
     steps:
     - name: Set env
+      shell: pwsh
       run: |
-        $version = "${env:REF_NAME}".substring(1)
+        $ErrorActionPreference = "Stop"
+        if ($env:GITHUB_EVENT_NAME -eq "workflow_dispatch") {
+          $channel = $env:INPUT_CHANNEL
+          $version = $env:INPUT_VERSION
+        } elseif ($env:REF_NAME -match '^(?<prefix>preview-)?v(?<version>\d+\.\d+\.\d+(?:-beta\d+)?)$') {
+          $channel = if ($Matches.prefix) { "preview" } else { "stable" }
+          $version = $Matches.version
+        } else {
+          throw "Unsupported release tag: $env:REF_NAME"
+        }
+
+        if ($channel -notin @("stable", "preview") -or
+            $version -notmatch '^\d+\.\d+\.\d+(?:\.\d+|-beta\d+)?$') {
+          throw "Invalid release channel or version."
+        }
+
         $info_version = $version.replace('-beta', '.')
+        echo "RELEASE_CHANNEL=$channel" >> $env:GITHUB_ENV
         echo "BUILD_VERSION=$version" >> $env:GITHUB_ENV
         echo "INFO_VERSION=$info_version" >> $env:GITHUB_ENV
       env:
         REF_NAME: ${{ github.ref_name }}
+        INPUT_CHANNEL: ${{ inputs.channel }}
+        INPUT_VERSION: ${{ inputs.version }}
 
     - name: Checkout
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -155,33 +188,24 @@ jobs:
       env:
         Test_Project_Path: BSH.Test\BSH.Test.csproj
 
-    - name: Build the application
-      run: |
-        dotnet publish -c Release -o ../output -a x64 --self-contained --no-restore /p:Version=$env:BUILD_VERSION /p:FileVersion=$env:INFO_VERSION
-        rm -R ../output/*.pdb
-      working-directory: ./src
-
-    - name: Confirm WinForms and WinUI installer artifacts
+    - name: Build selected installer
       shell: pwsh
-      run: |
-        ./tools/setup/Confirm-InstallerEntryPoint.ps1 -PublishDir ./output
-
-    - name: Building the installers
-      run: |
-        iscc.exe tools\setup\Setup.iss /DApplicationVersion=$env:BUILD_VERSION /DApplicationInfoVersion=$env:INFO_VERSION
-        iscc.exe tools\setup\Setup-WinUI.iss /DApplicationVersion=$env:BUILD_VERSION /DApplicationInfoVersion=$env:INFO_VERSION
+      run: ./build-release-local.ps1 -Channel $env:RELEASE_CHANNEL -BuildVersion $env:BUILD_VERSION -InfoVersion $env:INFO_VERSION -NoRestore
+      working-directory: ./src
 
     - name: Release to GitHub
       if: startsWith(github.ref, 'refs/tags/')
       run: |
         $outputDir = "$env:RUNNER_WORKSPACE/bsh3/tools/setup/output"
-        $winForms = "$outputDir/backupservicehome-${env:BUILD_VERSION}-win64.exe"
-        $winUi = "$outputDir/backupservicehome-${env:BUILD_VERSION}-winui-win64.exe"
+        $installer = "$outputDir/backupservicehome-${env:BUILD_VERSION}-win64.exe"
+        if (-not (Test-Path -LiteralPath $installer)) {
+          throw "Selected installer is missing: $installer"
+        }
         gh release view "$env:REF_NAME" *> $null
         if ($LASTEXITCODE -eq 0) {
-          gh release upload "$env:REF_NAME" "$winForms" "$winUi" --clobber
+          gh release upload "$env:REF_NAME" "$installer" --clobber
         } else {
-          gh release create "$env:REF_NAME" "$winForms" "$winUi" --generate-notes
+          gh release create "$env:REF_NAME" "$installer" --generate-notes
         }
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

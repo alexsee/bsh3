@@ -73,4 +73,31 @@
 			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="$([System.String]::Copy('%(FrameworkSdkReference.SDKName)').StartsWith('Microsoft.WindowsAppRuntime.'))" />
 		</ItemGroup>
 	</Target>
+	<!-- Work around WindowsAppSDK 2.5.1 omitting this notification dependency
+	     from self-contained component payloads: microsoft/WindowsAppSDK#6774.
+	     Use the framework MSIX from the restored Runtime package so versions match. -->
+	<Target Name="IncludeWindowsAppRuntimeInsightsResource"
+	        BeforeTargets="AssignTargetPaths"
+	        Condition="'$(WindowsAppSDKSelfContained)' == 'true'">
+		<PropertyGroup>
+			<_RuntimeMsixDir>$(MicrosoftWindowsAppSDKPackageDir)tools\MSIX\win10-$(Platform)\</_RuntimeMsixDir>
+			<_RuntimeResourcesDir>$(IntermediateOutputPath)WindowsAppRuntimeResources\</_RuntimeResourcesDir>
+			<_InsightsResource>$(_RuntimeResourcesDir)Microsoft.WindowsAppRuntime.Insights.Resource.dll</_InsightsResource>
+		</PropertyGroup>
+		<ItemGroup>
+			<_RuntimeFrameworkMsix Include="$(_RuntimeMsixDir)Microsoft.WindowsAppRuntime.*.msix"
+			                       Exclude="$(_RuntimeMsixDir)Microsoft.WindowsAppRuntime.Main.*.msix;$(_RuntimeMsixDir)Microsoft.WindowsAppRuntime.Singleton.*.msix;$(_RuntimeMsixDir)Microsoft.WindowsAppRuntime.DDLM.*.msix" />
+		</ItemGroup>
+		<Error Condition="'@(_RuntimeFrameworkMsix->Count())' != '1'"
+		       Text="Expected one Windows App Runtime framework MSIX in $(_RuntimeMsixDir)." />
+		<Unzip SourceFiles="@(_RuntimeFrameworkMsix)" DestinationFolder="$(_RuntimeResourcesDir)" />
+		<Error Condition="!Exists('$(_InsightsResource)')"
+		       Text="The restored Windows App Runtime is missing Microsoft.WindowsAppRuntime.Insights.Resource.dll." />
+		<ItemGroup>
+			<None Include="$(_InsightsResource)"
+			      Link="Microsoft.WindowsAppRuntime.Insights.Resource.dll"
+			      CopyToOutputDirectory="PreserveNewest"
+			      CopyToPublishDirectory="PreserveNewest" />
+		</ItemGroup>
+	</Target>
 </Project>

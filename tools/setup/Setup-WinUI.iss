@@ -4,17 +4,19 @@
 ; Install and uninstall only touch the Preview service, not the stable VSS service.
 
 [Setup]
-AppName=Backup Service Home 4
+AppName=Backup Service Home 4 (Preview)
 AppVerName=Backup Service Home 4 {#ApplicationVersion}
 AppPublisher=Alexander Seeliger Software
 AppPublisherURL=https://www.brightbits.de/
 AppSupportURL=https://www.brightbits.de/
 AppUpdatesURL=https://www.brightbits.de/
-DefaultDirName={pf}\Alexosoft\Backup Service Home 4
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+DefaultDirName={commonpf64}\brightbits\Backup Service Home 4
 DefaultGroupName=Backup Service Home 4
 LicenseFile=apache-license-2.0.rtf
 OutputDir=output
-OutputBaseFilename=backupservicehome-{#ApplicationVersion}-winui-win64
+OutputBaseFilename=backupservicehome-{#ApplicationVersion}-win64
 Compression=lzma/ultra64
 SolidCompression=true
 AppCopyright=Alexander Seeliger
@@ -62,7 +64,7 @@ Filename: "net"; Parameters: "stop ""Backup Service Home Preview-Dienst"""; Flag
 Filename: "sc"; Parameters: "delete ""Backup Service Home Preview-Dienst"""; WorkingDir: "{app}"; Flags: runhidden
 
 [Files]
-Source: "..\..\output\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "BSH.Main.exe,BSH.Main.deps.json,BSH.Main.runtimeconfig.json,BSH.Main.pdb,BSH.Main.resources.dll"
+Source: "..\..\output\preview\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "preview-vss.pipe"; DestDir: "{app}"; DestName: "vss.pipe"; Flags: ignoreversion
 
 [Code]

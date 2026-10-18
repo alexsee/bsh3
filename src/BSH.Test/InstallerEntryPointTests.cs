@@ -52,16 +52,13 @@ public class InstallerEntryPointTests
     }
 
     [Test]
-    public void WinFormsInstallerInstallsEnglishSatellitesTheSameWayAsGerman()
+    public void WinFormsInstallerPackagesItsCompleteIsolatedPayload()
     {
         var files = GetIssSection(WinFormsSetupIssPath, "[Files]");
-        const string germanSatellite =
-            @"Source: ""..\..\output\de\*""; DestDir: ""{app}\de""; Flags: ignoreversion";
-        const string englishSatellite =
-            @"Source: ""..\..\output\en\*""; DestDir: ""{app}\en""; Flags: ignoreversion";
-
-        Assert.That(files, Does.Contain(germanSatellite));
-        Assert.That(files, Does.Contain(englishSatellite));
+        Assert.That(files, Does.Contain(
+            @"Source: ""..\..\output\stable\*""; DestDir: ""{app}""; Flags: ignoreversion recursesubdirs createallsubdirs"));
+        Assert.That(files, Does.Not.Contain(@"..\..\output\preview\"));
+        Assert.That(files, Does.Not.Contain(@"Source: ""..\..\output\*"""));
     }
 
     [Test]
@@ -126,7 +123,9 @@ public class InstallerEntryPointTests
         var preview = GetIssSection(WinUiSetupIssPath, "[Setup]");
         var stable = GetIssSection(WinFormsSetupIssPath, "[Setup]");
 
-        Assert.That(preview, Does.Contain(@"DefaultDirName={pf}\Alexosoft\Backup Service Home 4"));
+        Assert.That(preview, Does.Contain("ArchitecturesAllowed=x64compatible"));
+        Assert.That(preview, Does.Contain("ArchitecturesInstallIn64BitMode=x64compatible"));
+        Assert.That(preview, Does.Contain(@"DefaultDirName={commonpf64}\brightbits\Backup Service Home 4"));
         Assert.That(preview, Does.Contain("DefaultGroupName=Backup Service Home 4"));
         Assert.That(preview, Does.Contain("AppMutex=BackupServiceHome3Preview"));
         Assert.That(preview, Does.Contain("AppID={{8F4C2B1A-7E63-4D9A-B5C0-6A1E9D3F47B2}}"));
@@ -141,20 +140,21 @@ public class InstallerEntryPointTests
     {
         var files = GetIssSection(WinUiSetupIssPath, "[Files]");
 
-        Assert.That(files, Does.Contain("Excludes: \"BSH.Main.exe,BSH.Main.deps.json,BSH.Main.runtimeconfig.json,BSH.Main.pdb,BSH.Main.resources.dll\""));
+        Assert.That(files, Does.Contain(@"Source: ""..\..\output\preview\*"""));
+        Assert.That(files, Does.Not.Contain(@"..\..\output\stable\"));
+        Assert.That(files, Does.Not.Contain(@"Source: ""..\..\output\*"""));
         Assert.That(files, Does.Contain(@"Source: ""preview-vss.pipe""; DestDir: ""{app}""; DestName: ""vss.pipe"""));
         Assert.That(File.ReadAllText(Path.Combine(RepoRoot, "tools", "setup", "preview-vss.pipe")).Trim(), Is.EqualTo("backupservicehome-preview"));
     }
 
     [Test]
-    public void WinUiInstallerIsASeparateArtifact()
+    public void BothInstallersUseVersionedWindowsFilename()
     {
         var setup = GetIssSection(WinUiSetupIssPath, "[Setup]");
         var winFormsSetup = GetIssSection(WinFormsSetupIssPath, "[Setup]");
 
-        Assert.That(setup, Does.Contain("OutputBaseFilename=backupservicehome-{#ApplicationVersion}-winui-win64"));
+        Assert.That(setup, Does.Contain("OutputBaseFilename=backupservicehome-{#ApplicationVersion}-win64"));
         Assert.That(winFormsSetup, Does.Contain("OutputBaseFilename=backupservicehome-{#ApplicationVersion}-win64"));
-        Assert.That(winFormsSetup, Does.Not.Contain("-winui-win64"));
     }
 
     [Test]
@@ -163,7 +163,7 @@ public class InstallerEntryPointTests
         var feed = File.ReadAllText(Path.Combine(RepoRoot, "tools", "updates", "auto_updater_beta.xml"));
         var readme = File.ReadAllText(Path.Combine(RepoRoot, "tools", "updates", "README.md"));
 
-        Assert.That(feed, Does.Contain("backupservicehome-REPLACE_WITH_VERSION-winui-win64.exe"));
+        Assert.That(feed, Does.Contain("backupservicehome-REPLACE_WITH_VERSION-win64.exe"));
         Assert.That(feed, Does.Contain("<version>REPLACE_WITH_VERSION</version>"));
         Assert.That(feed, Does.Not.Contain("3.9.0.3"));
         Assert.That(readme, Does.Contain("REPLACE_WITH_VERSION"));
@@ -197,7 +197,7 @@ public class InstallerEntryPointTests
 
         Assert.That(
             files,
-            Does.Contain(@"Source: ""..\..\output\*""; DestDir: ""{app}""; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: ""BSH.Main.exe,BSH.Main.deps.json,BSH.Main.runtimeconfig.json,BSH.Main.pdb,BSH.Main.resources.dll"""));
+            Does.Contain(@"Source: ""..\..\output\preview\*""; DestDir: ""{app}""; Flags: ignoreversion recursesubdirs createallsubdirs"));
     }
 
     [Test]
