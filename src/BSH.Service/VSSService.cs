@@ -34,7 +34,7 @@ public class VSSService : IVSSRemoteObject
             vss.Setup(root);
 
             var snapshotPath = vss.GetSnapshotPath(source);
-            XCopy.Copy(snapshotPath, destination, true, false);
+            XCopy.Copy(snapshotPath, destination);
 
             return true;
         }
