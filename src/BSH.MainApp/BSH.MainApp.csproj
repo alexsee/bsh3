@@ -22,7 +22,9 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
-		<Content Include="Assets\*.*" />
+		<Content Include="Assets\**\*"
+		         CopyToOutputDirectory="PreserveNewest"
+		         CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 	<ItemGroup>
 		<Manifest Include="$(ApplicationManifest)" />
@@ -37,7 +39,13 @@
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.4.1" />
 		<PackageReference Include="Humanizer.Core" Version="3.0.10" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.13" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
+		<!-- Legacy toolkit/tray libraries require this package ID. Exclude its
+		     assets; the component references below provide the SDK implementation. -->
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" ExcludeAssets="all" />
+		<PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="2.3.9" />
+		<PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="2.3.12" />
+		<PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.9" />
+		<PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="2.5.1" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageReference Include="WinUIEx" Version="2.9.3" />

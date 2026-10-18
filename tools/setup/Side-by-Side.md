@@ -26,6 +26,18 @@ the other shell never enter the payload. Both installers recursively package the
 own directory, including satellite resources and native dependencies. The preview
 installer also installs `preview-vss.pipe` as `vss.pipe`.
 
+The `Assets` directory is copied into build and publish output as physical files.
+The tray icon library opens `Assets/app_ico.ico` directly even though XAML refers
+to it through an `ms-appx` URI. The payload check requires that icon and the setup
+logo before compiling the installer.
+
+MainApp references the Windows App SDK WinUI, Foundation, Interactive Experiences,
+and Runtime components explicitly. It does not ship the unused AI, ML, Search, or
+Widgets components. The legacy `Microsoft.WindowsAppSDK` reference is retained with
+all assets excluded because the toolkit and tray libraries still depend on that
+package ID; it contributes no SDK assemblies or build targets. The test project
+applies the same exclusion to avoid loading legacy SDK assets alongside the components.
+
 The WinUI project copies `Microsoft.WindowsAppRuntime.Insights.Resource.dll` from
 the framework MSIX in the restored Windows App SDK Runtime package into self-contained
 builds and publish output. This works around Windows App SDK 2.5.1 notification
@@ -33,7 +45,7 @@ registration failures (microsoft/WindowsAppSDK#6774) without installing a separa
 runtime. The payload check requires this DLL before compiling the installer.
 
 The payload check runs before Inno Setup and rejects missing helpers, mixed shells,
-test assemblies, debug symbols, and Windows App Runtime files in the stable payload.
+test assemblies, debug symbols, AI files, and Windows App Runtime files in the stable payload.
 The selected installer is written to `tools/setup/output` as
 `backupservicehome-<version>-win64.exe` for either channel. Each invocation generates
 only the selected installer. Building both channels with the same version locally

@@ -111,6 +111,7 @@ foreach ($payload in @(
             $_.Name -like "BSH.Test.*" -or
             $_.Name -like "testhost.*" -or
             $_.Name -like "nunit*" -or
+            $_.Name -like "Microsoft.Windows.AI.*" -or
             $_.Extension -eq ".pdb"
         })
     if ($unexpected.Count -gt 0) {
@@ -130,6 +131,11 @@ if ($Channel -eq "stable") {
 
 Assert-File (Join-Path $previewDir "Microsoft.WindowsAppRuntime.Insights.Resource.dll") `
     "Preview payload must include Microsoft.WindowsAppRuntime.Insights.Resource.dll beside BSH.MainApp.exe."
+
+foreach ($asset in @("Assets\app_ico.ico", "Assets\app_logo.png")) {
+    Assert-File (Join-Path $previewDir $asset) `
+        "Preview payload is missing the runtime asset $asset."
+}
 
 $requiredRuntimeFiles = @(
     "Microsoft.WindowsAppRuntime.dll"
