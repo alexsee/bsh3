@@ -122,8 +122,9 @@ public class BackupServiceTests
         configurationManager.Encrypt = 1;
         configurationManager.EncryptPassMD5 = "hash";
 
+        // Admission must throw synchronously, before a task can be returned.
         Assert.Throws<PasswordRequiredException>(() =>
-            backupService.StartBackup("t", "", new JobReportStub(), CancellationToken.None));
+            _ = backupService.StartBackup("t", "", new JobReportStub(), CancellationToken.None));
     }
 
     [Test]
@@ -179,8 +180,9 @@ public class BackupServiceTests
         var firstJob = backupService.StartDelete("1", new JobReportStub(), CancellationToken.None);
         await storageCheckStarted.Task;
 
+        // Admission must throw synchronously, before a task can be returned.
         Assert.Throws<TaskRunningException>(() =>
-            backupService.StartDelete("2", new JobReportStub(), CancellationToken.None));
+            _ = backupService.StartDelete("2", new JobReportStub(), CancellationToken.None));
 
         finishStorageCheck.SetResult(false);
         Assert.ThrowsAsync<DeviceNotReadyException>(async () => await firstJob);
@@ -192,8 +194,9 @@ public class BackupServiceTests
         Exception reentrantStartException = null;
         var observer = new JobReportStub
         {
+            // Admission must throw synchronously, before a task can be returned.
             OnReportAction = (_, _) => reentrantStartException = Assert.Catch(() =>
-                backupService.StartDelete("2", new JobReportStub(), CancellationToken.None))
+                _ = backupService.StartDelete("2", new JobReportStub(), CancellationToken.None))
         };
         using var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Cancel();

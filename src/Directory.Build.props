@@ -7,4 +7,8 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true' Or '$(CI)' == 'true'">true</RestoreLockedMode>
   </PropertyGroup>
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'BSH.Analyzers'">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)BSH.Analyzers\BSH.Analyzers.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
 </Project>
