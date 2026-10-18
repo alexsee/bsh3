@@ -12,6 +12,9 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<UseWinUI>true</UseWinUI>
+		<!-- AutoUpdater.NET uses WinForms WebView2. Select its managed assemblies
+		     instead of the WinRT projection (this shell has no WinUI WebView2). -->
+		<WebView2EnableCsWinRTProjection>false</WebView2EnableCsWinRTProjection>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<WindowsPackageType>None</WindowsPackageType>
 		<WindowsAppSDKSelfContained Condition="'$(SelfContained)' == 'true'">true</WindowsAppSDKSelfContained>
