@@ -94,7 +94,7 @@ public class ScheduledBackupService : IScheduledBackupService
 
         schedulerService = schedulerAdapterFactory.Create();
         schedulerService.Start();
-        schedulerService.ScheduleAutoBackup(async () => await RunAutoBackup());
+        schedulerService.ScheduleAutoBackup(RunAutoBackup);
 
         WatchForDueBackup(RunAutoBackup);
     }
@@ -168,13 +168,13 @@ public class ScheduledBackupService : IScheduledBackupService
                 // once
                 if (DateTime.Compare(DateTime.Now, scheduleDate) < 0)
                 {
-                    schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), scheduleDate);
+                    schedulerService.ScheduleOnce(thScheduleSysRunBackup, scheduleDate);
                 }
             }
             else if (scheduleType == 2)
             {
                 // hourly
-                schedulerService.ScheduleHourly(async () => await thScheduleSysRunBackup(), scheduleDate);
+                schedulerService.ScheduleHourly(thScheduleSysRunBackup, scheduleDate);
             }
             else if (scheduleType == 3)
             {
@@ -183,11 +183,11 @@ public class ScheduledBackupService : IScheduledBackupService
                 // catch up old backup?
                 if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
                 {
-                    schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                    schedulerService.ScheduleOnce(thScheduleSysRunBackup, DateTime.Now.AddMinutes(1));
                     WatchForDueBackup(thScheduleSysRunBackup);
                 }
 
-                schedulerService.ScheduleDaily(async () => await thScheduleSysRunBackup(), scheduleDate);
+                schedulerService.ScheduleDaily(thScheduleSysRunBackup, scheduleDate);
             }
             else if (scheduleType == 4)
             {
@@ -199,7 +199,7 @@ public class ScheduledBackupService : IScheduledBackupService
                     // backup was performed already earlier
                     if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
                     {
-                        schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                        schedulerService.ScheduleOnce(thScheduleSysRunBackup, DateTime.Now.AddMinutes(1));
                         WatchForDueBackup(thScheduleSysRunBackup);
                     }
                 }
@@ -216,7 +216,7 @@ public class ScheduledBackupService : IScheduledBackupService
                             // backup was performed already earlier
                             if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
                             {
-                                schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                                schedulerService.ScheduleOnce(thScheduleSysRunBackup, DateTime.Now.AddMinutes(1));
                                 WatchForDueBackup(thScheduleSysRunBackup);
                             }
 
@@ -230,7 +230,7 @@ public class ScheduledBackupService : IScheduledBackupService
                     }
                 }
 
-                schedulerService.ScheduleWeekly(async () => await thScheduleSysRunBackup(), scheduleDate);
+                schedulerService.ScheduleWeekly(thScheduleSysRunBackup, scheduleDate);
             }
             else if (scheduleType == 5)
             {
@@ -242,7 +242,7 @@ public class ScheduledBackupService : IScheduledBackupService
                     // backup was performed already earlier
                     if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
                     {
-                        schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                        schedulerService.ScheduleOnce(thScheduleSysRunBackup, DateTime.Now.AddMinutes(1));
                         WatchForDueBackup(thScheduleSysRunBackup);
                     }
                 }
@@ -258,7 +258,7 @@ public class ScheduledBackupService : IScheduledBackupService
                         {
                             if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
                             {
-                                schedulerService.ScheduleOnce(async () => await thScheduleSysRunBackup(), DateTime.Now.AddMinutes(1));
+                                schedulerService.ScheduleOnce(thScheduleSysRunBackup, DateTime.Now.AddMinutes(1));
                                 WatchForDueBackup(thScheduleSysRunBackup);
                             }
 
@@ -272,7 +272,7 @@ public class ScheduledBackupService : IScheduledBackupService
                     }
                 }
 
-                schedulerService.ScheduleMonthly(async () => await thScheduleSysRunBackup(), scheduleDate);
+                schedulerService.ScheduleMonthly(thScheduleSysRunBackup, scheduleDate);
             }
         }
 

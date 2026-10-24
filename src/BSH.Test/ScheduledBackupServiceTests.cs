@@ -69,7 +69,7 @@ public class ScheduledBackupServiceTests
         await service.StartAsync();
         Assert.That(factory.CreateCount, Is.EqualTo(0));
 
-        scheduler.HourlyBackup();
+        await scheduler.HourlyBackup();
         await WaitUntil(() => factory.Watcher.StartWatchingCount == 1);
 
         Assert.That(jobService.CreateBackupCalls, Is.EqualTo(1));
@@ -98,7 +98,7 @@ public class ScheduledBackupServiceTests
             schedules: [new ScheduleEntry { Type = 2, Date = DateTime.Now }]);
 
         await service.StartAsync();
-        scheduler.HourlyBackup();
+        await scheduler.HourlyBackup();
         await jobService.WaitForBackupAsync();
         await Task.Delay(50);
 
@@ -375,19 +375,19 @@ public class ScheduledBackupServiceTests
 
     private sealed class FakeSchedulerAdapter : ISchedulerAdapter
     {
-        public Action AutoBackup { get; private set; }
-        public Action HourlyBackup { get; private set; }
+        public Func<Task> AutoBackup { get; private set; }
+        public Func<Task> HourlyBackup { get; private set; }
 
         public int ScheduleOnceCalls { get; private set; }
         public int ScheduleDailyCalls { get; private set; }
 
         public DateTime GetNextRun() => DateTime.MaxValue;
-        public void ScheduleAutoBackup(Action action) => AutoBackup = action;
-        public void ScheduleDaily(Action action, DateTime time) => ScheduleDailyCalls++;
-        public void ScheduleHourly(Action action, DateTime time) => HourlyBackup = action;
-        public void ScheduleMonthly(Action action, DateTime time) { }
-        public void ScheduleOnce(Action action, DateTime time) => ScheduleOnceCalls++;
-        public void ScheduleWeekly(Action action, DateTime time) { }
+        public void ScheduleAutoBackup(Func<Task> action) => AutoBackup = action;
+        public void ScheduleDaily(Func<Task> action, DateTime time) => ScheduleDailyCalls++;
+        public void ScheduleHourly(Func<Task> action, DateTime time) => HourlyBackup = action;
+        public void ScheduleMonthly(Func<Task> action, DateTime time) { }
+        public void ScheduleOnce(Func<Task> action, DateTime time) => ScheduleOnceCalls++;
+        public void ScheduleWeekly(Func<Task> action, DateTime time) { }
         public void Start() { }
         public void Stop() { }
     }
@@ -411,12 +411,12 @@ public class ScheduledBackupServiceTests
         public int ScheduleAutoBackupCalls { get; private set; }
 
         public DateTime GetNextRun() => NextAutoRun;
-        public void ScheduleAutoBackup(Action action) => ScheduleAutoBackupCalls++;
-        public void ScheduleDaily(Action action, DateTime time) { }
-        public void ScheduleHourly(Action action, DateTime time) { }
-        public void ScheduleMonthly(Action action, DateTime time) { }
-        public void ScheduleOnce(Action action, DateTime time) { }
-        public void ScheduleWeekly(Action action, DateTime time) { }
+        public void ScheduleAutoBackup(Func<Task> action) => ScheduleAutoBackupCalls++;
+        public void ScheduleDaily(Func<Task> action, DateTime time) { }
+        public void ScheduleHourly(Func<Task> action, DateTime time) { }
+        public void ScheduleMonthly(Func<Task> action, DateTime time) { }
+        public void ScheduleOnce(Func<Task> action, DateTime time) { }
+        public void ScheduleWeekly(Func<Task> action, DateTime time) { }
         public void Start() => StartCalls++;
         public void Stop() => StopCalls++;
     }
