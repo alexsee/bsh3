@@ -54,9 +54,6 @@ namespace Brightbits.BSH.Main
             cmdDeleteTime.Click += new EventHandler(cmdDeleteTime_Click);
             TabPage2 = new TabPage();
             Label5 = new Label();
-            Label3 = new Label();
-            NumericUpDown1 = new NumericUpDown();
-            CheckBox2 = new CheckBox();
             plDelete = new Panel();
             cboIntervall = new ComboBox();
             txtIntervall = new TextBox();
@@ -72,7 +69,6 @@ namespace Brightbits.BSH.Main
             TabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nudFullBackup).BeginInit();
             TabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)NumericUpDown1).BeginInit();
             plDelete.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nudIntervallHourBackups).BeginInit();
             SuspendLayout();
@@ -261,9 +257,6 @@ namespace Brightbits.BSH.Main
             // TabPage2
             // 
             TabPage2.Controls.Add(Label5);
-            TabPage2.Controls.Add(Label3);
-            TabPage2.Controls.Add(NumericUpDown1);
-            TabPage2.Controls.Add(CheckBox2);
             TabPage2.Controls.Add(plDelete);
             TabPage2.Controls.Add(nudIntervallHourBackups);
             TabPage2.Controls.Add(rdDeleteIntervall);
@@ -284,38 +277,6 @@ namespace Brightbits.BSH.Main
             Label5.Size = new Size(424, 35);
             Label5.TabIndex = 25;
             Label5.Text = "Danach tägliche Sicherungen für einen Monat verfügbar halten. Anschließend wöchen" + "tliche Sicherungen verfügbar halten.";
-            // 
-            // Label3
-            // 
-            Label3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            Label3.AutoSize = true;
-            Label3.Location = new Point(100, 288);
-            Label3.Name = "Label3";
-            Label3.Size = new Size(176, 17);
-            Label3.TabIndex = 24;
-            Label3.Text = "Sicherungen vorhanden sind.";
-            Label3.Visible = false;
-            // 
-            // NumericUpDown1
-            // 
-            NumericUpDown1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            NumericUpDown1.Location = new Point(34, 286);
-            NumericUpDown1.Name = "NumericUpDown1";
-            NumericUpDown1.Size = new Size(55, 25);
-            NumericUpDown1.TabIndex = 23;
-            NumericUpDown1.Visible = false;
-            // 
-            // CheckBox2
-            // 
-            CheckBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            CheckBox2.AutoSize = true;
-            CheckBox2.Location = new Point(13, 259);
-            CheckBox2.Name = "CheckBox2";
-            CheckBox2.Size = new Size(245, 21);
-            CheckBox2.TabIndex = 22;
-            CheckBox2.Text = "Sicherung behalten, wenn weniger als";
-            CheckBox2.UseVisualStyleBackColor = true;
-            CheckBox2.Visible = false;
             // 
             // plDelete
             // 
@@ -410,7 +371,6 @@ namespace Brightbits.BSH.Main
             ((System.ComponentModel.ISupportInitialize)nudFullBackup).EndInit();
             TabPage2.ResumeLayout(false);
             TabPage2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)NumericUpDown1).EndInit();
             plDelete.ResumeLayout(false);
             plDelete.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)nudIntervallHourBackups).EndInit();
@@ -439,9 +399,6 @@ namespace Brightbits.BSH.Main
         internal TabControl TabControl1;
         internal TabPage TabPage1;
         internal TabPage TabPage2;
-        internal Label Label3;
-        internal NumericUpDown NumericUpDown1;
-        internal CheckBox CheckBox2;
         internal Label Label4;
         internal ComboBox cboFullBackup;
         internal NumericUpDown nudFullBackup;

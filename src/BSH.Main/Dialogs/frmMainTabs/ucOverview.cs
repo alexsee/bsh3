@@ -361,11 +361,6 @@ public partial class ucOverview : IMainTabs, IStatusReport
         BackupLogic.BackupController.Cancel();
     }
 
-    private void btnUpdates_Click(object sender, EventArgs e)
-    {
-
-    }
-
     private void btnSettings_Click(object sender, EventArgs e)
     {
         SuperBase.CurrentTab = frmMain.AvailableTabs.TabConfiguration;
@@ -403,16 +398,6 @@ public partial class ucOverview : IMainTabs, IStatusReport
     private void cmdBackupNow_MouseLeave(object sender, EventArgs e)
     {
         cmdBackupNow.Image = Resources.backup_icon_48;
-    }
-
-    private void cmdBackupCancel_MouseEnter(object sender, EventArgs e)
-    {
-        cmdBackupCancel.Image = Resources.cancel_fill_icon_48;
-    }
-
-    private void cmdBackupCancel_MouseLeave(object sender, EventArgs e)
-    {
-        cmdBackupCancel.Image = Resources.cancel_icon_48;
     }
 
     private void llOptions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

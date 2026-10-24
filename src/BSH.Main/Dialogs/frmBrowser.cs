@@ -429,16 +429,6 @@ public partial class frmBrowser : IStatusReport
         }
     }
 
-    private void gbBigList_Click(object sender, EventArgs e)
-    {
-        lvFiles.View = View.LargeIcon;
-    }
-
-    private void gbDetails_Click(object sender, EventArgs e)
-    {
-        lvFiles.View = View.Details;
-    }
-
     private void frmBrowser_FormClosing(object sender, FormClosingEventArgs e)
     {
         CancelSearch();
@@ -928,12 +918,6 @@ public partial class frmBrowser : IStatusReport
 
         var backupDate = Convert.ToDateTime(sender.Version.CreationDate, CultureInfo.CreateSpecificCulture("de-DE"));
         lblBackupdate.Text = Resources.BACKUP_FROM_DATE + backupDate.ToString("dd. MMMM yyyy 'um' HH:mm");
-    }
-
-    private void mnuGoHome_Click(object sender, EventArgs e)
-    {
-        lvFavorite.Items[0].Selected = true;
-        lvFavorite_Click(sender, null);
     }
 
     private void GroßeSymboleToolStripMenuItem_Click(object sender, EventArgs e)
