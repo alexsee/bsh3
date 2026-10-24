@@ -375,9 +375,7 @@ public class FileSystemStorage : Storage, IStorageProvider
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
 
         var crypto = new Encryption();
-        crypto.Decode(remoteFilePath, GetLocalFileName(localFile), password);
-
-        return true;
+        return crypto.Decode(remoteFilePath, GetLocalFileName(localFile), password);
     }
 
     public bool DeleteFileFromStorage(string remoteFile)
