@@ -31,12 +31,4 @@ public class FileService : IFileService
         var fileContent = JsonSerializer.Serialize(content);
         File.WriteAllText(Path.Combine(folderPath, fileName), fileContent);
     }
-
-    public void Delete(string folderPath, string fileName)
-    {
-        if (fileName != null && File.Exists(Path.Combine(folderPath, fileName)))
-        {
-            File.Delete(Path.Combine(folderPath, fileName));
-        }
-    }
 }

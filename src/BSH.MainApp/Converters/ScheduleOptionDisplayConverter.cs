@@ -15,7 +15,6 @@ public sealed class ScheduleOptionDisplayConverter : IValueConverter
         return value switch
         {
             ScheduleEntryKind kind => ScheduleEditorDisplayText.GetScheduleKind(kind),
-            ScheduleRetentionMode mode => $"Schedule_RetentionMode_{mode}".GetLocalized() ?? mode.ToString(),
             ScheduleRetentionIntervalUnit unit => $"Schedule_RetentionUnit_{unit}".GetLocalized() ?? unit.ToString(),
             DayOfWeek day => CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(day),
             _ => value?.ToString() ?? string.Empty,
