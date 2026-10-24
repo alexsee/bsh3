@@ -25,12 +25,13 @@ function Assert-Contains([string] $haystack, [string] $needle, [string] $message
 }
 
 function Assert-ServiceBinPathIsConfigured([string] $script, [string] $serviceName, [string] $installerName) {
-    $createNeedle = "Parameters: `"create `"`"$serviceName`"`" binpath=`"`"{app}\BSH.Service.exe`"`" start=auto`""
-    $configNeedle = "Filename: `"sc`"; Parameters: `"config `"`"$serviceName`"`" binpath=`"`"{app}\BSH.Service.exe`"`" start=auto`"; WorkingDir: `"{app}`"; Flags: runhidden runascurrentuser"
+    $binPath = 'binpath= ""\""{app}\BSH.Service.exe\"""" start=auto'
+    $createNeedle = "Parameters: `"create `"`"$serviceName`"`" $binPath`""
+    $configNeedle = "Filename: `"sc`"; Parameters: `"config `"`"$serviceName`"`" $binPath`"; WorkingDir: `"{app}`"; Flags: runhidden runascurrentuser"
     $createAt = $script.IndexOf($createNeedle, [StringComparison]::Ordinal)
     $configAt = $script.IndexOf($configNeedle, [StringComparison]::Ordinal)
     if ($createAt -lt 0 -or $configAt -le $createAt) {
-        throw "$installerName must run sc config after sc create for $serviceName so an existing service keeps the installed binpath and start mode."
+        throw "$installerName must run sc config after sc create for $serviceName with a quoted executable path and start=auto."
     }
 }
 
