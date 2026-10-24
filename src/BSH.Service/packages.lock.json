@@ -61,12 +61,6 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.13"
         }
       },
-      "Serilog": {
-        "type": "Direct",
-        "requested": "[4.4.0, )",
-        "resolved": "4.4.0",
-        "contentHash": "ZC6Le3rr4TVJJjS4KsQAesxeF1EhW9qcZmmG7eP5Y2G3+gTGkJEUXkq4+tZNPtyp05I0wWOxnIjwtxFweJsObw=="
-      },
       "ServiceWire": {
         "type": "Direct",
         "requested": "[7.0.0, )",

@@ -764,7 +764,6 @@
           "Serilog": "[4.4.0, )",
           "Serilog.Extensions.Logging": "[10.0.0, )",
           "ServiceWire": "[7.0.0, )",
-          "System.Configuration.ConfigurationManager": "[10.0.13, )",
           "System.Data.SQLite.Core": "[1.0.119, )",
           "System.Management": "[10.0.13, )",
           "System.Security.Cryptography.ProtectedData": "[10.0.13, )"
@@ -812,7 +811,6 @@
           "Microsoft.Extensions.Hosting": "[10.0.13, )",
           "Microsoft.Extensions.Hosting.WindowsServices": "[10.0.13, )",
           "Microsoft.Extensions.Logging.Abstractions": "[10.0.13, )",
-          "Serilog": "[4.4.0, )",
           "ServiceWire": "[7.0.0, )"
         }
       },
