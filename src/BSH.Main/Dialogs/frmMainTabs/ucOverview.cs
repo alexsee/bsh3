@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using Humanizer;
+using Serilog;
 using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
@@ -427,7 +428,8 @@ public partial class ucOverview : IMainTabs, IStatusReport
             return;
         }
 
-        Invoke(new Action(async () => await RefreshInfo()));
+        // RefreshInfoOnUiThreadAsync owns completion and logs failures.
+        _ = RefreshInfoOnUiThreadAsync();
     }
 
     public void ReportState(JobState jobState)
@@ -437,7 +439,8 @@ public partial class ucOverview : IMainTabs, IStatusReport
             return;
         }
 
-        Invoke(new Action(async () => await RefreshInfo()));
+        // RefreshInfoOnUiThreadAsync owns completion and logs failures.
+        _ = RefreshInfoOnUiThreadAsync();
     }
 
     public void ReportStatus(string title, string text)
@@ -497,7 +500,20 @@ public partial class ucOverview : IMainTabs, IStatusReport
             return;
         }
 
-        Invoke(new Action(async () => await RefreshInfo()));
+        // RefreshInfoOnUiThreadAsync owns completion and logs failures.
+        _ = RefreshInfoOnUiThreadAsync();
+    }
+
+    private async Task RefreshInfoOnUiThreadAsync()
+    {
+        try
+        {
+            await (Task)Invoke(new Func<Task>(RefreshInfo));
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Overview UI update failed.");
+        }
     }
 
     private void llShowExceptionDialog_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

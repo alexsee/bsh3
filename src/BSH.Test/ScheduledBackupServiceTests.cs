@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
@@ -22,6 +23,42 @@ namespace BSH.Test;
 public class ScheduledBackupServiceTests
 {
     private static readonly DateTime NextAutoRun = new(2026, 8, 17, 8, 0, 0);
+
+    [Test]
+    public async Task ScheduledBackupRestoresPriorityWhenFullBackupLookupFails()
+    {
+        var scheduler = new FakeSchedulerAdapter();
+        var configuration = new FakeConfigurationManager
+        {
+            TaskType = TaskType.Schedule,
+            ScheduleFullBackup = "day|1"
+        };
+        var repository = new FakeScheduleRepository([new ScheduleEntry { Type = 2, Date = DateTime.Now }]);
+        var jobs = new RecordingJobService();
+        var service = new ScheduledBackupService(
+            configuration, jobs, new ThrowingFullBackupQueryManager(), repository,
+            new FakeSchedulerAdapterFactory(scheduler), new ScheduleSettingsService(configuration, repository),
+            new FakeMediaWatcherFactory());
+        using var process = Process.GetCurrentProcess();
+        var originalPriority = process.PriorityClass;
+        try
+        {
+            process.PriorityClass = ProcessPriorityClass.Normal;
+            await service.StartAsync();
+
+            var failure = Assert.ThrowsAsync<InvalidOperationException>(async () => await scheduler.HourlyBackup());
+
+            Assert.That(failure.Message, Is.EqualTo("full backup lookup failed"));
+            process.Refresh();
+            Assert.That(process.PriorityClass, Is.EqualTo(ProcessPriorityClass.Normal));
+            Assert.That(jobs.CreateBackupCalls, Is.Zero);
+        }
+        finally
+        {
+            service.Stop();
+            process.PriorityClass = originalPriority;
+        }
+    }
 
     [Test]
     public async Task AutoLocalVolume_MatchingDriveArrival_StartsBackup()
@@ -69,7 +106,7 @@ public class ScheduledBackupServiceTests
         await service.StartAsync();
         Assert.That(factory.CreateCount, Is.EqualTo(0));
 
-        scheduler.HourlyBackup();
+        await scheduler.HourlyBackup();
         await WaitUntil(() => factory.Watcher.StartWatchingCount == 1);
 
         Assert.That(jobService.CreateBackupCalls, Is.EqualTo(1));
@@ -98,7 +135,7 @@ public class ScheduledBackupServiceTests
             schedules: [new ScheduleEntry { Type = 2, Date = DateTime.Now }]);
 
         await service.StartAsync();
-        scheduler.HourlyBackup();
+        await scheduler.HourlyBackup();
         await jobService.WaitForBackupAsync();
         await Task.Delay(50);
 
@@ -375,19 +412,19 @@ public class ScheduledBackupServiceTests
 
     private sealed class FakeSchedulerAdapter : ISchedulerAdapter
     {
-        public Action AutoBackup { get; private set; }
-        public Action HourlyBackup { get; private set; }
+        public Func<Task> AutoBackup { get; private set; }
+        public Func<Task> HourlyBackup { get; private set; }
 
         public int ScheduleOnceCalls { get; private set; }
         public int ScheduleDailyCalls { get; private set; }
 
         public DateTime GetNextRun() => DateTime.MaxValue;
-        public void ScheduleAutoBackup(Action action) => AutoBackup = action;
-        public void ScheduleDaily(Action action, DateTime time) => ScheduleDailyCalls++;
-        public void ScheduleHourly(Action action, DateTime time) => HourlyBackup = action;
-        public void ScheduleMonthly(Action action, DateTime time) { }
-        public void ScheduleOnce(Action action, DateTime time) => ScheduleOnceCalls++;
-        public void ScheduleWeekly(Action action, DateTime time) { }
+        public void ScheduleAutoBackup(Func<Task> action) => AutoBackup = action;
+        public void ScheduleDaily(Func<Task> action, DateTime time) => ScheduleDailyCalls++;
+        public void ScheduleHourly(Func<Task> action, DateTime time) => HourlyBackup = action;
+        public void ScheduleMonthly(Func<Task> action, DateTime time) { }
+        public void ScheduleOnce(Func<Task> action, DateTime time) => ScheduleOnceCalls++;
+        public void ScheduleWeekly(Func<Task> action, DateTime time) { }
         public void Start() { }
         public void Stop() { }
     }
@@ -411,12 +448,12 @@ public class ScheduledBackupServiceTests
         public int ScheduleAutoBackupCalls { get; private set; }
 
         public DateTime GetNextRun() => NextAutoRun;
-        public void ScheduleAutoBackup(Action action) => ScheduleAutoBackupCalls++;
-        public void ScheduleDaily(Action action, DateTime time) { }
-        public void ScheduleHourly(Action action, DateTime time) { }
-        public void ScheduleMonthly(Action action, DateTime time) { }
-        public void ScheduleOnce(Action action, DateTime time) { }
-        public void ScheduleWeekly(Action action, DateTime time) { }
+        public void ScheduleAutoBackup(Func<Task> action) => ScheduleAutoBackupCalls++;
+        public void ScheduleDaily(Func<Task> action, DateTime time) { }
+        public void ScheduleHourly(Func<Task> action, DateTime time) { }
+        public void ScheduleMonthly(Func<Task> action, DateTime time) { }
+        public void ScheduleOnce(Func<Task> action, DateTime time) { }
+        public void ScheduleWeekly(Func<Task> action, DateTime time) { }
         public void Start() => StartCalls++;
         public void Stop() => StopCalls++;
     }
@@ -498,7 +535,7 @@ public class ScheduledBackupServiceTests
         public Task<List<string>> GetFolderListAsync(string version, string path) => Task.FromResult(new List<string>());
         public Task<string> GetFullRestoreFolderAsync(string folder, string version) => Task.FromResult("");
         public Task<VersionDetails> GetLastBackupAsync() => Task.FromResult<VersionDetails>(null);
-        public Task<VersionDetails> GetLastFullBackupAsync() => Task.FromResult<VersionDetails>(null);
+        public virtual Task<VersionDetails> GetLastFullBackupAsync() => Task.FromResult<VersionDetails>(null);
         public Task<string> GetLocalizedPathAsync(string path) => Task.FromResult(path);
         public Task<string> GetNextVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult("");
         public Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult("");
@@ -540,5 +577,14 @@ public class ScheduledBackupServiceTests
     private sealed class ThrowingVersionsQueryManager : StubQueryManager
     {
         public override List<VersionDetails> GetVersions(bool desc = true) => throw new InvalidOperationException("version lookup failed");
+    }
+
+    private sealed class ThrowingFullBackupQueryManager : StubQueryManager
+    {
+        public override async Task<VersionDetails> GetLastFullBackupAsync()
+        {
+            await Task.Yield();
+            throw new InvalidOperationException("full backup lookup failed");
+        }
     }
 }
