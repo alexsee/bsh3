@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Pr
 		global.json = global.json
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BSH.Analyzers", "BSH.Analyzers\BSH.Analyzers.csproj", "{FBA59524-DFB9-4CB5-B705-8A2DCC670B6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -81,6 +83,10 @@ Global
 		{7F56894D-9860-4E31-83F2-49549BF6038F}.Release|x64.ActiveCfg = Release|x64
 		{7F56894D-9860-4E31-83F2-49549BF6038F}.Release|x64.Build.0 = Release|x64
 		{7F56894D-9860-4E31-83F2-49549BF6038F}.Release|x64.Deploy.0 = Release|x64
+		{FBA59524-DFB9-4CB5-B705-8A2DCC670B6C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FBA59524-DFB9-4CB5-B705-8A2DCC670B6C}.Debug|x64.Build.0 = Debug|Any CPU
+		{FBA59524-DFB9-4CB5-B705-8A2DCC670B6C}.Release|x64.ActiveCfg = Release|Any CPU
+		{FBA59524-DFB9-4CB5-B705-8A2DCC670B6C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,11 +9,13 @@ official build/test/release pipeline runs exclusively on `windows-latest`
 
 ## Cursor Cloud specific instructions
 
-The Cursor Cloud VM is **Linux**, but every project targets a Windows TFM
+The Cursor Cloud VM is **Linux**, but the runtime and test projects target Windows TFMs
 (`net10.0-windows`; `BSH.MainApp` and `BSH.Test` target `net10.0-windows10.0.26100.0`). Full development (running the GUI
 shells, running the test suite, VSS, MSIX packaging) requires Windows. This environment
 supports building most of the solution and running the core engine's data/security
 layers, which is enough for engine-level development.
+The build-only `BSH.Analyzers` project targets `netstandard2.0` and runs inside
+the compiler on either platform.
 
 ### Toolchain
 - .NET SDK `10.0.400` (pinned in `src/global.json`) is installed at `~/.dotnet` and added
@@ -58,3 +60,23 @@ layers, which is enough for engine-level development.
   authoritative static analysis in CI is SonarCloud. `dotnet format` is available but the
   repo is not clean against its whitespace/style rules, so `dotnet format
   --verify-no-changes` is not the project's lint gate — rely on the build analyzers.
+
+## Enforced corrections
+
+| Rule | Enforcement | Evidence |
+| --- | --- | --- |
+| Observe task results with `await`, `return`, synchronous completion in a sync adapter, or transfer to an owner. | `BSH.Analyzers` build error `BSH0001` rejects dropped `Task`/`ValueTask` expression statements, including in synchronous methods. | Discarded scheduler registration tasks fixed in `f52d7d2` (#654); async completion also corrected in `0fcab14` (#472). |
+| Use `Task.Run(async () => await ...)` for asynchronous worker operations. | Build error `BSH0002` rejects `TaskFactory.StartNew` returning a nested task. | Backup and restore operations in `0fcab14` (#472) returned before their inner tasks completed. |
+
+Both rules run in normal `dotnet build "Backup Service Home 3.sln" -p:Platform=x64`
+and the existing CI build. `AsyncCompletionAnalyzerTests` in the normal NUnit suite
+compile the historical expressions and verify the error IDs and accepted ownership
+patterns. Run them with `dotnet test BSH.Test/BSH.Test.csproj -p:Platform=x64
+--filter FullyQualifiedName~AsyncCompletionAnalyzerTests` from `src/`.
+
+Judgment remains necessary for stored tasks and explicit `_ =` discards: the
+analyzer does not prove eventual observation. Use a discard only when another
+owner handles completion/failure, or when a synchronous rejection is under test;
+explain that owner or reason at the call site. Existing `.editorconfig` and local
+diagnostic suppressions remain the exception mechanism; give the reason next to
+any exception rather than disabling these rules for a whole project.
