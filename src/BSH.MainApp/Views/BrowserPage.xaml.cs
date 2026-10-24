@@ -15,7 +15,7 @@ namespace BSH.MainApp.Views;
 public sealed partial class BrowserPage : Page
 {
     private XamlRoot? iconXamlRoot;
-    private double iconScale;
+    private double iconRasterizationScale;
 
     public BrowserViewModel ViewModel { get; } = App.GetService<BrowserViewModel>();
 
@@ -30,7 +30,7 @@ public sealed partial class BrowserPage : Page
     {
         iconXamlRoot = XamlRoot;
         iconXamlRoot.Changed += IconXamlRoot_Changed;
-        await RefreshIconScaleAsync();
+        await RefreshIconsForDisplayScaleAsync();
     }
 
     private void BrowserPage_Unloaded(object sender, RoutedEventArgs e)
@@ -41,23 +41,23 @@ public sealed partial class BrowserPage : Page
             iconXamlRoot = null;
         }
 
-        iconScale = 0;
+        iconRasterizationScale = 0;
     }
 
     private async void IconXamlRoot_Changed(XamlRoot sender, XamlRootChangedEventArgs args)
     {
-        await RefreshIconScaleAsync();
+        await RefreshIconsForDisplayScaleAsync();
     }
 
-    private async Task RefreshIconScaleAsync()
+    private async Task RefreshIconsForDisplayScaleAsync()
     {
         var scale = iconXamlRoot?.RasterizationScale ?? 1;
-        if (scale == iconScale)
+        if (scale == iconRasterizationScale)
         {
             return;
         }
 
-        iconScale = scale;
+        iconRasterizationScale = scale;
         var dpi = (uint)Math.Round(scale * 96);
         foreach (var item in ViewModel.Items.Where(item => item.IsFile).ToArray())
         {
