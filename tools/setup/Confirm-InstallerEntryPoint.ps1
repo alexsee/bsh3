@@ -24,6 +24,16 @@ function Assert-Contains([string] $haystack, [string] $needle, [string] $message
     }
 }
 
+function Assert-ServiceBinPathIsConfigured([string] $script, [string] $serviceName, [string] $installerName) {
+    $createNeedle = "Parameters: `"create `"`"$serviceName`"`" binpath=`"`"{app}\BSH.Service.exe`"`" start=auto`""
+    $configNeedle = "Filename: `"sc`"; Parameters: `"config `"`"$serviceName`"`" binpath=`"`"{app}\BSH.Service.exe`"`" start=auto`"; WorkingDir: `"{app}`"; Flags: runhidden runascurrentuser"
+    $createAt = $script.IndexOf($createNeedle, [StringComparison]::Ordinal)
+    $configAt = $script.IndexOf($configNeedle, [StringComparison]::Ordinal)
+    if ($createAt -lt 0 -or $configAt -le $createAt) {
+        throw "$installerName must run sc config after sc create for $serviceName so an existing service keeps the installed binpath and start mode."
+    }
+}
+
 function Assert-File([string] $path, [string] $message) {
     if (-not (Test-Path -LiteralPath $path)) {
         throw $message
@@ -49,6 +59,9 @@ Assert-Contains $winFormsIss '{app}\BSH.Service.exe' `
 
 Assert-Contains $winUiIss '{app}\BSH.Service.exe' `
     "Setup-WinUI.iss must still register the VSS helper service (BSH.Service.exe)."
+
+Assert-ServiceBinPathIsConfigured $winFormsIss 'Backup Service Home-Dienst' 'Setup.iss'
+Assert-ServiceBinPathIsConfigured $winUiIss 'Backup Service Home Preview-Dienst' 'Setup-WinUI.iss'
 
 Assert-Contains $winUiIss 'Backup Service Home Preview-Dienst' `
     "Setup-WinUI.iss must register its own VSS service."
