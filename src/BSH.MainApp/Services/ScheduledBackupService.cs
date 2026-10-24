@@ -1,4 +1,4 @@
-﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
+// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
 using System.Diagnostics;
@@ -311,15 +311,14 @@ public class ScheduledBackupService : IScheduledBackupService
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        var schedulePolicy = scheduleSettingsService.LoadPolicy();
-        var lastFullBackup = schedulePolicy.ScheduledFullBackupsEnabled
-            ? await queryManager.GetLastFullBackupAsync()
-            : null;
-        var fullBackupOption = schedulePolicy.ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
-
-        // Backup durchführen
         try
         {
+            var schedulePolicy = scheduleSettingsService.LoadPolicy();
+            var lastFullBackup = schedulePolicy.ScheduledFullBackupsEnabled
+                ? await queryManager.GetLastFullBackupAsync()
+                : null;
+            var fullBackupOption = schedulePolicy.ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
+
             if (await jobService.CreateBackupAsync("Automatische Sicherung", "", false, fullBackupOption))
             {
                 await RemoveOldBackupsScheduled();

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
@@ -22,6 +23,42 @@ namespace BSH.Test;
 public class ScheduledBackupServiceTests
 {
     private static readonly DateTime NextAutoRun = new(2026, 8, 17, 8, 0, 0);
+
+    [Test]
+    public async Task ScheduledBackupRestoresPriorityWhenFullBackupLookupFails()
+    {
+        var scheduler = new FakeSchedulerAdapter();
+        var configuration = new FakeConfigurationManager
+        {
+            TaskType = TaskType.Schedule,
+            ScheduleFullBackup = "day|1"
+        };
+        var repository = new FakeScheduleRepository([new ScheduleEntry { Type = 2, Date = DateTime.Now }]);
+        var jobs = new RecordingJobService();
+        var service = new ScheduledBackupService(
+            configuration, jobs, new ThrowingFullBackupQueryManager(), repository,
+            new FakeSchedulerAdapterFactory(scheduler), new ScheduleSettingsService(configuration, repository),
+            new FakeMediaWatcherFactory());
+        using var process = Process.GetCurrentProcess();
+        var originalPriority = process.PriorityClass;
+        try
+        {
+            process.PriorityClass = ProcessPriorityClass.Normal;
+            await service.StartAsync();
+
+            var failure = Assert.ThrowsAsync<InvalidOperationException>(async () => await scheduler.HourlyBackup());
+
+            Assert.That(failure.Message, Is.EqualTo("full backup lookup failed"));
+            process.Refresh();
+            Assert.That(process.PriorityClass, Is.EqualTo(ProcessPriorityClass.Normal));
+            Assert.That(jobs.CreateBackupCalls, Is.Zero);
+        }
+        finally
+        {
+            service.Stop();
+            process.PriorityClass = originalPriority;
+        }
+    }
 
     [Test]
     public async Task AutoLocalVolume_MatchingDriveArrival_StartsBackup()
@@ -500,7 +537,7 @@ public class ScheduledBackupServiceTests
         public Task<List<string>> GetFolderListAsync(string version, string path) => Task.FromResult(new List<string>());
         public Task<string> GetFullRestoreFolderAsync(string folder, string version) => Task.FromResult("");
         public Task<VersionDetails> GetLastBackupAsync() => Task.FromResult<VersionDetails>(null);
-        public Task<VersionDetails> GetLastFullBackupAsync() => Task.FromResult<VersionDetails>(null);
+        public virtual Task<VersionDetails> GetLastFullBackupAsync() => Task.FromResult<VersionDetails>(null);
         public Task<string> GetLocalizedPathAsync(string path) => Task.FromResult(path);
         public Task<string> GetNextVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult("");
         public Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult("");
@@ -542,5 +579,14 @@ public class ScheduledBackupServiceTests
     private sealed class ThrowingVersionsQueryManager : StubQueryManager
     {
         public override List<VersionDetails> GetVersions(bool desc = true) => throw new InvalidOperationException("version lookup failed");
+    }
+
+    private sealed class ThrowingFullBackupQueryManager : StubQueryManager
+    {
+        public override async Task<VersionDetails> GetLastFullBackupAsync()
+        {
+            await Task.Yield();
+            throw new InvalidOperationException("full backup lookup failed");
+        }
     }
 }

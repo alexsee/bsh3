@@ -685,14 +685,14 @@ static class BackupLogic
         // Priorität heruntersetzen
         Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 
-        var schedulePolicy = ScheduleSettingsService.LoadPolicy();
-        var lastFullBackup = schedulePolicy.ScheduledFullBackupsEnabled
-            ? await QueryManager.GetLastFullBackupAsync()
-            : null;
-        var FullBackup = schedulePolicy.ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
-
         try
         {
+            var schedulePolicy = ScheduleSettingsService.LoadPolicy();
+            var lastFullBackup = schedulePolicy.ScheduledFullBackupsEnabled
+                ? await QueryManager.GetLastFullBackupAsync()
+                : null;
+            var FullBackup = schedulePolicy.ShouldPerformFullBackup(lastFullBackup?.CreationDate, DateTime.Now);
+
             // Backup durchführen
             var succeeded = await BackupController.CreateBackupAsync(Resources.BACKUP_TITLE_AUTOMATIC, "", false, FullBackup);
             if (succeeded)
