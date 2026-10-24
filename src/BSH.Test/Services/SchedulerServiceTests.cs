@@ -177,7 +177,7 @@ public class SchedulerServiceTests
     }
 
     [Test]
-    public async Task ExceptionAfterAwaitIsLoggedAndObservedByTheJob()
+    public async Task ExceptionAfterAwaitIsLoggedAndHandled()
     {
         var observation = await ObserveScheduledActionAsync(async () =>
         {
@@ -188,11 +188,10 @@ public class SchedulerServiceTests
         Assert.That(observation.ExecutingJobCount, Is.EqualTo(1));
         Assert.That(observation.ContinuedPastAwaitBeforeRelease, Is.False);
         Assert.That(observation.ContinuedPastAwait, Is.True);
-        Assert.That(observation.JobException, Is.Not.Null);
-        var failure = observation.JobException.GetBaseException();
-        Assert.That(failure, Is.TypeOf<InvalidOperationException>());
-        Assert.That(failure.Message, Is.EqualTo("backup failed after await"));
-        Assert.That(observation.Sink.Contains("Scheduled backup failed.", typeof(InvalidOperationException)), Is.True);
+        Assert.That(observation.JobException, Is.Null);
+        Assert.That(
+            observation.Sink.Contains("Scheduled backup failed.", typeof(InvalidOperationException), "backup failed after await"),
+            Is.True);
     }
 
     private static async Task<ScheduledActionObservation> ObserveScheduledActionAsync(Func<Task> afterAwait)
@@ -297,12 +296,13 @@ public class SchedulerServiceTests
 
         public void Emit(LogEvent logEvent) => events.Enqueue(logEvent);
 
-        public bool Contains(string message, Type exceptionType)
+        public bool Contains(string message, Type exceptionType, string exceptionMessage)
         {
             foreach (var logEvent in events)
             {
                 if (logEvent.Exception != null
                     && exceptionType.IsInstanceOfType(logEvent.Exception)
+                    && logEvent.Exception.Message == exceptionMessage
                     && logEvent.RenderMessage() == message)
                 {
                     return true;

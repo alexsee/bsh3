@@ -156,7 +156,7 @@ public class SchedulerService : ISchedulerAdapter
         async Task IJob.Execute(IJobExecutionContext context)
         {
             // The delegate is async. Awaiting it keeps this Quartz job alive until the
-            // backup finishes, and makes a failure after the first await observable.
+            // backup finishes. Logging the failure observes an exception after the first await.
             var action = context.MergedJobDataMap["action"] as Func<Task>;
             if (action == null)
             {
@@ -170,7 +170,6 @@ public class SchedulerService : ISchedulerAdapter
             catch (Exception ex)
             {
                 Log.Error(ex, "Scheduled backup failed.");
-                throw;
             }
         }
     }
