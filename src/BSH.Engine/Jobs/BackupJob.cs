@@ -515,18 +515,19 @@ public class BackupJob : Job
 
     /// <summary>
     /// Copies a single file from the local source to the backup device via the
-    /// StorageManager.
+    /// StorageManager. A locked file is retried once from a volume shadow copy.
+    /// The retry keeps the compression and encryption chosen for the backup.
     /// </summary>
     /// <param name="storage"></param>
     /// <param name="file"></param>
     /// <param name="newVersionId"></param>
     /// <param name="newVersionDate"></param>
     /// <param name="dbClient"></param>
-    /// <param name="normalCopy"></param>
-    /// <param name="useVss"></param>
+    /// <param name="isRetry">True after the first attempt failed. A further failure is reported and not retried.</param>
+    /// <param name="useVss">True to read the file from a volume shadow copy.</param>
     /// <returns></returns>
     /// <exception cref="FileNotProcessedException"></exception>
-    private async Task<bool> CopyFileToDeviceAsync(IStorageProvider storage, FileTableRow file, long newVersionId, string newVersionDate, DbClient dbClient, bool normalCopy = false, bool useVss = false)
+    private async Task<bool> CopyFileToDeviceAsync(IStorageProvider storage, FileTableRow file, long newVersionId, string newVersionDate, DbClient dbClient, bool isRetry = false, bool useVss = false)
     {
         var localFileName = file.FileNamePath();
         var remoteFileName = Path.Combine(newVersionDate, Path.GetFileName(file.FileRoot), file.FilePath, file.FileName);
@@ -537,15 +538,15 @@ public class BackupJob : Job
             localFileName = PrepareVssTempFile(localFileName, file);
         }
 
-        var compress = ShouldCompress(file, normalCopy);
-        var encrypt = ShouldEncrypt(file, normalCopy);
+        // Protection follows configuration on every attempt, including the shadow-copy retry.
+        var compress = ShouldCompress(file);
+        var encrypt = ShouldEncrypt(file);
         remoteFileName = EnsureSupportedRemotePath(storage, remoteFileName, localFileName, file, newVersionDate, compress, encrypt, out longFileName);
 
         bool result;
         try
         {
             result = CopyFileToStorage(storage, localFileName, remoteFileName, compress, encrypt);
-            DeleteVssTempFile(localFileName, useVss);
         }
         catch (IOException ex)
         {
@@ -558,7 +559,7 @@ public class BackupJob : Job
             }
 
             // second attempt? or via VSS
-            if (normalCopy || useVss)
+            if (isRetry || useVss)
             {
                 throw new FileNotProcessedException(ex);
             }
@@ -569,19 +570,27 @@ public class BackupJob : Job
                 throw new FileNotProcessedException(ex, true);
             }
 
-            return await CopyFileToDeviceAsync(storage, file, newVersionId, newVersionDate, dbClient, true, true);
+            return await RetryCopyFromShadowAsync(storage, file, newVersionId, newVersionDate, dbClient);
         }
         catch (Exception ex)
         {
             _logger.Warning(ex, "Could not copy file {LocalFileName} via regular file copy.", localFileName);
 
             // already second attempt or other non-fixable error
-            if (normalCopy || useVss)
+            if (isRetry || useVss)
             {
                 throw new FileNotProcessedException(ex);
             }
 
-            return await CopyFileToDeviceAsync(storage, file, newVersionId, newVersionDate, dbClient, true, true);
+            return await RetryCopyFromShadowAsync(storage, file, newVersionId, newVersionDate, dbClient);
+        }
+        finally
+        {
+            // The shadow file is a plaintext copy. Remove it unless it aliases the source.
+            if (!string.Equals(localFileName, file.FileNamePath(), StringComparison.OrdinalIgnoreCase))
+            {
+                DeleteVssTempFile(localFileName, useVss);
+            }
         }
 
         // backup successful?
@@ -594,6 +603,14 @@ public class BackupJob : Job
         await AddFileVersionDatabaseEntryAsync(dbClient, file, newVersionId, longFileName, compress, encrypt);
 
         return true;
+    }
+
+    /// <summary>
+    /// Retries the copy from a volume shadow copy without changing compression or encryption.
+    /// </summary>
+    private Task<bool> RetryCopyFromShadowAsync(IStorageProvider storage, FileTableRow file, long newVersionId, string newVersionDate, DbClient dbClient)
+    {
+        return CopyFileToDeviceAsync(storage, file, newVersionId, newVersionDate, dbClient, isRetry: true, useVss: true);
     }
 
     private string PrepareVssTempFile(string localFileName, FileTableRow file)
@@ -618,9 +635,9 @@ public class BackupJob : Job
         }
     }
 
-    private bool ShouldCompress(FileTableRow file, bool normalCopy)
+    private bool ShouldCompress(FileTableRow file)
     {
-        if (configurationManager.Compression != 1 || normalCopy)
+        if (configurationManager.Compression != 1)
         {
             return false;
         }
@@ -642,9 +659,9 @@ public class BackupJob : Job
         return !excludedExtensions.Contains(fileExt);
     }
 
-    private bool ShouldEncrypt(FileTableRow file, bool normalCopy)
+    private bool ShouldEncrypt(FileTableRow file)
     {
-        return configurationManager.Encrypt == 1 && !normalCopy && file.FileSize > 0;
+        return configurationManager.Encrypt == 1 && file.FileSize > 0;
     }
 
     private static string EnsureSupportedRemotePath(

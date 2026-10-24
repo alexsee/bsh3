@@ -22,7 +22,11 @@ namespace BSH.Test.Mocks
         private readonly HashSet<string> decryptFailFiles;
         private readonly HashSet<string> decryptedOnce = new(StringComparer.OrdinalIgnoreCase);
         private readonly bool failSecondDecryptOfSameFile;
+        private readonly int ioFailuresBeforeSuccess;
+        private readonly bool throwNonIoOnFirstCopy;
+        private readonly bool requireSourceExists;
         private int regularCopyAttempts;
+        private int copyToStorageAttempts;
 
         public StorageMock(
             bool failCheckMedium = false,
@@ -35,7 +39,10 @@ namespace BSH.Test.Mocks
             IEnumerable<string> decryptFailFiles = null,
             bool failSecondDecryptOfSameFile = false,
             long freeSpaceBytes = 0,
-            bool canWrite = true)
+            bool canWrite = true,
+            int ioFailuresBeforeSuccess = 0,
+            bool throwNonIoOnFirstCopy = false,
+            bool requireSourceExists = false)
         {
             this.failCheckMedium = failCheckMedium;
             this.failAllCopies = failAllCopies;
@@ -48,6 +55,9 @@ namespace BSH.Test.Mocks
                 ? []
                 : new HashSet<string>(decryptFailFiles, StringComparer.OrdinalIgnoreCase);
             this.failSecondDecryptOfSameFile = failSecondDecryptOfSameFile;
+            this.ioFailuresBeforeSuccess = ioFailuresBeforeSuccess;
+            this.throwNonIoOnFirstCopy = throwNonIoOnFirstCopy;
+            this.requireSourceExists = requireSourceExists;
             FreeSpaceBytes = freeSpaceBytes;
             CanWrite = canWrite;
         }
@@ -56,6 +66,9 @@ namespace BSH.Test.Mocks
         public int CopyFileToStorageCalls { get; private set; }
         public int CopyFileToStorageCompressedCalls { get; private set; }
         public int CopyFileToStorageEncryptedCalls { get; private set; }
+        public List<string> CompressedSourceFiles { get; } = [];
+        public List<string> EncryptedSourceFiles { get; } = [];
+        public List<string> EncryptedPasswords { get; } = [];
         public int CopyFileFromStorageCalls { get; private set; }
         public int CopyFileFromStorageCompressedCalls { get; private set; }
         public int CopyFileFromStorageEncryptedCalls { get; private set; }
@@ -118,12 +131,14 @@ namespace BSH.Test.Mocks
             CopyFileToStorageCalls++;
             LastRemoteFile = remoteFile;
             regularCopyAttempts++;
+            EnsureSourceExists(localFile);
 
             if (throwIoOnFirstRegularCopy && regularCopyAttempts == 1)
             {
                 throw new IOException("Simulated IO failure");
             }
 
+            FailScheduledCopy();
             return !failAllCopies;
         }
 
@@ -131,6 +146,9 @@ namespace BSH.Test.Mocks
         {
             CopyFileToStorageCompressedCalls++;
             LastRemoteFile = remoteFile;
+            CompressedSourceFiles.Add(localFile);
+            EnsureSourceExists(localFile);
+            FailScheduledCopy();
             return !failAllCopies;
         }
 
@@ -138,7 +156,33 @@ namespace BSH.Test.Mocks
         {
             CopyFileToStorageEncryptedCalls++;
             LastRemoteFile = remoteFile;
+            EncryptedSourceFiles.Add(localFile);
+            EncryptedPasswords.Add(password);
+            EnsureSourceExists(localFile);
+            FailScheduledCopy();
             return !failAllCopies;
+        }
+
+        private void EnsureSourceExists(string localFile)
+        {
+            if (requireSourceExists && !File.Exists(localFile))
+            {
+                throw new FileNotFoundException("Source file is missing.", localFile);
+            }
+        }
+
+        private void FailScheduledCopy()
+        {
+            copyToStorageAttempts++;
+            if (throwNonIoOnFirstCopy && copyToStorageAttempts == 1)
+            {
+                throw new InvalidOperationException("Simulated copy failure");
+            }
+
+            if (copyToStorageAttempts <= ioFailuresBeforeSuccess)
+            {
+                throw new IOException("Simulated IO failure");
+            }
         }
 
         public bool DecryptOnStorage(string remoteFile, string password)
