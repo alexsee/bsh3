@@ -110,11 +110,6 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        public int GetWidth()
-        {
-            return lblVersionDate.Left + lblVersionDate.Width + 10;
-        }
-
         public void Activate()
         {
             BackColor = Color.LightGray;
@@ -131,11 +126,6 @@ namespace Brightbits.BSH.Main
         }
 
         private void lblVersionID_Click(object sender, EventArgs e)
-        {
-            ItemClick?.Invoke(this);
-        }
-
-        private void lblVersionTitle_Click(object sender, EventArgs e)
         {
             ItemClick?.Invoke(this);
         }

@@ -2097,16 +2097,6 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap search_icon_24 {
-            get {
-                object obj = ResourceManager.GetObject("search_icon_24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap search_icon_48 {
             get {
                 object obj = ResourceManager.GetObject("search_icon_48", resourceCulture);
@@ -2220,26 +2210,6 @@ namespace BSH.Main.Properties {
         public static string TASK_BSH_SHUTDOWN_PC {
             get {
                 return ResourceManager.GetString("TASK_BSH_SHUTDOWN_PC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap taskdialog_bg {
-            get {
-                object obj = ResourceManager.GetObject("taskdialog_bg", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap taskdialog_hover {
-            get {
-                object obj = ResourceManager.GetObject("taskdialog_hover", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

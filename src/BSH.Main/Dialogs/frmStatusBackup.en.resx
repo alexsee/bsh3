@@ -124,12 +124,6 @@
   <data name="lblStatus.Text" xml:space="preserve">
     <value>Initializing...</value>
   </data>
-  <data name="cboOptions.Items" xml:space="preserve">
-    <value>Shutdown PC after Backup</value>
-  </data>
-  <data name="cboOptions.Items1" xml:space="preserve">
-    <value>Standby PC after Backup</value>
-  </data>
   <data name="cmdCancel.Text" xml:space="preserve">
     <value>&amp;Cancel</value>
   </data>

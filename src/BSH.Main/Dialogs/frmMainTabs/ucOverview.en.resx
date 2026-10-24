@@ -148,15 +148,6 @@
   <data name="Label7.Text" xml:space="preserve">
     <value>Next Backup:</value>
   </data>
-  <data name="btnUpdates.Text" xml:space="preserve">
-    <value>Install</value>
-  </data>
-  <data name="btnUpdates.ToolTip" xml:space="preserve">
-    <value>Installs important updates.</value>
-  </data>
-  <data name="Label3.Text" xml:space="preserve">
-    <value>Updates are available.</value>
-  </data>
   <data name="Label5.Text" xml:space="preserve">
     <value>Backup settings:</value>
   </data>
