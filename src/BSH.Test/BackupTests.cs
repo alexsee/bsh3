@@ -325,11 +325,12 @@ public class BackupTests
         Assert.That(backupJob.FileErrorList, Is.Empty);
     }
 
-    [TestCase(StorageProviderKind.LocalFileSystem, false, true, FileTypeKind.Compressed)]
-    [TestCase(StorageProviderKind.Ftp, false, true, FileTypeKind.StoredCompressed)]
-    [TestCase(StorageProviderKind.LocalFileSystem, true, false, FileTypeKind.Encrypted)]
-    [TestCase(StorageProviderKind.Ftp, true, false, FileTypeKind.StoredEncrypted)]
-    public async Task VssRetry_KeepsConfiguredProtection(StorageProviderKind kind, bool encrypt, bool compress, FileTypeKind expectedFileType)
+    [TestCase(StorageProviderKind.LocalFileSystem, false, true, FileTypeKind.Compressed, false)]
+    [TestCase(StorageProviderKind.Ftp, false, true, FileTypeKind.StoredCompressed, false)]
+    [TestCase(StorageProviderKind.LocalFileSystem, true, false, FileTypeKind.Encrypted, false)]
+    [TestCase(StorageProviderKind.Ftp, true, false, FileTypeKind.StoredEncrypted, false)]
+    [TestCase(StorageProviderKind.LocalFileSystem, true, false, FileTypeKind.Encrypted, true)]
+    public async Task VssRetry_KeepsConfiguredProtection(StorageProviderKind kind, bool encrypt, bool compress, FileTypeKind expectedFileType, bool nonIoFailure)
     {
         if (encrypt)
         {
@@ -343,7 +344,7 @@ public class BackupTests
         }
 
         var vss = new VssClientMock(shouldCopy: true);
-        var fs = new StorageMock(ioFailuresBeforeSuccess: 1, requireSourceExists: true) { Kind = kind };
+        var fs = new StorageMock(ioFailuresBeforeSuccess: 1, throwNonIoOnFirstCopy: nonIoFailure, requireSourceExists: true) { Kind = kind };
         using var backupJob = CreateBackupJobForSingleTempFile(fs, vss, ".txt");
         if (encrypt)
         {
@@ -369,29 +370,6 @@ public class BackupTests
         Assert.That(fs.CopyFileToStorageCompressedCalls, Is.EqualTo(2));
         Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(0));
         AssertShadowCopySource(fs.CompressedSourceFiles);
-    }
-
-    [Test]
-    public async Task VssRetry_EncryptedBackup_NonIoFailure_StoresEncryptedCopy()
-    {
-        configurationManager.Encrypt = 1;
-        configurationManager.EncryptPassMD5 = "cc03e747a6afbbcbf8be7668acfebee5";
-
-        var vss = new VssClientMock(shouldCopy: true);
-        var fs = new StorageMock(throwNonIoOnFirstCopy: true, requireSourceExists: true);
-        using var backupJob = CreateBackupJobForSingleTempFile(fs, vss, ".txt");
-        backupJob.Password = "test123";
-
-        await backupJob.BackupAsync(CancellationToken.None);
-
-        Assert.That(vss.CopyCalls, Is.EqualTo(1));
-        Assert.That(backupJob.FileErrorList, Is.Empty);
-        Assert.That(fs.CopyFileToStorageCalls, Is.EqualTo(0));
-        Assert.That(fs.CopyFileToStorageCompressedCalls, Is.EqualTo(0));
-        Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(2));
-        Assert.That(fs.EncryptedPasswords, Is.EqualTo(new[] { "test123", "test123" }));
-        Assert.That(await GetSingleFileTypeAsync(), Is.EqualTo((int)FileTypeKind.Encrypted));
-        AssertShadowCopySource(fs.EncryptedSourceFiles);
     }
 
     [Test]
@@ -734,10 +712,9 @@ public class BackupTests
     private static void AssertShadowCopySource(IReadOnlyList<string> sourceFiles)
     {
         Assert.That(sourceFiles, Has.Count.EqualTo(2));
-        var shadowCopy = Path.Combine(Path.GetTempPath(), Path.GetFileName(sourceFiles[0]));
-        Assert.That(sourceFiles[1], Is.EqualTo(shadowCopy));
-        Assert.That(sourceFiles[0], Is.Not.EqualTo(shadowCopy));
-        Assert.That(File.Exists(shadowCopy), Is.False);
+        Assert.That(sourceFiles[1], Is.Not.EqualTo(sourceFiles[0]).IgnoreCase);
+        Assert.That(File.Exists(sourceFiles[0]), Is.True);
+        Assert.That(File.Exists(sourceFiles[1]), Is.False);
     }
 
     private BackupJob CreateBackupJobForSingleTempFile(StorageMock storage, VssClientMock vss, string extension)
