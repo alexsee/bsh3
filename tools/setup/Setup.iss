@@ -40,9 +40,10 @@ Name: german; MessagesFile: compiler:Languages\German.isl
 Name: "{group}\Backup Service Home"; Filename: "{app}\BSH.Main.exe"; Parameters: "/config"
 
 [Run]
+; Inno doubles quotes; backslash-escaped quotes survive sc.exe parsing into ImagePath.
 Filename: "net"; Parameters: "stop ""Backup Service Home-Dienst"""; Flags: runhidden
-Filename: "sc"; Parameters: "create ""Backup Service Home-Dienst"" binpath=""{app}\BSH.Service.exe"" start=auto"; WorkingDir: "{app}"; Flags: runhidden runascurrentuser; StatusMsg: "Backup Service Home-Dienst wird eingerichtet..."
-Filename: "sc"; Parameters: "config ""Backup Service Home-Dienst"" binpath=""{app}\BSH.Service.exe"" start=auto"; WorkingDir: "{app}"; Flags: runhidden runascurrentuser
+Filename: "sc"; Parameters: "create ""Backup Service Home-Dienst"" binpath= ""\""{app}\BSH.Service.exe\"""" start=auto"; WorkingDir: "{app}"; Flags: runhidden runascurrentuser; StatusMsg: "Backup Service Home-Dienst wird eingerichtet..."
+Filename: "sc"; Parameters: "config ""Backup Service Home-Dienst"" binpath= ""\""{app}\BSH.Service.exe\"""" start=auto"; WorkingDir: "{app}"; Flags: runhidden runascurrentuser
 Filename: "net"; Parameters: "start ""Backup Service Home-Dienst"""; Flags: runascurrentuser runhidden; StatusMsg: "Backup Service Home-Dienst wird gestartet..."
 Filename: "{app}\BSH.Main.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,Backup Service Home}"
 
