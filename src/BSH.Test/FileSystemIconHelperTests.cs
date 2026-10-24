@@ -2,7 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,6 +65,15 @@ public class FileSystemIconHelperTests
     }
 
     [Test]
+    public void SelectIconTier_AccountsForDpiScaledShellLists()
+    {
+        Assert.That(FileSystemIconHelpers.SelectIconTier(32, 192), Is.EqualTo(FileSystemIconHelpers.ShellIconTier.Small));
+        Assert.That(FileSystemIconHelpers.SelectIconTier(64, 192), Is.EqualTo(FileSystemIconHelpers.ShellIconTier.Large));
+        Assert.That(FileSystemIconHelpers.SelectIconTier(96, 192), Is.EqualTo(FileSystemIconHelpers.ShellIconTier.ExtraLarge));
+        Assert.That(FileSystemIconHelpers.SelectIconTier(97, 192), Is.EqualTo(FileSystemIconHelpers.ShellIconTier.Jumbo));
+    }
+
+    [Test]
     public void ApplyStraightAlpha_PremultipliesAndUsesMaskWhenColorAlphaIsMissing()
     {
         var straight = new byte[] { 10, 20, 30, 128 };
@@ -86,21 +97,66 @@ public class FileSystemIconHelperTests
     [Test]
     public async Task GetFileIconAsync_DoesNotCreateOrDeleteExtensionNamedAppDataFile()
     {
+        await RunOnXamlThreadAsync(ProbeAppDataFile);
+    }
+
+    [Test]
+    public async Task GetFileIconAsync_UncachedLookupsReleaseNativeHandles()
+    {
+        await RunOnXamlThreadAsync(() =>
+        {
+            using var process = Process.GetCurrentProcess();
+            // Warm each shell list before measuring handles owned by our conversions.
+            LoadUncachedIcons();
+            var gdiBefore = GetGuiResources(process.Handle, 0);
+            var userBefore = GetGuiResources(process.Handle, 1);
+            for (var i = 0; i < 64; i++)
+            {
+                LoadUncachedIcons();
+            }
+
+            Assert.That(GetGuiResources(process.Handle, 0), Is.LessThanOrEqualTo(gdiBefore + 2), "GDI bitmaps must be deleted");
+            Assert.That(GetGuiResources(process.Handle, 1), Is.LessThanOrEqualTo(userBefore + 2), "HICONs must be destroyed");
+        });
+    }
+
+    private static void LoadUncachedIcons()
+    {
+        FileSystemIconHelpers.ClearIconCache();
+        foreach (var size in new uint[] { 16, 32, 48, 64 })
+        {
+            var icon = FileSystemIconHelpers.GetFileIconAsync("notes.txt", size).GetAwaiter().GetResult();
+            Assert.That(icon, Is.Not.Null);
+            Assert.That(HasVisiblePixel(icon), Is.True);
+        }
+    }
+
+    private static async Task RunOnXamlThreadAsync(Action action)
+    {
         var controller = DispatcherQueueController.CreateOnDedicatedThread();
         try
         {
-            await InvokeAsync(controller.DispatcherQueue, ProbeAppDataFile);
+            await InvokeAsync(controller.DispatcherQueue, () =>
+            {
+                using var xaml = WindowsXamlManager.InitializeForCurrentThread();
+                try
+                {
+                    action();
+                }
+                finally
+                {
+                    FileSystemIconHelpers.ClearIconCache();
+                }
+            });
         }
         finally
         {
-            FileSystemIconHelpers.ClearIconCache();
             await controller.ShutdownQueueAsync();
         }
     }
 
     private static void ProbeAppDataFile()
     {
-        using var xaml = WindowsXamlManager.InitializeForCurrentThread();
         FileSystemIconHelpers.ClearIconCache();
 
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -131,11 +187,10 @@ public class FileSystemIconHelperTests
 
             Assert.That(File.Exists(unexpected), Is.False);
 
-            var icon = FileSystemIconHelpers.LoadFileIcon("notes.txt", 16);
-            var sameCase = FileSystemIconHelpers.LoadFileIcon("NOTES.TXT", 16);
-            var larger = FileSystemIconHelpers.LoadFileIcon("notes.txt", 64);
-            var unknown = FileSystemIconHelpers.LoadFileIcon("sample" + extension, 16);
-            var wrapped = FileSystemIconHelpers.GetFileIconAsync("notes.txt", 16).GetAwaiter().GetResult();
+            var icon = FileSystemIconHelpers.GetFileIconAsync("notes.txt", 16).GetAwaiter().GetResult();
+            var sameCase = FileSystemIconHelpers.GetFileIconAsync("NOTES.TXT", 16).GetAwaiter().GetResult();
+            var larger = FileSystemIconHelpers.GetFileIconAsync("notes.txt", 64).GetAwaiter().GetResult();
+            var unknown = FileSystemIconHelpers.GetFileIconAsync("sample" + extension, 16).GetAwaiter().GetResult();
 
             Assert.That(File.Exists(sentinel), Is.True);
             Assert.That(File.ReadAllBytes(sentinel), Is.EqualTo(originalSentinel));
@@ -155,11 +210,11 @@ public class FileSystemIconHelperTests
             Assert.That(icon, Is.Not.Null);
             Assert.That(HasVisiblePixel(icon), Is.True);
             Assert.That(sameCase, Is.SameAs(icon));
-            Assert.That(wrapped, Is.SameAs(icon));
             Assert.That(larger, Is.Not.Null);
+            Assert.That(HasVisiblePixel(larger), Is.True);
             Assert.That(larger, Is.Not.SameAs(icon));
             Assert.That(unknown, Is.Not.Null);
-            Assert.That(FileSystemIconHelpers.LoadFileIcon("README"), Is.Null);
+            Assert.That(FileSystemIconHelpers.GetFileIconAsync("README", 16).GetAwaiter().GetResult(), Is.Null);
         }
         finally
         {
@@ -235,4 +290,8 @@ public class FileSystemIconHelperTests
 
         return source.Task;
     }
+
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    [DllImport("user32.dll", ExactSpelling = true)]
+    private static extern uint GetGuiResources(IntPtr process, uint flags);
 }

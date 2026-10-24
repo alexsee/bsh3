@@ -16,7 +16,6 @@ namespace BSH.MainApp.Utils;
 /// Lookup uses file attributes only, so it never creates or deletes a file.
 /// Call <see cref="GetFileIconAsync"/> on the UI thread; the shell calls run there.
 /// </summary>
-[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
 public static class FileSystemIconHelpers
 {
     private const int ShilExtraLarge = 2;
@@ -90,21 +89,22 @@ public static class FileSystemIconHelpers
     }
 
     /// <summary>
-    /// Smallest shell image that is at least <paramref name="devicePixels"/>: 16, 32, 48, then 256.
+    /// Smallest shell image that covers the device size. Small, large and extra-large
+    /// lists scale with system DPI; jumbo remains 256 pixels.
     /// </summary>
-    internal static ShellIconTier SelectIconTier(uint devicePixels)
+    internal static ShellIconTier SelectIconTier(uint devicePixels, uint dpi = 96)
     {
-        if (devicePixels <= 16)
+        if (devicePixels <= ToDevicePixels(16, dpi))
         {
             return ShellIconTier.Small;
         }
 
-        if (devicePixels <= 32)
+        if (devicePixels <= ToDevicePixels(32, dpi))
         {
             return ShellIconTier.Large;
         }
 
-        if (devicePixels <= 48)
+        if (devicePixels <= ToDevicePixels(48, dpi))
         {
             return ShellIconTier.ExtraLarge;
         }
@@ -157,7 +157,7 @@ public static class FileSystemIconHelpers
         Jumbo
     }
 
-    internal static BitmapSource? LoadFileIcon(string? fileName, uint requestedSize)
+    private static BitmapSource? LoadFileIcon(string? fileName, uint requestedSize)
     {
         var key = GetIconCacheKey(fileName, requestedSize);
         if (key == null)
@@ -171,8 +171,9 @@ public static class FileSystemIconHelpers
         }
 
         var extension = ExtensionOf(fileName)!.ToLowerInvariant();
-        var devicePixels = ToDevicePixels(requestedSize, GetDpiForSystem());
-        var created = TryCreateIcon(extension, devicePixels);
+        var dpi = GetDpiForSystem();
+        var devicePixels = ToDevicePixels(requestedSize, dpi);
+        var created = TryCreateIcon(extension, devicePixels, dpi);
         if (created == null)
         {
             return null;
@@ -192,9 +193,9 @@ public static class FileSystemIconHelpers
         return string.IsNullOrEmpty(extension) ? null : extension;
     }
 
-    private static BitmapSource? TryCreateIcon(string extension, uint devicePixels)
+    private static BitmapSource? TryCreateIcon(string extension, uint devicePixels, uint dpi)
     {
-        var tier = SelectIconTier(devicePixels);
+        var tier = SelectIconTier(devicePixels, dpi);
         var hIcon = tier is ShellIconTier.Small or ShellIconTier.Large
             ? GetSizedIcon(extension, tier == ShellIconTier.Small)
             : GetImageListIcon(extension, tier == ShellIconTier.ExtraLarge ? ShilExtraLarge : ShilJumbo);
@@ -421,30 +422,39 @@ public static class FileSystemIconHelpers
         }
     }
 
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("shell32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = true)]
     private static extern int SHGetImageList(int iImageList, ref Guid riid, out IShellImageList? imageList);
 
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("user32.dll", ExactSpelling = true)]
     private static extern uint GetDpiForSystem();
 
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
     private static extern bool GetIconInfo(IntPtr hIcon, out IconInfo iconInfo);
 
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("user32.dll", ExactSpelling = true)]
     private static extern bool DestroyIcon(IntPtr hIcon);
 
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("user32.dll", ExactSpelling = true)]
     private static extern IntPtr GetDC(IntPtr hWnd);
 
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("user32.dll", ExactSpelling = true)]
     private static extern int ReleaseDC(IntPtr hWnd, IntPtr hdc);
 
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("gdi32.dll", ExactSpelling = true)]
     private static extern bool DeleteObject(IntPtr hObject);
 
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("gdi32.dll", EntryPoint = "GetObjectW", ExactSpelling = true, SetLastError = true)]
     private static extern int GetObject(IntPtr h, int c, out BitmapRecord bitmap);
 
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
     private static extern int GetDIBits(
         IntPtr hdc,
