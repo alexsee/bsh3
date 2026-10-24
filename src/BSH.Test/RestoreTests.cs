@@ -29,12 +29,7 @@ public class RestoreTests
 {
     private const string TestDbName = "testdb_restore.db";
 
-    /// <summary>
-    /// Synthetic destination used by most tests. RestoreJob may attempt
-    /// Directory.CreateDirectory / timestamp updates; those failures are ignored.
-    /// No files are written by StorageMock.
-    /// </summary>
-    private const string SyntheticDestination = @"Z:\BSH.Test.Restore";
+    private string defaultDestination;
 
     private IDbClientFactory dbClientFactory;
     private IConfigurationManager configurationManager;
@@ -44,6 +39,8 @@ public class RestoreTests
     [SetUp]
     public async Task Setup()
     {
+        defaultDestination = Path.Combine(Path.GetTempPath(), "BSH.Test", "restore-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(defaultDestination);
         if (dbClientFactory != null)
         {
             DbClientFactory.ClosePool();
@@ -70,6 +67,7 @@ public class RestoreTests
     [TearDown]
     public void Cleanup()
     {
+        Directory.Delete(defaultDestination, true);
         DbClientFactory.ClosePool();
 
         if (File.Exists(TestDbName))
@@ -458,7 +456,7 @@ public class RestoreTests
     private RestoreJob CreateRestoreJob(
         IStorageProvider storage,
         int version = 1,
-        string destination = SyntheticDestination,
+        string destination = null,
         string file = @"\",
         FileOverwrite overwrite = FileOverwrite.Overwrite)
     {
@@ -471,7 +469,7 @@ public class RestoreTests
         {
             Version = version,
             File = file,
-            Destination = destination,
+            Destination = destination ?? defaultDestination,
             FileOverwrite = overwrite,
         };
     }
@@ -503,9 +501,9 @@ public class RestoreTests
     /// <summary>
     /// Creates a real destination file only where RestoreJob checks File.Exists for overwrite policy.
     /// </summary>
-    private static string CreateExistingDestinationFile(string fileName)
+    private string CreateExistingDestinationFile(string fileName)
     {
-        var destination = Path.Combine(Path.GetTempPath(), "BSH.Test", "restore-unit-" + Guid.NewGuid().ToString("N"));
+        var destination = defaultDestination;
         Directory.CreateDirectory(destination);
         File.WriteAllText(Path.Combine(destination, fileName), "existing");
         return destination;
