@@ -75,6 +75,3 @@ begin
 		shellExec('open', 'net', 'stop "Backup Service Home Preview-Dienst"', '', SW_HIDE, ewWaitUntilTerminated, ErrorCode);
 	end;
 end;
-
-[_ISTool]
-UseAbsolutePaths=true
