@@ -183,9 +183,6 @@
   <data name="lblExtras.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Right</value>
   </data>
-  <data name="&gt;&gt;AlteDatensicherungImportierenToolStripMenuItem.Name" xml:space="preserve">
-    <value>AlteDatensicherungImportierenToolStripMenuItem</value>
-  </data>
   <data name="picHelp.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
     <value>Zoom</value>
   </data>
@@ -311,9 +308,6 @@ von Backup Service Home herunterzuladen.</value>
   </data>
   <data name="picHelp.Location" type="System.Drawing.Point, System.Drawing">
     <value>986, 14</value>
-  </data>
-  <data name="&gt;&gt;AlteDatensicherungImportierenToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;lblHeadTitle.Name" xml:space="preserve">
     <value>lblHeadTitle</value>
@@ -464,14 +458,8 @@ von Backup Service Home herunterzuladen.</value>
   <data name="&gt;&gt;picHome.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="AlteDatensicherungImportierenToolStripMenuItem.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <data name="btnResetUserId.Text" xml:space="preserve">
     <value>Eindeutige Benutzerkennung zurücksetzen</value>
-  </data>
-  <data name="AlteDatensicherungImportierenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Alte Datensicherung importieren</value>
   </data>
   <data name="&gt;&gt;HilfeUndSupportToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -499,9 +487,6 @@ von Backup Service Home herunterzuladen.</value>
   </data>
   <data name="&gt;&gt;ToolStripMenuItem4.Name" xml:space="preserve">
     <value>ToolStripMenuItem4</value>
-  </data>
-  <data name="AlteDatensicherungImportierenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 32</value>
   </data>
   <data name="lblHeadTitle.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>

@@ -2,12 +2,6 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BSH.Main.Properties" GeneratedClassName="Settings" UseMySettingsClassName="true">
   <Profiles />
   <Settings>
-    <Setting Name="SystemStatus" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="SystemConfigured" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="BrowserSplitter" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">235</Value>
     </Setting>
@@ -31,9 +25,6 @@
     </Setting>
     <Setting Name="AutoSearchUpdates" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="StartParameters" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="UniqueUserId" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
