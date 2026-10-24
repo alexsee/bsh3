@@ -4,13 +4,16 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Services;
 using NUnit.Framework;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Matchers;
 using Quartz.Listener;
+using Quartz.Spi;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -46,12 +49,60 @@ public class SchedulerServiceTests
     private static IEnumerable<TestCaseData> Registrations()
     {
         var time = DateTime.Now.AddHours(1);
-        yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleAutoBackup(() => Task.CompletedTask))).SetArgDisplayNames("Auto");
         yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleOnce(() => Task.CompletedTask, time))).SetArgDisplayNames("Once");
+        foreach (var registration in RecurringRegistrations())
+        {
+            yield return registration;
+        }
+    }
+
+    private static IEnumerable<TestCaseData> RecurringRegistrations()
+    {
+        var time = DateTime.Now.AddHours(1);
+        yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleAutoBackup(() => Task.CompletedTask))).SetArgDisplayNames("Auto");
         yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleHourly(() => Task.CompletedTask, time))).SetArgDisplayNames("Hourly");
         yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleDaily(() => Task.CompletedTask, time))).SetArgDisplayNames("Daily");
         yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleWeekly(() => Task.CompletedTask, time))).SetArgDisplayNames("Weekly");
         yield return new TestCaseData((Action<SchedulerService>)(service => service.ScheduleMonthly(() => Task.CompletedTask, time))).SetArgDisplayNames("Monthly");
+    }
+
+    [TestCaseSource(nameof(RecurringRegistrations))]
+    public async Task MissedRecurringSlotAdvancesToFutureScheduledTime(Action<SchedulerService> register)
+    {
+        var service = new SchedulerService();
+        service.Start();
+        try
+        {
+            var scheduler = await new StdSchedulerFactory().GetScheduler("QuartzScheduler");
+            await scheduler.Standby();
+            register(service);
+
+            var keys = await scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
+            Assert.That(keys, Has.Count.EqualTo(1));
+            var trigger = (IOperableTrigger)await scheduler.GetTrigger(keys.Single());
+            var now = DateTimeOffset.UtcNow;
+            // Exercise Quartz's misfire recovery on the actual registered trigger,
+            // without waiting for an hourly (or monthly) slot to become overdue.
+            trigger.SetNextFireTimeUtc(now.AddDays(-32));
+            var originalClock = SystemTime.UtcNow;
+            try
+            {
+                SystemTime.UtcNow = () => now;
+                trigger.UpdateAfterMisfire(null);
+            }
+            finally
+            {
+                SystemTime.UtcNow = originalClock;
+            }
+
+            Assert.That(trigger.GetNextFireTimeUtc(), Is.GreaterThan(now),
+                "A missed recurring backup must not fire immediately when the worker becomes free.");
+            Assert.That(trigger.GetNextFireTimeUtc(), Is.EqualTo(trigger.GetFireTimeAfter(now)));
+        }
+        finally
+        {
+            service.Stop();
+        }
     }
 
     [TestCaseSource(nameof(Registrations))]

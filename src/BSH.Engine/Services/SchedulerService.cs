@@ -58,7 +58,7 @@ public class SchedulerService : ISchedulerAdapter
     public void ScheduleAutoBackup(Func<Task> action)
     {
         var trigger = TriggerBuilder.Create()
-            .WithCronSchedule("0 0 * * * ?")
+            .WithCronSchedule("0 0 * * * ?", schedule => schedule.WithMisfireHandlingInstructionDoNothing())
             .Build();
 
         scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
@@ -66,6 +66,7 @@ public class SchedulerService : ISchedulerAdapter
 
     public void ScheduleOnce(Func<Task> action, DateTime time)
     {
+        // Keep the one-shot trigger's default FireNow recovery: it has no later slot.
         var trigger = TriggerBuilder.Create()
             .StartAt(time)
             .Build();
@@ -76,7 +77,7 @@ public class SchedulerService : ISchedulerAdapter
     public void ScheduleHourly(Func<Task> action, DateTime time)
     {
         var trigger = TriggerBuilder.Create()
-            .WithCronSchedule("0 " + time.Minute + " * * * ?")
+            .WithCronSchedule("0 " + time.Minute + " * * * ?", schedule => schedule.WithMisfireHandlingInstructionDoNothing())
             .Build();
 
         scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
@@ -85,7 +86,8 @@ public class SchedulerService : ISchedulerAdapter
     public void ScheduleDaily(Func<Task> action, DateTime time)
     {
         var trigger = TriggerBuilder.Create()
-            .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(time.Hour, time.Minute))
+            .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(time.Hour, time.Minute)
+                .WithMisfireHandlingInstructionDoNothing())
             .Build();
 
         scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
@@ -94,7 +96,8 @@ public class SchedulerService : ISchedulerAdapter
     public void ScheduleWeekly(Func<Task> action, DateTime time)
     {
         var trigger = TriggerBuilder.Create()
-            .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(time.DayOfWeek, time.Hour, time.Minute))
+            .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(time.DayOfWeek, time.Hour, time.Minute)
+                .WithMisfireHandlingInstructionDoNothing())
             .Build();
 
         scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
@@ -103,7 +106,8 @@ public class SchedulerService : ISchedulerAdapter
     public void ScheduleMonthly(Func<Task> action, DateTime time)
     {
         var trigger = TriggerBuilder.Create()
-            .WithSchedule(CronScheduleBuilder.MonthlyOnDayAndHourAndMinute(time.Day, time.Hour, time.Minute))
+            .WithSchedule(CronScheduleBuilder.MonthlyOnDayAndHourAndMinute(time.Day, time.Hour, time.Minute)
+                .WithMisfireHandlingInstructionDoNothing())
             .Build();
 
         scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
