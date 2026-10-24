@@ -28,7 +28,6 @@ public partial class SetupViewModel : ObservableObject
     private readonly IPresentationService presentationService;
     private readonly IStatusService? statusService;
     private readonly IDbClientFactory? dbClientFactory;
-    private string? databaseFileOverride;
 
     public SetupViewModel(
         IConfigurationManager configurationManager,
@@ -59,15 +58,7 @@ public partial class SetupViewModel : ObservableObject
         CurrentStep = SetupWizardStep.Welcome;
     }
 
-    /// <summary>
-    /// Test helper to avoid touching the live app database path.
-    /// </summary>
-    public void UseDatabaseFile(string databaseFile)
-    {
-        databaseFileOverride = databaseFile;
-    }
-
-    private string DatabaseFile => databaseFileOverride ?? App.DatabaseFile;
+    private string DatabaseFile => App.DatabaseFile;
 
     public ObservableCollection<string> Sources { get; } = new();
 

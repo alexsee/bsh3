@@ -13,7 +13,6 @@ public static class ToastNotificationActivation
 {
     public const string ActionOverview = "overview";
     public const string ActionSettings = "settings";
-    public const string ActionBackupResult = "backupResult";
 
     public const string PageKeyOverview = "BSH.MainApp.ViewModels.MainViewModel";
     public const string PageKeySettings = "BSH.MainApp.ViewModels.SettingsViewModel";
