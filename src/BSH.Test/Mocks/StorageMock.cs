@@ -107,7 +107,7 @@ namespace BSH.Test.Mocks
             return RecordCopyFromStorage(
                 CopiedFromStorageRemoteFiles,
                 () => CopyFileFromStorageCalls++,
-                remoteFile);
+                remoteFile, localFile);
         }
 
         public bool CopyFileFromStorageCompressed(string localFile, string remoteFile)
@@ -115,7 +115,7 @@ namespace BSH.Test.Mocks
             return RecordCopyFromStorage(
                 CopiedFromStorageCompressedRemoteFiles,
                 () => CopyFileFromStorageCompressedCalls++,
-                remoteFile);
+                remoteFile, localFile);
         }
 
         public bool CopyFileFromStorageEncrypted(string localFile, string remoteFile, string password)
@@ -123,7 +123,7 @@ namespace BSH.Test.Mocks
             return RecordCopyFromStorage(
                 CopiedFromStorageEncryptedRemoteFiles,
                 () => CopyFileFromStorageEncryptedCalls++,
-                remoteFile);
+                remoteFile, localFile);
         }
 
         public bool CopyFileToStorage(string localFile, string remoteFile)
@@ -277,7 +277,7 @@ namespace BSH.Test.Mocks
             return true;
         }
 
-        private bool RecordCopyFromStorage(List<string> remoteFiles, Action incrementCalls, string remoteFile)
+        private bool RecordCopyFromStorage(List<string> remoteFiles, Action incrementCalls, string remoteFile, string localFile)
         {
             if (!string.IsNullOrEmpty(throwOnRemoteContaining) &&
                 remoteFile.Contains(throwOnRemoteContaining, StringComparison.Ordinal))
@@ -289,6 +289,11 @@ namespace BSH.Test.Mocks
             incrementCalls();
             LastRemoteFile = remoteFile;
             remoteFiles.Add(remoteFile);
+            if (!failAllCopies)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(localFile));
+                File.WriteAllText(localFile, "");
+            }
             return !failAllCopies;
         }
     }
