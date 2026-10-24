@@ -9,8 +9,6 @@ public interface ISwitchStorageService
 {
     bool LocalTargetContainsBackupData(string driveRoot);
 
-    bool UncTargetContainsBackupData(string uncPath);
-
     void SyncDatabaseToCurrentMedium(string databaseFile);
 
     Task SwitchToLocalAsync(string driveRoot, string? mediaVolumeSerial, string databaseFile);

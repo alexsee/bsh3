@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
 using Humanizer;
+using Serilog;
 using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
@@ -361,11 +362,6 @@ public partial class ucOverview : IMainTabs, IStatusReport
         BackupLogic.BackupController.Cancel();
     }
 
-    private void btnUpdates_Click(object sender, EventArgs e)
-    {
-
-    }
-
     private void btnSettings_Click(object sender, EventArgs e)
     {
         SuperBase.CurrentTab = frmMain.AvailableTabs.TabConfiguration;
@@ -405,16 +401,6 @@ public partial class ucOverview : IMainTabs, IStatusReport
         cmdBackupNow.Image = Resources.backup_icon_48;
     }
 
-    private void cmdBackupCancel_MouseEnter(object sender, EventArgs e)
-    {
-        cmdBackupCancel.Image = Resources.cancel_fill_icon_48;
-    }
-
-    private void cmdBackupCancel_MouseLeave(object sender, EventArgs e)
-    {
-        cmdBackupCancel.Image = Resources.cancel_icon_48;
-    }
-
     private void llOptions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
         btnSettings_Click(e, null);
@@ -442,7 +428,8 @@ public partial class ucOverview : IMainTabs, IStatusReport
             return;
         }
 
-        Invoke(new Action(async () => await RefreshInfo()));
+        // RefreshInfoOnUiThreadAsync owns completion and logs failures.
+        _ = RefreshInfoOnUiThreadAsync();
     }
 
     public void ReportState(JobState jobState)
@@ -452,7 +439,8 @@ public partial class ucOverview : IMainTabs, IStatusReport
             return;
         }
 
-        Invoke(new Action(async () => await RefreshInfo()));
+        // RefreshInfoOnUiThreadAsync owns completion and logs failures.
+        _ = RefreshInfoOnUiThreadAsync();
     }
 
     public void ReportStatus(string title, string text)
@@ -512,7 +500,20 @@ public partial class ucOverview : IMainTabs, IStatusReport
             return;
         }
 
-        Invoke(new Action(async () => await RefreshInfo()));
+        // RefreshInfoOnUiThreadAsync owns completion and logs failures.
+        _ = RefreshInfoOnUiThreadAsync();
+    }
+
+    private async Task RefreshInfoOnUiThreadAsync()
+    {
+        try
+        {
+            await (Task)Invoke(new Func<Task>(RefreshInfo));
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Overview UI update failed.");
+        }
     }
 
     private void llShowExceptionDialog_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

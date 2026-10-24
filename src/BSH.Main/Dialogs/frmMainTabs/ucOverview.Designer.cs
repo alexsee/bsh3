@@ -44,9 +44,6 @@ namespace Brightbits.BSH.Main
             cmdBackupCancel = new PictureBox();
             Label7 = new Label();
             lblNextBackup = new Label();
-            plUpdates = new Panel();
-            btnUpdates = new Button();
-            Label3 = new Label();
             plBottom = new Panel();
             Label5 = new Label();
             lblInfo = new Label();
@@ -66,7 +63,6 @@ namespace Brightbits.BSH.Main
             loadingCircle = new MRG.Controls.UI.LoadingCircle();
             plStatus.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)cmdBackupCancel).BeginInit();
-            plUpdates.SuspendLayout();
             plBottom.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)btnOnOff).BeginInit();
             ((System.ComponentModel.ISupportInitialize)cmdBackupNow).BeginInit();
@@ -173,30 +169,6 @@ namespace Brightbits.BSH.Main
             lblNextBackup.Name = "lblNextBackup";
             ttMain.SetToolTip(lblNextBackup, resources.GetString("lblNextBackup.ToolTip"));
             // 
-            // plUpdates
-            // 
-            resources.ApplyResources(plUpdates, "plUpdates");
-            plUpdates.BackColor = Color.FromArgb(255, 192, 192);
-            plUpdates.Controls.Add(btnUpdates);
-            plUpdates.Controls.Add(Label3);
-            plUpdates.Name = "plUpdates";
-            ttMain.SetToolTip(plUpdates, resources.GetString("plUpdates.ToolTip"));
-            // 
-            // btnUpdates
-            // 
-            resources.ApplyResources(btnUpdates, "btnUpdates");
-            btnUpdates.BackColor = Color.Transparent;
-            btnUpdates.Name = "btnUpdates";
-            ttMain.SetToolTip(btnUpdates, resources.GetString("btnUpdates.ToolTip"));
-            btnUpdates.UseVisualStyleBackColor = false;
-            btnUpdates.Click += btnUpdates_Click;
-            // 
-            // Label3
-            // 
-            resources.ApplyResources(Label3, "Label3");
-            Label3.Name = "Label3";
-            ttMain.SetToolTip(Label3, resources.GetString("Label3.ToolTip"));
-            // 
             // plBottom
             // 
             resources.ApplyResources(plBottom, "plBottom");
@@ -280,7 +252,6 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(FlowLayoutPanel1, "FlowLayoutPanel1");
             FlowLayoutPanel1.BackColor = Color.White;
-            FlowLayoutPanel1.Controls.Add(plUpdates);
             FlowLayoutPanel1.Controls.Add(plBottom);
             FlowLayoutPanel1.Name = "FlowLayoutPanel1";
             ttMain.SetToolTip(FlowLayoutPanel1, resources.GetString("FlowLayoutPanel1.ToolTip"));
@@ -382,7 +353,6 @@ namespace Brightbits.BSH.Main
             ttMain.SetToolTip(this, resources.GetString("$this.ToolTip"));
             plStatus.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)cmdBackupCancel).EndInit();
-            plUpdates.ResumeLayout(false);
             plBottom.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)btnOnOff).EndInit();
             ((System.ComponentModel.ISupportInitialize)cmdBackupNow).EndInit();
@@ -411,9 +381,6 @@ namespace Brightbits.BSH.Main
         internal ToolTip ttMain;
         internal Panel plBottom;
         internal Label lblInfo;
-        internal Panel plUpdates;
-        internal Label Label3;
-        internal Button btnUpdates;
         internal Label Label7;
         internal Label lblNextBackup;
         internal PictureBox btnSettings;

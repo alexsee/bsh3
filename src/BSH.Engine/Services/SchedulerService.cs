@@ -8,6 +8,7 @@ using Brightbits.BSH.Engine.Providers.Ports;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
+using Serilog;
 
 namespace Brightbits.BSH.Engine.Services;
 
@@ -42,7 +43,7 @@ public class SchedulerService : ISchedulerAdapter
         await this.scheduler.Start().ConfigureAwait(false);
     }
 
-    private static IJobDetail GetJob(Action action)
+    private static IJobDetail GetJob(Func<Task> action)
     {
         var job = JobBuilder.Create<RunActionJob>()
             .SetJobData(new JobDataMap
@@ -54,7 +55,7 @@ public class SchedulerService : ISchedulerAdapter
         return job;
     }
 
-    public void ScheduleAutoBackup(Action action)
+    public void ScheduleAutoBackup(Func<Task> action)
     {
         var trigger = TriggerBuilder.Create()
             .WithCronSchedule("0 0 * * * ?")
@@ -63,7 +64,7 @@ public class SchedulerService : ISchedulerAdapter
         scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
-    public void ScheduleOnce(Action action, DateTime time)
+    public void ScheduleOnce(Func<Task> action, DateTime time)
     {
         var trigger = TriggerBuilder.Create()
             .StartAt(time)
@@ -72,7 +73,7 @@ public class SchedulerService : ISchedulerAdapter
         scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
-    public void ScheduleHourly(Action action, DateTime time)
+    public void ScheduleHourly(Func<Task> action, DateTime time)
     {
         var trigger = TriggerBuilder.Create()
             .WithCronSchedule("0 " + time.Minute + " * * * ?")
@@ -81,7 +82,7 @@ public class SchedulerService : ISchedulerAdapter
         scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
-    public void ScheduleDaily(Action action, DateTime time)
+    public void ScheduleDaily(Func<Task> action, DateTime time)
     {
         var trigger = TriggerBuilder.Create()
             .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(time.Hour, time.Minute))
@@ -90,7 +91,7 @@ public class SchedulerService : ISchedulerAdapter
         scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
-    public void ScheduleWeekly(Action action, DateTime time)
+    public void ScheduleWeekly(Func<Task> action, DateTime time)
     {
         var trigger = TriggerBuilder.Create()
             .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(time.DayOfWeek, time.Hour, time.Minute))
@@ -99,7 +100,7 @@ public class SchedulerService : ISchedulerAdapter
         scheduler.ScheduleJob(GetJob(action), trigger).GetAwaiter().GetResult();
     }
 
-    public void ScheduleMonthly(Action action, DateTime time)
+    public void ScheduleMonthly(Func<Task> action, DateTime time)
     {
         var trigger = TriggerBuilder.Create()
             .WithSchedule(CronScheduleBuilder.MonthlyOnDayAndHourAndMinute(time.Day, time.Hour, time.Minute))
@@ -154,11 +155,22 @@ public class SchedulerService : ISchedulerAdapter
     {
         async Task IJob.Execute(IJobExecutionContext context)
         {
-            await Task.Run(() =>
+            // The delegate is async. Awaiting it keeps this Quartz job alive until the
+            // backup finishes. Logging the failure observes an exception after the first await.
+            var action = context.MergedJobDataMap["action"] as Func<Task>;
+            if (action == null)
             {
-                var action = context.MergedJobDataMap["action"] as Action;
-                action?.Invoke();
-            });
+                return;
+            }
+
+            try
+            {
+                await action().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Scheduled backup failed.");
+            }
         }
     }
 }

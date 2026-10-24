@@ -12,8 +12,6 @@ namespace BSH.MainApp.Contracts.Services;
 
 public interface IPresentationService
 {
-    Task CloseBackupBrowserWindowAsync();
-    Task CloseMainWindowAsync();
     Task<TaskCompleteAction> CloseStatusWindowAsync();
     Task OpenCurrentEventLogAsync();
     Task OpenHelpSupportAsync();

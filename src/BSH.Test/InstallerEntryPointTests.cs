@@ -107,6 +107,19 @@ public class InstallerEntryPointTests
     }
 
     [Test]
+    public void BothInstallersConfigureExistingVssServiceBinPath()
+    {
+        // sc create fails silently when the service already exists (runhidden).
+        // sc config still applies the current binpath and start mode.
+        AssertVssServiceBinPathIsCreatedThenConfigured(
+            GetIssSection(WinFormsSetupIssPath, "[Run]"),
+            "Backup Service Home-Dienst");
+        AssertVssServiceBinPathIsCreatedThenConfigured(
+            GetIssSection(WinUiSetupIssPath, "[Run]"),
+            "Backup Service Home Preview-Dienst");
+    }
+
+    [Test]
     public void WinUiInstallerDoesNotRemoveTheStableVssService()
     {
         var text = File.ReadAllText(WinUiSetupIssPath);
@@ -189,6 +202,24 @@ public class InstallerEntryPointTests
     public void WinFormsShellRemainsPublishable()
     {
         Assert.That(IsPublishable(MainCsprojPath), Is.True);
+    }
+
+    private static void AssertVssServiceBinPathIsCreatedThenConfigured(string runSection, string serviceName)
+    {
+        const string binPath = "binpath=\"\"{app}\\BSH.Service.exe\"\" start=auto";
+        var create = "Parameters: \"create \"\"" + serviceName + "\"\" " + binPath + "\"";
+        var config =
+            "Filename: \"sc\"; Parameters: \"config \"\"" + serviceName + "\"\" " + binPath +
+            "\"; WorkingDir: \"{app}\"; Flags: runhidden runascurrentuser";
+
+        var createIndex = runSection.IndexOf(create, StringComparison.Ordinal);
+        var configIndex = runSection.IndexOf(config, StringComparison.Ordinal);
+
+        Assert.That(createIndex, Is.GreaterThanOrEqualTo(0), $"sc create for {serviceName} was not found.");
+        Assert.That(
+            configIndex,
+            Is.GreaterThan(createIndex),
+            $"sc config for {serviceName} must follow sc create and set binpath and start=auto.");
     }
 
     private static string GetIssSection(string setupIssPath, string sectionHeader)

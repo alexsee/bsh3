@@ -128,7 +128,7 @@ public class StatusService : IJobReport, IStatusService
             ShowNotification(
                 "INFO_BACKUP_UNSUCCESSFUL_TITLE".GetLocalized(),
                 "INFO_BACKUP_UNSUCCESSFUL_TEXT".GetLocalized(),
-                ToastNotificationActivation.ActionBackupResult);
+                ToastNotificationActivation.ActionOverview);
         }
     }
 

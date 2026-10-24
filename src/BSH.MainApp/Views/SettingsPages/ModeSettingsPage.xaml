@@ -16,15 +16,6 @@
     <Page.Resources>
         <x:Double x:Key="SettingsCardSpacing">3</x:Double>
 
-        <Style
-            x:Key="SettingsSectionHeaderTextBlockStyle"
-            BasedOn="{StaticResource BodyStrongTextBlockStyle}"
-            TargetType="TextBlock">
-            <Style.Setters>
-                <Setter Property="Margin" Value="1,29,0,5" />
-            </Style.Setters>
-        </Style>
-
         <converters:EnumComparisonConverter x:Key="EnumComparisonConverter" />
 
         <engine:TaskType x:Key="TaskType_Auto">Auto</engine:TaskType>

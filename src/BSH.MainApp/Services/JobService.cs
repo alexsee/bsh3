@@ -26,8 +26,6 @@ public class JobService : IJobService, IDisposable
     private readonly JobSessionRunner jobSessionRunner;
     private readonly WinUIJobSessionPresenter presenter;
 
-    public bool IsCancellationRequested => jobRuntime.IsCancellationRequested;
-
     /// <summary>
     /// Initializes a new instance of the JobService given the BackupService and
     /// ConfigurationManager instance.
@@ -57,11 +55,10 @@ public class JobService : IJobService, IDisposable
             backupService,
             () => this.statusService.IsTaskRunning(),
             this.SelectMediaWaitMode,
-            async (_, waitMode, cancellationTokenSource) =>
+            async (_, _, cancellationTokenSource) =>
             {
                 var waitForMediaService = this.waitForMediaServiceFactory();
-                var suppressPrompt = waitMode == MediaWaitMode.SilentPolling;
-                return await waitForMediaService.ExecuteAsync(suppressPrompt, cancellationTokenSource);
+                return await waitForMediaService.ExecuteAsync(cancellationTokenSource);
             });
         this.presenter = new WinUIJobSessionPresenter(this.presentationService, this.statusService, this.Cancel, this.completionActionService);
         this.jobSessionRunner = new JobSessionRunner(
@@ -116,10 +113,9 @@ public class JobService : IJobService, IDisposable
     /// <param name="statusDialog">Specifies if the user should be shown a status user interface.</param>
     /// <param name="fullBackup">Specifies if the backup should be a full backup.</param>
     /// <param name="shutdownPC">Specifies if the computer should be shut down after completion.</param>
-    /// <param name="shutdownApp">Specifies if the application should be closed after completion.</param>
     /// <param name="sourceFolders">Specifies the source folders to consider for the backup.</param>
     /// <returns></returns>
-    public async Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "")
+    public async Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "")
     {
         _logger.Debug("Backup task is started with title: {Title}, description: {Description}, statusDialog: {StatusDialog}, fullBackup: {FullBackup}",
             title, description, statusDialog, fullBackup);

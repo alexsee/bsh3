@@ -311,7 +311,7 @@ public class BackupTests
     public async Task TestRetriesWithVssAfterIoException()
     {
         var vss = new VssClientMock(shouldCopy: true);
-        var fs = new StorageMock(throwIoOnFirstRegularCopy: true);
+        var fs = new StorageMock(throwIoOnFirstRegularCopy: true, requireSourceExists: true);
         using var backupJob = CreateBackupJobForSingleTempFile(fs, vss, ".txt");
 
         var token = new CancellationTokenSource().Token;
@@ -319,7 +319,82 @@ public class BackupTests
 
         Assert.That(vss.CopyCalls, Is.EqualTo(1));
         Assert.That(fs.CopyFileToStorageCalls, Is.EqualTo(2));
+        Assert.That(fs.CopyFileToStorageCompressedCalls, Is.EqualTo(0));
+        Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(0));
+        Assert.That(await GetSingleFileTypeAsync(), Is.EqualTo((int)FileTypeKind.RegularCopy));
         Assert.That(backupJob.FileErrorList, Is.Empty);
+    }
+
+    [TestCase(StorageProviderKind.LocalFileSystem, false, true, FileTypeKind.Compressed, false)]
+    [TestCase(StorageProviderKind.Ftp, false, true, FileTypeKind.StoredCompressed, false)]
+    [TestCase(StorageProviderKind.LocalFileSystem, true, false, FileTypeKind.Encrypted, false)]
+    [TestCase(StorageProviderKind.Ftp, true, false, FileTypeKind.StoredEncrypted, false)]
+    [TestCase(StorageProviderKind.LocalFileSystem, true, false, FileTypeKind.Encrypted, true)]
+    public async Task VssRetry_KeepsConfiguredProtection(StorageProviderKind kind, bool encrypt, bool compress, FileTypeKind expectedFileType, bool nonIoFailure)
+    {
+        if (encrypt)
+        {
+            configurationManager.Encrypt = 1;
+            configurationManager.EncryptPassMD5 = "cc03e747a6afbbcbf8be7668acfebee5";
+        }
+
+        if (compress)
+        {
+            configurationManager.Compression = 1;
+        }
+
+        var vss = new VssClientMock(shouldCopy: true);
+        var fs = new StorageMock(ioFailuresBeforeSuccess: 1, throwNonIoOnFirstCopy: nonIoFailure, requireSourceExists: true) { Kind = kind };
+        using var backupJob = CreateBackupJobForSingleTempFile(fs, vss, ".txt");
+        if (encrypt)
+        {
+            backupJob.Password = "test123";
+        }
+
+        await backupJob.BackupAsync(CancellationToken.None);
+
+        Assert.That(vss.CopyCalls, Is.EqualTo(1));
+        Assert.That(backupJob.FileErrorList, Is.Empty);
+        Assert.That(fs.CopyFileToStorageCalls, Is.EqualTo(0));
+        Assert.That(await GetSingleFileTypeAsync(), Is.EqualTo((int)expectedFileType));
+
+        if (encrypt)
+        {
+            Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(2));
+            Assert.That(fs.CopyFileToStorageCompressedCalls, Is.EqualTo(0));
+            Assert.That(fs.EncryptedPasswords, Is.EqualTo(new[] { "test123", "test123" }));
+            AssertShadowCopySource(fs.EncryptedSourceFiles);
+            return;
+        }
+
+        Assert.That(fs.CopyFileToStorageCompressedCalls, Is.EqualTo(2));
+        Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(0));
+        AssertShadowCopySource(fs.CompressedSourceFiles);
+    }
+
+    [Test]
+    public async Task VssRetry_EncryptedBackup_SecondFailure_DoesNotStorePlainCopy()
+    {
+        configurationManager.Encrypt = 1;
+        configurationManager.EncryptPassMD5 = "cc03e747a6afbbcbf8be7668acfebee5";
+
+        var vss = new VssClientMock(shouldCopy: true);
+        var fs = new StorageMock(ioFailuresBeforeSuccess: 5, requireSourceExists: true);
+        using var backupJob = CreateBackupJobForSingleTempFile(fs, vss, ".txt");
+        backupJob.Password = "test123";
+
+        await backupJob.BackupAsync(CancellationToken.None);
+
+        Assert.That(backupJob.FileErrorList, Has.Count.EqualTo(1));
+        Assert.That(vss.CopyCalls, Is.EqualTo(1));
+        Assert.That(fs.CopyFileToStorageCalls, Is.EqualTo(0));
+        Assert.That(fs.CopyFileToStorageCompressedCalls, Is.EqualTo(0));
+        Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(2));
+        Assert.That(fs.EncryptedSourceFiles, Has.Count.EqualTo(2));
+        Assert.That(File.Exists(fs.EncryptedSourceFiles[1]), Is.False);
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(0));
     }
 
     [Test]
@@ -632,6 +707,14 @@ public class BackupTests
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(2));
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync(
             "SELECT COUNT(*) FROM filelink WHERE fileversionID = 1 AND versionID = 2")), Is.EqualTo(1));
+    }
+
+    private static void AssertShadowCopySource(IReadOnlyList<string> sourceFiles)
+    {
+        Assert.That(sourceFiles, Has.Count.EqualTo(2));
+        Assert.That(sourceFiles[1], Is.Not.EqualTo(sourceFiles[0]).IgnoreCase);
+        Assert.That(File.Exists(sourceFiles[0]), Is.True);
+        Assert.That(File.Exists(sourceFiles[1]), Is.False);
     }
 
     private BackupJob CreateBackupJobForSingleTempFile(StorageMock storage, VssClientMock vss, string extension)
