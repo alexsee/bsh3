@@ -101,6 +101,25 @@ public class FileSystemIconHelperTests
     }
 
     [Test]
+    public async Task GetFileIconAsync_DisplayDpiChangesResolutionAndCacheEntry()
+    {
+        await RunOnXamlThreadAsync(() =>
+        {
+            FileSystemIconHelpers.ClearIconCache();
+            var standard = FileSystemIconHelpers.GetFileIconAsync("notes.txt", 16, 96).GetAwaiter().GetResult();
+            var scaled = FileSystemIconHelpers.GetFileIconAsync("notes.txt", 16, 192).GetAwaiter().GetResult();
+            var standardAgain = FileSystemIconHelpers.GetFileIconAsync("NOTES.TXT", 16, 96).GetAwaiter().GetResult();
+
+            Assert.That(standard, Is.Not.Null);
+            Assert.That(scaled, Is.Not.Null);
+            Assert.That(scaled.PixelWidth, Is.GreaterThanOrEqualTo(32), "16 DIPs at 200% need at least 32 pixels");
+            Assert.That(scaled.PixelHeight, Is.GreaterThanOrEqualTo(32));
+            Assert.That(scaled, Is.Not.SameAs(standard), "Different display scales must not reuse a cached bitmap");
+            Assert.That(standardAgain, Is.SameAs(standard));
+        });
+    }
+
+    [Test]
     public async Task GetFileIconAsync_UncachedLookupsReleaseNativeHandles()
     {
         await RunOnXamlThreadAsync(() =>

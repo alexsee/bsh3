@@ -52,13 +52,31 @@ public class FileOrFolderItem : INotifyPropertyChanged
     public BitmapSource? Icon16
     {
         get;
-        set;
+        set
+        {
+            if (ReferenceEquals(field, value))
+            {
+                return;
+            }
+
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     public BitmapSource? Icon64
     {
         get;
-        set;
+        set
+        {
+            if (ReferenceEquals(field, value))
+            {
+                return;
+            }
+
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

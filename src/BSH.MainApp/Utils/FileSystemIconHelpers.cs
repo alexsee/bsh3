@@ -34,9 +34,18 @@ public static class FileSystemIconHelpers
     /// </summary>
     public static Task<BitmapSource?> GetFileIconAsync(string fileName, uint requestedSize = 16)
     {
+        var displayDpi = GetDpiForWindow(GetActiveWindow());
+        return GetFileIconAsync(fileName, requestedSize, displayDpi);
+    }
+
+    /// <summary>
+    /// Icon at the specified display DPI, which can differ from the system shell lists' DPI.
+    /// </summary>
+    public static Task<BitmapSource?> GetFileIconAsync(string fileName, uint requestedSize, uint displayDpi)
+    {
         try
         {
-            return Task.FromResult(LoadFileIcon(fileName, requestedSize));
+            return Task.FromResult(LoadFileIcon(fileName, requestedSize, displayDpi));
         }
         catch (Exception ex)
         {
@@ -157,9 +166,12 @@ public static class FileSystemIconHelpers
         Jumbo
     }
 
-    private static BitmapSource? LoadFileIcon(string? fileName, uint requestedSize)
+    private static BitmapSource? LoadFileIcon(string? fileName, uint requestedSize, uint displayDpi)
     {
-        var key = GetIconCacheKey(fileName, requestedSize);
+        var systemDpi = GetDpiForSystem();
+        // The current window's scale determines the required pixels; shell lists use system DPI.
+        var devicePixels = ToDevicePixels(requestedSize, displayDpi == 0 ? systemDpi : displayDpi);
+        var key = GetIconCacheKey(fileName, devicePixels);
         if (key == null)
         {
             return null;
@@ -171,9 +183,7 @@ public static class FileSystemIconHelpers
         }
 
         var extension = ExtensionOf(fileName)!.ToLowerInvariant();
-        var dpi = GetDpiForSystem();
-        var devicePixels = ToDevicePixels(requestedSize, dpi);
-        var created = TryCreateIcon(extension, devicePixels, dpi);
+        var created = TryCreateIcon(extension, devicePixels, systemDpi);
         if (created == null)
         {
             return null;
@@ -429,6 +439,14 @@ public static class FileSystemIconHelpers
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("user32.dll", ExactSpelling = true)]
     private static extern uint GetDpiForSystem();
+
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    [DllImport("user32.dll", ExactSpelling = true)]
+    private static extern IntPtr GetActiveWindow();
+
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    [DllImport("user32.dll", ExactSpelling = true)]
+    private static extern uint GetDpiForWindow(IntPtr hWnd);
 
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]

@@ -3,6 +3,7 @@
 
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Models;
+using BSH.MainApp.Utils;
 using BSH.MainApp.ViewModels;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
@@ -13,11 +14,56 @@ namespace BSH.MainApp.Views;
 
 public sealed partial class BrowserPage : Page
 {
+    private XamlRoot? iconXamlRoot;
+    private double iconScale;
+
     public BrowserViewModel ViewModel { get; } = App.GetService<BrowserViewModel>();
 
     public BrowserPage()
     {
         InitializeComponent();
+        Loaded += BrowserPage_Loaded;
+        Unloaded += BrowserPage_Unloaded;
+    }
+
+    private async void BrowserPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        iconXamlRoot = XamlRoot;
+        iconXamlRoot.Changed += IconXamlRoot_Changed;
+        await RefreshIconScaleAsync();
+    }
+
+    private void BrowserPage_Unloaded(object sender, RoutedEventArgs e)
+    {
+        if (iconXamlRoot != null)
+        {
+            iconXamlRoot.Changed -= IconXamlRoot_Changed;
+            iconXamlRoot = null;
+        }
+
+        iconScale = 0;
+    }
+
+    private async void IconXamlRoot_Changed(XamlRoot sender, XamlRootChangedEventArgs args)
+    {
+        await RefreshIconScaleAsync();
+    }
+
+    private async Task RefreshIconScaleAsync()
+    {
+        var scale = iconXamlRoot?.RasterizationScale ?? 1;
+        if (scale == iconScale)
+        {
+            return;
+        }
+
+        iconScale = scale;
+        var dpi = (uint)Math.Round(scale * 96);
+        foreach (var item in ViewModel.Items.Where(item => item.IsFile).ToArray())
+        {
+            item.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(item.FileNameOnDrive, 16, dpi);
+            item.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(item.FileNameOnDrive, 64, dpi);
+        }
     }
 
     private ListViewSelectionMode GetFilesSelectionMode(bool isMultiSelectMode) =>
