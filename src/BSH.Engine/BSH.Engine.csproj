@@ -13,7 +13,6 @@
     <Title>Backup Service Home</Title>
     <Platforms>x64</Platforms>
     <Configurations>Debug;Release</Configurations>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsPublishable>False</IsPublishable>
     <SatelliteResourceLanguages>de;de-DE;en;en-US</SatelliteResourceLanguages>
     <Version>3.9.0.3</Version>
@@ -61,7 +60,6 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageReference Include="System.Management" Version="10.0.13" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.13" />
     <PackageReference Include="ServiceWire" Version="7.0.0" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.13" />
   </ItemGroup>
