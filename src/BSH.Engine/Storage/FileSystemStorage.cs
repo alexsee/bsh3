@@ -461,12 +461,8 @@ public class FileSystemStorage : Storage, IStorageProvider
 
     public bool IsPathTooLong(string path, bool compression, bool encryption)
     {
-        if (compression || encryption)
-        {
-            return Path.Combine(backupFolder, path).Length + 4 > 255;
-        }
-
-        return Path.Combine(backupFolder, path).Length > 255;
+        var extensionLength = (compression ? 4 : 0) + (encryption ? 4 : 0);
+        return Path.Combine(backupFolder, path).Length + extensionLength > 255;
     }
 
     public long GetFreeSpace()

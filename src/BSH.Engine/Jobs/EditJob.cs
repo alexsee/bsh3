@@ -168,16 +168,24 @@ public class EditJob : Job
     /// <param name="fileVersionId"></param>
     private async Task EditFileFromDeviceAsync(DbClient dbClient, string remoteFile, int fileType, long fileVersionId)
     {
-        var decryptedFileType = fileType.ToFileTypeKind() switch
+        var kind = fileType.ToFileTypeKind();
+        var decryptedFileType = kind switch
         {
             FileTypeKind.StoredEncrypted => FileTypeKind.StoredCopy,
             FileTypeKind.Encrypted => FileTypeKind.RegularCopy,
+            FileTypeKind.CompressedEncrypted => FileTypeKind.Compressed,
+            FileTypeKind.StoredCompressedEncrypted => FileTypeKind.StoredCompressed,
             _ => (FileTypeKind?)null
         };
 
         if (decryptedFileType == null)
         {
             return;
+        }
+
+        if (kind is FileTypeKind.CompressedEncrypted or FileTypeKind.StoredCompressedEncrypted)
+        {
+            remoteFile += ".zip";
         }
 
         if (!storage.DecryptOnStorage(remoteFile, Password))
