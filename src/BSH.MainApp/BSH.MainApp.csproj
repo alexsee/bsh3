@@ -22,7 +22,6 @@
 		<Product>Backup Service Home 4</Product>
 		<AssemblyTitle>Backup Service Home 4</AssemblyTitle>
 		<Version>4.0.0.0</Version>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
 		<Content Include="Assets\**\*"

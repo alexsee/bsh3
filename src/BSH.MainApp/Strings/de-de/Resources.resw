@@ -250,9 +250,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="Browser_PreviewRetrieveFailed_Title" xml:space="preserve">
     <value>Vorschau nicht verfügbar</value>
   </data>
-  <data name="Browser_Title.Text" xml:space="preserve">
-    <value>Browser</value>
-  </data>
   <data name="CreateBackup_CreateButton" xml:space="preserve">
     <value>Sicherung erstellen</value>
   </data>
@@ -397,9 +394,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="MSG_TASK_RUNNING_TITLE" xml:space="preserve">
     <value>Andere Sicherungsaufgabe in Bearbeitung</value>
   </data>
-  <data name="MainView_BackupMode" xml:space="preserve">
-    <value>Sicherungsmodus:</value>
-  </data>
   <data name="MainView_BackupMode_Automatic" xml:space="preserve">
     <value>Automatische Sicherungen</value>
   </data>
@@ -408,9 +402,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   </data>
   <data name="MainView_BackupMode_Scheduled" xml:space="preserve">
     <value>Zeitplanbasierte Sicherungen</value>
-  </data>
-  <data name="MainView_BtnCreateBackup_Title" xml:space="preserve">
-    <value>Manuelle Sicherung</value>
   </data>
   <data name="MainView_Cancel" xml:space="preserve">
     <value>Abbrechen</value>
@@ -444,9 +435,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   </data>
   <data name="MsgBox_Cancel" xml:space="preserve">
     <value>Abbrechen</value>
-  </data>
-  <data name="MsgBox_Close" xml:space="preserve">
-    <value>Schließen</value>
   </data>
   <data name="MsgBox_Delete" xml:space="preserve">
     <value>Löschen</value>
@@ -575,9 +563,6 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   <data name="Schedule_DaysBetweenFullBackups" xml:space="preserve">
     <value>Tage zwischen vollständigen Sicherungen</value>
   </data>
-  <data name="Schedule_Delete" xml:space="preserve">
-    <value>Löschen</value>
-  </data>
   <data name="Schedule_DeleteInterval" xml:space="preserve">
     <value>Löschintervall</value>
   </data>
@@ -598,9 +583,6 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   </data>
   <data name="Schedule_Kind_Once" xml:space="preserve">
     <value>Einmalig</value>
-  </data>
-  <data name="Schedule_Kind_Unknown" xml:space="preserve">
-    <value>Unbekannt</value>
   </data>
   <data name="Schedule_Kind_Weekly" xml:space="preserve">
     <value>Wöchentlich</value>
@@ -1569,9 +1551,6 @@ Das Medium wird automatisch erkannt.</value>
   </data>
   <data name="Overview_FailedFiles_More" xml:space="preserve">
     <value>…und {0:N0} weitere. Das Ereignisprotokoll listet alle auf.</value>
-  </data>
-  <data name="Overview_BackupsToggle" xml:space="preserve">
-    <value>Sicherungen</value>
   </data>
   <data name="Schedule_Entry_Once" xml:space="preserve">
     <value>Einmalig am {0}</value>

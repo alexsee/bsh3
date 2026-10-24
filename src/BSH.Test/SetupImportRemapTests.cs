@@ -15,7 +15,6 @@ using BSH.MainApp.ViewModels;
 using BSH.MainApp.ViewModels.Windows;
 using BSH.Test.Fakes;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
 using NUnit.Framework;
 using Windows.UI.Popups;
 
@@ -124,19 +123,15 @@ public class SetupImportRemapTests
 
     private sealed class StubNavigationService : INavigationService
     {
-        public event NavigatedEventHandler Navigated { add { } remove { } }
-        public bool CanGoBack => false;
         public Frame? Frame { get; set; }
         public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false) => true;
-        public bool GoBack() => false;
     }
 
     private sealed class StubJobService : IJobService
     {
-        public bool IsCancellationRequested => false;
         public void Cancel() { }
         public Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(true);
-        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
+        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "") => Task.FromResult(true);
         public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
         public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.FromResult(new JobSessionResult { Started = true });
         public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
@@ -148,8 +143,6 @@ public class SetupImportRemapTests
 
     private sealed class StubPresentationService : IPresentationService
     {
-        public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
         public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
         public Task OpenHelpSupportAsync() => Task.CompletedTask;

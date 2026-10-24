@@ -35,14 +35,6 @@ public sealed class SwitchStorageService : ISwitchStorageService
         return File.Exists(Path.Combine(backupFolder, UncTargetProbe.BackupDatabaseFileName));
     }
 
-    public bool UncTargetContainsBackupData(string uncPath)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(uncPath);
-
-        var normalized = uncPath.Replace('/', '\\');
-        return File.Exists(Path.Combine(normalized, UncTargetProbe.BackupDatabaseFileName));
-    }
-
     public void SyncDatabaseToCurrentMedium(string databaseFile)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(databaseFile);

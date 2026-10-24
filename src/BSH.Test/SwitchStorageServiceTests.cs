@@ -140,25 +140,6 @@ public class SwitchStorageServiceTests
     }
 
     [Test]
-    public void UncTargetContainsBackupDataReturnsTrueWhenBackupDatabaseExists()
-    {
-        var uncPath = Path.Combine(tempRoot, "unc-share");
-        Directory.CreateDirectory(uncPath);
-        File.WriteAllText(Path.Combine(uncPath, "backup.bshdb"), "existing");
-
-        Assert.That(switchStorageService.UncTargetContainsBackupData(uncPath), Is.True);
-    }
-
-    [Test]
-    public void UncTargetContainsBackupDataReturnsFalseWhenTargetIsEmpty()
-    {
-        var uncPath = Path.Combine(tempRoot, "unc-empty");
-        Directory.CreateDirectory(uncPath);
-
-        Assert.That(switchStorageService.UncTargetContainsBackupData(uncPath), Is.False);
-    }
-
-    [Test]
     public async Task SwitchToUncAsyncUpdatesConfigurationClearsHistoryAndSyncsDatabase()
     {
         await SeedBackupHistoryAsync();
