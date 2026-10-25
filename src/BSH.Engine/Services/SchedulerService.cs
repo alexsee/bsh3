@@ -32,8 +32,7 @@ public class SchedulerService : ISchedulerAdapter
         if (this.scheduler == null)
         {
             var properties = new NameValueCollection {
-                { "quartz.threadPool.threadCount", "1" },
-                { "quartz.threadPool.maxConcurrency", "1" }
+                { "quartz.threadPool.threadCount", "1" }
             };
 
             var factory = new StdSchedulerFactory(properties);
