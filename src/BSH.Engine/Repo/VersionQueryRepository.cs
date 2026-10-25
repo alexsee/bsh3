@@ -217,7 +217,7 @@ public class VersionQueryRepository : IVersionQueryRepository
             "FROM fileversiontable AS fvt " +
             "INNER JOIN filetable AS ft ON ft.fileID = fvt.fileID " +
             "INNER JOIN versiontable AS vt ON vt.versionID = fvt.filePackage " +
-            "WHERE fvt.fileType IN (5, 6)",
+            "WHERE fvt.fileType IN (5, 6, 7, 8)",
             null);
 
         return Convert.ToInt32(result ?? 0);
@@ -231,7 +231,7 @@ public class VersionQueryRepository : IVersionQueryRepository
             "FROM fileversiontable AS fvt " +
             "INNER JOIN filetable AS ft ON ft.fileID = fvt.fileID " +
             "INNER JOIN versiontable AS vt ON vt.versionID = fvt.filePackage " +
-            "WHERE fvt.fileType IN (5, 6) " +
+            "WHERE fvt.fileType IN (5, 6, 7, 8) " +
             "ORDER BY fvt.fileversionid",
             null);
     }

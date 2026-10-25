@@ -273,9 +273,11 @@ public class BackupTests
         Assert.That(await GetSingleFileTypeAsync(), Is.EqualTo(4));
     }
 
-    [Test]
-    public async Task TestFtpStorageUsesStoredEncryptedFileType()
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task TestFtpStorageUsesStoredEncryptedFileType(bool compress)
     {
+        configurationManager.Compression = compress ? 1 : 0;
         configurationManager.Encrypt = 1;
         configurationManager.EncryptPassMD5 = "cc03e747a6afbbcbf8be7668acfebee5";
 
@@ -286,7 +288,9 @@ public class BackupTests
         var token = new CancellationTokenSource().Token;
         await backupJob.BackupAsync(token);
 
-        Assert.That(await GetSingleFileTypeAsync(), Is.EqualTo(5));
+        Assert.That(await GetSingleFileTypeAsync(), Is.EqualTo(compress ? 8 : 5));
+        Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(1));
+        Assert.That(fs.CopyFileToStorageCompressedCalls, Is.Zero);
     }
 
     private async Task<int> GetSingleFileTypeAsync()
@@ -370,6 +374,38 @@ public class BackupTests
         Assert.That(fs.CopyFileToStorageCompressedCalls, Is.EqualTo(2));
         Assert.That(fs.CopyFileToStorageEncryptedCalls, Is.EqualTo(0));
         AssertShadowCopySource(fs.CompressedSourceFiles);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task VssRetry_RemovesPlaintextWhenPreparationOrPathCheckThrows(bool failPathCheck)
+    {
+        var vss = new VssClientMock(shouldCopy: true) { ThrowAfterCopy = !failPathCheck };
+        var storage = new StorageMock(ioFailuresBeforeSuccess: 1) { ThrowOnRetryPathCheck = failPathCheck };
+        using var backupJob = CreateBackupJobForSingleTempFile(storage, vss, ".txt");
+
+        await backupJob.BackupAsync(CancellationToken.None);
+
+        try
+        {
+            Assert.That(backupJob.FileErrorList, Has.Count.EqualTo(1));
+            Assert.That(vss.DestinationFiles, Has.Count.EqualTo(1));
+            Assert.That(File.Exists(vss.DestinationFiles[0]), Is.False, "VSS failure must not leave plaintext behind.");
+            Assert.That(Directory.Exists(Path.GetDirectoryName(vss.DestinationFiles[0])), Is.False);
+            using var dbClient = dbClientFactory.CreateDbClient();
+            Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM fileversiontable")), Is.EqualTo(0));
+        }
+        finally
+        {
+            // Also clean up plaintext if this regression test fails against the old implementation.
+            foreach (var destination in vss.DestinationFiles)
+            {
+                if (File.Exists(destination))
+                {
+                    File.Delete(destination);
+                }
+            }
+        }
     }
 
     [Test]

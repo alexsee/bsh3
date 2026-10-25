@@ -3,6 +3,8 @@
 
 using System;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
@@ -142,6 +144,58 @@ public class FileSystemRestoreIntegrationTests
 
         Assert.That(restoreJob.FileErrorList, Is.Empty);
         Assert.That(File.ReadAllText(Path.Combine(restoreDir, "secret.txt")), Is.EqualTo(SampleContent + "-encrypted"));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task BackupAndRestore_CompressedEncryptedContentMatchesStoredType(bool useVss)
+    {
+        configurationManager.Compression = 1;
+        configurationManager.Encrypt = 1;
+        configurationManager.EncryptPassMD5 = Hash.GetMD5Hash(Password);
+        var sourceFile = WriteSourceFile("secret.txt", SampleContent);
+        if (useVss)
+        {
+            vssClient = new VssClientMock(shouldCopy: true) { SnapshotContent = SampleContent };
+        }
+
+        // An exclusive lock forces the real storage path to retry from the simulated shadow copy.
+        using (var sourceLock = useVss ? new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.None) : null)
+        {
+            await RunBackupAsync(password: Password);
+        }
+
+        Assert.That(vssClient.CopyCalls, Is.EqualTo(useVss ? 1 : 0));
+        foreach (var temporaryFile in vssClient.DestinationFiles)
+        {
+            Assert.That(File.Exists(temporaryFile), Is.False);
+            Assert.That(Directory.Exists(Path.GetDirectoryName(temporaryFile)), Is.False);
+        }
+
+        var encryptedFiles = Directory.GetFiles(backupDir, "*.zip.enc", SearchOption.AllDirectories);
+        Assert.That(encryptedFiles, Has.Length.EqualTo(1), "Combined protection must store an encrypted archive.");
+        Assert.That(Directory.GetFiles(backupDir, "*.zip", SearchOption.AllDirectories), Is.Empty);
+        var decryptedArchive = Path.Combine(rootDir, "decrypted.zip");
+        Assert.That(new Encryption().Decode(encryptedFiles.Single(), decryptedArchive, Password), Is.True);
+        using (var archive = ZipFile.OpenRead(decryptedArchive))
+        using (var reader = new StreamReader(archive.Entries.Single().Open()))
+        {
+            Assert.That(await reader.ReadToEndAsync(), Is.EqualTo(SampleContent));
+        }
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileType FROM fileversiontable")), Is.EqualTo(7));
+
+        using var restoreJob = CreateRestoreJob(CreateStorage(), password: Password);
+        await restoreJob.RestoreAsync(CancellationToken.None);
+        Assert.That(restoreJob.FileErrorList, Is.Empty);
+        Assert.That(File.ReadAllText(Path.Combine(restoreDir, "secret.txt")), Is.EqualTo(SampleContent));
+
+        using var deleteJob = new DeleteJob(CreateStorage(), dbClientFactory, queryManager, configurationManager,
+            versionQueryRepository, backupMutationRepository) { Version = "1" };
+        await deleteJob.DeleteAsync();
+        Assert.That(deleteJob.FileErrorList, Is.Empty);
+        Assert.That(Directory.GetFiles(backupDir, "*.zip.enc", SearchOption.AllDirectories), Is.Empty);
     }
 
     [Test]

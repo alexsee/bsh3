@@ -20,6 +20,7 @@ using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Properties;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Services.FileCollector;
+using Brightbits.BSH.Engine.Storage;
 using Brightbits.BSH.Engine.Utils;
 using Serilog;
 
@@ -541,11 +542,10 @@ public class BackupJob : Job
         // Protection follows configuration on every attempt, including the shadow-copy retry.
         var compress = ShouldCompress(file);
         var encrypt = ShouldEncrypt(file);
-        remoteFileName = EnsureSupportedRemotePath(storage, remoteFileName, localFileName, file, newVersionDate, compress, encrypt, out longFileName);
-
         bool result;
         try
         {
+            remoteFileName = EnsureSupportedRemotePath(storage, remoteFileName, localFileName, file, newVersionDate, compress, encrypt, out longFileName);
             result = CopyFileToStorage(storage, localFileName, remoteFileName, compress, encrypt);
         }
         catch (IOException ex)
@@ -615,22 +615,24 @@ public class BackupJob : Job
 
     private string PrepareVssTempFile(string localFileName, FileTableRow file)
     {
+        var vssTempDirectory = Path.Combine(Path.GetTempPath(), "bsh-vss-" + Guid.NewGuid().ToString("N"));
+        var vssTempFile = Path.Combine(vssTempDirectory, file.FileName);
         try
         {
             _logger.Information("File {FileName} will be attempted to backup via Volume Shadow Copy Service.", localFileName);
 
-            var vssTempFile = Path.Combine(Path.GetTempPath(), file.FileName);
+            Directory.CreateDirectory(vssTempDirectory);
             if (vssClient.CopyFile(localFileName, vssTempFile) && File.Exists(vssTempFile))
             {
                 return vssTempFile;
             }
 
-            TryDeleteFile(vssTempFile);
             _logger.Warning("File {FileName} could not be copied via Volume Shadow Copy Service.", localFileName);
             throw new FileNotProcessedException();
         }
         catch (Exception ex)
         {
+            DeleteVssTempFile(vssTempFile, useVss: true);
             throw new FileNotProcessedException(ex);
         }
     }
@@ -687,6 +689,11 @@ public class BackupJob : Job
 
     private bool CopyFileToStorage(IStorageProvider storage, string localFileName, string remoteFileName, bool compress, bool encrypt)
     {
+        if (compress && encrypt)
+        {
+            return EncryptedArchive.CopyToStorage(storage, localFileName, remoteFileName, Password);
+        }
+
         if (compress)
         {
             return storage.CopyFileToStorageCompressed(localFileName, remoteFileName);
@@ -708,6 +715,14 @@ public class BackupJob : Job
         }
 
         TryDeleteFile(localFileName);
+        try
+        {
+            Directory.Delete(Path.GetDirectoryName(localFileName));
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "Could not delete shadow-copy temporary directory for {FileName}.", localFileName);
+        }
     }
 
     private static void TryDeleteFile(string fileName)
@@ -750,7 +765,11 @@ public class BackupJob : Job
 
         var isLocalStorage = storage.Kind == StorageProviderKind.LocalFileSystem;
         FileTypeKind fileType;
-        if (encrypt)
+        if (compress && encrypt)
+        {
+            fileType = isLocalStorage ? FileTypeKind.CompressedEncrypted : FileTypeKind.StoredCompressedEncrypted;
+        }
+        else if (encrypt)
         {
             fileType = isLocalStorage ? FileTypeKind.Encrypted : FileTypeKind.StoredEncrypted;
         }

@@ -202,12 +202,15 @@ public class FileSystemEngineLifecycleTests
         Assert.That(File.ReadAllText(Path.Combine(dest, "extra.txt")), Is.EqualTo("second-version-only"));
     }
 
-    [Test]
-    public async Task EditDecrypt_ThenRestoreWithoutPassword()
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task EditDecrypt_ThenRestoreWithoutPassword(bool compress)
     {
+        configurationManager.Compression = compress ? 1 : 0;
         configurationManager.Encrypt = 1;
         configurationManager.EncryptPassMD5 = Hash.GetMD5Hash(Password);
-        WriteSourceFile("secret.txt", "encrypted-payload");
+        var content = new string('s', 256);
+        WriteSourceFile("secret.txt", content);
 
         await RunBackupAsync(password: Password);
 
@@ -231,7 +234,12 @@ public class FileSystemEngineLifecycleTests
         await restoreJob.RestoreAsync(CancellationToken.None);
 
         Assert.That(restoreJob.FileErrorList, Is.Empty);
-        Assert.That(File.ReadAllText(Path.Combine(dest, "secret.txt")), Is.EqualTo("encrypted-payload"));
+        Assert.That(File.ReadAllText(Path.Combine(dest, "secret.txt")), Is.EqualTo(content));
+        Assert.That(Directory.GetFiles(backupDir, "*.enc", SearchOption.AllDirectories), Is.Empty);
+        if (compress)
+        {
+            Assert.That(Directory.GetFiles(backupDir, "*.zip", SearchOption.AllDirectories), Has.Length.EqualTo(1));
+        }
     }
 
     [Test]
