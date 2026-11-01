@@ -53,6 +53,17 @@ public class FileSystemIconHelperTests
     }
 
     [Test]
+    public void BgraBufferLength_RejectsUnusableBitmapSizes()
+    {
+        Assert.That(FileSystemIconHelpers.BgraBufferLength(16, 16), Is.EqualTo(1024));
+        Assert.That(FileSystemIconHelpers.BgraBufferLength(1024, 1024), Is.EqualTo(1024 * 1024 * 4));
+        Assert.That(FileSystemIconHelpers.BgraBufferLength(0, 16), Is.Null);
+        Assert.That(FileSystemIconHelpers.BgraBufferLength(16, -1), Is.Null);
+        Assert.That(FileSystemIconHelpers.BgraBufferLength(1025, 1), Is.Null);
+        Assert.That(FileSystemIconHelpers.BgraBufferLength(1, 1025), Is.Null);
+    }
+
+    [Test]
     public void SelectIconTier_PicksSmallestListThatCoversTheSize()
     {
         Assert.That(FileSystemIconHelpers.SelectIconTier(16), Is.EqualTo(FileSystemIconHelpers.ShellIconTier.Small));
