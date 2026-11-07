@@ -13,7 +13,7 @@ namespace Brightbits.BSH.Engine.Database;
 public static class DbUtils
 {
     /// <summary>
-    /// Gets the string of a column from a IDatabaseReader.
+    /// Gets the string of a column from a IDataReader.
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="column"></param>
@@ -33,7 +33,7 @@ public static class DbUtils
     }
 
     /// <summary>
-    /// Gets the int of a column from a IDatabaseReader.
+    /// Gets the int of a column from a IDataReader.
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="column"></param>
@@ -47,7 +47,7 @@ public static class DbUtils
     }
 
     /// <summary>
-    /// Gets the double of a column from a IDatabaseReader.
+    /// Gets the double of a column from a IDataReader.
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="column"></param>
@@ -61,7 +61,7 @@ public static class DbUtils
     }
 
     /// <summary>
-    /// Gets the datetime of a column from a IDatabaseReader.
+    /// Gets the datetime of a column from a IDataReader.
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="column"></param>
@@ -75,7 +75,7 @@ public static class DbUtils
     }
 
     /// <summary>
-    /// Gets the datetime of a string column from a IDatabaseReader.
+    /// Gets the datetime of a string column from a IDataReader.
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="column"></param>
@@ -90,7 +90,7 @@ public static class DbUtils
     }
 
     /// <summary>
-    /// Gets the datetime of a string column from a IDatabaseReader.
+    /// Gets the datetime of a string column from a IDataReader.
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="column"></param>

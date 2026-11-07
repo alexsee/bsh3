@@ -326,7 +326,6 @@ public class BackupJob : Job
                 }
                 catch (Exception ex)
                 {
-                    // don't do anything
                     _logger.Error(ex, "Backup could not be refreshed. New backup will be ignored.");
                 }
             }

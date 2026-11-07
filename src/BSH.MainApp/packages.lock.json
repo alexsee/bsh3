@@ -529,15 +529,6 @@
         "resolved": "10.0.13",
         "contentHash": "rTW3WGWYugm9qMihqSXXHxAIVP9Ay4ASkYc8CJLDbuscbc88lpO8U/asZpeYb9GiXbD8wNDhRoV5b2JEbHmtow=="
       },
-      "System.Configuration.ConfigurationManager": {
-        "type": "Transitive",
-        "resolved": "10.0.13",
-        "contentHash": "BkkGt1IDGMaNkSWJR+hEN3V/UMvyoYKW0rG7rlhKQwS2Ghn+9dt98aV7syIMK+ChumTk+IbDF4k0QXqVs9Zudg==",
-        "dependencies": {
-          "System.Diagnostics.EventLog": "10.0.13",
-          "System.Security.Cryptography.ProtectedData": "10.0.13"
-        }
-      },
       "System.Data.SQLite.Core": {
         "type": "Transitive",
         "resolved": "1.0.119",
@@ -583,7 +574,6 @@
           "Serilog": "[4.4.0, )",
           "Serilog.Extensions.Logging": "[10.0.0, )",
           "ServiceWire": "[7.0.0, )",
-          "System.Configuration.ConfigurationManager": "[10.0.13, )",
           "System.Data.SQLite.Core": "[1.0.119, )",
           "System.Management": "[10.0.13, )",
           "System.Security.Cryptography.ProtectedData": "[10.0.13, )"

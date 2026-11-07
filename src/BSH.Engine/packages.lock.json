@@ -64,16 +64,6 @@
         "resolved": "7.0.0",
         "contentHash": "9xrmaQy75ZDU9OQirbiOxBTSP7JSreD96Z89GjUw/C48CvmD7GGQxfI30uS/VBCsEvhqnMiQI665ZLVhHzlOCA=="
       },
-      "System.Configuration.ConfigurationManager": {
-        "type": "Direct",
-        "requested": "[10.0.13, )",
-        "resolved": "10.0.13",
-        "contentHash": "BkkGt1IDGMaNkSWJR+hEN3V/UMvyoYKW0rG7rlhKQwS2Ghn+9dt98aV7syIMK+ChumTk+IbDF4k0QXqVs9Zudg==",
-        "dependencies": {
-          "System.Diagnostics.EventLog": "10.0.13",
-          "System.Security.Cryptography.ProtectedData": "10.0.13"
-        }
-      },
       "System.Data.SQLite.Core": {
         "type": "Direct",
         "requested": "[1.0.119, )",
@@ -145,11 +135,6 @@
         "resolved": "10.0.13",
         "contentHash": "rTW3WGWYugm9qMihqSXXHxAIVP9Ay4ASkYc8CJLDbuscbc88lpO8U/asZpeYb9GiXbD8wNDhRoV5b2JEbHmtow=="
       },
-      "System.Diagnostics.EventLog": {
-        "type": "Transitive",
-        "resolved": "10.0.13",
-        "contentHash": "DkNjtQyPR5Ud/zHnWHdsOuKbFRL9nIC92Q76z0NmHVDoQm40toLtsGFTIWq7toBoVa6fo/DInL3PLxY3Asixyw=="
-      },
       "bsh.service.shared": {
         "type": "Project"
       }
@@ -168,11 +153,6 @@
         "type": "Transitive",
         "resolved": "1.0.119",
         "contentHash": "dI7ngiCNgdm+n00nQvFTa+LbHvE9MIQXwMSLRzJI/KAJ7G1WmCachsvfE1CD6xvb3OXJvYYEfv3+S/LHyhN0Rg=="
-      },
-      "System.Diagnostics.EventLog": {
-        "type": "Transitive",
-        "resolved": "10.0.13",
-        "contentHash": "DkNjtQyPR5Ud/zHnWHdsOuKbFRL9nIC92Q76z0NmHVDoQm40toLtsGFTIWq7toBoVa6fo/DInL3PLxY3Asixyw=="
       }
     }
   }
