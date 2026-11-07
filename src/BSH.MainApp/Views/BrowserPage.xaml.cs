@@ -29,6 +29,11 @@ public sealed partial class BrowserPage : Page
     private async void BrowserPage_Loaded(object sender, RoutedEventArgs e)
     {
         iconXamlRoot = XamlRoot;
+        if (iconXamlRoot is null)
+        {
+            return;
+        }
+
         iconXamlRoot.Changed += IconXamlRoot_Changed;
         await RefreshIconsForDisplayScaleAsync();
     }

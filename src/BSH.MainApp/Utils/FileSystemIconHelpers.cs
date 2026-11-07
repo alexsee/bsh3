@@ -34,8 +34,7 @@ public static class FileSystemIconHelpers
     /// </summary>
     public static Task<BitmapSource?> GetFileIconAsync(string fileName, uint requestedSize = 16)
     {
-        var displayDpi = GetDpiForWindow(GetActiveWindow());
-        return GetFileIconAsync(fileName, requestedSize, displayDpi);
+        return GetFileIconAsync(fileName, requestedSize, CurrentDisplayDpi());
     }
 
     /// <summary>
@@ -75,7 +74,20 @@ public static class FileSystemIconHelpers
             return null;
         }
 
-        return string.Concat(extension.ToLowerInvariant(), "_", size.ToString(CultureInfo.InvariantCulture));
+        return FormatCacheKey(extension, size);
+    }
+
+    /// <summary>
+    /// Length of a 32-bit BGRA buffer, or null when the bitmap size is not usable.
+    /// </summary>
+    internal static int? BgraBufferLength(int width, int height)
+    {
+        if (width <= 0 || height <= 0 || width > MaxIconPixels || height > MaxIconPixels)
+        {
+            return null;
+        }
+
+        return (int)((long)width * height * 4);
     }
 
     /// <summary>
@@ -168,28 +180,39 @@ public static class FileSystemIconHelpers
 
     private static BitmapSource? LoadFileIcon(string? fileName, uint requestedSize, uint displayDpi)
     {
-        var systemDpi = GetDpiForSystem();
-        // The current window's scale determines the required pixels; shell lists use system DPI.
-        var devicePixels = ToDevicePixels(requestedSize, displayDpi == 0 ? systemDpi : displayDpi);
-        var key = GetIconCacheKey(fileName, devicePixels);
-        if (key == null)
+        var extension = ExtensionOf(fileName);
+        if (extension == null)
         {
             return null;
         }
 
+        var systemDpi = GetDpiForSystem();
+        // The current window's scale determines the required pixels; shell lists use system DPI.
+        var devicePixels = ToDevicePixels(requestedSize, displayDpi == 0 ? systemDpi : displayDpi);
+        var key = FormatCacheKey(extension, devicePixels);
         if (cachedIcons.TryGetValue(key, out var cached))
         {
             return cached;
         }
 
-        var extension = ExtensionOf(fileName)!.ToLowerInvariant();
-        var created = TryCreateIcon(extension, devicePixels, systemDpi);
+        var created = TryCreateIcon(extension.ToLowerInvariant(), devicePixels, systemDpi);
         if (created == null)
         {
             return null;
         }
 
         return cachedIcons.GetOrAdd(key, created);
+    }
+
+    private static string FormatCacheKey(string extension, uint size)
+    {
+        return string.Concat(extension.ToLowerInvariant(), "_", size.ToString(CultureInfo.InvariantCulture));
+    }
+
+    private static uint CurrentDisplayDpi()
+    {
+        var dpi = GetDpiForWindow(GetActiveWindow());
+        return dpi == 0 ? GetDpiForSystem() : dpi;
     }
 
     private static string? ExtensionOf(string? fileName)
@@ -206,9 +229,19 @@ public static class FileSystemIconHelpers
     private static BitmapSource? TryCreateIcon(string extension, uint devicePixels, uint dpi)
     {
         var tier = SelectIconTier(devicePixels, dpi);
-        var hIcon = tier is ShellIconTier.Small or ShellIconTier.Large
-            ? GetSizedIcon(extension, tier == ShellIconTier.Small)
-            : GetImageListIcon(extension, tier == ShellIconTier.ExtraLarge ? ShilExtraLarge : ShilJumbo);
+        IntPtr hIcon;
+        if (tier is ShellIconTier.Small or ShellIconTier.Large)
+        {
+            hIcon = GetSizedIcon(extension, tier == ShellIconTier.Small);
+        }
+        else if (tier == ShellIconTier.ExtraLarge)
+        {
+            hIcon = GetImageListIcon(extension, ShilExtraLarge);
+        }
+        else
+        {
+            hIcon = GetImageListIcon(extension, ShilJumbo);
+        }
         if (hIcon == IntPtr.Zero)
         {
             return null;
@@ -355,13 +388,13 @@ public static class FileSystemIconHelpers
 
     private static byte[]? ReadBgra32(IntPtr hdc, IntPtr bitmap, int width, int height)
     {
-        if (width <= 0 || height <= 0 || width > MaxIconPixels || height > MaxIconPixels)
+        var byteCount = BgraBufferLength(width, height);
+        if (byteCount == null)
         {
             return null;
         }
 
-        var byteCount = width * height * 4;
-        var pixels = new byte[byteCount];
+        var pixels = new byte[byteCount.Value];
         if (CopyPixels(hdc, bitmap, width, height, pixels, topDown: true))
         {
             return pixels;
