@@ -33,15 +33,11 @@ namespace Brightbits.BSH.Main
             pbarTotal = new ProgressBar();
             lblFiles = new Label();
             Panel1 = new Panel();
-            plShutdown = new Panel();
-            cboOptions = new ComboBox();
-            chkOptions = new CheckBox();
             Label1 = new Label();
             cmdCancel = new Button();
             PictureBox1 = new PictureBox();
             lblFile = new Label();
             Panel1.SuspendLayout();
-            plShutdown.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)PictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -67,32 +63,9 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(Panel1, "Panel1");
             Panel1.BackColor = System.Drawing.SystemColors.Control;
-            Panel1.Controls.Add(plShutdown);
             Panel1.Controls.Add(Label1);
             Panel1.Controls.Add(cmdCancel);
             Panel1.Name = "Panel1";
-            // 
-            // plShutdown
-            // 
-            resources.ApplyResources(plShutdown, "plShutdown");
-            plShutdown.Controls.Add(cboOptions);
-            plShutdown.Controls.Add(chkOptions);
-            plShutdown.Name = "plShutdown";
-            // 
-            // cboOptions
-            // 
-            resources.ApplyResources(cboOptions, "cboOptions");
-            cboOptions.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboOptions.FormattingEnabled = true;
-            cboOptions.Items.AddRange(new object[] { resources.GetString("cboOptions.Items"), resources.GetString("cboOptions.Items1") });
-            cboOptions.Name = "cboOptions";
-            // 
-            // chkOptions
-            // 
-            resources.ApplyResources(chkOptions, "chkOptions");
-            chkOptions.Name = "chkOptions";
-            chkOptions.UseVisualStyleBackColor = true;
-            chkOptions.CheckedChanged += chkOptions_CheckedChanged;
             // 
             // Label1
             // 
@@ -137,8 +110,6 @@ namespace Brightbits.BSH.Main
             MaximizeBox = false;
             Name = "frmStatusBackup";
             Panel1.ResumeLayout(false);
-            plShutdown.ResumeLayout(false);
-            plShutdown.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)PictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -152,8 +123,5 @@ namespace Brightbits.BSH.Main
         internal Button cmdCancel;
         internal Label Label1;
         internal Label lblFile;
-        internal ComboBox cboOptions;
-        internal CheckBox chkOptions;
-        internal Panel plShutdown;
     }
 }

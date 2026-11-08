@@ -305,8 +305,6 @@ public class ApplicationUpdateServiceTests
             return Task.FromResult(ContentDialogResult.None);
         }
 
-        public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
         public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
         public Task OpenHelpSupportAsync() => Task.CompletedTask;

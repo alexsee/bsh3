@@ -67,8 +67,9 @@ the compiler on either platform.
 | --- | --- | --- |
 | Observe task results with `await`, `return`, synchronous completion in a sync adapter, or transfer to an owner. | `BSH.Analyzers` build error `BSH0001` rejects dropped `Task`/`ValueTask` expression statements, including in synchronous methods. | Discarded scheduler registration tasks fixed in `f52d7d2` (#654); async completion also corrected in `0fcab14` (#472). |
 | Use `Task.Run(async () => await ...)` for asynchronous worker operations. | Build error `BSH0002` rejects `TaskFactory.StartNew` returning a nested task. | Backup and restore operations in `0fcab14` (#472) returned before their inner tasks completed. |
+| Use task-returning delegates for asynchronous callbacks so callers can observe completion and failures. | Build error `BSH0003` rejects async lambdas and async-void method groups converted to `System.Action` delegates, except direct event subscriptions. | Scheduled backups previously used `Action`, making Quartz finish at the first await (`b722166`). |
 
-Both rules run in normal `dotnet build "Backup Service Home 3.sln" -p:Platform=x64`
+All three rules run in normal `dotnet build "Backup Service Home 3.sln" -p:Platform=x64`
 and the existing CI build. `AsyncCompletionAnalyzerTests` in the normal NUnit suite
 compile the historical expressions and verify the error IDs and accepted ownership
 patterns. Run them with `dotnet test BSH.Test/BSH.Test.csproj -p:Platform=x64

@@ -73,7 +73,7 @@ public class BrowserPreviewServiceTests
         await service.PreviewFileAsync("2", "report.txt", @"\source\docs\");
 
         Assert.That(queryManager.GetFileNameCalls.Single(), Is.EqualTo((2, "report.txt", @"\source\docs\", "secret")));
-        Assert.That(host.ShownFiles.Single(), Is.EqualTo((tempFile, true)));
+        Assert.That(host.ShownFiles.Single(), Is.EqualTo(tempFile));
         Assert.That(File.Exists(tempFile), Is.False);
         Assert.That(presentation.MessageBoxes, Is.Empty);
     }
@@ -114,7 +114,7 @@ public class BrowserPreviewServiceTests
 
             await service.PreviewFileAsync("2", "report.txt", @"\source\docs\");
 
-            Assert.That(host.ShownFiles.Single(), Is.EqualTo((sourcePath, false)));
+            Assert.That(host.ShownFiles.Single(), Is.EqualTo(sourcePath));
             Assert.That(File.Exists(sourcePath), Is.True);
         }
         finally
@@ -182,17 +182,17 @@ public class BrowserPreviewServiceTests
 
     private sealed class RecordingPreviewHost : ISmartPreviewHost
     {
-        public List<(string FilePath, bool IsTemporary)> ShownFiles { get; } = [];
+        public List<string> ShownFiles { get; } = [];
         public bool ThrowOnShow { get; set; }
 
-        public Task ShowAsync(string filePath, bool isTemporary)
+        public Task ShowAsync(string filePath)
         {
             if (ThrowOnShow)
             {
                 throw new InvalidOperationException("SmartPreview failed to start.");
             }
 
-            ShownFiles.Add((filePath, isTemporary));
+            ShownFiles.Add(filePath);
             return Task.CompletedTask;
         }
     }
@@ -204,7 +204,6 @@ public class BrowserPreviewServiceTests
         public List<ActionType> CheckMediaCalls { get; } = [];
         public int RequestPasswordCallCount { get; private set; }
 
-        public bool IsCancellationRequested => false;
         public void Cancel() { }
         public Task<bool> CheckMediaAsync(ActionType action, bool silent = false)
         {
@@ -212,7 +211,7 @@ public class BrowserPreviewServiceTests
             return Task.FromResult(CheckMediaResult);
         }
 
-        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
+        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "") => Task.FromResult(true);
         public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
         public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.FromResult(new JobSessionResult { Started = true });
         public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
@@ -282,8 +281,6 @@ public class BrowserPreviewServiceTests
     {
         public List<(string Title, string Content)> MessageBoxes { get; } = [];
 
-        public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
         public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
         public Task OpenHelpSupportAsync() => Task.CompletedTask;

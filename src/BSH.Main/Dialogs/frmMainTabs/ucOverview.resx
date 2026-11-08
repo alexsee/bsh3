@@ -130,9 +130,6 @@
   <data name="&gt;&gt;Panel1.Type" xml:space="preserve">
     <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Label3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>792, 26</value>
-  </data>
   <data name="lblBdSpaceAvailable.ToolTip" xml:space="preserve">
     <value />
   </data>
@@ -184,20 +181,11 @@
     <value />
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="btnUpdates.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
-  </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
     <value>System.Windows.Forms.UserControl, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;Label5.Parent" xml:space="preserve">
     <value>plBottom</value>
-  </data>
-  <data name="&gt;&gt;Label3.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;plUpdates.Name" xml:space="preserve">
-    <value>plUpdates</value>
   </data>
   <data name="plBottom.ToolTip" xml:space="preserve">
     <value />
@@ -223,9 +211,6 @@
   <data name="cmdBackupNow.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
     <value>Zoom</value>
   </data>
-  <data name="&gt;&gt;Label3.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Label2.ToolTip" xml:space="preserve">
     <value />
   </data>
@@ -249,9 +234,6 @@
   </data>
   <data name="&gt;&gt;lblNextBackup.ZOrder" xml:space="preserve">
     <value>11</value>
-  </data>
-  <data name="&gt;&gt;btnUpdates.Name" xml:space="preserve">
-    <value>btnUpdates</value>
   </data>
   <data name="&gt;&gt;lblBdNewestBackup.ZOrder" xml:space="preserve">
     <value>1</value>
@@ -277,9 +259,6 @@
   <data name="&gt;&gt;Label1.ZOrder" xml:space="preserve">
     <value>15</value>
   </data>
-  <data name="&gt;&gt;plUpdates.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
   <data name="&gt;&gt;FlowLayoutPanel1.Type" xml:space="preserve">
     <value>System.Windows.Forms.FlowLayoutPanel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -299,9 +278,6 @@ werden rückgängig gemacht.</value>
   <data name="llShowExceptionDialog.Location" type="System.Drawing.Point, System.Drawing">
     <value>28, 0</value>
   </data>
-  <data name="&gt;&gt;btnUpdates.Parent" xml:space="preserve">
-    <value>plUpdates</value>
-  </data>
   <data name="Label6.Size" type="System.Drawing.Size, System.Drawing">
     <value>90, 27</value>
   </data>
@@ -311,9 +287,6 @@ werden rückgängig gemacht.</value>
   <data name="lblBdOldestBackup.ToolTip" xml:space="preserve">
     <value />
   </data>
-  <data name="btnUpdates.Text" xml:space="preserve">
-    <value>Installieren</value>
-  </data>
   <data name="Label6.ToolTip" xml:space="preserve">
     <value />
   </data>
@@ -322,9 +295,6 @@ werden rückgängig gemacht.</value>
   </data>
   <data name="btnSettings.Size" type="System.Drawing.Size, System.Drawing">
     <value>38, 38</value>
-  </data>
-  <data name="&gt;&gt;plUpdates.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Label5.Location" type="System.Drawing.Point, System.Drawing">
     <value>42, 24</value>
@@ -389,9 +359,6 @@ werden rückgängig gemacht.</value>
   <data name="cmdBackupNow.Location" type="System.Drawing.Point, System.Drawing">
     <value>470, 321</value>
   </data>
-  <data name="Label3.ToolTip" xml:space="preserve">
-    <value />
-  </data>
   <data name="lblInfo.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
   </data>
@@ -455,9 +422,6 @@ werden rückgängig gemacht.</value>
   <data name="lblBdNewestBackup.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Left</value>
   </data>
-  <data name="Label3.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Left, Right</value>
-  </data>
   <data name="&gt;&gt;llOptions.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
@@ -488,14 +452,8 @@ werden rückgängig gemacht.</value>
   <data name="Label5.Text" xml:space="preserve">
     <value>Sicherungseinstellungen:</value>
   </data>
-  <data name="&gt;&gt;plUpdates.Parent" xml:space="preserve">
-    <value>FlowLayoutPanel1</value>
-  </data>
   <data name="&gt;&gt;lblInfo.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;Label3.Name" xml:space="preserve">
-    <value>Label3</value>
   </data>
   <data name="FlowLayoutPanel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Bottom</value>
@@ -517,9 +475,6 @@ werden rückgängig gemacht.</value>
   </data>
   <data name="&gt;&gt;FlowLayoutPanel1.Parent" xml:space="preserve">
     <value>$this</value>
-  </data>
-  <data name="Label3.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 9.75pt, style=Bold</value>
   </data>
   <data name="&gt;&gt;cmdBackupCancel.ZOrder" xml:space="preserve">
     <value>1</value>
@@ -548,17 +503,11 @@ werden rückgängig gemacht.</value>
   <data name="&gt;&gt;Label6.Name" xml:space="preserve">
     <value>Label6</value>
   </data>
-  <data name="btnUpdates.ToolTip" xml:space="preserve">
-    <value>Installiert wichtige Aktualisierungen.</value>
-  </data>
   <data name="cmdBackupCancel.Size" type="System.Drawing.Size, System.Drawing">
     <value>24, 30</value>
   </data>
   <data name="llShowExceptionDialog.Text" xml:space="preserve">
     <value>(Fehler anzeigen)</value>
-  </data>
-  <data name="plUpdates.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 0, 0</value>
   </data>
   <data name="btnOnOff.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -571,9 +520,6 @@ werden rückgängig gemacht.</value>
   </data>
   <data name="&gt;&gt;llOptions.ZOrder" xml:space="preserve">
     <value>2</value>
-  </data>
-  <data name="&gt;&gt;Label3.Parent" xml:space="preserve">
-    <value>plUpdates</value>
   </data>
   <data name="&gt;&gt;Label6.Parent" xml:space="preserve">
     <value>$this</value>
@@ -596,9 +542,6 @@ werden rückgängig gemacht.</value>
   <data name="Label6.Text" xml:space="preserve">
     <value>Aus / Ein</value>
   </data>
-  <data name="Label3.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleLeft</value>
-  </data>
   <data name="picDataType.TabIndex" type="System.Int32, mscorlib">
     <value>63</value>
   </data>
@@ -610,9 +553,6 @@ werden rückgängig gemacht.</value>
   </data>
   <data name="&gt;&gt;Label2.ZOrder" xml:space="preserve">
     <value>16</value>
-  </data>
-  <data name="plUpdates.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 153</value>
   </data>
   <data name="pbStatus.Size" type="System.Drawing.Size, System.Drawing">
     <value>810, 30</value>
@@ -632,9 +572,6 @@ werden rückgängig gemacht.</value>
   <data name="&gt;&gt;lblBdSpaceAvailable.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="btnUpdates.Location" type="System.Drawing.Point, System.Drawing">
-    <value>884, 6</value>
-  </data>
   <data name="pbStatus.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
@@ -646,9 +583,6 @@ werden rückgängig gemacht.</value>
   </data>
   <data name="pbStatus.TabIndex" type="System.Int32, mscorlib">
     <value>76</value>
-  </data>
-  <data name="plUpdates.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
   </data>
   <data name="&gt;&gt;picDataType.ZOrder" xml:space="preserve">
     <value>12</value>
@@ -686,9 +620,6 @@ werden rückgängig gemacht.</value>
   <data name="&gt;&gt;llShowExceptionDialog.Parent" xml:space="preserve">
     <value>Panel1</value>
   </data>
-  <data name="btnUpdates.Size" type="System.Drawing.Size, System.Drawing">
-    <value>134, 39</value>
-  </data>
   <data name="Label7.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -700,9 +631,6 @@ werden rückgängig gemacht.</value>
   </data>
   <data name="&gt;&gt;cmdBackupCancel.Name" xml:space="preserve">
     <value>cmdBackupCancel</value>
-  </data>
-  <data name="Label3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>38, 14</value>
   </data>
   <data name="&gt;&gt;Panel1.Name" xml:space="preserve">
     <value>Panel1</value>
@@ -727,9 +655,6 @@ werden rückgängig gemacht.</value>
   </data>
   <data name="&gt;&gt;lblOldBackup.Name" xml:space="preserve">
     <value>lblOldBackup</value>
-  </data>
-  <data name="btnUpdates.TabIndex" type="System.Int32, mscorlib">
-    <value>75</value>
   </data>
   <data name="cmdBackupCancel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -773,14 +698,8 @@ werden rückgängig gemacht.</value>
   <data name="plStatus.Location" type="System.Drawing.Point, System.Drawing">
     <value>148, 93</value>
   </data>
-  <data name="Label3.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
   <data name="&gt;&gt;lblBdOldestBackup.Parent" xml:space="preserve">
     <value>$this</value>
-  </data>
-  <data name="Label3.Text" xml:space="preserve">
-    <value>Es sind Aktualisierungen verfügbar.</value>
   </data>
   <data name="&gt;&gt;llBackup.ZOrder" xml:space="preserve">
     <value>1</value>
@@ -899,12 +818,6 @@ werden rückgängig gemacht.</value>
   <data name="&gt;&gt;picDataType.Type" xml:space="preserve">
     <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;btnUpdates.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="plUpdates.ToolTip" xml:space="preserve">
-    <value />
-  </data>
   <data name="llShowExceptionDialog.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -958,9 +871,6 @@ werden rückgängig gemacht.</value>
   </data>
   <data name="lblBdStatus.Size" type="System.Drawing.Size, System.Drawing">
     <value>850, 38</value>
-  </data>
-  <data name="Label3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 0, 4, 0</value>
   </data>
   <data name="Label5.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -1043,17 +953,11 @@ werden rückgängig gemacht.</value>
   <data name="&gt;&gt;llOptions.Name" xml:space="preserve">
     <value>llOptions</value>
   </data>
-  <data name="&gt;&gt;btnUpdates.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="btnSettings.TabIndex" type="System.Int32, mscorlib">
     <value>99</value>
   </data>
   <data name="&gt;&gt;llShowExceptionDialog.Type" xml:space="preserve">
     <value>System.Windows.Forms.LinkLabel, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="plUpdates.TabIndex" type="System.Int32, mscorlib">
-    <value>96</value>
   </data>
   <data name="&gt;&gt;Label1.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -1081,9 +985,6 @@ werden rückgängig gemacht.</value>
   </data>
   <data name="&gt;&gt;lblBackupMode.Name" xml:space="preserve">
     <value>lblBackupMode</value>
-  </data>
-  <data name="btnUpdates.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
   </data>
   <data name="lblInfo.Size" type="System.Drawing.Size, System.Drawing">
     <value>950, 62</value>
@@ -1165,9 +1066,6 @@ werden rückgängig gemacht.</value>
   </data>
   <data name="Label1.Text" xml:space="preserve">
     <value>Backupmodus:</value>
-  </data>
-  <data name="plUpdates.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1050, 51</value>
   </data>
   <data name="&gt;&gt;llBackup.Parent" xml:space="preserve">
     <value>$this</value>

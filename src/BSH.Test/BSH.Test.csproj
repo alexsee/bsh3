@@ -5,7 +5,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <Platform>x64</Platform>
     <Platforms>x64</Platforms>
-    <Configurations>Debug;Release;Windows 10</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <IsPublishable>False</IsPublishable>
     <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
     <Version>3.9.0.3</Version>

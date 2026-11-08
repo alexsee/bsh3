@@ -318,12 +318,31 @@ public class RestoreJob : Job
             return;
         }
 
-        DeleteExistingFile(localFilePath);
-
         try
         {
-            var remoteFilePath = StoragePath.BuildRemoteFilePath(reader);
-            StoragePath.CopyFromStorageByType(storage, reader.GetInt32("fileType").ToFileTypeKind(), localFilePath, remoteFilePath, Password);
+            // Keep the original filename for ZIP entry lookup, on the destination volume
+            // so the completed file can be moved into place without a partial copy.
+            var temporaryDirectory = Path.Combine(destination, ".bsh-restore-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(temporaryDirectory);
+            var temporaryFile = Path.Combine(temporaryDirectory, Path.GetFileName(localFilePath));
+            try
+            {
+                var remoteFilePath = StoragePath.BuildRemoteFilePath(reader);
+                StoragePath.CopyFromStorageByType(storage, reader.GetInt32("fileType").ToFileTypeKind(), temporaryFile, remoteFilePath, Password);
+                System.IO.File.Move(temporaryFile, localFilePath, overwrite: true);
+            }
+            finally
+            {
+                try
+                {
+                    System.IO.File.Delete(temporaryFile);
+                    Directory.Delete(temporaryDirectory);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Warning(ex, "Temporary restore directory {Directory} could not be cleaned up.", temporaryDirectory);
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -398,22 +417,5 @@ public class RestoreJob : Job
         };
 
         return await RequestOverwrite(localFile, remoteFile);
-    }
-
-    private static void DeleteExistingFile(string localFilePath)
-    {
-        if (!System.IO.File.Exists(localFilePath))
-        {
-            return;
-        }
-
-        try
-        {
-            System.IO.File.Delete(localFilePath);
-        }
-        catch (Exception ex)
-        {
-            throw new FileNotProcessedException(ex);
-        }
     }
 }

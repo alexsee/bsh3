@@ -8,7 +8,7 @@ namespace BSH.MainApp.Services;
 
 public class SmartPreviewHost : ISmartPreviewHost
 {
-    public async Task ShowAsync(string filePath, bool isTemporary)
+    public async Task ShowAsync(string filePath)
     {
         var executablePath = Path.Combine(AppContext.BaseDirectory, "SmartPreview.exe");
         if (!File.Exists(executablePath))

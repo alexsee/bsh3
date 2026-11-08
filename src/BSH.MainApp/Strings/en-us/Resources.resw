@@ -250,9 +250,6 @@ This feature is currently not available because the quick preview could not be f
   <data name="Browser_PreviewRetrieveFailed_Title" xml:space="preserve">
     <value>Preview not available</value>
   </data>
-  <data name="Browser_Title.Text" xml:space="preserve">
-    <value>Browser</value>
-  </data>
   <data name="CreateBackup_CreateButton" xml:space="preserve">
     <value>Create Backup</value>
   </data>
@@ -397,9 +394,6 @@ This feature is currently not available because the quick preview could not be f
   <data name="MSG_TASK_RUNNING_TITLE" xml:space="preserve">
     <value>Other task in progress</value>
   </data>
-  <data name="MainView_BackupMode" xml:space="preserve">
-    <value>Backup mode:</value>
-  </data>
   <data name="MainView_BackupMode_Automatic" xml:space="preserve">
     <value>Automatic backups</value>
   </data>
@@ -408,9 +402,6 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="MainView_BackupMode_Scheduled" xml:space="preserve">
     <value>Scheduled backups</value>
-  </data>
-  <data name="MainView_BtnCreateBackup_Title" xml:space="preserve">
-    <value>Manual backup</value>
   </data>
   <data name="MainView_Cancel" xml:space="preserve">
     <value>Cancel</value>
@@ -444,9 +435,6 @@ This feature is currently not available because the quick preview could not be f
   </data>
   <data name="MsgBox_Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="MsgBox_Close" xml:space="preserve">
-    <value>Close</value>
   </data>
   <data name="MsgBox_Delete" xml:space="preserve">
     <value>Delete</value>
@@ -575,9 +563,6 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   <data name="Schedule_DaysBetweenFullBackups" xml:space="preserve">
     <value>Days between full backups</value>
   </data>
-  <data name="Schedule_Delete" xml:space="preserve">
-    <value>Delete</value>
-  </data>
   <data name="Schedule_DeleteInterval" xml:space="preserve">
     <value>Delete interval</value>
   </data>
@@ -598,9 +583,6 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   </data>
   <data name="Schedule_Kind_Once" xml:space="preserve">
     <value>Once</value>
-  </data>
-  <data name="Schedule_Kind_Unknown" xml:space="preserve">
-    <value>Unknown</value>
   </data>
   <data name="Schedule_Kind_Weekly" xml:space="preserve">
     <value>Weekly</value>
@@ -1569,9 +1551,6 @@ The medium will be automatically detected.</value>
   </data>
   <data name="Overview_FailedFiles_More" xml:space="preserve">
     <value>…and {0:N0} more. The event log lists all of them.</value>
-  </data>
-  <data name="Overview_BackupsToggle" xml:space="preserve">
-    <value>Backups</value>
   </data>
   <data name="Schedule_Entry_Once" xml:space="preserve">
     <value>Once on {0}</value>

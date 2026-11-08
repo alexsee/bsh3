@@ -25,6 +25,12 @@ public class AsyncCompletionAnalyzerTests
     [TestCase("new ValueTask(Task.CompletedTask);", "BSH0001")]
     [TestCase("scheduler?.ScheduleJob(GetJob(action), trigger);", "BSH0001")]
     [TestCase("new TaskFactory<Task>().StartNew(() => Task.CompletedTask);", "BSH0001,BSH0002")]
+    // The original scheduler callback became async void when converted to Action.
+    [TestCase("action = async () => await backupJob.BackupAsync(cancellationToken);", "BSH0003")]
+    [TestCase("AcceptAction(async () => await Task.Yield());", "BSH0003")]
+    [TestCase("Action<int> callback = async value => await Task.Yield();", "BSH0003")]
+    [TestCase("action = async delegate { await Task.Yield(); };", "BSH0003")]
+    [TestCase("action = AsyncVoid;", "BSH0003")]
     // Ownership may be awaited, returned, synchronously observed, or retained.
     [TestCase("await scheduler.ScheduleJob(GetJob(action), trigger);", "")]
     [TestCase("return scheduler.ScheduleJob(GetJob(action), trigger);", "")]
@@ -33,6 +39,10 @@ public class AsyncCompletionAnalyzerTests
     [TestCase("_ = scheduler.ScheduleJob(GetJob(action), trigger);", "")]
     [TestCase("currentTask = Task.Run(async () => await backupJob.BackupAsync(cancellationToken));", "")]
     [TestCase("currentTask = Task.Factory.StartNew(() => 42);", "")]
+    [TestCase("Func<Task> callback = async () => await Task.Yield();", "")]
+    [TestCase("action = () => { };", "")]
+    [TestCase("Changed += async (sender, args) => await Task.Yield();", "")]
+    [TestCase("ActionChanged += async () => await Task.Yield();", "")]
     public async Task DiagnosesTaskOwnership(string statement, string expectedIds)
     {
         var isAsync = statement.StartsWith("await ", StringComparison.Ordinal);
@@ -47,12 +57,16 @@ public class AsyncCompletionAnalyzerTests
                 Task currentTask;
                 Example scheduler, backupJob, restoreJob;
                 Action action;
+                event EventHandler Changed;
+                event Action ActionChanged;
                 object trigger;
                 CancellationToken cancellationToken;
                 object GetJob(Action action) => null;
                 Task ScheduleJob(object job, object trigger) => Task.CompletedTask;
                 Task BackupAsync(CancellationToken token) => Task.CompletedTask;
                 Task RestoreAsync(CancellationToken token) => Task.CompletedTask;
+                void AcceptAction(Action callback) { }
+                async void AsyncVoid() { await Task.Yield(); }
                 {{(isAsync ? "async Task" : "Task")}} Run()
                 {
                     {{(isAsync ? statement : body)}}

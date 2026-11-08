@@ -35,22 +35,6 @@ public class UncTargetProbeTests
     }
 
     [Test]
-    public void Probe_DetectsExistingBackupDatabaseOnLocalUncStyleFolder()
-    {
-        // Use a real local directory that looks like UNC only if we can; otherwise verify ContainsBackupData
-        // via a temporary path that IsUncPath rejects — covered by InvalidPath above.
-        // This test documents the empty-check using a path that NetworkConnection may fail on.
-        var result = UncTargetProbe.Probe(
-            @"\\invalid-host-that-does-not-exist-bsh3\share",
-            null,
-            null,
-            requireEmptyTarget: true);
-
-        Assert.That(result.Status, Is.EqualTo(UncProbeStatus.Unreachable).Or.EqualTo(UncProbeStatus.ContainsBackupData));
-        Assert.That(result.NormalizedPath, Is.EqualTo(@"\\invalid-host-that-does-not-exist-bsh3\share"));
-    }
-
-    [Test]
     public void NetworkConnection_PlaintextPassword_IsUsedWhenPasswordIsEncryptedFalse()
     {
         // Regression: UI UNC probes pass plaintext, but NetworkConnection historically always

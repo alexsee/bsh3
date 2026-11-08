@@ -15,7 +15,6 @@
             
             <SolidColorBrush x:Key="WindowCaptionBackground">Transparent</SolidColorBrush>
             <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled">Transparent</SolidColorBrush>
-            <SolidColorBrush x:Key="WarningTextBrush" Color="#C45A00" />
             <winex:Icon x:Key="AppIcon">Assets\app_ico.ico</winex:Icon>
 
             <ResourceDictionary.ThemeDictionaries>

@@ -697,10 +697,9 @@ public class BrowserViewModelTests
         public List<(string Version, string File, string Destination)> RestoreCalls { get; } = [];
         public List<(string Version, string File, string Destination)> SingleRestoreCalls { get; } = [];
         public List<(string Version, IReadOnlyList<string> Files, string Destination)> BatchRestoreCalls { get; } = [];
-        public bool IsCancellationRequested => false;
         public void Cancel() { }
         public Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(true);
-        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
+        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "") => Task.FromResult(true);
         public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
         public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) { DeleteBackupsCalls.Add(versions); return Task.FromResult(new JobSessionResult { Started = true }); }
         public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null)
@@ -785,8 +784,6 @@ public class BrowserViewModelTests
 
     private sealed class BrowserPresentationService : IPresentationService
     {
-        public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
         public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
         public Task OpenHelpSupportAsync() => Task.CompletedTask;

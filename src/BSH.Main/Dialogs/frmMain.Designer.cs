@@ -45,7 +45,6 @@ namespace Brightbits.BSH.Main
             MitWindowsStartenToolStripMenuItem = new ToolStripMenuItem();
             ToolStripMenuItem4 = new ToolStripSeparator();
             EreignisprotokollAnzeigenToolStripMenuItem = new ToolStripMenuItem();
-            AlteDatensicherungImportierenToolStripMenuItem = new ToolStripMenuItem();
             ZurücksetzenToolStripMenuItem = new ToolStripMenuItem();
             GespeichertesKennwortLöschenToolStripMenuItem = new ToolStripMenuItem();
             btnResetUserId = new ToolStripMenuItem();
@@ -89,7 +88,7 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(cmsHelp, "cmsHelp");
             cmsHelp.ImageScalingSize = new Size(20, 20);
-            cmsHelp.Items.AddRange(new ToolStripItem[] { HilfeUndSupportToolStripMenuItem, AufAktualisierungenPrüfenToolStripMenuItem, AutomatischNachAktualisierungenSuchenToolStripMenuItem, BetaversionenÜberAktualiserungenHerunterladenToolStripMenuItem, ÜberBackupServiceHome3ToolStripMenuItem, ToolStripMenuItem1, MitWindowsStartenToolStripMenuItem, ToolStripMenuItem4, EreignisprotokollAnzeigenToolStripMenuItem, AlteDatensicherungImportierenToolStripMenuItem, ZurücksetzenToolStripMenuItem, GespeichertesKennwortLöschenToolStripMenuItem, btnResetUserId, ToolStripMenuItem2, BackupServiceHome3BeendenToolStripMenuItem });
+            cmsHelp.Items.AddRange(new ToolStripItem[] { HilfeUndSupportToolStripMenuItem, AufAktualisierungenPrüfenToolStripMenuItem, AutomatischNachAktualisierungenSuchenToolStripMenuItem, BetaversionenÜberAktualiserungenHerunterladenToolStripMenuItem, ÜberBackupServiceHome3ToolStripMenuItem, ToolStripMenuItem1, MitWindowsStartenToolStripMenuItem, ToolStripMenuItem4, EreignisprotokollAnzeigenToolStripMenuItem, ZurücksetzenToolStripMenuItem, GespeichertesKennwortLöschenToolStripMenuItem, btnResetUserId, ToolStripMenuItem2, BackupServiceHome3BeendenToolStripMenuItem });
             cmsHelp.Name = "cmsHelp";
             cmsHelp.RenderMode = ToolStripRenderMode.System;
             ttMain.SetToolTip(cmsHelp, resources.GetString("cmsHelp.ToolTip"));
@@ -146,11 +145,6 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(EreignisprotokollAnzeigenToolStripMenuItem, "EreignisprotokollAnzeigenToolStripMenuItem");
             EreignisprotokollAnzeigenToolStripMenuItem.Name = "EreignisprotokollAnzeigenToolStripMenuItem";
             EreignisprotokollAnzeigenToolStripMenuItem.Click += EreignisprotokollAnzeigenToolStripMenuItem_Click;
-            // 
-            // AlteDatensicherungImportierenToolStripMenuItem
-            // 
-            resources.ApplyResources(AlteDatensicherungImportierenToolStripMenuItem, "AlteDatensicherungImportierenToolStripMenuItem");
-            AlteDatensicherungImportierenToolStripMenuItem.Name = "AlteDatensicherungImportierenToolStripMenuItem";
             // 
             // ZurücksetzenToolStripMenuItem
             // 
@@ -245,7 +239,6 @@ namespace Brightbits.BSH.Main
         internal ToolStripMenuItem AutomatischNachAktualisierungenSuchenToolStripMenuItem;
         internal Label lblExtras;
         internal ToolStripSeparator ToolStripMenuItem4;
-        internal ToolStripMenuItem AlteDatensicherungImportierenToolStripMenuItem;
         internal ToolStripMenuItem EreignisprotokollAnzeigenToolStripMenuItem;
         private ToolStripMenuItem btnResetUserId;
     }

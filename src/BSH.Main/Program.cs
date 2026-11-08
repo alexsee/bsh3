@@ -69,7 +69,6 @@ static class Program
                 CheckCommands(args);
             }
 
-            Settings.Default.StartParameters = "";
             Settings.Default.Save();
 
             Application.Run();
@@ -96,7 +95,6 @@ static class Program
     private static void AutoUpdater_ApplicationExitEvent()
     {
         // close application
-        Settings.Default.StartParameters = Environment.CommandLine;
         Settings.Default.Save();
         AppLifecycle.Exit();
     }

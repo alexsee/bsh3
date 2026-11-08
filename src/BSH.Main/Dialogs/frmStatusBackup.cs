@@ -87,9 +87,4 @@ public partial class frmStatusBackup : IStatusReport
         cmdCancel.Enabled = false;
         cmdCancel.Text = Resources.DLG_STATUS_STATUS_CANCELED_TEXT;
     }
-
-    private void chkOptions_CheckedChanged(object sender, EventArgs e)
-    {
-        cboOptions.Enabled = chkOptions.Checked;
-    }
 }

@@ -166,12 +166,6 @@
   <data name="EreignisprotokollAnzeigenToolStripMenuItem.Text" xml:space="preserve">
     <value>Show Event Logs</value>
   </data>
-  <data name="AlteDatensicherungImportierenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>343, 32</value>
-  </data>
-  <data name="AlteDatensicherungImportierenToolStripMenuItem.Text" xml:space="preserve">
-    <value>Import old Backups</value>
-  </data>
   <data name="ZurücksetzenToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>343, 32</value>
   </data>

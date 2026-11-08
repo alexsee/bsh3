@@ -15,7 +15,6 @@ public sealed class ApplicationUpdateService : IUpdateService
 {
     public const string UniqueUserIdSettingKey = "UniqueUserId";
     public const string AutoSearchUpdatesSettingKey = "AutoSearchUpdates";
-    public const string StableUpdateFeedUrl = "https://updates.brightbits.de/backup_service_home/v4/auto_updater.xml";
     public const string BetaUpdateFeedUrl = "https://updates.brightbits.de/backup_service_home/v4/auto_updater_beta.xml";
 
     /// <summary>

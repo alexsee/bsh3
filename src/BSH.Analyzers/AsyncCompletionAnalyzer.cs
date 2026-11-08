@@ -21,8 +21,13 @@ public sealed class AsyncCompletionAnalyzer : DiagnosticAnalyzer
         "Use Task.Run(async () => await ...) instead of Task.Factory.StartNew so completion and failures follow the inner task",
         "Correctness", DiagnosticSeverity.Error, isEnabledByDefault: true);
 
+    private static readonly DiagnosticDescriptor AsyncAction = new(
+        "BSH0003", "Preserve asynchronous callback completion",
+        "Use a task-returning delegate instead of Action for asynchronous callbacks so callers can observe completion and failures",
+        "Correctness", DiagnosticSeverity.Error, isEnabledByDefault: true);
+
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(DiscardedTask, NestedTask);
+        ImmutableArray.Create(DiscardedTask, NestedTask, AsyncAction);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -30,6 +35,30 @@ public sealed class AsyncCompletionAnalyzer : DiagnosticAnalyzer
         context.EnableConcurrentExecution();
         context.RegisterOperationAction(AnalyzeExpressionStatement, OperationKind.ExpressionStatement);
         context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
+        context.RegisterOperationAction(AnalyzeDelegateCreation, OperationKind.DelegateCreation);
+    }
+
+    private static void AnalyzeDelegateCreation(OperationAnalysisContext context)
+    {
+        var creation = (IDelegateCreationOperation)context.Operation;
+        // Events are a legitimate async-void boundary, including events typed as Action.
+        if (creation.Parent is IEventAssignmentOperation ||
+            creation.Type is not INamedTypeSymbol delegateType ||
+            delegateType.Name != "Action" || delegateType.ContainingNamespace.ToDisplayString() != "System")
+        {
+            return;
+        }
+
+        var method = creation.Target switch
+        {
+            IAnonymousFunctionOperation function => function.Symbol,
+            IMethodReferenceOperation reference => reference.Method,
+            _ => null
+        };
+        if (method is { IsAsync: true, ReturnsVoid: true })
+        {
+            context.ReportDiagnostic(Diagnostic.Create(AsyncAction, creation.Syntax.GetLocation()));
+        }
     }
 
     private static bool IsTask(ITypeSymbol type)

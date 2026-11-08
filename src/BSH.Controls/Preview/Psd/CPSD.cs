@@ -16,28 +16,16 @@ namespace SimplePsd
         private ColorModeData m_ColorModeData;
         private ImageResource m_ImageResource;
         private ResolutionInfo m_ResolutionInfo;
-        private DisplayInfo m_DisplayInfo;
-        private ThumbNail m_ThumbNail;
 
         private bool m_bResolutionInfoFilled;
-        private bool m_bThumbnailFilled;
-        private bool m_bCopyright;
 
         private short m_nColourCount;
-        private short m_nTransparentIndex;
-        private int m_nGlobalAngle;
-        private int m_nCompression;
         private IntPtr m_hBitmap;
 
         public CPSD()
         {
             m_bResolutionInfoFilled = false;
-            m_bThumbnailFilled = false;
-            m_bCopyright = false;
             m_nColourCount = -1;
-            m_nTransparentIndex = -1;
-            m_nGlobalAngle = 30;
-            m_nCompression = -1;
             m_hBitmap = IntPtr.Zero;
         }
         // construction, destruction
@@ -140,54 +128,9 @@ namespace SimplePsd
             return nErrorCode;
         }
 
-        public bool IsThumbnailIncluded()
-        {
-            return m_bThumbnailFilled;
-        }
-
-        public int GetBitsPerPixel()
-        {
-            return m_HeaderInfo.NBitsPerPixel;
-        }
-
-        public int GlobalAngle()
-        {
-            return m_nGlobalAngle;
-        }
-
-        public bool IsCopyrighted()
-        {
-            return m_bCopyright;
-        }
-
         public IntPtr GetHBitmap()
         {
             return m_hBitmap;
-        }
-
-        public int GetWidth()
-        {
-            return m_HeaderInfo.NWidth;
-        }
-
-        public int GetHeight()
-        {
-            return m_HeaderInfo.NHeight;
-        }
-
-        public int GetXResolution()
-        {
-            return m_ResolutionInfo.HRes;
-        }
-
-        public int GetYResolution()
-        {
-            return m_ResolutionInfo.VRes;
-        }
-
-        public int GetCompression()
-        {
-            return m_nCompression;
         }
 
         protected bool ReadHeader(FileStream stream)
@@ -316,8 +259,6 @@ namespace SimplePsd
 
                 m_ImageResource = new ImageResource();
                 m_ResolutionInfo = new ResolutionInfo();
-                m_DisplayInfo = new DisplayInfo();
-                m_ThumbNail = new ThumbNail();
 
                 if (SwapBytes(Length, 4))
                 {
@@ -436,182 +377,6 @@ namespace SimplePsd
                                         nBytesRead += 2;
                                     }
                                     break;
-                                case 1007:
-                                    {
-                                        ShortValue = binReader.ReadBytes(2);
-                                        nBytesRead += 2;
-                                        if (SwapBytes(ShortValue, 2))
-                                        {
-                                            m_DisplayInfo.ColourSpace = BitConverter.ToInt16(ShortValue, 0);
-                                        }
-
-                                        for (int n = 0; n < 4; ++n)
-                                        {
-                                            ShortValue = binReader.ReadBytes(2);
-                                            nBytesRead += 2;
-                                            if (SwapBytes(ShortValue, 2))
-                                            {
-                                                m_DisplayInfo.Colour[n] = BitConverter.ToInt16(ShortValue, 0);
-                                            }
-                                        }
-
-                                        ShortValue = binReader.ReadBytes(2);
-                                        nBytesRead += 2;
-                                        if (SwapBytes(ShortValue, 2))
-                                        {
-                                            m_DisplayInfo.Opacity = BitConverter.ToInt16(ShortValue, 0);
-                                        }
-
-                                        if (m_DisplayInfo.Opacity < 0 || m_DisplayInfo.Opacity > 100)
-                                        {
-                                            m_DisplayInfo.Opacity = 100;
-                                        }
-
-                                        byte c = binReader.ReadByte();
-                                        nBytesRead += 1;
-                                        if (c == 0x00)
-                                        {
-                                            m_DisplayInfo.Kind = false;
-                                        }
-                                        else
-                                        {
-                                            m_DisplayInfo.Kind = true;
-                                        }
-
-                                        nBytesRead += 1;
-                                        m_DisplayInfo.Padding = binReader.ReadByte();
-                                    }
-                                    break;
-                                case 1034:
-                                    {
-                                        ShortValue = binReader.ReadBytes(2);
-                                        nBytesRead += 2;
-                                        int nCopyright = 0;
-                                        if (SwapBytes(ShortValue, 2))
-                                        {
-                                            nCopyright = BitConverter.ToInt16(ShortValue, 0);
-                                        }
-
-                                        if (nCopyright > 0)
-                                        {
-                                            m_bCopyright = true;
-                                        }
-                                        else
-                                        {
-                                            m_bCopyright = false;
-                                        }
-                                    }
-                                    break;
-                                case 1033:
-                                case 1036:
-                                    {
-                                        m_bThumbnailFilled = true;
-
-                                        IntValue = binReader.ReadBytes(4);
-                                        if (SwapBytes(IntValue, 4))
-                                        {
-                                            m_ThumbNail.NFormat = BitConverter.ToInt32(IntValue, 0);
-                                        }
-
-                                        nBytesRead += 4;
-
-                                        IntValue = binReader.ReadBytes(4);
-                                        if (SwapBytes(IntValue, 4))
-                                        {
-                                            m_ThumbNail.NWidth = BitConverter.ToInt32(IntValue, 0);
-                                        }
-
-                                        nBytesRead += 4;
-
-                                        IntValue = binReader.ReadBytes(4);
-                                        if (SwapBytes(IntValue, 4))
-                                        {
-                                            m_ThumbNail.NHeight = BitConverter.ToInt32(IntValue, 0);
-                                        }
-
-                                        nBytesRead += 4;
-
-                                        IntValue = binReader.ReadBytes(4);
-                                        if (SwapBytes(IntValue, 4))
-                                        {
-                                            m_ThumbNail.NWidthBytes = BitConverter.ToInt32(IntValue, 0);
-                                        }
-
-                                        nBytesRead += 4;
-
-                                        IntValue = binReader.ReadBytes(4);
-                                        if (SwapBytes(IntValue, 4))
-                                        {
-                                            m_ThumbNail.NSize = BitConverter.ToInt32(IntValue, 0);
-                                        }
-
-                                        nBytesRead += 4;
-
-                                        IntValue = binReader.ReadBytes(4);
-                                        if (SwapBytes(IntValue, 4))
-                                        {
-                                            m_ThumbNail.NCompressedSize = BitConverter.ToInt32(IntValue, 0);
-                                        }
-
-                                        nBytesRead += 4;
-
-                                        ShortValue = binReader.ReadBytes(2);
-                                        nBytesRead += 2;
-                                        if (SwapBytes(ShortValue, 2))
-                                        {
-                                            m_ThumbNail.NBitPerPixel = BitConverter.ToInt16(ShortValue, 0);
-                                        }
-
-                                        ShortValue = binReader.ReadBytes(2);
-                                        nBytesRead += 2;
-                                        if (SwapBytes(ShortValue, 2))
-                                        {
-                                            m_ThumbNail.NPlanes = BitConverter.ToInt16(ShortValue, 0);
-                                        }
-
-                                        int nTotalData = m_ImageResource.NSize - 28; // header
-
-                                        byte[] buffer = new byte[nTotalData];
-                                        byte c;
-                                        if (m_ImageResource.NID == 1033)
-                                        {
-                                            // In BGR format
-                                            for (int n = 0; n < nTotalData; n = n + 3)
-                                            {
-                                                c = binReader.ReadByte();
-                                                nBytesRead += 1;
-                                                buffer[n + 2] = c;
-                                                c = binReader.ReadByte();
-                                                nBytesRead += 1;
-                                                buffer[n + 1] = c;
-                                                c = binReader.ReadByte();
-                                                nBytesRead += 1;
-                                                buffer[n] = c;
-                                            }
-                                        }
-                                        else if (m_ImageResource.NID == 1036)
-                                        {
-                                            // In RGB format										
-                                            for (int n = 0; n < nTotalData; ++n)
-                                            {
-                                                c = binReader.ReadByte();
-                                                nBytesRead += 1;
-                                                buffer[n] = c;
-                                            }
-                                        }
-                                    }
-                                    break;
-                                case 1037:
-                                    {
-                                        IntValue = binReader.ReadBytes(4);
-                                        if (SwapBytes(IntValue, 4))
-                                        {
-                                            m_nGlobalAngle = BitConverter.ToInt32(IntValue, 0);
-                                        }
-
-                                        nBytesRead += 4;
-                                    }
-                                    break;
                                 case 1046:
                                     {
                                         ShortValue = binReader.ReadBytes(2);
@@ -619,16 +384,6 @@ namespace SimplePsd
                                         if (SwapBytes(ShortValue, 2))
                                         {
                                             m_nColourCount = BitConverter.ToInt16(ShortValue, 0);
-                                        }
-                                    }
-                                    break;
-                                case 1047:
-                                    {
-                                        ShortValue = binReader.ReadBytes(2);
-                                        nBytesRead += 2;
-                                        if (SwapBytes(ShortValue, 2))
-                                        {
-                                            m_nTransparentIndex = BitConverter.ToInt16(ShortValue, 0);
                                         }
                                     }
                                     break;
@@ -679,13 +434,6 @@ namespace SimplePsd
                     stream.Position += nTotalBytes;
                 }
 
-                //				byte c = 0x00;
-                //				for(int i=0;i<nTotalBytes;i++)
-                //				{
-                //					if(binReader.PeekChar() == -1) break;
-                //					c = binReader.ReadByte();
-                //				}
-
                 bSuccess = true;
             }
             catch (EndOfStreamException e)
@@ -713,8 +461,6 @@ namespace SimplePsd
                 {
                     nCompression = BitConverter.ToInt16(ShortValue, 0);
                 }
-
-                m_nCompression = nCompression;
 
                 switch (nCompression)
                 {

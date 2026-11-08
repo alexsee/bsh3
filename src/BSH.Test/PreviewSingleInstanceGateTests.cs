@@ -13,8 +13,9 @@ namespace BSH.Test;
 
 public class PreviewSingleInstanceGateTests
 {
-    [Test]
-    public void SecondPreviewLaunchSignalsTheRunningInstance()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SecondPreviewLaunchOnlySignalsWhenRequested(bool activateExisting)
     {
         var names = UniqueNames();
         var sync = new InMemoryPreviewInstanceSync();
@@ -38,10 +39,11 @@ public class PreviewSingleInstanceGateTests
                 names.Preview,
                 names.Engine,
                 names.EventName,
-                sync);
+                sync,
+                activateExisting: activateExisting);
 
             Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
-            Assert.That(activated, Is.True);
+            Assert.That(activated, Is.EqualTo(activateExisting));
         }
         finally
         {

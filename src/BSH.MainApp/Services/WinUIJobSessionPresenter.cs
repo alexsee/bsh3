@@ -29,14 +29,15 @@ public sealed class WinUIJobSessionPresenter : IJobSessionPresenter
         IPresentationService presentationService,
         IStatusService statusService,
         Action cancelAction,
-        ICompletionActionService? completionActionService = null)
+        ICompletionActionService completionActionService)
     {
         ArgumentNullException.ThrowIfNull(presentationService);
         ArgumentNullException.ThrowIfNull(statusService);
         ArgumentNullException.ThrowIfNull(cancelAction);
+        ArgumentNullException.ThrowIfNull(completionActionService);
 
         this.cancelAction = cancelAction;
-        this.completionActionService = completionActionService ?? new CompletionActionService();
+        this.completionActionService = completionActionService;
         this.presentationService = presentationService;
         this.statusService = statusService;
     }

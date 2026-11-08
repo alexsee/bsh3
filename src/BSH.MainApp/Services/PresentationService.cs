@@ -76,14 +76,6 @@ public class PresentationService : IPresentationService
         await App.GetService<IActivationService>().ActivateAsync(null);
     }
 
-    public async Task CloseMainWindowAsync()
-    {
-        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
-        {
-            App.MainWindow.Close();
-        });
-    }
-
     public async Task ShowBackupBrowserWindowAsync()
     {
         await App.GetService<IActivationService>().ActivateAsync(null);
@@ -93,11 +85,6 @@ public class PresentationService : IPresentationService
         }
 
         App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
-    }
-
-    public async Task CloseBackupBrowserWindowAsync()
-    {
-        await ShowMainWindowAsync();
     }
 
     public async Task ShowAboutWindowAsync()

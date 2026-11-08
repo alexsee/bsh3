@@ -25,30 +25,6 @@ namespace BSH.Main.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool SystemStatus {
-            get {
-                return ((bool)(this["SystemStatus"]));
-            }
-            set {
-                this["SystemStatus"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool SystemConfigured {
-            get {
-                return ((bool)(this["SystemConfigured"]));
-            }
-            set {
-                this["SystemConfigured"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("235")]
         public int BrowserSplitter {
             get {
@@ -140,18 +116,6 @@ namespace BSH.Main.Properties {
             }
             set {
                 this["AutoSearchUpdates"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string StartParameters {
-            get {
-                return ((string)(this["StartParameters"]));
-            }
-            set {
-                this["StartParameters"] = value;
             }
         }
         

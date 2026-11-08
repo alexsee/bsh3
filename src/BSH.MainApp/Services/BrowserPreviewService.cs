@@ -65,7 +65,7 @@ public class BrowserPreviewService : IBrowserPreviewService
                 return;
             }
 
-            await smartPreviewHost.ShowAsync(localFilePath, isTemporary);
+            await smartPreviewHost.ShowAsync(localFilePath);
         }
         catch
         {

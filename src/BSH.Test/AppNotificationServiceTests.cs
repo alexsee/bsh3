@@ -5,7 +5,6 @@ using System;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Notifications;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -101,14 +100,6 @@ public class AppNotificationServiceTests
 
     private sealed class UnusedNavigation : INavigationService
     {
-        public event NavigatedEventHandler Navigated
-        {
-            add { }
-            remove { }
-        }
-
-        public bool CanGoBack => false;
-
         public Frame Frame
         {
             get;
@@ -116,11 +107,6 @@ public class AppNotificationServiceTests
         }
 
         public bool NavigateTo(string pageKey, object parameter = null, bool clearNavigation = false)
-        {
-            return false;
-        }
-
-        public bool GoBack()
         {
             return false;
         }

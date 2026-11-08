@@ -19,11 +19,14 @@ public class ActivationService : IActivationService
         _activationHandlers = activationHandlers;
     }
 
-    public async Task ActivateAsync(object? activationArgs)
+    public async Task ActivateAsync(object? activationArgs, bool showWindow = true)
     {
         await HandleActivationAsync(activationArgs);
 
-        App.MainWindow.Activate();
+        if (showWindow)
+        {
+            App.MainWindow.Activate();
+        }
     }
 
     private async Task HandleActivationAsync(object? activationArgs)

@@ -44,7 +44,7 @@ public sealed class RegistryStartupLaunchAdapter : IStartupLaunchAdapter
         {
             if (enabled)
             {
-                using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true)
+                using var key = Registry.CurrentUser.CreateSubKey(RunKeyPath, writable: true)
                     ?? throw new InvalidOperationException("Unable to open startup registry key.");
                 var executablePath = getExecutablePath();
                 key.SetValue(ValueName, $"\"{executablePath}\" {PreviewLaunch.AutoStartArgument}");

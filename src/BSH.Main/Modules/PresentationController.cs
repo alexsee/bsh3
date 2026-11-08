@@ -56,24 +56,10 @@ public class PresentationController
         }
 
         StatusController.Current.RemoveObserver(statusWindow);
-        TaskCompleteAction CloseStatusWindowRet;
-        if (statusWindow.chkOptions.Checked && statusWindow.cboOptions.SelectedIndex == 0)
-        {
-            CloseStatusWindowRet = TaskCompleteAction.ShutdownPC;
-        }
-        else if (statusWindow.chkOptions.Checked && statusWindow.cboOptions.SelectedIndex == 1)
-        {
-            CloseStatusWindowRet = TaskCompleteAction.HibernatePC;
-        }
-        else
-        {
-            CloseStatusWindowRet = TaskCompleteAction.NoAction;
-        }
-
         statusWindow.Close();
         statusWindow.Dispose();
         statusWindow = null;
-        return CloseStatusWindowRet;
+        return TaskCompleteAction.NoAction;
     }
 
     private frmMain mainWindow;

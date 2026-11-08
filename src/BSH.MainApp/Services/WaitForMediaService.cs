@@ -12,11 +12,7 @@ public class WaitForMediaService : IWaitForMediaService
 {
     private const int THREAD_SLEEP_SECONDS = 5000;
 
-    private const int MAX_WAITING_SECONDS = 300000;
-
     private readonly IBackupService backupService;
-
-    private long currentWaitingTime = 0L;
 
     private WaitForMediumWindow? window;
 
@@ -25,21 +21,16 @@ public class WaitForMediaService : IWaitForMediaService
         this.backupService = backupService;
     }
 
-    public async Task<bool> ExecuteAsync(bool silent, CancellationTokenSource cancellationTokenSource)
+    public async Task<bool> ExecuteAsync(CancellationTokenSource cancellationTokenSource)
     {
-        await ShowWindowAsync(silent, cancellationTokenSource);
-        var result = await WaitForMediaAvailabilityAsync(silent, cancellationTokenSource);
-        await CloseWindowAsync(silent, cancellationTokenSource);
+        await ShowWindowAsync(cancellationTokenSource);
+        var result = await WaitForMediaAvailabilityAsync(cancellationTokenSource);
+        await CloseWindowAsync(cancellationTokenSource);
         return result;
     }
 
-    private async Task ShowWindowAsync(bool silent, CancellationTokenSource cancellationTokenSource)
+    private async Task ShowWindowAsync(CancellationTokenSource cancellationTokenSource)
     {
-        if (silent)
-        {
-            return;
-        }
-
         await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
         {
             window = new WaitForMediumWindow();
@@ -49,7 +40,7 @@ public class WaitForMediaService : IWaitForMediaService
         });
     }
 
-    private async Task<bool> WaitForMediaAvailabilityAsync(bool silent, CancellationTokenSource cancellationTokenSource)
+    private async Task<bool> WaitForMediaAvailabilityAsync(CancellationTokenSource cancellationTokenSource)
     {
         return await Task.Run(async () =>
         {
@@ -58,12 +49,6 @@ public class WaitForMediaService : IWaitForMediaService
                 try
                 {
                     await Task.Delay(THREAD_SLEEP_SECONDS);
-                    currentWaitingTime += THREAD_SLEEP_SECONDS;
-
-                    if (silent && currentWaitingTime > MAX_WAITING_SECONDS)
-                    {
-                        return false;
-                    }
 
                     if (await backupService.CheckMedia())
                     {
@@ -80,9 +65,9 @@ public class WaitForMediaService : IWaitForMediaService
         });
     }
 
-    private async Task CloseWindowAsync(bool silent, CancellationTokenSource cancellationTokenSource)
+    private async Task CloseWindowAsync(CancellationTokenSource cancellationTokenSource)
     {
-        if (silent || window == null)
+        if (window == null)
         {
             return;
         }

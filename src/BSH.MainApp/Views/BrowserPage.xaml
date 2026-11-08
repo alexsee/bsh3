@@ -71,23 +71,6 @@
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Name="FileOrFolderTemplate" x:DataType="engine:FileTableRow">
-            <StackPanel
-                Orientation="Horizontal"
-                Spacing="4"
-                Background="Transparent">
-                <i:Interaction.Behaviors>
-                    <i:EventTriggerBehavior EventName="PointerEntered">
-                        <i:ChangePropertyAction PropertyName="Opacity" Value="0.7" />
-                    </i:EventTriggerBehavior>
-                    <i:EventTriggerBehavior EventName="PointerExited">
-                        <i:ChangePropertyAction PropertyName="Opacity" Value="1.0" />
-                    </i:EventTriggerBehavior>
-                </i:Interaction.Behaviors>
-                <TextBlock Text="{x:Bind FileName, Mode=OneWay}" VerticalAlignment="Center" FontSize="12" FontWeight="Medium" />
-            </StackPanel>
-        </DataTemplate>
-
         <DataTemplate x:Name="FavoriteTemplate" x:DataType="models:BrowserFavoriteItem">
             <Grid>
                 <Grid.ColumnDefinitions>

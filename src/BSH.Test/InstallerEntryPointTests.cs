@@ -17,6 +17,8 @@ namespace BSH.Test;
 /// </summary>
 public class InstallerEntryPointTests
 {
+    private const string QuotedServiceBinPath = "binpath= \"\"\\\"\"{app}\\BSH.Service.exe\\\"\"\"\" start=auto";
+
     private static readonly string RepoRoot = LocateRepoRoot();
     private static readonly string WinFormsSetupIssPath = Path.Combine(RepoRoot, "tools", "setup", "Setup.iss");
     private static readonly string WinUiSetupIssPath = Path.Combine(RepoRoot, "tools", "setup", "Setup-WinUI.iss");
@@ -97,13 +99,26 @@ public class InstallerEntryPointTests
     public void BothInstallersRegisterAndStartVssService()
     {
         var winFormsRun = GetIssSection(WinFormsSetupIssPath, "[Run]");
-        Assert.That(winFormsRun, Does.Contain("binpath=\"\"{app}\\BSH.Service.exe\"\" start=auto"));
+        Assert.That(winFormsRun, Does.Contain(QuotedServiceBinPath));
         Assert.That(winFormsRun, Does.Contain("Parameters: \"start \"\"Backup Service Home-Dienst\"\""));
 
         var winUiRun = GetIssSection(WinUiSetupIssPath, "[Run]");
-        Assert.That(winUiRun, Does.Contain("binpath=\"\"{app}\\BSH.Service.exe\"\" start=auto"));
+        Assert.That(winUiRun, Does.Contain(QuotedServiceBinPath));
         Assert.That(winUiRun, Does.Contain("Parameters: \"start \"\"Backup Service Home Preview-Dienst\"\""));
         Assert.That(winUiRun, Does.Not.Contain("Backup Service Home-Dienst"));
+    }
+
+    [Test]
+    public void BothInstallersConfigureExistingVssServiceBinPath()
+    {
+        // sc create fails silently when the service already exists (runhidden).
+        // sc config still applies the current binpath and start mode.
+        AssertVssServiceBinPathIsCreatedThenConfigured(
+            GetIssSection(WinFormsSetupIssPath, "[Run]"),
+            "Backup Service Home-Dienst");
+        AssertVssServiceBinPathIsCreatedThenConfigured(
+            GetIssSection(WinUiSetupIssPath, "[Run]"),
+            "Backup Service Home Preview-Dienst");
     }
 
     [Test]
@@ -189,6 +204,23 @@ public class InstallerEntryPointTests
     public void WinFormsShellRemainsPublishable()
     {
         Assert.That(IsPublishable(MainCsprojPath), Is.True);
+    }
+
+    private static void AssertVssServiceBinPathIsCreatedThenConfigured(string runSection, string serviceName)
+    {
+        var create = "Parameters: \"create \"\"" + serviceName + "\"\" " + QuotedServiceBinPath + "\"";
+        var config =
+            "Filename: \"sc\"; Parameters: \"config \"\"" + serviceName + "\"\" " + QuotedServiceBinPath +
+            "\"; WorkingDir: \"{app}\"; Flags: runhidden runascurrentuser";
+
+        var createIndex = runSection.IndexOf(create, StringComparison.Ordinal);
+        var configIndex = runSection.IndexOf(config, StringComparison.Ordinal);
+
+        Assert.That(createIndex, Is.GreaterThanOrEqualTo(0), $"sc create for {serviceName} was not found.");
+        Assert.That(
+            configIndex,
+            Is.GreaterThan(createIndex),
+            $"sc config for {serviceName} must follow sc create and set binpath and start=auto.");
     }
 
     private static string GetIssSection(string setupIssPath, string sectionHeader)

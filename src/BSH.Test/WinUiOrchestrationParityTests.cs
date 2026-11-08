@@ -56,7 +56,7 @@ public class WinUiOrchestrationParityTests
     [Test]
     public async Task StartAsyncMonitorsPowerAndStopsAutomationWhenPowerIsDisconnected()
     {
-        var powerStatusService = new TestPowerStatusService { HasBattery = true };
+        var powerStatusService = new TestPowerStatusService();
         var statusService = new TestStatusService();
         var scheduledBackupService = new TestScheduledBackupService();
         var service = new OrchestrationService(
@@ -194,7 +194,6 @@ public class WinUiOrchestrationParityTests
     {
         var powerStatusService = new TestPowerStatusService
         {
-            HasBattery = true,
             IsRunningOnBattery = true
         };
         var statusService = new TestStatusService();
@@ -238,7 +237,7 @@ public class WinUiOrchestrationParityTests
             DeativateAutoBackupsWhenAkku = "1",
             TaskType = TaskType.Auto
         };
-        var powerStatusService = new TestPowerStatusService { HasBattery = true };
+        var powerStatusService = new TestPowerStatusService();
         var statusService = new TestStatusService();
         var scheduledBackupService = new TestScheduledBackupService();
         var service = new OrchestrationService(
@@ -337,7 +336,7 @@ public class WinUiOrchestrationParityTests
     }
 
     [TestCase(JobState.FINISHED, "INFO_BACKUP_SUCCESSFUL_TITLE", "action=overview")]
-    [TestCase(JobState.ERROR, "INFO_BACKUP_UNSUCCESSFUL_TITLE", "action=backupResult")]
+    [TestCase(JobState.ERROR, "INFO_BACKUP_UNSUCCESSFUL_TITLE", "action=overview")]
     public void StatusServiceShowsBackupCompletionNotifications(JobState state, string expectedTitleKey, string expectedLaunch)
     {
         var notifications = new TestNotificationService();
@@ -437,10 +436,9 @@ public class WinUiOrchestrationParityTests
     {
         public int CancelCalls { get; private set; }
 
-        public bool IsCancellationRequested => CancelCalls > 0;
         public void Cancel() => CancelCalls++;
         public Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(true);
-        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
+        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "") => Task.FromResult(true);
         public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
         public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.FromResult(new JobSessionResult { Started = true });
         public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
@@ -454,7 +452,6 @@ public class WinUiOrchestrationParityTests
     {
         private EventHandler? powerStatusChanged;
 
-        public bool HasBattery { get; set; }
         public bool IsRunningOnBattery { get; set; }
         public int StartMonitoringCalls { get; private set; }
         public int StopMonitoringCalls { get; private set; }
@@ -548,8 +545,6 @@ public class WinUiOrchestrationParityTests
 
     private sealed class TestPresentationService : IPresentationService
     {
-        public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
         public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
         public Task OpenHelpSupportAsync() => Task.CompletedTask;

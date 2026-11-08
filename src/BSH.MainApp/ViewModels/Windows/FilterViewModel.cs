@@ -133,10 +133,6 @@ public partial class FilterViewModel : ObservableObject
         private set => SetProperty(ref isRegexTestNoMatch, value);
     }
 
-    public IRelayCommand AddFolderCommand { get; }
-
-    public IRelayCommand AddFileCommand { get; }
-
     public IRelayCommand AddFileTypeCommand { get; }
 
     public IRelayCommand AddRegexCommand { get; }
@@ -164,8 +160,6 @@ public partial class FilterViewModel : ObservableObject
     {
         this.configurationManager = configurationManager;
 
-        AddFolderCommand = new RelayCommand<string?>(AddFolder);
-        AddFileCommand = new RelayCommand<string?>(AddFile);
         AddFileTypeCommand = new RelayCommand<string?>(AddFileType, CanAddFileType);
         AddRegexCommand = new RelayCommand<string?>(AddRegex, CanAddRegex);
         ShowAddFileTypeCommand = new RelayCommand(() => ShowAddPanel(fileType: true));

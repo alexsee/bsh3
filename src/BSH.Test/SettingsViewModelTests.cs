@@ -548,8 +548,6 @@ public class SettingsViewModelTests
         public int MessageBoxCalls { get; private set; }
         public string? Password { get; set; }
 
-        public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
         public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
         public Task OpenHelpSupportAsync() => Task.CompletedTask;
@@ -595,7 +593,6 @@ public class SettingsViewModelTests
         public bool RequestPasswordResult { get; set; } = true;
         public bool ClearEncryptionOnModify { get; set; }
 
-        public bool IsCancellationRequested => false;
         public void Cancel() { }
         public Task<bool> CheckMediaAsync(ActionType action, bool silent = false)
         {
@@ -603,7 +600,7 @@ public class SettingsViewModelTests
             return Task.FromResult(CheckMediaResult);
         }
 
-        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, bool shutdownApp = false, string sourceFolders = "") => Task.FromResult(true);
+        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "") => Task.FromResult(true);
         public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
         public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true)
         {
@@ -670,7 +667,6 @@ public class SettingsViewModelTests
     private sealed class SettingsSwitchStorageService : ISwitchStorageService
     {
         public bool LocalTargetContainsBackupData(string driveRoot) => false;
-        public bool UncTargetContainsBackupData(string uncPath) => false;
         public void SyncDatabaseToCurrentMedium(string databaseFile) { }
         public Task SwitchToLocalAsync(string driveRoot, string? mediaVolumeSerial, string databaseFile) => Task.CompletedTask;
         public Task SwitchToUncAsync(SwitchStorageUncTarget unc, string databaseFile) => Task.CompletedTask;

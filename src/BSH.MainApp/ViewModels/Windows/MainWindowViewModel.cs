@@ -31,20 +31,6 @@ public partial class MainWindowViewModel : ObservableObject
         public const string ResetConfiguration = "Support.ResetConfiguration";
     }
 
-    public static IReadOnlyList<string> SupportActionTags
-    {
-        get;
-    } =
-    [
-        SupportActionKeys.About,
-        SupportActionKeys.Help,
-        SupportActionKeys.EventLog,
-        SupportActionKeys.CheckForUpdates,
-        SupportActionKeys.ClearStoredPassword,
-        SupportActionKeys.ResetUniqueUserId,
-        SupportActionKeys.ResetConfiguration
-    ];
-
     private readonly IPresentationService? presentationService;
     private readonly INavigationService? navigationService;
     private readonly IUpdateService? updateService;

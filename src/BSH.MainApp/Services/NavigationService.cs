@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Diagnostics.CodeAnalysis;
-
 using Brightbits.BSH.Engine.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
@@ -18,8 +16,6 @@ public class NavigationService : INavigationService
     private readonly IConfigurationManager _configurationManager;
     private object? _lastParameterUsed;
     private Frame? _frame;
-
-    public event NavigatedEventHandler? Navigated;
 
     public Frame? Frame
     {
@@ -42,9 +38,6 @@ public class NavigationService : INavigationService
         }
     }
 
-    [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
-    public bool CanGoBack => Frame != null && Frame.CanGoBack;
-
     public NavigationService(IPageService pageService, IConfigurationManager configurationManager)
     {
         _pageService = pageService;
@@ -65,23 +58,6 @@ public class NavigationService : INavigationService
         {
             Frame.Navigated -= OnNavigated;
         }
-    }
-
-    public bool GoBack()
-    {
-        if (CanGoBack)
-        {
-            var vmBeforeNavigation = Frame.GetPageViewModel();
-            Frame.GoBack();
-            if (vmBeforeNavigation is INavigationAware navigationAware)
-            {
-                navigationAware.OnNavigatedFrom();
-            }
-
-            return true;
-        }
-
-        return false;
     }
 
     public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false)
@@ -127,8 +103,6 @@ public class NavigationService : INavigationService
             {
                 navigationAware.OnNavigatedTo(e.Parameter);
             }
-
-            Navigated?.Invoke(sender, e);
         }
     }
 }

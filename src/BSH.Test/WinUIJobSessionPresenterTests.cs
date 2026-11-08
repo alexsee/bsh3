@@ -63,7 +63,8 @@ public class WinUIJobSessionPresenterTests
         return new WinUIJobSessionPresenter(
             new StubPresentationService(),
             new StubStatusService { OverwriteResult = overwriteResult },
-            cancel);
+            cancel,
+            new CompletionActionService());
     }
 
     private sealed class StubStatusService : IStatusService
@@ -98,8 +99,6 @@ public class WinUIJobSessionPresenterTests
 
     private sealed class StubPresentationService : IPresentationService
     {
-        public Task CloseBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task CloseMainWindowAsync() => Task.CompletedTask;
         public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
         public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
         public Task OpenHelpSupportAsync() => Task.CompletedTask;

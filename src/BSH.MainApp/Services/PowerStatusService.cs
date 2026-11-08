@@ -16,15 +16,6 @@ public class PowerStatusService : IPowerStatusService
     private bool isRunningOnBattery;
     private EventHandler? powerStatusChanged;
 
-    public bool HasBattery
-    {
-        get
-        {
-            EnsurePowerStatusSnapshot();
-            return hasBattery;
-        }
-    }
-
     public bool IsRunningOnBattery
     {
         get
