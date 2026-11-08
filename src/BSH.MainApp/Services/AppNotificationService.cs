@@ -144,7 +144,6 @@ public class AppNotificationService : IAppNotificationService, IDisposable
 
     private void PresentOnUi(string pageKey)
     {
-        App.NoteExplicitPresentation();
         PreviewAppStartup.PresentPreviewWindow(
             () => App.HasMainWindow,
             () => App.GetService<SetupRouting>().NavigateForStartup(),
@@ -152,7 +151,11 @@ public class AppNotificationService : IAppNotificationService, IDisposable
             () => App.MainWindow.ViewModel.IsShellNavigationEnabled,
             key => _navigationService.NavigateTo(key),
             pageKey,
-            () => App.MainWindow.AppWindow.Show(),
+            () =>
+            {
+                App.MainWindow.AppWindow.Show();
+                App.NoteExplicitPresentation();
+            },
             () => App.MainWindow.Activate(),
             () => App.MainWindow.AppWindow.MoveInZOrderAtTop());
     }

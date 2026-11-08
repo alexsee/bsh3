@@ -82,39 +82,75 @@ public static class PreviewAppStartup
     }
 
     /// <summary>
-    /// A background prompt may show the main window only while its dialog is open.
-    /// An explicit presentation during that time must keep the window visible.
+    /// Tracks whether the user currently wants the main window to stay visible,
+    /// and how many dialogs are using it as an owner. Visibility is recorded only
+    /// after a successful explicit show, and the window is hidden only when the
+    /// last dialog releases it.
     /// </summary>
-    public static bool ShouldRestoreHiddenOwner(bool temporarilyShown, int epochAtStart, int epochNow)
+    public sealed class DialogOwnerGate
     {
-        return temporarilyShown && epochAtStart == epochNow;
-    }
+        private int openDialogs;
+        private bool userVisible;
 
-    public readonly struct DialogOwnerLease : IDisposable
-    {
-        private readonly bool temporarilyShown;
-        private readonly int epochAtStart;
-        private readonly Func<int> currentEpoch;
-        private readonly Action hide;
+        public int OpenDialogs => openDialogs;
 
-        public DialogOwnerLease(bool temporarilyShown, int epochAtStart, Func<int> currentEpoch, Action hide)
+        public bool UserVisible => userVisible;
+
+        public void MarkExplicitlyShown()
         {
-            this.temporarilyShown = temporarilyShown;
-            this.epochAtStart = epochAtStart;
-            this.currentEpoch = currentEpoch;
-            this.hide = hide;
+            userVisible = true;
         }
 
-        public void Dispose()
+        public void MarkClosedToTray()
         {
-            if (currentEpoch == null || hide == null)
+            userVisible = false;
+        }
+
+        public Lease Begin(bool windowIsVisible, Action showTemporary, Action hide)
+        {
+            ArgumentNullException.ThrowIfNull(showTemporary);
+            ArgumentNullException.ThrowIfNull(hide);
+            openDialogs++;
+            try
             {
-                return;
+                if (!windowIsVisible)
+                {
+                    showTemporary();
+                }
+            }
+            catch
+            {
+                openDialogs--;
+                throw;
             }
 
-            if (ShouldRestoreHiddenOwner(temporarilyShown, epochAtStart, currentEpoch()))
+            return new Lease(this, hide);
+        }
+
+        private void Release(Action hide)
+        {
+            openDialogs--;
+            if (openDialogs == 0 && !userVisible)
             {
                 hide();
+            }
+        }
+
+        public sealed class Lease : IDisposable
+        {
+            private DialogOwnerGate gate;
+            private readonly Action hide;
+
+            internal Lease(DialogOwnerGate gate, Action hide)
+            {
+                this.gate = gate;
+                this.hide = hide;
+            }
+
+            public void Dispose()
+            {
+                var current = Interlocked.Exchange(ref gate, null);
+                current?.Release(hide);
             }
         }
     }

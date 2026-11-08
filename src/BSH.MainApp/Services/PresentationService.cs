@@ -72,18 +72,18 @@ public class PresentationService : IPresentationService
 
     public async Task ShowMainWindowAsync()
     {
-        App.NoteExplicitPresentation();
         App.GetService<SetupRouting>().NavigateForStartup();
         await App.GetService<IActivationService>().ActivateAsync(null);
         App.MainWindow.AppWindow.Show();
+        App.NoteExplicitPresentation();
         App.MainWindow.AppWindow.MoveInZOrderAtTop();
     }
 
     public async Task ShowBackupBrowserWindowAsync()
     {
-        App.NoteExplicitPresentation();
         await App.GetService<IActivationService>().ActivateAsync(null);
         App.MainWindow.AppWindow.Show();
+        App.NoteExplicitPresentation();
         App.MainWindow.AppWindow.MoveInZOrderAtTop();
         if (!App.MainWindow.ViewModel.IsShellNavigationEnabled)
         {

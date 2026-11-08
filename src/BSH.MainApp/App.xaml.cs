@@ -67,13 +67,18 @@ public partial class App : Application
 
     private static MainWindow? mainWindow;
 
-    private static int explicitPresentations;
+    private static readonly PreviewAppStartup.DialogOwnerGate dialogOwners = new();
 
     internal static bool HasMainWindow => mainWindow != null;
 
     internal static void NoteExplicitPresentation()
     {
-        Interlocked.Increment(ref explicitPresentations);
+        dialogOwners.MarkExplicitlyShown();
+    }
+
+    internal static void NoteClosedToTray()
+    {
+        dialogOwners.MarkClosedToTray();
     }
 
     public static MainWindow MainWindow => mainWindow ??= new MainWindow();
@@ -210,8 +215,9 @@ public partial class App : Application
         var presentQueuedLaunch = foreground.CompleteStartup();
         if (!autoStart)
         {
-            NoteExplicitPresentation();
             await App.GetService<IActivationService>().ActivateAsync(args);
+            MainWindow.AppWindow.Show();
+            NoteExplicitPresentation();
         }
         else if (presentQueuedLaunch)
         {
@@ -233,8 +239,7 @@ public partial class App : Application
     {
         try
         {
-            NoteExplicitPresentation();
-            ShowMainWindowCore(moveToTop: true);
+            ShowMainWindowCore(explicitShow: true);
         }
         catch (Exception ex)
         {
@@ -243,24 +248,17 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Gives a dialog a loaded <c>XamlRoot</c>. A never-activated window has no
-    /// live tree, and a hidden window will not display a dialog hosted in it, so
-    /// the owner is shown for the dialog and hidden again unless the user has
-    /// explicitly presented it.
+    /// Gives a dialog a loaded <c>XamlRoot</c>. A never-activated window has none,
+    /// and a hidden window does not display a dialog hosted in its tree, so the
+    /// owner is shown for the dialog and hidden when the last dialog finishes
+    /// unless an explicit show has succeeded.
     /// </summary>
-    internal static PreviewAppStartup.DialogOwnerLease BeginDialogOwner()
+    internal static PreviewAppStartup.DialogOwnerGate.Lease BeginDialogOwner()
     {
-        var epoch = Volatile.Read(ref explicitPresentations);
         var wasVisible = mainWindow != null && mainWindow.AppWindow.IsVisible;
-        if (!wasVisible)
-        {
-            ShowMainWindowCore(moveToTop: false);
-        }
-
-        return new PreviewAppStartup.DialogOwnerLease(
-            temporarilyShown: !wasVisible,
-            epoch,
-            () => Volatile.Read(ref explicitPresentations),
+        return dialogOwners.Begin(
+            wasVisible,
+            () => ShowMainWindowCore(explicitShow: false),
             () =>
             {
                 try
@@ -274,10 +272,10 @@ public partial class App : Application
             });
     }
 
-    private static void ShowMainWindowCore(bool moveToTop)
+    private static void ShowMainWindowCore(bool explicitShow)
     {
-        // Autostart leaves the window uncreated. Navigation attaches content so
-        // the root can load. Show comes before Activate so a hidden window returns.
+        // Navigation attaches content so the root can load. The explicit flag is
+        // recorded only after Show returns, with no await in between.
         PreviewAppStartup.PresentPreviewWindow(
             () => mainWindow != null,
             () => GetService<SetupRouting>().NavigateForStartup(),
@@ -285,9 +283,16 @@ public partial class App : Application
             () => false,
             null,
             null,
-            () => MainWindow.AppWindow.Show(),
+            () =>
+            {
+                MainWindow.AppWindow.Show();
+                if (explicitShow)
+                {
+                    NoteExplicitPresentation();
+                }
+            },
             () => MainWindow.Activate(),
-            moveToTop ? () => MainWindow.AppWindow.MoveInZOrderAtTop() : () => { });
+            explicitShow ? () => MainWindow.AppWindow.MoveInZOrderAtTop() : () => { });
     }
 
     private static void OnAutoUpdaterApplicationExit()

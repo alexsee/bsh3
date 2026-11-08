@@ -119,38 +119,103 @@ public class PreviewStartupPresentationTests
     }
 
     [Test]
-    public void ABackgroundPromptHidesTheOwnerItTemporarilyShowed()
+    public void APromptOpenedBeforeTheExplicitShowDoesNotHideAfterwards()
     {
+        var gate = new PreviewAppStartup.DialogOwnerGate();
         var hidden = 0;
-        var epoch = 0;
-        using (new PreviewAppStartup.DialogOwnerLease(temporarilyShown: true, epochAtStart: 0, () => epoch, () => hidden++))
+        var shown = 0;
+        var dialog = gate.Begin(windowIsVisible: false, () => shown++, () => hidden++);
+
+        Assert.That(shown, Is.EqualTo(1));
+        Assert.That(gate.UserVisible, Is.False);
+
+        gate.MarkExplicitlyShown();
+        dialog.Dispose();
+
+        Assert.That(hidden, Is.EqualTo(0));
+        Assert.That(gate.UserVisible, Is.True);
+        Assert.That(gate.OpenDialogs, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void AnEarlierDialogDoesNotHideWhileAnotherDialogIsOpen()
+    {
+        var gate = new PreviewAppStartup.DialogOwnerGate();
+        var hidden = 0;
+        var first = gate.Begin(windowIsVisible: false, () => { }, () => hidden++);
+        var second = gate.Begin(windowIsVisible: true, () => { }, () => hidden++);
+
+        first.Dispose();
+        Assert.That(hidden, Is.EqualTo(0));
+        Assert.That(gate.OpenDialogs, Is.EqualTo(1));
+
+        second.Dispose();
+        Assert.That(hidden, Is.EqualTo(1));
+        Assert.That(gate.OpenDialogs, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void ClosingToTrayLetsTheNextPromptHideTheWindowAgain()
+    {
+        var gate = new PreviewAppStartup.DialogOwnerGate();
+        var hidden = 0;
+        gate.MarkExplicitlyShown();
+        gate.MarkClosedToTray();
+
+        using (gate.Begin(windowIsVisible: false, () => { }, () => hidden++))
         {
         }
 
+        Assert.That(gate.UserVisible, Is.False);
         Assert.That(hidden, Is.EqualTo(1));
     }
 
     [Test]
-    public void ABackgroundPromptLeavesAnAlreadyVisibleOwnerAlone()
+    public void ReleasingADialogTwiceHidesOnlyOnce()
     {
+        var gate = new PreviewAppStartup.DialogOwnerGate();
         var hidden = 0;
-        using (new PreviewAppStartup.DialogOwnerLease(temporarilyShown: false, epochAtStart: 1, () => 1, () => hidden++))
+        var dialog = gate.Begin(windowIsVisible: false, () => { }, () => hidden++);
+
+        dialog.Dispose();
+        dialog.Dispose();
+
+        Assert.That(hidden, Is.EqualTo(1));
+        Assert.That(gate.OpenDialogs, Is.EqualTo(0));
+
+        using (gate.Begin(windowIsVisible: false, () => { }, () => hidden++))
         {
         }
 
-        Assert.That(hidden, Is.EqualTo(0));
+        Assert.That(hidden, Is.EqualTo(2));
+        Assert.That(gate.OpenDialogs, Is.EqualTo(0));
     }
 
     [Test]
-    public void AnExplicitPresentationDuringAPromptKeepsTheWindowVisible()
+    public void AStartupShowThatHasSucceededStaysUpAfterAPrompt()
     {
+        var gate = new PreviewAppStartup.DialogOwnerGate();
         var hidden = 0;
-        var epoch = 0;
-        using (new PreviewAppStartup.DialogOwnerLease(temporarilyShown: true, epochAtStart: 0, () => epoch, () => hidden++))
+        gate.MarkExplicitlyShown();
+
+        using (gate.Begin(windowIsVisible: true, () => { }, () => hidden++))
         {
-            epoch++;
         }
 
         Assert.That(hidden, Is.EqualTo(0));
+        Assert.That(gate.UserVisible, Is.True);
+    }
+
+    [Test]
+    public void AFailedTemporaryShowReleasesTheDialogCount()
+    {
+        var gate = new PreviewAppStartup.DialogOwnerGate();
+
+        Assert.Throws<InvalidOperationException>(() => gate.Begin(
+            windowIsVisible: false,
+            () => throw new InvalidOperationException("show"),
+            () => { }));
+
+        Assert.That(gate.OpenDialogs, Is.EqualTo(0));
     }
 }

@@ -37,6 +37,7 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
     private void WindowEx_Closed(object sender, Microsoft.UI.Xaml.WindowEventArgs args)
     {
         args.Handled = true;
+        App.NoteClosedToTray();
         this.Hide();
     }
 
