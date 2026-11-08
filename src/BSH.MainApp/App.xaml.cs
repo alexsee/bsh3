@@ -79,14 +79,14 @@ public partial class App : Application
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = germanCulture;
 
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
-        var logDirectory = AppEventLog.GetDirectory(DatabaseFile);
 #if DEBUG
         if (OverviewPreview.IsRequested)
         {
-            logDirectory = Path.Combine(Path.GetTempPath(), "BSH.OverviewPreview");
+            AppEventLog.Initialize(Path.Combine(Path.GetTempPath(), "BSH.OverviewPreview"), "Backup Service Home 4", version);
         }
+        else
 #endif
-        AppEventLog.Initialize(logDirectory, "Backup Service Home 4", version);
+        AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home 4", version);
 
         _ = host.Value;
 
@@ -99,9 +99,7 @@ public partial class App : Application
 #if DEBUG
         if (!OverviewPreview.IsRequested)
 #endif
-        {
-            App.GetService<IAppNotificationService>().Initialize();
-        }
+        App.GetService<IAppNotificationService>().Initialize();
 
         UnhandledException += App_UnhandledException;
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;

@@ -14,6 +14,7 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
 {
     public MainWindowViewModel ViewModel { get; } = new MainWindowViewModel();
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage(Justification = "Initializes a native WinUI window; verified by the real app screenshot fixtures.")]
     public MainWindow()
     {
         InitializeComponent();
@@ -37,6 +38,7 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
         Title = "AppDisplayName".GetLocalized();
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage(Justification = "Native caption rendering requires an interactive window; verified with light and dark app screenshots.")]
     private void UpdateCaptionColors(Microsoft.UI.Xaml.ElementTheme theme)
     {
         // Native caption buttons do not inherit the XAML root's requested theme.
