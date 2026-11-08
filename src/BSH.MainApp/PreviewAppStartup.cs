@@ -15,7 +15,7 @@ namespace BSH.MainApp;
 /// Startup decisions for the WinUI Preview. Kept separate from <see cref="App"/>
 /// so tests can run them without a window or a second process.
 /// </summary>
-public static partial class PreviewAppStartup
+public static class PreviewAppStartup
 {
     public static bool ShouldExit(
         PreviewStartupResult startup,
@@ -40,117 +40,6 @@ public static partial class PreviewAppStartup
                 "Preview_EngineBusy_Text",
                 "Backup Service Home is already running. Preview uses the same database and will not start while that app is running."));
         return true;
-    }
-
-    /// <summary>
-    /// Shows the main window on the UI thread. A missing window is navigated first,
-    /// so an unconfigured database opens setup. A hidden window is shown before it
-    /// is activated. Page navigation runs only when the shell is enabled afterwards.
-    /// </summary>
-    public static void PresentPreviewWindow(
-        Func<bool> windowExists,
-        Action navigateForStartup,
-        bool navigateToPage,
-        Func<bool> shellNavigationEnabled,
-        Action<string>? navigateTo,
-        string? pageKey,
-        (Action Show, Action Activate, Action MoveToTop) foreground)
-    {
-        ArgumentNullException.ThrowIfNull(windowExists);
-        ArgumentNullException.ThrowIfNull(navigateForStartup);
-        ArgumentNullException.ThrowIfNull(shellNavigationEnabled);
-        ArgumentNullException.ThrowIfNull(foreground.Show);
-        ArgumentNullException.ThrowIfNull(foreground.Activate);
-        ArgumentNullException.ThrowIfNull(foreground.MoveToTop);
-
-        if (!windowExists())
-        {
-            navigateForStartup();
-        }
-
-        if (navigateToPage && shellNavigationEnabled())
-        {
-            ArgumentNullException.ThrowIfNull(navigateTo);
-            navigateTo(pageKey ?? string.Empty);
-        }
-
-        foreground.Show();
-        foreground.Activate();
-        foreground.MoveToTop();
-    }
-
-    /// <summary>
-    /// Tracks whether the user currently wants the main window to stay visible,
-    /// and how many dialogs are using it as an owner. Visibility is recorded only
-    /// after a successful explicit show, and the window is hidden only when the
-    /// last dialog releases it.
-    /// </summary>
-    public sealed partial class DialogOwnerGate
-    {
-        private int openDialogs;
-        private bool userVisible;
-
-        public int OpenDialogs => openDialogs;
-
-        public bool UserVisible => userVisible;
-
-        public void MarkExplicitlyShown()
-        {
-            userVisible = true;
-        }
-
-        public void MarkClosedToTray()
-        {
-            userVisible = false;
-        }
-
-        public Lease Begin(bool windowIsVisible, Action showTemporary, Action hide)
-        {
-            ArgumentNullException.ThrowIfNull(showTemporary);
-            ArgumentNullException.ThrowIfNull(hide);
-            openDialogs++;
-            try
-            {
-                if (!windowIsVisible)
-                {
-                    showTemporary();
-                }
-            }
-            catch
-            {
-                openDialogs--;
-                throw;
-            }
-
-            return new Lease(this, hide);
-        }
-
-        private void Release(Action hide)
-        {
-            openDialogs--;
-            if (openDialogs == 0 && !userVisible)
-            {
-                hide();
-            }
-        }
-
-        public sealed partial class Lease : IDisposable
-        {
-            private DialogOwnerGate? gate;
-            private readonly Action hide;
-
-            internal Lease(DialogOwnerGate gate, Action hide)
-            {
-                this.gate = gate;
-                this.hide = hide;
-            }
-
-            public void Dispose()
-            {
-                var current = Interlocked.Exchange(ref gate, null);
-                current?.Release(hide);
-            }
-        }
     }
 
     public static async Task<bool> OpenDatabaseAsync(

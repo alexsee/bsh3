@@ -13,8 +13,9 @@ namespace BSH.Test;
 
 public class PreviewSingleInstanceGateTests
 {
-    [Test]
-    public void SecondPreviewLaunchSignalsTheRunningInstance()
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SecondPreviewLaunchOnlySignalsWhenRequested(bool activateExisting)
     {
         var names = UniqueNames();
         var sync = new InMemoryPreviewInstanceSync();
@@ -38,85 +39,11 @@ public class PreviewSingleInstanceGateTests
                 names.Preview,
                 names.Engine,
                 names.EventName,
-                sync);
-
-            Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
-            Assert.That(activated, Is.True);
-        }
-        finally
-        {
-            gate.Dispose();
-        }
-    }
-
-    [Test]
-    public void SecondAutoStartDoesNotSignalTheRunningInstance()
-    {
-        var names = UniqueNames();
-        var sync = new SignalCountingSync();
-        var activated = false;
-        var first = PreviewSingleInstanceGate.Acquire(
-            () => activated = true,
-            out var gate,
-            names.Preview,
-            names.Engine,
-            names.EventName,
-            sync,
-            activateExisting: false);
-
-        Assert.That(first, Is.EqualTo(PreviewStartupResult.Started));
-
-        try
-        {
-            var second = PreviewSingleInstanceGate.Acquire(
-                () => { },
-                out _,
-                names.Preview,
-                names.Engine,
-                names.EventName,
                 sync,
-                activateExisting: false);
+                activateExisting: activateExisting);
 
             Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
-            Assert.That(activated, Is.False);
-            Assert.That(sync.SignalCount, Is.EqualTo(0));
-        }
-        finally
-        {
-            gate.Dispose();
-        }
-    }
-
-    [Test]
-    public void ManualSecondLaunchSignalsAnInstanceThatStartedFromAutostart()
-    {
-        var names = UniqueNames();
-        var sync = new InMemoryPreviewInstanceSync();
-        var activated = false;
-        var first = PreviewSingleInstanceGate.Acquire(
-            () => activated = true,
-            out var gate,
-            names.Preview,
-            names.Engine,
-            names.EventName,
-            sync,
-            activateExisting: false);
-
-        Assert.That(first, Is.EqualTo(PreviewStartupResult.Started));
-
-        try
-        {
-            var second = PreviewSingleInstanceGate.Acquire(
-                () => { },
-                out _,
-                names.Preview,
-                names.Engine,
-                names.EventName,
-                sync,
-                activateExisting: true);
-
-            Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
-            Assert.That(activated, Is.True);
+            Assert.That(activated, Is.EqualTo(activateExisting));
         }
         finally
         {
@@ -232,58 +159,6 @@ public class PreviewSingleInstanceGateTests
             Assert.That(error, Is.Null);
             Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
             Assert.That(activated.Wait(TimeSpan.FromSeconds(2)), Is.True);
-        }
-        finally
-        {
-            gate.Dispose();
-        }
-    }
-
-    [Test]
-    [Platform("Win")]
-    public void WindowsSyncDoesNotSignalWhenTheSecondLaunchIsAutostart()
-    {
-        var names = UniqueNames();
-        var sync = WindowsPreviewInstanceSync.Shared;
-        var activated = new ManualResetEventSlim(false);
-        var first = PreviewSingleInstanceGate.Acquire(
-            () => activated.Set(),
-            out var gate,
-            names.Preview,
-            names.Engine,
-            names.EventName,
-            sync,
-            activateExisting: false);
-        Assert.That(first, Is.EqualTo(PreviewStartupResult.Started));
-
-        try
-        {
-            PreviewStartupResult second = default;
-            Exception error = null;
-            var thread = new Thread(() =>
-            {
-                try
-                {
-                    second = PreviewSingleInstanceGate.Acquire(
-                        () => { },
-                        out _,
-                        names.Preview,
-                        names.Engine,
-                        names.EventName,
-                        sync,
-                        activateExisting: false);
-                }
-                catch (Exception ex)
-                {
-                    error = ex;
-                }
-            });
-            thread.Start();
-            thread.Join();
-
-            Assert.That(error, Is.Null);
-            Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
-            Assert.That(activated.Wait(TimeSpan.FromMilliseconds(300)), Is.False);
         }
         finally
         {
@@ -451,31 +326,5 @@ public class PreviewSingleInstanceGateTests
     {
         var id = Guid.NewGuid().ToString("N");
         return ("preview-" + id, "engine-" + id, "activate-" + id);
-    }
-
-    private sealed class SignalCountingSync : IPreviewInstanceSync
-    {
-        private readonly InMemoryPreviewInstanceSync inner = new();
-
-        public int SignalCount
-        {
-            get; private set;
-        }
-
-        public bool TryAcquireMutex(string name, out IDisposable ownership)
-        {
-            return inner.TryAcquireMutex(name, out ownership);
-        }
-
-        public IDisposable Listen(string name, Action onSignal)
-        {
-            return inner.Listen(name, onSignal);
-        }
-
-        public void Signal(string name)
-        {
-            SignalCount++;
-            inner.Signal(name);
-        }
     }
 }

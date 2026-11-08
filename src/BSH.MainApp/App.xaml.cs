@@ -67,20 +67,6 @@ public partial class App : Application
 
     private static MainWindow? mainWindow;
 
-    private static readonly PreviewAppStartup.DialogOwnerGate dialogOwners = new();
-
-    internal static bool HasMainWindow => mainWindow != null;
-
-    internal static void NoteExplicitPresentation()
-    {
-        dialogOwners.MarkExplicitlyShown();
-    }
-
-    internal static void NoteClosedToTray()
-    {
-        dialogOwners.MarkClosedToTray();
-    }
-
     public static MainWindow MainWindow => mainWindow ??= new MainWindow();
 
     public static string DatabaseFile { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
@@ -161,14 +147,13 @@ public partial class App : Application
 
     private static PreviewSingleInstanceGate? previewInstance;
 
-    private static readonly PreviewForegroundCoordinator foreground = new();
+    private static bool foregroundRequested;
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
 
         var uiQueue = DispatcherQueue.GetForCurrentThread();
-        UiThread.Capture(uiQueue);
         var autoStart = PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs());
         var startup = PreviewSingleInstanceGate.Acquire(
             onActivateRequested: () => uiQueue.TryEnqueue(BringPreviewToFront),
@@ -199,8 +184,10 @@ public partial class App : Application
             return;
         }
 
-        // Background startup. Keep this path off MainWindow: autostart must not
-        // create or show it. Tray, taskbar, and notification handlers present it later.
+        // Create the hidden window on the UI thread before background services use its dispatcher.
+        _ = MainWindow;
+
+        // start application
         App.GetService<IStatusService>().Initialize();
 
         await App.GetService<IOrchestrationService>().InitializeAsync();
@@ -211,89 +198,28 @@ public partial class App : Application
         await updateService.InitializeAsync(OnAutoUpdaterApplicationExit);
         await updateService.MaybeCheckOnStartupAsync();
 
-        var presentQueuedLaunch = foreground.CompleteStartup();
-        if (!autoStart)
-        {
-            await App.GetService<IActivationService>().ActivateAsync(args);
-            MainWindow.AppWindow.Show();
-            NoteExplicitPresentation();
-        }
-        else if (presentQueuedLaunch)
-        {
-            PresentMainWindow();
-        }
+        await App.GetService<IActivationService>().ActivateAsync(args, showWindow: !autoStart || foregroundRequested);
     }
 
     private static void BringPreviewToFront()
     {
-        if (!foreground.TryPresentNow())
+        var window = mainWindow;
+        if (window == null)
         {
+            foregroundRequested = true;
             return;
         }
 
-        PresentMainWindow();
-    }
-
-    internal static void PresentMainWindow()
-    {
         try
         {
-            ShowMainWindowCore(explicitShow: true);
+            window.AppWindow.Show();
+            window.Activate();
+            window.AppWindow.MoveInZOrderAtTop();
         }
         catch (Exception ex)
         {
             Log.Warning(ex, "Could not bring the Preview window to the front.");
         }
-    }
-
-    /// <summary>
-    /// Gives a dialog a loaded <c>XamlRoot</c>. A never-activated window has none,
-    /// and a hidden window does not display a dialog hosted in its tree, so the
-    /// owner is shown for the dialog and hidden when the last dialog finishes
-    /// unless an explicit show has succeeded.
-    /// </summary>
-    internal static PreviewAppStartup.DialogOwnerGate.Lease BeginDialogOwner()
-    {
-        var wasVisible = mainWindow != null && mainWindow.AppWindow.IsVisible;
-        return dialogOwners.Begin(
-            wasVisible,
-            () => ShowMainWindowCore(explicitShow: false),
-            () =>
-            {
-                try
-                {
-                    mainWindow?.Hide();
-                }
-                catch (Exception ex)
-                {
-                    Log.Warning(ex, "Could not restore the hidden main window.");
-                }
-            });
-    }
-
-    private static void ShowMainWindowCore(bool explicitShow)
-    {
-        // Navigation attaches content so the root can load. The explicit flag is
-        // recorded only after Show returns, with no await in between.
-        PreviewAppStartup.PresentPreviewWindow(
-            () => mainWindow != null,
-            () => GetService<SetupRouting>().NavigateForStartup(),
-            navigateToPage: false,
-            () => false,
-            null,
-            null,
-            (
-                Show: () =>
-                {
-                    MainWindow.AppWindow.Show();
-                    if (explicitShow)
-                    {
-                        NoteExplicitPresentation();
-                    }
-                },
-                Activate: () => MainWindow.Activate(),
-                MoveToTop: explicitShow ? () => MainWindow.AppWindow.MoveInZOrderAtTop() : () => { }
-            ));
     }
 
     private static void OnAutoUpdaterApplicationExit()
@@ -461,7 +387,7 @@ public partial class App : Application
 
             services.AddSingleton<IStorageFactory, StorageFactory>();
 
-            services.AddSingleton<DispatcherQueue>((_) => UiThread.Queue ?? throw new InvalidOperationException("The UI dispatcher has not been captured."));
+            services.AddSingleton<DispatcherQueue>((x) => DispatcherQueue.GetForCurrentThread());
 
             // Views and ViewModels
             services.AddTransient<BrowserViewModel>();

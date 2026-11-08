@@ -75,8 +75,6 @@ public sealed class PreviewSingleInstanceGate : IDisposable
 
         if (!sync.TryAcquireMutex(previewMutexName, out var previewOwnership))
         {
-            // A second autostart must exit without foregrounding the window.
-            // Manual second launches pass activateExisting and signal the owner.
             if (activateExisting)
             {
                 sync.Signal(activateEventName);

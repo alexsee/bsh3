@@ -57,14 +57,13 @@ public class PreviewAppStartupTests
         }
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void SecondLaunchExitsWithoutADialog(bool autoStart)
+    [Test]
+    public void SecondLaunchExitsWithoutADialog()
     {
         var messages = new List<string>();
         var shouldExit = PreviewAppStartup.ShouldExit(
             PreviewStartupResult.ActivateExisting,
-            autoStart,
+            autoStart: false,
             (caption, text) => messages.Add(caption + text),
             (key, fallback) => fallback);
 
@@ -106,13 +105,12 @@ public class PreviewAppStartupTests
         Assert.That(text, Does.Contain("already running"));
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void AFreeMutexContinuesStartup(bool autoStart)
+    [Test]
+    public void AFreeMutexContinuesStartup()
     {
         var shouldExit = PreviewAppStartup.ShouldExit(
             PreviewStartupResult.Started,
-            autoStart,
+            autoStart: false,
             (_, _) => Assert.Fail("No dialog is shown when Preview can start."),
             (_, fallback) => fallback);
 

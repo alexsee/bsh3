@@ -31,7 +31,7 @@ public class WaitForMediaService : IWaitForMediaService
 
     private async Task ShowWindowAsync(CancellationTokenSource cancellationTokenSource)
     {
-        await UiThread.RunDialogAsync(() =>
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
         {
             window = new WaitForMediumWindow();
             window.ViewModel.OnCancelRequested += cancellationTokenSource.Cancel;
@@ -72,8 +72,7 @@ public class WaitForMediaService : IWaitForMediaService
             return;
         }
 
-        var queue = UiThread.Queue ?? throw new InvalidOperationException("The UI dispatcher has not been captured.");
-        await queue.EnqueueAsync(() =>
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
         {
             window.ViewModel.OnCancelRequested -= cancellationTokenSource.Cancel;
             window.Close();

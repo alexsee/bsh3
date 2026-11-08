@@ -85,8 +85,6 @@ Each product has its own Run value:
 
 If both values are present, Windows starts both programs at login. The Preview installer shows the optional task “Automatischen Start der stabilen Version deaktivieren”. It is checked the first time (`checkedonce`). Leaving it checked deletes `BackupServiceHome3Run` so only the Preview starts. Uncheck it to keep the stable autostart entry. Uninstalling the Preview does not recreate that entry.
 
-When Preview is started with `-autostart` or `/autostart` and can open the shared database, it initializes backups and the tray icon and leaves the main window hidden. The window opens for a launch without that argument, and for a later tray, taskbar, or notification activation. A second autostart does not bring a running Preview to the front. A second launch without the argument does.
-
 When Preview is started with `-autostart` and the stable app already holds `BackupServiceHome3`, Preview exits without a dialog and writes a log line. A normal launch (Start Menu, shortcut, or no `-autostart`) still shows the “already running” message.
 
 The reverse is unchanged stable behavior: if Preview is already running, it holds `BackupServiceHome3`, and the stable app’s existing single-instance check exits quietly with no message.

@@ -18,8 +18,6 @@ public class AppNotificationService : IAppNotificationService, IDisposable
     private readonly Action detachNotifications;
     private readonly Action unregisterNotifications;
     private readonly Func<string, bool> showNotification;
-    private readonly Action<Action> postToUi;
-    private readonly Action<string> presentOnUi;
     private bool _isRegistered;
 
     public AppNotificationService(INavigationService navigationService)
@@ -32,17 +30,13 @@ public class AppNotificationService : IAppNotificationService, IDisposable
         Action? register,
         Action? detach,
         Func<string, bool>? showPayload,
-        Action? unregister = null,
-        Action<Action>? postToUi = null,
-        Action<string>? presentOnUi = null)
+        Action? unregister = null)
     {
         _navigationService = navigationService;
         registerNotifications = register ?? RegisterWithPlatform;
         detachNotifications = detach ?? DetachFromPlatform;
         showNotification = showPayload ?? ShowWithPlatform;
         unregisterNotifications = unregister ?? UnregisterFromPlatform;
-        this.postToUi = postToUi ?? PostToCapturedUiQueue;
-        this.presentOnUi = presentOnUi ?? PresentOnUi;
     }
 
     public void Initialize()
@@ -118,48 +112,23 @@ public class AppNotificationService : IAppNotificationService, IDisposable
     public void Activate(string? arguments)
     {
         var pageKey = ToastNotificationActivation.ResolvePageKey(arguments);
-        postToUi(() =>
+        App.MainWindow.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
         {
             try
             {
-                presentOnUi(pageKey);
+                if (App.MainWindow.ViewModel.IsShellNavigationEnabled)
+                {
+                    _navigationService.NavigateTo(pageKey);
+                }
+
+                App.MainWindow.Activate();
+                App.MainWindow.AppWindow.MoveInZOrderAtTop();
             }
             catch
             {
                 // Fail safe: never crash from toast activation.
             }
         });
-    }
-
-    private static void PostToCapturedUiQueue(Action action)
-    {
-        var queue = UiThread.Queue;
-        if (queue == null)
-        {
-            return;
-        }
-
-        queue.TryEnqueue(DispatcherQueuePriority.Low, () => action());
-    }
-
-    private void PresentOnUi(string pageKey)
-    {
-        PreviewAppStartup.PresentPreviewWindow(
-            () => App.HasMainWindow,
-            () => App.GetService<SetupRouting>().NavigateForStartup(),
-            navigateToPage: true,
-            () => App.MainWindow.ViewModel.IsShellNavigationEnabled,
-            key => _navigationService.NavigateTo(key),
-            pageKey,
-            (
-                Show: () =>
-                {
-                    App.MainWindow.AppWindow.Show();
-                    App.NoteExplicitPresentation();
-                },
-                Activate: () => App.MainWindow.Activate(),
-                MoveToTop: () => App.MainWindow.AppWindow.MoveInZOrderAtTop()
-            ));
     }
 
     public void Unregister()

@@ -27,7 +27,7 @@ public class PresentationService : IPresentationService
 
     public async Task ShowStatusWindowAsync()
     {
-        await UiThread.RunDialogAsync( () =>
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
         {
             CloseStatusWindowCore();
 
@@ -74,17 +74,11 @@ public class PresentationService : IPresentationService
     {
         App.GetService<SetupRouting>().NavigateForStartup();
         await App.GetService<IActivationService>().ActivateAsync(null);
-        App.MainWindow.AppWindow.Show();
-        App.NoteExplicitPresentation();
-        App.MainWindow.AppWindow.MoveInZOrderAtTop();
     }
 
     public async Task ShowBackupBrowserWindowAsync()
     {
         await App.GetService<IActivationService>().ActivateAsync(null);
-        App.MainWindow.AppWindow.Show();
-        App.NoteExplicitPresentation();
-        App.MainWindow.AppWindow.MoveInZOrderAtTop();
         if (!App.MainWindow.ViewModel.IsShellNavigationEnabled)
         {
             return;
@@ -142,7 +136,7 @@ public class PresentationService : IPresentationService
 
     public async Task<(string? password, bool persist)> RequestPasswordAsync()
     {
-        return await UiThread.RunDialogAsync( async () =>
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var requestPasswordWindow = new RequestPasswordWindow();
             requestPasswordWindow.XamlRoot = App.MainWindow.Content.XamlRoot;
@@ -159,7 +153,7 @@ public class PresentationService : IPresentationService
 
     public async Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile)
     {
-        return await UiThread.RunDialogAsync( async () =>
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var dialog = new RequestFileOverwriteWindow();
             return await dialog.ShowDialogAsync(localFile, remoteFile);
@@ -205,7 +199,7 @@ public class PresentationService : IPresentationService
             return;
         }
 
-        await UiThread.RunDialogAsync( async () =>
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var content = new StackPanel { Spacing = 8 };
             content.Children.Add(new ListView
@@ -234,7 +228,7 @@ public class PresentationService : IPresentationService
 
     public async Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync()
     {
-        return await UiThread.RunDialogAsync( async () =>
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var dialog = new NewBackupWindow();
             return (await dialog.ShowDialogAsync(), dialog.ViewModel);
@@ -243,7 +237,7 @@ public class PresentationService : IPresentationService
 
     public async Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel)
     {
-        return await UiThread.RunDialogAsync( async () =>
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var dialog = new EditBackupWindow();
             dialog.ViewModel.Title = backupViewModel.Title;
@@ -260,7 +254,7 @@ public class PresentationService : IPresentationService
 
     public async Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
     {
-        return await UiThread.RunDialogAsync( async () =>
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             ValidateCommands(commands);
             var (defaultCommand, secondaryCommand, cancelCommand) = ResolveCommands(commands, defaultCommandIndex, cancelCommandIndex);
@@ -384,7 +378,7 @@ public class PresentationService : IPresentationService
 
     public async Task ShowExcludeFileFolderWindowAsync()
     {
-        await UiThread.RunDialogAsync( async () =>
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var dialog = new FilterWindow();
             await dialog.ShowDialogAsync();
@@ -393,7 +387,7 @@ public class PresentationService : IPresentationService
 
     public async Task ShowCompressionExclusionsWindowAsync()
     {
-        await UiThread.RunDialogAsync( async () =>
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var dialog = new CompressionExclusionsWindow();
             await dialog.ShowDialogAsync();
@@ -402,7 +396,7 @@ public class PresentationService : IPresentationService
 
     public async Task ShowScheduleEditorWindowAsync()
     {
-        await UiThread.RunDialogAsync( async () =>
+        await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var dialog = new ScheduleEditorWindow();
             await dialog.ShowDialogAsync();
@@ -411,7 +405,7 @@ public class PresentationService : IPresentationService
 
     public async Task<bool> ShowSwitchStorageWindowAsync()
     {
-        return await UiThread.RunDialogAsync( async () =>
+        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             var dialog = new SwitchStorageWindow();
             return await dialog.ShowDialogAsync(App.DatabaseFile);
