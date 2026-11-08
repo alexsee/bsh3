@@ -11,8 +11,12 @@ From `src`, select exactly one application per build:
 
 This requires the .NET SDK and Inno Setup (`iscc.exe` on PATH). CI uses the same
 script with `-NoRestore` after its locked restore and build/test steps.
-`BuildVersion` sets the selected app/helper assembly versions and installer version;
-`InfoVersion` is the numeric Windows file version. The other application's payload
+`BuildVersion` sets the selected app/helper product version and installer version;
+`InfoVersion` sets the numeric assembly and Windows file versions. The WinUI About
+dialog, startup log, and updater user agent read the assembly version, so
+`4.0.0-beta1` with `InfoVersion` `4.0.0.1` is reported there as `4.0.0.1`.
+Always increase `InfoVersion` for a new release, including successive betas.
+The other application's payload
 and installers are left untouched.
 
 Each build cleans and publishes only its selected payload:

@@ -8,7 +8,9 @@ That URL returned HTTP 404 when this feed was added. Upload `tools/updates/auto_
 
 The `<url>` value must point to the Preview installer built by `tools/setup/Setup-WinUI.iss`, named `backupservicehome-<version>-win64.exe` and attached to the `preview-v<version>` GitHub release. Host the executable on `download.brightbits.de` or another public URL, then put that URL in `<url>`. Stable and Preview installers use the same filename format, so select the artifact from the Preview release.
 
-The `<version>` value must be a version AutoUpdater.NET can compare, and it must be greater than the assembly version of the installed Preview (`<Version>` in `src/BSH.MainApp/BSH.MainApp.csproj`, or the release tag such as `3.9.6`). A version that is not newer than the installed build is not offered.
+Set `<version>` to the release's numeric `InfoVersion`, which the release script also sets as the app's assembly version. For example, `4.0.0-beta1` uses `4.0.0.1`, and `4.0.0-beta2` uses `4.0.0.2`. Do not put a `-beta` suffix in the feed's `<version>`.
+
+AutoUpdater.NET offers an update only when the feed version is greater than the installed assembly version. Keep numeric versions increasing, including when moving from beta to a final release: `4.0.0.0` would be lower than `4.0.0.2`.
 
 A missing feed or any other failed automatic check is logged and does not show a dialog. A manual Check for Updates click shows “Could not check for updates” / “Update-Prüfung nicht möglich” instead.
 
