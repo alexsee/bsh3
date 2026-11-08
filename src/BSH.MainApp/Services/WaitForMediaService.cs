@@ -72,7 +72,8 @@ public class WaitForMediaService : IWaitForMediaService
             return;
         }
 
-        await UiThread.Queue.EnqueueAsync(() =>
+        var queue = UiThread.Queue ?? throw new InvalidOperationException("The UI dispatcher has not been captured.");
+        await queue.EnqueueAsync(() =>
         {
             window.ViewModel.OnCancelRequested -= cancellationTokenSource.Cancel;
             window.Close();
