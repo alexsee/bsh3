@@ -72,28 +72,6 @@ public class PreviewAppStartupTests
         Assert.That(messages, Is.Empty);
     }
 
-    [TestCase(false)]
-    [TestCase(true)]
-    public void StableMutexConflictExitsBeforeTheWindowIsPresented(bool autoStart)
-    {
-        var messages = new List<string>();
-        var shouldExit = PreviewAppStartup.ShouldExit(
-            PreviewStartupResult.BlockedByOtherEngine,
-            autoStart,
-            (_, text) => messages.Add(text),
-            (_, fallback) => fallback);
-
-        Assert.That(shouldExit, Is.True);
-        if (autoStart)
-        {
-            Assert.That(messages, Is.Empty);
-            return;
-        }
-
-        Assert.That(messages, Has.Count.EqualTo(1));
-        Assert.That(messages[0], Does.Contain("already running"));
-    }
-
     [Test]
     public void AutoStartExitsQuietlyWhenTheStableAppHoldsTheDatabase()
     {
@@ -128,9 +106,9 @@ public class PreviewAppStartupTests
         Assert.That(text, Does.Contain("already running"));
     }
 
-    [TestCase(false, true)]
-    [TestCase(true, false)]
-    public void AFreeMutexContinuesStartup(bool autoStart, bool presentMainWindow)
+    [TestCase(false)]
+    [TestCase(true)]
+    public void AFreeMutexContinuesStartup(bool autoStart)
     {
         var shouldExit = PreviewAppStartup.ShouldExit(
             PreviewStartupResult.Started,
@@ -139,7 +117,6 @@ public class PreviewAppStartupTests
             (_, fallback) => fallback);
 
         Assert.That(shouldExit, Is.False);
-        Assert.That(PreviewAppStartup.ShouldPresentMainWindow(autoStart), Is.EqualTo(presentMainWindow));
     }
 
     [TestCase(null)]

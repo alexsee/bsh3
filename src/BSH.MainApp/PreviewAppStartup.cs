@@ -43,13 +43,42 @@ public static class PreviewAppStartup
     }
 
     /// <summary>
-    /// Autostart keeps the process in the tray. A manual launch presents the main window.
-    /// Later tray, taskbar, and notification activation must not call this with the
-    /// running process's original command line.
+    /// Shows the main window on the UI thread. A missing window is navigated first,
+    /// so an unconfigured database opens setup. A hidden window is shown before it
+    /// is activated. Page navigation runs only when the shell is enabled afterwards.
     /// </summary>
-    public static bool ShouldPresentMainWindow(bool autoStart)
+    public static void PresentPreviewWindow(
+        Func<bool> windowExists,
+        Action navigateForStartup,
+        bool navigateToPage,
+        Func<bool> shellNavigationEnabled,
+        Action<string> navigateTo,
+        string pageKey,
+        Action show,
+        Action activate,
+        Action moveToTop)
     {
-        return !autoStart;
+        ArgumentNullException.ThrowIfNull(windowExists);
+        ArgumentNullException.ThrowIfNull(navigateForStartup);
+        ArgumentNullException.ThrowIfNull(shellNavigationEnabled);
+        ArgumentNullException.ThrowIfNull(show);
+        ArgumentNullException.ThrowIfNull(activate);
+        ArgumentNullException.ThrowIfNull(moveToTop);
+
+        if (!windowExists())
+        {
+            navigateForStartup();
+        }
+
+        if (navigateToPage && shellNavigationEnabled())
+        {
+            ArgumentNullException.ThrowIfNull(navigateTo);
+            navigateTo(pageKey);
+        }
+
+        show();
+        activate();
+        moveToTop();
     }
 
     public static async Task<bool> OpenDatabaseAsync(

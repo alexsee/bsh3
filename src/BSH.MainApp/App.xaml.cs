@@ -67,6 +67,8 @@ public partial class App : Application
 
     private static MainWindow? mainWindow;
 
+    internal static bool HasMainWindow => mainWindow != null;
+
     public static MainWindow MainWindow => mainWindow ??= new MainWindow();
 
     public static string DatabaseFile { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Alexosoft\Backup Service Home 3\backupservicehome.bshdb";
@@ -84,6 +86,7 @@ public partial class App : Application
         _ = host.Value;
 
         InitializeComponent();
+        UiThread.Queue = DispatcherQueue.GetForCurrentThread();
 
         unhandledExceptionHandler = new UnhandledExceptionHandler(
             askContinueAsync: AskContinueAfterUnhandledExceptionAsync,
@@ -154,12 +157,12 @@ public partial class App : Application
         base.OnLaunched(args);
 
         var uiQueue = DispatcherQueue.GetForCurrentThread();
+        UiThread.Queue = uiQueue;
         var autoStart = PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs());
-        var presentMainWindow = PreviewAppStartup.ShouldPresentMainWindow(autoStart);
         var startup = PreviewSingleInstanceGate.Acquire(
             onActivateRequested: () => uiQueue.TryEnqueue(BringPreviewToFront),
             out var gate,
-            activateExisting: presentMainWindow);
+            activateExisting: !autoStart);
         if (PreviewAppStartup.ShouldExit(
             startup,
             autoStart,
@@ -198,7 +201,7 @@ public partial class App : Application
         await updateService.MaybeCheckOnStartupAsync();
 
         var presentQueuedLaunch = foreground.CompleteStartup();
-        if (presentMainWindow)
+        if (!autoStart)
         {
             await App.GetService<IActivationService>().ActivateAsync(args);
         }
@@ -218,22 +221,22 @@ public partial class App : Application
         PresentMainWindow();
     }
 
-    private static void PresentMainWindow()
+    internal static void PresentMainWindow()
     {
         try
         {
             // Autostart leaves the window uncreated. A later manual launch creates
             // it. A window that was closed to the tray keeps its current page.
-            var window = mainWindow;
-            if (window == null)
-            {
-                App.GetService<SetupRouting>().NavigateForStartup();
-                window = MainWindow;
-            }
-
-            window.AppWindow.Show();
-            window.Activate();
-            window.AppWindow.MoveInZOrderAtTop();
+            PreviewAppStartup.PresentPreviewWindow(
+                () => mainWindow != null,
+                () => GetService<SetupRouting>().NavigateForStartup(),
+                navigateToPage: false,
+                () => false,
+                null,
+                null,
+                () => MainWindow.AppWindow.Show(),
+                () => MainWindow.Activate(),
+                () => MainWindow.AppWindow.MoveInZOrderAtTop());
         }
         catch (Exception ex)
         {
@@ -406,7 +409,7 @@ public partial class App : Application
 
             services.AddSingleton<IStorageFactory, StorageFactory>();
 
-            services.AddSingleton<DispatcherQueue>((x) => DispatcherQueue.GetForCurrentThread());
+            services.AddSingleton<DispatcherQueue>((_) => UiThread.Queue);
 
             // Views and ViewModels
             services.AddTransient<BrowserViewModel>();

@@ -31,7 +31,7 @@ public class WaitForMediaService : IWaitForMediaService
 
     private async Task ShowWindowAsync(CancellationTokenSource cancellationTokenSource)
     {
-        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+        await UiThread.RunAsync(App.PresentMainWindow, () =>
         {
             window = new WaitForMediumWindow();
             window.ViewModel.OnCancelRequested += cancellationTokenSource.Cancel;
@@ -72,7 +72,7 @@ public class WaitForMediaService : IWaitForMediaService
             return;
         }
 
-        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+        await UiThread.Queue.EnqueueAsync(() =>
         {
             window.ViewModel.OnCancelRequested -= cancellationTokenSource.Cancel;
             window.Close();

@@ -3,9 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Brightbits.BSH.Engine.Runtime;
 using BSH.MainApp;
 using NUnit.Framework;
 
@@ -13,30 +10,6 @@ namespace BSH.Test;
 
 public class PreviewStartupPresentationTests
 {
-    private static readonly string RepoRoot = LocateRepoRoot();
-
-    [TestCaseSource(nameof(LaunchArguments))]
-    public void FirstLaunchPresentsTheMainWindowOnlyForAManualStart(string[] args, bool present)
-    {
-        var autoStart = PreviewLaunch.IsAutoStart(args);
-        Assert.That(autoStart, Is.Not.EqualTo(present));
-        Assert.That(PreviewAppStartup.ShouldPresentMainWindow(autoStart), Is.EqualTo(present));
-        Assert.That(
-            PreviewAppStartup.ShouldExit(
-                PreviewStartupResult.Started,
-                autoStart,
-                (_, _) => Assert.Fail("A start that owns the database does not show a dialog."),
-                (_, fallback) => fallback),
-            Is.False);
-    }
-
-    [Test]
-    public void MissingArgumentsAreAManualLaunch()
-    {
-        Assert.That(PreviewLaunch.IsAutoStart(null), Is.False);
-        Assert.That(PreviewAppStartup.ShouldPresentMainWindow(false), Is.True);
-    }
-
     [Test]
     public void ForegroundRequestDuringStartupIsDeferredUntilInitializationFinishes()
     {
@@ -59,180 +32,89 @@ public class PreviewStartupPresentationTests
     }
 
     [Test]
-    public void AutostartPolicyIsOnlyConsultedWhileDecidingTheInitialLaunch()
+    public void AMissingWindowIsNavigatedBeforeItIsShown()
     {
-        var mainApp = Path.Combine(RepoRoot, "src", "BSH.MainApp");
-        var readers = Directory.GetFiles(mainApp, "*.cs", SearchOption.AllDirectories)
-            .Where(path => File.ReadAllText(path).Contains("ShouldPresentMainWindow("))
-            .Select(Path.GetFileName)
-            .OrderBy(name => name, StringComparer.Ordinal)
-            .ToArray();
+        var shell = true;
+        var order = new List<string>();
 
-        Assert.That(readers, Is.EqualTo(new[] { "App.xaml.cs", "PreviewAppStartup.cs" }));
+        PreviewAppStartup.PresentPreviewWindow(
+            () => false,
+            () => order.Add("startup"),
+            navigateToPage: false,
+            () => shell,
+            _ => order.Add("nav"),
+            "page",
+            () => order.Add("show"),
+            () => order.Add("activate"),
+            () => order.Add("top"));
 
-        var app = File.ReadAllText(Path.Combine(mainApp, "App.xaml.cs"));
-        var launched = ExtractMethod(app, "void OnLaunched(");
-        Assert.That(launched, Does.Contain("PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs())"));
-        Assert.That(launched, Does.Contain("activateExisting: presentMainWindow"));
-        Assert.That(CountOf(app, "IsAutoStart("), Is.EqualTo(1));
-
-        foreach (var handler in new[]
-        {
-            ExtractMethod(app, "void BringPreviewToFront("),
-            ExtractMethod(app, "void PresentMainWindow("),
-            ExtractMethod(app, "void ShowMainWindowCommand_ExecuteRequested("),
-            ExtractMethod(app, "void ShowBrowserWindowCommand_ExecuteRequested("),
-            ExtractMethod(
-                File.ReadAllText(Path.Combine(mainApp, "Services", "AppNotificationService.cs")),
-                "void Activate("),
-            ExtractMethod(
-                File.ReadAllText(Path.Combine(mainApp, "Services", "PresentationService.cs")),
-                "Task ShowMainWindowAsync(")
-        })
-        {
-            Assert.That(handler, Does.Not.Contain("IsAutoStart"));
-            Assert.That(handler, Does.Not.Contain("ShouldPresentMainWindow"));
-        }
+        Assert.That(order, Is.EqualTo(new[] { "startup", "show", "activate", "top" }));
     }
 
     [Test]
-    public void BackgroundStartupDoesNotCreateTheMainWindow()
+    public void AnUnconfiguredWindowStaysOnSetupAndIsStillShown()
     {
-        var mainApp = Path.Combine(RepoRoot, "src", "BSH.MainApp");
-        var app = File.ReadAllText(Path.Combine(mainApp, "App.xaml.cs"));
-        var launched = ExtractMethod(app, "void OnLaunched(");
+        var shell = true;
+        var order = new List<string>();
 
-        Assert.That(launched, Does.Not.Contain("App.MainWindow"));
-        Assert.That(launched, Does.Not.Contain("new MainWindow"));
-        Assert.That(launched, Does.Not.Contain("NavigateForStartup"));
-
-        var presentBranch = launched.IndexOf("if (presentMainWindow)", StringComparison.Ordinal);
-        Assert.That(presentBranch, Is.GreaterThan(0));
-        Assert.That(launched.IndexOf("ActivateAsync(", StringComparison.Ordinal), Is.GreaterThan(presentBranch));
-        Assert.That(CountOf(launched, "ActivateAsync("), Is.EqualTo(1));
-
-        foreach (var step in new[]
-        {
-            "OpenDatabaseAsync(",
-            "IStatusService>().Initialize()",
-            "IOrchestrationService>().InitializeAsync()",
-            "InitializeTrayIcon()",
-            "MaybeCheckOnStartupAsync()"
-        })
-        {
-            var index = launched.IndexOf(step, StringComparison.Ordinal);
-            Assert.That(index, Is.GreaterThanOrEqualTo(0), step);
-            Assert.That(index, Is.LessThan(presentBranch), step);
-        }
-
-        AssertDoesNotTouchMainWindow(
-            Path.Combine(mainApp, "Services", "StatusService.cs"),
-            "void Initialize(");
-        AssertDoesNotTouchMainWindow(
-            Path.Combine(mainApp, "Services", "OrchestrationService.cs"),
-            "Task InitializeAsync(");
-        AssertDoesNotTouchMainWindow(
-            Path.Combine(mainApp, "Services", "OrchestrationService.cs"),
-            "Task StartAsync(");
-        AssertDoesNotTouchMainWindow(
-            Path.Combine(mainApp, "Services", "OrchestrationService.cs"),
-            "Task ApplyAutomationPolicyAsync(");
-        AssertDoesNotTouchMainWindow(
-            Path.Combine(mainApp, "Services", "ScheduledBackupService.cs"),
-            "Task StartAsync(");
-        AssertDoesNotTouchMainWindow(
-            Path.Combine(mainApp, "Services", "ApplicationUpdateService.cs"),
-            "Task InitializeAsync(");
-        AssertDoesNotTouchMainWindow(
-            Path.Combine(mainApp, "Services", "ApplicationUpdateService.cs"),
-            "Task MaybeCheckOnStartupAsync(");
-        AssertDoesNotTouchMainWindow(
-            Path.Combine(mainApp, "Services", "ApplicationUpdateService.cs"),
-            "Task CheckAsync(");
-        AssertDoesNotTouchMainWindow(Path.Combine(mainApp, "App.xaml.cs"), "void InitializeTrayIcon(");
-
-        var present = ExtractMethod(app, "void PresentMainWindow(");
-        Assert.That(present, Does.Contain("NavigateForStartup()"));
-        Assert.That(present, Does.Contain("window = MainWindow"));
-        Assert.That(present, Does.Contain("AppWindow.Show()"));
-        Assert.That(present, Does.Contain("window.Activate()"));
-    }
-
-    private static void AssertDoesNotTouchMainWindow(string path, string signature)
-    {
-        var body = ExtractMethod(File.ReadAllText(path), signature);
-        Assert.That(body, Does.Not.Contain("App.MainWindow"), signature);
-        Assert.That(body, Does.Not.Contain("new MainWindow"), signature);
-        Assert.That(body, Does.Not.Contain(".Activate("), signature);
-    }
-
-    private static IEnumerable<TestCaseData> LaunchArguments()
-    {
-        yield return new TestCaseData(new[] { "BSH.MainApp.exe", "-autostart" }, false);
-        yield return new TestCaseData(new[] { "BSH.MainApp.exe", "/autostart" }, false);
-        yield return new TestCaseData(new[] { "BSH.MainApp.exe", "-AUTOSTART" }, false);
-        yield return new TestCaseData(new[] { "BSH.MainApp.exe", "/AutoStart" }, false);
-        yield return new TestCaseData(new[] { "BSH.MainApp.exe", "-autostart", "/config" }, false);
-        yield return new TestCaseData(new[] { "BSH.MainApp.exe" }, true);
-        yield return new TestCaseData(new[] { "BSH.MainApp.exe", "-delayedstart" }, true);
-        yield return new TestCaseData(new[] { "BSH.MainApp.exe", "/config" }, true);
-    }
-
-    private static int CountOf(string text, string value)
-    {
-        var count = 0;
-        var index = 0;
-        while ((index = text.IndexOf(value, index, StringComparison.Ordinal)) >= 0)
-        {
-            count++;
-            index += value.Length;
-        }
-
-        return count;
-    }
-
-    private static string ExtractMethod(string source, string signature)
-    {
-        var start = source.IndexOf(signature, StringComparison.Ordinal);
-        Assert.That(start, Is.GreaterThanOrEqualTo(0), signature);
-        var open = source.IndexOf('{', start);
-        Assert.That(open, Is.GreaterThan(start), signature);
-
-        var depth = 0;
-        for (var i = open; i < source.Length; i++)
-        {
-            if (source[i] == '{')
+        PreviewAppStartup.PresentPreviewWindow(
+            () => false,
+            () =>
             {
-                depth++;
-            }
-            else if (source[i] == '}')
+                order.Add("startup");
+                shell = false;
+            },
+            navigateToPage: true,
+            () =>
             {
-                depth--;
-                if (depth == 0)
-                {
-                    return source.Substring(open, i - open + 1);
-                }
-            }
-        }
+                order.Add("shell");
+                return shell;
+            },
+            key => order.Add("nav:" + key),
+            "settings",
+            () => order.Add("show"),
+            () => order.Add("activate"),
+            () => order.Add("top"));
 
-        Assert.Fail($"Method {signature} was not closed.");
-        return string.Empty;
+        Assert.That(order, Is.EqualTo(new[] { "startup", "shell", "show", "activate", "top" }));
     }
 
-    private static string LocateRepoRoot()
+    [Test]
+    public void AHiddenWindowIsShownBeforeActivationAndCanOpenTheRequestedPage()
     {
-        var dir = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (dir != null)
-        {
-            var setupIss = Path.Combine(dir.FullName, "tools", "setup", "Setup.iss");
-            if (File.Exists(setupIss))
-            {
-                return dir.FullName;
-            }
+        var order = new List<string>();
 
-            dir = dir.Parent;
-        }
+        PreviewAppStartup.PresentPreviewWindow(
+            () => true,
+            () => order.Add("startup"),
+            navigateToPage: true,
+            () => true,
+            key => order.Add("nav:" + key),
+            "overview",
+            () => order.Add("show"),
+            () => order.Add("activate"),
+            () => order.Add("top"));
 
-        throw new DirectoryNotFoundException("Could not locate repository root containing tools/setup/Setup.iss.");
+        Assert.That(order, Is.EqualTo(new[] { "nav:overview", "show", "activate", "top" }));
+        Assert.That(order.IndexOf("show"), Is.LessThan(order.IndexOf("activate")));
+    }
+
+    [Test]
+    public void NavigationFailureDoesNotShowTheWindow()
+    {
+        var shown = false;
+
+        Assert.Throws<InvalidOperationException>(() => PreviewAppStartup.PresentPreviewWindow(
+            () => false,
+            () => throw new InvalidOperationException("startup"),
+            navigateToPage: false,
+            () => true,
+            _ => { },
+            null,
+            () => shown = true,
+            () => { },
+            () => { }));
+
+        Assert.That(shown, Is.False);
     }
 }

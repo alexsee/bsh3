@@ -29,7 +29,7 @@ public class BrowserDialogService : IBrowserDialogService
 
     public async Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions)
     {
-        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        return await UiThread.RunAsync(App.PresentMainWindow, async () =>
         {
             var versionList = new ListView
             {
@@ -78,7 +78,7 @@ public class BrowserDialogService : IBrowserDialogService
         FileOrFolderItem item,
         IReadOnlyList<VersionDetails> versions)
     {
-        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        return await UiThread.RunAsync(App.PresentMainWindow, async () =>
         {
             var itemType = item.IsFile
                 ? "Browser_DeleteFromAll_File".GetLocalized()
@@ -337,7 +337,7 @@ public class BrowserDialogService : IBrowserDialogService
 
     public async Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite)
     {
-        return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+        return await UiThread.RunAsync(App.PresentMainWindow, async () =>
         {
             var nameBox = new TextBox
             {
@@ -364,14 +364,15 @@ public class BrowserDialogService : IBrowserDialogService
     public async Task<string?> PickRestoreDestinationFolderAsync()
     {
         // Cannot show dialogs or pickers without a live XamlRoot; treat as cancel.
-        if (App.MainWindow?.Content == null)
+        // HasMainWindow avoids constructing the window just to discover that it is absent.
+        if (!App.HasMainWindow || App.MainWindow.Content == null)
         {
             return null;
         }
 
         try
         {
-            return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
+            return await UiThread.RunAsync(App.PresentMainWindow, async () =>
             {
                 var folderPicker = new FolderPicker(App.MainWindow.AppWindow.Id)
                 {

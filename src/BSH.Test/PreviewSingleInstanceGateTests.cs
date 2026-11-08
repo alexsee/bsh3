@@ -241,6 +241,58 @@ public class PreviewSingleInstanceGateTests
 
     [Test]
     [Platform("Win")]
+    public void WindowsSyncDoesNotSignalWhenTheSecondLaunchIsAutostart()
+    {
+        var names = UniqueNames();
+        var sync = WindowsPreviewInstanceSync.Shared;
+        var activated = new ManualResetEventSlim(false);
+        var first = PreviewSingleInstanceGate.Acquire(
+            () => activated.Set(),
+            out var gate,
+            names.Preview,
+            names.Engine,
+            names.EventName,
+            sync,
+            activateExisting: false);
+        Assert.That(first, Is.EqualTo(PreviewStartupResult.Started));
+
+        try
+        {
+            PreviewStartupResult second = default;
+            Exception error = null;
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    second = PreviewSingleInstanceGate.Acquire(
+                        () => { },
+                        out _,
+                        names.Preview,
+                        names.Engine,
+                        names.EventName,
+                        sync,
+                        activateExisting: false);
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+            });
+            thread.Start();
+            thread.Join();
+
+            Assert.That(error, Is.Null);
+            Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
+            Assert.That(activated.Wait(TimeSpan.FromMilliseconds(300)), Is.False);
+        }
+        finally
+        {
+            gate.Dispose();
+        }
+    }
+
+    [Test]
+    [Platform("Win")]
     public void WindowsSyncBlocksAndReleasesThePreviewMutex()
     {
         var names = UniqueNames();
