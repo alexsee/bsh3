@@ -43,6 +43,9 @@ try {
             "--self-contained", "true",
             "-p:Platform=x64",
             "-p:Version=$BuildVersion",
+            # About, logs, and update checks read the numeric assembly version.
+            # Version alone drops the beta number (4.0.0-beta2 becomes 4.0.0.0).
+            "-p:AssemblyVersion=$InfoVersion",
             "-p:FileVersion=$InfoVersion"
         )
         if ($NoRestore) {
