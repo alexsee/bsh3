@@ -15,7 +15,7 @@ namespace BSH.MainApp;
 /// Startup decisions for the WinUI Preview. Kept separate from <see cref="App"/>
 /// so tests can run them without a window or a second process.
 /// </summary>
-public static class PreviewAppStartup
+public static partial class PreviewAppStartup
 {
     public static bool ShouldExit(
         PreviewStartupResult startup,
@@ -52,18 +52,16 @@ public static class PreviewAppStartup
         Action navigateForStartup,
         bool navigateToPage,
         Func<bool> shellNavigationEnabled,
-        Action<string> navigateTo,
-        string pageKey,
-        Action show,
-        Action activate,
-        Action moveToTop)
+        Action<string>? navigateTo,
+        string? pageKey,
+        (Action Show, Action Activate, Action MoveToTop) foreground)
     {
         ArgumentNullException.ThrowIfNull(windowExists);
         ArgumentNullException.ThrowIfNull(navigateForStartup);
         ArgumentNullException.ThrowIfNull(shellNavigationEnabled);
-        ArgumentNullException.ThrowIfNull(show);
-        ArgumentNullException.ThrowIfNull(activate);
-        ArgumentNullException.ThrowIfNull(moveToTop);
+        ArgumentNullException.ThrowIfNull(foreground.Show);
+        ArgumentNullException.ThrowIfNull(foreground.Activate);
+        ArgumentNullException.ThrowIfNull(foreground.MoveToTop);
 
         if (!windowExists())
         {
@@ -73,12 +71,12 @@ public static class PreviewAppStartup
         if (navigateToPage && shellNavigationEnabled())
         {
             ArgumentNullException.ThrowIfNull(navigateTo);
-            navigateTo(pageKey);
+            navigateTo(pageKey ?? string.Empty);
         }
 
-        show();
-        activate();
-        moveToTop();
+        foreground.Show();
+        foreground.Activate();
+        foreground.MoveToTop();
     }
 
     /// <summary>
@@ -87,7 +85,7 @@ public static class PreviewAppStartup
     /// after a successful explicit show, and the window is hidden only when the
     /// last dialog releases it.
     /// </summary>
-    public sealed class DialogOwnerGate
+    public sealed partial class DialogOwnerGate
     {
         private int openDialogs;
         private bool userVisible;
@@ -136,9 +134,9 @@ public static class PreviewAppStartup
             }
         }
 
-        public sealed class Lease : IDisposable
+        public sealed partial class Lease : IDisposable
         {
-            private DialogOwnerGate gate;
+            private DialogOwnerGate? gate;
             private readonly Action hide;
 
             internal Lease(DialogOwnerGate gate, Action hide)

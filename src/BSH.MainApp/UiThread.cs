@@ -16,21 +16,34 @@ internal static class UiThread
     /// Dispatcher captured on the UI thread. A volatile write publishes it to
     /// background callers before they post work.
     /// </summary>
-    internal static volatile DispatcherQueue Queue;
+    internal static volatile DispatcherQueue? Queue;
+
+    internal static void Capture(DispatcherQueue queue)
+    {
+        ArgumentNullException.ThrowIfNull(queue);
+        Queue = queue;
+    }
+
+    private static DispatcherQueue RequireQueue()
+    {
+        var queue = Queue;
+        ArgumentNullException.ThrowIfNull(queue);
+        return queue;
+    }
 
     public static Task RunAsync(Action prepare, Action work)
     {
-        return RunAsync(Queue, prepare, work);
+        return RunAsync(RequireQueue(), prepare, work);
     }
 
     public static Task RunAsync(Action prepare, Func<Task> work)
     {
-        return RunAsync(Queue, prepare, work);
+        return RunAsync(RequireQueue(), prepare, work);
     }
 
     public static Task<T> RunAsync<T>(Action prepare, Func<Task<T>> work)
     {
-        return RunAsync(Queue, prepare, work);
+        return RunAsync(RequireQueue(), prepare, work);
     }
 
     public static Task RunAsync(DispatcherQueue queue, Action prepare, Action work)
@@ -71,17 +84,17 @@ internal static class UiThread
 
     public static Task RunDialogAsync(Action work)
     {
-        return RunDialogAsync(Queue, work);
+        return RunDialogAsync(RequireQueue(), work);
     }
 
     public static Task RunDialogAsync(Func<Task> work)
     {
-        return RunDialogAsync(Queue, work);
+        return RunDialogAsync(RequireQueue(), work);
     }
 
     public static Task<T> RunDialogAsync<T>(Func<Task<T>> work)
     {
-        return RunDialogAsync(Queue, work);
+        return RunDialogAsync(RequireQueue(), work);
     }
 
     public static Task RunDialogAsync(DispatcherQueue queue, Action work)

@@ -44,9 +44,7 @@ public class PreviewStartupPresentationTests
             () => shell,
             _ => order.Add("nav"),
             "page",
-            () => order.Add("show"),
-            () => order.Add("activate"),
-            () => order.Add("top"));
+            (Show: () => order.Add("show"), Activate: () => order.Add("activate"), MoveToTop: () => order.Add("top")));
 
         Assert.That(order, Is.EqualTo(new[] { "startup", "show", "activate", "top" }));
     }
@@ -72,9 +70,7 @@ public class PreviewStartupPresentationTests
             },
             key => order.Add("nav:" + key),
             "settings",
-            () => order.Add("show"),
-            () => order.Add("activate"),
-            () => order.Add("top"));
+            (Show: () => order.Add("show"), Activate: () => order.Add("activate"), MoveToTop: () => order.Add("top")));
 
         Assert.That(order, Is.EqualTo(new[] { "startup", "shell", "show", "activate", "top" }));
     }
@@ -91,9 +87,7 @@ public class PreviewStartupPresentationTests
             () => true,
             key => order.Add("nav:" + key),
             "overview",
-            () => order.Add("show"),
-            () => order.Add("activate"),
-            () => order.Add("top"));
+            (Show: () => order.Add("show"), Activate: () => order.Add("activate"), MoveToTop: () => order.Add("top")));
 
         Assert.That(order, Is.EqualTo(new[] { "nav:overview", "show", "activate", "top" }));
         Assert.That(order.IndexOf("show"), Is.LessThan(order.IndexOf("activate")));
@@ -111,9 +105,7 @@ public class PreviewStartupPresentationTests
             () => true,
             _ => { },
             null,
-            () => shown = true,
-            () => { },
-            () => { }));
+            (Show: () => shown = true, Activate: () => { }, MoveToTop: () => { })));
 
         Assert.That(shown, Is.False);
     }

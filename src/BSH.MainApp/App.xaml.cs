@@ -98,7 +98,6 @@ public partial class App : Application
         _ = host.Value;
 
         InitializeComponent();
-        UiThread.Queue = DispatcherQueue.GetForCurrentThread();
 
         unhandledExceptionHandler = new UnhandledExceptionHandler(
             askContinueAsync: AskContinueAfterUnhandledExceptionAsync,
@@ -169,7 +168,7 @@ public partial class App : Application
         base.OnLaunched(args);
 
         var uiQueue = DispatcherQueue.GetForCurrentThread();
-        UiThread.Queue = uiQueue;
+        UiThread.Capture(uiQueue);
         var autoStart = PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs());
         var startup = PreviewSingleInstanceGate.Acquire(
             onActivateRequested: () => uiQueue.TryEnqueue(BringPreviewToFront),
@@ -283,16 +282,18 @@ public partial class App : Application
             () => false,
             null,
             null,
-            () =>
-            {
-                MainWindow.AppWindow.Show();
-                if (explicitShow)
+            (
+                Show: () =>
                 {
-                    NoteExplicitPresentation();
-                }
-            },
-            () => MainWindow.Activate(),
-            explicitShow ? () => MainWindow.AppWindow.MoveInZOrderAtTop() : () => { });
+                    MainWindow.AppWindow.Show();
+                    if (explicitShow)
+                    {
+                        NoteExplicitPresentation();
+                    }
+                },
+                Activate: () => MainWindow.Activate(),
+                MoveToTop: explicitShow ? () => MainWindow.AppWindow.MoveInZOrderAtTop() : () => { }
+            ));
     }
 
     private static void OnAutoUpdaterApplicationExit()
@@ -460,7 +461,7 @@ public partial class App : Application
 
             services.AddSingleton<IStorageFactory, StorageFactory>();
 
-            services.AddSingleton<DispatcherQueue>((_) => UiThread.Queue);
+            services.AddSingleton<DispatcherQueue>((_) => UiThread.Queue ?? throw new InvalidOperationException("The UI dispatcher has not been captured."));
 
             // Views and ViewModels
             services.AddTransient<BrowserViewModel>();

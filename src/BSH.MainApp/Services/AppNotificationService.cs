@@ -151,13 +151,15 @@ public class AppNotificationService : IAppNotificationService, IDisposable
             () => App.MainWindow.ViewModel.IsShellNavigationEnabled,
             key => _navigationService.NavigateTo(key),
             pageKey,
-            () =>
-            {
-                App.MainWindow.AppWindow.Show();
-                App.NoteExplicitPresentation();
-            },
-            () => App.MainWindow.Activate(),
-            () => App.MainWindow.AppWindow.MoveInZOrderAtTop());
+            (
+                Show: () =>
+                {
+                    App.MainWindow.AppWindow.Show();
+                    App.NoteExplicitPresentation();
+                },
+                Activate: () => App.MainWindow.Activate(),
+                MoveToTop: () => App.MainWindow.AppWindow.MoveInZOrderAtTop()
+            ));
     }
 
     public void Unregister()
