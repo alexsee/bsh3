@@ -18,7 +18,7 @@
             <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="Padding" Value="24" />
+            <Setter Property="Padding" Value="20" />
         </Style>
         <Style x:Key="OverviewLabelStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
@@ -43,15 +43,25 @@
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="LastBackupCard.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="LocationCard.(Grid.Column)" Value="0" />
-                        <Setter Target="LocationCard.(Grid.Row)" Value="1" />
-                        <Setter Target="LocationCard.(Grid.ColumnSpan)" Value="2" />
                         <Setter Target="OverviewCommands.(Grid.Column)" Value="0" />
                         <Setter Target="OverviewCommands.(Grid.Row)" Value="1" />
                         <Setter Target="OverviewCommands.(Grid.ColumnSpan)" Value="2" />
                         <Setter Target="ScheduleSummary.(Grid.ColumnSpan)" Value="2" />
-                        <Setter Target="DetailsGrid.RowSpacing" Value="20" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="DetailStates">
+                <VisualState x:Name="SideBySideDetails">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="680" /></VisualState.StateTriggers>
+                </VisualState>
+                <VisualState x:Name="StackedDetails">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="LastBackupCard.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="LocationCard.(Grid.Column)" Value="0" />
+                        <Setter Target="LocationCard.(Grid.Row)" Value="1" />
+                        <Setter Target="LocationCard.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="DetailsGrid.RowSpacing" Value="16" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -66,7 +76,7 @@
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="OverviewContent.Margin" Value="20,24,20,24" />
+                        <Setter Target="OverviewContent.Margin" Value="20,20,20,28" />
                         <Setter Target="StatusSummary.ColumnSpacing" Value="16" />
                         <Setter Target="StatusIcon.Width" Value="48" />
                         <Setter Target="StatusIcon.Height" Value="48" />
@@ -77,27 +87,20 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       HorizontalScrollMode="Disabled"
                       VerticalScrollBarVisibility="Auto">
-            <StackPanel x:Name="OverviewContent" Margin="32,24,32,24"
+            <StackPanel x:Name="OverviewContent" Margin="32,24,32,32"
                         MaxWidth="1080" HorizontalAlignment="Stretch" Spacing="20">
                 <StackPanel Spacing="4">
-                    <TextBlock FontSize="32" FontWeight="SemiBold"
+                    <TextBlock FontSize="28" FontWeight="SemiBold"
                                AutomationProperties.HeadingLevel="Level1"
                                Text="{helpers:ResourceString Name=Nav_Overview}" />
-                    <TextBlock Style="{StaticResource OverviewLabelStyle}"
-                               Text="{helpers:ResourceString Name=Overview_Subtitle}" />
                 </StackPanel>
 
                 <!-- One summary and one command surface, close to the state they act on. -->
                 <Border Style="{StaticResource OverviewCardStyle}">
-                    <StackPanel Spacing="20">
+                    <StackPanel Spacing="16">
                         <Grid x:Name="StatusSummary" ColumnSpacing="24">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -107,13 +110,15 @@
                                 <controls:SeverityIcon Severity="{x:Bind ViewModel.Severity, Mode=OneWay}"
                                                        IconSize="32"
                                                        Visibility="{x:Bind ViewModel.NextBackupGridVisibility, Mode=OneWay}" />
-                                <ProgressRing Width="48" Height="48"
+                                <Ellipse Fill="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
+                                         Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}" />
+                                <ProgressRing Width="44" Height="44" IsIndeterminate="False"
+                                              Maximum="{x:Bind ViewModel.CurrentProgressMax, Mode=OneWay}"
+                                              Value="{x:Bind ViewModel.CurrentProgressValue, Mode=OneWay}"
                                               IsActive="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}"
                                               Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}" />
                             </Grid>
                             <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource OverviewLabelStyle}" FontSize="12"
-                                           Text="{helpers:ResourceString Name=Overview_Status_Header}" />
                                 <TextBlock x:Name="StatusHeading" FontSize="26" FontWeight="SemiBold"
                                            TextWrapping="Wrap"
                                            AutomationProperties.HeadingLevel="Level2"
@@ -121,9 +126,29 @@
                                            Text="{x:Bind ViewModel.StatusTitle, Mode=OneWay}" />
                                 <TextBlock Style="{StaticResource OverviewLabelStyle}" MaxWidth="680"
                                            HorizontalAlignment="Left"
-                                           Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+                                           Text="{x:Bind ViewModel.StatusText, Mode=OneWay}"
+                                           Visibility="{x:Bind views:MainPage.Invert(ViewModel.HasActionItems), Mode=OneWay}" />
                             </StackPanel>
                         </Grid>
+
+                        <StackPanel Spacing="10" Visibility="{x:Bind ViewModel.HasActionItems, Mode=OneWay}">
+                            <ItemsRepeater ItemsSource="{x:Bind ViewModel.ActionItems}">
+                                <ItemsRepeater.Layout>
+                                    <StackLayout Spacing="8" />
+                                </ItemsRepeater.Layout>
+                                <ItemsRepeater.ItemTemplate>
+                                    <DataTemplate x:DataType="viewmodels:OverviewActionItem">
+                                        <InfoBar IsOpen="True" IsClosable="False"
+                                                 Severity="{x:Bind views:MainPage.ToInfoBarSeverity(Severity)}"
+                                                 Message="{x:Bind Text}">
+                                            <InfoBar.ActionButton>
+                                                <Button Style="{StaticResource AccentButtonStyle}" Content="{x:Bind ButtonText}" Command="{x:Bind Command}" />
+                                            </InfoBar.ActionButton>
+                                        </InfoBar>
+                                    </DataTemplate>
+                                </ItemsRepeater.ItemTemplate>
+                            </ItemsRepeater>
+                        </StackPanel>
 
                         <Grid ColumnSpacing="20" RowSpacing="12" Padding="0,16,0,0"
                               BorderThickness="0,1,0,0" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
@@ -158,37 +183,52 @@
                                                   ToolTipService.ToolTip="{helpers:ResourceString Name=MainView_SystemToggle}" />
                                 </CommandBar.Content>
                                 <AppBarButton Icon="Save" CornerRadius="6" Padding="12,4"
+                                              Visibility="{x:Bind views:MainPage.Invert(ViewModel.HasActionItems), Mode=OneWay}"
                                               Background="{ThemeResource AccentFillColorDefaultBrush}"
                                               Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
                                               Label="{helpers:ResourceString Name=MainView_StartBackup}"
                                               Command="{x:Bind ViewModel.StartManualBackupCommand}" />
+                                <AppBarButton Icon="Save" Label="{helpers:ResourceString Name=MainView_StartBackup}"
+                                              Visibility="{x:Bind ViewModel.HasActionItems, Mode=OneWay}"
+                                              Command="{x:Bind ViewModel.StartManualBackupCommand}" />
                             </CommandBar>
+                        </Grid>
+                        <Grid Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}"
+                              ColumnSpacing="16" Padding="0,16,0,0"
+                              BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="8" VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource OverviewLabelStyle}" TextWrapping="Wrap"
+                                           Text="{x:Bind ViewModel.CurrentProgressStatusTitle, Mode=OneWay}" />
+                                <ProgressBar Maximum="{x:Bind ViewModel.CurrentProgressMax, Mode=OneWay}"
+                                             Value="{x:Bind ViewModel.CurrentProgressValue, Mode=OneWay}" />
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               TextTrimming="CharacterEllipsis"
+                                               Text="{x:Bind ViewModel.CurrentFileText, Mode=OneWay}"
+                                               ToolTipService.ToolTip="{x:Bind ViewModel.CurrentFilePath, Mode=OneWay}" />
+                                    <TextBlock Grid.Column="1" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               Text="{x:Bind ViewModel.ProgressCountText, Mode=OneWay}" />
+                                </Grid>
+                            </StackPanel>
+                            <Button Grid.Column="1" VerticalAlignment="Center" Command="{x:Bind ViewModel.CancelBackupCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon FontSize="16" Glyph="&#xE711;" />
+                                    <TextBlock Text="{helpers:ResourceString Name=MainView_Cancel}" />
+                                </StackPanel>
+                            </Button>
                         </Grid>
                     </StackPanel>
                 </Border>
 
-                <StackPanel Spacing="10" Visibility="{x:Bind ViewModel.HasActionItems, Mode=OneWay}">
-                    <TextBlock FontWeight="SemiBold" AutomationProperties.HeadingLevel="Level2"
-                               Text="{helpers:ResourceString Name=Overview_WhatToDo}" />
-                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.ActionItems}">
-                        <ItemsRepeater.Layout>
-                            <StackLayout Spacing="8" />
-                        </ItemsRepeater.Layout>
-                        <ItemsRepeater.ItemTemplate>
-                            <DataTemplate x:DataType="viewmodels:OverviewActionItem">
-                                <InfoBar IsOpen="True" IsClosable="False"
-                                         Severity="{x:Bind views:MainPage.ToInfoBarSeverity(Severity)}"
-                                         Message="{x:Bind Text}">
-                                    <InfoBar.ActionButton>
-                                        <Button Content="{x:Bind ButtonText}" Command="{x:Bind Command}" />
-                                    </InfoBar.ActionButton>
-                                </InfoBar>
-                            </DataTemplate>
-                        </ItemsRepeater.ItemTemplate>
-                    </ItemsRepeater>
-                </StackPanel>
-
-                <Grid x:Name="DetailsGrid" ColumnSpacing="20">
+                <Grid x:Name="DetailsGrid" ColumnSpacing="16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
@@ -209,7 +249,7 @@
                                        Text="{helpers:ResourceString Name=Overview_LastBackup_None}"
                                        Visibility="{x:Bind views:MainPage.Invert(ViewModel.HasLastBackup), Mode=OneWay}" />
                             <StackPanel Spacing="10" Visibility="{x:Bind ViewModel.HasLastBackup, Mode=OneWay}">
-                                <TextBlock FontSize="24" FontWeight="SemiBold" TextWrapping="Wrap"
+                                <TextBlock FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap"
                                            Text="{x:Bind ViewModel.LastBackupWhen, Mode=OneWay}" />
                                 <Grid ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
@@ -226,7 +266,7 @@
                                            Text="{x:Bind ViewModel.LastBackupName, Mode=OneWay}"
                                            Visibility="{x:Bind ViewModel.HasLastBackupName, Mode=OneWay}" />
                             </StackPanel>
-                            <Grid x:Name="FileChanges" ColumnSpacing="16"
+                            <Grid x:Name="FileChanges" ColumnSpacing="12" MaxWidth="320" HorizontalAlignment="Left"
                                   Padding="0,16,0,0" BorderThickness="0,1,0,0"
                                   BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
                                   Visibility="{x:Bind ViewModel.HasChangeStatistics, Mode=OneWay}">
@@ -235,11 +275,11 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Style="{StaticResource OverviewLabelStyle}" FontSize="12"
+                                <TextBlock FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"
                                            Text="{x:Bind ViewModel.AddedFilesText, Mode=OneWay}" />
-                                <TextBlock Grid.Column="1" Style="{StaticResource OverviewLabelStyle}" FontSize="12"
+                                <TextBlock Grid.Column="1" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"
                                            Text="{x:Bind ViewModel.ModifiedFilesText, Mode=OneWay}" />
-                                <TextBlock Grid.Column="2" Style="{StaticResource OverviewLabelStyle}" FontSize="12"
+                                <TextBlock Grid.Column="2" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"
                                            Text="{x:Bind ViewModel.DeletedFilesText, Mode=OneWay}" />
                             </Grid>
                             <HyperlinkButton HorizontalAlignment="Left" Padding="0,4"
@@ -257,8 +297,7 @@
                                            Text="{helpers:ResourceString Name=Overview_Location_Header}" />
                             </StackPanel>
                             <StackPanel Spacing="8">
-                                <TextBlock FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap"
-                                           MaxLines="2" TextTrimming="CharacterEllipsis"
+                                <TextBlock FontSize="14" TextTrimming="CharacterEllipsis"
                                            Text="{x:Bind ViewModel.LocationPath, Mode=OneWay}"
                                            ToolTipService.ToolTip="{x:Bind ViewModel.LocationPath, Mode=OneWay}" />
                                 <TextBlock Style="{StaticResource OverviewLabelStyle}"
@@ -282,46 +321,14 @@
                                            Text="{x:Bind ViewModel.FreeSpaceHint, Mode=OneWay}"
                                            Visibility="{x:Bind ViewModel.IsFreeSpaceLow, Mode=OneWay}" />
                             </StackPanel>
+                            <TextBlock Style="{StaticResource OverviewLabelStyle}" FontSize="12"
+                                       Margin="0,4,0,0" Text="{x:Bind ViewModel.TotalsText, Mode=OneWay}" />
                         </StackPanel>
                     </Border>
                 </Grid>
 
-                <TextBlock Style="{StaticResource OverviewLabelStyle}" FontSize="12"
-                           Text="{x:Bind ViewModel.TotalsText, Mode=OneWay}" />
             </StackPanel>
         </ScrollViewer>
 
-        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}"
-              Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" ColumnSpacing="20" Padding="24,16"
-              BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Spacing="8" VerticalAlignment="Center">
-                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap"
-                           Text="{x:Bind ViewModel.CurrentProgressStatusTitle, Mode=OneWay}" />
-                <ProgressBar Maximum="{x:Bind ViewModel.CurrentProgressMax, Mode=OneWay}"
-                             Value="{x:Bind ViewModel.CurrentProgressValue, Mode=OneWay}" />
-                <Grid ColumnSpacing="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               TextTrimming="CharacterEllipsis"
-                               Text="{x:Bind ViewModel.CurrentFileText, Mode=OneWay}"
-                               ToolTipService.ToolTip="{x:Bind ViewModel.CurrentFilePath, Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Text="{x:Bind ViewModel.ProgressCountText, Mode=OneWay}" />
-                </Grid>
-            </StackPanel>
-            <Button Grid.Column="1" VerticalAlignment="Center" Command="{x:Bind ViewModel.CancelBackupCommand}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon FontSize="16" Glyph="&#xE711;" />
-                    <TextBlock Text="{helpers:ResourceString Name=MainView_Cancel}" />
-                </StackPanel>
-            </Button>
-        </Grid>
     </Grid>
 </Page>

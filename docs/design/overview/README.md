@@ -2,8 +2,9 @@
 
 The overview now puts status and backup controls together, gives the last backup
 and storage details a clear reading order, and uses quiet Fluent surfaces. Wide
-windows show navigation labels; smaller windows use compact navigation and stack
-the detail cards. Light, dark, and high-contrast colors use Windows theme resources.
+windows show navigation labels; smaller windows use compact navigation. Detail
+cards stay side by side down to 680 effective pixels, then stack. Light, dark,
+and high-contrast colors use theme resources, with dedicated green success tints.
 
 ## Before and after
 
@@ -15,13 +16,14 @@ deterministic sample data and window size, captured from the real WinUI app.
 | ![Before: numbered overview](before-annotated.png) | ![After: numbered overview](after-annotated.png) |
 
 1. **Navigation and hierarchy:** visible navigation labels at desktop widths,
-   a larger page heading and a short subtitle.
+   a clear page heading with redundant labels removed.
 2. **Status and actions:** status gets a clear visual lead; the schedule, system
-   toggle and primary backup command move next to it.
+   toggle and primary backup command move next to it. Warnings put their corrective
+   action first; live progress, file counts and cancel stay inside the status card.
 3. **Backup details:** the backup time and result lead; change counts are quieter
-   and the browse link has its own space, avoiding header collisions.
+   with stronger, closely grouped change counts and a dedicated browse link.
 4. **Storage:** the path and available space are easier to find; secondary labels
-   step back. The surrounding surface separates sections without heavy decoration.
+   step back. Lifetime totals live in the storage card with comfortable padding.
 
 ## Screenshot set
 
@@ -54,6 +56,17 @@ the narrow fixture uses 1060 × 1080. Normal application startup is unchanged.
 
 ## Council review
 
-Requested members: gpt-6.1-sol, grok-4.7, opus-5.5. No council rounds were run:
-the T3 orchestration capability tool was unavailable in this session. No models
-were substituted and no council scores or approvals are claimed.
+The named reviewers inspected the real screenshots independently. Sol runs through
+Codex; Grok and Opus run through Cursor. All use high effort. The review prompts
+do not include a target score. [Round 1 screenshots](round-1/) are preserved.
+
+| Reviewer | Round 1 | Round 2 |
+| --- | --- | --- |
+| GPT-6.1 Sol | 8/10 | pending |
+| Grok 4.7 | 7/10 | pending |
+| Opus 5.5 | 6.5/10 | pending |
+
+The second pass consolidates progress and warning actions in the status card,
+keeps storage visible in the reviewed narrow window, simplifies typography,
+strengthens the change counts, and cleans up the dark success tint. Round 2 is
+the final review under the requested two-round limit.

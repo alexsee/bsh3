@@ -2,8 +2,10 @@
 // Licensed under the Apache License, Version 2.0.
 
 #if DEBUG
+using System.Globalization;
 using BSH.MainApp.Models;
 using BSH.MainApp.Views;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 
 namespace BSH.MainApp;
@@ -50,9 +52,9 @@ internal static class OverviewPreview
         vm.LastBackupName = "Dokumente & Erinnerungen";
         vm.HasLastBackupName = true;
         vm.HasChangeStatistics = true;
-        vm.AddedFilesText = "24 hinzugefügt";
-        vm.ModifiedFilesText = "8 geändert";
-        vm.DeletedFilesText = "2 entfernt";
+        vm.AddedFilesText = string.Format(CultureInfo.CurrentCulture, "Overview_Changes_Added".GetLocalized()!, 24);
+        vm.ModifiedFilesText = string.Format(CultureInfo.CurrentCulture, "Overview_Changes_Modified".GetLocalized()!, 8);
+        vm.DeletedFilesText = string.Format(CultureInfo.CurrentCulture, "Overview_Changes_Deleted".GetLocalized()!, 2);
         vm.LocationKindText = "Lokales Laufwerk / Netzwerk";
         vm.LocationPath = @"E:\Sicherungen\Zuhause";
         vm.LocationConnectionText = "Verbunden und bereit";
