@@ -147,17 +147,21 @@ public partial class App : Application
 
     private static PreviewSingleInstanceGate? previewInstance;
 
+    private static bool foregroundRequested;
+
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
 
         var uiQueue = DispatcherQueue.GetForCurrentThread();
+        var autoStart = PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs());
         var startup = PreviewSingleInstanceGate.Acquire(
             onActivateRequested: () => uiQueue.TryEnqueue(BringPreviewToFront),
-            out var gate);
+            out var gate,
+            activateExisting: !autoStart);
         if (PreviewAppStartup.ShouldExit(
             startup,
-            PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs()),
+            autoStart,
             NativeMessage.Show,
             PreviewAppStartup.LocalizedOrFallback))
         {
@@ -180,6 +184,9 @@ public partial class App : Application
             return;
         }
 
+        // Create the hidden window on the UI thread before background services use its dispatcher.
+        _ = MainWindow;
+
         // start application
         App.GetService<IStatusService>().Initialize();
 
@@ -191,7 +198,7 @@ public partial class App : Application
         await updateService.InitializeAsync(OnAutoUpdaterApplicationExit);
         await updateService.MaybeCheckOnStartupAsync();
 
-        await App.GetService<IActivationService>().ActivateAsync(args);
+        await App.GetService<IActivationService>().ActivateAsync(args, showWindow: !autoStart || foregroundRequested);
     }
 
     private static void BringPreviewToFront()
@@ -199,6 +206,7 @@ public partial class App : Application
         var window = mainWindow;
         if (window == null)
         {
+            foregroundRequested = true;
             return;
         }
 

@@ -1,10 +1,10 @@
-﻿{
-    "profiles": {
-      "BSH.MainApp (Unpackaged)": {
-        "commandName": "Project"
-      },
-      "BSH.MainApp (Package)": {
-        "commandName": "MsixPackage"
-      }
+{
+  "profiles": {
+    "BSH.MainApp (Unpackaged)": {
+      "commandName": "Project"
+    },
+    "BSH.MainApp (Package)": {
+      "commandName": "MsixPackage"
     }
+  }
 }

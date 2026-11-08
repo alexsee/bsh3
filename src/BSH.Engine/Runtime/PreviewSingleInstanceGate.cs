@@ -45,7 +45,10 @@ public sealed class PreviewSingleInstanceGate : IDisposable
         this.listener = listener;
     }
 
-    public static PreviewStartupResult Acquire(Action onActivateRequested, out PreviewSingleInstanceGate gate)
+    public static PreviewStartupResult Acquire(
+        Action onActivateRequested,
+        out PreviewSingleInstanceGate gate,
+        bool activateExisting = true)
     {
         return Acquire(
             onActivateRequested,
@@ -53,7 +56,8 @@ public sealed class PreviewSingleInstanceGate : IDisposable
             PreviewMutexName,
             SharedEngineMutexName,
             ActivateEventName,
-            WindowsPreviewInstanceSync.Shared);
+            WindowsPreviewInstanceSync.Shared,
+            activateExisting);
     }
 
     public static PreviewStartupResult Acquire(
@@ -62,7 +66,8 @@ public sealed class PreviewSingleInstanceGate : IDisposable
         string previewMutexName,
         string engineMutexName,
         string activateEventName,
-        IPreviewInstanceSync sync)
+        IPreviewInstanceSync sync,
+        bool activateExisting = true)
     {
         gate = null;
         ArgumentNullException.ThrowIfNull(onActivateRequested);
@@ -70,7 +75,11 @@ public sealed class PreviewSingleInstanceGate : IDisposable
 
         if (!sync.TryAcquireMutex(previewMutexName, out var previewOwnership))
         {
-            sync.Signal(activateEventName);
+            if (activateExisting)
+            {
+                sync.Signal(activateEventName);
+            }
+
             return PreviewStartupResult.ActivateExisting;
         }
 
