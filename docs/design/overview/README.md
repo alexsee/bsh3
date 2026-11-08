@@ -20,8 +20,8 @@ deterministic sample data and window size, captured from the real WinUI app.
 2. **Status and actions:** status gets a clear visual lead; the schedule, system
    toggle and primary backup command move next to it. Warnings put their corrective
    action first; live progress, file counts and cancel stay inside the status card.
-3. **Backup details:** the backup time and result lead; change counts are quieter
-   with stronger, closely grouped change counts and a dedicated browse link.
+3. **Backup details:** the backup time and result lead, followed by stronger,
+   closely grouped change counts and a dedicated browse link.
 4. **Storage:** the path and available space are easier to find; secondary labels
    step back. Lifetime totals live in the storage card with comfortable padding.
 
@@ -62,11 +62,17 @@ do not include a target score. [Round 1 screenshots](round-1/) are preserved.
 
 | Reviewer | Round 1 | Round 2 |
 | --- | --- | --- |
-| GPT-6.1 Sol | 8/10 | pending |
-| Grok 4.7 | 7/10 | pending |
-| Opus 5.5 | 6.5/10 | pending |
+| GPT-6.1 Sol | 8/10 | 8/10 |
+| Grok 4.7 | 7/10 | 8/10 |
+| Opus 5.5 | 6.5/10 | 7.5/10 |
 
 The second pass consolidates progress and warning actions in the status card,
 keeps storage visible in the reviewed narrow window, simplifies typography,
-strengthens the change counts, and cleans up the dark success tint. Round 2 is
-the final review under the requested two-round limit.
+strengthens the change counts, and cleans up the dark success tint. All three
+final reviewers said ready to ship. Review stopped after two rounds;
+Opus remained below the requested score. [Round 2 screenshots](round-2/) preserve
+the exact set that received these scores.
+
+After round 2, two minor suggestions were applied: normal body-size native backup
+buttons and free space first in the storage card, with a secondary path. The main
+screenshot set includes that final polish; it was not re-scored by the council.

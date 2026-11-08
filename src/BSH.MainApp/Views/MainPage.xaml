@@ -182,15 +182,22 @@
                                                   OffContent="{helpers:ResourceString Name=Overview_SystemOff}"
                                                   ToolTipService.ToolTip="{helpers:ResourceString Name=MainView_SystemToggle}" />
                                 </CommandBar.Content>
-                                <AppBarButton Icon="Save" CornerRadius="6" Padding="12,4"
-                                              Visibility="{x:Bind views:MainPage.Invert(ViewModel.HasActionItems), Mode=OneWay}"
-                                              Background="{ThemeResource AccentFillColorDefaultBrush}"
-                                              Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
-                                              Label="{helpers:ResourceString Name=MainView_StartBackup}"
-                                              Command="{x:Bind ViewModel.StartManualBackupCommand}" />
-                                <AppBarButton Icon="Save" Label="{helpers:ResourceString Name=MainView_StartBackup}"
-                                              Visibility="{x:Bind ViewModel.HasActionItems, Mode=OneWay}"
-                                              Command="{x:Bind ViewModel.StartManualBackupCommand}" />
+                                <AppBarElementContainer Visibility="{x:Bind views:MainPage.Invert(ViewModel.HasActionItems), Mode=OneWay}">
+                                    <Button Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.StartManualBackupCommand}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon FontSize="16" Glyph="&#xE74E;" />
+                                            <TextBlock FontSize="14" Text="{helpers:ResourceString Name=MainView_StartBackup}" />
+                                        </StackPanel>
+                                    </Button>
+                                </AppBarElementContainer>
+                                <AppBarElementContainer Visibility="{x:Bind ViewModel.HasActionItems, Mode=OneWay}">
+                                    <Button Command="{x:Bind ViewModel.StartManualBackupCommand}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon FontSize="16" Glyph="&#xE74E;" />
+                                            <TextBlock FontSize="14" Text="{helpers:ResourceString Name=MainView_StartBackup}" />
+                                        </StackPanel>
+                                    </Button>
+                                </AppBarElementContainer>
                             </CommandBar>
                         </Grid>
                         <Grid Visibility="{x:Bind ViewModel.ProgressGridVisibility, Mode=OneWay}"
@@ -296,8 +303,15 @@
                                 <TextBlock FontWeight="SemiBold" AutomationProperties.HeadingLevel="Level2"
                                            Text="{helpers:ResourceString Name=Overview_Location_Header}" />
                             </StackPanel>
+                            <StackPanel Spacing="6">
+                                <TextBlock FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap"
+                                           Text="{x:Bind ViewModel.FreeSpaceText, Mode=OneWay}" />
+                                <TextBlock Foreground="{ThemeResource SystemFillColorCautionBrush}" TextWrapping="Wrap"
+                                           Text="{x:Bind ViewModel.FreeSpaceHint, Mode=OneWay}"
+                                           Visibility="{x:Bind ViewModel.IsFreeSpaceLow, Mode=OneWay}" />
+                            </StackPanel>
                             <StackPanel Spacing="8">
-                                <TextBlock FontSize="14" TextTrimming="CharacterEllipsis"
+                                <TextBlock Style="{StaticResource OverviewLabelStyle}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
                                            Text="{x:Bind ViewModel.LocationPath, Mode=OneWay}"
                                            ToolTipService.ToolTip="{x:Bind ViewModel.LocationPath, Mode=OneWay}" />
                                 <TextBlock Style="{StaticResource OverviewLabelStyle}"
@@ -313,13 +327,6 @@
                                     <TextBlock Grid.Column="1" TextWrapping="Wrap"
                                                Text="{x:Bind ViewModel.LocationConnectionText, Mode=OneWay}" />
                                 </Grid>
-                            </StackPanel>
-                            <StackPanel Spacing="6">
-                                <TextBlock FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap"
-                                           Text="{x:Bind ViewModel.FreeSpaceText, Mode=OneWay}" />
-                                <TextBlock Foreground="{ThemeResource SystemFillColorCautionBrush}" TextWrapping="Wrap"
-                                           Text="{x:Bind ViewModel.FreeSpaceHint, Mode=OneWay}"
-                                           Visibility="{x:Bind ViewModel.IsFreeSpaceLow, Mode=OneWay}" />
                             </StackPanel>
                             <TextBlock Style="{StaticResource OverviewLabelStyle}" FontSize="12"
                                        Margin="0,4,0,0" Text="{x:Bind ViewModel.TotalsText, Mode=OneWay}" />
