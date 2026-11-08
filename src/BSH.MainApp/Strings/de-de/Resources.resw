@@ -1693,4 +1693,16 @@ Das Medium wird automatisch erkannt.</value>
   <data name="Overview_Running_Text" xml:space="preserve">
     <value>Sie können währenddessen weiterarbeiten. Der Fortschritt wird unten angezeigt.</value>
   </data>
+  <data name="Overview_Subtitle" xml:space="preserve">
+    <value>Sicherungen und Speicher im Blick.</value>
+  </data>
+  <data name="Overview_Status_Header" xml:space="preserve">
+    <value>Sicherungsstatus</value>
+  </data>
+  <data name="Overview_SystemOn" xml:space="preserve">
+    <value>System aktiv</value>
+  </data>
+  <data name="Overview_SystemOff" xml:space="preserve">
+    <value>System aus</value>
+  </data>
 </root>

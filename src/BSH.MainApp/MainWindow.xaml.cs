@@ -21,6 +21,9 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
         SystemBackdrop = new MicaBackdrop();
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(titleBar);
+        var root = (Microsoft.UI.Xaml.FrameworkElement)Content;
+        root.ActualThemeChanged += (_, _) => UpdateCaptionColors(root.ActualTheme);
+        UpdateCaptionColors(root.ActualTheme);
 
         // Load the window/taskbar icon from the multi-resolution .ico so Windows can
         // pick a crisp size per DPI instead of upscaling a single small frame.
@@ -32,6 +35,18 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
 
         this.CenterOnScreen();
         Title = "AppDisplayName".GetLocalized();
+    }
+
+    private void UpdateCaptionColors(Microsoft.UI.Xaml.ElementTheme theme)
+    {
+        // Native caption buttons do not inherit the XAML root's requested theme.
+        var foreground = new global::Windows.UI.ViewManagement.AccessibilitySettings().HighContrast
+            ? new global::Windows.UI.ViewManagement.UISettings().GetColorValue(global::Windows.UI.ViewManagement.UIColorType.Foreground)
+            : theme == Microsoft.UI.Xaml.ElementTheme.Dark ? Microsoft.UI.Colors.White : Microsoft.UI.Colors.Black;
+        AppWindow.TitleBar.ButtonForegroundColor = foreground;
+        AppWindow.TitleBar.ButtonInactiveForegroundColor = foreground;
+        AppWindow.TitleBar.ButtonBackgroundColor = Microsoft.UI.Colors.Transparent;
+        AppWindow.TitleBar.ButtonInactiveBackgroundColor = Microsoft.UI.Colors.Transparent;
     }
 
     private void WindowEx_Closed(object sender, Microsoft.UI.Xaml.WindowEventArgs args)
