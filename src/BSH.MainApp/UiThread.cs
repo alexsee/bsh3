@@ -68,4 +68,58 @@ internal static class UiThread
             return await work();
         });
     }
+
+    public static Task RunDialogAsync(Action work)
+    {
+        return RunDialogAsync(Queue, work);
+    }
+
+    public static Task RunDialogAsync(Func<Task> work)
+    {
+        return RunDialogAsync(Queue, work);
+    }
+
+    public static Task<T> RunDialogAsync<T>(Func<Task<T>> work)
+    {
+        return RunDialogAsync(Queue, work);
+    }
+
+    public static Task RunDialogAsync(DispatcherQueue queue, Action work)
+    {
+        ArgumentNullException.ThrowIfNull(queue);
+        ArgumentNullException.ThrowIfNull(work);
+        return queue.EnqueueAsync(() =>
+        {
+            using (App.BeginDialogOwner())
+            {
+                work();
+            }
+        });
+    }
+
+    public static Task RunDialogAsync(DispatcherQueue queue, Func<Task> work)
+    {
+        ArgumentNullException.ThrowIfNull(queue);
+        ArgumentNullException.ThrowIfNull(work);
+        return queue.EnqueueAsync(async () =>
+        {
+            using (App.BeginDialogOwner())
+            {
+                await work();
+            }
+        });
+    }
+
+    public static Task<T> RunDialogAsync<T>(DispatcherQueue queue, Func<Task<T>> work)
+    {
+        ArgumentNullException.ThrowIfNull(queue);
+        ArgumentNullException.ThrowIfNull(work);
+        return queue.EnqueueAsync(async () =>
+        {
+            using (App.BeginDialogOwner())
+            {
+                return await work();
+            }
+        });
+    }
 }

@@ -144,6 +144,7 @@ public class AppNotificationService : IAppNotificationService, IDisposable
 
     private void PresentOnUi(string pageKey)
     {
+        App.NoteExplicitPresentation();
         PreviewAppStartup.PresentPreviewWindow(
             () => App.HasMainWindow,
             () => App.GetService<SetupRouting>().NavigateForStartup(),

@@ -31,7 +31,7 @@ public class WaitForMediaService : IWaitForMediaService
 
     private async Task ShowWindowAsync(CancellationTokenSource cancellationTokenSource)
     {
-        await UiThread.RunAsync(App.PresentMainWindow, () =>
+        await UiThread.RunDialogAsync(() =>
         {
             window = new WaitForMediumWindow();
             window.ViewModel.OnCancelRequested += cancellationTokenSource.Cancel;

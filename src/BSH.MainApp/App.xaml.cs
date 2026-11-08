@@ -67,7 +67,14 @@ public partial class App : Application
 
     private static MainWindow? mainWindow;
 
+    private static int explicitPresentations;
+
     internal static bool HasMainWindow => mainWindow != null;
+
+    internal static void NoteExplicitPresentation()
+    {
+        Interlocked.Increment(ref explicitPresentations);
+    }
 
     public static MainWindow MainWindow => mainWindow ??= new MainWindow();
 
@@ -203,6 +210,7 @@ public partial class App : Application
         var presentQueuedLaunch = foreground.CompleteStartup();
         if (!autoStart)
         {
+            NoteExplicitPresentation();
             await App.GetService<IActivationService>().ActivateAsync(args);
         }
         else if (presentQueuedLaunch)
@@ -225,23 +233,61 @@ public partial class App : Application
     {
         try
         {
-            // Autostart leaves the window uncreated. A later manual launch creates
-            // it. A window that was closed to the tray keeps its current page.
-            PreviewAppStartup.PresentPreviewWindow(
-                () => mainWindow != null,
-                () => GetService<SetupRouting>().NavigateForStartup(),
-                navigateToPage: false,
-                () => false,
-                null,
-                null,
-                () => MainWindow.AppWindow.Show(),
-                () => MainWindow.Activate(),
-                () => MainWindow.AppWindow.MoveInZOrderAtTop());
+            NoteExplicitPresentation();
+            ShowMainWindowCore(moveToTop: true);
         }
         catch (Exception ex)
         {
             Log.Warning(ex, "Could not bring the Preview window to the front.");
         }
+    }
+
+    /// <summary>
+    /// Gives a dialog a loaded <c>XamlRoot</c>. A never-activated window has no
+    /// live tree, and a hidden window will not display a dialog hosted in it, so
+    /// the owner is shown for the dialog and hidden again unless the user has
+    /// explicitly presented it.
+    /// </summary>
+    internal static PreviewAppStartup.DialogOwnerLease BeginDialogOwner()
+    {
+        var epoch = Volatile.Read(ref explicitPresentations);
+        var wasVisible = mainWindow != null && mainWindow.AppWindow.IsVisible;
+        if (!wasVisible)
+        {
+            ShowMainWindowCore(moveToTop: false);
+        }
+
+        return new PreviewAppStartup.DialogOwnerLease(
+            temporarilyShown: !wasVisible,
+            epoch,
+            () => Volatile.Read(ref explicitPresentations),
+            () =>
+            {
+                try
+                {
+                    mainWindow?.Hide();
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(ex, "Could not restore the hidden main window.");
+                }
+            });
+    }
+
+    private static void ShowMainWindowCore(bool moveToTop)
+    {
+        // Autostart leaves the window uncreated. Navigation attaches content so
+        // the root can load. Show comes before Activate so a hidden window returns.
+        PreviewAppStartup.PresentPreviewWindow(
+            () => mainWindow != null,
+            () => GetService<SetupRouting>().NavigateForStartup(),
+            navigateToPage: false,
+            () => false,
+            null,
+            null,
+            () => MainWindow.AppWindow.Show(),
+            () => MainWindow.Activate(),
+            moveToTop ? () => MainWindow.AppWindow.MoveInZOrderAtTop() : () => { });
     }
 
     private static void OnAutoUpdaterApplicationExit()

@@ -29,7 +29,7 @@ public class BrowserDialogService : IBrowserDialogService
 
     public async Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions)
     {
-        return await UiThread.RunAsync(App.PresentMainWindow, async () =>
+        return await UiThread.RunDialogAsync( async () =>
         {
             var versionList = new ListView
             {
@@ -78,7 +78,7 @@ public class BrowserDialogService : IBrowserDialogService
         FileOrFolderItem item,
         IReadOnlyList<VersionDetails> versions)
     {
-        return await UiThread.RunAsync(App.PresentMainWindow, async () =>
+        return await UiThread.RunDialogAsync( async () =>
         {
             var itemType = item.IsFile
                 ? "Browser_DeleteFromAll_File".GetLocalized()
@@ -337,7 +337,7 @@ public class BrowserDialogService : IBrowserDialogService
 
     public async Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite)
     {
-        return await UiThread.RunAsync(App.PresentMainWindow, async () =>
+        return await UiThread.RunDialogAsync( async () =>
         {
             var nameBox = new TextBox
             {
@@ -372,7 +372,7 @@ public class BrowserDialogService : IBrowserDialogService
 
         try
         {
-            return await UiThread.RunAsync(App.PresentMainWindow, async () =>
+            return await UiThread.RunDialogAsync( async () =>
             {
                 var folderPicker = new FolderPicker(App.MainWindow.AppWindow.Id)
                 {

@@ -81,6 +81,44 @@ public static class PreviewAppStartup
         moveToTop();
     }
 
+    /// <summary>
+    /// A background prompt may show the main window only while its dialog is open.
+    /// An explicit presentation during that time must keep the window visible.
+    /// </summary>
+    public static bool ShouldRestoreHiddenOwner(bool temporarilyShown, int epochAtStart, int epochNow)
+    {
+        return temporarilyShown && epochAtStart == epochNow;
+    }
+
+    public readonly struct DialogOwnerLease : IDisposable
+    {
+        private readonly bool temporarilyShown;
+        private readonly int epochAtStart;
+        private readonly Func<int> currentEpoch;
+        private readonly Action hide;
+
+        public DialogOwnerLease(bool temporarilyShown, int epochAtStart, Func<int> currentEpoch, Action hide)
+        {
+            this.temporarilyShown = temporarilyShown;
+            this.epochAtStart = epochAtStart;
+            this.currentEpoch = currentEpoch;
+            this.hide = hide;
+        }
+
+        public void Dispose()
+        {
+            if (currentEpoch == null || hide == null)
+            {
+                return;
+            }
+
+            if (ShouldRestoreHiddenOwner(temporarilyShown, epochAtStart, currentEpoch()))
+            {
+                hide();
+            }
+        }
+    }
+
     public static async Task<bool> OpenDatabaseAsync(
         string databaseFile,
         IDbClientFactory dbClientFactory,

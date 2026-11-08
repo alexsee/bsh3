@@ -117,4 +117,40 @@ public class PreviewStartupPresentationTests
 
         Assert.That(shown, Is.False);
     }
+
+    [Test]
+    public void ABackgroundPromptHidesTheOwnerItTemporarilyShowed()
+    {
+        var hidden = 0;
+        var epoch = 0;
+        using (new PreviewAppStartup.DialogOwnerLease(temporarilyShown: true, epochAtStart: 0, () => epoch, () => hidden++))
+        {
+        }
+
+        Assert.That(hidden, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void ABackgroundPromptLeavesAnAlreadyVisibleOwnerAlone()
+    {
+        var hidden = 0;
+        using (new PreviewAppStartup.DialogOwnerLease(temporarilyShown: false, epochAtStart: 1, () => 1, () => hidden++))
+        {
+        }
+
+        Assert.That(hidden, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void AnExplicitPresentationDuringAPromptKeepsTheWindowVisible()
+    {
+        var hidden = 0;
+        var epoch = 0;
+        using (new PreviewAppStartup.DialogOwnerLease(temporarilyShown: true, epochAtStart: 0, () => epoch, () => hidden++))
+        {
+            epoch++;
+        }
+
+        Assert.That(hidden, Is.EqualTo(0));
+    }
 }
