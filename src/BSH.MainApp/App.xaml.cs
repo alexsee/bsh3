@@ -79,6 +79,13 @@ public partial class App : Application
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = germanCulture;
 
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
+#if DEBUG
+        if (OverviewPreview.IsRequested)
+        {
+            AppEventLog.Initialize(Path.Combine(Path.GetTempPath(), "BSH.OverviewPreview"), "Backup Service Home 4", version);
+        }
+        else
+#endif
         AppEventLog.Initialize(AppEventLog.GetDirectory(DatabaseFile), "Backup Service Home 4", version);
 
         _ = host.Value;
@@ -89,6 +96,9 @@ public partial class App : Application
             askContinueAsync: AskContinueAfterUnhandledExceptionAsync,
             exitApplication: ExitAfterUnhandledException);
 
+#if DEBUG
+        if (!OverviewPreview.IsRequested)
+#endif
         App.GetService<IAppNotificationService>().Initialize();
 
         UnhandledException += App_UnhandledException;
@@ -152,6 +162,13 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+
+#if DEBUG
+        if (OverviewPreview.TryShow())
+        {
+            return;
+        }
+#endif
 
         var uiQueue = DispatcherQueue.GetForCurrentThread();
         var autoStart = PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs());

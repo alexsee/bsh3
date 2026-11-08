@@ -10,7 +10,7 @@
     mc:Ignorable="d"
     Title="{helpers:ResourceString Name=AppDisplayName}"
     TaskBarIcon="{StaticResource AppIcon}"
-    Width="1200" Height="800" Closed="WindowEx_Closed">
+    Width="1200" Height="800" MinWidth="600" MinHeight="480" Closed="WindowEx_Closed">
 
     <Grid Background="{ThemeResource AppPageBackgroundBrush}">
         <Border
@@ -42,11 +42,13 @@
         </Border>
 
         <NavigationView x:Name="MainNavigation"
-                        PaneDisplayMode="LeftCompact"
+                        PaneDisplayMode="Auto"
+                        OpenPaneLength="240"
+                        ExpandedModeThresholdWidth="1100"
+                        CompactModeThresholdWidth="640"
                         IsBackButtonVisible="Collapsed"
-                        IsPaneToggleButtonVisible="False"
+                        IsPaneToggleButtonVisible="True"
                         IsSettingsVisible="{x:Bind ViewModel.IsShellNavigationEnabled, Mode=OneWay}"
-                        PaneTitle="{helpers:ResourceString Name=AppDisplayName}"
                         MenuItemsSource="{x:Bind ViewModel.NavigationItems}"
                         FooterMenuItemsSource="{x:Bind ViewModel.FooterNavigationItems}"
                         SelectedItem="{x:Bind ViewModel.CurrentPage, Mode=TwoWay}">
