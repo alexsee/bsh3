@@ -255,6 +255,7 @@ public class SetupService : ISetupService
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 1 WHERE fileType = 3");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 2 WHERE fileType = 4");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 6 WHERE fileType = 5");
+        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 7 WHERE fileType = 8");
     }
 
     public async Task ConvertFileTypesForFtpImportAsync()
@@ -262,6 +263,7 @@ public class SetupService : ISetupService
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
+        await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 8 WHERE fileType = 7");
     }
 
     private static string EscapeSql(string value)

@@ -10,12 +10,12 @@ using Brightbits.BSH.Engine.Exceptions;
 namespace Brightbits.BSH.Engine.Database;
 
 /// <summary>
-/// Schema versions understood by this build. Stable 3.9.5 and the WinUI Preview
-/// both stop at version 9.
+/// Schema versions understood by this build. Version 10 adds the compressed,
+/// encrypted file types; earlier builds must not interpret these as unknown files.
 /// </summary>
 public static class SchemaCompatibility
 {
-    public const int SupportedSchemaVersion = 9;
+    public const int SupportedSchemaVersion = 10;
 
     public static async Task CheckExistingDatabaseAsync(string databaseFile)
     {

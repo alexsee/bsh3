@@ -44,7 +44,7 @@ public static class StoragePath
 
     /// <summary>
     /// Builds the version-qualified long-file storage path used for
-    /// local-storage kinds (1/2/6).
+    /// local-storage kinds (1/2/6/7).
     /// </summary>
     public static string BuildLongFilePath(string versionDate, string longFileName)
     {
@@ -67,6 +67,8 @@ public static class StoragePath
                 storage.CopyFileFromStorageCompressed(localFilePath, remoteFilePath),
             FileTypeKind.StoredEncrypted or FileTypeKind.Encrypted =>
                 storage.CopyFileFromStorageEncrypted(localFilePath, remoteFilePath, password),
+            FileTypeKind.CompressedEncrypted or FileTypeKind.StoredCompressedEncrypted =>
+                EncryptedArchive.CopyFromStorage(storage, localFilePath, remoteFilePath, password),
             _ => true,
         };
 
@@ -97,6 +99,10 @@ public static class StoragePath
             case FileTypeKind.StoredEncrypted:
             case FileTypeKind.Encrypted:
                 storage.DeleteFileFromStorageEncrypted(remoteFile);
+                break;
+            case FileTypeKind.CompressedEncrypted:
+            case FileTypeKind.StoredCompressedEncrypted:
+                storage.DeleteFileFromStorageEncrypted(remoteFile + ".zip");
                 break;
         }
     }

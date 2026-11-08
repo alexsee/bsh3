@@ -17,7 +17,7 @@ namespace BSH.Test;
 
 public class PreviewAppStartupTests
 {
-    [TestCase("10")]
+    [TestCase("11")]
     [TestCase("not-a-version")]
     public async Task StartupRejectsAnUnsupportedSchemaBeforeChangingConfiguration(string schemaVersion)
     {
@@ -120,6 +120,7 @@ public class PreviewAppStartupTests
     [TestCase(null)]
     [TestCase("8")]
     [TestCase("9")]
+    [TestCase("10")]
     public async Task ACompatibleDatabaseOpens(string schemaVersion)
     {
         var directory = Path.Combine(Path.GetTempPath(), "BSH.Test", "preview-compatible-" + Guid.NewGuid().ToString("N"));
@@ -142,8 +143,8 @@ public class PreviewAppStartupTests
                 (_, fallback) => fallback);
 
             Assert.That(result, Is.True);
-            Assert.That(configuration.DBVersion, Is.EqualTo("9"));
-            Assert.That(Directory.GetFiles(directory, "*.bak"), Has.Length.EqualTo(schemaVersion == "8" ? 1 : 0));
+            Assert.That(configuration.DBVersion, Is.EqualTo("10"));
+            Assert.That(Directory.GetFiles(directory, "*.bak"), Has.Length.EqualTo(schemaVersion is "8" or "9" ? 1 : 0));
         }
         finally
         {

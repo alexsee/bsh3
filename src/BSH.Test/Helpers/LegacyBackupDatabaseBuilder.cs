@@ -24,7 +24,7 @@ public static class LegacyBackupDatabaseBuilder
 
     public const string VersionDescription = "Schema upgrade fixture";
 
-    public const string CurrentSchemaVersion = "9";
+    public const string CurrentSchemaVersion = "10";
 
     public static async Task CreateAsync(string databaseFile, string schemaVersion)
     {
