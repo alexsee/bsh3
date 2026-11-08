@@ -16,7 +16,10 @@ public class PreviewLaunchAndSchemaTests
     {
         Assert.That(PreviewLaunch.IsAutoStart(new[] { "BSH.MainApp.exe", "-autostart" }), Is.True);
         Assert.That(PreviewLaunch.IsAutoStart(new[] { "BSH.MainApp.exe", "/autostart" }), Is.True);
+        Assert.That(PreviewLaunch.IsAutoStart(new[] { "BSH.MainApp.exe", "-AUTOSTART" }), Is.True);
+        Assert.That(PreviewLaunch.IsAutoStart(new[] { "BSH.MainApp.exe", "/AutoStart" }), Is.True);
         Assert.That(PreviewLaunch.IsAutoStart(new[] { "BSH.MainApp.exe" }), Is.False);
+        Assert.That(PreviewLaunch.IsAutoStart(new[] { "BSH.MainApp.exe", "-delayedstart" }), Is.False);
         Assert.That(PreviewLaunch.IsAutoStart(null), Is.False);
     }
 

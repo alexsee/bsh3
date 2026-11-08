@@ -50,6 +50,81 @@ public class PreviewSingleInstanceGateTests
     }
 
     [Test]
+    public void SecondAutoStartDoesNotSignalTheRunningInstance()
+    {
+        var names = UniqueNames();
+        var sync = new SignalCountingSync();
+        var activated = false;
+        var first = PreviewSingleInstanceGate.Acquire(
+            () => activated = true,
+            out var gate,
+            names.Preview,
+            names.Engine,
+            names.EventName,
+            sync,
+            activateExisting: false);
+
+        Assert.That(first, Is.EqualTo(PreviewStartupResult.Started));
+
+        try
+        {
+            var second = PreviewSingleInstanceGate.Acquire(
+                () => { },
+                out _,
+                names.Preview,
+                names.Engine,
+                names.EventName,
+                sync,
+                activateExisting: false);
+
+            Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
+            Assert.That(activated, Is.False);
+            Assert.That(sync.SignalCount, Is.EqualTo(0));
+        }
+        finally
+        {
+            gate.Dispose();
+        }
+    }
+
+    [Test]
+    public void ManualSecondLaunchSignalsAnInstanceThatStartedFromAutostart()
+    {
+        var names = UniqueNames();
+        var sync = new InMemoryPreviewInstanceSync();
+        var activated = false;
+        var first = PreviewSingleInstanceGate.Acquire(
+            () => activated = true,
+            out var gate,
+            names.Preview,
+            names.Engine,
+            names.EventName,
+            sync,
+            activateExisting: false);
+
+        Assert.That(first, Is.EqualTo(PreviewStartupResult.Started));
+
+        try
+        {
+            var second = PreviewSingleInstanceGate.Acquire(
+                () => { },
+                out _,
+                names.Preview,
+                names.Engine,
+                names.EventName,
+                sync,
+                activateExisting: true);
+
+            Assert.That(second, Is.EqualTo(PreviewStartupResult.ActivateExisting));
+            Assert.That(activated, Is.True);
+        }
+        finally
+        {
+            gate.Dispose();
+        }
+    }
+
+    [Test]
     public void PreviewDoesNotStartWhenTheSharedEngineMutexIsHeld()
     {
         var names = UniqueNames();
@@ -324,5 +399,31 @@ public class PreviewSingleInstanceGateTests
     {
         var id = Guid.NewGuid().ToString("N");
         return ("preview-" + id, "engine-" + id, "activate-" + id);
+    }
+
+    private sealed class SignalCountingSync : IPreviewInstanceSync
+    {
+        private readonly InMemoryPreviewInstanceSync inner = new();
+
+        public int SignalCount
+        {
+            get; private set;
+        }
+
+        public bool TryAcquireMutex(string name, out IDisposable ownership)
+        {
+            return inner.TryAcquireMutex(name, out ownership);
+        }
+
+        public IDisposable Listen(string name, Action onSignal)
+        {
+            return inner.Listen(name, onSignal);
+        }
+
+        public void Signal(string name)
+        {
+            SignalCount++;
+            inner.Signal(name);
+        }
     }
 }

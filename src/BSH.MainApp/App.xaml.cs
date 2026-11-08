@@ -147,17 +147,22 @@ public partial class App : Application
 
     private static PreviewSingleInstanceGate? previewInstance;
 
+    private static readonly PreviewForegroundCoordinator foreground = new();
+
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
 
         var uiQueue = DispatcherQueue.GetForCurrentThread();
+        var autoStart = PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs());
+        var presentMainWindow = PreviewAppStartup.ShouldPresentMainWindow(autoStart);
         var startup = PreviewSingleInstanceGate.Acquire(
             onActivateRequested: () => uiQueue.TryEnqueue(BringPreviewToFront),
-            out var gate);
+            out var gate,
+            activateExisting: presentMainWindow);
         if (PreviewAppStartup.ShouldExit(
             startup,
-            PreviewLaunch.IsAutoStart(Environment.GetCommandLineArgs()),
+            autoStart,
             NativeMessage.Show,
             PreviewAppStartup.LocalizedOrFallback))
         {
@@ -180,7 +185,8 @@ public partial class App : Application
             return;
         }
 
-        // start application
+        // Background startup. Keep this path off MainWindow: autostart must not
+        // create or show it. Tray, taskbar, and notification handlers present it later.
         App.GetService<IStatusService>().Initialize();
 
         await App.GetService<IOrchestrationService>().InitializeAsync();
@@ -191,19 +197,40 @@ public partial class App : Application
         await updateService.InitializeAsync(OnAutoUpdaterApplicationExit);
         await updateService.MaybeCheckOnStartupAsync();
 
-        await App.GetService<IActivationService>().ActivateAsync(args);
+        var presentQueuedLaunch = foreground.CompleteStartup();
+        if (presentMainWindow)
+        {
+            await App.GetService<IActivationService>().ActivateAsync(args);
+        }
+        else if (presentQueuedLaunch)
+        {
+            PresentMainWindow();
+        }
     }
 
     private static void BringPreviewToFront()
     {
-        var window = mainWindow;
-        if (window == null)
+        if (!foreground.TryPresentNow())
         {
             return;
         }
 
+        PresentMainWindow();
+    }
+
+    private static void PresentMainWindow()
+    {
         try
         {
+            // Autostart leaves the window uncreated. A later manual launch creates
+            // it. A window that was closed to the tray keeps its current page.
+            var window = mainWindow;
+            if (window == null)
+            {
+                App.GetService<SetupRouting>().NavigateForStartup();
+                window = MainWindow;
+            }
+
             window.AppWindow.Show();
             window.Activate();
             window.AppWindow.MoveInZOrderAtTop();

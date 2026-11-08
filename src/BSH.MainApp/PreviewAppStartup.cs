@@ -42,6 +42,16 @@ public static class PreviewAppStartup
         return true;
     }
 
+    /// <summary>
+    /// Autostart keeps the process in the tray. A manual launch presents the main window.
+    /// Later tray, taskbar, and notification activation must not call this with the
+    /// running process's original command line.
+    /// </summary>
+    public static bool ShouldPresentMainWindow(bool autoStart)
+    {
+        return !autoStart;
+    }
+
     public static async Task<bool> OpenDatabaseAsync(
         string databaseFile,
         IDbClientFactory dbClientFactory,
