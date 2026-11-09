@@ -157,8 +157,6 @@ namespace BSH.Service.VSS
                 throw new InvalidOperationException("VSS snapshot has not been set up. Call Setup() first.");
             }
 
-            Trace.TraceInformation("New volume: " + _snap.Root);
-
             // This bit replaces the file's normal root information with root
             // info from our new shadow copy.
             if (Path.IsPathRooted(localPath))
@@ -177,8 +175,6 @@ namespace BSH.Service.VSS
 
             localPath = localPath.Insert(0, _snap.Root);
 
-            Trace.TraceInformation("Converted path: " + localPath);
-
             return localPath;
         }
 
@@ -193,7 +189,6 @@ namespace BSH.Service.VSS
                 // The BackupComplete event must be sent to all of the writers.
                 _backup.BackupComplete();
             }
-            // Not sure why, but this throws a VSS_BAD_STATE on XP and W2K3.
             // Per some forum posts about this, I'm just ignoring it.
             catch (VssBadStateException) { }
         }
