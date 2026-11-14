@@ -1,0 +1,64 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '23 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze C#
+    runs-on: windows-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: src
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+      with:
+        global-json-file: src/global.json
+        cache: true
+        cache-dependency-path: src/**/packages.lock.json
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+      with:
+        languages: csharp
+        build-mode: manual
+
+    # WinUI's XAML compiler requires Windows. Keep the explicit restore and
+    # build aligned with dotnet-desktop-build.yml instead of using autobuild.
+    - name: Restore dependencies
+      run: dotnet restore "Backup Service Home 3.sln" --locked-mode -a x64
+
+    - name: Build solution
+      run: dotnet build "Backup Service Home 3.sln" --configuration Release --no-restore -p:Platform=x64
+
+    - name: Analyze
+      uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+      with:
+        category: /language:csharp
