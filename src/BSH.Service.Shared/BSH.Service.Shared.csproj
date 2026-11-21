@@ -15,7 +15,4 @@
     <Nullable>enable</Nullable>
     <Version>3.9.0.3</Version>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
 </Project>
