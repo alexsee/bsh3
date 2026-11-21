@@ -9,12 +9,31 @@
     IsTabStop="False"
     mc:Ignorable="d">
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="SuccessBadgeBackgroundBrush" Color="#DFF4E6" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="SuccessBadgeBackgroundBrush" Color="#DFF4E6" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="SuccessBadgeBackgroundBrush" Color="#244536" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <SolidColorBrush x:Key="SuccessBadgeBackgroundBrush" Color="{ThemeResource SystemColorWindowColor}" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <Grid>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="SeverityStates">
                 <VisualState x:Name="Protected">
                     <VisualState.Setters>
-                        <Setter Target="Circle.Fill" Value="{ThemeResource SystemFillColorSuccessBackgroundBrush}" />
+                        <Setter Target="Circle.Fill" Value="{ThemeResource SuccessBadgeBackgroundBrush}" />
                         <Setter Target="Icon.Foreground" Value="{ThemeResource SystemFillColorSuccessBrush}" />
                         <Setter Target="Icon.Glyph" Value="&#xE73E;" />
                     </VisualState.Setters>
