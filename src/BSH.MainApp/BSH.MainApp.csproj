@@ -40,7 +40,7 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.251219" />
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.4.1" />
 		<PackageReference Include="Humanizer.Core" Version="3.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.13" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="11.0.0" />
 		<!-- Legacy toolkit/tray libraries require this package ID. Exclude its
 		     assets; the component references below provide the SDK implementation. -->
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" ExcludeAssets="all" />
