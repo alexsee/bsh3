@@ -12,7 +12,6 @@ public class Encryption
 {
     private static readonly ILogger Logger = Log.ForContext<Encryption>();
 
-    // TODO: remove the hardcoded salts
     private readonly byte[] mKeySalt = [0xA1, 0x41, 0xC4, 0xF5, 0x23, 0x70, 0xBF, 0x52];
     private readonly byte[] mIVSalt = [0x47, 0x80, 0x22, 0xFF, 0x12, 0xE7, 0xF1, 0x39];
 
