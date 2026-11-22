@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -730,7 +729,7 @@ public partial class frmBrowser : IStatusReport
             // quick preview
             if (lvFiles.SelectedItems.Count != 0 && lvFiles.SelectedItems[0].ImageKey != "folder")
             {
-                ToolStripSchnellansicht_Click(null, null);
+                await PreviewSelectedFileAsync();
             }
         }
         else if (e.KeyCode == Keys.Enter)
@@ -1104,65 +1103,25 @@ public partial class frmBrowser : IStatusReport
         }
     }
 
+    internal WinFormsPreviewService PreviewService = new();
+
     private async void ToolStripSchnellansicht_Click(object sender, EventArgs e)
     {
-        // Datei ausgewählt?
+        await PreviewSelectedFileAsync();
+    }
+
+    internal async Task PreviewSelectedFileAsync()
+    {
         if (lvFiles.SelectedItems.Count > 0 && lvFiles.SelectedItems[0].ImageKey != "folder")
         {
-            if (!await BackupLogic.BackupController.CheckMediaAsync(ActionType.Restore))
-            {
-                return;
-            }
-
-            if (!BackupLogic.BackupController.RequestPassword())
-            {
-                return;
-            }
-
-            // Schnellansicht laden
-            try
-            {
-                var password = BackupLogic.BackupService.GetPassword();
-                var tmpFile = await BackupLogic.QueryManager.GetFileNameFromDriveAsync(int.Parse(selectedVersion.Id), lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString(), password);
-
-                var procInfo = new ProcessStartInfo(System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\SmartPreview.exe", " -file:\"" + tmpFile.Item1 + "\"");
-                procInfo.WindowStyle = ProcessWindowStyle.Normal;
-
-                var proc = Process.Start(procInfo);
-                await proc.WaitForExitAsync();
-
-                if (tmpFile.Item1 != null && tmpFile.Item2)
-                {
-                    for (var i = 0; i <= 5; i++)
-                    {
-                        try
-                        {
-                            if (i == 5)
-                            {
-                                return;
-                            }
-
-                            System.IO.File.Delete(tmpFile.Item1);
-                            break;
-                        }
-                        catch
-                        {
-                            // ignore error
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                // Fehler: Feature nicht installiert?
-                MessageBox.Show(Resources.DLG_FEATURE_NOT_AVAILABLE_TEXT, Resources.DLG_FEATURE_NOT_AVAILABLE_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
+            await PreviewService.PreviewAsync(() => (int.Parse(selectedVersion.Id),
+                lvFiles.SelectedItems[0].Text, lvFiles.SelectedItems[0].Tag.ToString()));
         }
     }
 
-    private void SchnellansichtToolStripMenuItem_Click(object sender, EventArgs e)
+    private async void SchnellansichtToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        ToolStripSchnellansicht_Click(null, null);
+        await PreviewSelectedFileAsync();
     }
 
     private void txtSearch_Enter(object sender, EventArgs e)
