@@ -99,6 +99,8 @@ public class LegacyListLifetimeTests
         list.Items.Add(item);
         list.DrawItems();
         var releaseFirst = new TaskCompletionSource();
+        var releaseSecond = new TaskCompletionSource();
+        var secondEntered = new TaskCompletionSource();
         var completed = new TaskCompletionSource();
         var firstFinished = false;
         var secondStarted = false;
@@ -107,16 +109,18 @@ public class LegacyListLifetimeTests
             await releaseFirst.Task;
             firstFinished = true;
         };
-        list.ItemClick += _ =>
+        list.ItemClick += async _ =>
         {
             secondStarted = true;
+            secondEntered.SetResult();
+            await releaseSecond.Task;
             completed.SetResult();
-            return Task.CompletedTask;
         };
 
+        Task selection = null;
         if (selectItem)
         {
-            list.SelectItem(item.VersionID);
+            selection = list.SelectItemAsync(item.VersionID);
         }
         else
         {
@@ -124,11 +128,40 @@ public class LegacyListLifetimeTests
         }
 
         var startedBeforeFirstFinished = secondStarted;
+        var selectionCompletedBeforeFirst = selection?.IsCompleted;
         releaseFirst.SetResult();
+        await secondEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        var selectionCompletedBeforeSecond = selection?.IsCompleted;
+        releaseSecond.SetResult();
         await completed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        if (selection != null)
+        {
+            await selection.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.That(selectionCompletedBeforeFirst, Is.False);
+            Assert.That(selectionCompletedBeforeSecond, Is.False);
+        }
 
         Assert.That(startedBeforeFirstFinished, Is.False);
         Assert.That(firstFinished, Is.True);
+    }
+
+    [Test]
+    public void HighlightingVersionDoesNotNavigate()
+    {
+        using var list = new aVersionList();
+        var item = new ClickableVersionItem { VersionID = "version" };
+        list.Items.Add(item);
+        list.DrawItems();
+        var navigations = 0;
+        list.ItemClick += _ =>
+        {
+            navigations++;
+            return Task.CompletedTask;
+        };
+
+        list.HighlightItem(item.VersionID);
+
+        Assert.That(navigations, Is.Zero);
     }
 
     private sealed class ClickableVersionItem : aVersionListItem
