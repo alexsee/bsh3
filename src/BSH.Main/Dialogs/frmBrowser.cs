@@ -527,7 +527,7 @@ public partial class frmBrowser : IStatusReport
         StatusController.Current.AddObserver(this);
 
         // load versions
-        ReloadBrowser();
+        await ReloadBrowserAsync();
 
         // retrieve favorites
         await ReadFavoritsAsync();
@@ -1227,7 +1227,7 @@ public partial class frmBrowser : IStatusReport
 
     private void UpdateSearchNavigation(string searchText, string versionId)
     {
-        AVersionList1.SelectItem(versionId, false);
+        AVersionList1.HighlightItem(versionId);
         UcNav.Path = string.Format(Resources.DLG_BACKUPBROWSER_SEARCH_RESULTS_TEXT, searchText);
         UcNav.PathLocalized = UcNav.Path;
         UcNav.CreateNavi("", true);
@@ -1374,10 +1374,10 @@ public partial class frmBrowser : IStatusReport
         await BackupLogic.BackupController.DeleteBackupAsync(selectedVersion.Id, true);
 
         Enabled = true;
-        ReloadBrowser();
+        await ReloadBrowserAsync();
     }
 
-    private void ReloadBrowser()
+    private async Task ReloadBrowserAsync()
     {
         // retrieve versions
         var lstVersions = BackupLogic.QueryManager.GetVersions(true);
@@ -1406,7 +1406,7 @@ public partial class frmBrowser : IStatusReport
 
         // switch to current version
         AVersionList1.DrawItems();
-        AVersionList1.SelectItem(lstVersions[0].Id);
+        await AVersionList1.SelectItemAsync(lstVersions[0].Id);
 
         Enabled = true;
         Focus();
@@ -1441,7 +1441,7 @@ public partial class frmBrowser : IStatusReport
                 return;
             }
 
-            AVersionList1.SelectItem(backupVersion);
+            await AVersionList1.SelectItemAsync(backupVersion);
         }
     }
 
@@ -1459,7 +1459,7 @@ public partial class frmBrowser : IStatusReport
                 return;
             }
 
-            AVersionList1.SelectItem(backupVersion);
+            await AVersionList1.SelectItemAsync(backupVersion);
         }
     }
 
@@ -1578,7 +1578,7 @@ public partial class frmBrowser : IStatusReport
         }
 
         // load versions
-        ReloadBrowser();
+        await ReloadBrowserAsync();
     }
 
     private void lvFavorite_SizeChanged(object sender, EventArgs e)
@@ -1714,12 +1714,25 @@ public partial class frmBrowser : IStatusReport
 
     public void ReportState(JobState jobState)
     {
-        if (!IsHandleCreated)
+        if (!IsHandleCreated || (jobState != JobState.FINISHED && jobState != JobState.CANCELED))
         {
             return;
         }
 
-        Invoke(new Action(() => { if (jobState == JobState.FINISHED || jobState == JobState.CANCELED) { try { ReloadBrowser(); } catch { } } }));
+        // The synchronous status callback transfers completion and failures to this helper.
+        _ = ReloadBrowserAfterReportAsync();
+    }
+
+    private async Task ReloadBrowserAfterReportAsync()
+    {
+        try
+        {
+            await InvokeAsync(async cancellationToken => await ReloadBrowserAsync());
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Exception refreshing backup browser after job completion.");
+        }
     }
 
     public void ReportStatus(string title, string text)

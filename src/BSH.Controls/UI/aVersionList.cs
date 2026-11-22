@@ -78,7 +78,18 @@ namespace Brightbits.BSH.Main
             }
         }
 
-        public async void SelectItem(string versionID, bool click = true)
+        public void HighlightItem(string versionID) => SelectItemCore(versionID);
+
+        public async Task SelectItemAsync(string versionID)
+        {
+            var entry = SelectItemCore(versionID);
+            if (entry != null)
+            {
+                await RaiseItemClickAsync(entry);
+            }
+        }
+
+        private aVersionListItem SelectItemCore(string versionID)
         {
             foreach (var entry in flpMain.Controls.OfType<aVersionListItem>())
             {
@@ -88,13 +99,10 @@ namespace Brightbits.BSH.Main
                     DeactivateAll();
                     entry.Activate();
 
-                    if (click)
-                    {
-                        await RaiseItemClickAsync(entry);
-                    }
-                    return;
+                    return entry;
                 }
             }
+            return null;
         }
 
         private void ItemAdded(object sender, ControlEventArgs e)

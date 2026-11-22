@@ -93,7 +93,7 @@ public partial class frmFileProperties
             return;
         }
 
-        BrowserWindow.AVersionList1.SelectItem(((FileTableRow)lvVersions.SelectedItems[0].Tag).FilePackage);
+        await BrowserWindow.AVersionList1.SelectItemAsync(((FileTableRow)lvVersions.SelectedItems[0].Tag).FilePackage);
         await BrowserWindow.OpenFolderAsync(CurrentFileFolder);
         Close();
     }
