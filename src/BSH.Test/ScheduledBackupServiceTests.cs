@@ -311,6 +311,111 @@ public class ScheduledBackupServiceTests
         service.Stop();
     }
 
+    [TestCase(3, -1, true)]
+    [TestCase(3, 0, false)]
+    [TestCase(3, 1, false)]
+    [TestCase(4, -1, true)]
+    [TestCase(4, 0, false)]
+    [TestCase(5, -1, true)]
+    [TestCase(5, 0, false)]
+    public void SharedCatchUpOnScheduledDayUsesInclusiveHistoryBoundary(int type, int secondsFromSlot, bool expected)
+    {
+        var date = new DateTime(2026, 11, 18, 8, 0, 0);
+        AssertRegistration(type, date, date.AddHours(4), [date.AddSeconds(secondsFromSlot)], expected);
+    }
+
+    [TestCase(3)]
+    [TestCase(4)]
+    [TestCase(5)]
+    public void SharedCatchUpOnScheduledDayRequiresTimeToHavePassed(int type)
+    {
+        var date = new DateTime(2026, 11, 18, 8, 0, 0);
+        AssertRegistration(type, date, date.AddSeconds(-1), [], false);
+        AssertRegistration(type, date, date, [], false);
+        AssertRegistration(type, date, date.AddSeconds(1), [], true);
+        AssertRegistration(type, date, date.AddSeconds(1), [], false, enabled: "0");
+        AssertRegistration(type, date, date.AddSeconds(1), [], false, lastBackup: "18-11-2026 08-00-00");
+        AssertRegistration(type, date, date.AddSeconds(1), [], true, lastBackup: "18-11-2026 07-59-59");
+    }
+
+    [TestCase(4, 16)]
+    [TestCase(5, 5)]
+    [TestCase(5, 31)]
+    public void SharedCatchUpBetweenSlotsPreservesOrderedHistoryAndWholeDayChecks(int type, int day)
+    {
+        var now = new DateTime(2026, 11, 18, 12, 0, 0);
+        var date = new DateTime(2026, day == 31 ? 10 : 11, day, 8, 0, 0);
+        AssertRegistration(type, date, now, [], false);
+        AssertRegistration(type, date, now, [date.AddDays(-2)], true);
+        AssertRegistration(type, date, now, [date, date.AddDays(-2)], false);
+        AssertRegistration(type, date, now, [now, date.AddDays(-2)], false);
+        AssertRegistration(type, date, now, [date.AddDays(-2)], false, enabled: "0");
+        AssertRegistration(type, date, now, [date.AddDays(-2)], false, lastBackup: "18-11-2026 08-00-00");
+        AssertRegistration(type, date, now, [date.Date.AddDays(-1).AddHours(13)], false);
+        AssertRegistration(type, date, now, [date.Date.AddDays(-1).AddHours(12)], true);
+    }
+
+    private static void AssertRegistration(int type, DateTime date, DateTime now, DateTime[] versions,
+        bool expectedCatchUp, string enabled = "1", string lastBackup = "")
+    {
+        var configuration = new FakeConfigurationManager { DoPastBackups = enabled, LastBackupDone = lastBackup };
+        var query = new StubQueryManager
+        {
+            Versions = new List<VersionDetails>(Array.ConvertAll(versions, value => new VersionDetails { CreationDate = value }))
+        };
+        var scheduler = new CatchUpScheduler();
+        var watchCalls = 0;
+        Func<Task> backup = () => Task.CompletedTask;
+        new ScheduledBackupRegistration(configuration, query).Register(
+            new ScheduleEntry { Type = type, Date = date }, scheduler, backup, () => watchCalls++, now);
+
+        Assert.That(watchCalls, Is.EqualTo(expectedCatchUp ? 1 : 0));
+        Assert.That(scheduler.Registrations, Is.EqualTo(expectedCatchUp
+            ? new[] { (1, now.AddMinutes(1)), (type, date) }
+            : new[] { (type, date) }));
+        Assert.That(ReferenceEquals(scheduler.Callback, backup), Is.True);
+    }
+
+    [TestCase(1, -1, 0)]
+    [TestCase(1, 0, 0)]
+    [TestCase(1, 1, 1)]
+    [TestCase(2, -1, 1)]
+    [TestCase(99, 1, 0)]
+    public void SharedRegistrationPreservesOneShotAndHourlyDispatch(int type, int secondsFromNow, int expected)
+    {
+        var now = new DateTime(2026, 11, 18, 12, 0, 0);
+        var date = now.AddSeconds(secondsFromNow);
+        var registration = new ScheduledBackupRegistration(new FakeConfigurationManager { DoPastBackups = "1" }, new ThrowingVersionsQueryManager());
+        var scheduler = new CatchUpScheduler();
+        registration.Register(new ScheduleEntry { Type = type, Date = date }, scheduler,
+            () => Task.CompletedTask, () => Assert.Fail("Unexpected media watch"), now);
+        Assert.That(scheduler.Registrations.Count, Is.EqualTo(expected));
+        if (expected > 0)
+        {
+            Assert.That(scheduler.Registrations[0], Is.EqualTo((type, date)));
+        }
+    }
+
+    private sealed class CatchUpScheduler : ISchedulerAdapter
+    {
+        public List<(int Type, DateTime Date)> Registrations { get; } = [];
+        public Func<Task> Callback { get; private set; }
+        private void Record(int type, Func<Task> action, DateTime time)
+        {
+            Registrations.Add((type, time));
+            Callback = action;
+        }
+        public void ScheduleOnce(Func<Task> action, DateTime time) => Record(1, action, time);
+        public void ScheduleHourly(Func<Task> action, DateTime time) => Record(2, action, time);
+        public void ScheduleDaily(Func<Task> action, DateTime time) => Record(3, action, time);
+        public void ScheduleWeekly(Func<Task> action, DateTime time) => Record(4, action, time);
+        public void ScheduleMonthly(Func<Task> action, DateTime time) => Record(5, action, time);
+        public void ScheduleAutoBackup(Func<Task> action) => throw new NotSupportedException();
+        public DateTime GetNextRun() => DateTime.MaxValue;
+        public void Start() { }
+        public void Stop() { }
+    }
+
     private static ScheduledBackupService CreateService(
         TaskType taskType,
         MediaType mediaType,

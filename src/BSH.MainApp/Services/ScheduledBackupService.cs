@@ -2,14 +2,12 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Diagnostics;
-using System.Globalization;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Services;
-using Brightbits.BSH.Engine.Utils;
 using BSH.MainApp.Contracts.Services;
 using Serilog;
 
@@ -158,148 +156,12 @@ public class ScheduledBackupService : IScheduledBackupService
         schedulerService.Start();
 
         var schedules = await scheduleRepository.GetSchedulesAsync();
+        var registration = new ScheduledBackupRegistration(configurationManager, queryManager);
         foreach (var schedule in schedules)
         {
-            var scheduleDate = schedule.Date;
-            var scheduleType = schedule.Type;
-
-            if (scheduleType == 1)
-            {
-                // once
-                if (DateTime.Compare(DateTime.Now, scheduleDate) < 0)
-                {
-                    schedulerService.ScheduleOnce(thScheduleSysRunBackup, scheduleDate);
-                }
-            }
-            else if (scheduleType == 2)
-            {
-                // hourly
-                schedulerService.ScheduleHourly(thScheduleSysRunBackup, scheduleDate);
-            }
-            else if (scheduleType == 3)
-            {
-                // daily
-
-                // catch up old backup?
-                if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
-                {
-                    schedulerService.ScheduleOnce(thScheduleSysRunBackup, DateTime.Now.AddMinutes(1));
-                    WatchForDueBackup(thScheduleSysRunBackup);
-                }
-
-                schedulerService.ScheduleDaily(thScheduleSysRunBackup, scheduleDate);
-            }
-            else if (scheduleType == 4)
-            {
-                // weekly
-
-                // catch up old backup?
-                if (DateTime.Now.DayOfWeek == scheduleDate.DayOfWeek)
-                {
-                    // backup was performed already earlier
-                    if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
-                    {
-                        schedulerService.ScheduleOnce(thScheduleSysRunBackup, DateTime.Now.AddMinutes(1));
-                        WatchForDueBackup(thScheduleSysRunBackup);
-                    }
-                }
-                else
-                {
-                    // check of backup was done the last 7 days
-                    var versions = queryManager.GetVersions(true);
-                    var checkDate = DateUtils.GetDateToWeekDay(scheduleDate.DayOfWeek, DateTime.Now);
-
-                    foreach (var versionDate in versions.Select(x => x.CreationDate))
-                    {
-                        if (versionDate.Subtract(checkDate).Days < 0)
-                        {
-                            // backup was performed already earlier
-                            if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
-                            {
-                                schedulerService.ScheduleOnce(thScheduleSysRunBackup, DateTime.Now.AddMinutes(1));
-                                WatchForDueBackup(thScheduleSysRunBackup);
-                            }
-
-                            break;
-                        }
-
-                        if (versionDate.DayOfWeek == scheduleDate.DayOfWeek)
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                schedulerService.ScheduleWeekly(thScheduleSysRunBackup, scheduleDate);
-            }
-            else if (scheduleType == 5)
-            {
-                // monthly
-
-                // catch up old backup?
-                if (DateTime.Now.Day == scheduleDate.Day)
-                {
-                    // backup was performed already earlier
-                    if (DateTime.Now.TimeOfDay > scheduleDate.TimeOfDay && DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
-                    {
-                        schedulerService.ScheduleOnce(thScheduleSysRunBackup, DateTime.Now.AddMinutes(1));
-                        WatchForDueBackup(thScheduleSysRunBackup);
-                    }
-                }
-                else
-                {
-                    var versions = queryManager.GetVersions(true);
-                    var checkDate = DateUtils.GetDateToMonth(scheduleDate.Day, DateTime.Now);
-
-                    foreach (var versionDate in versions.Select(x => x.CreationDate))
-                    {
-                        // backup was performed already earlier
-                        if (versionDate.Subtract(checkDate).Days < 0)
-                        {
-                            if (DoPastBackup(DateTime.Now.Date.Add(scheduleDate.TimeOfDay)))
-                            {
-                                schedulerService.ScheduleOnce(thScheduleSysRunBackup, DateTime.Now.AddMinutes(1));
-                                WatchForDueBackup(thScheduleSysRunBackup);
-                            }
-
-                            break;
-                        }
-
-                        if (versionDate.Day == scheduleDate.Day)
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                schedulerService.ScheduleMonthly(thScheduleSysRunBackup, scheduleDate);
-            }
+            registration.Register(schedule, schedulerService, thScheduleSysRunBackup,
+                () => WatchForDueBackup(thScheduleSysRunBackup), DateTime.Now);
         }
-
-    }
-
-    private bool DoPastBackup(DateTime date)
-    {
-        if (configurationManager.DoPastBackups != "1")
-        {
-            return false;
-        }
-
-        if (!string.IsNullOrEmpty(configurationManager.LastBackupDone)
-            && DateTime.ParseExact(configurationManager.LastBackupDone, "dd-MM-yyyy HH-mm-ss", CultureInfo.InvariantCulture) >= date)
-        {
-            return false;
-        }
-
-        foreach (var versionDate in queryManager.GetVersions().Select(x => x.CreationDate))
-        {
-            if (versionDate >= date)
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private async Task thScheduleSysRunBackup()
