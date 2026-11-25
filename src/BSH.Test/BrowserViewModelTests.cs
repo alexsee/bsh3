@@ -586,6 +586,39 @@ public class BrowserViewModelTests
         Assert.That(viewModel.SearchPathLabel, Does.Contain("missing-file"));
     }
 
+    [Test]
+    public async Task ClearingSearchWithoutCurrentVersionRestoresFolderContext()
+    {
+        var viewModel = CreateViewModel();
+        var folder = new FileOrFolderItem { Name = "docs", FullPath = @"source\docs" };
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentFolderPath.Add(new FileOrFolderItem { Name = "source", FullPath = "source" });
+        viewModel.CurrentFolderPath.Add(folder);
+        viewModel.SearchTerms = "missing-file";
+        await viewModel.CommitSearchCommand.ExecuteAsync(null);
+        Assert.That(viewModel.InfoPaneItem, Is.Null);
+        Assert.That(viewModel.UpFolderCommand.CanExecute(null), Is.False);
+
+        viewModel.CurrentVersion = null;
+        var infoPaneChanged = false;
+        var upFolderChanged = false;
+        viewModel.PropertyChanged += (_, args) => infoPaneChanged |= args.PropertyName == nameof(BrowserViewModel.InfoPaneItem);
+        viewModel.UpFolderCommand.CanExecuteChanged += (_, _) => upFolderChanged = true;
+        viewModel.SearchTerms = string.Empty;
+
+        Assert.That(viewModel.IsSearchMode, Is.False);
+        Assert.That(viewModel.InfoPaneItem, Is.SameAs(folder));
+        Assert.That(viewModel.UpFolderCommand.CanExecute(null), Is.False);
+        Assert.That(infoPaneChanged, Is.True);
+        Assert.That(upFolderChanged, Is.True);
+
+        upFolderChanged = false;
+        viewModel.CurrentVersion = Version("2");
+
+        Assert.That(viewModel.UpFolderCommand.CanExecute(null), Is.True);
+        Assert.That(upFolderChanged, Is.True);
+    }
+
     private static BrowserViewModel CreateViewModel(
         BrowserQueryManager? queryManager = null,
         BrowserJobService? jobService = null,

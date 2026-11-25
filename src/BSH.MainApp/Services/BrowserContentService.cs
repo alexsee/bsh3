@@ -78,7 +78,6 @@ public class BrowserContentService : IBrowserContentService
                 DisplayName = $"{x.FileName} - {x.FilePath.Trim('\\')}",
                 FullPath = x.FilePath,
                 IsFile = true,
-                FileNameOnDrive = x.FileName,
                 FileDateModified = x.FileDateModified,
                 FileDateCreated = x.FileDateCreated,
                 FileSize = x.FileSize
@@ -151,7 +150,6 @@ public class BrowserContentService : IBrowserContentService
                 DisplayName = x.FileName,
                 FullPath = x.FilePath,
                 IsFile = true,
-                FileNameOnDrive = x.FileName,
                 FileDateModified = x.FileDateModified,
                 FileDateCreated = x.FileDateCreated,
                 FileSize = x.FileSize
@@ -182,8 +180,8 @@ public class BrowserContentService : IBrowserContentService
     {
         foreach (var file in fileList)
         {
-            file.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive);
-            file.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(file.FileNameOnDrive, 64);
+            file.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(file.Name);
+            file.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(file.Name, 64);
         }
     }
 

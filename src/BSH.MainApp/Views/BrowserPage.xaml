@@ -149,7 +149,6 @@
                     <ColumnDefinition Width="250" />
                 </Grid.ColumnDefinitions>
 
-                <!-- toolbar -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
                     <Button VerticalAlignment="Center" Command="{x:Bind ViewModel.UpFolderCommand}" Style="{StaticResource AddressToolbarButtonStyle}">
                         <FontIcon FontSize="16" Glyph="&#xe74a;" />
@@ -159,7 +158,6 @@
                     </Button>
                 </StackPanel>
 
-                <!-- breadcrumb bar / search chrome -->
                 <Grid
                 Grid.Column="1"
                 HorizontalAlignment="Stretch"
@@ -188,7 +186,6 @@
                     Visibility="{x:Bind ViewModel.IsSearchMode, Mode=OneWay}" />
                 </Grid>
 
-                <!-- search box -->
                 <AutoSuggestBox
                     x:Name="tbSearchBox"
                     Grid.Column="2"
@@ -209,7 +206,6 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
 
-                        <!-- favorites -->
                         <TextBlock Grid.Row="0" Text="{helpers:ResourceString Name=Browser_Favorites}" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
                         <ListView Margin="8,0,12,0" SelectedItem="{x:Bind ViewModel.CurrentFavorite, Mode=TwoWay}" Grid.Row="1" MaxHeight="300" ItemsSource="{x:Bind ViewModel.Favorites, Mode=TwoWay}" ItemTemplate="{StaticResource FavoriteTemplate}" RightTapped="FavoritesListView_RightTapped">
                             <i:Interaction.Behaviors>
@@ -225,7 +221,6 @@
                             </ListView.ContextFlyout>
                         </ListView>
 
-                        <!-- backup list -->
                         <TextBlock Grid.Row="2" Text="{helpers:ResourceString Name=Browser_Backups}" Margin="12,12,0,0" Style="{StaticResource SideBarTitleStyle}" />
                         <ListView 
                         Grid.Row="3" 
@@ -267,15 +262,11 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- command bar -->
                     <Grid
                     Grid.Row="0"
                     Grid.ColumnSpan="2"
 		            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
 		            BorderThickness="0,0,0,1">
-                        <Grid.Resources>
-                            <GridLength x:Key="CommandAreaGridLength">Auto</GridLength>
-                        </Grid.Resources>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -356,7 +347,6 @@
                         </CommandBar>
                     </Grid>
 
-                    <!-- file and folder list -->
                     <Grid Grid.Row="1">
                         <ScrollViewer VerticalScrollMode="Auto">
                             <ListView
@@ -426,7 +416,6 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- info pane -->
                     <Grid 
                     Grid.Row="1"
                     Grid.Column="1"
