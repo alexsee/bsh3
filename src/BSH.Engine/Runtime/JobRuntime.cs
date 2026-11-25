@@ -16,8 +16,8 @@ public sealed class JobRuntime : IDisposable
     private readonly ILogger _logger = Log.ForContext<JobRuntime>();
     private readonly IBackupService backupService;
     private readonly Func<bool> isTaskRunning;
-    private readonly Func<bool, MediaWaitMode> selectMediaWaitMode;
-    private readonly Func<ActionType, MediaWaitMode, CancellationTokenSource, Task<bool>> waitForMediaAsync;
+    private readonly Func<bool, bool> shouldPromptForMedia;
+    private readonly Func<ActionType, CancellationTokenSource, Task<bool>> waitForMediaAsync;
     private readonly object cancellationTokenSync = new();
     private CancellationTokenSource cancellationTokenSource;
     private bool sessionActive;
@@ -37,30 +37,17 @@ public sealed class JobRuntime : IDisposable
     public JobRuntime(
         IBackupService backupService,
         Func<bool> isTaskRunning,
-        Func<bool> shouldWaitForMedia,
-        Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync)
-        : this(
-            backupService,
-            isTaskRunning,
-            silent => shouldWaitForMedia() && !silent ? MediaWaitMode.PromptUser : MediaWaitMode.None,
-            (action, mode, cancellationTokenSource) => waitForMediaAsync(action, mode == MediaWaitMode.SilentPolling, cancellationTokenSource))
-    {
-    }
-
-    public JobRuntime(
-        IBackupService backupService,
-        Func<bool> isTaskRunning,
-        Func<bool, MediaWaitMode> selectMediaWaitMode,
-        Func<ActionType, MediaWaitMode, CancellationTokenSource, Task<bool>> waitForMediaAsync)
+        Func<bool, bool> shouldPromptForMedia,
+        Func<ActionType, CancellationTokenSource, Task<bool>> waitForMediaAsync)
     {
         ArgumentNullException.ThrowIfNull(backupService);
         ArgumentNullException.ThrowIfNull(isTaskRunning);
-        ArgumentNullException.ThrowIfNull(selectMediaWaitMode);
+        ArgumentNullException.ThrowIfNull(shouldPromptForMedia);
         ArgumentNullException.ThrowIfNull(waitForMediaAsync);
 
         this.backupService = backupService;
         this.isTaskRunning = isTaskRunning;
-        this.selectMediaWaitMode = selectMediaWaitMode;
+        this.shouldPromptForMedia = shouldPromptForMedia;
         this.waitForMediaAsync = waitForMediaAsync;
         cancellationTokenSource = new CancellationTokenSource();
     }
@@ -96,10 +83,9 @@ public sealed class JobRuntime : IDisposable
             return true;
         }
 
-        var waitMode = selectMediaWaitMode(silent);
-        if (waitMode != MediaWaitMode.None)
+        if (shouldPromptForMedia(silent))
         {
-            return await waitForMediaAsync(action, waitMode, cts);
+            return await waitForMediaAsync(action, cts);
         }
 
         return false;

@@ -45,7 +45,7 @@ public class BackupController : IDisposable
         IBackupService backupService,
         IConfigurationManager configurationManager,
         Func<bool> isTaskRunning,
-        Func<ActionType, bool, CancellationTokenSource, Task<bool>> waitForMediaAsync)
+        Func<ActionType, CancellationTokenSource, Task<bool>> waitForMediaAsync)
     {
         ArgumentNullException.ThrowIfNull(backupService);
         ArgumentNullException.ThrowIfNull(configurationManager);
@@ -56,7 +56,7 @@ public class BackupController : IDisposable
         this.jobRuntime = new JobRuntime(
             backupService,
             isTaskRunning,
-            () => this.configurationManager.Medium == "1",
+            silent => !silent && this.configurationManager.Medium == "1",
             waitForMediaAsync);
         this.presenter = new WinFormsJobSessionPresenter();
         IStoredPasswordAdapter storedPasswordAdapter = new WinFormsStoredPasswordAdapter();
@@ -270,7 +270,7 @@ public class BackupController : IDisposable
         LogSingleOperationStartFailure(result.Failure, operationName);
         if (statusDialog)
         {
-            await presenter.CompleteAsync(honorCompletionActions: false);
+            await presenter.CompleteAsync();
         }
         return false;
     }

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
 using System.Data;
 using System.IO;
 using System.Security.Cryptography;
@@ -10,30 +9,28 @@ using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Security;
+using BSH.Test.Helpers;
 using NUnit.Framework;
 
 namespace BSH.Test;
 public class ConfigurationManagerTests
 {
+    private string databaseDirectory;
     private IDbClientFactory dbClientFactory;
 
     [SetUp]
     public async Task Setup()
     {
-        DbClientFactory.ClosePool();
-
+        databaseDirectory = Directory.CreateTempSubdirectory("bsh-test-configuration-manager-").FullName;
         dbClientFactory = new DbClientFactory();
-        await dbClientFactory.InitializeAsync(Path.Combine(Environment.CurrentDirectory, "testdb_configurationmanager.db"));
+        await dbClientFactory.InitializeAsync(Path.Combine(databaseDirectory, "testdb.db"));
     }
 
     [TearDown]
     public void Cleanup()
     {
         DbClientFactory.ClosePool();
-        if (File.Exists("testdb_configurationmanager.db"))
-        {
-            File.Delete("testdb_configurationmanager.db");
-        }
+        TempDirectory.DeleteBestEffort(databaseDirectory);
     }
 
     [Test]
@@ -126,6 +123,24 @@ public class ConfigurationManagerTests
     }
 
     [Test]
+    public async Task InitializeLoadsOrdinarySettingsWithoutWritingThemBack()
+    {
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO configuration VALUES ('sourcefolder', 'Documents'), ('mediumtype', 'FileTransferServer');");
+        await dbClientFactory.ExecuteNonQueryAsync("""
+            CREATE TRIGGER reject_configuration_updates BEFORE UPDATE ON configuration
+            BEGIN
+                SELECT RAISE(ABORT, 'Unexpected configuration write during initialization');
+            END;
+            """);
+
+        var configurationManager = new ConfigurationManager(dbClientFactory);
+        await configurationManager.InitializeAsync();
+
+        Assert.That(configurationManager.SourceFolder, Is.EqualTo("Documents"));
+        Assert.That(configurationManager.MediumType, Is.EqualTo(MediaType.FileTransferServer));
+    }
+
+    [Test]
     public async Task LoadConfigurationInvalidIntegerBackedValuesKeepDefaults()
     {
         await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO configuration (confValue, confProperty) VALUES ('invalid-task', 'tasktype');");
@@ -148,13 +163,11 @@ public class ConfigurationManagerTests
         configurationManager.IsConfigured = "1";
         configurationManager.SourceFolder = @"C:\Users\alex\Documents";
 
+        var databaseFile = dbClientFactory.DatabaseFile;
         DbClientFactory.ClosePool();
-        if (File.Exists("testdb_configurationmanager.db"))
-        {
-            File.Delete("testdb_configurationmanager.db");
-        }
+        File.Delete(databaseFile);
 
-        await dbClientFactory.InitializeAsync(Path.Combine(Environment.CurrentDirectory, "testdb_configurationmanager.db"));
+        await dbClientFactory.InitializeAsync(databaseFile);
         await configurationManager.InitializeAsync();
 
         Assert.That(configurationManager.IsConfigured, Is.EqualTo("0"));

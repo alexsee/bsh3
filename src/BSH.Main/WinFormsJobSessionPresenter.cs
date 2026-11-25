@@ -37,22 +37,18 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
 
     public Task CompleteAsync(bool triggerShutdown = false, bool triggerHibernate = false, bool honorCompletionActions = true)
     {
-        var action = TaskCompleteAction.NoAction;
         if (statusWindowShown)
         {
-            action = PresentationController.Current.CloseStatusWindow();
+            PresentationController.Current.CloseStatusWindow();
             statusWindowShown = false;
         }
 
-        var executeShutdown = triggerShutdown || (honorCompletionActions && action == TaskCompleteAction.ShutdownPC);
-        var executeHibernate = triggerHibernate || (honorCompletionActions && action == TaskCompleteAction.HibernatePC);
-
-        if (executeShutdown)
+        if (triggerShutdown)
         {
             _logger.Debug("Computer will be shutdown after task has finished.");
             Process.Start("shutdown.exe", "-s -t 60 -c \"" + Resources.TASK_BSH_SHUTDOWN_PC + "\"");
         }
-        else if (executeHibernate)
+        else if (triggerHibernate)
         {
             _logger.Debug("Computer will be hibernated after task has finished.");
             Process.Start("rundll32.exe", "powrprof.dll,SetSuspendState");
