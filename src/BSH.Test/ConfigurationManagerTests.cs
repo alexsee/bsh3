@@ -126,6 +126,24 @@ public class ConfigurationManagerTests
     }
 
     [Test]
+    public async Task InitializeLoadsOrdinarySettingsWithoutWritingThemBack()
+    {
+        await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO configuration VALUES ('sourcefolder', 'Documents'), ('mediumtype', 'FileTransferServer');");
+        await dbClientFactory.ExecuteNonQueryAsync("""
+            CREATE TRIGGER reject_configuration_updates BEFORE UPDATE ON configuration
+            BEGIN
+                SELECT RAISE(ABORT, 'Unexpected configuration write during initialization');
+            END;
+            """);
+
+        var configurationManager = new ConfigurationManager(dbClientFactory);
+        await configurationManager.InitializeAsync();
+
+        Assert.That(configurationManager.SourceFolder, Is.EqualTo("Documents"));
+        Assert.That(configurationManager.MediumType, Is.EqualTo(MediaType.FileTransferServer));
+    }
+
+    [Test]
     public async Task LoadConfigurationInvalidIntegerBackedValuesKeepDefaults()
     {
         await dbClientFactory.ExecuteNonQueryAsync("INSERT INTO configuration (confValue, confProperty) VALUES ('invalid-task', 'tasktype');");
