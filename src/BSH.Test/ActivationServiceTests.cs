@@ -35,6 +35,19 @@ public class ActivationServiceTests
     }
 
     [Test]
+    public void ProductionConstructorRoutesAnEmptyNavigationFrameWithoutShowingTheWindow()
+    {
+        var shell = new TestShell("1");
+        var activation = new ActivationService(shell, shell, shell.SetupRouting);
+
+        activation.ActivateForLaunch(
+            LaunchArguments, false, ExtendedActivationKind.Launch, UnexpectedNotificationArgument);
+
+        Assert.That(shell.Calls, Is.EqualTo(new[] { "navigate" }));
+        Assert.That(shell.Navigation, Is.EqualTo((typeof(MainViewModel).FullName, (object)LaunchArguments, false)));
+    }
+
+    [Test]
     public void PopulatedFrameKeepsItsCurrentPage()
     {
         var shell = new TestShell("1") { HasPage = true };
