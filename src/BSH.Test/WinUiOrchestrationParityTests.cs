@@ -12,6 +12,7 @@ using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime;
+using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
@@ -21,6 +22,7 @@ using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 using Windows.System.Power;
 using Windows.UI.Popups;
+using WinFormsBackupController = Brightbits.BSH.Main.BackupController;
 
 namespace BSH.Test;
 
@@ -357,27 +359,56 @@ public class WinUiOrchestrationParityTests
         Assert.That(notifications.Payloads[0], Does.Contain($"launch=\"{expectedLaunch}\""));
     }
 
-    [Test]
-    public async Task JobRuntimeCanPromptForMediaDuringSilentConfiguredBackups()
+    [TestCase("1", true, "1", true)]
+    [TestCase("1", true, "0", false)]
+    [TestCase("1", false, "0", true)]
+    [TestCase("0", true, "1", false)]
+    [TestCase("0", false, "1", false)]
+    public async Task JobServicePromptsForMissingMediaAccordingToConfiguration(
+        string medium, bool silent, string showWaitOnMediaAutoBackups, bool shouldPrompt)
     {
-        var waitWasRequested = false;
-        var runtime = new JobRuntime(
+        var waitForMediaService = new TestWaitForMediaService();
+        using var jobService = new JobService(
             new TestBackupService { IsMediaAvailable = false },
-            () => false,
-            silent => silent ? MediaWaitMode.PromptUser : MediaWaitMode.None,
-            async (_, waitMode, cancellationTokenSource) =>
+            new FakeConfigurationManager
             {
-                Assert.That(waitMode, Is.EqualTo(MediaWaitMode.PromptUser));
-                waitWasRequested = true;
-                await cancellationTokenSource.CancelAsync();
-                return false;
-            });
+                Medium = medium,
+                ShowWaitOnMediaAutoBackups = showWaitOnMediaAutoBackups
+            },
+            new TestStatusService(),
+            new TestPresentationService(),
+            new CompletionActionService(),
+            new TestStoredPasswordAdapter(),
+            () => waitForMediaService);
 
-        var result = await runtime.CheckMediaAsync(ActionType.Backup, silent: true);
+        var result = await jobService.CheckMediaAsync(ActionType.Backup, silent);
 
         Assert.That(result, Is.False);
-        Assert.That(waitWasRequested, Is.True);
-        Assert.That(runtime.IsCancellationRequested, Is.True);
+        Assert.That(waitForMediaService.CancellationTokenSource is not null, Is.EqualTo(shouldPrompt));
+        if (shouldPrompt)
+        {
+            jobService.Cancel();
+            Assert.That(waitForMediaService.CancellationTokenSource.IsCancellationRequested, Is.True);
+        }
+    }
+
+    [TestCase("1", false, true)]
+    [TestCase("1", true, false)]
+    [TestCase("0", false, false)]
+    public async Task WinFormsPromptsForMissingMediaOnlyDuringInteractiveRemovableMediaChecks(
+        string medium, bool silent, bool shouldPrompt)
+    {
+        var waitForMediaService = new TestWaitForMediaService();
+        using var backupController = new WinFormsBackupController(
+            new TestBackupService { IsMediaAvailable = false },
+            new FakeConfigurationManager { Medium = medium, ShowWaitOnMediaAutoBackups = "1" },
+            () => false,
+            (_, cancellationTokenSource) => waitForMediaService.ExecuteAsync(cancellationTokenSource));
+
+        var result = await backupController.CheckMediaAsync(ActionType.Backup, silent);
+
+        Assert.That(result, Is.False);
+        Assert.That(waitForMediaService.CancellationTokenSource is not null, Is.EqualTo(shouldPrompt));
     }
 
     [TestCase(BatteryStatus.Discharging, PowerSupplyStatus.NotPresent, true)]
@@ -523,6 +554,23 @@ public class WinUiOrchestrationParityTests
         public Task<List<FileTableRow>> GetVersionsByFileAsync(string fileName, string filePath) => Task.FromResult(new List<FileTableRow>());
         public Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500) => Task.FromResult(new List<FileTableRow>());
         public Task<bool> HasChangesOrNewAsync(string path, string versionId) => Task.FromResult(false);
+    }
+
+    private sealed class TestWaitForMediaService : IWaitForMediaService
+    {
+        public CancellationTokenSource CancellationTokenSource { get; private set; }
+
+        public Task<bool> ExecuteAsync(CancellationTokenSource cancellationTokenSource)
+        {
+            CancellationTokenSource = cancellationTokenSource;
+            return Task.FromResult(false);
+        }
+    }
+
+    private sealed class TestStoredPasswordAdapter : IStoredPasswordAdapter
+    {
+        public Task<string> GetPasswordAsync() => Task.FromResult("");
+        public Task StorePasswordAsync(string password) => Task.CompletedTask;
     }
 
     private sealed class TestBackupService : IBackupService

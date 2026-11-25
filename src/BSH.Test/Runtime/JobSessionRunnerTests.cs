@@ -25,7 +25,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_ReturnsTaskRunning_WhenAnotherTaskIsRunning()
     {
         var backupService = new BackupServiceStub();
-        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => true, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -41,7 +41,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_DoesNotResolvePassword_WhenAnotherTaskIsRunning()
     {
         var backupService = new BackupServiceStub { HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => true, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub
         {
             NextPasswordRequest = new JobSessionPasswordRequest("secret", true)
@@ -62,7 +62,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_DoesNotShowStartupErrors_WhenStartedSilently()
     {
         var backupService = new BackupServiceStub();
-        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => true, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -80,7 +80,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_ReturnsDeviceNotReady_WhenMediaIsMissing()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -95,7 +95,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_DoesNotResolvePassword_WhenMediaIsMissing()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = false, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub
         {
             NextPasswordRequest = new JobSessionPasswordRequest("secret", true)
@@ -116,7 +116,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_ReturnsPasswordRequired_WhenPasswordRequestFails()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime, () => true, () => Hash.GetMD5Hash("secret"), new StoredPasswordAdapterStub());
 
@@ -131,7 +131,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_StartsBackup_WhenSessionCanBePrepared()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -152,7 +152,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_UsesStoredPasswordBeforePrompting()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var storedPasswordAdapter = new StoredPasswordAdapterStub { StoredPassword = "secret" };
         var runner = new JobSessionRunner(backupService, jobRuntime, () => true, () => Hash.GetMD5Hash("secret"), storedPasswordAdapter);
@@ -168,7 +168,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_PromptsAndPersistsPassword_WhenStoredPasswordIsUnavailable()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub
         {
             NextPasswordRequest = new JobSessionPasswordRequest("secret", true)
@@ -187,7 +187,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_RetriesPrompt_WhenPasswordIsWrong()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         presenter.PasswordRequests.Enqueue(new JobSessionPasswordRequest("wrong", false));
         presenter.PasswordRequests.Enqueue(new JobSessionPasswordRequest("secret", false));
@@ -204,7 +204,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_UsesLatestPasswordHash_WhenConfigurationChangesAfterConstruction()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, HasPasswordResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub
         {
             NextPasswordRequest = new JobSessionPasswordRequest("new-secret", false)
@@ -226,7 +226,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleRestoreAsync_StartsRestore_WhenSessionCanBePrepared()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -245,7 +245,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleDeleteAsync_StartsDelete_WhenSessionCanBePrepared()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -261,7 +261,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleDeleteSingleAsync_StartsDeleteSingle_WhenSessionCanBePrepared()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -279,7 +279,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleDeleteSingleAsync_ForwardsVersionIds_WhenProvided()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
         IReadOnlyList<int> versionIds = [2, 5, 9];
@@ -298,7 +298,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleModifyAsync_StartsEdit_WhenSessionCanBePrepared()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -313,7 +313,7 @@ public class JobSessionRunnerTests
     public async Task RunSingleBackupAsync_ReturnsCanceled_WhenOperationRequestsCancellation()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -335,7 +335,7 @@ public class JobSessionRunnerTests
     public async Task RunBatchRestoreAsync_CarriesForwardOverwriteChoice_AndReportsFinishedState()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         presenter.BatchOverwriteChoices.Enqueue(FileOverwrite.Overwrite);
         var runner = new JobSessionRunner(backupService, jobRuntime);
@@ -354,7 +354,7 @@ public class JobSessionRunnerTests
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
         backupService.DeleteFailures.Enqueue(new FileExceptionEntry() { Exception = new InvalidOperationException("boom") });
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -373,7 +373,7 @@ public class JobSessionRunnerTests
     public async Task RunBatchDeleteAsync_ReturnsSucceeded_WhenEveryItemFinishes()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -387,7 +387,7 @@ public class JobSessionRunnerTests
     public async Task RunBatchDeleteAsync_ReturnsTaskRunning_WhenAnotherTaskIsRunning()
     {
         var backupService = new BackupServiceStub();
-        using var jobRuntime = new JobRuntime(backupService, () => true, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => true, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -406,7 +406,7 @@ public class JobSessionRunnerTests
     public async Task RunBatchDeleteAsync_ReportsCanceledAndStopsProcessing_WhenCancellationIsRequested()
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -432,7 +432,11 @@ public class JobSessionRunnerTests
     {
         var isTaskRunning = false;
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => isTaskRunning, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(
+            backupService,
+            () => isTaskRunning,
+            _ => throw new AssertionException("Available media should bypass the prompt policy."),
+            (_, _) => throw new AssertionException("Available media should bypass the prompt."));
         var activeToken = await jobRuntime.PrepareAsync(ActionType.Backup, statusDialog: false);
         isTaskRunning = true;
 
@@ -452,8 +456,8 @@ public class JobSessionRunnerTests
         using var jobRuntime = new JobRuntime(
             backupService,
             () => false,
-            () => true,
-            async (_, _, cancellationTokenSource) =>
+            silent => !silent,
+            async (_, cancellationTokenSource) =>
             {
                 activeCancellation = cancellationTokenSource;
                 waitStarted.SetResult(true);
@@ -479,7 +483,7 @@ public class JobSessionRunnerTests
             CheckMediaResult = true,
             OnStartBackup = (_, _) => throw new InvalidOperationException("boom")
         };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -503,7 +507,7 @@ public class JobSessionRunnerTests
                 return Task.CompletedTask;
             }
         };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -521,7 +525,7 @@ public class JobSessionRunnerTests
             CheckMediaResult = true,
             OnStartDelete = (_, _) => Task.FromException(new OperationCanceledException())
         };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -545,7 +549,7 @@ public class JobSessionRunnerTests
                 return Task.CompletedTask;
             }
         };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var presenter = new JobReportStub();
         var runner = new JobSessionRunner(backupService, jobRuntime);
 
@@ -647,7 +651,7 @@ public class JobSessionRunnerTests
         var previous = new LastBackupResult { Outcome = BackupOutcome.Succeeded, CompletedAt = new DateTime(2026, 10, 16) };
         var configuration = new FakeConfigurationManager { LastBackupResult = previous.ToJson() };
         var backupService = new BackupServiceStub { CheckMediaResult = true };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var runner = new JobSessionRunner(backupService, jobRuntime, backupResultRecorder: new BackupResultRecorder(configuration));
         backupService.OnStartBackup = (_, _) =>
         {
@@ -665,7 +669,7 @@ public class JobSessionRunnerTests
     {
         var configuration = new FakeConfigurationManager();
         var backupService = new BackupServiceStub { CheckMediaResult = false };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var runner = new JobSessionRunner(backupService, jobRuntime, backupResultRecorder: new BackupResultRecorder(configuration));
 
         var presenter = new JobReportStub();
@@ -683,7 +687,7 @@ public class JobSessionRunnerTests
         JobReportStub presenter = null)
     {
         var backupService = new BackupServiceStub { CheckMediaResult = true, OnStartBackup = onStartBackup };
-        using var jobRuntime = new JobRuntime(backupService, () => false, () => false, (_, _, _) => Task.FromResult(false));
+        using var jobRuntime = new JobRuntime(backupService, () => false, _ => false, (_, _) => Task.FromResult(false));
         var recorder = new BackupResultRecorder(configuration, () => new DateTime(2026, 10, 17, 16, 0, 0));
         var runner = new JobSessionRunner(backupService, jobRuntime, backupResultRecorder: recorder);
 

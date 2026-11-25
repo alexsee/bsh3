@@ -54,8 +54,8 @@ public class JobService : IJobService, IDisposable
         this.jobRuntime = new JobRuntime(
             backupService,
             () => this.statusService.IsTaskRunning(),
-            this.SelectMediaWaitMode,
-            async (_, _, cancellationTokenSource) =>
+            this.ShouldPromptForMedia,
+            async (_, cancellationTokenSource) =>
             {
                 var waitForMediaService = this.waitForMediaServiceFactory();
                 return await waitForMediaService.ExecuteAsync(cancellationTokenSource);
@@ -70,19 +70,10 @@ public class JobService : IJobService, IDisposable
             new BackupResultRecorder(this.configurationManager));
     }
 
-    private MediaWaitMode SelectMediaWaitMode(bool silent)
+    private bool ShouldPromptForMedia(bool silent)
     {
-        if (configurationManager.Medium != "1")
-        {
-            return MediaWaitMode.None;
-        }
-
-        if (!silent || configurationManager.ShowWaitOnMediaAutoBackups == "1")
-        {
-            return MediaWaitMode.PromptUser;
-        }
-
-        return MediaWaitMode.None;
+        return configurationManager.Medium == "1"
+            && (!silent || configurationManager.ShowWaitOnMediaAutoBackups == "1");
     }
 
     /// <summary>
