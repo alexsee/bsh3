@@ -27,25 +27,31 @@ public class WaitForMediaService
         window.OnAbort_Click += cancellationTokenSource.Cancel;
         window.Show();
 
-        return await Task.Run(async () =>
+        return await PollForMediaAsync(PollIntervalMilliseconds);
+    }
+
+    internal async Task<bool> PollForMediaAsync(int pollIntervalMilliseconds)
+    {
+        var cancellationToken = cancellationTokenSource.Token;
+        try
         {
-            while (!cancellationTokenSource.Token.IsCancellationRequested)
+            return await Task.Run(async () =>
             {
-                try
+                while (true)
                 {
-                    await Task.Delay(PollIntervalMilliseconds);
-                    if (await backupService.CheckMedia())
+                    await Task.Delay(pollIntervalMilliseconds, cancellationToken);
+                    var mediaAvailable = await backupService.CheckMedia();
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (mediaAvailable)
                     {
                         return true;
                     }
                 }
-                catch
-                {
-                    break;
-                }
-            }
-
+            }, cancellationToken);
+        }
+        catch
+        {
             return false;
-        });
+        }
     }
 }
