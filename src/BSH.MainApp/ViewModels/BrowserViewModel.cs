@@ -28,7 +28,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     private readonly IBrowserPreviewService browserPreviewService;
     private readonly IBrowserViewPreferencesService viewPreferencesService;
     private readonly Dictionary<string, Task<VersionChangeStatistics>> versionStatisticsCache = [];
-    private BrowserContentMode contentMode = BrowserContentMode.Folder;
     private long contentRequestId;
     private long fileDetailsRequestId;
     private bool suppressSearchTermsChanged;
@@ -105,7 +104,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     public ObservableCollection<VersionDetails> Versions { get; set; } = [];
 
     public FileOrFolderItem? InfoPaneItem => CurrentItem
-        ?? (contentMode == BrowserContentMode.Folder ? CurrentFolderPath.LastOrDefault() : null);
+        ?? (IsSearchMode ? null : CurrentFolderPath.LastOrDefault());
 
     public BrowserViewModel(
         IQueryManager queryManager,
@@ -220,9 +219,9 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
     }
 
-    private bool CanUpFolder() => contentMode == BrowserContentMode.Folder && CurrentFolderPath.Count > 1;
+    private bool CanUpFolder() => !IsSearchMode && CurrentFolderPath.Count > 1;
     private bool HasFileOrFolderSelected() => CurrentVersion != null && (SelectedItems.Count > 0 || CurrentItem != null);
-    private bool CanRestoreAll() => contentMode == BrowserContentMode.Folder && CurrentVersion != null && CurrentFolderPath.Count > 0;
+    private bool CanRestoreAll() => !IsSearchMode && CurrentVersion != null && CurrentFolderPath.Count > 0;
     private bool HasVersionSelected() => CurrentVersion != null;
     private bool HasFileSelected() => CurrentItem != null && CurrentItem.IsFile;
     private bool HasUserFavoriteSelected() => CurrentFavorite?.IsUserFavorite == true;
@@ -272,6 +271,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         if (CurrentVersion == null)
         {
             ResetSearchChrome();
+            NotifyContentCommandsChanged();
             return;
         }
 
@@ -283,6 +283,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
 
         ResetSearchChrome();
         Items.Clear();
+        NotifyContentCommandsChanged();
     }
 
     [RelayCommand(CanExecute = nameof(HasVersionSelected))]
@@ -356,7 +357,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        // load folder
         ClearSearchTerms();
         await LoadFolderAsync(CurrentVersion.Id, CurrentItem.FullPath, BeginContentRequest());
     }
@@ -369,7 +369,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        // load parent folder
         ClearSearchTerms();
         await LoadFolderAsync(CurrentVersion.Id, CurrentFolderPath[^2].FullPath, BeginContentRequest());
     }
@@ -964,7 +963,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        contentMode = BrowserContentMode.Folder;
         ResetSearchChrome();
         CurrentItem = null;
         CurrentFolderPath.Clear();
@@ -985,7 +983,6 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        contentMode = BrowserContentMode.Search;
         IsSearchMode = true;
         CommittedSearchTerms = searchTerms;
         SearchPathLabel = FormatSearchPathLabel(searchTerms);

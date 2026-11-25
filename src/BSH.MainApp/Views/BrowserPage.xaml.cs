@@ -66,8 +66,8 @@ public sealed partial class BrowserPage : Page
         var dpi = (uint)Math.Round(scale * 96);
         foreach (var item in ViewModel.Items.Where(item => item.IsFile).ToArray())
         {
-            item.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(item.FileNameOnDrive, 16, dpi);
-            item.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(item.FileNameOnDrive, 64, dpi);
+            item.Icon16 = await FileSystemIconHelpers.GetFileIconAsync(item.Name, 16, dpi);
+            item.Icon64 = await FileSystemIconHelpers.GetFileIconAsync(item.Name, 64, dpi);
         }
     }
 

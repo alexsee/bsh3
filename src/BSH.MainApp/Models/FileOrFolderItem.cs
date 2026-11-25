@@ -9,11 +9,6 @@ namespace BSH.MainApp.Models;
 
 public class FileOrFolderItem : INotifyPropertyChanged
 {
-    public string FileNameOnDrive
-    {
-        get; set;
-    } = string.Empty;
-
     public string Name
     {
         get; set;
