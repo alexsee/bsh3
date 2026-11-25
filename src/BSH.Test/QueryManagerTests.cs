@@ -12,12 +12,14 @@ using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Repo;
+using BSH.Test.Helpers;
 using BSH.Test.Mocks;
 using NUnit.Framework;
 
 namespace BSH.Test;
 public class QueryManagerTests
 {
+    private string databaseDirectory;
     private IDbClientFactory dbClientFactory;
     private IConfigurationManager configurationManager;
     private IQueryManager queryManager;
@@ -26,20 +28,9 @@ public class QueryManagerTests
     [SetUp]
     public async Task Setup()
     {
-        if (dbClientFactory != null)
-        {
-            DbClientFactory.ClosePool();
-            this.dbClientFactory = null;
-        }
-
-        // start with clean database
-        if (File.Exists("testdb_querymanager.db"))
-        {
-            File.Delete("testdb_querymanager.db");
-        }
-
+        databaseDirectory = Directory.CreateTempSubdirectory("bsh-test-query-manager-").FullName;
         dbClientFactory = new DbClientFactory();
-        await dbClientFactory.InitializeAsync(Environment.CurrentDirectory + "\\testdb_querymanager.db");
+        await dbClientFactory.InitializeAsync(Path.Combine(databaseDirectory, "testdb.db"));
 
         configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
@@ -53,6 +44,13 @@ public class QueryManagerTests
 
         // insert some data
         await PopulateExampleData();
+    }
+
+    [TearDown]
+    public void Cleanup()
+    {
+        DbClientFactory.ClosePool();
+        TempDirectory.DeleteBestEffort(databaseDirectory);
     }
 
     public async Task PopulateExampleData()

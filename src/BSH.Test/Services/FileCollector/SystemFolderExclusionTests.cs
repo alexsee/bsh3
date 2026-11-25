@@ -9,27 +9,23 @@ using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Services.FileCollector;
+using BSH.Test.Helpers;
 using NUnit.Framework;
 
 namespace BSH.Test.Services.FileCollector;
 
 public class SystemFolderExclusionTests
 {
+    private string databaseDirectory;
     private IDbClientFactory dbClientFactory;
     private string tempRoot;
 
     [SetUp]
     public async Task Setup()
     {
-        DbClientFactory.ClosePool();
-
-        if (File.Exists("testdb_systemfolderexclusion.db"))
-        {
-            File.Delete("testdb_systemfolderexclusion.db");
-        }
-
+        databaseDirectory = Directory.CreateTempSubdirectory("bsh-test-system-folder-exclusion-").FullName;
         dbClientFactory = new DbClientFactory();
-        await dbClientFactory.InitializeAsync(Path.Combine(Environment.CurrentDirectory, "testdb_systemfolderexclusion.db"));
+        await dbClientFactory.InitializeAsync(Path.Combine(databaseDirectory, "testdb.db"));
 
         tempRoot = Path.Combine(Path.GetTempPath(), "bsh3-system-folder-exclusion-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempRoot);
@@ -39,10 +35,7 @@ public class SystemFolderExclusionTests
     public void Cleanup()
     {
         DbClientFactory.ClosePool();
-        if (File.Exists("testdb_systemfolderexclusion.db"))
-        {
-            File.Delete("testdb_systemfolderexclusion.db");
-        }
+        TempDirectory.DeleteBestEffort(databaseDirectory);
 
         ClearSystemAttributesAndDelete(tempRoot);
     }

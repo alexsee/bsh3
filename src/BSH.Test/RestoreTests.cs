@@ -27,8 +27,7 @@ namespace BSH.Test;
 /// </summary>
 public class RestoreTests
 {
-    private const string TestDbName = "testdb_restore.db";
-
+    private string databaseDirectory;
     private string defaultDestination;
 
     private IDbClientFactory dbClientFactory;
@@ -41,19 +40,10 @@ public class RestoreTests
     {
         defaultDestination = Path.Combine(Path.GetTempPath(), "BSH.Test", "restore-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(defaultDestination);
-        if (dbClientFactory != null)
-        {
-            DbClientFactory.ClosePool();
-            dbClientFactory = null;
-        }
 
-        if (File.Exists(TestDbName))
-        {
-            File.Delete(TestDbName);
-        }
-
+        databaseDirectory = Directory.CreateTempSubdirectory("bsh-test-restore-").FullName;
         dbClientFactory = new DbClientFactory();
-        await dbClientFactory.InitializeAsync(Path.Combine(Environment.CurrentDirectory, TestDbName));
+        await dbClientFactory.InitializeAsync(Path.Combine(databaseDirectory, "testdb.db"));
 
         configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
@@ -67,12 +57,12 @@ public class RestoreTests
     [TearDown]
     public void Cleanup()
     {
-        Directory.Delete(defaultDestination, true);
         DbClientFactory.ClosePool();
+        TempDirectory.DeleteBestEffort(databaseDirectory);
 
-        if (File.Exists(TestDbName))
+        if (Directory.Exists(defaultDestination))
         {
-            File.Delete(TestDbName);
+            Directory.Delete(defaultDestination, recursive: true);
         }
     }
 
