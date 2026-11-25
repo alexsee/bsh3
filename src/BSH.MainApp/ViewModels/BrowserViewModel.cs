@@ -46,6 +46,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [NotifyCanExecuteChangedFor(nameof(EditBackupCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteBackupCommand))]
     [NotifyCanExecuteChangedFor(nameof(LockBackupCommand))]
+    [NotifyCanExecuteChangedFor(nameof(UpFolderCommand))]
     private VersionDetails? currentVersion;
 
     [ObservableProperty]
@@ -219,7 +220,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
     }
 
-    private bool CanUpFolder() => !IsSearchMode && CurrentFolderPath.Count > 1;
+    private bool CanUpFolder() => !IsSearchMode && CurrentVersion != null && CurrentFolderPath.Count > 1;
     private bool HasFileOrFolderSelected() => CurrentVersion != null && (SelectedItems.Count > 0 || CurrentItem != null);
     private bool CanRestoreAll() => !IsSearchMode && CurrentVersion != null && CurrentFolderPath.Count > 0;
     private bool HasVersionSelected() => CurrentVersion != null;

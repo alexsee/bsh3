@@ -608,8 +608,14 @@ public class BrowserViewModelTests
 
         Assert.That(viewModel.IsSearchMode, Is.False);
         Assert.That(viewModel.InfoPaneItem, Is.SameAs(folder));
-        Assert.That(viewModel.UpFolderCommand.CanExecute(null), Is.True);
+        Assert.That(viewModel.UpFolderCommand.CanExecute(null), Is.False);
         Assert.That(infoPaneChanged, Is.True);
+        Assert.That(upFolderChanged, Is.True);
+
+        upFolderChanged = false;
+        viewModel.CurrentVersion = Version("2");
+
+        Assert.That(viewModel.UpFolderCommand.CanExecute(null), Is.True);
         Assert.That(upFolderChanged, Is.True);
     }
 
