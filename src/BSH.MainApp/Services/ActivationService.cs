@@ -1,46 +1,70 @@
 ﻿// Copyright (c) Alexander Seeliger. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using BSH.MainApp.Activation;
 using BSH.MainApp.Contracts.Services;
 
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppLifecycle;
+using Microsoft.Windows.AppNotifications;
 
 namespace BSH.MainApp.Services;
 
 public class ActivationService : IActivationService
 {
-    private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
-    private readonly IEnumerable<IActivationHandler> _activationHandlers;
+    private readonly IAppNotificationService _notificationService;
+    private readonly SetupRouting _setupRouting;
+    private readonly Func<bool> _hasFrameContent;
+    private readonly Action _activateWindow;
 
-    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers)
+    public ActivationService(
+        IAppNotificationService notificationService,
+        INavigationService navigationService,
+        SetupRouting setupRouting)
+        : this(notificationService, setupRouting,
+            () => navigationService.Frame?.Content != null, static () => App.MainWindow.Activate())
     {
-        _defaultHandler = defaultHandler;
-        _activationHandlers = activationHandlers;
     }
 
-    public async Task ActivateAsync(object? activationArgs, bool showWindow = true)
+    internal ActivationService(
+        IAppNotificationService notificationService,
+        SetupRouting setupRouting,
+        Func<bool> hasFrameContent,
+        Action activateWindow)
     {
-        await HandleActivationAsync(activationArgs);
+        _notificationService = notificationService;
+        _setupRouting = setupRouting;
+        _hasFrameContent = hasFrameContent;
+        _activateWindow = activateWindow;
+    }
+
+    public void ActivateForLaunch(LaunchActivatedEventArgs args, bool showWindow)
+    {
+        var activation = AppInstance.GetCurrent().GetActivatedEventArgs();
+        ActivateForLaunch(args.Arguments, showWindow, activation?.Kind,
+            () => (activation!.Data as AppNotificationActivatedEventArgs)?.Argument);
+    }
+
+    internal void ActivateForLaunch(
+        string? launchArguments, bool showWindow, ExtendedActivationKind? activationKind, Func<string?> getNotificationArgument)
+    {
+        if (activationKind == ExtendedActivationKind.AppNotification)
+        {
+            _notificationService.Activate(getNotificationArgument());
+        }
+
+        if (!_hasFrameContent())
+        {
+            _setupRouting.NavigateForStartup(launchArguments);
+        }
 
         if (showWindow)
         {
-            App.MainWindow.Activate();
+            ShowMainWindow();
         }
     }
 
-    private async Task HandleActivationAsync(object? activationArgs)
+    public void ShowMainWindow()
     {
-        var activationHandler = _activationHandlers.FirstOrDefault(h => h.CanHandle(activationArgs));
-
-        if (activationHandler != null)
-        {
-            await activationHandler.HandleAsync(activationArgs);
-        }
-
-        if (_defaultHandler.CanHandle(activationArgs))
-        {
-            await _defaultHandler.HandleAsync(activationArgs);
-        }
+        _activateWindow();
     }
 }

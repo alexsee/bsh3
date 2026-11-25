@@ -12,6 +12,7 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
+using BSH.MainApp.ViewModels;
 using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Windows;
 using CommunityToolkit.WinUI;
@@ -23,7 +24,27 @@ namespace BSH.MainApp.Services;
 
 public class PresentationService : IPresentationService
 {
+    private readonly IActivationService activationService;
+    private readonly SetupRouting setupRouting;
+    private readonly INavigationService navigationService;
+    private readonly Func<bool> isShellNavigationEnabled;
     private StatusWindow? statusWindow;
+
+    public PresentationService(
+        IActivationService activationService, SetupRouting setupRouting, INavigationService navigationService)
+        : this(activationService, setupRouting, navigationService, static () => App.MainWindow.ViewModel.IsShellNavigationEnabled)
+    {
+    }
+
+    internal PresentationService(
+        IActivationService activationService, SetupRouting setupRouting, INavigationService navigationService,
+        Func<bool> isShellNavigationEnabled)
+    {
+        this.activationService = activationService;
+        this.setupRouting = setupRouting;
+        this.navigationService = navigationService;
+        this.isShellNavigationEnabled = isShellNavigationEnabled;
+    }
 
     public async Task ShowStatusWindowAsync()
     {
@@ -70,21 +91,22 @@ public class PresentationService : IPresentationService
         return action;
     }
 
-    public async Task ShowMainWindowAsync()
+    public Task ShowMainWindowAsync()
     {
-        App.GetService<SetupRouting>().NavigateForStartup();
-        await App.GetService<IActivationService>().ActivateAsync(null);
+        setupRouting.NavigateForStartup();
+        activationService.ShowMainWindow();
+        return Task.CompletedTask;
     }
 
-    public async Task ShowBackupBrowserWindowAsync()
+    public Task ShowBackupBrowserWindowAsync()
     {
-        await App.GetService<IActivationService>().ActivateAsync(null);
-        if (!App.MainWindow.ViewModel.IsShellNavigationEnabled)
+        activationService.ShowMainWindow();
+        if (isShellNavigationEnabled())
         {
-            return;
+            navigationService.NavigateTo(typeof(BrowserViewModel).FullName!);
         }
 
-        App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
+        return Task.CompletedTask;
     }
 
     public async Task ShowAboutWindowAsync()

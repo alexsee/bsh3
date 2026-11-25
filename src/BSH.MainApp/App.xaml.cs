@@ -16,7 +16,6 @@ using Brightbits.BSH.Engine.Runtime.Ports;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Services.FileCollector;
 using Brightbits.BSH.Engine.Storage;
-using BSH.MainApp.Activation;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Core.Contracts.Services;
 using BSH.MainApp.Core.Services;
@@ -198,7 +197,7 @@ public partial class App : Application
         await updateService.InitializeAsync(OnAutoUpdaterApplicationExit);
         await updateService.MaybeCheckOnStartupAsync();
 
-        await App.GetService<IActivationService>().ActivateAsync(args, showWindow: !autoStart || foregroundRequested);
+        App.GetService<IActivationService>().ActivateForLaunch(args, showWindow: !autoStart || foregroundRequested);
     }
 
     private static void BringPreviewToFront()
@@ -329,12 +328,6 @@ public partial class App : Application
         UseContentRoot(AppContext.BaseDirectory).
         ConfigureServices((context, services) =>
         {
-            // Default Activation Handler
-            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
-
-            // Other Activation Handlers
-            services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
-
             // Services
             services.AddSingleton<IAppNotificationService, AppNotificationService>();
             services.AddSingleton<IActivationService, ActivationService>();
