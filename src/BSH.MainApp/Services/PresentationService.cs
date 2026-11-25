@@ -70,21 +70,22 @@ public class PresentationService : IPresentationService
         return action;
     }
 
-    public async Task ShowMainWindowAsync()
+    public Task ShowMainWindowAsync()
     {
         App.GetService<SetupRouting>().NavigateForStartup();
-        await App.GetService<IActivationService>().ActivateAsync(null);
+        App.GetService<IActivationService>().ShowMainWindow();
+        return Task.CompletedTask;
     }
 
-    public async Task ShowBackupBrowserWindowAsync()
+    public Task ShowBackupBrowserWindowAsync()
     {
-        await App.GetService<IActivationService>().ActivateAsync(null);
-        if (!App.MainWindow.ViewModel.IsShellNavigationEnabled)
+        App.GetService<IActivationService>().ShowMainWindow();
+        if (App.MainWindow.ViewModel.IsShellNavigationEnabled)
         {
-            return;
+            App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
         }
 
-        App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
+        return Task.CompletedTask;
     }
 
     public async Task ShowAboutWindowAsync()
