@@ -499,16 +499,7 @@ public class ConfigurationManager : IConfigurationManager
                     LoadPersistedFtpPassword(result);
                     break;
                 case nameof(MediumType):
-                    var text = result.ToString();
-                    if (int.TryParse(text, out var mediumType))
-                    {
-                        settings.MediumType = (MediaType)mediumType;
-                    }
-                    else
-                    {
-                        // Older databases can store the enum name. Invalid values resolve to Unset.
-                        Enum.TryParse(text, out settings.MediumType);
-                    }
+                    settings.MediumType = ParseMediumType(result.ToString());
                     break;
                 case nameof(TaskType):
                     if (int.TryParse(result.ToString(), out var taskType))
@@ -528,6 +519,17 @@ public class ConfigurationManager : IConfigurationManager
                     break;
             }
         }
+    }
+
+    private static MediaType ParseMediumType(string value)
+    {
+        if (int.TryParse(value, out var number))
+        {
+            return (MediaType)number;
+        }
+
+        // Older databases can store the enum name.
+        return Enum.TryParse<MediaType>(value, out var mediumType) ? mediumType : MediaType.Unset;
     }
 
     private void LoadPersistedFtpPassword(object persistedValue)
