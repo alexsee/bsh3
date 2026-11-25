@@ -25,8 +25,7 @@ namespace BSH.Test;
 
 public class DeleteTests
 {
-    private const string TestDbName = "testdb.db";
-
+    private string databaseDirectory;
     private IDbClientFactory dbClientFactory;
     private IConfigurationManager configurationManager;
     private IQueryManager queryManager;
@@ -36,19 +35,9 @@ public class DeleteTests
     [SetUp]
     public async Task Setup()
     {
-        if (dbClientFactory != null)
-        {
-            DbClientFactory.ClosePool();
-            dbClientFactory = null;
-        }
-
-        if (File.Exists(TestDbName))
-        {
-            File.Delete(TestDbName);
-        }
-
+        databaseDirectory = Directory.CreateTempSubdirectory("bsh-test-delete-").FullName;
         dbClientFactory = new DbClientFactory();
-        await dbClientFactory.InitializeAsync(Path.Combine(Environment.CurrentDirectory, TestDbName));
+        await dbClientFactory.InitializeAsync(Path.Combine(databaseDirectory, "testdb.db"));
 
         configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
@@ -58,6 +47,13 @@ public class DeleteTests
 
         var storageFactory = new StorageFactory(configurationManager);
         queryManager = new QueryManager(dbClientFactory, configurationManager, storageFactory);
+    }
+
+    [TearDown]
+    public void Cleanup()
+    {
+        DbClientFactory.ClosePool();
+        TempDirectory.DeleteBestEffort(databaseDirectory);
     }
 
     [Test]

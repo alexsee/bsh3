@@ -13,14 +13,14 @@ using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Services;
+using BSH.Test.Helpers;
 using NUnit.Framework;
 
 namespace BSH.Test;
 
 public class ScheduleSettingsServiceTests
 {
-    private const string DatabaseFileName = "testdb_schedule_settings.db";
-
+    private string databaseDirectory;
     private IDbClientFactory dbClientFactory;
     private IConfigurationManager configurationManager;
     private IScheduleRepository scheduleRepository;
@@ -29,14 +29,9 @@ public class ScheduleSettingsServiceTests
     [SetUp]
     public async Task Setup()
     {
-        DbClientFactory.ClosePool();
-        if (File.Exists(DatabaseFileName))
-        {
-            File.Delete(DatabaseFileName);
-        }
-
+        databaseDirectory = Directory.CreateTempSubdirectory("bsh-test-schedule-settings-").FullName;
         dbClientFactory = new DbClientFactory();
-        await dbClientFactory.InitializeAsync(Path.Combine(Environment.CurrentDirectory, DatabaseFileName));
+        await dbClientFactory.InitializeAsync(Path.Combine(databaseDirectory, "testdb.db"));
 
         configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
@@ -49,10 +44,7 @@ public class ScheduleSettingsServiceTests
     public void Cleanup()
     {
         DbClientFactory.ClosePool();
-        if (File.Exists(DatabaseFileName))
-        {
-            File.Delete(DatabaseFileName);
-        }
+        TempDirectory.DeleteBestEffort(databaseDirectory);
     }
 
     [Test]

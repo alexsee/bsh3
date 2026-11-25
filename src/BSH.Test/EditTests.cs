@@ -23,8 +23,7 @@ namespace BSH.Test;
 
 public class EditTests
 {
-    private const string TestDbName = "testdb_edit.db";
-
+    private string databaseDirectory;
     private IDbClientFactory dbClientFactory;
     private IConfigurationManager configurationManager;
     private IQueryManager queryManager;
@@ -34,19 +33,9 @@ public class EditTests
     [SetUp]
     public async Task Setup()
     {
-        if (dbClientFactory != null)
-        {
-            DbClientFactory.ClosePool();
-            dbClientFactory = null;
-        }
-
-        if (File.Exists(TestDbName))
-        {
-            File.Delete(TestDbName);
-        }
-
+        databaseDirectory = Directory.CreateTempSubdirectory("bsh-test-edit-").FullName;
         dbClientFactory = new DbClientFactory();
-        await dbClientFactory.InitializeAsync(Path.Combine(Environment.CurrentDirectory, TestDbName));
+        await dbClientFactory.InitializeAsync(Path.Combine(databaseDirectory, "testdb.db"));
 
         configurationManager = new ConfigurationManager(dbClientFactory);
         await configurationManager.InitializeAsync();
@@ -62,11 +51,7 @@ public class EditTests
     public void Cleanup()
     {
         DbClientFactory.ClosePool();
-
-        if (File.Exists(TestDbName))
-        {
-            File.Delete(TestDbName);
-        }
+        TempDirectory.DeleteBestEffort(databaseDirectory);
     }
 
     [Test]
