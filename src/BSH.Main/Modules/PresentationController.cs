@@ -48,18 +48,17 @@ public class PresentationController
         StatusController.Current.AddObserver(statusWindow);
     }
 
-    public TaskCompleteAction CloseStatusWindow()
+    public void CloseStatusWindow()
     {
         if (statusWindow == null)
         {
-            return TaskCompleteAction.NoAction;
+            return;
         }
 
         StatusController.Current.RemoveObserver(statusWindow);
         statusWindow.Close();
         statusWindow.Dispose();
         statusWindow = null;
-        return TaskCompleteAction.NoAction;
     }
 
     private frmMain mainWindow;

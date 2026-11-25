@@ -270,7 +270,7 @@ public class BackupController : IDisposable
         LogSingleOperationStartFailure(result.Failure, operationName);
         if (statusDialog)
         {
-            await presenter.CompleteAsync(honorCompletionActions: false);
+            await presenter.CompleteAsync();
         }
         return false;
     }
