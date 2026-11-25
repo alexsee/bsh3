@@ -12,6 +12,7 @@ using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
+using BSH.MainApp.ViewModels;
 using BSH.MainApp.ViewModels.Windows;
 using BSH.MainApp.Windows;
 using CommunityToolkit.WinUI;
