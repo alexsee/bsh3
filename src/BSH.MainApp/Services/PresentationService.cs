@@ -23,7 +23,27 @@ namespace BSH.MainApp.Services;
 
 public class PresentationService : IPresentationService
 {
+    private readonly IActivationService activationService;
+    private readonly SetupRouting setupRouting;
+    private readonly INavigationService navigationService;
+    private readonly Func<bool> isShellNavigationEnabled;
     private StatusWindow? statusWindow;
+
+    public PresentationService(
+        IActivationService activationService, SetupRouting setupRouting, INavigationService navigationService)
+        : this(activationService, setupRouting, navigationService, static () => App.MainWindow.ViewModel.IsShellNavigationEnabled)
+    {
+    }
+
+    internal PresentationService(
+        IActivationService activationService, SetupRouting setupRouting, INavigationService navigationService,
+        Func<bool> isShellNavigationEnabled)
+    {
+        this.activationService = activationService;
+        this.setupRouting = setupRouting;
+        this.navigationService = navigationService;
+        this.isShellNavigationEnabled = isShellNavigationEnabled;
+    }
 
     public async Task ShowStatusWindowAsync()
     {
@@ -72,17 +92,17 @@ public class PresentationService : IPresentationService
 
     public Task ShowMainWindowAsync()
     {
-        App.GetService<SetupRouting>().NavigateForStartup();
-        App.GetService<IActivationService>().ShowMainWindow();
+        setupRouting.NavigateForStartup();
+        activationService.ShowMainWindow();
         return Task.CompletedTask;
     }
 
     public Task ShowBackupBrowserWindowAsync()
     {
-        App.GetService<IActivationService>().ShowMainWindow();
-        if (App.MainWindow.ViewModel.IsShellNavigationEnabled)
+        activationService.ShowMainWindow();
+        if (isShellNavigationEnabled())
         {
-            App.GetService<INavigationService>().NavigateTo("BSH.MainApp.ViewModels.BrowserViewModel");
+            navigationService.NavigateTo(typeof(BrowserViewModel).FullName!);
         }
 
         return Task.CompletedTask;

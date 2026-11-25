@@ -12,30 +12,49 @@ namespace BSH.MainApp.Services;
 public class ActivationService : IActivationService
 {
     private readonly IAppNotificationService _notificationService;
-    private readonly INavigationService _navigationService;
     private readonly SetupRouting _setupRouting;
+    private readonly Func<bool> _hasFrameContent;
+    private readonly Action _activateWindow;
 
     public ActivationService(
         IAppNotificationService notificationService,
         INavigationService navigationService,
         SetupRouting setupRouting)
+        : this(notificationService, setupRouting,
+            () => navigationService.Frame?.Content != null, static () => App.MainWindow.Activate())
+    {
+    }
+
+    internal ActivationService(
+        IAppNotificationService notificationService,
+        SetupRouting setupRouting,
+        Func<bool> hasFrameContent,
+        Action activateWindow)
     {
         _notificationService = notificationService;
-        _navigationService = navigationService;
         _setupRouting = setupRouting;
+        _hasFrameContent = hasFrameContent;
+        _activateWindow = activateWindow;
     }
 
     public void ActivateForLaunch(LaunchActivatedEventArgs args, bool showWindow)
     {
         var activation = AppInstance.GetCurrent().GetActivatedEventArgs();
-        if (activation?.Kind == ExtendedActivationKind.AppNotification)
+        ActivateForLaunch(args.Arguments, showWindow, activation?.Kind,
+            () => (activation!.Data as AppNotificationActivatedEventArgs)?.Argument);
+    }
+
+    internal void ActivateForLaunch(
+        string? launchArguments, bool showWindow, ExtendedActivationKind? activationKind, Func<string?> getNotificationArgument)
+    {
+        if (activationKind == ExtendedActivationKind.AppNotification)
         {
-            _notificationService.Activate((activation.Data as AppNotificationActivatedEventArgs)?.Argument);
+            _notificationService.Activate(getNotificationArgument());
         }
 
-        if (_navigationService.Frame?.Content == null)
+        if (!_hasFrameContent())
         {
-            _setupRouting.NavigateForStartup(args.Arguments);
+            _setupRouting.NavigateForStartup(launchArguments);
         }
 
         if (showWindow)
@@ -46,6 +65,6 @@ public class ActivationService : IActivationService
 
     public void ShowMainWindow()
     {
-        App.MainWindow.Activate();
+        _activateWindow();
     }
 }
