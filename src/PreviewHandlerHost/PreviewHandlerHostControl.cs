@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using C4F.DevKit.PreviewHandler.PreviewHandlerFramework;
@@ -109,14 +108,6 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
             base.Dispose(disposing);
         }
 
-        /// <summary>
-        /// 1) Look up the preview handler associated with the file extension
-        /// 2) Create an instance of the handler using its CLSID and reflection
-        /// 3) Check if it is a file or stream handler
-        /// 4) Initialize with File or Stream using Initialize from the appropriate interface
-        /// 5) Call SetWindow passing in a handle to this control and the bounds of the control
-        /// 6) Call DoPreview
-        /// </summary>
         private void GeneratePreview()
         {
             lblMessage.Visible = false;
@@ -128,18 +119,8 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
             r.left = 0;
             r.right = this.Width;
 
-            RegistrationData data = PreviewHandlerRegistryAccessor.LoadRegistrationInformation();
-            PreviewHandlerInfo handler = null;
-
-            foreach (ExtensionInfo ei in data.Extensions.Where(ei => _filePath.ToUpper().EndsWith(ei.Extension.ToUpper())))
-            {
-                handler = ei.Handler;
-                if (handler != null)
-                {
-                    break;
-                }
-            }
-            if (handler == null)
+            string handlerId = PreviewHandlerRegistryAccessor.FindHandlerId(_filePath);
+            if (handlerId == null)
             {
                 lblMessage.Visible = true;
                 lblMessage.Text = "Keine Vorschau verfügbar";
@@ -147,13 +128,11 @@ namespace C4F.DevKit.PreviewHandler.PreviewHandlerHost
                 return;
             }
 
-            Type comType = Type.GetTypeFromCLSID(new Guid(handler.ID));
+            Type comType = Type.GetTypeFromCLSID(new Guid(handlerId));
             try
             {
-                // Create an instance of the preview handler
                 _comInstance = Activator.CreateInstance(comType);
 
-                // Check if it is a stream or file handler
                 if (_comInstance is IInitializeWithFile fileInitializer)
                 {
                     fileInitializer.Initialize(_filePath, 0);
