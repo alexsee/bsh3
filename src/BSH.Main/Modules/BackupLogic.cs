@@ -165,9 +165,9 @@ static class BackupLogic
             BackupService,
             ConfigurationManager,
             () => StatusController.Current.IsTaskRunning(),
-            async (action, silent, cancellationTokenSource) =>
+            async (_, cancellationTokenSource) =>
             {
-                var waitForMediaService = new WaitForMediaService(BackupService, silent, cancellationTokenSource);
+                var waitForMediaService = new WaitForMediaService(BackupService, cancellationTokenSource);
                 return await waitForMediaService.ExecuteAsync();
             });
 
