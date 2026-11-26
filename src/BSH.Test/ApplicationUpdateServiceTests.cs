@@ -8,6 +8,7 @@ using AutoUpdaterDotNET;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Services;
+using BSH.MainApp.ViewModels.Windows;
 using BSH.Test.Fakes;
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
