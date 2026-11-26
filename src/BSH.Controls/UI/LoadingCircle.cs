@@ -43,16 +43,6 @@ namespace MRG.Controls.UI
         private const int DefaultSpokeThickness = 4;
         private readonly Color DefaultColor = Color.DarkGray;
 
-        private const int MacOSXInnerCircleRadius = 5;
-        private const int MacOSXOuterCircleRadius = 11;
-        private const int MacOSXNumberOfSpoke = 12;
-        private const int MacOSXSpokeThickness = 2;
-
-        private const int FireFoxInnerCircleRadius = 6;
-        private const int FireFoxOuterCircleRadius = 7;
-        private const int FireFoxNumberOfSpoke = 9;
-        private const int FireFoxSpokeThickness = 4;
-
         private const int IE7InnerCircleRadius = 8;
         private const int IE7OuterCircleRadius = 9;
         private const int IE7NumberOfSpoke = 24;
@@ -60,8 +50,6 @@ namespace MRG.Controls.UI
 
         public enum StylePresets
         {
-            MacOSX,
-            Firefox,
             IE7,
             Custom
         }
@@ -269,16 +257,6 @@ namespace MRG.Controls.UI
 
                 switch (m_StylePreset)
                 {
-                    case StylePresets.MacOSX:
-                        SetCircleAppearance(MacOSXNumberOfSpoke,
-                            MacOSXSpokeThickness, MacOSXInnerCircleRadius,
-                            MacOSXOuterCircleRadius);
-                        break;
-                    case StylePresets.Firefox:
-                        SetCircleAppearance(FireFoxNumberOfSpoke,
-                            FireFoxSpokeThickness, FireFoxInnerCircleRadius,
-                            FireFoxOuterCircleRadius);
-                        break;
                     case StylePresets.IE7:
                         SetCircleAppearance(IE7NumberOfSpoke,
                             IE7SpokeThickness, IE7InnerCircleRadius,

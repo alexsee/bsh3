@@ -130,9 +130,6 @@
   <data name="arrow_upward_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\arrow_upward_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="BackupStatus_" xml:space="preserve">
-    <value>Status ist derzeit unbekannt.</value>
-  </data>
   <data name="BackupStatus_0" xml:space="preserve">
     <value>Backup Service Home wird ordnungsgemäß ausgeführt.</value>
   </data>
@@ -168,9 +165,6 @@
   </data>
   <data name="BACKUP_TITLE_MANUAL" xml:space="preserve">
     <value>Manuelle Sicherung</value>
-  </data>
-  <data name="cancel_fill_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cancel_fill_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="cancel_icon_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cancel_icon_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -307,12 +301,6 @@ FTP Server meldete: </value>
   <data name="DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE" xml:space="preserve">
     <value>Fehlgeschlagen</value>
   </data>
-  <data name="DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT" xml:space="preserve">
-    <value>Die Verbindung konnte erfolgreich aufgebaut werden.</value>
-  </data>
-  <data name="DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE" xml:space="preserve">
-    <value>Erfolgreich</value>
-  </data>
   <data name="DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT" xml:space="preserve">
     <value>Die Verbindung konnte erfolgreich aufgebaut werden.</value>
   </data>
@@ -418,12 +406,6 @@ Die nötigen Rechte zum Verändern dieser Einstellung fehlen.</value>
   <data name="DLG_MAIN_MSG_RESET_TITLE" xml:space="preserve">
     <value>Zurücksetzen</value>
   </data>
-  <data name="DLG_MAIN_MSG_UWP_AUTOSTART_TEXT" xml:space="preserve">
-    <value>Sie können das Autostart Verhalten von Backup Service Home 3 im Taskmanager deaktivieren.</value>
-  </data>
-  <data name="DLG_MAIN_MSG_UWP_AUTOSTART_TITLE" xml:space="preserve">
-    <value>Autostartverhalten</value>
-  </data>
   <data name="DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT" xml:space="preserve">
     <value>Wartungsaufgabe wird durchgeführt...</value>
   </data>
@@ -435,21 +417,6 @@ Die nötigen Rechte zum Verändern dieser Einstellung fehlen.</value>
   </data>
   <data name="DLG_STATUS_STATUS_CANCELED_TEXT" xml:space="preserve">
     <value>Abbrechen...</value>
-  </data>
-  <data name="DLG_UC_CONFIG_LBL_COMPRESSION_STAGE" xml:space="preserve">
-    <value> Stufe </value>
-  </data>
-  <data name="DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION" xml:space="preserve">
-    <value>Höchste Kompression</value>
-  </data>
-  <data name="DLG_UC_CONFIG_LBL_HIGH_COMPRESSION" xml:space="preserve">
-    <value>Hohe Kompression</value>
-  </data>
-  <data name="DLG_UC_CONFIG_LBL_LOW_COMPRESSION" xml:space="preserve">
-    <value>Niedrige Kompression</value>
-  </data>
-  <data name="DLG_UC_CONFIG_LBL_NO_COMPRESSION" xml:space="preserve">
-    <value>Keine Kompression</value>
   </data>
   <data name="DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT" xml:space="preserve">
     <value>Die Verbindung zum FTP-Server konnte nicht aufgebaut werden.</value>
@@ -768,12 +735,6 @@ Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   <data name="INFO_BSH_NOT_CONFIGURED_TITLE" xml:space="preserve">
     <value>Nicht konfiguriert.</value>
   </data>
-  <data name="INFO_BSH_UPDATE_AVAILABLE_TEXT" xml:space="preserve">
-    <value>Für Backup Service Home 3 sind Aktualisierungen verfügbar, die nun heruntergeladen und installiert werden können. Es wird empfohlen diese Aktualisierungen zu installieren.</value>
-  </data>
-  <data name="INFO_BSH_UPDATE_AVAILABLE_TITLE" xml:space="preserve">
-    <value>Es sind Aktualisierungen verfügbar</value>
-  </data>
   <data name="INFO_NO_BACKUP_AVAILABLE_TEXT" xml:space="preserve">
     <value>Es ist derzeit keine Datensicherung vorhanden, die durchsucht werden kann.</value>
   </data>
@@ -872,18 +833,6 @@ Doppelklicken Sie hier, um die Konfiguration zu starten.</value>
   </data>
   <data name="visibility_icon_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\visibility_icon_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="WAIT_0" xml:space="preserve">
-    <value>Backup Service Home wartet auf das Datensicherungsmedium, </value>
-  </data>
-  <data name="WAIT_1" xml:space="preserve">
-    <value>Backup Service Home wartet auf das Datensicherungsmedium,</value>
-  </data>
-  <data name="WAIT_2" xml:space="preserve">
-    <value>Backup Service Home wartet auf das Datensicherungsmedium,</value>
-  </data>
-  <data name="WAIT_3" xml:space="preserve">
-    <value>Backup Service Home wartet auf das Datensicherungsmedium, </value>
   </data>
   <data name="WELCOMETITLE_STEP_1" xml:space="preserve">
     <value>Welche Daten möchten Sie sichern?</value>

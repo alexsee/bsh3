@@ -107,7 +107,6 @@ public partial class frmEditScheduler
         if (settings.EnableScheduledFullBackups)
         {
             chkFullBackup.Checked = true;
-            cboFullBackup.SelectedIndex = 0;
             nudFullBackup.Value = settings.ScheduledFullBackupDays;
         }
         else
@@ -229,7 +228,7 @@ public partial class frmEditScheduler
         settings.AutomaticHourlyBackupThreshold = decimal.ToInt32(nudIntervallHourBackups.Value);
 
         // Vollsicherung nach Sicherung oder Tag anlegen
-        settings.EnableScheduledFullBackups = chkFullBackup.Checked && cboFullBackup.SelectedIndex == 0;
+        settings.EnableScheduledFullBackups = chkFullBackup.Checked;
         settings.ScheduledFullBackupDays = decimal.ToInt32(nudFullBackup.Value);
 
         await BackupLogic.ScheduleSettingsService.SaveAsync(settings);
@@ -258,7 +257,5 @@ public partial class frmEditScheduler
     private void chkFullBackup_CheckedChanged(object sender, EventArgs e)
     {
         nudFullBackup.Enabled = chkFullBackup.Checked;
-        cboFullBackup.Enabled = chkFullBackup.Checked;
-        cboFullBackup.SelectedIndex = 0;
     }
 }
