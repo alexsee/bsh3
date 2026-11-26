@@ -2,22 +2,16 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
-using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
-using Brightbits.BSH.Engine.Runtime;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Models;
 using BSH.MainApp.Services;
-using BSH.MainApp.ViewModels.Windows;
+using BSH.Test.Fakes;
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 
@@ -197,115 +191,59 @@ public class BrowserPreviewServiceTests
         }
     }
 
-    private sealed class PreviewJobService : IJobService
+    private sealed class PreviewJobService : FakeJobService
     {
         public bool CheckMediaResult { get; set; } = true;
         public bool RequestPasswordResult { get; set; } = true;
         public List<ActionType> CheckMediaCalls { get; } = [];
         public int RequestPasswordCallCount { get; private set; }
 
-        public void Cancel() { }
-        public Task<bool> CheckMediaAsync(ActionType action, bool silent = false)
+        public override Task<bool> CheckMediaAsync(ActionType action, bool silent = false)
         {
             CheckMediaCalls.Add(action);
             return Task.FromResult(CheckMediaResult);
         }
 
-        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "") => Task.FromResult(true);
-        public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
-        public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.FromResult(new JobSessionResult { Started = true });
-        public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
-        public Task<bool> RequestPassword()
+        public override Task<bool> RequestPassword()
         {
             RequestPasswordCallCount++;
             return Task.FromResult(RequestPasswordResult);
         }
-
-        public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true) => Task.CompletedTask;
-        public Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true) => Task.CompletedTask;
-        public Task ModifyBackupAsync(bool statusDialog = true) => Task.CompletedTask;
     }
 
-    private sealed class PreviewBackupService : IBackupService
+    private sealed class PreviewBackupService : FakeBackupService
     {
-        public Task<bool> CheckMedia(bool quickCheck = false) => Task.FromResult(true);
-        public string GetPassword() => "secret";
-        public bool HasPassword() => true;
-        public void SetPassword(string password) { }
-        public Task SetStableAsync(string version, bool stable) => Task.CompletedTask;
-        public Task UpdateVersionAsync(string version, VersionDetails versionDetails) => Task.CompletedTask;
-        public Task StartBackup(string title, string description, IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false) => Task.CompletedTask;
-        public Task StartDelete(string version, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false, IReadOnlyList<int> versionIds = null) => Task.CompletedTask;
-        public Task StartEdit(IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartRestore(string version, string file, string destination, IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => Task.CompletedTask;
-        public void UpdateDatabaseFile(string databaseFile) { }
+        public override string GetPassword() => "secret";
+        public override bool HasPassword() => true;
     }
 
-    private sealed class PreviewQueryManager : IQueryManager
+    private sealed class PreviewQueryManager : FakeQueryManager
     {
         public (string Path, bool IsTemporary)? FileResult { get; set; } = (@"C:\backed-up\report.txt", false);
         public List<(int VersionId, string FileName, string FilePath, string Password)> GetFileNameCalls { get; } = [];
 
-        public Task<(string, bool)> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password)
+        public override Task<(string, bool)> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password)
         {
             GetFileNameCalls.Add((versionId, fileName, filePath, password));
             return Task.FromResult(FileResult ?? ((string)null, false));
         }
 
-        public Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult<string>(null);
-        public Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult<string>(null);
-        public string GetFileNameFromDrive(FileTableRow file) => file.FileName;
-        public Task<VersionChangeStatistics> GetVersionChangeStatisticsAsync(string versionId) => throw new NotSupportedException();
-        public Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult<FileDetails>(null);
-        public Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path) => Task.FromResult(new List<FileTableRow>());
-        public Task<List<string>> GetFolderListAsync(string version, string path) => Task.FromResult(new List<string>());
-        public Task<string> GetFullRestoreFolderAsync(string folder, string version) => Task.FromResult(folder);
-        public Task<VersionDetails> GetLastBackupAsync() => Task.FromResult(new VersionDetails { Id = "1" });
-        public Task<VersionDetails> GetLastFullBackupAsync() => Task.FromResult(new VersionDetails { Id = "1" });
-        public Task<string> GetLocalizedPathAsync(string path) => Task.FromResult(path);
-        public Task<string> GetNextVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult<string>(null);
-        public Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult<string>(null);
-        public Task<int> GetNumberOfVersionsAsync() => Task.FromResult(1);
-        public Task<int> GetNumberOfFilesAsync() => Task.FromResult(0);
-        public Task<double> GetTotalFileSizeAsync() => Task.FromResult(0d);
-        public Task<VersionDetails> GetOldestBackupAsync() => Task.FromResult(new VersionDetails { Id = "1" });
-        public Task<VersionDetails> GetVersionByIdAsync(string id) => Task.FromResult(new VersionDetails { Id = id });
-        public List<VersionDetails> GetVersions(bool desc = true) => [new VersionDetails { Id = "1" }];
-        public Task<List<FileTableRow>> GetVersionsByFileAsync(string fileName, string filePath) => Task.FromResult(new List<FileTableRow>());
-        public Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500) => Task.FromResult(new List<FileTableRow>());
-        public Task<bool> HasChangesOrNewAsync(string path, string versionId) => Task.FromResult(false);
+        public override Task<VersionDetails> GetLastBackupAsync() => Task.FromResult(new VersionDetails { Id = "1" });
+        public override Task<VersionDetails> GetLastFullBackupAsync() => Task.FromResult(new VersionDetails { Id = "1" });
+        public override Task<int> GetNumberOfVersionsAsync() => Task.FromResult(1);
+        public override Task<VersionDetails> GetOldestBackupAsync() => Task.FromResult(new VersionDetails { Id = "1" });
+        public override Task<VersionDetails> GetVersionByIdAsync(string id) => Task.FromResult(new VersionDetails { Id = id });
+        public override List<VersionDetails> GetVersions(bool desc = true) => [new VersionDetails { Id = "1" }];
     }
 
-    private sealed class PreviewPresentationService : IPresentationService
+    private sealed class PreviewPresentationService : FakePresentationService
     {
         public List<(string Title, string Content)> MessageBoxes { get; } = [];
 
-        public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
-        public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
-        public Task OpenHelpSupportAsync() => Task.CompletedTask;
-        public Task<(string? password, bool persist)> RequestPasswordAsync() => Task.FromResult<(string?, bool)>((null, false));
-        public Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile) => Task.FromResult(RequestOverwriteResult.None);
-        public Task ResetConfigurationAsync() => Task.CompletedTask;
-        public Task ShowAboutWindowAsync() => Task.CompletedTask;
-        public Task ShowBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task ShowCompressionExclusionsWindowAsync() => Task.CompletedTask;
-        public Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync() => Task.FromResult((false, new NewBackupViewModel()));
-        public Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel) => Task.FromResult((false, backupViewModel));
-        public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);
-        public Task ShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
-        public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
-        public Task ShowLastBackupFailedFilesAsync(LastBackupResult result) => Task.CompletedTask;
-        public Task ShowMainWindowAsync() => Task.CompletedTask;
-        public Task ShowStatusWindowAsync() => Task.CompletedTask;
-        public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
+        public override Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
         {
             MessageBoxes.Add((title, content));
             return Task.FromResult(ContentDialogResult.None);
         }
-
-        public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
-        public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
-        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 }

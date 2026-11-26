@@ -186,20 +186,20 @@ public class MainViewModelSystemToggleTests
             backupService: backupService);
     }
 
-    private sealed class WrongStateBackupService : IBackupService
+    private sealed class WrongStateBackupService : FakeBackupService
     {
-        public Task<bool> CheckMedia(bool quickCheck = false) => throw new DeviceContainsWrongStateException();
-        public string GetPassword() => throw new NotSupportedException();
-        public bool HasPassword() => throw new NotSupportedException();
-        public void SetPassword(string password) => throw new NotSupportedException();
-        public Task SetStableAsync(string version, bool stable) => throw new NotSupportedException();
-        public Task UpdateVersionAsync(string version, VersionDetails details) => throw new NotSupportedException();
-        public void UpdateDatabaseFile(string databaseFile) => throw new NotSupportedException();
-        public Task StartBackup(string title, string description, IJobReport report, CancellationToken token, bool fullBackup = false, string sources = "", bool silent = false) => throw new NotSupportedException();
-        public Task StartDelete(string version, IJobReport report, CancellationToken token, bool silent = false) => throw new NotSupportedException();
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport report, CancellationToken token, bool silent = false, IReadOnlyList<int> versionIds = null) => throw new NotSupportedException();
-        public Task StartEdit(IJobReport report, CancellationToken token, bool silent = false) => throw new NotSupportedException();
-        public Task StartRestore(string version, string file, string destination, IJobReport report, CancellationToken token, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => throw new NotSupportedException();
+        public override Task<bool> CheckMedia(bool quickCheck = false) => throw new DeviceContainsWrongStateException();
+        public override string GetPassword() => throw new NotSupportedException();
+        public override bool HasPassword() => throw new NotSupportedException();
+        public override void SetPassword(string password) => throw new NotSupportedException();
+        public override Task SetStableAsync(string version, bool stable) => throw new NotSupportedException();
+        public override Task UpdateVersionAsync(string version, VersionDetails details) => throw new NotSupportedException();
+        public override void UpdateDatabaseFile(string databaseFile) => throw new NotSupportedException();
+        public override Task StartBackup(string title, string description, IJobReport report, CancellationToken token, bool fullBackup = false, string sources = "", bool silent = false) => throw new NotSupportedException();
+        public override Task StartDelete(string version, IJobReport report, CancellationToken token, bool silent = false) => throw new NotSupportedException();
+        public override Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport report, CancellationToken token, bool silent = false, IReadOnlyList<int> versionIds = null) => throw new NotSupportedException();
+        public override Task StartEdit(IJobReport report, CancellationToken token, bool silent = false) => throw new NotSupportedException();
+        public override Task StartRestore(string version, string file, string destination, IJobReport report, CancellationToken token, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => throw new NotSupportedException();
     }
 
     private static async Task WaitUntil(Func<bool> condition)

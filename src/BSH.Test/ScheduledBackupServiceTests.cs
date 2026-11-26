@@ -7,11 +7,9 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Repo;
 using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
-using Brightbits.BSH.Engine.Runtime;
 using Brightbits.BSH.Engine.Services;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Services;
@@ -454,7 +452,7 @@ public class ScheduledBackupServiceTests
         var scheduleRepository = new EmptyScheduleRepository();
         return new ScheduledBackupService(
             configurationManager,
-            new UnusedJobService(),
+            new FakeJobService(),
             new StubQueryManager(),
             scheduleRepository,
             factory,
@@ -584,16 +582,15 @@ public class ScheduledBackupServiceTests
         public Task ReplaceSchedulesAsync(IEnumerable<ScheduleEntry> schedules) => Task.CompletedTask;
     }
 
-    private sealed class RecordingJobService : IJobService
+    private sealed class RecordingJobService : FakeJobService
     {
         public bool MediaAvailable { get; set; } = true;
         public int CreateBackupCalls { get; private set; }
         public string LastBackupTitle { get; private set; }
 
-        public void Cancel() { }
-        public Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(MediaAvailable);
+        public override Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(MediaAvailable);
 
-        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "")
+        public override Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "")
         {
             CreateBackupCalls++;
             LastBackupTitle = title;
@@ -604,56 +601,21 @@ public class ScheduledBackupServiceTests
         {
             return WaitUntil(() => CreateBackupCalls >= minimumCalls);
         }
-
-        public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
-        public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.FromResult(new JobSessionResult { Started = true });
-        public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
-        public Task<bool> RequestPassword() => Task.FromResult(true);
-        public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true) => Task.CompletedTask;
-        public Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true) => Task.CompletedTask;
-        public Task ModifyBackupAsync(bool statusDialog = true) => Task.CompletedTask;
     }
 
-    private sealed class UnusedJobService : IJobService
+    private class StubQueryManager : FakeQueryManager
     {
-        public void Cancel() { }
-        public Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(true);
-        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "") => Task.FromResult(true);
-        public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
-        public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.FromResult(new JobSessionResult { Started = true });
-        public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
-        public Task<bool> RequestPassword() => Task.FromResult(true);
-        public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true) => Task.CompletedTask;
-        public Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true) => Task.CompletedTask;
-        public Task ModifyBackupAsync(bool statusDialog = true) => Task.CompletedTask;
-    }
-
-    private class StubQueryManager : IQueryManager
-    {
-        public Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult("");
-        public Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult("");
-        public string GetFileNameFromDrive(FileTableRow file) => "";
-        public Task<(string, bool)> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password) => Task.FromResult(("", false));
-        public Task<VersionChangeStatistics> GetVersionChangeStatisticsAsync(string versionId) => throw new NotSupportedException();
-        public Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult(new FileDetails());
-        public Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path) => Task.FromResult(new List<FileTableRow>());
-        public Task<List<string>> GetFolderListAsync(string version, string path) => Task.FromResult(new List<string>());
-        public Task<string> GetFullRestoreFolderAsync(string folder, string version) => Task.FromResult("");
-        public Task<VersionDetails> GetLastBackupAsync() => Task.FromResult<VersionDetails>(null);
-        public virtual Task<VersionDetails> GetLastFullBackupAsync() => Task.FromResult<VersionDetails>(null);
-        public Task<string> GetLocalizedPathAsync(string path) => Task.FromResult(path);
-        public Task<string> GetNextVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult("");
-        public Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult("");
-        public Task<int> GetNumberOfVersionsAsync() => Task.FromResult(0);
-        public Task<int> GetNumberOfFilesAsync() => Task.FromResult(0);
-        public Task<double> GetTotalFileSizeAsync() => Task.FromResult(0d);
-        public Task<VersionDetails> GetOldestBackupAsync() => Task.FromResult<VersionDetails>(null);
-        public Task<VersionDetails> GetVersionByIdAsync(string id) => Task.FromResult<VersionDetails>(null);
         public List<VersionDetails> Versions { get; init; } = [];
-        public virtual List<VersionDetails> GetVersions(bool desc = true) => Versions;
-        public Task<List<FileTableRow>> GetVersionsByFileAsync(string fileName, string filePath) => Task.FromResult(new List<FileTableRow>());
-        public Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500) => Task.FromResult(new List<FileTableRow>());
-        public Task<bool> HasChangesOrNewAsync(string path, string versionId) => Task.FromResult(false);
+
+        public override Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult("");
+        public override Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult("");
+        public override string GetFileNameFromDrive(FileTableRow file) => "";
+        public override Task<(string, bool)> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password) => Task.FromResult(("", false));
+        public override Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult(new FileDetails());
+        public override Task<string> GetFullRestoreFolderAsync(string folder, string version) => Task.FromResult("");
+        public override Task<string> GetNextVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult("");
+        public override Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult("");
+        public override List<VersionDetails> GetVersions(bool desc = true) => Versions;
     }
 
     [Test]
@@ -663,7 +625,7 @@ public class ScheduledBackupServiceTests
         var scheduleRepository = new FakeScheduleRepository(Array.Empty<ScheduleEntry>());
         var service = new ScheduledBackupService(
             configuration,
-            new UnusedJobService(),
+            new FakeJobService(),
             new ThrowingVersionsQueryManager(),
             scheduleRepository,
             new FakeSchedulerAdapterFactory(new FakeSchedulerAdapter()),

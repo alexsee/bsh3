@@ -3,13 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts;
-using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.Services;
 using BSH.Test.Fakes;
@@ -56,7 +52,7 @@ public class StatusServiceTests
     {
         return new StatusService(
             new FakeConfigurationManager(),
-            new NoopPresentationService());
+            new FakePresentationService());
     }
 
     private sealed class RecordingStatusReport : IStatusReport
@@ -77,30 +73,5 @@ public class StatusServiceTests
         }
         public void ReportFileProgress(string file) => FileUpdates.Add(file);
         public void ReportSystemStatus(SystemStatus systemStatus) { }
-    }
-
-    private sealed class NoopPresentationService : IPresentationService
-    {
-        public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
-        public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
-        public Task OpenHelpSupportAsync() => Task.CompletedTask;
-        public Task<(string? password, bool persist)> RequestPasswordAsync() => Task.FromResult<(string?, bool)>((null, false));
-        public Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile) => Task.FromResult(RequestOverwriteResult.None);
-        public Task ResetConfigurationAsync() => Task.CompletedTask;
-        public Task ShowAboutWindowAsync() => Task.CompletedTask;
-        public Task ShowBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task ShowCompressionExclusionsWindowAsync() => Task.CompletedTask;
-        public Task<(bool, BSH.MainApp.ViewModels.Windows.NewBackupViewModel)> ShowCreateBackupWindowAsync() => Task.FromResult((false, new BSH.MainApp.ViewModels.Windows.NewBackupViewModel()));
-        public Task<(bool, BSH.MainApp.ViewModels.Windows.EditBackupViewModel)> ShowEditBackupWindowAsync(BSH.MainApp.ViewModels.Windows.EditBackupViewModel backupViewModel) => Task.FromResult((false, backupViewModel));
-        public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);
-        public Task ShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
-        public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
-        public Task ShowLastBackupFailedFilesAsync(LastBackupResult result) => Task.CompletedTask;
-        public Task ShowMainWindowAsync() => Task.CompletedTask;
-        public Task ShowStatusWindowAsync() => Task.CompletedTask;
-        public Task<Microsoft.UI.Xaml.Controls.ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<Windows.UI.Popups.IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(Microsoft.UI.Xaml.Controls.ContentDialogResult.None);
-        public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
-        public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
-        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 }

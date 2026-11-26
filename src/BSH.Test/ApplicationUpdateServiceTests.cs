@@ -5,14 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoUpdaterDotNET;
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Runtime.Ports;
 using BSH.MainApp.Contracts.Services;
-using BSH.MainApp.Models;
 using BSH.MainApp.Services;
-using BSH.MainApp.ViewModels.Windows;
+using BSH.Test.Fakes;
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 using Windows.UI.Popups;
@@ -290,7 +286,7 @@ public class ApplicationUpdateServiceTests
         }
     }
 
-    private sealed class RecordingPresentation : IPresentationService
+    private sealed class RecordingPresentation : FakePresentationService
     {
         private readonly List<(string Title, string Content)> dialogs;
 
@@ -299,31 +295,10 @@ public class ApplicationUpdateServiceTests
             this.dialogs = dialogs;
         }
 
-        public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
+        public override Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1)
         {
             dialogs.Add((title, content));
             return Task.FromResult(ContentDialogResult.None);
         }
-
-        public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
-        public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
-        public Task OpenHelpSupportAsync() => Task.CompletedTask;
-        public Task<(string? password, bool persist)> RequestPasswordAsync() => Task.FromResult<(string?, bool)>((null, false));
-        public Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile) => Task.FromResult(RequestOverwriteResult.None);
-        public Task ResetConfigurationAsync() => Task.CompletedTask;
-        public Task ShowAboutWindowAsync() => Task.CompletedTask;
-        public Task ShowBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task ShowCompressionExclusionsWindowAsync() => Task.CompletedTask;
-        public Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync() => Task.FromResult((false, new NewBackupViewModel()));
-        public Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel) => Task.FromResult((false, backupViewModel));
-        public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);
-        public Task ShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
-        public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
-        public Task ShowLastBackupFailedFilesAsync(LastBackupResult result) => Task.CompletedTask;
-        public Task ShowMainWindowAsync() => Task.CompletedTask;
-        public Task ShowStatusWindowAsync() => Task.CompletedTask;
-        public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
-        public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
-        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 }
