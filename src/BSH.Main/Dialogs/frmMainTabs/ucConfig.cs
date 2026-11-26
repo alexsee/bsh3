@@ -142,12 +142,10 @@ public partial class ucConfig : IMainTabs
         if (chkFtpEncryption.Checked)
         {
             configurationManager.FtpEncryptionMode = "0";
-            configurationManager.FtpSslProtocols = "0";
         }
         else
         {
             configurationManager.FtpEncryptionMode = "3";
-            configurationManager.FtpSslProtocols = "0";
         }
 
         configurationManager.BackupFolder = txtBackupPath.Text;
@@ -691,8 +689,7 @@ public partial class ucConfig : IMainTabs
                         ftp.Password,
                         ftp.Path,
                         ftp.Encoding,
-                        encryptionMode: ftp.EnforceUnencrypted ? "0" : "3",
-                        sslProtocols: "0");
+                        encryptionMode: ftp.EnforceUnencrypted ? "0" : "3");
                     break;
             }
         }

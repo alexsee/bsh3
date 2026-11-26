@@ -406,8 +406,7 @@ public class SettingsViewModelTests
             FtpPass = "ftp-pass",
             FtpFolder = "/old",
             FtpCoding = "UTF8",
-            FtpEncryptionMode = "3",
-            FtpSslProtocols = "0"
+            FtpEncryptionMode = "3"
         };
         var harness = CreateHarness(configuration);
         harness.ViewModel.OnNavigatedTo(null);

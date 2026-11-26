@@ -122,11 +122,6 @@ public interface IConfigurationManager
         get;
         set;
     }
-    string FtpSslProtocols
-    {
-        get;
-        set;
-    }
     string FtpUser
     {
         get;

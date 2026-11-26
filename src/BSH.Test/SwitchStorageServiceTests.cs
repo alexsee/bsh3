@@ -197,7 +197,6 @@ public class SwitchStorageServiceTests
         Assert.That(configurationManager.FtpFolder, Is.EqualTo("/backups"));
         Assert.That(configurationManager.FtpCoding, Is.EqualTo("ISO-8859-1"));
         Assert.That(configurationManager.FtpEncryptionMode, Is.EqualTo("0"));
-        Assert.That(configurationManager.FtpSslProtocols, Is.EqualTo("0"));
 
         Assert.That(await CountAsync("versiontable"), Is.EqualTo(0));
         Assert.That(await CountAsync("filelink"), Is.EqualTo(0));

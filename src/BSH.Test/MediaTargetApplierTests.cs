@@ -110,7 +110,6 @@ public class MediaTargetApplierTests
             FtpFolder = "/old",
             FtpCoding = "UTF8",
             FtpEncryptionMode = "3",
-            FtpSslProtocols = "0",
         };
 
         MediaTargetApplier.ApplyEmptyLocalTarget(configuration);
@@ -126,7 +125,6 @@ public class MediaTargetApplierTests
         Assert.That(configuration.FtpFolder, Is.EqualTo(""));
         Assert.That(configuration.FtpCoding, Is.EqualTo(""));
         Assert.That(configuration.FtpEncryptionMode, Is.EqualTo(""));
-        Assert.That(configuration.FtpSslProtocols, Is.EqualTo(""));
     }
 
     [Test]
@@ -144,7 +142,6 @@ public class MediaTargetApplierTests
             FtpFolder = "/backups",
             FtpCoding = "UTF8",
             FtpEncryptionMode = "3",
-            FtpSslProtocols = "0",
         };
 
         MediaTargetApplier.ApplyLocalTarget(configuration, @"D:\Backups\PC\User", "ABCDEF12");
@@ -160,7 +157,6 @@ public class MediaTargetApplierTests
         Assert.That(configuration.FtpFolder, Is.EqualTo(""));
         Assert.That(configuration.FtpCoding, Is.EqualTo(""));
         Assert.That(configuration.FtpEncryptionMode, Is.EqualTo(""));
-        Assert.That(configuration.FtpSslProtocols, Is.EqualTo(""));
     }
 
     [Test]
@@ -192,8 +188,7 @@ public class MediaTargetApplierTests
             "ftp-pass",
             "/backups",
             "UTF8",
-            encryptionMode: "0",
-            sslProtocols: "0");
+            encryptionMode: "0");
 
         Assert.That(configuration.MediumType, Is.EqualTo(MediaType.FileTransferServer));
         Assert.That(configuration.BackupFolder, Is.EqualTo(""));
@@ -207,7 +202,6 @@ public class MediaTargetApplierTests
         Assert.That(configuration.FtpFolder, Is.EqualTo("/backups"));
         Assert.That(configuration.FtpCoding, Is.EqualTo("UTF8"));
         Assert.That(configuration.FtpEncryptionMode, Is.EqualTo("0"));
-        Assert.That(configuration.FtpSslProtocols, Is.EqualTo("0"));
     }
 
     [TestCase(@"\\server\share\path", null)]

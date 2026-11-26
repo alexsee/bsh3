@@ -505,8 +505,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             FtpRemotePassword,
             NormalizeFtpFolder(FtpRemotePath),
             FtpRemoteEncoding,
-            encryptionMode: FtpRemoteEnforceUnencrypted ? "0" : "3",
-            sslProtocols: "0");
+            encryptionMode: FtpRemoteEnforceUnencrypted ? "0" : "3");
     }
 
     private void ApplyLocalTargetFromPage()

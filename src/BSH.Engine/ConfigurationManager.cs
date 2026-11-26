@@ -17,7 +17,6 @@ public class ConfigurationManager : IConfigurationManager
 {
     private const string DefaultFtpCoding = "ISO-8859-1";
     private const string DefaultFtpEncryptionMode = "3";
-    private const string DefaultFtpSslProtocols = "0";
 
     private static readonly FieldInfo[] SettingsFields = typeof(Settings).GetFields(BindingFlags.Instance | BindingFlags.Public);
 
@@ -324,16 +323,6 @@ public class ConfigurationManager : IConfigurationManager
         }
     }
 
-    public string FtpSslProtocols
-    {
-        get => string.IsNullOrEmpty(settings.FtpSslProtocols) ? DefaultFtpSslProtocols : settings.FtpSslProtocols;
-        set
-        {
-            settings.FtpSslProtocols = value;
-            SaveProperty(nameof(FtpSslProtocols), value);
-        }
-    }
-
     public string IsConfigured
     {
         get => settings.IsConfigured;
@@ -629,7 +618,6 @@ public class ConfigurationManager : IConfigurationManager
         public string FtpPort = "21";
         public string FtpCoding = DefaultFtpCoding;
         public string FtpEncryptionMode = DefaultFtpEncryptionMode;
-        public string FtpSslProtocols = DefaultFtpSslProtocols;
         public string IsConfigured = "0";
         public string DbStatus = "0";
         public string DeativateAutoBackupsWhenAkku = "1";
