@@ -376,9 +376,6 @@ This feature is currently not available because the quick preview could not be f
   <data name="MSG_BACKUP_DEVICE_NOT_READY_TITLE" xml:space="preserve">
     <value>Backup medium not available.</value>
   </data>
-  <data name="MSG_NO_UPDATE_FOUND_TEXT" xml:space="preserve">
-    <value>You are on the latest version of Backup Service Home 4. No updates were found.</value>
-  </data>
   <data name="MSG_NO_UPDATE_FOUND_TITLE" xml:space="preserve">
     <value>No updates found</value>
   </data>
@@ -595,18 +592,6 @@ Do you want to contine (ALL BACKUPS WILL BE DELETED)?</value>
   </data>
   <data name="Schedule_Repeat" xml:space="preserve">
     <value>Repeat</value>
-  </data>
-  <data name="Schedule_Retention" xml:space="preserve">
-    <value>Retention</value>
-  </data>
-  <data name="Schedule_RetentionMode_Automatic" xml:space="preserve">
-    <value>Automatic</value>
-  </data>
-  <data name="Schedule_RetentionMode_Interval" xml:space="preserve">
-    <value>Interval</value>
-  </data>
-  <data name="Schedule_RetentionMode_None" xml:space="preserve">
-    <value>None</value>
   </data>
   <data name="Schedule_RetentionUnit_Day" xml:space="preserve">
     <value>days</value>

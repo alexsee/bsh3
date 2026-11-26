@@ -376,9 +376,6 @@ Diese Funktion ist derzeit nicht verfügbar, weil die Schnellvorschau nicht gefu
   <data name="MSG_BACKUP_DEVICE_NOT_READY_TITLE" xml:space="preserve">
     <value>Sicherungsmedium nicht bereit</value>
   </data>
-  <data name="MSG_NO_UPDATE_FOUND_TEXT" xml:space="preserve">
-    <value>Sie sind auf der neusten Version von Backup Service Home 4. Es wurden keine Aktualisierungen gefunden.</value>
-  </data>
   <data name="MSG_NO_UPDATE_FOUND_TITLE" xml:space="preserve">
     <value>Keine Aktualisierungen gefunden</value>
   </data>
@@ -595,18 +592,6 @@ Möchten Sie fortfahren (ALLE SICHERUNGEN WERDEN GELÖSCHT)?</value>
   </data>
   <data name="Schedule_Repeat" xml:space="preserve">
     <value>Wiederholen</value>
-  </data>
-  <data name="Schedule_Retention" xml:space="preserve">
-    <value>Aufbewahrung</value>
-  </data>
-  <data name="Schedule_RetentionMode_Automatic" xml:space="preserve">
-    <value>Automatisch</value>
-  </data>
-  <data name="Schedule_RetentionMode_Interval" xml:space="preserve">
-    <value>Intervall</value>
-  </data>
-  <data name="Schedule_RetentionMode_None" xml:space="preserve">
-    <value>Keine</value>
   </data>
   <data name="Schedule_RetentionUnit_Day" xml:space="preserve">
     <value>Tage</value>
