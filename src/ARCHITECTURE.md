@@ -49,7 +49,7 @@ This document is intentionally stable and high-level. Use symbol search for the 
 - `BSH.Engine` is the business core; UI projects are orchestration/presentation layers around it.
 - Backup operations are modeled as jobs (`BackupJob`, `RestoreJob`, `DeleteJob`, etc.) and are launched through `IBackupService`.
 - Storage medium differences are isolated behind `IStorageProvider` + `StorageFactory`; call sites should not branch on filesystem vs FTP behavior.
-- VSS access is a process boundary: engine code calls `VolumeShadowCopyClient`, which talks to `BSH.Service` through `IVSSRemoteObject` over named pipes.
+- VSS access is a process boundary: engine code calls `VolumeShadowCopyClient`, which talks to `BSH.Service` through `IVSSRemoteObject` over named pipes. The helper performs privileged file I/O, so the pipe grants access to elevated local administrators and the service account. Backups running without elevation can still copy readable files, but cannot use the VSS retry for locked files.
 - Schema creation/migration ownership lives in `BSH.Engine.Database` (`DbClientFactory`, `DbMigrationService`); keep schema evolution there.
 - Progress/UI feedback crosses a boundary through `IJobReport`; engine jobs should stay UI-framework-agnostic.
 - Preview-handler/preview UI code is separate from backup execution logic (preview projects do not own backup workflows).

@@ -17,19 +17,29 @@ namespace BSH.Test;
 public class ServiceWirePipeTests
 {
     [Test]
-    public void PipeGrantsUsersReadWriteAndServiceAccountFullControl()
+    public void PipeGrantsAccessOnlyToLocalAdministratorsAndServiceAccounts()
     {
         var factory = new CustomNamedPipeServerStreamFactory();
         using var pipe = factory.Create("bsh-acl-" + Guid.NewGuid().ToString("N"),
             PipeDirection.InOut, 2, PipeTransmissionMode.Byte, PipeOptions.None, 8192, 8192);
         var rules = pipe.GetAccessControl().GetAccessRules(true, false, typeof(SecurityIdentifier))
             .Cast<PipeAccessRule>().ToArray();
+        using var identity = WindowsIdentity.GetCurrent();
+        var administrators = new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null);
+        var system = new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null);
+        var network = new SecurityIdentifier(WellKnownSidType.NetworkSid, null);
 
         Assert.Multiple(() =>
         {
-            AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null), PipeAccessRights.ReadWrite);
-            AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null), PipeAccessRights.FullControl);
-            AssertAllowed(rules, WindowsIdentity.GetCurrent().User!, PipeAccessRights.FullControl);
+            AssertAllowed(rules, administrators, PipeAccessRights.ReadWrite);
+            AssertAllowed(rules, system, PipeAccessRights.FullControl);
+            AssertAllowed(rules, identity.User!, PipeAccessRights.FullControl);
+            Assert.That(rules.Where(rule => rule.AccessControlType == AccessControlType.Allow)
+                .Select(rule => rule.IdentityReference).Distinct(),
+                Is.EquivalentTo(new[] { administrators, system, identity.User! }.Distinct()));
+            Assert.That(rules.Any(rule => rule.IdentityReference.Equals(network)
+                && rule.AccessControlType == AccessControlType.Deny
+                && rule.PipeAccessRights == PipeAccessRights.FullControl), Is.True);
         });
     }
 
