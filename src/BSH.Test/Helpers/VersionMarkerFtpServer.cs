@@ -27,6 +27,7 @@ internal sealed class VersionMarkerFtpServer : IAsyncDisposable
     public bool MarkerDownloaded { get; private set; }
     public bool UploadReceived { get; private set; }
     public bool LoggedIn { get; private set; }
+    public string TlsUpgradeCommand { get; private set; }
 
     public VersionMarkerFtpServer(string marker, bool rejectUploads = false, X509Certificate2 certificate = null)
         : this(Encoding.UTF8.GetBytes(marker), rejectUploads, certificate)
@@ -53,11 +54,7 @@ internal sealed class VersionMarkerFtpServer : IAsyncDisposable
         if (tlsStream != null)
         {
             using var greetingReader = new StreamReader(stream, Encoding.ASCII, leaveOpen: true);
-            if (await greetingReader.ReadLineAsync(cancellation.Token) != "AUTH TLS")
-            {
-                return;
-            }
-
+            TlsUpgradeCommand = await greetingReader.ReadLineAsync(cancellation.Token);
             await greetingWriter.WriteLineAsync("234 Start TLS");
             try
             {

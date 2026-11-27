@@ -63,6 +63,7 @@ public class FtpStorageTests
         {
             Assert.Throws<AuthenticationException>(() => FtpStorage.CheckConnection(
                 "localhost", server.Port, "user", "pass", "/", "UTF-8", encryption: true));
+            Assert.That(server.TlsUpgradeCommand, Is.EqualTo("AUTH TLS"));
             Assert.That(server.LoggedIn, Is.False);
         }
 
@@ -71,6 +72,7 @@ public class FtpStorageTests
             Assert.That(FtpStorage.CheckConnection(
                 "localhost", server.Port, "user", "pass", "/", "UTF-8",
                 encryption: true, allowUntrustedCertificate: true), Is.True);
+            Assert.That(server.TlsUpgradeCommand, Is.EqualTo("AUTH TLS"));
             Assert.That(server.LoggedIn, Is.True);
         }
     }
