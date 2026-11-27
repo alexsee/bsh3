@@ -59,7 +59,7 @@ public partial class SetupViewModel : ObservableObject
         CurrentStep = SetupWizardStep.Welcome;
     }
 
-    private string DatabaseFile => App.DatabaseFile;
+    private string DatabaseFile => dbClientFactory?.DatabaseFile ?? App.DatabaseFile;
 
     public ObservableCollection<string> Sources { get; } = new();
 

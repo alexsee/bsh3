@@ -15,6 +15,30 @@ namespace BSH.Test;
 public class BackupDatabaseImportTests
 {
     [Test]
+    public void SuccessfulDownloadReplacesDatabaseAndRemovesOldSidecars()
+    {
+        var directory = Directory.CreateTempSubdirectory("bsh-test-import-").FullName;
+        try
+        {
+            var destination = Path.Combine(directory, "backup.bshdb");
+            File.WriteAllText(destination, "old database");
+            File.WriteAllText(destination + "-wal", "old journal");
+            File.WriteAllText(destination + "-shm", "old shared memory");
+            using var storage = new StorageMock();
+
+            BackupDatabaseImport.DownloadFromStorage(storage, destination);
+
+            Assert.That(File.ReadAllText(destination), Is.Empty);
+            Assert.That(storage.CopiedFromStorageRemoteFiles, Is.EqualTo(new[] { "backup.bshdb" }));
+            Assert.That(Directory.GetFiles(directory), Is.EqualTo(new[] { destination }));
+        }
+        finally
+        {
+            TempDirectory.DeleteBestEffort(directory);
+        }
+    }
+
+    [Test]
     public async Task FailedDownloadPreservesTheCurrentDatabase()
     {
         var directory = Directory.CreateTempSubdirectory("bsh-test-import-").FullName;
@@ -42,7 +66,7 @@ public class BackupDatabaseImportTests
         {
             var dbClientFactory = new DbClientFactory();
             await dbClientFactory.InitializeAsync(Path.Combine(directory, "backup.bshdb"));
-            const string sources = @"C:\|c:\Docs\Child|C:\DocsArchive|E:\Photos\Trip|E:\PhotosOld|C:\Music\Albums";
+            const string sources = @"C:\|c:\Docs\Child|C:\DocsArchive|E:\Photos\Trip|E:\PhotosOld|C:\Music\Albums|Z:\Unmapped";
             using var dbClient = dbClientFactory.CreateDbClient();
             await dbClient.ExecuteNonQueryAsync(CommandType.Text,
                 "INSERT INTO versiontable (versionID, versionSources) VALUES (1, @sources)", [("sources", sources)]);
@@ -53,7 +77,7 @@ public class BackupDatabaseImportTests
                  (@"C:\Music", @"C:\Music")]);
 
             var remappedSources = await dbClient.ExecuteScalarAsync("SELECT versionSources FROM versiontable WHERE versionID = 1");
-            Assert.That(remappedSources, Is.EqualTo(@"D:\|E:\Docs\Child|D:\DocsArchive|G:\Photos\Trip|F:\PhotosOld|C:\Music\Albums"));
+            Assert.That(remappedSources, Is.EqualTo(@"D:\|E:\Docs\Child|D:\DocsArchive|G:\Photos\Trip|F:\PhotosOld|C:\Music\Albums|Z:\Unmapped"));
         }
         finally
         {

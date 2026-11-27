@@ -22,6 +22,9 @@ internal sealed class VersionMarkerFtpServer : IAsyncDisposable
     private readonly byte[] marker;
     private readonly bool rejectUploads;
     private readonly X509Certificate2 certificate;
+    private readonly int sessionCount;
+    private readonly bool implicitTls;
+    private readonly string remoteFileName;
 
     public int Port => ((IPEndPoint)listener.LocalEndpoint).Port;
     public bool MarkerDownloaded { get; private set; }
@@ -34,28 +37,48 @@ internal sealed class VersionMarkerFtpServer : IAsyncDisposable
     {
     }
 
-    public VersionMarkerFtpServer(byte[] marker, bool rejectUploads = false, X509Certificate2 certificate = null)
+    public VersionMarkerFtpServer(byte[] marker, bool rejectUploads = false, X509Certificate2 certificate = null,
+        int sessionCount = 1, bool implicitTls = false, string remoteFileName = "backup.bshv")
     {
         this.marker = marker;
         this.rejectUploads = rejectUploads;
         this.certificate = certificate;
+        this.sessionCount = sessionCount;
+        this.implicitTls = implicitTls;
+        this.remoteFileName = remoteFileName;
         listener.Start();
         session = RunAsync();
     }
 
     private async Task RunAsync()
     {
-        using var client = await listener.AcceptTcpClientAsync(cancellation.Token);
+        // An implicit FTPS endpoint sends no FTP greeting on the initial explicit probe.
+        using var explicitProbe = implicitTls ? await listener.AcceptTcpClientAsync(cancellation.Token) : null;
+        for (var i = 0; i < sessionCount; i++)
+        {
+            using var client = await listener.AcceptTcpClientAsync(cancellation.Token);
+            await RunSessionAsync(client);
+        }
+    }
+
+    private async Task RunSessionAsync(TcpClient client)
+    {
         using var stream = client.GetStream();
         using var greetingWriter = new StreamWriter(stream, Encoding.ASCII, leaveOpen: true) { AutoFlush = true, NewLine = "\r\n" };
-        await greetingWriter.WriteLineAsync("220 Version marker fixture");
+        if (!implicitTls)
+        {
+            await greetingWriter.WriteLineAsync("220 FTP fixture");
+        }
 
         using var tlsStream = certificate == null ? null : new SslStream(stream, leaveInnerStreamOpen: true);
         if (tlsStream != null)
         {
-            using var greetingReader = new StreamReader(stream, Encoding.ASCII, leaveOpen: true);
-            TlsUpgradeCommand = await greetingReader.ReadLineAsync(cancellation.Token);
-            await greetingWriter.WriteLineAsync("234 Start TLS");
+            if (!implicitTls)
+            {
+                using var greetingReader = new StreamReader(stream, Encoding.ASCII, leaveOpen: true);
+                TlsUpgradeCommand = await greetingReader.ReadLineAsync(cancellation.Token);
+                await greetingWriter.WriteLineAsync("234 Start TLS");
+            }
             try
             {
                 await tlsStream.AuthenticateAsServerAsync(
@@ -73,6 +96,11 @@ internal sealed class VersionMarkerFtpServer : IAsyncDisposable
         TcpListener dataListener = null;
         try
         {
+            if (implicitTls)
+            {
+                await writer.WriteLineAsync("220 FTP fixture");
+            }
+
             while (await reader.ReadLineAsync(cancellation.Token) is { } command)
             {
                 switch (command.Split(' ')[0])
@@ -117,7 +145,7 @@ internal sealed class VersionMarkerFtpServer : IAsyncDisposable
                         using (var dataClient = await dataListener.AcceptTcpClientAsync(cancellation.Token))
                         {
                             var payload = command.StartsWith("NLST", StringComparison.Ordinal)
-                                ? Encoding.ASCII.GetBytes("/backups/backup.bshv\r\n")
+                                ? Encoding.ASCII.GetBytes($"/backups/{remoteFileName}\r\n")
                                 : marker;
                             await dataClient.GetStream().WriteAsync(payload, cancellation.Token);
                         }

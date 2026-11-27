@@ -13,6 +13,7 @@ using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels;
 using BSH.Test.Fakes;
+using BSH.Test.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 using Windows.UI.Popups;
@@ -22,6 +23,52 @@ namespace BSH.Test;
 [TestFixture]
 public class SettingsViewModelTests
 {
+    [TestCase(true)]
+    [TestCase(false)]
+    public void FtpCertificateExceptionIsPersistedAndClearedOnEndpointEdit(bool editHost)
+    {
+        var configuration = CreateFtpConfiguration();
+        var viewModel = CreateHarness(configuration).ViewModel;
+        viewModel.OnNavigatedTo(null);
+        viewModel.FtpRemoteAllowUntrustedCertificate = true;
+        Assert.That(configuration.FtpAllowUntrustedCertificate, Is.True);
+
+        viewModel = CreateHarness(configuration).ViewModel;
+        viewModel.OnNavigatedTo(null);
+        Assert.That(viewModel.FtpRemoteAllowUntrustedCertificate, Is.True);
+
+        if (editHost)
+        {
+            viewModel.FtpRemoteHost = "other.example";
+        }
+        else
+        {
+            viewModel.FtpRemotePort = 2121;
+        }
+
+        Assert.That(viewModel.FtpRemoteAllowUntrustedCertificate, Is.False);
+        Assert.That(configuration.FtpAllowUntrustedCertificate, Is.False);
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task FtpConnectionTestReportsResultAndHonorsEncryptionMode(bool allowPlainFtp)
+    {
+        await using var server = new VersionMarkerFtpServer("7");
+        var configuration = CreateFtpConfiguration();
+        configuration.FtpHost = "127.0.0.1";
+        configuration.FtpPort = server.Port.ToString();
+        configuration.FtpFolder = "/";
+        configuration.FtpEncryptionMode = allowPlainFtp ? "0" : "3";
+        var harness = CreateHarness(configuration);
+        harness.ViewModel.OnNavigatedTo(null);
+
+        await harness.ViewModel.CheckFtpRemote();
+
+        Assert.That(server.LoggedIn, Is.EqualTo(allowPlainFtp));
+        Assert.That(harness.PresentationService.MessageBoxCalls, Is.EqualTo(1));
+    }
+
     [Test]
     public void FtpFields_PersistAndReloadAcrossNavigation()
     {

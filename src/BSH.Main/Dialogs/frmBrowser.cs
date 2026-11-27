@@ -578,21 +578,12 @@ public partial class frmBrowser : IStatusReport
             }
 
             var favorites = Settings.Default.BrowserFavorits.Split('|');
-            var favoriteNames = Settings.Default.BrowserFavoritsName.Split('|');
-            if (!string.IsNullOrEmpty(Settings.Default.BrowserFavorits)
-                && (favoriteNames.Length != favorites.Length || string.IsNullOrEmpty(Settings.Default.BrowserFavoritsName)))
+            var savedNames = Settings.Default.BrowserFavoritsName;
+            var favoriteNames = await GetFavoriteNamesAsync(favorites, savedNames, BackupLogic.QueryManager.GetLocalizedPathAsync);
+            var repairedNames = string.Join("|", favoriteNames);
+            if (repairedNames != savedNames)
             {
-                favoriteNames = new string[favorites.Length];
-                for (var i = 0; i < favorites.Length; i++)
-                {
-                    if (!string.IsNullOrEmpty(favorites[i]))
-                    {
-                        var path = await BackupLogic.QueryManager.GetLocalizedPathAsync(favorites[i].TrimEnd('\\'));
-                        favoriteNames[i] = System.IO.Path.GetFileName(path);
-                    }
-                }
-
-                Settings.Default.BrowserFavoritsName = string.Join("|", favoriteNames);
+                Settings.Default.BrowserFavoritsName = repairedNames;
                 Settings.Default.Save();
             }
 
@@ -649,6 +640,27 @@ public partial class frmBrowser : IStatusReport
         }
 
         lvFavorite.EndUpdate();
+    }
+
+    internal static async Task<string[]> GetFavoriteNamesAsync(
+        string[] favorites, string savedNames, Func<string, Task<string>> localizePath)
+    {
+        var names = savedNames.Split('|');
+        if (favorites.Length == 1 && favorites[0].Length == 0
+            || names.Length == favorites.Length && savedNames.Length > 0)
+        {
+            return names;
+        }
+
+        names = new string[favorites.Length];
+        for (var i = 0; i < favorites.Length; i++)
+        {
+            names[i] = favorites[i].Length == 0
+                ? ""
+                : System.IO.Path.GetFileName(await localizePath(favorites[i].TrimEnd('\\')));
+        }
+
+        return names;
     }
 
     private async Task GetExplorerFoldersAsync(bool VersionChanged = false)
