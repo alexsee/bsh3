@@ -57,7 +57,11 @@ public class FtpStorageTests
     {
         using var key = RSA.Create(2048);
         var request = new CertificateRequest("CN=localhost", key, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-        using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddDays(1));
+        using var generatedCertificate = request.CreateSelfSigned(
+            DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddDays(1));
+        // Schannel needs a server certificate with a non-ephemeral private key.
+        using var certificate = X509CertificateLoader.LoadPkcs12(
+            generatedCertificate.Export(X509ContentType.Pkcs12), password: null);
 
         await using (var server = new VersionMarkerFtpServer("7", certificate: certificate))
         {
