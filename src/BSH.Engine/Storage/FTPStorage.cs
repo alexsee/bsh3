@@ -102,7 +102,10 @@ public class FtpStorage : Storage, IStorageProvider
 
     private static Encoding GetEncoding(string encoding)
     {
-        return encoding == "UTF-8" ? new UTF8Encoding(false) : Encoding.GetEncoding(encoding);
+        return string.Equals(encoding, "UTF-8", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(encoding, "UTF8", StringComparison.OrdinalIgnoreCase)
+            ? new UTF8Encoding(false)
+            : Encoding.GetEncoding(encoding);
     }
 
     private static FtpConfig CreateConnectionConfig(int port, bool encryption, bool allowUntrustedCertificate, bool quickCheck = false)

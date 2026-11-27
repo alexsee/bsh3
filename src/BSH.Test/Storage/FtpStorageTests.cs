@@ -53,6 +53,17 @@ public class FtpStorageTests
         Assert.That(server.LoggedIn, Is.False);
     }
 
+    [TestCase("UTF8")]
+    [TestCase("UTF-8")]
+    public async Task ConnectionAcceptsPersistedUtf8EncodingNames(string encoding)
+    {
+        await using var server = new VersionMarkerFtpServer("7");
+
+        Assert.That(FtpStorage.CheckConnection(
+            "127.0.0.1", server.Port, "user", "pass", "/", encoding, encryption: false), Is.True);
+        Assert.That(server.LoggedIn, Is.True);
+    }
+
     [Test]
     public async Task ConnectionTestRequiresConsentToAcceptSelfSignedCertificate()
     {
