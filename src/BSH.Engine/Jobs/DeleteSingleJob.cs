@@ -172,7 +172,8 @@ public class DeleteSingleJob : Job
                 : await versionQueryRepository.GetFileVersionsExclusiveToVersionsForDeleteSingleAsync(dbClient, fileId, scopedVersions);
 
             var i = 0;
-            while (await reader.ReadAsync())
+            // Return normally on cancellation so the caller can commit completed deletions.
+            while (!cancellationToken.IsCancellationRequested && await reader.ReadAsync(CancellationToken.None))
             {
                 if (cancellationToken.IsCancellationRequested)
                 {

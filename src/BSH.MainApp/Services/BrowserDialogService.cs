@@ -158,7 +158,7 @@ public class BrowserDialogService : IBrowserDialogService
             }
 
             var scopeResult = ToUiResult(scope);
-            object contentDescription = items.Count == 1 ? itemType : items.Count;
+            object? contentDescription = items.Count == 1 ? itemType : items.Count;
             var (resourceKey, arguments) = (items.Count == 1, scopeResult.DeleteFromAllVersions) switch
             {
                 (true, true) => ("Browser_DeleteFromAll_Confirm", new[] { contentDescription }),

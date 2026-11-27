@@ -157,26 +157,9 @@ public class DeleteJob : Job
             _logger.Error("{NumFiles} could not be deleted to device.", FileErrorList.Count);
         }
 
-        // clean storage folders
-        if (!cancellationToken.IsCancellationRequested && storage.Kind == StorageProviderKind.LocalFileSystem)
+        if (storage.Kind == StorageProviderKind.LocalFileSystem && !cancellationToken.IsCancellationRequested)
         {
-            using var dbClient = dbClientFactory.CreateDbClient();
-            using var reader = await versionQueryRepository.GetOrphanedVersionDatesAsync(dbClient);
-
-            while (!cancellationToken.IsCancellationRequested && await reader.ReadAsync())
-            {
-                try
-                {
-                    var remoteFolder = reader.GetString("versiondate");
-                    storage.DeleteDirectory(remoteFolder);
-                }
-                catch
-                {
-                    // not necessary to handle this error
-                }
-            }
-
-            await reader.CloseAsync();
+            await DeleteOrphanedStorageFoldersAsync(cancellationToken);
         }
 
         // store database version
@@ -205,5 +188,31 @@ public class DeleteJob : Job
 
         _logger.Information("Deletion of backup {Version} successfully.", Version);
         ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
+    }
+
+    private async Task DeleteOrphanedStorageFoldersAsync(CancellationToken cancellationToken)
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+        using var reader = await versionQueryRepository.GetOrphanedVersionDatesAsync(dbClient);
+
+        // Poll between rows so cancellation still reaches the database upload.
+        while (!cancellationToken.IsCancellationRequested && await reader.ReadAsync(CancellationToken.None))
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            try
+            {
+                storage.DeleteDirectory(reader.GetString("versiondate"));
+            }
+            catch
+            {
+                // Orphaned directories can be cleaned up by a later job.
+            }
+        }
+
+        await reader.CloseAsync();
     }
 }
