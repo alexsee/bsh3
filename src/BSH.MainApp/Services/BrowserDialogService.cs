@@ -158,15 +158,15 @@ public class BrowserDialogService : IBrowserDialogService
             }
 
             var scopeResult = ToUiResult(scope);
-            var confirmMessage = scopeResult.DeleteFromAllVersions
-                ? string.Format("Browser_DeleteFromAll_Confirm".GetLocalized() ?? "Browser_DeleteFromAll_Confirm", itemType)
-                : string.Format("Browser_DeleteFromRange_Confirm".GetLocalized() ?? "Browser_DeleteFromRange_Confirm", itemType, scopeResult.VersionIds.Count);
-            if (items.Count > 1)
+            object contentDescription = items.Count == 1 ? itemType : items.Count;
+            var (resourceKey, arguments) = (items.Count == 1, scopeResult.DeleteFromAllVersions) switch
             {
-                confirmMessage = scopeResult.DeleteFromAllVersions
-                    ? string.Format("Browser_DeleteSelection_AllConfirm".GetLocalized() ?? "Browser_DeleteSelection_AllConfirm", items.Count)
-                    : string.Format("Browser_DeleteSelection_RangeConfirm".GetLocalized() ?? "Browser_DeleteSelection_RangeConfirm", items.Count, scopeResult.VersionIds.Count);
-            }
+                (true, true) => ("Browser_DeleteFromAll_Confirm", new[] { contentDescription }),
+                (true, false) => ("Browser_DeleteFromRange_Confirm", new[] { contentDescription, scopeResult.VersionIds.Count }),
+                (false, true) => ("Browser_DeleteSelection_AllConfirm", new[] { contentDescription }),
+                (false, false) => ("Browser_DeleteSelection_RangeConfirm", new[] { contentDescription, scopeResult.VersionIds.Count })
+            };
+            var confirmMessage = string.Format(resourceKey.GetLocalized() ?? resourceKey, arguments);
 
             var confirmDialog = new ContentDialog
             {

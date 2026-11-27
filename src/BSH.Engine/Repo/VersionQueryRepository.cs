@@ -128,26 +128,8 @@ public class VersionQueryRepository : IVersionQueryRepository
 
     public async Task<IReadOnlyList<int>> GetFileIdsForDeleteSingleAsync(DbClient dbClient, string fileFilter, string pathFilter)
     {
-        string sql;
-        (string, object)[] parameters;
-
-        if (!string.IsNullOrEmpty(fileFilter) && !string.IsNullOrEmpty(pathFilter))
-        {
-            sql = "SELECT ft.fileID FROM fileTable AS ft WHERE fileName = @fileName AND filePath = @filePath";
-            parameters =
-            [
-                ("fileName", fileFilter),
-                ("filePath", pathFilter)
-            ];
-        }
-        else
-        {
-            sql = "SELECT ft.fileID FROM fileTable AS ft WHERE filePath LIKE @filePath ESCAPE '|'";
-            parameters =
-            [
-                ("filePath", pathFilter)
-            ];
-        }
+        var (predicate, parameters) = DeleteContentFilter.ForFiles(fileFilter, pathFilter);
+        var sql = "SELECT ft.fileID FROM fileTable AS ft WHERE " + predicate;
 
         var result = new List<int>();
         using var reader = await dbClient.ExecuteDataReaderAsync(CommandType.Text, sql, parameters);

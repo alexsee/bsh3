@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
@@ -71,8 +72,6 @@ public class DeleteJob : Job
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var canceled = false;
-
         // connect to database
         using (var dbClient = dbClientFactory.CreateDbClient())
         {
@@ -98,16 +97,18 @@ public class DeleteJob : Job
             ReportProgress(files.Tables[0].Rows.Count, 0);
             ReportStatus(Resources.STATUS_DELETE_REMOVE_SHORT, Resources.STATUS_DELETE_REMOVE_TEXT);
 
+            var failedFileVersionIds = new List<long>();
+
             // delete files
             for (var i = 0; i < files.Tables[0].Rows.Count; i++)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    canceled = true;
                     break;
                 }
 
                 var file = files.Tables[0].Rows[i];
+                var fileVersionId = Convert.ToInt64(file["fileversionid"]);
 
                 ReportProgress(files.Tables[0].Rows.Count, i);
                 ReportFileProgress(file["fileName"]?.ToString());
@@ -128,15 +129,22 @@ public class DeleteJob : Job
                     var fileExceptionEntry = AddFileErrorToList(new FileTableRow() { FileName = file["fileName"].ToString(), FilePath = file["filePath"].ToString() }, ex);
 
                     _logger.Error(ex.InnerException, "File {FileName} could not be deleted. {Exception}", file["fileName"].ToString(), fileExceptionEntry);
+                    failedFileVersionIds.Add(fileVersionId);
+                    continue;
                 }
 
                 // update database
-                await backupMutationRepository.DeleteFileVersionAsync(dbClient, Convert.ToInt64(file["fileversionid"]));
+                await backupMutationRepository.DeleteFileVersionAsync(dbClient, fileVersionId);
             }
 
-            // Commit already processed files on cancellation and retain the rest of the version.
-            if (!canceled)
+            // On cancellation, commit only the metadata for payloads already removed from storage.
+            if (!cancellationToken.IsCancellationRequested)
             {
+                foreach (var fileVersionId in failedFileVersionIds)
+                {
+                    await backupMutationRepository.DeleteFileVersionAsync(dbClient, fileVersionId);
+                }
+
                 await backupMutationRepository.DeleteVersionMetadataAsync(dbClient, version);
             }
 
@@ -150,7 +158,7 @@ public class DeleteJob : Job
         }
 
         // clean storage folders
-        if (!canceled && storage.Kind == StorageProviderKind.LocalFileSystem)
+        if (!cancellationToken.IsCancellationRequested && storage.Kind == StorageProviderKind.LocalFileSystem)
         {
             using var dbClient = dbClientFactory.CreateDbClient();
             using var reader = await versionQueryRepository.GetOrphanedVersionDatesAsync(dbClient);

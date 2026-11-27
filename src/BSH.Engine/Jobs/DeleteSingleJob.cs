@@ -24,14 +24,6 @@ namespace Brightbits.BSH.Engine.Jobs;
 /// </summary>
 public class DeleteSingleJob : Job
 {
-    public static string CreateFolderFilter(string path)
-    {
-        var relativePath = path.Trim('\\');
-        var normalizedPath = relativePath.Length == 0 ? "\\" : "\\" + relativePath + "\\";
-        return normalizedPath.Replace("%", "|%", StringComparison.Ordinal)
-            .Replace("_", "|_", StringComparison.Ordinal) + "%";
-    }
-
     private static readonly ILogger _logger = Log.ForContext<DeleteSingleJob>();
     private readonly IBackupMutationRepository backupMutationRepository;
 
@@ -50,8 +42,8 @@ public class DeleteSingleJob : Job
     /// <summary>
     /// Starts the single file deletion from the backup device.
     /// </summary>
-    /// <param name="fileFilter"></param>
-    /// <param name="pathFilter"></param>
+    /// <param name="fileFilter">The exact file name, or empty to delete a folder.</param>
+    /// <param name="pathFilter">The literal database path of the file parent or selected folder.</param>
     /// <exception cref="DeviceNotReadyException"></exception>
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
     public Task DeleteSingleAsync(string fileFilter, string pathFilter)
@@ -65,8 +57,8 @@ public class DeleteSingleJob : Job
     /// Otherwise only the specified backup versions are unlinked (storage is deleted only when no
     /// remaining version still references the content).
     /// </summary>
-    /// <param name="fileFilter"></param>
-    /// <param name="pathFilter"></param>
+    /// <param name="fileFilter">The exact file name, or empty to delete a folder.</param>
+    /// <param name="pathFilter">The literal database path of the file parent or selected folder.</param>
     /// <param name="versionIds">Optional version IDs to scope the delete; null/empty means all versions.</param>
     /// <exception cref="DeviceNotReadyException"></exception>
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>

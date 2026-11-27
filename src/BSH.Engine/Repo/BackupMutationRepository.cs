@@ -230,63 +230,47 @@ public class BackupMutationRepository : IBackupMutationRepository
 
     public async Task DeleteSingleFileMetadataAsync(DbClient dbClient, string fileFilter, string pathFilter, IReadOnlyList<int> versionIds = null)
     {
-        string whereClause;
-        var parameters = new List<(string, object)>();
+        var (predicate, parameters) = DeleteContentFilter.ForFiles(fileFilter, pathFilter);
+        var fileIds = "SELECT fileID FROM fileTable WHERE " + predicate;
+        var versionClause = string.Empty;
+        var linkParameters = parameters;
 
-        if (!string.IsNullOrEmpty(fileFilter) && !string.IsNullOrEmpty(pathFilter))
+        if (versionIds is { Count: > 0 })
         {
-            whereClause = "fileName = @fileName AND filePath = @filePath";
-            parameters.Add(("fileName", fileFilter));
-            parameters.Add(("filePath", pathFilter));
-        }
-        else
-        {
-            whereClause = "filePath LIKE @filePath ESCAPE '|'";
-            parameters.Add(("filePath", pathFilter));
+            var (inClause, inParameters) = SqlParameterBuilder.BuildInClause("v", versionIds);
+            versionClause = " AND versionID IN (" + inClause + ")";
+            linkParameters = SqlParameterBuilder.Combine(parameters, inParameters);
         }
 
-        var subQuerySql = "SELECT ft.fileID FROM fileTable AS ft WHERE " + whereClause;
-
-        if (versionIds == null || versionIds.Count == 0)
-        {
-            await dbClient.ExecuteNonQueryAsync(
-                CommandType.Text,
-                "DELETE FROM fileLink WHERE fileversionid IN (SELECT fileversionid FROM fileversiontable AS fvt WHERE fvt.fileID IN (" + subQuerySql + "))",
-                parameters.ToArray());
-            await dbClient.ExecuteNonQueryAsync(
-                CommandType.Text,
-                "DELETE FROM fileversiontable WHERE fileID IN (" + subQuerySql + ")",
-                parameters.ToArray());
-            await dbClient.ExecuteNonQueryAsync(
-                CommandType.Text,
-                "DELETE FROM fileTable AS ft WHERE " + whereClause,
-                parameters.ToArray());
-            return;
-        }
-
-        var (inClause, inParameters) = SqlParameterBuilder.BuildInClause("v", versionIds);
-        var scopedParameters = SqlParameterBuilder.Combine(parameters, inParameters);
-
-        // Unlink the file from the selected versions only.
         await dbClient.ExecuteNonQueryAsync(
             CommandType.Text,
-            "DELETE FROM fileLink WHERE versionID IN (" + inClause + ") " +
-            "AND fileversionid IN (SELECT fileversionid FROM fileversiontable AS fvt WHERE fvt.fileID IN (" + subQuerySql + "))",
-            scopedParameters);
+            "DELETE FROM fileLink WHERE fileversionid IN (SELECT fileversionid FROM fileversiontable WHERE fileID IN (" + fileIds + "))" +
+            versionClause,
+            linkParameters);
 
-        // Drop content rows that no longer have any version links.
         await dbClient.ExecuteNonQueryAsync(
             CommandType.Text,
-            "DELETE FROM fileversiontable WHERE fileID IN (" + subQuerySql + ") " +
+            "DELETE FROM fileversiontable WHERE fileID IN (" + fileIds + ") " +
             "AND fileversionid NOT IN (SELECT fileversionid FROM filelink)",
-            parameters.ToArray());
+            parameters);
 
-        // Drop logical files that no longer have any content rows.
         await dbClient.ExecuteNonQueryAsync(
             CommandType.Text,
-            "DELETE FROM fileTable AS ft WHERE " + whereClause + " " +
-            "AND fileID NOT IN (SELECT fileID FROM fileversiontable)",
-            parameters.ToArray());
+            "DELETE FROM fileTable WHERE " + predicate + " AND fileID NOT IN (SELECT fileID FROM fileversiontable)",
+            parameters);
+
+        if (string.IsNullOrEmpty(fileFilter))
+        {
+            var folderPredicate = DeleteContentFilter.ForFolders;
+            await dbClient.ExecuteNonQueryAsync(
+                CommandType.Text,
+                "DELETE FROM folderlink WHERE folderid IN (SELECT id FROM foldertable WHERE " + folderPredicate + ")" + versionClause,
+                linkParameters);
+            await dbClient.ExecuteNonQueryAsync(
+                CommandType.Text,
+                "DELETE FROM foldertable WHERE " + folderPredicate + " AND id NOT IN (SELECT folderid FROM folderlink)",
+                parameters);
+        }
     }
 
     public async Task UpdateFileVersionTypeAsync(DbClient dbClient, long fileVersionId, int fileType)

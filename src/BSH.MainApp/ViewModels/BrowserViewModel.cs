@@ -6,7 +6,6 @@ using System.Collections.Specialized;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Services;
-using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Contracts.ViewModels;
@@ -684,12 +683,10 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             }
         }
 
-        var targets = items.Select(item => item.IsFile
-            ? (item.Name, item.FullPath)
-            : (string.Empty, DeleteSingleJob.CreateFolderFilter(item.FullPath))).ToArray();
+        var targets = items.Select(item => (FileName: item.IsFile ? item.Name : string.Empty, Path: item.FullPath)).ToArray();
         if (targets.Length == 1)
         {
-            await jobService.DeleteSingleFileAsync(targets[0].Item1, targets[0].Item2, versionIds: versionIds);
+            await jobService.DeleteSingleFileAsync(targets[0].FileName, targets[0].Path, versionIds: versionIds);
         }
         else
         {

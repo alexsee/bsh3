@@ -226,7 +226,7 @@ public class DeleteTests
         var storage = new RecordingDeleteStorage();
         using var deleteJob = CreateDeleteSingleJob(storage);
 
-        await deleteJob.DeleteSingleAsync(string.Empty, @"\docs\%", [2]);
+        await deleteJob.DeleteSingleAsync(string.Empty, @"\docs\", [2]);
 
         Assert.That(storage.DeletedPlain, Is.Empty);
 
@@ -397,20 +397,86 @@ public class DeleteTests
         else
         {
             using var job = CreateDeleteSingleJob(storage);
-            await job.DeleteSingleAsync(string.Empty, @"\docs\%", [], cancellation.Token);
+            await job.DeleteSingleAsync(string.Empty, @"\docs\", [], cancellation.Token);
         }
 
         Assert.That(storage.DeletedPlain, Has.Count.EqualTo(1));
         var deletedVersionId = Path.GetFileName(storage.DeletedPlain[0]) == "a.txt" ? 1 : 2;
         using var dbClient = dbClientFactory.CreateDbClient();
-        var remainingFileVersion = Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileversionID FROM fileversiontable"));
-        var remainingFileLink = Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileversionID FROM filelink"));
+        var remainingFileVersion = await dbClient.ExecuteScalarAsync("SELECT GROUP_CONCAT(fileversionID) FROM fileversiontable");
+        var remainingFileLink = await dbClient.ExecuteScalarAsync("SELECT GROUP_CONCAT(fileversionID) FROM filelink");
         var versionStatus = Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT versionStatus FROM versiontable"));
         Assert.Multiple(() =>
         {
-            Assert.That(remainingFileVersion, Is.EqualTo(3 - deletedVersionId));
-            Assert.That(remainingFileLink, Is.EqualTo(3 - deletedVersionId));
+            Assert.That(remainingFileVersion, Is.EqualTo((3 - deletedVersionId).ToString()));
+            Assert.That(remainingFileLink, Is.EqualTo((3 - deletedVersionId).ToString()));
             Assert.That(versionStatus, Is.EqualTo(0));
+        });
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task DeleteVersion_CanceledDuringFinalPayloadRetainsRemainingRestoreLinks(bool failDelete)
+    {
+        await SeedVersionAsync(1, "01-01-2021 00-00-00");
+        await SeedVersionAsync(2, "02-01-2021 00-00-00");
+        await SeedSharedFileAsync(1, 1, [1, 2], "shared.txt", @"\docs\", 1, "");
+        await SeedFileForVersionAsync(2, 2, 1, "unique.txt", @"\docs\", 1, "");
+        await JobSeedHelper.SeedEmptyFolderAsync(dbClientFactory, 1, 1, @"\docs\empty\");
+
+        using var cancellation = new CancellationTokenSource();
+        var storage = new RecordingDeleteStorage(throwOnDelete: failDelete) { OnPlainDelete = cancellation.Cancel };
+        using var job = CreateDeleteJob(storage, "1");
+        await job.DeleteAsync(cancellation.Token);
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        var status = await dbClient.ExecuteScalarAsync("SELECT versionStatus FROM versiontable WHERE versionID = 1");
+        var sharedLinks = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink WHERE fileversionID = 1");
+        var uniqueLinks = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink WHERE fileversionID = 2");
+        var folderLinks = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM folderlink WHERE versionID = 1");
+        Assert.Multiple(() =>
+        {
+            Assert.That(Convert.ToInt32(status), Is.Zero);
+            Assert.That(Convert.ToInt32(sharedLinks), Is.EqualTo(2));
+            Assert.That(Convert.ToInt32(uniqueLinks), Is.EqualTo(failDelete ? 1 : 0));
+            Assert.That(Convert.ToInt32(folderLinks), Is.EqualTo(1));
+        });
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task DeleteSingle_FolderRemovesOnlyMatchingContentAndEmptyFolderLinks(bool allVersions)
+    {
+        await SeedVersionAsync(1, "01-01-2021 00-00-00");
+        await SeedVersionAsync(2, "02-01-2021 00-00-00");
+        await SeedSharedFileAsync(1, 1, [1, 2], "remove.txt", @"\docs_100%\child\", 1, "");
+        await SeedFileForVersionAsync(2, 2, 1, "keep.txt", @"\docsX100x\", 1, "");
+        await JobSeedHelper.SeedEmptyFolderAsync(dbClientFactory, 1, 1, @"\docs_100%");
+        await JobSeedHelper.SeedEmptyFolderAsync(dbClientFactory, 1, 2, @"\docs_100%\");
+        await JobSeedHelper.SeedEmptyFolderAsync(dbClientFactory, 2, 1, @"\docs_100%\child\empty\");
+        await JobSeedHelper.SeedEmptyFolderAsync(dbClientFactory, 3, 1, @"\docs_100%-other\empty\");
+        await JobSeedHelper.SeedEmptyFolderAsync(dbClientFactory, 4, 1, @"\docsX100x\empty\");
+
+        var storage = new RecordingDeleteStorage();
+        using var job = CreateDeleteSingleJob(storage);
+        await job.DeleteSingleAsync(string.Empty, @"\docs_100%", allVersions ? null : [1]);
+
+        using var dbClient = dbClientFactory.CreateDbClient();
+        var selectedFolders = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM folderlink WHERE folderid IN (1, 2) AND versionid = 1");
+        var otherFolders = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM folderlink WHERE folderid IN (3, 4)");
+        var otherVersion = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM folderlink WHERE folderid = 1 AND versionid = 2");
+        var orphanedFolders = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM foldertable WHERE id NOT IN (SELECT folderid FROM folderlink)");
+        var selectedFile = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink WHERE fileversionid = 1 AND versionid = 1");
+        var otherFile = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink WHERE fileversionid = 2");
+        Assert.Multiple(() =>
+        {
+            Assert.That(Convert.ToInt32(selectedFolders), Is.Zero);
+            Assert.That(Convert.ToInt32(otherFolders), Is.EqualTo(2));
+            Assert.That(Convert.ToInt32(otherVersion), Is.EqualTo(allVersions ? 0 : 1));
+            Assert.That(Convert.ToInt32(orphanedFolders), Is.Zero);
+            Assert.That(Convert.ToInt32(selectedFile), Is.Zero);
+            Assert.That(Convert.ToInt32(otherFile), Is.EqualTo(1));
+            Assert.That(storage.DeletedPlain, Has.Count.EqualTo(allVersions ? 1 : 0));
         });
     }
 
@@ -425,7 +491,7 @@ public class DeleteTests
 
         var storage = new StorageMock();
         using var deleteJob = CreateDeleteSingleJob(storage);
-        await deleteJob.DeleteSingleAsync(fileFilter: "", pathFilter: @"\docs\%");
+        await deleteJob.DeleteSingleAsync(fileFilter: "", pathFilter: @"\docs\");
 
         Assert.That(storage.DeletedPlain, Has.Count.EqualTo(1));
         Assert.That(storage.DeletedCompressed, Has.Count.EqualTo(1));
@@ -603,13 +669,13 @@ public class DeleteTests
 
         public bool DeleteFileFromStorage(string remoteFile)
         {
+            OnPlainDelete?.Invoke();
             if (throwOnDelete)
             {
                 throw new IOException("Delete failed.");
             }
 
             DeletedPlain.Add(remoteFile);
-            OnPlainDelete?.Invoke();
             return true;
         }
 

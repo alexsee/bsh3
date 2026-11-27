@@ -360,7 +360,7 @@ public class BrowserViewModelTests
         Assert.That(jobService.DeleteSelectionTargets, Is.EqualTo(new[]
         {
             ("report.txt", @"\source\"),
-            (string.Empty, @"\source\old|_files\%")
+            (string.Empty, @"\source\old_files")
         }));
         Assert.That(jobService.DeleteSelectionVersionIds, Is.EqualTo(new[] { 2 }));
     }
