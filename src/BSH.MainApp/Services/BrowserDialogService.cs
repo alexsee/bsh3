@@ -75,12 +75,12 @@ public class BrowserDialogService : IBrowserDialogService
     }
 
     public async Task<DeleteSelectedContentResult> ShowDeleteSelectedContentWindowAsync(
-        FileOrFolderItem item,
+        IReadOnlyList<FileOrFolderItem> items,
         IReadOnlyList<VersionDetails> versions)
     {
         return await App.MainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
-            var itemType = item.IsFile
+            var itemType = items[0].IsFile
                 ? "Browser_DeleteFromAll_File".GetLocalized()
                 : "Browser_DeleteFromAll_Folder".GetLocalized();
 
@@ -117,8 +117,11 @@ public class BrowserDialogService : IBrowserDialogService
             lastDaysBox.GotFocus += (_, _) => radios.LastDays.IsChecked = true;
             versionList.GotFocus += (_, _) => radios.Selected.IsChecked = true;
 
+            var intro = items.Count == 1
+                ? string.Format("Browser_DeleteFromRange_Intro".GetLocalized() ?? "Browser_DeleteFromRange_Intro", itemType)
+                : string.Format("Browser_DeleteSelection_Intro".GetLocalized() ?? "Browser_DeleteSelection_Intro", items.Count);
             var content = BuildDeleteScopeContent(
-                string.Format("Browser_DeleteFromRange_Intro".GetLocalized() ?? "Browser_DeleteFromRange_Intro", itemType),
+                intro,
                 radios,
                 lastNBox,
                 lastDaysBox,
@@ -158,6 +161,12 @@ public class BrowserDialogService : IBrowserDialogService
             var confirmMessage = scopeResult.DeleteFromAllVersions
                 ? string.Format("Browser_DeleteFromAll_Confirm".GetLocalized() ?? "Browser_DeleteFromAll_Confirm", itemType)
                 : string.Format("Browser_DeleteFromRange_Confirm".GetLocalized() ?? "Browser_DeleteFromRange_Confirm", itemType, scopeResult.VersionIds.Count);
+            if (items.Count > 1)
+            {
+                confirmMessage = scopeResult.DeleteFromAllVersions
+                    ? string.Format("Browser_DeleteSelection_AllConfirm".GetLocalized() ?? "Browser_DeleteSelection_AllConfirm", items.Count)
+                    : string.Format("Browser_DeleteSelection_RangeConfirm".GetLocalized() ?? "Browser_DeleteSelection_RangeConfirm", items.Count, scopeResult.VersionIds.Count);
+            }
 
             var confirmDialog = new ContentDialog
             {

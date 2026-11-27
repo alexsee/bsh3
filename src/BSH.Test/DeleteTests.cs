@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
@@ -380,6 +381,40 @@ public class DeleteTests
     }
 
     [Test]
+    public async Task DeleteCancellationKeepsUnprocessedFileAndItsMetadata([Values] bool entireBackup)
+    {
+        await SeedVersionAsync(1, "01-01-2021 00-00-00");
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "a.txt", @"\docs\", 1, "");
+        await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 1, "b.txt", @"\docs\", 1, "");
+
+        using var cancellation = new CancellationTokenSource();
+        var storage = new RecordingDeleteStorage { OnPlainDelete = cancellation.Cancel };
+        if (entireBackup)
+        {
+            using var job = CreateDeleteJob(storage, "1");
+            await job.DeleteAsync(cancellation.Token);
+        }
+        else
+        {
+            using var job = CreateDeleteSingleJob(storage);
+            await job.DeleteSingleAsync(string.Empty, @"\docs\%", [], cancellation.Token);
+        }
+
+        Assert.That(storage.DeletedPlain, Has.Count.EqualTo(1));
+        var deletedVersionId = Path.GetFileName(storage.DeletedPlain[0]) == "a.txt" ? 1 : 2;
+        using var dbClient = dbClientFactory.CreateDbClient();
+        var remainingFileVersion = Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileversionID FROM fileversiontable"));
+        var remainingFileLink = Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT fileversionID FROM filelink"));
+        var versionStatus = Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT versionStatus FROM versiontable"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(remainingFileVersion, Is.EqualTo(3 - deletedVersionId));
+            Assert.That(remainingFileLink, Is.EqualTo(3 - deletedVersionId));
+            Assert.That(versionStatus, Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public async Task DeleteSingle_PathFilterDeletesAllFilesUnderPath()
     {
         const string versionDate = "01-01-2021 00-00-00";
@@ -553,6 +588,7 @@ public class DeleteTests
         public List<string> DeletedPlain { get; } = [];
         public List<string> DeletedCompressed { get; } = [];
         public List<string> DeletedEncrypted { get; } = [];
+        public Action OnPlainDelete { get; init; }
 
         public Task<bool> CheckMedium(bool quickCheck = false) => Task.FromResult(!failCheckMedium);
         public void Open() { }
@@ -573,6 +609,7 @@ public class DeleteTests
             }
 
             DeletedPlain.Add(remoteFile);
+            OnPlainDelete?.Invoke();
             return true;
         }
 

@@ -110,6 +110,15 @@
   <data name="Browser_DeleteFromAll_Folder" xml:space="preserve">
     <value>Ordner</value>
   </data>
+  <data name="Browser_DeleteSelection_Intro" xml:space="preserve">
+    <value>Wählen Sie die Sicherungen aus, aus denen die {0} ausgewählten Einträge gelöscht werden sollen.</value>
+  </data>
+  <data name="Browser_DeleteSelection_AllConfirm" xml:space="preserve">
+    <value>Die {0} ausgewählten Einträge aus allen Sicherungen löschen?</value>
+  </data>
+  <data name="Browser_DeleteSelection_RangeConfirm" xml:space="preserve">
+    <value>Die {0} ausgewählten Einträge aus {1} Sicherungen löschen?</value>
+  </data>
   <data name="Browser_DeleteFromRange_All" xml:space="preserve">
     <value>Aus allen Sicherungen</value>
   </data>

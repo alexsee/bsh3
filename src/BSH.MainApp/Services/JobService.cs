@@ -225,6 +225,15 @@ public class JobService : IJobService, IDisposable
         await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
     }
 
+    public async Task DeleteSelectedFilesAsync(IReadOnlyList<(string FileFilter, string PathFilter)> targets, IReadOnlyList<int>? versionIds)
+    {
+        var result = await jobSessionRunner.RunBatchDeleteSingleAsync(targets, presenter, versionIds: versionIds);
+        if (await HandleSessionStartAsync(result, "delete", statusDialog: true))
+        {
+            await presenter.CompleteAsync(honorCompletionActions: !result.Canceled);
+        }
+    }
+
     /// <summary>
     /// Runs a modify backup task to edit the backup.
     /// </summary>

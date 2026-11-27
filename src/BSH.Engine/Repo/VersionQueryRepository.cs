@@ -142,7 +142,7 @@ public class VersionQueryRepository : IVersionQueryRepository
         }
         else
         {
-            sql = "SELECT ft.fileID FROM fileTable AS ft WHERE filePath LIKE @filePath";
+            sql = "SELECT ft.fileID FROM fileTable AS ft WHERE filePath LIKE @filePath ESCAPE '|'";
             parameters =
             [
                 ("filePath", pathFilter)

@@ -111,9 +111,9 @@ public class BackupController : IDisposable
             return false;
         }
 
-        await presenter.CompleteAsync(triggerShutdown: shutdownPC);
+        await presenter.CompleteAsync(triggerShutdown: shutdownPC, honorCompletionActions: !result.Canceled);
 
-        if (shutdownApp)
+        if (shutdownApp && !result.Canceled)
         {
             AppLifecycle.Exit(closeWindows: false);
         }

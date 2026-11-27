@@ -246,6 +246,26 @@ public sealed class JobSessionRunner
             });
     }
 
+    public Task<JobSessionResult> RunBatchDeleteSingleAsync(
+        IReadOnlyList<(string FileFilter, string PathFilter)> targets,
+        IJobSessionPresenter presenter,
+        bool statusDialog = true,
+        IReadOnlyList<int> versionIds = null)
+    {
+        ArgumentNullException.ThrowIfNull(targets);
+        return RunBatchOperationAsync(
+            ActionType.Delete,
+            presenter,
+            statusDialog,
+            requirePassword: false,
+            targets.Count,
+            (jobReport, cancellationToken, index) =>
+            {
+                var (fileFilter, pathFilter) = targets[index];
+                return backupService.StartDeleteSingle(fileFilter, pathFilter, jobReport, cancellationToken, !statusDialog, versionIds);
+            });
+    }
+
     /// <summary>
     /// Runs a single modify session with shared session preparation and error handling.
     /// </summary>

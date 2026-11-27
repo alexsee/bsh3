@@ -71,6 +71,8 @@ public class DeleteJob : Job
 
         cancellationToken.ThrowIfCancellationRequested();
 
+        var canceled = false;
+
         // connect to database
         using (var dbClient = dbClientFactory.CreateDbClient())
         {
@@ -99,6 +101,12 @@ public class DeleteJob : Job
             // delete files
             for (var i = 0; i < files.Tables[0].Rows.Count; i++)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    canceled = true;
+                    break;
+                }
+
                 var file = files.Tables[0].Rows[i];
 
                 ReportProgress(files.Tables[0].Rows.Count, i);
@@ -126,8 +134,11 @@ public class DeleteJob : Job
                 await backupMutationRepository.DeleteFileVersionAsync(dbClient, Convert.ToInt64(file["fileversionid"]));
             }
 
-            // update backup metadata
-            await backupMutationRepository.DeleteVersionMetadataAsync(dbClient, version);
+            // Commit already processed files on cancellation and retain the rest of the version.
+            if (!canceled)
+            {
+                await backupMutationRepository.DeleteVersionMetadataAsync(dbClient, version);
+            }
 
             dbClient.CommitTransaction();
         }
@@ -139,12 +150,12 @@ public class DeleteJob : Job
         }
 
         // clean storage folders
-        if (storage.Kind == StorageProviderKind.LocalFileSystem)
+        if (!canceled && storage.Kind == StorageProviderKind.LocalFileSystem)
         {
             using var dbClient = dbClientFactory.CreateDbClient();
             using var reader = await versionQueryRepository.GetOrphanedVersionDatesAsync(dbClient);
 
-            while (await reader.ReadAsync())
+            while (!cancellationToken.IsCancellationRequested && await reader.ReadAsync())
             {
                 try
                 {
@@ -176,6 +187,12 @@ public class DeleteJob : Job
         if (FileErrorList.Count > 0)
         {
             ReportExceptions(FileErrorList);
+        }
+
+        if (cancellationToken.IsCancellationRequested)
+        {
+            ReportState(JobState.CANCELED);
+            return;
         }
 
         _logger.Information("Deletion of backup {Version} successfully.", Version);

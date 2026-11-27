@@ -26,6 +26,7 @@ public class FakeJobService : IJobService
     public virtual Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.FromResult(new JobSessionResult { Started = true });
 
     public virtual Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
+    public virtual Task DeleteSelectedFilesAsync(IReadOnlyList<(string FileFilter, string PathFilter)> targets, IReadOnlyList<int>? versionIds) => Task.CompletedTask;
 
     public virtual Task<bool> RequestPassword() => Task.FromResult(true);
 

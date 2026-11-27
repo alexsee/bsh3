@@ -43,6 +43,11 @@ public class WinFormsJobSessionPresenter : IJobSessionPresenter
             statusWindowShown = false;
         }
 
+        if (!honorCompletionActions)
+        {
+            return Task.CompletedTask;
+        }
+
         if (triggerShutdown)
         {
             _logger.Debug("Computer will be shutdown after task has finished.");

@@ -209,6 +209,7 @@ public class BackupMutationRepository : IBackupMutationRepository
             ("id", fileVersionId)
         };
 
+        await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM filelink WHERE fileversionid = @id", parameters);
         await dbClient.ExecuteNonQueryAsync(CommandType.Text, "DELETE FROM fileversiontable WHERE fileversionid = @id", parameters);
     }
 
@@ -240,7 +241,7 @@ public class BackupMutationRepository : IBackupMutationRepository
         }
         else
         {
-            whereClause = "filePath LIKE @filePath";
+            whereClause = "filePath LIKE @filePath ESCAPE '|'";
             parameters.Add(("filePath", pathFilter));
         }
 
