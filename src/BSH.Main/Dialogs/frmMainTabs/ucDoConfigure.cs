@@ -256,8 +256,7 @@ public partial class ucDoConfigure : IMainTabs
                             txtFTPPassword.Text,
                             txtFTPPath.Text,
                             Convert.ToString(cboFtpEncoding.SelectedItem),
-                            encryptionMode: chkFtpEncryption2.Checked ? "0" : "3",
-                            sslProtocols: "0");
+                            encryptionMode: chkFtpEncryption2.Checked ? "0" : "3");
                     }
                     else
                     {

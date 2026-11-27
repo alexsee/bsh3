@@ -101,8 +101,7 @@ public class SetupService : ISetupService
                     configuration.FtpPassword,
                     configuration.FtpFolder,
                     configuration.FtpEncoding,
-                    encryptionMode: configuration.FtpEnforceUnencrypted ? "0" : "3",
-                    sslProtocols: "0");
+                    encryptionMode: configuration.FtpEnforceUnencrypted ? "0" : "3");
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(configuration), configuration.TargetKind, "Unsupported setup target.");

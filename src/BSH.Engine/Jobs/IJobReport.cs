@@ -45,7 +45,6 @@ public class ForwardJobReport : IJobReport
 
     public void ReportAction(ActionType action, bool silent)
     {
-        // not used
     }
 
     public void ReportState(JobState jobState)
@@ -61,7 +60,6 @@ public class ForwardJobReport : IJobReport
 
     public void ReportProgress(int total, int current)
     {
-        // not used
     }
 
     public void ReportFileProgress(string file)

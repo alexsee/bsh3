@@ -32,7 +32,6 @@ public sealed class FakeConfigurationManager : IConfigurationManager
     public string FtpHost { get; set; } = "";
     public string FtpPass { get; set; } = "";
     public string FtpPort { get; set; } = "";
-    public string FtpSslProtocols { get; set; } = "";
     public string FtpUser { get; set; } = "";
     public string InfoBackupDone { get; set; } = "";
     public string IntervallAutoHourBackups { get; set; } = "";

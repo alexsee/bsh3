@@ -68,7 +68,7 @@ public class EditJob : Job
         // check medium
         if (!await storage.CheckMedium())
         {
-            _logger.Error("Backup storage is not ready. Backup will be cancelled.");
+            _logger.Error("Backup storage is not ready. Edit will be cancelled.");
 
             ReportState(JobState.ERROR);
             throw new DeviceNotReadyException();

@@ -77,8 +77,7 @@ public sealed class SwitchStorageService : ISwitchStorageService
             ftp.Password,
             ftp.Folder,
             string.IsNullOrWhiteSpace(ftp.Encoding) ? "UTF8" : ftp.Encoding,
-            encryptionMode: ftp.EnforceUnencrypted ? "0" : "3",
-            sslProtocols: "0");
+            encryptionMode: ftp.EnforceUnencrypted ? "0" : "3");
 
         await ClearBackupHistoryAsync();
         SyncDatabaseToCurrentMedium(databaseFile);

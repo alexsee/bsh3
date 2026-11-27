@@ -148,8 +148,7 @@ public static class MediaTargetApplier
         string? password,
         string? folder,
         string? encoding,
-        string? encryptionMode = null,
-        string? sslProtocols = null)
+        string? encryptionMode = null)
     {
         ArgumentNullException.ThrowIfNull(configurationManager);
 
@@ -168,11 +167,6 @@ public static class MediaTargetApplier
         {
             configurationManager.FtpEncryptionMode = encryptionMode;
         }
-
-        if (sslProtocols is not null)
-        {
-            configurationManager.FtpSslProtocols = sslProtocols;
-        }
     }
 
     private static void ClearUncCredentials(IConfigurationManager configurationManager)
@@ -190,7 +184,6 @@ public static class MediaTargetApplier
         configurationManager.FtpFolder = "";
         configurationManager.FtpCoding = "";
         configurationManager.FtpEncryptionMode = "";
-        configurationManager.FtpSslProtocols = "";
     }
 
     private static string NormalizeVolumeSerial(string? mediaVolumeSerial)
