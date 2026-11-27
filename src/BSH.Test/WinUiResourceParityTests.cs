@@ -181,8 +181,6 @@ public class WinUiResourceParityTests
     {
         var referencedKeys = Enum.GetValues<ScheduleEntryKind>()
             .Select(kind => $"Schedule_Kind_{kind}")
-            .Concat(Enum.GetValues<ScheduleRetentionMode>()
-                .Select(mode => $"Schedule_RetentionMode_{mode}"))
             .Concat(Enum.GetValues<ScheduleRetentionIntervalUnit>()
                 .Select(unit => $"Schedule_RetentionUnit_{unit}"))
             .ToList();

@@ -15,7 +15,6 @@
 		<!-- AutoUpdater.NET uses WinForms WebView2. Select its managed assemblies
 		     instead of the WinRT projection (this shell has no WinUI WebView2). -->
 		<WebView2EnableCsWinRTProjection>false</WebView2EnableCsWinRTProjection>
-		<EnableMsixTooling>true</EnableMsixTooling>
 		<WindowsPackageType>None</WindowsPackageType>
 		<WindowsAppSDKSelfContained Condition="'$(SelfContained)' == 'true'">true</WindowsAppSDKSelfContained>
 		<UseRidGraph>true</UseRidGraph>
@@ -30,9 +29,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Manifest Include="$(ApplicationManifest)" />
-	</ItemGroup>
-	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-		<ProjectCapability Include="Msix" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Autoupdater.NET.Official" Version="1.9.3" />
@@ -75,9 +71,6 @@
 		  <Generator>MSBuild:Compile</Generator>
 		</Page>
 	</ItemGroup>
-	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
-	</PropertyGroup>
 	<Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
 		<ItemGroup>
 			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="$([System.String]::Copy('%(FrameworkSdkReference.SDKName)').StartsWith('Microsoft.WindowsAppRuntime.'))" />
