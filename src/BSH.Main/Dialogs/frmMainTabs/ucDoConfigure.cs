@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +23,10 @@ public partial class ucDoConfigure : IMainTabs
     public ucDoConfigure()
     {
         InitializeComponent();
+        txtFTPServer.TextChanged += (_, _) => chkFtpAllowUntrustedCertificate.Checked = false;
+        txtFTPPort.TextChanged += (_, _) => chkFtpAllowUntrustedCertificate.Checked = false;
+        txtFTPServer2.TextChanged += (_, _) => chkFtpAllowUntrustedCertificate2.Checked = false;
+        txtFTPPort2.TextChanged += (_, _) => chkFtpAllowUntrustedCertificate2.Checked = false;
     }
 
     private string tmpFolderStore = "";
@@ -163,7 +168,7 @@ public partial class ucDoConfigure : IMainTabs
                     {
                         txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-                        var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+                        var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem), !chkFtpEncryption.Checked, chkFtpAllowUntrustedCertificate.Checked);
                         if (!profile)
                         {
                             // directory not found
@@ -256,7 +261,8 @@ public partial class ucDoConfigure : IMainTabs
                             txtFTPPassword.Text,
                             txtFTPPath.Text,
                             Convert.ToString(cboFtpEncoding.SelectedItem),
-                            encryptionMode: chkFtpEncryption2.Checked ? "0" : "3");
+                            encryptionMode: chkFtpEncryption.Checked ? "0" : "3",
+                            allowUntrustedCertificate: chkFtpAllowUntrustedCertificate.Checked);
                     }
                     else
                     {
@@ -406,7 +412,8 @@ public partial class ucDoConfigure : IMainTabs
                             txtFTPPath2.Text,
                             Convert.ToString(cboFtpEncoding2.SelectedItem),
                             !chkFtpEncryption2.Checked,
-                            0))
+                            0,
+                            chkFtpAllowUntrustedCertificate2.Checked))
                         {
                             storage.Open();
                             if (!storage.FileExists("backup.bshdb"))
@@ -475,7 +482,8 @@ public partial class ucDoConfigure : IMainTabs
                             txtFTPPath2.Text,
                             Convert.ToString(cboFtpEncoding2.SelectedItem),
                             !chkFtpEncryption2.Checked,
-                            0);
+                            0,
+                            chkFtpAllowUntrustedCertificate2.Checked);
                         storage.Open();
                         storage.CopyFileFromStorage(BackupLogic.DatabaseFile, "backup.bshdb");
                     }
@@ -521,14 +529,10 @@ public partial class ucDoConfigure : IMainTabs
                 else if (tcStep5.SelectedIndex == 1)
                 {
                     // refresh ftp credentials
-                    BackupLogic.ConfigurationManager.BackupFolder = "";
-                    BackupLogic.ConfigurationManager.FtpFolder = txtFTPPath2.Text;
-                    BackupLogic.ConfigurationManager.FtpHost = txtFTPServer2.Text;
-                    BackupLogic.ConfigurationManager.FtpPass = txtFTPPass2.Text;
-                    BackupLogic.ConfigurationManager.FtpPort = txtFTPPort2.Text;
-                    BackupLogic.ConfigurationManager.FtpUser = txtFTPUser2.Text;
-                    BackupLogic.ConfigurationManager.FtpCoding = Convert.ToString(cboFtpEncoding2.SelectedItem);
-                    BackupLogic.ConfigurationManager.MediumType = MediaType.FileTransferServer;
+                    MediaTargetApplier.ApplyFtpTarget(
+                        BackupLogic.ConfigurationManager, txtFTPServer2.Text, txtFTPPort2.Text, txtFTPUser2.Text,
+                        txtFTPPass2.Text, txtFTPPath2.Text, Convert.ToString(cboFtpEncoding2.SelectedItem),
+                        chkFtpEncryption2.Checked ? "0" : "3", chkFtpAllowUntrustedCertificate2.Checked);
 
                     await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
                     await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
@@ -565,37 +569,47 @@ public partial class ucDoConfigure : IMainTabs
                 // store source directories
                 var sourcePaths = string.Join("|", lvSourceDirs.Items.Cast<ListViewItem>().Select(x => x.Text));
 
-                foreach (var version in BackupLogic.QueryManager.GetVersions())
+                var versionsToRemap = BackupLogic.QueryManager.GetVersions();
+                using (var dbClient = BackupLogic.DbClientFactory.CreateDbClient())
                 {
-                    var sources = version.Sources.Split('|').Select(x => new VersionEntry(x, false)).ToList();
-
-                    foreach (ListViewItem entry in lvSourceDirs.Items)
+                    dbClient.BeginTransaction();
+                    foreach (var version in versionsToRemap)
                     {
-                        if (entry.Text.Length > 3)
-                        {
-                            foreach (var source in sources)
-                            {
-                                source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
-                                source.Changed = true;
-                            }
-                        }
-                    }
+                        var sources = version.Sources.Split('|').Select(x => new VersionEntry(x, false)).ToList();
 
-                    foreach (ListViewItem entry in lvSourceDirs.Items)
-                    {
-                        if (entry.Text.Length > 3)
+                        foreach (ListViewItem entry in lvSourceDirs.Items)
                         {
-                            foreach (var source in sources)
+                            if (entry.Text.Length > 3)
                             {
-                                if (!source.Changed)
+                                foreach (var source in sources)
                                 {
                                     source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
+                                    source.Changed = true;
                                 }
                             }
                         }
+
+                        foreach (ListViewItem entry in lvSourceDirs.Items)
+                        {
+                            if (entry.Text.Length > 3)
+                            {
+                                foreach (var source in sources)
+                                {
+                                    if (!source.Changed)
+                                    {
+                                        source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
+                                    }
+                                }
+                            }
+                        }
+
+                        await dbClient.ExecuteNonQueryAsync(
+                            CommandType.Text,
+                            "UPDATE versiontable SET versionSources = @sources WHERE versionID = @versionId",
+                            [("sources", string.Join("|", sources.Select(source => source.Path))), ("versionId", version.Id)]);
                     }
 
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE versiontable SET versionSources = \"" + string.Join("|", sources.Select(x => x.Path).ToArray()) + "\" WHERE versionID = " + version.Id);
+                    dbClient.CommitTransaction();
                 }
 
                 BackupLogic.ConfigurationManager.SourceFolder = sourcePaths;
@@ -698,7 +712,7 @@ public partial class ucDoConfigure : IMainTabs
         // check ftp credentials
         try
         {
-            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem), !chkFtpEncryption.Checked, chkFtpAllowUntrustedCertificate.Checked);
 
             if (!profile)
             {

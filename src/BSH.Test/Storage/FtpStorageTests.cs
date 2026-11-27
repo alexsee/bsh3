@@ -39,6 +39,16 @@ public class FtpStorageTests
     }
 
     [Test]
+    public async Task CheckMediumRejectsPlainFtpWhenTlsIsRequired()
+    {
+        await using var server = new VersionMarkerFtpServer("7");
+        using var storage = new FtpStorage("127.0.0.1", server.Port, "user", "pass", "/backups", "UTF-8",
+            encryption: true, currentStorageVersion: 7, allowUntrustedCertificate: true);
+
+        Assert.That(await storage.CheckMedium(quickCheck: true), Is.False);
+    }
+
+    [Test]
     public async Task CheckMediumValidatesDownloadedVersionMarker()
     {
         // Exercise the real FTP transport, including controls that prove validation

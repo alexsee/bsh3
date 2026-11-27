@@ -577,25 +577,24 @@ public partial class frmBrowser : IStatusReport
                 lvFavorite.Items.Add(newEntry);
             }
 
-            // refresh favorites
-            if (string.IsNullOrEmpty(Settings.Default.BrowserFavoritsName))
-            {
-                foreach (var e in Settings.Default.BrowserFavorits.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    var entry = e;
-
-                    // store favorite name
-                    if (entry.EndsWith('\\'))
-                    {
-                        entry = entry[..^1];
-                    }
-
-                    Settings.Default.BrowserFavoritsName += System.IO.Path.GetFileName(await BackupLogic.QueryManager.GetLocalizedPathAsync(entry));
-                }
-            }
-
-            // read favorites
             var favorites = Settings.Default.BrowserFavorits.Split('|');
+            var favoriteNames = Settings.Default.BrowserFavoritsName.Split('|');
+            if (!string.IsNullOrEmpty(Settings.Default.BrowserFavorits)
+                && (favoriteNames.Length != favorites.Length || string.IsNullOrEmpty(Settings.Default.BrowserFavoritsName)))
+            {
+                favoriteNames = new string[favorites.Length];
+                for (var i = 0; i < favorites.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(favorites[i]))
+                    {
+                        var path = await BackupLogic.QueryManager.GetLocalizedPathAsync(favorites[i].TrimEnd('\\'));
+                        favoriteNames[i] = System.IO.Path.GetFileName(path);
+                    }
+                }
+
+                Settings.Default.BrowserFavoritsName = string.Join("|", favoriteNames);
+                Settings.Default.Save();
+            }
 
             for (var i = 0; i < favorites.Length; i++)
             {
@@ -614,7 +613,7 @@ public partial class frmBrowser : IStatusReport
                 // determine folder path
                 var newEntry = new ListViewItem
                 {
-                    Text = Settings.Default.BrowserFavoritsName.Split('|')[i],
+                    Text = favoriteNames[i],
                     ImageIndex = 1,
                     Tag = '\\' + entry[(entry.IndexOf('\\') + 1)..] + '\\',
                     ToolTipText = string.Format(Resources.DLG_BACKUPBROWSER_TT_FOLDER, await BackupLogic.QueryManager.GetLocalizedPathAsync(entry[(entry.LastIndexOf('\\') + 1)..]), entry[(entry.IndexOf('\\') + 1)..])
@@ -1497,8 +1496,6 @@ public partial class frmBrowser : IStatusReport
 
     private async void MehrereVersionenLöschenToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        Enabled = false;
-
         using (var dlgMultiVersionDelete = new frmMultiVersionDeletion())
         {
             foreach (var version in BackupLogic.QueryManager.GetVersions())
@@ -1509,7 +1506,7 @@ public partial class frmBrowser : IStatusReport
                 dlgMultiVersionDelete.lstVersions.Items.Add(newItem);
             }
 
-            if (dlgMultiVersionDelete.ShowDialog() == DialogResult.OK)
+            if (dlgMultiVersionDelete.ShowDialog(this) == DialogResult.OK)
             {
                 if (MessageBox.Show(Resources.DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TEXT, Resources.DLG_BACKUPBROWSER_MSG_WARN_DELETE_BACKUP_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 {
@@ -1526,13 +1523,17 @@ public partial class frmBrowser : IStatusReport
                 }
 
                 // disable automatic browser refresh by unregistering observer
+                Enabled = false;
                 StatusController.Current.RemoveObserver(this);
-
-                // delete all selected backups
-                await BackupLogic.BackupController.DeleteBackupsAsync(toDeleteItems, true);
-
-                // enable automatic browser refresh by registering observer
-                StatusController.Current.AddObserver(this);
+                try
+                {
+                    await BackupLogic.BackupController.DeleteBackupsAsync(toDeleteItems, true);
+                }
+                finally
+                {
+                    StatusController.Current.AddObserver(this);
+                    Enabled = true;
+                }
             }
         }
 

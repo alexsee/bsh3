@@ -65,6 +65,28 @@ public class ConfigurationManagerTests
     }
 
     [Test]
+    public async Task FtpCertificateExceptionDefaultsOffAndClearsOnEndpointChange()
+    {
+        var settings = new ConfigurationManager(dbClientFactory);
+        await settings.InitializeAsync();
+        Assert.That(settings.FtpAllowUntrustedCertificate, Is.False);
+
+        settings.FtpHost = "nas.example";
+        settings.FtpAllowUntrustedCertificate = true;
+        await settings.InitializeAsync();
+        Assert.That(settings.FtpAllowUntrustedCertificate, Is.True);
+
+        settings.FtpPort = "990";
+        await settings.InitializeAsync();
+        Assert.That(settings.FtpAllowUntrustedCertificate, Is.False);
+
+        settings.FtpAllowUntrustedCertificate = true;
+        settings.FtpHost = "other.example";
+        await settings.InitializeAsync();
+        Assert.That(settings.FtpAllowUntrustedCertificate, Is.False);
+    }
+
+    [Test]
     public async Task FtpPasswordIsProtectedAtRestAndReloadedAsPlaintext()
     {
         var configurationManager = new ConfigurationManager(dbClientFactory);

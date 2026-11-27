@@ -258,6 +258,11 @@ public class ConfigurationManager : IConfigurationManager
         get => settings.FtpHost;
         set
         {
+            if (FtpAllowUntrustedCertificate && !string.Equals(settings.FtpHost, value, StringComparison.OrdinalIgnoreCase))
+            {
+                FtpAllowUntrustedCertificate = false;
+            }
+
             settings.FtpHost = value;
             SaveProperty(nameof(FtpHost), value);
         }
@@ -298,6 +303,11 @@ public class ConfigurationManager : IConfigurationManager
         get => settings.FtpPort;
         set
         {
+            if (FtpAllowUntrustedCertificate && settings.FtpPort != value)
+            {
+                FtpAllowUntrustedCertificate = false;
+            }
+
             settings.FtpPort = value;
             SaveProperty(nameof(FtpPort), value);
         }
@@ -320,6 +330,16 @@ public class ConfigurationManager : IConfigurationManager
         {
             settings.FtpEncryptionMode = value;
             SaveProperty(nameof(FtpEncryptionMode), value);
+        }
+    }
+
+    public bool FtpAllowUntrustedCertificate
+    {
+        get => settings.FtpAllowUntrustedCertificate;
+        set
+        {
+            settings.FtpAllowUntrustedCertificate = value;
+            SaveProperty(nameof(FtpAllowUntrustedCertificate), value ? "1" : "0");
         }
     }
 
@@ -487,6 +507,9 @@ public class ConfigurationManager : IConfigurationManager
                 case nameof(FtpPass):
                     LoadPersistedFtpPassword(result);
                     break;
+                case nameof(FtpAllowUntrustedCertificate):
+                    settings.FtpAllowUntrustedCertificate = result.ToString() == "1";
+                    break;
                 case nameof(MediumType):
                     settings.MediumType = ParseMediumType(result.ToString());
                     break;
@@ -618,6 +641,7 @@ public class ConfigurationManager : IConfigurationManager
         public string FtpPort = "21";
         public string FtpCoding = DefaultFtpCoding;
         public string FtpEncryptionMode = DefaultFtpEncryptionMode;
+        public bool FtpAllowUntrustedCertificate;
         public string IsConfigured = "0";
         public string DbStatus = "0";
         public string DeativateAutoBackupsWhenAkku = "1";

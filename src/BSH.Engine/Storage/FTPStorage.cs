@@ -41,6 +41,8 @@ public class FtpStorage : Storage, IStorageProvider
 
     private readonly bool encryption;
 
+    private readonly bool allowUntrustedCertificate;
+
     private FtpClient ftpClient;
 
     public FtpStorage(IConfigurationManager configurationManager)
@@ -54,12 +56,13 @@ public class FtpStorage : Storage, IStorageProvider
         this.folderPath = configurationManager.FtpFolder;
         this.encoding = configurationManager.FtpCoding;
         this.encryption = configurationManager.FtpEncryptionMode == "3";
+        this.allowUntrustedCertificate = configurationManager.FtpAllowUntrustedCertificate;
         this.currentStorageVersion = int.TryParse(configurationManager.OldBackupPrevent, out var storageVersion) ? storageVersion : 0;
     }
 
     public FtpStorage(
         string serverAddress, int serverPort, string userName, string password, string folderPath, string encoding,
-        bool encryption, int currentStorageVersion)
+        bool encryption, int currentStorageVersion, bool allowUntrustedCertificate = false)
     {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
@@ -68,6 +71,7 @@ public class FtpStorage : Storage, IStorageProvider
         this.folderPath = folderPath;
         this.encoding = encoding;
         this.encryption = encryption;
+        this.allowUntrustedCertificate = allowUntrustedCertificate;
         this.currentStorageVersion = currentStorageVersion;
     }
 
@@ -95,31 +99,30 @@ public class FtpStorage : Storage, IStorageProvider
         }
     }
 
-    private FtpProfile GetFtpProfile(bool quickCheck = false)
+    private static Encoding GetEncoding(string encoding)
     {
-        Encoding finalEncoding;
+        return encoding == "UTF-8" ? new UTF8Encoding(false) : Encoding.GetEncoding(encoding);
+    }
 
-        // set encoding
-        if (this.encoding == "UTF-8")
+    private static FtpConfig CreateConnectionConfig(int port, bool encryption, bool allowUntrustedCertificate, bool quickCheck = false)
+    {
+        var timeout = quickCheck ? 15000 : 60000;
+        var encryptionMode = FtpEncryptionMode.None;
+        if (encryption)
         {
-            finalEncoding = new UTF8Encoding(false);
-        }
-        else
-        {
-            finalEncoding = Encoding.GetEncoding(this.encoding);
+            encryptionMode = port == 990 ? FtpEncryptionMode.Implicit : FtpEncryptionMode.Explicit;
         }
 
-        // determine profile
-        var profile = new FtpProfile()
+        return new FtpConfig
         {
-            Host = this.serverAddress,
-            Credentials = new NetworkCredential(this.userName, this.password),
-            Encoding = finalEncoding,
-            Timeout = quickCheck ? 15000 : 60000,
+            ConnectTimeout = timeout,
+            ReadTimeout = timeout,
+            DataConnectionConnectTimeout = timeout,
+            DataConnectionReadTimeout = timeout,
             RetryAttempts = 1,
+            EncryptionMode = encryptionMode,
+            ValidateAnyCertificate = encryption && allowUntrustedCertificate
         };
-
-        return profile;
     }
 
     private static void ConfigureClientLogger(BaseFtpClient client, ILogger logger)
@@ -130,42 +133,16 @@ public class FtpStorage : Storage, IStorageProvider
         client.Config.LogDurations = false;
     }
 
-    public static bool CheckConnection(string host, int port, string userName, string password, string folderPath, string encoding)
+    public static bool CheckConnection(
+        string host, int port, string userName, string password, string folderPath, string encoding,
+        bool encryption = true, bool allowUntrustedCertificate = false)
     {
         var credentials = new NetworkCredential(userName, password);
-        var config = new FtpConfig
-        {
-            ConnectTimeout = 60000,
-            DataConnectionConnectTimeout = 60000,
-            DataConnectionReadTimeout = 60000,
-
-            // ignore all certificates
-            ValidateAnyCertificate = true
-        };
-
+        var config = CreateConnectionConfig(port, encryption, allowUntrustedCertificate);
         using var client = new FtpClient(host, credentials, port, config);
+        client.Encoding = GetEncoding(encoding);
         ConfigureClientLogger(client, _logger);
-
-        // set encoding
-        if (encoding == "UTF-8")
-        {
-            client.Encoding = new UTF8Encoding(false);
-        }
-        else
-        {
-            client.Encoding = Encoding.GetEncoding(encoding);
-        }
-
-        // first, try direct connect
-        try
-        {
-            client.Connect();
-        }
-        catch
-        {
-            // failed, so try auto connect
-            client.AutoConnect();
-        }
+        client.Connect();
 
         if (!client.IsConnected)
         {
@@ -187,24 +164,11 @@ public class FtpStorage : Storage, IStorageProvider
         try
         {
             var credentials = new NetworkCredential(userName, password);
-            var config = new FtpConfig()
-            {
-                // ignore all certificates
-                ValidateAnyCertificate = true,
-            };
-
+            var config = CreateConnectionConfig(serverPort, encryption, allowUntrustedCertificate, quickCheck);
             using var client = new AsyncFtpClient(serverAddress, credentials, serverPort, config);
-            client.LoadProfile(GetFtpProfile(quickCheck));
+            client.Encoding = GetEncoding(encoding);
             ConfigureClientLogger(client, _logger);
-
-            if (this.encryption)
-            {
-                await client.AutoConnect();
-            }
-            else
-            {
-                await client.Connect();
-            }
+            await client.Connect();
 
             if (!client.IsConnected)
             {
@@ -364,25 +328,13 @@ public class FtpStorage : Storage, IStorageProvider
         if (ftpClient == null)
         {
             var credentials = new NetworkCredential(userName, password);
-            var config = new FtpConfig()
-            {
-                // ignore all certificates
-                ValidateAnyCertificate = true
-            };
-
+            var config = CreateConnectionConfig(serverPort, encryption, allowUntrustedCertificate);
             ftpClient = new FtpClient(serverAddress, credentials, serverPort, config);
-            ftpClient.LoadProfile(GetFtpProfile());
+            ftpClient.Encoding = GetEncoding(encoding);
             ConfigureClientLogger(ftpClient, _logger);
         }
 
-        if (this.encryption)
-        {
-            ftpClient.AutoConnect();
-        }
-        else
-        {
-            ftpClient.Connect();
-        }
+        ftpClient.Connect();
     }
 
     public void UpdateStorageVersion(int versionId)

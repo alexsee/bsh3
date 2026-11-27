@@ -446,4 +446,7 @@ Close the new (empty) backup medium to the computer and select this one from the
   <data name="$this.Text" xml:space="preserve">
     <value>Switch Backup Medium</value>
   </data>
+  <data name="chkFtpAllowUntrustedCertificate.Text" xml:space="preserve">
+    <value>Allow untrusted FTPS certificates (unsafe)</value>
+  </data>
 </root>

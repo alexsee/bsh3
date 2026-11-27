@@ -110,6 +110,7 @@
                                         <RowDefinition />
                                         <RowDefinition />
                                         <RowDefinition />
+                                        <RowDefinition />
                                     </Grid.RowDefinitions>
 
                                     <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Text="{helpers:ResourceString Name=Settings_Target_Server}" />
@@ -138,7 +139,11 @@
                                               IsChecked="{Binding FtpRemoteEnforceUnencrypted, Mode=OneWay}"
                                               Click="FtpEnforceUnencryptedCheckBox_Click" />
 
-                                    <Button Grid.Column="1" Grid.Row="5" Command="{Binding CheckFtpRemoteCommand}">
+                                    <CheckBox Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="5"
+                                              Content="{helpers:ResourceString Name=Ftp_AllowUntrustedCertificate}"
+                                              IsChecked="{Binding FtpRemoteAllowUntrustedCertificate, Mode=TwoWay}" />
+
+                                    <Button Grid.Column="1" Grid.Row="6" Command="{Binding CheckFtpRemoteCommand}">
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <FontIcon FontSize="16" Glyph="&#xE968;" />
                                             <TextBlock Text="{helpers:ResourceString Name=Settings_Target_TestConnection}" />

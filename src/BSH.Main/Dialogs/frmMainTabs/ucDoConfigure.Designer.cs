@@ -48,6 +48,7 @@ namespace Brightbits.BSH.Main
             ColumnHeader2 = new ColumnHeader();
             TabPage2 = new TabPage();
             chkFtpEncryption = new CheckBox();
+            chkFtpAllowUntrustedCertificate = new CheckBox();
             Label18 = new Label();
             cboFtpEncoding = new ComboBox();
             cmdFTPCheck = new Button();
@@ -79,6 +80,7 @@ namespace Brightbits.BSH.Main
             ColumnHeader3 = new ColumnHeader();
             TabPage4 = new TabPage();
             chkFtpEncryption2 = new CheckBox();
+            chkFtpAllowUntrustedCertificate2 = new CheckBox();
             cboFtpEncoding2 = new ComboBox();
             Label19 = new Label();
             txtFTPPort2 = new TextBox();
@@ -260,6 +262,7 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(TabPage2, "TabPage2");
             TabPage2.Controls.Add(chkFtpEncryption);
+            TabPage2.Controls.Add(chkFtpAllowUntrustedCertificate);
             TabPage2.Controls.Add(Label18);
             TabPage2.Controls.Add(cboFtpEncoding);
             TabPage2.Controls.Add(cmdFTPCheck);
@@ -281,6 +284,9 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(chkFtpEncryption, "chkFtpEncryption");
             chkFtpEncryption.Name = "chkFtpEncryption";
             chkFtpEncryption.UseVisualStyleBackColor = true;
+            chkFtpAllowUntrustedCertificate.Name = "chkFtpAllowUntrustedCertificate";
+            resources.ApplyResources(chkFtpAllowUntrustedCertificate, "chkFtpAllowUntrustedCertificate");
+            chkFtpAllowUntrustedCertificate.UseVisualStyleBackColor = true;
             // 
             // Label18
             // 
@@ -466,6 +472,7 @@ namespace Brightbits.BSH.Main
             // 
             resources.ApplyResources(TabPage4, "TabPage4");
             TabPage4.Controls.Add(chkFtpEncryption2);
+            TabPage4.Controls.Add(chkFtpAllowUntrustedCertificate2);
             TabPage4.Controls.Add(cboFtpEncoding2);
             TabPage4.Controls.Add(Label19);
             TabPage4.Controls.Add(txtFTPPort2);
@@ -486,6 +493,9 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(chkFtpEncryption2, "chkFtpEncryption2");
             chkFtpEncryption2.Name = "chkFtpEncryption2";
             chkFtpEncryption2.UseVisualStyleBackColor = true;
+            chkFtpAllowUntrustedCertificate2.Name = "chkFtpAllowUntrustedCertificate2";
+            resources.ApplyResources(chkFtpAllowUntrustedCertificate2, "chkFtpAllowUntrustedCertificate2");
+            chkFtpAllowUntrustedCertificate2.UseVisualStyleBackColor = true;
             // 
             // cboFtpEncoding2
             // 
@@ -877,6 +887,8 @@ namespace Brightbits.BSH.Main
         internal ComboBox cboFtpEncoding2;
         internal Label Label19;
         private CheckBox chkFtpEncryption;
+        private CheckBox chkFtpAllowUntrustedCertificate;
         private CheckBox chkFtpEncryption2;
+        private CheckBox chkFtpAllowUntrustedCertificate2;
     }
 }

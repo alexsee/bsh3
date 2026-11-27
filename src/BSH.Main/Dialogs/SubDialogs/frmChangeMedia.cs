@@ -21,6 +21,8 @@ public partial class frmChangeMedia
     public frmChangeMedia()
     {
         InitializeComponent();
+        txtFTPServer.TextChanged += (_, _) => chkFtpAllowUntrustedCertificate.Checked = false;
+        txtFTPPort.TextChanged += (_, _) => chkFtpAllowUntrustedCertificate.Checked = false;
     }
 
     /// <summary>
@@ -178,7 +180,8 @@ public partial class frmChangeMedia
                 txtFTPPath.Text,
                 Convert.ToString(cboFtpEncoding.SelectedItem) ?? "",
                 !chkFtpEncryption.Checked,
-                0);
+                0,
+                chkFtpAllowUntrustedCertificate.Checked);
             storage.Open();
 
             if (storage.FileExists(UncTargetProbe.BackupDatabaseFileName))
@@ -200,7 +203,8 @@ public partial class frmChangeMedia
             txtFTPPassword.Text,
             txtFTPPath.Text,
             Convert.ToString(cboFtpEncoding.SelectedItem) ?? "",
-            chkFtpEncryption.Checked);
+            chkFtpEncryption.Checked,
+            chkFtpAllowUntrustedCertificate.Checked);
     }
 
     private void frmChangeMedia_Load(object sender, EventArgs e)
@@ -219,7 +223,7 @@ public partial class frmChangeMedia
         {
             txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, int.Parse(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem), !chkFtpEncryption.Checked, chkFtpAllowUntrustedCertificate.Checked);
 
             if (!profile)
             {

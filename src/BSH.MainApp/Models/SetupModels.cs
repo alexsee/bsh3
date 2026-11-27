@@ -98,6 +98,8 @@ public sealed class NewSetupConfiguration
         get; init;
     }
 
+    public bool FtpAllowUntrustedCertificate { get; init; }
+
     public required TaskType TaskType
     {
         get; init;
