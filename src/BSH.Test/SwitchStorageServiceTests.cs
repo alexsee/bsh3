@@ -5,19 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
-using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
-using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Security;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.Services;
+using BSH.Test.Fakes;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -258,23 +255,11 @@ public class SwitchStorageServiceTests
         public Task ConvertFileTypesForFtpImportAsync() => throw new NotSupportedException();
     }
 
-    private sealed class RecordingBackupService : IBackupService
+    private sealed class RecordingBackupService : FakeBackupService
     {
         public List<string> UpdatedDatabaseFiles { get; } = [];
 
-        public Task<bool> CheckMedia(bool quickCheck = false) => Task.FromResult(true);
-        public string GetPassword() => string.Empty;
-        public bool HasPassword() => false;
-        public void SetPassword(string password) { }
-        public Task SetStableAsync(string version, bool stable) => Task.CompletedTask;
-        public Task UpdateVersionAsync(string version, VersionDetails versionDetails) => Task.CompletedTask;
-        public Task StartBackup(string title, string description, IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false) => Task.CompletedTask;
-        public Task StartDelete(string version, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false, IReadOnlyList<int> versionIds = null) => Task.CompletedTask;
-        public Task StartEdit(IJobReport jobReport, CancellationToken cancellationToken, bool silent = false) => Task.CompletedTask;
-        public Task StartRestore(string version, string file, string destination, IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false) => Task.CompletedTask;
-
-        public void UpdateDatabaseFile(string databaseFile)
+        public override void UpdateDatabaseFile(string databaseFile)
         {
             UpdatedDatabaseFiles.Add(databaseFile);
         }

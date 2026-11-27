@@ -3,20 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Jobs;
-using Brightbits.BSH.Engine.Models;
-using Brightbits.BSH.Engine.Runtime;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
 using BSH.MainApp.ViewModels;
-using BSH.MainApp.ViewModels.Windows;
 using BSH.Test.Fakes;
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
-using Windows.UI.Popups;
 
 namespace BSH.Test;
 
@@ -73,9 +66,9 @@ public class SetupImportRemapTests
             new FakeConfigurationManager(),
             setupService ?? new RecordingSetupService(),
             new StubOrchestrationService(),
-            new StubJobService(),
+            new FakeJobService(),
             new StubNavigationService(),
-            new StubPresentationService());
+            new FakePresentationService());
     }
 
     private sealed class RecordingSetupService : ISetupService
@@ -125,44 +118,5 @@ public class SetupImportRemapTests
     {
         public Frame? Frame { get; set; }
         public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false) => true;
-    }
-
-    private sealed class StubJobService : IJobService
-    {
-        public void Cancel() { }
-        public Task<bool> CheckMediaAsync(ActionType action, bool silent = false) => Task.FromResult(true);
-        public Task<bool> CreateBackupAsync(string title, string description, bool statusDialog = true, bool fullBackup = false, bool shutdownPC = false, string sourceFolders = "") => Task.FromResult(true);
-        public Task DeleteBackupAsync(string version, bool statusDialog = true) => Task.CompletedTask;
-        public Task<JobSessionResult> DeleteBackupsAsync(List<string> versions, bool statusDialog = true) => Task.FromResult(new JobSessionResult { Started = true });
-        public Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null) => Task.CompletedTask;
-        public Task<bool> RequestPassword() => Task.FromResult(true);
-        public Task RestoreBackupAsync(string version, List<string> files, string destination, bool statusDialog = true) => Task.CompletedTask;
-        public Task RestoreBackupAsync(string version, string file, string destination, bool statusDialog = true) => Task.CompletedTask;
-        public Task ModifyBackupAsync(bool statusDialog = true) => Task.CompletedTask;
-    }
-
-    private sealed class StubPresentationService : IPresentationService
-    {
-        public Task<TaskCompleteAction> CloseStatusWindowAsync() => Task.FromResult(TaskCompleteAction.NoAction);
-        public Task OpenCurrentEventLogAsync() => Task.CompletedTask;
-        public Task OpenHelpSupportAsync() => Task.CompletedTask;
-        public Task<(string? password, bool persist)> RequestPasswordAsync() => Task.FromResult<(string?, bool)>((null, false));
-        public Task<RequestOverwriteResult> RequestOverwriteAsync(FileTableRow localFile, FileTableRow remoteFile) => Task.FromResult(RequestOverwriteResult.None);
-        public Task ResetConfigurationAsync() => Task.CompletedTask;
-        public Task ShowAboutWindowAsync() => Task.CompletedTask;
-        public Task ShowBackupBrowserWindowAsync() => Task.CompletedTask;
-        public Task ShowCompressionExclusionsWindowAsync() => Task.CompletedTask;
-        public Task<(bool, NewBackupViewModel)> ShowCreateBackupWindowAsync() => Task.FromResult((false, new NewBackupViewModel()));
-        public Task<(bool, EditBackupViewModel)> ShowEditBackupWindowAsync(EditBackupViewModel backupViewModel) => Task.FromResult((false, backupViewModel));
-        public Task<bool> ShowDeleteBackupWindowAsync() => Task.FromResult(false);
-        public Task ShowErrorInsufficientDiskSpaceAsync() => Task.CompletedTask;
-        public Task ShowFileExceptionsAsync(IReadOnlyCollection<FileExceptionEntry> files) => Task.CompletedTask;
-        public Task ShowLastBackupFailedFilesAsync(LastBackupResult result) => Task.CompletedTask;
-        public Task ShowMainWindowAsync() => Task.CompletedTask;
-        public Task ShowStatusWindowAsync() => Task.CompletedTask;
-        public Task<ContentDialogResult> ShowMessageBoxAsync(string title, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.None);
-        public Task ShowExcludeFileFolderWindowAsync() => Task.CompletedTask;
-        public Task ShowScheduleEditorWindowAsync() => Task.CompletedTask;
-        public Task<bool> ShowSwitchStorageWindowAsync() => Task.FromResult(false);
     }
 }

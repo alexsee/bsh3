@@ -7,7 +7,6 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine;
-using Brightbits.BSH.Engine.Contracts.Services;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Jobs;
 using Brightbits.BSH.Engine.Models;
@@ -705,7 +704,7 @@ public class JobSessionRunnerTests
         };
     }
 
-    private sealed class BackupServiceStub : IBackupService
+    private sealed class BackupServiceStub : FakeBackupService
     {
         public bool CheckMediaResult { get; set; } = true;
         public bool HasPasswordResult { get; set; } = true;
@@ -732,14 +731,11 @@ public class JobSessionRunnerTests
         public Func<IJobReport, CancellationToken, Task> OnStartBackup { get; set; }
         public Func<IJobReport, CancellationToken, Task> OnStartDelete { get; set; }
 
-        public Task<bool> CheckMedia(bool quickCheck = false) => Task.FromResult(CheckMediaResult);
-        public string GetPassword() => string.Empty;
-        public bool HasPassword() => HasPasswordResult;
-        public void SetPassword(string password) => LastPasswordSet = password;
-        public Task SetStableAsync(string version, bool stable) => Task.CompletedTask;
-        public Task UpdateVersionAsync(string version, VersionDetails versionDetails) => Task.CompletedTask;
+        public override Task<bool> CheckMedia(bool quickCheck = false) => Task.FromResult(CheckMediaResult);
+        public override bool HasPassword() => HasPasswordResult;
+        public override void SetPassword(string password) => LastPasswordSet = password;
 
-        public Task StartBackup(string title, string description, IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false)
+        public override Task StartBackup(string title, string description, IJobReport jobReport, CancellationToken cancellationToken, bool fullBackup = false, string sources = "", bool silent = false)
         {
             StartBackupCalls++;
             LastTitle = title;
@@ -750,7 +746,7 @@ public class JobSessionRunnerTests
             return OnStartBackup?.Invoke(jobReport, cancellationToken) ?? Task.CompletedTask;
         }
 
-        public Task StartDelete(string version, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
+        public override Task StartDelete(string version, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
         {
             StartDeleteCalls++;
             LastVersion = version;
@@ -763,7 +759,7 @@ public class JobSessionRunnerTests
             return OnStartDelete?.Invoke(jobReport, cancellationToken) ?? Task.CompletedTask;
         }
 
-        public Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false, IReadOnlyList<int> versionIds = null)
+        public override Task StartDeleteSingle(string fileFilter, string pathFilter, IJobReport jobReport, CancellationToken cancellationToken, bool silent = false, IReadOnlyList<int> versionIds = null)
         {
             StartDeleteSingleCalls++;
             LastFileFilter = fileFilter;
@@ -773,14 +769,14 @@ public class JobSessionRunnerTests
             return Task.CompletedTask;
         }
 
-        public Task StartEdit(IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
+        public override Task StartEdit(IJobReport jobReport, CancellationToken cancellationToken, bool silent = false)
         {
             StartEditCalls++;
             LastSilent = silent;
             return Task.CompletedTask;
         }
 
-        public Task StartRestore(string version, string file, string destination, IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false)
+        public override Task StartRestore(string version, string file, string destination, IJobReport jobReport, CancellationToken cancellationToken, FileOverwrite overwrite = FileOverwrite.Ask, bool silent = false)
         {
             StartRestoreCalls++;
             LastVersion = version;
@@ -791,7 +787,6 @@ public class JobSessionRunnerTests
             RestoreOverwrites.Add(overwrite);
             return Task.CompletedTask;
         }
-        public void UpdateDatabaseFile(string databaseFile) { }
     }
 
     private sealed class JobReportStub : IJobSessionPresenter

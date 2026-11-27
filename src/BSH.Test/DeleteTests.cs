@@ -17,6 +17,7 @@ using Brightbits.BSH.Engine.Models;
 using Brightbits.BSH.Engine.Providers.Ports;
 using Brightbits.BSH.Engine.Repo;
 using Brightbits.BSH.Engine.Storage;
+using BSH.Test.Fakes;
 using BSH.Test.Helpers;
 using BSH.Test.Mocks;
 using NUnit.Framework;
@@ -443,7 +444,7 @@ public class DeleteTests
         Assert.That(Convert.ToInt32(await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM foldertable")), Is.EqualTo(1));
     }
 
-    private sealed class CandidateQueryManager : IQueryManager
+    private sealed class CandidateQueryManager : FakeQueryManager
     {
         private readonly FileDetails details;
 
@@ -452,29 +453,7 @@ public class DeleteTests
             this.details = details;
         }
 
-        public Task<VersionChangeStatistics> GetVersionChangeStatisticsAsync(string versionId) => throw new NotSupportedException();
-        public Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult(details);
-        public Task<string> GetBackVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult<string>(null);
-        public Task<string> GetBackVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult<string>(null);
-        public string GetFileNameFromDrive(FileTableRow file) => file.FileName;
-        public Task<(string, bool)> GetFileNameFromDriveAsync(int versionId, string fileName, string filePath, string password) => Task.FromResult((fileName, false));
-        public Task<List<FileTableRow>> GetFilesByVersionAsync(string version, string path) => Task.FromResult(new List<FileTableRow>());
-        public Task<List<string>> GetFolderListAsync(string version, string path) => Task.FromResult(new List<string>());
-        public Task<string> GetFullRestoreFolderAsync(string folder, string version) => Task.FromResult(folder);
-        public Task<VersionDetails> GetLastBackupAsync() => Task.FromResult<VersionDetails>(null);
-        public Task<VersionDetails> GetLastFullBackupAsync() => Task.FromResult<VersionDetails>(null);
-        public Task<string> GetLocalizedPathAsync(string path) => Task.FromResult(path);
-        public Task<string> GetNextVersionWhereFileAsync(string startVersion, string searchString) => Task.FromResult<string>(null);
-        public Task<string> GetNextVersionWhereFilesInFolderAsync(string startVersion, string path) => Task.FromResult<string>(null);
-        public Task<int> GetNumberOfVersionsAsync() => Task.FromResult(0);
-        public Task<int> GetNumberOfFilesAsync() => Task.FromResult(0);
-        public Task<double> GetTotalFileSizeAsync() => Task.FromResult(0d);
-        public Task<VersionDetails> GetOldestBackupAsync() => Task.FromResult<VersionDetails>(null);
-        public Task<VersionDetails> GetVersionByIdAsync(string id) => Task.FromResult<VersionDetails>(null);
-        public List<VersionDetails> GetVersions(bool desc = true) => [];
-        public Task<List<FileTableRow>> GetVersionsByFileAsync(string fileName, string filePath) => Task.FromResult(new List<FileTableRow>());
-        public Task<List<FileTableRow>> SearchFilesByVersionAsync(string version, string searchTerm, int limit = 500) => Task.FromResult(new List<FileTableRow>());
-        public Task<bool> HasChangesOrNewAsync(string path, string versionId) => Task.FromResult(false);
+        public override Task<FileDetails> GetFileDetailsAsync(string version, string fileName, string filePath) => Task.FromResult(details);
     }
 
     private DeleteJob CreateDeleteJob(IStorageProvider storage, string version)
