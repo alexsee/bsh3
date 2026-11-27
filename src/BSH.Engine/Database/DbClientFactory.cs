@@ -73,7 +73,7 @@ public class DbClientFactory : IDbClientFactory
 
         await dbClient.ExecuteNonQueryAsync("CREATE INDEX filePackageIndex ON fileversiontable (filePackage)");
 
-        await dbClient.ExecuteNonQueryAsync("INSERT INTO configuration VALUES (\"dbversion\", \"9\")");
+        await dbClient.ExecuteNonQueryAsync("INSERT INTO configuration VALUES (\"dbversion\", \"10\")");
     }
 
     public async Task ExecuteNonQueryAsync(string query)

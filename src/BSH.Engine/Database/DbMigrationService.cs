@@ -132,6 +132,12 @@ public class DbMigrationService : IDbMigrationService
             await dbClient.ExecuteNonQueryAsync("PRAGMA journal_mode=WAL;");
             configurationManager.DBVersion = "9";
         }
+
+        if (configurationManager.DBVersion == "9")
+        {
+            // The table layout is unchanged, but older readers cannot restore file types 7/8.
+            configurationManager.DBVersion = "10";
+        }
     }
 
     private async Task CheckpointAsync()

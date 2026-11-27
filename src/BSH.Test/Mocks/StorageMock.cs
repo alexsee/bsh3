@@ -86,6 +86,7 @@ namespace BSH.Test.Mocks
         public long FreeSpaceBytes { get; set; }
         public bool CanWrite { get; set; }
         public Func<Task<bool>> CheckMediumAsync { get; set; }
+        public bool ThrowOnRetryPathCheck { get; set; }
 
         public bool CanWriteToStorage()
         {
@@ -254,6 +255,11 @@ namespace BSH.Test.Mocks
 
         public bool IsPathTooLong(string path, bool compression, bool encryption)
         {
+            if (ThrowOnRetryPathCheck && copyToStorageAttempts > 0)
+            {
+                throw new IOException("Simulated retry path-check failure.");
+            }
+
             return pathTooLong;
         }
 

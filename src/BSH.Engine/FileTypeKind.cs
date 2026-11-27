@@ -7,7 +7,7 @@ namespace Brightbits.BSH.Engine;
 
 /// <summary>
 /// Storage encoding of a file version (fileversiontable.fileType).
-/// The local filesystem storage writes 1/2/6, FTP storage writes 3/4/5.
+/// The local filesystem storage writes 1/2/6/7, FTP storage writes 3/4/5/8.
 /// </summary>
 public enum FileTypeKind
 {
@@ -29,7 +29,13 @@ public enum FileTypeKind
     StoredEncrypted = 5,
 
     /// <summary>Encrypted copy on local filesystem storage.</summary>
-    Encrypted = 6
+    Encrypted = 6,
+
+    /// <summary>Compressed, then encrypted copy on local filesystem storage (.zip.enc).</summary>
+    CompressedEncrypted = 7,
+
+    /// <summary>Compressed, then encrypted copy on FTP storage (.zip.enc).</summary>
+    StoredCompressedEncrypted = 8
 }
 
 /// <summary>
@@ -49,10 +55,10 @@ public static class FileTypeKindExtensions
 
     /// <summary>
     /// Whether this kind stores long file names under a "_LONGFILES_" folder
-    /// (applies to the local-storage kinds 1/2/6).
+    /// (applies to the local-storage kinds 1/2/6/7).
     /// </summary>
     public static bool UsesLongFileNameStorage(this FileTypeKind kind)
     {
-        return kind is FileTypeKind.RegularCopy or FileTypeKind.Compressed or FileTypeKind.Encrypted;
+        return kind is FileTypeKind.RegularCopy or FileTypeKind.Compressed or FileTypeKind.Encrypted or FileTypeKind.CompressedEncrypted;
     }
 }

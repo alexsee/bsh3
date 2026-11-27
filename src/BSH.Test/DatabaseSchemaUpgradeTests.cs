@@ -19,6 +19,7 @@ public class DatabaseSchemaUpgradeTests
 {
     [TestCase("1")]
     [TestCase("8")]
+    [TestCase("9")]
     public async Task InitializeAsync_UpgradesPriorSchemaAndKeepsEngineReadable(string schemaVersion)
     {
         await using var fixture = await SchemaUpgradeFixture.CreateAsync(schemaVersion);

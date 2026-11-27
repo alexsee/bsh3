@@ -650,6 +650,7 @@ public class QueryManager : IQueryManager
             FileTypeKind.Compressed or FileTypeKind.StoredCompressed => "Compressed",
             FileTypeKind.StoredCopy => "Stored copy",
             FileTypeKind.StoredEncrypted or FileTypeKind.Encrypted => "Encrypted",
+            FileTypeKind.CompressedEncrypted or FileTypeKind.StoredCompressedEncrypted => "Compressed and encrypted",
             _ => "Unknown"
         };
     }
