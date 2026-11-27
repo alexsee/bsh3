@@ -99,13 +99,6 @@ public partial class ucConfig : IMainTabs
             Enabled = true;
         }
 
-        // reset backup path
-        if (cmdChange.Tag?.ToString() == "save")
-        {
-            // user does not store the settings
-            txtBackupPath.Text = txtBackupPath.Tag.ToString();
-        }
-
         // update backup storage
         if (cboMedia.SelectedIndex == 1)
         {

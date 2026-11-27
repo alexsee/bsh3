@@ -48,15 +48,6 @@ namespace SimplePsd
         public static extern int FillRect(IntPtr hDC, ref RECT lprc, IntPtr hbr);
 
         #endregion
-
-        #region Public Constructor
-        public WinInvoke32()
-        {
-            // 
-            // TODO: Add constructor logic here
-            //
-        }
-        #endregion
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

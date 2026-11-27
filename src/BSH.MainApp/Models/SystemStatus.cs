@@ -8,6 +8,5 @@ public enum SystemStatus
     NOT_CONFIGURED,
     ACTIVATED,
     DEACTIVATED,
-    PAUSED_DUE_TO_BATTERY,
-    UNKNOWN
+    PAUSED_DUE_TO_BATTERY
 }

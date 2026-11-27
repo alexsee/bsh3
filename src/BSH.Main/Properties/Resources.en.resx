@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BackupStatus_" xml:space="preserve">
-    <value>Status is currently unknown.</value>
-  </data>
   <data name="BackupStatus_0" xml:space="preserve">
     <value>Backup Service Home is running normally.</value>
   </data>
@@ -276,12 +273,6 @@ FTP Server reported:</value>
   <data name="DLG_CHANGE_MEDIA_MSG_ERROR_FTP_UNSUCCESSFUL_UNSPECIFIC_TITLE" xml:space="preserve">
     <value>Failed</value>
   </data>
-  <data name="DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT" xml:space="preserve">
-    <value>Connection established successfully.</value>
-  </data>
-  <data name="DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE" xml:space="preserve">
-    <value>Success</value>
-  </data>
   <data name="DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT" xml:space="preserve">
     <value>Connection established successfully.</value>
   </data>
@@ -381,12 +372,6 @@ The necessary rights to change this setting are missing.</value>
   <data name="DLG_MAIN_MSG_RESET_TITLE" xml:space="preserve">
     <value>Reset Backup Service Home</value>
   </data>
-  <data name="DLG_MAIN_MSG_UWP_AUTOSTART_TEXT" xml:space="preserve">
-    <value>You can disable the auto-start behavior of Backup Service Home 3 in the Task Manager.</value>
-  </data>
-  <data name="DLG_MAIN_MSG_UWP_AUTOSTART_TITLE" xml:space="preserve">
-    <value>Autostart behavior</value>
-  </data>
   <data name="DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT" xml:space="preserve">
     <value>Maintainance work is progressing...</value>
   </data>
@@ -398,21 +383,6 @@ The necessary rights to change this setting are missing.</value>
   </data>
   <data name="DLG_STATUS_STATUS_CANCELED_TEXT" xml:space="preserve">
     <value>Cancelling...</value>
-  </data>
-  <data name="DLG_UC_CONFIG_LBL_COMPRESSION_STAGE" xml:space="preserve">
-    <value> Mode </value>
-  </data>
-  <data name="DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION" xml:space="preserve">
-    <value>Highest compression</value>
-  </data>
-  <data name="DLG_UC_CONFIG_LBL_HIGH_COMPRESSION" xml:space="preserve">
-    <value>High compression</value>
-  </data>
-  <data name="DLG_UC_CONFIG_LBL_LOW_COMPRESSION" xml:space="preserve">
-    <value>Low compression</value>
-  </data>
-  <data name="DLG_UC_CONFIG_LBL_NO_COMPRESSION" xml:space="preserve">
-    <value>No compression</value>
   </data>
   <data name="DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT" xml:space="preserve">
     <value>The connection to the FTP server could not be established.</value>
@@ -713,12 +683,6 @@ Double-click here to start configuring.</value>
   <data name="INFO_BSH_NOT_CONFIGURED_TITLE" xml:space="preserve">
     <value>Not configured.</value>
   </data>
-  <data name="INFO_BSH_UPDATE_AVAILABLE_TEXT" xml:space="preserve">
-    <value>For Backup Service Home 3, updates are available that can now be downloaded and installed. It is recommended to install these updates.</value>
-  </data>
-  <data name="INFO_BSH_UPDATE_AVAILABLE_TITLE" xml:space="preserve">
-    <value>Updates are available.</value>
-  </data>
   <data name="INFO_NO_BACKUP_AVAILABLE_TEXT" xml:space="preserve">
     <value>There is currently no backup available that can be searched.</value>
   </data>
@@ -763,18 +727,6 @@ Double-click here to start configuring.</value>
   </data>
   <data name="TASK_BSH_SHUTDOWN_PC" xml:space="preserve">
     <value>Backup Service Home 3 will shut down the computer after a successful action...</value>
-  </data>
-  <data name="WAIT_0" xml:space="preserve">
-    <value>Backup Service Home is waiting for the data backup medium,</value>
-  </data>
-  <data name="WAIT_1" xml:space="preserve">
-    <value>Backup Service Home is waiting for the data backup medium,</value>
-  </data>
-  <data name="WAIT_2" xml:space="preserve">
-    <value>Backup Service Home is waiting for the data backup medium,</value>
-  </data>
-  <data name="WAIT_3" xml:space="preserve">
-    <value>Backup Service Home is waiting for the data backup medium,</value>
   </data>
   <data name="WELCOMETITLE_STEP_1" xml:space="preserve">
     <value>What data would you like to back up?</value>

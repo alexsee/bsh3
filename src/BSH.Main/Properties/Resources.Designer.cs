@@ -167,15 +167,6 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Status ist derzeit unbekannt. ähnelt.
-        /// </summary>
-        public static string BackupStatus_ {
-            get {
-                return ResourceManager.GetString("BackupStatus_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wird ordnungsgemäß ausgeführt. ähnelt.
         /// </summary>
         public static string BackupStatus_0 {
@@ -217,16 +208,6 @@ namespace BSH.Main.Properties {
         public static string BackupStatus_4 {
             get {
                 return ResourceManager.GetString("BackupStatus_4", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap cancel_fill_icon_48 {
-            get {
-                object obj = ResourceManager.GetObject("cancel_fill_icon_48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -628,24 +609,6 @@ namespace BSH.Main.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte erfolgreich aufgebaut werden. ähnelt.
         /// </summary>
-        public static string DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT {
-            get {
-                return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Erfolgreich ähnelt.
-        /// </summary>
-        public static string DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE {
-            get {
-                return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_INFO_FTP_SUCCESSFUL_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Die Verbindung konnte erfolgreich aufgebaut werden. ähnelt.
-        /// </summary>
         public static string DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT {
             get {
                 return ResourceManager.GetString("DLG_CHANGE_MEDIA_MSG_INFO_CONNECTION_SUCCESSFUL_TEXT", resourceCulture);
@@ -927,24 +890,6 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Sie können das Autostart Verhalten von Backup Service Home 3 im Taskmanager deaktivieren. ähnelt.
-        /// </summary>
-        public static string DLG_MAIN_MSG_UWP_AUTOSTART_TEXT {
-            get {
-                return ResourceManager.GetString("DLG_MAIN_MSG_UWP_AUTOSTART_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Autostartverhalten ähnelt.
-        /// </summary>
-        public static string DLG_MAIN_MSG_UWP_AUTOSTART_TITLE {
-            get {
-                return ResourceManager.GetString("DLG_MAIN_MSG_UWP_AUTOSTART_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Wartungsaufgabe wird durchgeführt... ähnelt.
         /// </summary>
         public static string DLG_SHORT_STATUS_DEFAULT_STATUS_TEXT {
@@ -977,51 +922,6 @@ namespace BSH.Main.Properties {
         public static string DLG_STATUS_STATUS_CANCELED_TEXT {
             get {
                 return ResourceManager.GetString("DLG_STATUS_STATUS_CANCELED_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die  Stufe  ähnelt.
-        /// </summary>
-        public static string DLG_UC_CONFIG_LBL_COMPRESSION_STAGE {
-            get {
-                return ResourceManager.GetString("DLG_UC_CONFIG_LBL_COMPRESSION_STAGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Hohe Kompression ähnelt.
-        /// </summary>
-        public static string DLG_UC_CONFIG_LBL_HIGH_COMPRESSION {
-            get {
-                return ResourceManager.GetString("DLG_UC_CONFIG_LBL_HIGH_COMPRESSION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Höchste Kompression ähnelt.
-        /// </summary>
-        public static string DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION {
-            get {
-                return ResourceManager.GetString("DLG_UC_CONFIG_LBL_HIGHEST_COMPRESSION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Niedrige Kompression ähnelt.
-        /// </summary>
-        public static string DLG_UC_CONFIG_LBL_LOW_COMPRESSION {
-            get {
-                return ResourceManager.GetString("DLG_UC_CONFIG_LBL_LOW_COMPRESSION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Keine Kompression ähnelt.
-        /// </summary>
-        public static string DLG_UC_CONFIG_LBL_NO_COMPRESSION {
-            get {
-                return ResourceManager.GetString("DLG_UC_CONFIG_LBL_NO_COMPRESSION", resourceCulture);
             }
         }
         
@@ -1931,24 +1831,6 @@ namespace BSH.Main.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Für Backup Service Home 3 sind Aktualisierungen verfügbar, die nun heruntergeladen und installiert werden können. Es wird empfohlen diese Aktualisierungen zu installieren. ähnelt.
-        /// </summary>
-        public static string INFO_BSH_UPDATE_AVAILABLE_TEXT {
-            get {
-                return ResourceManager.GetString("INFO_BSH_UPDATE_AVAILABLE_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Es sind Aktualisierungen verfügbar ähnelt.
-        /// </summary>
-        public static string INFO_BSH_UPDATE_AVAILABLE_TITLE {
-            get {
-                return ResourceManager.GetString("INFO_BSH_UPDATE_AVAILABLE_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Es ist derzeit keine Datensicherung vorhanden, die durchsucht werden kann. ähnelt.
         /// </summary>
         public static string INFO_NO_BACKUP_AVAILABLE_TEXT {
@@ -2260,42 +2142,6 @@ namespace BSH.Main.Properties {
             get {
                 object obj = ResourceManager.GetObject("visibility_icon_24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wartet auf das Datensicherungsmedium,  ähnelt.
-        /// </summary>
-        public static string WAIT_0 {
-            get {
-                return ResourceManager.GetString("WAIT_0", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wartet auf das Datensicherungsmedium, ähnelt.
-        /// </summary>
-        public static string WAIT_1 {
-            get {
-                return ResourceManager.GetString("WAIT_1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wartet auf das Datensicherungsmedium, ähnelt.
-        /// </summary>
-        public static string WAIT_2 {
-            get {
-                return ResourceManager.GetString("WAIT_2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Backup Service Home wartet auf das Datensicherungsmedium,  ähnelt.
-        /// </summary>
-        public static string WAIT_3 {
-            get {
-                return ResourceManager.GetString("WAIT_3", resourceCulture);
             }
         }
         

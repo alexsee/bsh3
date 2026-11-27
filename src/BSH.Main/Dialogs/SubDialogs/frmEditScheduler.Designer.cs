@@ -40,7 +40,6 @@ namespace Brightbits.BSH.Main
             TabControl1 = new TabControl();
             TabPage1 = new TabPage();
             Label4 = new Label();
-            cboFullBackup = new ComboBox();
             nudFullBackup = new NumericUpDown();
             chkFullBackup = new CheckBox();
             chkFullBackup.CheckedChanged += new EventHandler(chkFullBackup_CheckedChanged);
@@ -155,7 +154,6 @@ namespace Brightbits.BSH.Main
             // TabPage1
             // 
             TabPage1.Controls.Add(Label4);
-            TabPage1.Controls.Add(cboFullBackup);
             TabPage1.Controls.Add(nudFullBackup);
             TabPage1.Controls.Add(chkFullBackup);
             TabPage1.Controls.Add(lwTimeSchedule);
@@ -177,17 +175,6 @@ namespace Brightbits.BSH.Main
             Label4.Size = new Size(164, 17);
             Label4.TabIndex = 14;
             Label4.Text = "eine Vollsicherung anlegen";
-            // 
-            // cboFullBackup
-            // 
-            cboFullBackup.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboFullBackup.Enabled = false;
-            cboFullBackup.FormattingEnabled = true;
-            cboFullBackup.Items.AddRange(new object[] { "Tage" });
-            cboFullBackup.Location = new Point(129, 289);
-            cboFullBackup.Name = "cboFullBackup";
-            cboFullBackup.Size = new Size(121, 25);
-            cboFullBackup.TabIndex = 13;
             // 
             // nudFullBackup
             // 
@@ -400,7 +387,6 @@ namespace Brightbits.BSH.Main
         internal TabPage TabPage1;
         internal TabPage TabPage2;
         internal Label Label4;
-        internal ComboBox cboFullBackup;
         internal NumericUpDown nudFullBackup;
         internal CheckBox chkFullBackup;
         internal Label Label5;

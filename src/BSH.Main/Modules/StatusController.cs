@@ -17,7 +17,7 @@ using Resources = BSH.Main.Properties.Resources;
 
 namespace Brightbits.BSH.Main;
 
-public class StatusController : IJobReport
+public class StatusController
 {
     private static readonly ILogger Logger = Log.ForContext<StatusController>();
     private static StatusController _statusController;
@@ -304,10 +304,5 @@ public class StatusController : IJobReport
         }
 
         dlgFileNotCopied.ShowDialog();
-    }
-
-    public async Task RequestShowErrorInsufficientDiskSpaceAsync()
-    {
-        PresentationController.ShowErrorInsufficientDiskSpace();
     }
 }
