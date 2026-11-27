@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Contracts;
@@ -133,16 +134,52 @@ public class FtpStorage : Storage, IStorageProvider
         client.Config.LogDurations = false;
     }
 
+    private static bool ShouldTryImplicitTls(BaseFtpClient client, Exception exception)
+    {
+        // An implicit FTPS server waits for the TLS ClientHello before sending its greeting.
+        return client.Port is not (21 or 990)
+            && client.Config.EncryptionMode == FtpEncryptionMode.Explicit
+            && !client.IsEncrypted
+            && exception is TimeoutException
+                or IOException { InnerException: SocketException { SocketErrorCode: SocketError.TimedOut } };
+    }
+
+    private static void Connect(FtpClient client)
+    {
+        try
+        {
+            client.Connect();
+        }
+        catch (Exception ex) when (ShouldTryImplicitTls(client, ex))
+        {
+            client.Config.EncryptionMode = FtpEncryptionMode.Implicit;
+            client.Connect();
+        }
+    }
+
+    private static async Task ConnectAsync(AsyncFtpClient client)
+    {
+        try
+        {
+            await client.Connect();
+        }
+        catch (Exception ex) when (ShouldTryImplicitTls(client, ex))
+        {
+            client.Config.EncryptionMode = FtpEncryptionMode.Implicit;
+            await client.Connect();
+        }
+    }
+
     public static bool CheckConnection(
         string host, int port, string userName, string password, string folderPath, string encoding,
-        bool encryption = true, bool allowUntrustedCertificate = false)
+        bool encryption, bool allowUntrustedCertificate = false)
     {
         var credentials = new NetworkCredential(userName, password);
         var config = CreateConnectionConfig(port, encryption, allowUntrustedCertificate);
         using var client = new FtpClient(host, credentials, port, config);
         client.Encoding = GetEncoding(encoding);
         ConfigureClientLogger(client, _logger);
-        client.Connect();
+        Connect(client);
 
         if (!client.IsConnected)
         {
@@ -168,7 +205,7 @@ public class FtpStorage : Storage, IStorageProvider
             using var client = new AsyncFtpClient(serverAddress, credentials, serverPort, config);
             client.Encoding = GetEncoding(encoding);
             ConfigureClientLogger(client, _logger);
-            await client.Connect();
+            await ConnectAsync(client);
 
             if (!client.IsConnected)
             {
@@ -334,7 +371,7 @@ public class FtpStorage : Storage, IStorageProvider
             ConfigureClientLogger(ftpClient, _logger);
         }
 
-        ftpClient.Connect();
+        Connect(ftpClient);
     }
 
     public void UpdateStorageVersion(int versionId)

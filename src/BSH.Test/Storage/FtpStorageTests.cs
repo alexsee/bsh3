@@ -4,6 +4,9 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Security.Authentication;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
@@ -46,6 +49,30 @@ public class FtpStorageTests
             encryption: true, currentStorageVersion: 7, allowUntrustedCertificate: true);
 
         Assert.That(await storage.CheckMedium(quickCheck: true), Is.False);
+        Assert.That(server.LoggedIn, Is.False);
+    }
+
+    [Test]
+    public async Task ConnectionTestRequiresConsentToAcceptSelfSignedCertificate()
+    {
+        using var key = RSA.Create(2048);
+        var request = new CertificateRequest("CN=localhost", key, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddDays(1));
+
+        await using (var server = new VersionMarkerFtpServer("7", certificate: certificate))
+        {
+            Assert.Throws<AuthenticationException>(() => FtpStorage.CheckConnection(
+                "localhost", server.Port, "user", "pass", "/", "UTF-8", encryption: true));
+            Assert.That(server.LoggedIn, Is.False);
+        }
+
+        await using (var server = new VersionMarkerFtpServer("7", certificate: certificate))
+        {
+            Assert.That(FtpStorage.CheckConnection(
+                "localhost", server.Port, "user", "pass", "/", "UTF-8",
+                encryption: true, allowUntrustedCertificate: true), Is.True);
+            Assert.That(server.LoggedIn, Is.True);
+        }
     }
 
     [Test]

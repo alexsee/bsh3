@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
@@ -780,7 +781,6 @@ public partial class SetupViewModel : ObservableObject
             CurrentStep = SetupWizardStep.Progress;
             IsBusy = true;
 
-            setupService.PrepareDatabaseReplacement(DatabaseFile);
             using (var storage = new FtpStorage(
                 ImportFtpHost,
                 port,
@@ -793,7 +793,7 @@ public partial class SetupViewModel : ObservableObject
                 ImportFtpAllowUntrustedCertificate))
             {
                 storage.Open();
-                storage.CopyFileFromStorage(DatabaseFile, "backup.bshdb");
+                BackupDatabaseImport.DownloadFromStorage(storage, DatabaseFile);
             }
 
             await ReinitializeAfterImportAsync();

@@ -31,7 +31,8 @@ public class ServiceWirePipeTests
 
         Assert.Multiple(() =>
         {
-            AssertAllowed(rules, administrators, PipeAccessRights.ReadWrite);
+            AssertAllowed(rules, administrators,
+                PipeAccessRights.ReadWrite | PipeAccessRights.CreateNewInstance | PipeAccessRights.Synchronize);
             AssertAllowed(rules, system, PipeAccessRights.FullControl);
             AssertAllowed(rules, identity.User!, PipeAccessRights.FullControl);
             Assert.That(rules.Where(rule => rule.AccessControlType == AccessControlType.Allow)

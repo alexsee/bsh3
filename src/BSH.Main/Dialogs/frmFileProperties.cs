@@ -78,7 +78,8 @@ public partial class frmFileProperties
         // Wurde überhaupt irgendetwas ausgewählt?
         if (lvVersions.SelectedItems.Count > 0 && lvVersions.SelectedItems[0].Tag is FileTableRow version)
         {
-            await BackupLogic.BackupController.RestoreBackupAsync(version.FilePackage, CurrentFileFolder + '\\' + lblFileName.Text, Destination);
+            var filePath = version.FilePath.TrimEnd('\\') + '\\' + version.FileName;
+            await BackupLogic.BackupController.RestoreBackupAsync(version.FilePackage, filePath, Destination);
         }
     }
 

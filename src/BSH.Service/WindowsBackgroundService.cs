@@ -36,7 +36,8 @@ namespace BSH.Service
                 AccessControlType.Deny));
             _pipeSecurity.AddAccessRule(new PipeAccessRule(
                 new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null),
-                PipeAccessRights.ReadWrite,
+                // ServiceWire opens the client with GENERIC_READ | GENERIC_WRITE.
+                PipeAccessRights.ReadWrite | PipeAccessRights.CreateNewInstance | PipeAccessRights.Synchronize,
                 AccessControlType.Allow));
 
             // Allow the service to create further pipe instances, including

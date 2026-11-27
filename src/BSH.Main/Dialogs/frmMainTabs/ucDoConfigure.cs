@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -168,8 +167,7 @@ public partial class ucDoConfigure : IMainTabs
                     {
                         txtFTPPath.Text = FtpStorage.GetFtpPath(txtFTPPath.Text);
 
-                        var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem), !chkFtpEncryption.Checked, chkFtpAllowUntrustedCertificate.Checked);
-                        if (!profile)
+                        if (!CheckNewFtpTarget())
                         {
                             // directory not found
                             MessageBox.Show(Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TEXT, Resources.DLG_UC_DO_CONFIGURE_MSG_ERROR_FTP_DIRECTORY_NOT_FOUND_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -473,7 +471,6 @@ public partial class ucDoConfigure : IMainTabs
                     try
                     {
                         // download backup database
-                        DeleteCurrentDatabaseFile();
                         using IStorageProvider storage = new FtpStorage(
                             txtFTPServer2.Text,
                             int.Parse(txtFTPPort2.Text),
@@ -485,7 +482,7 @@ public partial class ucDoConfigure : IMainTabs
                             0,
                             chkFtpAllowUntrustedCertificate2.Checked);
                         storage.Open();
-                        storage.CopyFileFromStorage(BackupLogic.DatabaseFile, "backup.bshdb");
+                        BackupDatabaseImport.DownloadFromStorage(storage, BackupLogic.DatabaseFile);
                     }
                     catch (Exception ex)
                     {
@@ -566,53 +563,13 @@ public partial class ucDoConfigure : IMainTabs
 
             case 8:
 
-                // store source directories
-                var sourcePaths = string.Join("|", lvSourceDirs.Items.Cast<ListViewItem>().Select(x => x.Text));
+                var remaps = lvSourceDirs.Items.Cast<ListViewItem>()
+                    .Select(item => (OriginalPath: item.SubItems[1].Text, NewPath: item.Text))
+                    .ToArray();
+                await BackupDatabaseImport.RemapVersionSourcesAsync(
+                    BackupLogic.DbClientFactory, BackupLogic.QueryManager.GetVersions(), remaps);
 
-                var versionsToRemap = BackupLogic.QueryManager.GetVersions();
-                using (var dbClient = BackupLogic.DbClientFactory.CreateDbClient())
-                {
-                    dbClient.BeginTransaction();
-                    foreach (var version in versionsToRemap)
-                    {
-                        var sources = version.Sources.Split('|').Select(x => new VersionEntry(x, false)).ToList();
-
-                        foreach (ListViewItem entry in lvSourceDirs.Items)
-                        {
-                            if (entry.Text.Length > 3)
-                            {
-                                foreach (var source in sources)
-                                {
-                                    source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
-                                    source.Changed = true;
-                                }
-                            }
-                        }
-
-                        foreach (ListViewItem entry in lvSourceDirs.Items)
-                        {
-                            if (entry.Text.Length > 3)
-                            {
-                                foreach (var source in sources)
-                                {
-                                    if (!source.Changed)
-                                    {
-                                        source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
-                                    }
-                                }
-                            }
-                        }
-
-                        await dbClient.ExecuteNonQueryAsync(
-                            CommandType.Text,
-                            "UPDATE versiontable SET versionSources = @sources WHERE versionID = @versionId",
-                            [("sources", string.Join("|", sources.Select(source => source.Path))), ("versionId", version.Id)]);
-                    }
-
-                    dbClient.CommitTransaction();
-                }
-
-                BackupLogic.ConfigurationManager.SourceFolder = sourcePaths;
+                BackupLogic.ConfigurationManager.SourceFolder = string.Join("|", remaps.Select(remap => remap.NewPath));
                 BackupLogic.ConfigurationManager.TaskType = TaskType.Manual;
 
                 // show overview window
@@ -645,25 +602,6 @@ public partial class ucDoConfigure : IMainTabs
         catch (Exception)
         {
             // ignore error
-        }
-    }
-
-    private sealed class VersionEntry
-    {
-        public VersionEntry(string path, bool changed)
-        {
-            Path = path;
-            Changed = changed;
-        }
-
-        public string Path
-        {
-            get; set;
-        }
-
-        public bool Changed
-        {
-            get; set;
         }
     }
 
@@ -707,14 +645,21 @@ public partial class ucDoConfigure : IMainTabs
         cmdDelete.Enabled = lvSourceFolders.SelectedItems.Count > 0;
     }
 
+    private bool CheckNewFtpTarget()
+    {
+        return FtpStorage.CheckConnection(
+            txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text,
+            txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem),
+            encryption: !chkFtpEncryption.Checked,
+            allowUntrustedCertificate: chkFtpAllowUntrustedCertificate.Checked);
+    }
+
     private void cmdFTPCheck_Click(object sender, EventArgs e)
     {
         // check ftp credentials
         try
         {
-            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem), !chkFtpEncryption.Checked, chkFtpAllowUntrustedCertificate.Checked);
-
-            if (!profile)
+            if (!CheckNewFtpTarget())
             {
                 MessageBox.Show(Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TEXT, Resources.DLG_UC_CONFIG_MSG_ERROR_FTP_UNSUCCESSFUL_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
