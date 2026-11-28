@@ -12,56 +12,115 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IO.Pipes;
+using System.Security.Principal;
 using BSH.Service.Shared;
-using Microsoft.Win32.SafeHandles;
+using BSH.Service.VSS;
 
 namespace BSH.Service;
 
 public class VSSService : IVSSRemoteObject
 {
-    private Exception? exception;
+    private const string DeniedMessage = "The caller is not authorized to copy this file.";
+    private readonly Action<string, Action<string>> withSnapshot;
+
+    public VSSService() : this(WithSnapshot)
+    {
+    }
+
+    internal VSSService(Action<string, Action<string>> withSnapshot)
+    {
+        this.withSnapshot = withSnapshot;
+    }
 
     public bool CopyFileWithVSS(string vssServiceFolder, string source, string destination)
     {
-        // The service folder is not an authorization input.
-        _ = vssServiceFolder;
-        this.exception = null;
-        SafeAccessTokenHandle? caller = null;
+        var connection = CallerImpersonatingNpHost.CurrentConnection;
+        if (connection == null)
+        {
+            return false;
+        }
+
+        connection.Error = null;
+        WindowsIdentity? caller = null;
         try
         {
-            // A missing impersonation token is a denial, including when the process is LocalSystem.
-            if (!VssCallerAuthorization.TryDuplicateCallerToken(out var duplicated) || duplicated == null)
+            // Capture the connection's token before VSS runs, then use it only for file access.
+            connection.Pipe.RunAsClient(() => caller = WindowsIdentity.GetCurrent(ifImpersonating: true));
+            if (caller?.ImpersonationLevel is not (TokenImpersonationLevel.Impersonation or TokenImpersonationLevel.Delegation))
             {
-                this.exception = new UnauthorizedAccessException(VssCallerAuthorization.DeniedMessage);
-                return false;
+                throw new UnauthorizedAccessException(DeniedMessage);
             }
 
-            caller = duplicated;
-            if (!VssCallerAuthorization.RevertToSelf())
-            {
-                this.exception = new UnauthorizedAccessException(VssCallerAuthorization.DeniedMessage);
-                return false;
-            }
-
-            VssCallerAuthorization.CopyAuthorized(caller, source, destination);
+            var sourcePath = GetLocalPath(source);
+            var destinationPath = GetLocalPath(destination);
+            withSnapshot(sourcePath, snapshotPath =>
+                WindowsIdentity.RunImpersonated(caller.AccessToken, () => CopySnapshot(snapshotPath, destinationPath)));
             return true;
         }
-        catch (Exception ex)
+        catch (Exception error)
         {
-            this.exception = ex;
+            connection.Error = error;
+            return false;
         }
         finally
         {
-            VssCallerAuthorization.RevertToSelf();
             caller?.Dispose();
         }
-
-        return false;
     }
 
-    public Exception? GetException()
+    public Exception? GetException() =>
+        CallerImpersonatingNpHost.CurrentConnection is { } connection
+            ? connection.Error
+            : new UnauthorizedAccessException(DeniedMessage);
+
+    private static string GetLocalPath(string path)
     {
-        VssCallerAuthorization.RevertToSelf();
-        return this.exception;
+        ArgumentNullException.ThrowIfNull(path);
+        const string extendedPrefix = @"\\?\";
+        if (path.StartsWith(extendedPrefix, StringComparison.Ordinal))
+        {
+            path = path[extendedPrefix.Length..];
+        }
+
+        if (path.Length < 3 || !char.IsAsciiLetter(path[0]) || path[1] != ':' || path[2] != '\\')
+        {
+            throw new UnauthorizedAccessException(DeniedMessage);
+        }
+
+        var fullPath = Path.GetFullPath(path);
+        var drive = new DriveInfo(Path.GetPathRoot(fullPath)!);
+        if (drive.DriveType is not (DriveType.Fixed or DriveType.Removable or DriveType.Ram))
+        {
+            throw new UnauthorizedAccessException(DeniedMessage);
+        }
+
+        return fullPath;
     }
+
+    private static void WithSnapshot(string source, Action<string> copy)
+    {
+        using var snapshot = new VssBackup();
+        snapshot.Setup(Path.GetPathRoot(source)!);
+        copy(snapshot.GetSnapshotPath(source));
+    }
+
+    private static void CopySnapshot(string source, string destination)
+    {
+        if ((File.GetAttributes(source) & FileAttributes.ReparsePoint) != 0)
+        {
+            throw new UnauthorizedAccessException(DeniedMessage);
+        }
+
+        using var input = new FileStream(source, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+        using var output = new FileStream(destination, FileMode.Create, FileAccess.Write, FileShare.Read);
+        input.CopyTo(output);
+    }
+}
+
+internal sealed class VssPipeConnection(NamedPipeServerStream pipe)
+{
+    internal NamedPipeServerStream Pipe { get; } = pipe;
+
+    internal Exception? Error { get; set; }
 }

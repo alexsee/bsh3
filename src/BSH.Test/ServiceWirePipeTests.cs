@@ -7,8 +7,10 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using Brightbits.BSH.Engine.Services;
 using BSH.Service;
 using BSH.Service.Shared;
+using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 using ServiceWire.NamedPipes;
 
@@ -25,11 +27,13 @@ public class ServiceWirePipeTests
             PipeDirection.InOut, 2, PipeTransmissionMode.Byte, PipeOptions.None, 8192, 8192);
         var rules = pipe.GetAccessControl().GetAccessRules(true, true, typeof(SecurityIdentifier))
             .Cast<PipeAccessRule>().ToArray();
+        var interactive = new SecurityIdentifier(WellKnownSidType.InteractiveSid, null);
 
         Assert.Multiple(() =>
         {
             AssertNotAllowed(rules, new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null), PipeAccessRights.ReadWrite);
-            AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.InteractiveSid, null), PipeAccessRights.ReadWrite);
+            AssertAllowed(rules, interactive, PipeAccessRights.ReadWrite);
+            AssertNotAllowed(rules, interactive, PipeAccessRights.CreateNewInstance);
             AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null), PipeAccessRights.ReadWrite);
             AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null), PipeAccessRights.FullControl);
             AssertAllowed(rules, WindowsIdentity.GetCurrent().User!, PipeAccessRights.FullControl);
@@ -46,56 +50,73 @@ public class ServiceWirePipeTests
     }
 
     [Test]
-    public void CallerTokenAccessCheckFollowsReadAndWriteAces()
+    public void VssPipeCopiesReadableFilesAndHonorsFileAcls()
     {
-        var root = Path.Combine(Path.GetTempPath(), "bsh-vss-acl-" + Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(root);
-        var readable = Path.Combine(root, "readable.txt");
-        var deniedRead = Path.Combine(root, "denied-read.txt");
-        var deniedWrite = Path.Combine(root, "denied-write");
+        var pipeName = "bsh-rpc-" + Guid.NewGuid().ToString("N");
+        var root = Directory.CreateTempSubdirectory("bsh-vss-acl-");
+        var readable = Path.Combine(root.FullName, "readable.txt");
+        var deniedRead = Path.Combine(root.FullName, "denied-read.txt");
+        var deniedWrite = Path.Combine(root.FullName, "denied-write.txt");
+        var output = Path.Combine(root.FullName, "output.txt");
         File.WriteAllText(readable, "readable");
-        File.WriteAllText(deniedRead, "secret");
-        Directory.CreateDirectory(deniedWrite);
+        File.WriteAllText(deniedRead, "private");
+        File.WriteAllText(deniedWrite, "original");
 
         try
         {
-            SetDeny(deniedRead, FileSystemRights.Read, deny: true);
-            SetDeny(deniedWrite, FileSystemRights.Write, deny: true);
-
-            using var identity = WindowsIdentity.GetCurrent();
-            var readableRights = VssCallerAuthorization.Check(identity.AccessToken, readable, readable);
-            var unreadable = VssCallerAuthorization.Check(identity.AccessToken, deniedRead, readable);
-            var unwritable = VssCallerAuthorization.Check(identity.AccessToken, readable, deniedWrite);
-
-            Assert.Multiple(() =>
+            SetFileDeny(deniedRead, FileSystemRights.ReadData, deny: true);
+            SetFileDeny(deniedWrite, FileSystemRights.WriteData, deny: true);
+            var logger = new ServiceWireLogger(NullLogger<WindowsBackgroundService>.Instance);
+            using var host = new CallerImpersonatingNpHost(pipeName, logger, new CustomNamedPipeServerStreamFactory());
+            host.AddService<IVSSRemoteObject>(new VSSService((source, copy) =>
             {
-                Assert.That(readableRights.CanReadSource, Is.True);
-                Assert.That(unreadable.CanReadSource, Is.False);
-                Assert.That(unwritable.CanWriteDestination, Is.False);
-                Assert.That(VssCopyPolicy.IsAuthorized(new CallerFileRights(true, true)), Is.True);
-                Assert.That(VssCopyPolicy.IsAuthorized(new CallerFileRights(true, false)), Is.False);
-                Assert.That(VssCopyPolicy.IsAuthorized(new CallerFileRights(false, true)), Is.False);
-                Assert.That(VssCopyPolicy.IsAuthorized(unreadable), Is.False);
-                Assert.That(VssCopyPolicy.IsAuthorized(unwritable), Is.False);
-            });
+                using var identity = WindowsIdentity.GetCurrent(ifImpersonating: true);
+                if (identity != null)
+                {
+                    throw new InvalidOperationException("The VSS requester ran as the pipe caller.");
+                }
+
+                copy(source);
+            }));
+            host.Open();
+
+            var client = new VolumeShadowCopyClient(pipeName);
+            Assert.That(client.CopyFile(readable, output), Is.True);
+            Assert.That(File.ReadAllText(output), Is.EqualTo("readable"));
+            Assert.That(client.CopyFile(deniedRead, output), Is.False);
+            Assert.That(File.ReadAllText(output), Is.EqualTo("readable"));
+            Assert.That(client.CopyFile(readable, deniedWrite), Is.False);
+            Assert.That(File.ReadAllText(deniedWrite), Is.EqualTo("original"));
         }
         finally
         {
-            TryClearDeny(deniedRead, FileSystemRights.Read);
-            TryClearDeny(deniedWrite, FileSystemRights.Write);
-            try
-            {
-                if (Directory.Exists(root))
-                {
-                    Directory.Delete(root, recursive: true);
-                }
-            }
-            catch (IOException)
-            {
-            }
-            catch (UnauthorizedAccessException)
-            {
-            }
+            SetFileDeny(deniedRead, FileSystemRights.ReadData, deny: false);
+            SetFileDeny(deniedWrite, FileSystemRights.WriteData, deny: false);
+            root.Delete(recursive: true);
+        }
+    }
+
+    [Test]
+    [Explicit("Requires the updated VSS service installed as LocalSystem and a standard-user test runner.")]
+    public void StandardUserCanBackUpALockedFileThroughTheInstalledVssService()
+    {
+        using var identity = WindowsIdentity.GetCurrent();
+        Assert.That(new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator), Is.False);
+
+        var root = Directory.CreateTempSubdirectory("bsh-vss-locked-");
+        var source = Path.Combine(root.FullName, "locked.txt");
+        var destination = Path.Combine(root.FullName, "backup.txt");
+        try
+        {
+            File.WriteAllText(source, "locked file contents");
+            using var locked = File.Open(source, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+
+            Assert.That(new VolumeShadowCopyClient().CopyFile(source, destination), Is.True);
+            Assert.That(File.ReadAllText(destination), Is.EqualTo("locked file contents"));
+        }
+        finally
+        {
+            root.Delete(recursive: true);
         }
     }
 
@@ -134,55 +155,22 @@ public class ServiceWirePipeTests
             && (rule.PipeAccessRights & rights) == rights), Is.False, $"Unexpected {rights} for {sid}");
     }
 
-    private static void SetDeny(string path, FileSystemRights rights, bool deny)
+    private static void SetFileDeny(string path, FileSystemRights rights, bool deny)
     {
-        var rule = new FileSystemAccessRule(WindowsIdentity.GetCurrent().User!, rights, AccessControlType.Deny);
-        if (Directory.Exists(path))
-        {
-            var directory = new DirectoryInfo(path);
-            var security = directory.GetAccessControl();
-            if (deny)
-            {
-                security.AddAccessRule(rule);
-            }
-            else
-            {
-                security.RemoveAccessRule(rule);
-            }
-
-            directory.SetAccessControl(security);
-            return;
-        }
-
+        using var identity = WindowsIdentity.GetCurrent();
+        var rule = new FileSystemAccessRule(identity.User!, rights, AccessControlType.Deny);
         var file = new FileInfo(path);
-        var fileSecurity = file.GetAccessControl();
+        var security = file.GetAccessControl();
         if (deny)
         {
-            fileSecurity.AddAccessRule(rule);
+            security.AddAccessRule(rule);
         }
         else
         {
-            fileSecurity.RemoveAccessRule(rule);
+            security.RemoveAccessRule(rule);
         }
 
-        file.SetAccessControl(fileSecurity);
-    }
-
-    private static void TryClearDeny(string path, FileSystemRights rights)
-    {
-        try
-        {
-            if (File.Exists(path) || Directory.Exists(path))
-            {
-                SetDeny(path, rights, deny: false);
-            }
-        }
-        catch (UnauthorizedAccessException)
-        {
-        }
-        catch (IOException)
-        {
-        }
+        file.SetAccessControl(security);
     }
 
     private sealed class FailedVssService : IVSSRemoteObject

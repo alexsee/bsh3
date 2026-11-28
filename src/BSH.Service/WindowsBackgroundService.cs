@@ -13,11 +13,9 @@
 // limitations under the License.
 
 using System.IO.Pipes;
-using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using BSH.Service.Shared;
-using Microsoft.Win32.SafeHandles;
 using ServiceWire;
 using ServiceWire.NamedPipes;
 
@@ -57,8 +55,6 @@ namespace BSH.Service
         public NamedPipeServerStream Create(string pipeName, PipeDirection direction, int maxNumberOfServerInstances,
           PipeTransmissionMode transmissionMode, PipeOptions options, int inBufferSize, int outBufferSize)
         {
-            // NamedPipeServerStream is sealed. CallerImpersonatingNpHost impersonates on a wrapping
-            // read stream. The DACL is applied as the pipe is created.
             return NamedPipeServerStreamAcl.Create(pipeName, direction, maxNumberOfServerInstances, transmissionMode, options,
               inBufferSize, outBufferSize, _pipeSecurity);
         }
@@ -106,20 +102,22 @@ namespace BSH.Service
         }
     }
 
-    /// <summary>
-    /// NpHost reads the pipe and then invokes the service on that same thread, but its
-    /// connection handler calls the base ProcessRequest and NamedPipeServerStream is sealed.
-    /// This host accepts the pipe and impersonates on the stream ServiceWire reads.
-    /// </summary>
+    // ServiceWire dispatches synchronously on the connection thread. Bind the pipe to
+    // that dispatch so the RPC can impersonate its caller only for file I/O.
     internal sealed class CallerImpersonatingNpHost : NpHost
     {
         private const int MaxConnections = 254;
 
         private readonly INamedPipeServerStreamFactory streamFactory;
 
-        private readonly ManualResetEventSlim stopped = new(false);
+        private readonly CancellationTokenSource stopping = new();
 
-        private volatile bool running;
+        [ThreadStatic]
+        private static VssPipeConnection? currentConnection;
+
+        internal static VssPipeConnection? CurrentConnection => currentConnection;
+
+        private Thread? listener;
 
         private int disposeOnce;
 
@@ -131,61 +129,60 @@ namespace BSH.Service
 
         protected override void StartListener()
         {
-            stopped.Reset();
-            running = true;
-            Task.Factory.StartNew(Listen, TaskCreationOptions.LongRunning);
+            var cancellation = stopping.Token;
+            listener = new Thread(() => Listen(cancellation)) { IsBackground = true };
+            listener.Start();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing && Interlocked.Exchange(ref disposeOnce, 1) == 0)
             {
-                StopListening();
+                stopping.Cancel();
+                listener?.Join();
+                stopping.Dispose();
             }
 
             base.Dispose(disposing);
         }
 
-        private void Listen()
+        private void Listen(CancellationToken cancellation)
         {
             try
             {
-                while (running)
+                while (!cancellation.IsCancellationRequested)
                 {
-                    AcceptNextClient();
+                    AcceptNextClient(cancellation);
                 }
             }
-            catch (Exception)
+            catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
             {
-                SetStatus(HostStatus.Faulted);
             }
-            finally
+            catch (Exception error)
             {
-                running = false;
-                stopped.Set();
+                Log.Error("VSS pipe listener failed: {0}", error.Message);
+                SetStatus(HostStatus.Faulted);
             }
         }
 
-        private void AcceptNextClient()
+        private void AcceptNextClient(CancellationToken cancellation)
         {
             NamedPipeServerStream? pipe = null;
             try
             {
                 pipe = streamFactory.Create(PipeName, PipeDirection.InOut, MaxConnections, PipeTransmissionMode.Byte,
-                    PipeOptions.None, 8192, 8192);
-                pipe.WaitForConnection();
-                if (!running)
-                {
-                    return;
-                }
+                    PipeOptions.Asynchronous, 8192, 8192);
+                pipe.WaitForConnectionAsync(cancellation).GetAwaiter().GetResult();
+                cancellation.ThrowIfCancellationRequested();
 
                 var connected = pipe;
+                new Thread(() => Serve(connected)) { IsBackground = true }.Start();
                 pipe = null;
-                Task.Factory.StartNew(() => Serve(connected));
             }
-            catch (IOException exception) when (IsPipeBusy(exception) && running)
+            catch (IOException exception) when ((exception.HResult & 0xFFFF) == 231)
             {
-                Thread.Sleep(50);
+                // All pipe instances are in use. Wait for capacity or shutdown.
+                cancellation.WaitHandle.WaitOne(50);
             }
             finally
             {
@@ -195,142 +192,22 @@ namespace BSH.Service
 
         private void Serve(NamedPipeServerStream pipe)
         {
-            try
+            using (pipe)
             {
-                var reading = new CallerImpersonatingReadStream(new BufferedStream(pipe), pipe);
-                ProcessRequest(reading, new BufferedStream(pipe));
-            }
-            catch (Exception)
-            {
-                // ProcessRequest already records client failures. One client must not stop the listener.
-            }
-            finally
-            {
-                VssCallerAuthorization.RevertToSelf();
+                currentConnection = new VssPipeConnection(pipe);
                 try
                 {
-                    if (pipe.IsConnected)
-                    {
-                        pipe.Close();
-                    }
+                    ProcessRequest(new BufferedStream(pipe), new BufferedStream(pipe));
                 }
-                catch (ObjectDisposedException)
+                catch (Exception error)
                 {
+                    Log.Debug("VSS pipe connection ended: {0}", error.GetType().Name);
                 }
-
-                pipe.Dispose();
-            }
-        }
-
-        private void StopListening()
-        {
-            if (!running)
-            {
-                return;
-            }
-
-            running = false;
-            for (var attempt = 0; attempt < 20 && !stopped.IsSet; attempt++)
-            {
-                try
+                finally
                 {
-                    using var client = new NamedPipeClientStream(PipeName);
-                    client.Connect(50);
-                }
-                catch (Exception)
-                {
-                    // The listener may not be inside WaitForConnection yet.
-                }
-
-                if (stopped.Wait(50))
-                {
-                    return;
+                    currentConnection = null;
                 }
             }
         }
-
-        private static bool IsPipeBusy(IOException exception) => (exception.HResult & 0xFFFF) == 231;
-    }
-
-    file sealed class CallerImpersonatingReadStream : Stream
-    {
-        private readonly Stream inner;
-
-        private readonly NamedPipeServerStream pipe;
-
-        public CallerImpersonatingReadStream(Stream inner, NamedPipeServerStream pipe)
-        {
-            this.inner = inner;
-            this.pipe = pipe;
-        }
-
-        public override bool CanRead => inner.CanRead;
-
-        public override bool CanSeek => inner.CanSeek;
-
-        public override bool CanWrite => inner.CanWrite;
-
-        public override long Length => inner.Length;
-
-        public override long Position
-        {
-            get => inner.Position;
-            set => inner.Position = value;
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            var read = inner.Read(buffer, offset, count);
-            ImpersonateClient(read);
-            return read;
-        }
-
-        public override int Read(Span<byte> buffer)
-        {
-            var read = inner.Read(buffer);
-            ImpersonateClient(read);
-            return read;
-        }
-
-        public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
-
-        public override void Write(ReadOnlySpan<byte> buffer) => inner.Write(buffer);
-
-        public override void Flush() => inner.Flush();
-
-        public override long Seek(long offset, SeekOrigin origin) => inner.Seek(offset, origin);
-
-        public override void SetLength(long value) => inner.SetLength(value);
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                inner.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        private void ImpersonateClient(int bytesRead)
-        {
-            if (bytesRead <= 0)
-            {
-                return;
-            }
-
-            // A pool thread can still be impersonating the previous client. Drop that token
-            // and bind this read to the client on this pipe.
-            VssCallerAuthorization.RevertToSelf();
-            if (!ImpersonateNamedPipeClient(pipe.SafePipeHandle))
-            {
-                throw new IOException("The named-pipe caller could not be impersonated.");
-            }
-        }
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool ImpersonateNamedPipeClient(SafePipeHandle pipe);
     }
 }

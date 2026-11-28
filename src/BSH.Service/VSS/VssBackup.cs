@@ -166,7 +166,7 @@ namespace BSH.Service.VSS
                 string? root = Path.GetPathRoot(localPath);
                 if (root != null)
                 {
-                    localPath = localPath.Replace(root, string.Empty);
+                    localPath = localPath[root.Length..];
                 }
             }
             string slash = Path.DirectorySeparatorChar.ToString();
