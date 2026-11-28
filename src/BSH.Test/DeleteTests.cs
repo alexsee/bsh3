@@ -381,25 +381,45 @@ public class DeleteTests
     }
 
     [Test]
-    public async Task DeleteCancellationKeepsUnprocessedFileAndItsMetadata([Values] bool entireBackup)
+    public async Task DeleteCancellationKeepsUnprocessedFileAndItsMetadata(
+        [Values] bool entireBackup,
+        [Values] bool cancelDuringProgress)
     {
         await SeedVersionAsync(1, "01-01-2021 00-00-00");
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 1, 1, 1, "a.txt", @"\docs\", 1, "");
         await JobSeedHelper.SeedFileForVersionAsync(dbClientFactory, 2, 2, 1, "b.txt", @"\docs\", 1, "");
 
         using var cancellation = new CancellationTokenSource();
-        var storage = new RecordingDeleteStorage { OnPlainDelete = cancellation.Cancel };
+        var storage = new RecordingDeleteStorage
+        {
+            OnPlainDelete = cancelDuringProgress ? null : cancellation.Cancel
+        };
+        var reportedFiles = 0;
+        var report = new JobReportStub
+        {
+            OnReportFileProgress = _ =>
+            {
+                if (cancelDuringProgress && ++reportedFiles == 2)
+                {
+                    cancellation.Cancel();
+                }
+            }
+        };
+
         if (entireBackup)
         {
             using var job = CreateDeleteJob(storage, "1");
+            job.AddObserver(report);
             await job.DeleteAsync(cancellation.Token);
         }
         else
         {
             using var job = CreateDeleteSingleJob(storage);
+            job.AddObserver(report);
             await job.DeleteSingleAsync(string.Empty, @"\docs\", [], cancellation.Token);
         }
 
+        Assert.That(report.ReportedStates.Last(), Is.EqualTo(JobState.CANCELED));
         Assert.That(storage.DeletedPlain, Has.Count.EqualTo(1));
         var deletedVersionId = Path.GetFileName(storage.DeletedPlain[0]) == "a.txt" ? 1 : 2;
         using var dbClient = dbClientFactory.CreateDbClient();
@@ -459,7 +479,7 @@ public class DeleteTests
 
         var storage = new RecordingDeleteStorage();
         using var job = CreateDeleteSingleJob(storage);
-        await job.DeleteSingleAsync(string.Empty, @"\docs_100%", allVersions ? null : [1]);
+        await job.DeleteSingleAsync(string.Empty, @"\Docs_100%", allVersions ? null : [1]);
 
         using var dbClient = dbClientFactory.CreateDbClient();
         var selectedFolders = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM folderlink WHERE folderid IN (1, 2) AND versionid = 1");
@@ -478,6 +498,22 @@ public class DeleteTests
             Assert.That(Convert.ToInt32(otherFile), Is.EqualTo(1));
             Assert.That(storage.DeletedPlain, Has.Count.EqualTo(allVersions ? 1 : 0));
         });
+    }
+
+    [Test]
+    public async Task DeleteSingle_EmptyFolderPathDoesNotDeleteTheBackupRoot()
+    {
+        await SeedVersionAsync(1, "01-01-2021 00-00-00");
+        await SeedFileForVersionAsync(1, 1, 1, "keep.txt", @"\docs\", 1, "");
+
+        var storage = new RecordingDeleteStorage();
+        using var job = CreateDeleteSingleJob(storage);
+        Assert.ThrowsAsync<ArgumentException>(() => job.DeleteSingleAsync(string.Empty, string.Empty));
+
+        Assert.That(storage.DeletedPlain, Is.Empty);
+        using var dbClient = dbClientFactory.CreateDbClient();
+        var remainingFiles = await dbClient.ExecuteScalarAsync("SELECT COUNT(*) FROM filelink");
+        Assert.That(Convert.ToInt32(remainingFiles), Is.EqualTo(1));
     }
 
     [Test]

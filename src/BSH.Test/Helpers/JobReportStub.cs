@@ -17,6 +17,7 @@ namespace BSH.Test.Helpers;
 public sealed class JobReportStub : IJobReport
 {
     public Action<ActionType, bool> OnReportAction { get; set; }
+    public Action<string> OnReportFileProgress { get; set; }
     public RequestOverwriteResult OverwriteResult { get; set; } = RequestOverwriteResult.Overwrite;
 
     public int RequestOverwriteCalls { get; private set; }
@@ -35,7 +36,7 @@ public sealed class JobReportStub : IJobReport
 
     public void ReportProgress(int total, int current) { }
 
-    public void ReportFileProgress(string file) { }
+    public void ReportFileProgress(string file) => OnReportFileProgress?.Invoke(file);
 
     public void ReportExceptions(Collection<FileExceptionEntry> files, bool silent) { }
 

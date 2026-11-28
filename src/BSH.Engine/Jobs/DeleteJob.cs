@@ -112,6 +112,10 @@ public class DeleteJob : Job
 
                 ReportProgress(files.Tables[0].Rows.Count, i);
                 ReportFileProgress(file["fileName"]?.ToString());
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
 
                 try
                 {

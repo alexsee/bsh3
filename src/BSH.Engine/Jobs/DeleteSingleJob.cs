@@ -184,6 +184,10 @@ public class DeleteSingleJob : Job
                 ReportFileProgress(fileName);
                 ReportProgress(fileIds.Count, i);
                 i++;
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
 
                 try
                 {

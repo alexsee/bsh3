@@ -14,7 +14,7 @@ internal static class DeleteContentFilter
             return ("fileName = @fileName AND filePath = @filePath", [("fileName", fileName), ("filePath", path)]);
         }
 
-        ArgumentNullException.ThrowIfNull(path);
+        ArgumentException.ThrowIfNullOrEmpty(path);
         var relativePath = path.Trim('\\');
         var prefix = relativePath.Length == 0 ? "\\" : "\\" + relativePath + "\\";
         return (MatchDirectoryPrefix("filePath"), [("folderPrefix", prefix)]);
@@ -23,5 +23,6 @@ internal static class DeleteContentFilter
     // Allow historical folder rows without a trailing separator.
     public static string ForFolders => MatchDirectoryPrefix("folder || char(92)");
 
-    private static string MatchDirectoryPrefix(string pathExpression) => $"instr({pathExpression}, @folderPrefix) = 1";
+    private static string MatchDirectoryPrefix(string pathExpression) =>
+        $"substr({pathExpression}, 1, length(@folderPrefix)) = @folderPrefix COLLATE NOCASE";
 }
