@@ -3,11 +3,13 @@
 
 using System;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Services;
@@ -595,7 +597,7 @@ public partial class ucDoConfigure : IMainTabs
                         }
                     }
 
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE versiontable SET versionSources = \"" + string.Join("|", sources.Select(x => x.Path).ToArray()) + "\" WHERE versionID = " + version.Id);
+                    await UpdateVersionSourcesAsync(BackupLogic.DbClientFactory, version.Id, string.Join("|", sources.Select(x => x.Path)));
                 }
 
                 BackupLogic.ConfigurationManager.SourceFolder = sourcePaths;
@@ -608,6 +610,26 @@ public partial class ucDoConfigure : IMainTabs
                 await BackupLogic.StartSystemAsync(true);
                 break;
         }
+    }
+
+    internal static async Task UpdateVersionSourcesAsync(IDbClientFactory dbClientFactory, string versionId, string versionSources)
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+        await UpdateVersionSourcesAsync(dbClient, versionId, versionSources);
+    }
+
+    internal static Task UpdateVersionSourcesAsync(DbClient dbClient, string versionId, string versionSources)
+    {
+        var parameters = new (string, object)[]
+        {
+            ("versionSources", versionSources),
+            ("versionID", long.Parse(versionId))
+        };
+
+        return dbClient.ExecuteNonQueryAsync(
+            CommandType.Text,
+            "UPDATE versiontable SET versionSources = @versionSources WHERE versionID = @versionID",
+            parameters);
     }
 
     private static void DeleteCurrentDatabaseFile()
