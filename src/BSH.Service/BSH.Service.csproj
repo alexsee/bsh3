@@ -25,4 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BSH.Service.Shared\BSH.Service.Shared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="BSH.Test" />
+  </ItemGroup>
 </Project>

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using BSH.Service.Shared;
-using BSH.Service.VSS;
+using Microsoft.Win32.SafeHandles;
 
 namespace BSH.Service;
 
@@ -23,24 +23,37 @@ public class VSSService : IVSSRemoteObject
 
     public bool CopyFileWithVSS(string vssServiceFolder, string source, string destination)
     {
-        var fileInfo = new FileInfo(source);
-
+        // The service folder is not an authorization input.
+        _ = vssServiceFolder;
+        this.exception = null;
+        SafeAccessTokenHandle? caller = null;
         try
         {
-            var root = fileInfo.Directory?.Root.Name
-                ?? throw new InvalidOperationException($"Could not determine volume root for '{source}'.");
+            // A missing impersonation token is a denial, including when the process is LocalSystem.
+            if (!VssCallerAuthorization.TryDuplicateCallerToken(out var duplicated) || duplicated == null)
+            {
+                this.exception = new UnauthorizedAccessException(VssCallerAuthorization.DeniedMessage);
+                return false;
+            }
 
-            using var vss = new VssBackup();
-            vss.Setup(root);
+            caller = duplicated;
+            if (!VssCallerAuthorization.RevertToSelf())
+            {
+                this.exception = new UnauthorizedAccessException(VssCallerAuthorization.DeniedMessage);
+                return false;
+            }
 
-            var snapshotPath = vss.GetSnapshotPath(source);
-            XCopy.Copy(snapshotPath, destination);
-
+            VssCallerAuthorization.CopyAuthorized(caller, source, destination);
             return true;
         }
         catch (Exception ex)
         {
             this.exception = ex;
+        }
+        finally
+        {
+            VssCallerAuthorization.RevertToSelf();
+            caller?.Dispose();
         }
 
         return false;
@@ -48,6 +61,7 @@ public class VSSService : IVSSRemoteObject
 
     public Exception? GetException()
     {
+        VssCallerAuthorization.RevertToSelf();
         return this.exception;
     }
 }

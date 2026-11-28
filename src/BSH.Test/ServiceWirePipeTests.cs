@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Security.AccessControl;
@@ -45,6 +46,60 @@ public class ServiceWirePipeTests
     }
 
     [Test]
+    public void CallerTokenAccessCheckFollowsReadAndWriteAces()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "bsh-vss-acl-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        var readable = Path.Combine(root, "readable.txt");
+        var deniedRead = Path.Combine(root, "denied-read.txt");
+        var deniedWrite = Path.Combine(root, "denied-write");
+        File.WriteAllText(readable, "readable");
+        File.WriteAllText(deniedRead, "secret");
+        Directory.CreateDirectory(deniedWrite);
+
+        try
+        {
+            SetDeny(deniedRead, FileSystemRights.Read, deny: true);
+            SetDeny(deniedWrite, FileSystemRights.Write, deny: true);
+
+            using var identity = WindowsIdentity.GetCurrent();
+            var readableRights = VssCallerAuthorization.Check(identity.AccessToken, readable, readable);
+            var unreadable = VssCallerAuthorization.Check(identity.AccessToken, deniedRead, readable);
+            var unwritable = VssCallerAuthorization.Check(identity.AccessToken, readable, deniedWrite);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(readableRights.CanReadSource, Is.True);
+                Assert.That(unreadable.CanReadSource, Is.False);
+                Assert.That(unwritable.CanWriteDestination, Is.False);
+                Assert.That(VssCopyPolicy.IsAuthorized(new CallerFileRights(true, true)), Is.True);
+                Assert.That(VssCopyPolicy.IsAuthorized(new CallerFileRights(true, false)), Is.False);
+                Assert.That(VssCopyPolicy.IsAuthorized(new CallerFileRights(false, true)), Is.False);
+                Assert.That(VssCopyPolicy.IsAuthorized(unreadable), Is.False);
+                Assert.That(VssCopyPolicy.IsAuthorized(unwritable), Is.False);
+            });
+        }
+        finally
+        {
+            TryClearDeny(deniedRead, FileSystemRights.Read);
+            TryClearDeny(deniedWrite, FileSystemRights.Write);
+            try
+            {
+                if (Directory.Exists(root))
+                {
+                    Directory.Delete(root, recursive: true);
+                }
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+        }
+    }
+
+    [Test]
     public void VssContractRoundTripsErrorsAndReconnectsOverNamedPipe()
     {
         var pipeName = "bsh-rpc-" + Guid.NewGuid().ToString("N");
@@ -77,6 +132,57 @@ public class ServiceWirePipeTests
         Assert.That(rules.Any(rule => rule.IdentityReference.Equals(sid)
             && rule.AccessControlType == AccessControlType.Allow
             && (rule.PipeAccessRights & rights) == rights), Is.False, $"Unexpected {rights} for {sid}");
+    }
+
+    private static void SetDeny(string path, FileSystemRights rights, bool deny)
+    {
+        var rule = new FileSystemAccessRule(WindowsIdentity.GetCurrent().User!, rights, AccessControlType.Deny);
+        if (Directory.Exists(path))
+        {
+            var directory = new DirectoryInfo(path);
+            var security = directory.GetAccessControl();
+            if (deny)
+            {
+                security.AddAccessRule(rule);
+            }
+            else
+            {
+                security.RemoveAccessRule(rule);
+            }
+
+            directory.SetAccessControl(security);
+            return;
+        }
+
+        var file = new FileInfo(path);
+        var fileSecurity = file.GetAccessControl();
+        if (deny)
+        {
+            fileSecurity.AddAccessRule(rule);
+        }
+        else
+        {
+            fileSecurity.RemoveAccessRule(rule);
+        }
+
+        file.SetAccessControl(fileSecurity);
+    }
+
+    private static void TryClearDeny(string path, FileSystemRights rights)
+    {
+        try
+        {
+            if (File.Exists(path) || Directory.Exists(path))
+            {
+                SetDeny(path, rights, deny: false);
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (IOException)
+        {
+        }
     }
 
     private sealed class FailedVssService : IVSSRemoteObject

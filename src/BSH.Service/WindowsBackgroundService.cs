@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using BSH.Service.Shared;
+using Microsoft.Win32.SafeHandles;
 using ServiceWire;
 using ServiceWire.NamedPipes;
 
@@ -27,17 +29,19 @@ namespace BSH.Service
 
         public CustomNamedPipeServerStreamFactory()
         {
-            var sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
-
             _pipeSecurity = new PipeSecurity();
+            // Interactive callers and administrators may use the pipe. LocalSystem and the
+            // service account keep FullControl so further instances can be created, including
+            // under a custom account. The DACL is protected so the default ACL cannot keep
+            // Authenticated Users.
             _pipeSecurity.AddAccessRule(new PipeAccessRule(
-                sid,
+                new SecurityIdentifier(WellKnownSidType.InteractiveSid, null),
                 PipeAccessRights.ReadWrite,
-                AccessControlType.Allow
-            ));
-
-            // Preserve cross-user client access while allowing the service to create
-            // further pipe instances, including when installed under a custom account.
+                AccessControlType.Allow));
+            _pipeSecurity.AddAccessRule(new PipeAccessRule(
+                new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null),
+                PipeAccessRights.ReadWrite,
+                AccessControlType.Allow));
             _pipeSecurity.AddAccessRule(new PipeAccessRule(
                 new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
                 PipeAccessRights.FullControl,
@@ -47,13 +51,26 @@ namespace BSH.Service
                 identity.User ?? throw new InvalidOperationException("The service account has no Windows SID."),
                 PipeAccessRights.FullControl,
                 AccessControlType.Allow));
+            _pipeSecurity.SetAccessRuleProtection(isProtected: true, preserveInheritance: false);
         }
 
         public NamedPipeServerStream Create(string pipeName, PipeDirection direction, int maxNumberOfServerInstances,
           PipeTransmissionMode transmissionMode, PipeOptions options, int inBufferSize, int outBufferSize)
         {
-            return NamedPipeServerStreamAcl.Create(pipeName, direction, maxNumberOfServerInstances, transmissionMode, options,
-              inBufferSize, outBufferSize, _pipeSecurity);
+            // NamedPipeServerStream is sealed, so the impersonating Read override cannot be a
+            // subclass. CallerImpersonatingNpHost wraps the reads ServiceWire makes on this instance.
+            var stream = new NamedPipeServerStream(pipeName, direction, maxNumberOfServerInstances, transmissionMode, options,
+              inBufferSize, outBufferSize);
+            try
+            {
+                stream.SetAccessControl(_pipeSecurity);
+                return stream;
+            }
+            catch
+            {
+                stream.Dispose();
+                throw;
+            }
         }
     }
 
@@ -70,8 +87,8 @@ namespace BSH.Service
 
             // Preview installs a vss.pipe beside this exe so it does not bind the stable pipe.
             var pipeName = VssPipeNames.ReadInstalledPipeName(AppContext.BaseDirectory);
-            host = new NpHost(pipeName, log: new ServiceWireLogger(logger),
-                streamFactory: new CustomNamedPipeServerStreamFactory());
+            host = new CallerImpersonatingNpHost(pipeName, new ServiceWireLogger(logger),
+                new CustomNamedPipeServerStreamFactory());
             host.AddService(remoteObject);
         }
 
@@ -97,5 +114,229 @@ namespace BSH.Service
                 host.Close();
             }
         }
+    }
+
+    /// <summary>
+    /// NpHost reads the pipe and then invokes the service on that same thread, but its
+    /// connection handler calls the base ProcessRequest and NamedPipeServerStream is sealed.
+    /// This host accepts the pipe and impersonates on the stream ServiceWire reads.
+    /// </summary>
+    internal sealed class CallerImpersonatingNpHost : NpHost
+    {
+        private const int MaxConnections = 254;
+
+        private readonly INamedPipeServerStreamFactory streamFactory;
+
+        private readonly ManualResetEventSlim stopped = new(false);
+
+        private volatile bool running;
+
+        private int disposeOnce;
+
+        public CallerImpersonatingNpHost(string pipeName, ILog log, INamedPipeServerStreamFactory streamFactory)
+            : base(pipeName, log, streamFactory: streamFactory)
+        {
+            this.streamFactory = streamFactory;
+        }
+
+        protected override void StartListener()
+        {
+            stopped.Reset();
+            running = true;
+            Task.Factory.StartNew(Listen, TaskCreationOptions.LongRunning);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && Interlocked.Exchange(ref disposeOnce, 1) == 0)
+            {
+                StopListening();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private void Listen()
+        {
+            try
+            {
+                while (running)
+                {
+                    AcceptNextClient();
+                }
+            }
+            catch (Exception)
+            {
+                SetStatus(HostStatus.Faulted);
+            }
+            finally
+            {
+                running = false;
+                stopped.Set();
+            }
+        }
+
+        private void AcceptNextClient()
+        {
+            NamedPipeServerStream? pipe = null;
+            try
+            {
+                pipe = streamFactory.Create(PipeName, PipeDirection.InOut, MaxConnections, PipeTransmissionMode.Byte,
+                    PipeOptions.None, 8192, 8192);
+                pipe.WaitForConnection();
+                if (!running)
+                {
+                    return;
+                }
+
+                var connected = pipe;
+                pipe = null;
+                Task.Factory.StartNew(() => Serve(connected));
+            }
+            catch (IOException exception) when (IsPipeBusy(exception) && running)
+            {
+                Thread.Sleep(50);
+            }
+            finally
+            {
+                pipe?.Dispose();
+            }
+        }
+
+        private void Serve(NamedPipeServerStream pipe)
+        {
+            try
+            {
+                var reading = new CallerImpersonatingReadStream(new BufferedStream(pipe), pipe);
+                ProcessRequest(reading, new BufferedStream(pipe));
+            }
+            catch (Exception)
+            {
+                // ProcessRequest already records client failures. One client must not stop the listener.
+            }
+            finally
+            {
+                try
+                {
+                    if (pipe.IsConnected)
+                    {
+                        pipe.Close();
+                    }
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+
+                pipe.Dispose();
+            }
+        }
+
+        private void StopListening()
+        {
+            if (!running)
+            {
+                return;
+            }
+
+            running = false;
+            for (var attempt = 0; attempt < 20 && !stopped.IsSet; attempt++)
+            {
+                try
+                {
+                    using var client = new NamedPipeClientStream(PipeName);
+                    client.Connect(50);
+                }
+                catch (Exception)
+                {
+                    // The listener may not be inside WaitForConnection yet.
+                }
+
+                if (stopped.Wait(50))
+                {
+                    return;
+                }
+            }
+        }
+
+        private static bool IsPipeBusy(IOException exception) => (exception.HResult & 0xFFFF) == 231;
+    }
+
+    file sealed class CallerImpersonatingReadStream : Stream
+    {
+        private readonly Stream inner;
+
+        private readonly NamedPipeServerStream pipe;
+
+        public CallerImpersonatingReadStream(Stream inner, NamedPipeServerStream pipe)
+        {
+            this.inner = inner;
+            this.pipe = pipe;
+        }
+
+        public override bool CanRead => inner.CanRead;
+
+        public override bool CanSeek => inner.CanSeek;
+
+        public override bool CanWrite => inner.CanWrite;
+
+        public override long Length => inner.Length;
+
+        public override long Position
+        {
+            get => inner.Position;
+            set => inner.Position = value;
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            var read = inner.Read(buffer, offset, count);
+            ImpersonateClient(read);
+            return read;
+        }
+
+        public override int Read(Span<byte> buffer)
+        {
+            var read = inner.Read(buffer);
+            ImpersonateClient(read);
+            return read;
+        }
+
+        public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
+
+        public override void Write(ReadOnlySpan<byte> buffer) => inner.Write(buffer);
+
+        public override void Flush() => inner.Flush();
+
+        public override long Seek(long offset, SeekOrigin origin) => inner.Seek(offset, origin);
+
+        public override void SetLength(long value) => inner.SetLength(value);
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                inner.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private void ImpersonateClient(int bytesRead)
+        {
+            if (bytesRead <= 0 || VssCallerAuthorization.IsThreadImpersonating())
+            {
+                return;
+            }
+
+            if (!ImpersonateNamedPipeClient(pipe.SafePipeHandle))
+            {
+                throw new IOException("The named-pipe caller could not be impersonated.");
+            }
+        }
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool ImpersonateNamedPipeClient(SafePipeHandle pipe);
     }
 }
