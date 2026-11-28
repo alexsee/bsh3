@@ -22,15 +22,26 @@ public class ServiceWirePipeTests
         var factory = new CustomNamedPipeServerStreamFactory();
         using var pipe = factory.Create("bsh-acl-" + Guid.NewGuid().ToString("N"),
             PipeDirection.InOut, 2, PipeTransmissionMode.Byte, PipeOptions.None, 8192, 8192);
-        var rules = pipe.GetAccessControl().GetAccessRules(true, false, typeof(SecurityIdentifier))
+        var rules = pipe.GetAccessControl().GetAccessRules(true, true, typeof(SecurityIdentifier))
             .Cast<PipeAccessRule>().ToArray();
 
         Assert.Multiple(() =>
         {
-            AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null), PipeAccessRights.ReadWrite);
+            AssertNotAllowed(rules, new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null), PipeAccessRights.ReadWrite);
+            AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.InteractiveSid, null), PipeAccessRights.ReadWrite);
+            AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null), PipeAccessRights.ReadWrite);
             AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null), PipeAccessRights.FullControl);
             AssertAllowed(rules, WindowsIdentity.GetCurrent().User!, PipeAccessRights.FullControl);
         });
+    }
+
+    [Test]
+    public void CopyWithoutAnImpersonationTokenIsDenied()
+    {
+        var service = new VSSService();
+
+        Assert.That(service.CopyFileWithVSS("service", @"C:\bsh-vss-no-token-source", @"C:\bsh-vss-no-token-destination"), Is.False);
+        Assert.That(service.GetException(), Is.TypeOf<UnauthorizedAccessException>());
     }
 
     [Test]
@@ -59,6 +70,13 @@ public class ServiceWirePipeTests
         Assert.That(rules.Any(rule => rule.IdentityReference.Equals(sid)
             && rule.AccessControlType == AccessControlType.Allow
             && (rule.PipeAccessRights & rights) == rights), Is.True, $"Missing {rights} for {sid}");
+    }
+
+    private static void AssertNotAllowed(PipeAccessRule[] rules, SecurityIdentifier sid, PipeAccessRights rights)
+    {
+        Assert.That(rules.Any(rule => rule.IdentityReference.Equals(sid)
+            && rule.AccessControlType == AccessControlType.Allow
+            && (rule.PipeAccessRights & rights) == rights), Is.False, $"Unexpected {rights} for {sid}");
     }
 
     private sealed class FailedVssService : IVSSRemoteObject
