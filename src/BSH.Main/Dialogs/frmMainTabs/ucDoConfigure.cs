@@ -598,15 +598,10 @@ public partial class ucDoConfigure : IMainTabs
                             }
                         }
 
-                        var parameters = new (string, object)[]
-                        {
-                            ("versionSources", string.Join("|", sources.Select(x => x.Path))),
-                            ("versionID", long.Parse(version.Id))
-                        };
-                        await dbClient.ExecuteNonQueryAsync(
-                            CommandType.Text,
-                            "UPDATE versiontable SET versionSources = @versionSources WHERE versionID = @versionID",
-                            parameters);
+                        await UpdateVersionSourcesAsync(
+                            dbClient,
+                            version.Id,
+                            string.Join("|", sources.Select(x => x.Path)));
                     }
                 }
 
@@ -620,6 +615,20 @@ public partial class ucDoConfigure : IMainTabs
                 await BackupLogic.StartSystemAsync(true);
                 break;
         }
+    }
+
+    internal static Task UpdateVersionSourcesAsync(DbClient dbClient, string versionId, string versionSources)
+    {
+        var parameters = new (string, object)[]
+        {
+            ("versionSources", versionSources),
+            ("versionID", long.Parse(versionId))
+        };
+
+        return dbClient.ExecuteNonQueryAsync(
+            CommandType.Text,
+            "UPDATE versiontable SET versionSources = @versionSources WHERE versionID = @versionID",
+            parameters);
     }
 
     private static void DeleteCurrentDatabaseFile()
