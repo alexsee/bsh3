@@ -341,6 +341,31 @@ public class BrowserViewModelTests
     }
 
     [Test]
+    public async Task DeleteSelectedContentUsesMultipleSelectedItemsInsteadOfCurrentItem()
+    {
+        var dialogService = new BrowserDialogService
+        {
+            SelectedContentResult = DeleteSelectedContentResult.FromVersions(["2"])
+        };
+        var jobService = new BrowserJobService();
+        var viewModel = CreateViewModel(jobService: jobService, browserDialogService: dialogService);
+        viewModel.CurrentVersion = Version("2");
+        viewModel.CurrentItem = new FileOrFolderItem { Name = "keep.txt", FullPath = @"\source\", IsFile = true };
+        viewModel.SelectedItems.Add(new FileOrFolderItem { Name = "report.txt", FullPath = @"\source\", IsFile = true });
+        viewModel.SelectedItems.Add(new FileOrFolderItem { Name = "old_files", FullPath = @"\source\old_files" });
+
+        await viewModel.DeleteSelectedContentCommand.ExecuteAsync(null);
+
+        Assert.That(jobService.DeleteSingleCalls, Is.Empty);
+        Assert.That(jobService.DeleteSelectionTargets, Is.EqualTo(new[]
+        {
+            ("report.txt", @"\source\"),
+            (string.Empty, @"\source\old_files")
+        }));
+        Assert.That(jobService.DeleteSelectionVersionIds, Is.EqualTo(new[] { 2 }));
+    }
+
+    [Test]
     public async Task DeleteMultipleBackupsConfirmsSelectedVersionsAndRefreshes()
     {
         var dialogService = new BrowserDialogService { VersionsSelectedForDelete = ["1", "3"] };
@@ -708,6 +733,8 @@ public class BrowserViewModelTests
     private sealed class BrowserJobService : FakeJobService
     {
         public List<(string FileFilter, string FolderFilter, IReadOnlyList<int>? VersionIds)> DeleteSingleCalls { get; } = [];
+        public IReadOnlyList<(string FileFilter, string PathFilter)> DeleteSelectionTargets { get; private set; } = [];
+        public IReadOnlyList<int>? DeleteSelectionVersionIds { get; private set; }
         public List<List<string>> DeleteBackupsCalls { get; } = [];
         public List<(string Version, string File, string Destination)> RestoreCalls { get; } = [];
         public List<(string Version, string File, string Destination)> SingleRestoreCalls { get; } = [];
@@ -718,6 +745,13 @@ public class BrowserViewModelTests
         public override Task DeleteSingleFileAsync(string fileFilter, string folderFilter, bool statusDialog = true, IReadOnlyList<int>? versionIds = null)
         {
             DeleteSingleCalls.Add((fileFilter, folderFilter, versionIds));
+            return Task.CompletedTask;
+        }
+
+        public override Task DeleteSelectedFilesAsync(IReadOnlyList<(string FileFilter, string PathFilter)> targets, IReadOnlyList<int>? versionIds)
+        {
+            DeleteSelectionTargets = targets;
+            DeleteSelectionVersionIds = versionIds;
             return Task.CompletedTask;
         }
 
@@ -750,7 +784,7 @@ public class BrowserViewModelTests
         public string? DestinationFolder { get; set; }
         public bool DestinationPickerPrompted { get; private set; }
 
-        public Task<DeleteSelectedContentResult> ShowDeleteSelectedContentWindowAsync(FileOrFolderItem item, IReadOnlyList<VersionDetails> versions)
+        public Task<DeleteSelectedContentResult> ShowDeleteSelectedContentWindowAsync(IReadOnlyList<FileOrFolderItem> items, IReadOnlyList<VersionDetails> versions)
         {
             SelectedContentDeletePrompted = true;
             SelectedContentPromptedVersions = versions;

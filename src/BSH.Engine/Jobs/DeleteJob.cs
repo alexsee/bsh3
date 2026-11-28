@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,13 +97,25 @@ public class DeleteJob : Job
             ReportProgress(files.Tables[0].Rows.Count, 0);
             ReportStatus(Resources.STATUS_DELETE_REMOVE_SHORT, Resources.STATUS_DELETE_REMOVE_TEXT);
 
+            var failedFileVersionIds = new List<long>();
+
             // delete files
             for (var i = 0; i < files.Tables[0].Rows.Count; i++)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
                 var file = files.Tables[0].Rows[i];
+                var fileVersionId = Convert.ToInt64(file["fileversionid"]);
 
                 ReportProgress(files.Tables[0].Rows.Count, i);
                 ReportFileProgress(file["fileName"]?.ToString());
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
 
                 try
                 {
@@ -120,14 +133,24 @@ public class DeleteJob : Job
                     var fileExceptionEntry = AddFileErrorToList(new FileTableRow() { FileName = file["fileName"].ToString(), FilePath = file["filePath"].ToString() }, ex);
 
                     _logger.Error(ex.InnerException, "File {FileName} could not be deleted. {Exception}", file["fileName"].ToString(), fileExceptionEntry);
+                    failedFileVersionIds.Add(fileVersionId);
+                    continue;
                 }
 
                 // update database
-                await backupMutationRepository.DeleteFileVersionAsync(dbClient, Convert.ToInt64(file["fileversionid"]));
+                await backupMutationRepository.DeleteFileVersionAsync(dbClient, fileVersionId);
             }
 
-            // update backup metadata
-            await backupMutationRepository.DeleteVersionMetadataAsync(dbClient, version);
+            // On cancellation, commit only the metadata for payloads already removed from storage.
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                foreach (var fileVersionId in failedFileVersionIds)
+                {
+                    await backupMutationRepository.DeleteFileVersionAsync(dbClient, fileVersionId);
+                }
+
+                await backupMutationRepository.DeleteVersionMetadataAsync(dbClient, version);
+            }
 
             dbClient.CommitTransaction();
         }
@@ -138,26 +161,9 @@ public class DeleteJob : Job
             _logger.Error("{NumFiles} could not be deleted to device.", FileErrorList.Count);
         }
 
-        // clean storage folders
-        if (storage.Kind == StorageProviderKind.LocalFileSystem)
+        if (storage.Kind == StorageProviderKind.LocalFileSystem && !cancellationToken.IsCancellationRequested)
         {
-            using var dbClient = dbClientFactory.CreateDbClient();
-            using var reader = await versionQueryRepository.GetOrphanedVersionDatesAsync(dbClient);
-
-            while (await reader.ReadAsync())
-            {
-                try
-                {
-                    var remoteFolder = reader.GetString("versiondate");
-                    storage.DeleteDirectory(remoteFolder);
-                }
-                catch
-                {
-                    // not necessary to handle this error
-                }
-            }
-
-            await reader.CloseAsync();
+            await DeleteOrphanedStorageFoldersAsync(cancellationToken);
         }
 
         // store database version
@@ -178,7 +184,39 @@ public class DeleteJob : Job
             ReportExceptions(FileErrorList);
         }
 
+        if (cancellationToken.IsCancellationRequested)
+        {
+            ReportState(JobState.CANCELED);
+            return;
+        }
+
         _logger.Information("Deletion of backup {Version} successfully.", Version);
         ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
+    }
+
+    private async Task DeleteOrphanedStorageFoldersAsync(CancellationToken cancellationToken)
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+        using var reader = await versionQueryRepository.GetOrphanedVersionDatesAsync(dbClient);
+
+        // Poll between rows so cancellation still reaches the database upload.
+        while (!cancellationToken.IsCancellationRequested && await reader.ReadAsync(CancellationToken.None))
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            try
+            {
+                storage.DeleteDirectory(reader.GetString("versiondate"));
+            }
+            catch
+            {
+                // Orphaned directories can be cleaned up by a later job.
+            }
+        }
+
+        await reader.CloseAsync();
     }
 }

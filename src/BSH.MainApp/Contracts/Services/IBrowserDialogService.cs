@@ -11,12 +11,12 @@ public interface IBrowserDialogService
     Task<IReadOnlyList<string>> ShowDeleteBackupsWindowAsync(IReadOnlyList<VersionDetails> versions);
 
     /// <summary>
-    /// Asks the user how to delete the selected file or folder from backups.
+    /// Asks the user how to delete the selected files or folders from backups.
     /// </summary>
-    /// <param name="item">The selected browser item.</param>
-    /// <param name="versions">Candidate backup versions (typically those containing the item).</param>
+    /// <param name="items">The selected browser items.</param>
+    /// <param name="versions">Candidate backup versions.</param>
     Task<DeleteSelectedContentResult> ShowDeleteSelectedContentWindowAsync(
-        FileOrFolderItem item,
+        IReadOnlyList<FileOrFolderItem> items,
         IReadOnlyList<VersionDetails> versions);
 
     Task<string?> ShowRenameFavoriteWindowAsync(BrowserFavoriteItem favorite);

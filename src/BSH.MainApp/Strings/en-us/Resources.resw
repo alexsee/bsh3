@@ -110,6 +110,15 @@
   <data name="Browser_DeleteFromAll_Folder" xml:space="preserve">
     <value>folder</value>
   </data>
+  <data name="Browser_DeleteSelection_Intro" xml:space="preserve">
+    <value>Choose which backups to remove the {0} selected items from.</value>
+  </data>
+  <data name="Browser_DeleteSelection_AllConfirm" xml:space="preserve">
+    <value>Delete the {0} selected items from all backups?</value>
+  </data>
+  <data name="Browser_DeleteSelection_RangeConfirm" xml:space="preserve">
+    <value>Delete the {0} selected items from {1} backups?</value>
+  </data>
   <data name="Browser_DeleteFromRange_All" xml:space="preserve">
     <value>From all backups</value>
   </data>

@@ -1624,7 +1624,7 @@ public partial class frmBrowser : IStatusReport
 
             if (isFolder)
             {
-                await BackupLogic.BackupController.DeleteSingleFileAsync("", selected.Tag.ToString() + "%", versionIds: versionIds);
+                await BackupLogic.BackupController.DeleteSingleFileAsync("", selected.Tag.ToString(), versionIds: versionIds);
             }
             else
             {

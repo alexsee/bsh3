@@ -42,8 +42,8 @@ public class DeleteSingleJob : Job
     /// <summary>
     /// Starts the single file deletion from the backup device.
     /// </summary>
-    /// <param name="fileFilter"></param>
-    /// <param name="pathFilter"></param>
+    /// <param name="fileFilter">The exact file name, or empty to delete a folder.</param>
+    /// <param name="pathFilter">The literal database path of the file parent or selected folder.</param>
     /// <exception cref="DeviceNotReadyException"></exception>
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
     public Task DeleteSingleAsync(string fileFilter, string pathFilter)
@@ -57,8 +57,8 @@ public class DeleteSingleJob : Job
     /// Otherwise only the specified backup versions are unlinked (storage is deleted only when no
     /// remaining version still references the content).
     /// </summary>
-    /// <param name="fileFilter"></param>
-    /// <param name="pathFilter"></param>
+    /// <param name="fileFilter">The exact file name, or empty to delete a folder.</param>
+    /// <param name="pathFilter">The literal database path of the file parent or selected folder.</param>
     /// <param name="versionIds">Optional version IDs to scope the delete; null/empty means all versions.</param>
     /// <exception cref="DeviceNotReadyException"></exception>
     /// <exception cref="DatabaseFileNotUpdatedException"></exception>
@@ -98,8 +98,20 @@ public class DeleteSingleJob : Job
             _logger.Information("{NumFiles} files determined for deletion.", fileIds.Count);
             ReportProgress(fileIds.Count, 0);
 
-            await DeletePhysicalVersionsAsync(dbClient, fileIds, scopedVersions);
-            await backupMutationRepository.DeleteSingleFileMetadataAsync(dbClient, fileFilter, pathFilter, scopedVersions);
+            var processedVersions = new List<long>();
+            await DeletePhysicalVersionsAsync(dbClient, fileIds, scopedVersions, processedVersions, cancellationToken);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                // These payloads had no links outside the delete scope.
+                foreach (var fileVersionId in processedVersions)
+                {
+                    await backupMutationRepository.DeleteFileVersionAsync(dbClient, fileVersionId);
+                }
+            }
+            else
+            {
+                await backupMutationRepository.DeleteSingleFileMetadataAsync(dbClient, fileFilter, pathFilter, scopedVersions);
+            }
 
             dbClient.CommitTransaction();
         }
@@ -120,6 +132,12 @@ public class DeleteSingleJob : Job
             ReportExceptions(FileErrorList);
         }
 
+        if (cancellationToken.IsCancellationRequested)
+        {
+            ReportState(JobState.CANCELED);
+            return;
+        }
+
         _logger.Information("Deletion of single files successfully.");
         ReportState(FileErrorList.Count > 0 ? JobState.ERROR : JobState.FINISHED);
     }
@@ -138,21 +156,38 @@ public class DeleteSingleJob : Job
     private async Task DeletePhysicalVersionsAsync(
         DbClient dbClient,
         IReadOnlyList<int> fileIds,
-        IReadOnlyList<int> scopedVersions)
+        IReadOnlyList<int> scopedVersions,
+        List<long> processedVersions,
+        CancellationToken cancellationToken)
     {
         foreach (var fileId in fileIds)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
             using var reader = scopedVersions == null
                 ? await versionQueryRepository.GetFileVersionsForDeleteSingleAsync(dbClient, fileId)
                 : await versionQueryRepository.GetFileVersionsExclusiveToVersionsForDeleteSingleAsync(dbClient, fileId, scopedVersions);
 
             var i = 0;
-            while (await reader.ReadAsync())
+            // Return normally on cancellation so the caller can commit completed deletions.
+            while (!cancellationToken.IsCancellationRequested && await reader.ReadAsync(CancellationToken.None))
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
                 var fileName = reader.GetString("filePath") + reader.GetString("fileName");
                 ReportFileProgress(fileName);
                 ReportProgress(fileIds.Count, i);
                 i++;
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
 
                 try
                 {
@@ -162,6 +197,7 @@ public class DeleteSingleJob : Job
                         reader.GetString("longfilename"),
                         reader.GetString("versionDate"),
                         reader.GetInt32("fileType").ToString());
+                    processedVersions.Add(reader.GetInt64(reader.GetOrdinal("fileversionid")));
                 }
                 catch (FileNotProcessedException ex)
                 {

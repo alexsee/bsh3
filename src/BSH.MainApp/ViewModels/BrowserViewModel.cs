@@ -459,7 +459,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             return;
         }
 
-        var items = GetItemsToRestore();
+        var items = GetSelectedItems();
         if (items.Count == 0)
         {
             return;
@@ -475,7 +475,7 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         await jobService.RestoreBackupAsync(CurrentVersion.Id, paths, destination);
     }
 
-    private List<FileOrFolderItem> GetItemsToRestore()
+    private List<FileOrFolderItem> GetSelectedItems()
     {
         if (SelectedItems.Count > 0)
         {
@@ -639,7 +639,9 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(HasFileOrFolderSelected))]
     private async Task DeleteSelectedContent()
     {
-        if (CurrentItem == null || CurrentVersion == null)
+        var version = CurrentVersion;
+        var items = GetSelectedItems();
+        if (version == null || items.Count == 0)
         {
             return;
         }
@@ -650,18 +652,19 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
         }
 
         IReadOnlyList<VersionDetails> candidateVersions = Versions.ToList();
-        if (CurrentItem.IsFile)
+        if (items.All(item => item.IsFile))
         {
-            candidateVersions = await DeleteSingleCandidateVersions.ResolveAsync(
-                queryManager,
-                Versions.ToList(),
-                CurrentVersion.Id,
-                CurrentItem.Name,
-                CurrentItem.FullPath,
-                isFile: true);
+            var containingVersions = new List<VersionDetails>();
+            foreach (var item in items)
+            {
+                containingVersions.AddRange(await DeleteSingleCandidateVersions.ResolveAsync(
+                    queryManager, candidateVersions, version.Id, item.Name, item.FullPath, isFile: true));
+            }
+
+            candidateVersions = containingVersions.DistinctBy(candidate => candidate.Id).ToList();
         }
 
-        var deleteResult = await browserDialogService.ShowDeleteSelectedContentWindowAsync(CurrentItem, candidateVersions);
+        var deleteResult = await browserDialogService.ShowDeleteSelectedContentWindowAsync(items, candidateVersions);
         if (deleteResult.IsCancelled)
         {
             return;
@@ -680,13 +683,14 @@ public partial class BrowserViewModel : ObservableObject, INavigationAware
             }
         }
 
-        if (CurrentItem.IsFile)
+        var targets = items.Select(item => (FileName: item.IsFile ? item.Name : string.Empty, Path: item.FullPath)).ToArray();
+        if (targets.Length == 1)
         {
-            await jobService.DeleteSingleFileAsync(CurrentItem.Name, CurrentItem.FullPath, versionIds: versionIds);
+            await jobService.DeleteSingleFileAsync(targets[0].FileName, targets[0].Path, versionIds: versionIds);
         }
         else
         {
-            await jobService.DeleteSingleFileAsync(string.Empty, CurrentItem.FullPath + "%", versionIds: versionIds);
+            await jobService.DeleteSelectedFilesAsync(targets, versionIds);
         }
 
         await Refresh();
