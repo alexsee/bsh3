@@ -27,6 +27,8 @@ public partial class ucConfig : IMainTabs
     public ucConfig()
     {
         InitializeComponent();
+        txtFTPServer.TextChanged += (_, _) => chkFtpAllowUntrustedCertificate.Checked = false;
+        txtFTPPort.TextChanged += (_, _) => chkFtpAllowUntrustedCertificate.Checked = false;
     }
 
     #region  Implementation of IMainTabs 
@@ -131,6 +133,7 @@ public partial class ucConfig : IMainTabs
         configurationManager.FtpPass = txtFTPPassword.Text;
         configurationManager.FtpFolder = FtpStorage.GetFtpPath(txtFTPPath.Text);
         configurationManager.FtpCoding = cboFtpEncoding.SelectedItem?.ToString();
+        configurationManager.FtpAllowUntrustedCertificate = chkFtpAllowUntrustedCertificate.Checked;
 
         if (chkFtpEncryption.Checked)
         {
@@ -239,6 +242,7 @@ public partial class ucConfig : IMainTabs
         txtFTPPassword.Text = configurationManager.FtpPass;
         txtFTPPath.Text = configurationManager.FtpFolder;
         cboFtpEncoding.SelectedItem = configurationManager.FtpCoding;
+        chkFtpAllowUntrustedCertificate.Checked = configurationManager.FtpAllowUntrustedCertificate;
         txtBackupPath.Text = configurationManager.BackupFolder;
 
         if (configurationManager.FtpEncryptionMode == "3")
@@ -458,7 +462,7 @@ public partial class ucConfig : IMainTabs
         try
         {
             // check FTP
-            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem));
+            var profile = FtpStorage.CheckConnection(txtFTPServer.Text, Convert.ToInt32(txtFTPPort.Text), txtFTPUsername.Text, txtFTPPassword.Text, txtFTPPath.Text, Convert.ToString(cboFtpEncoding.SelectedItem), !chkFtpEncryption.Checked, chkFtpAllowUntrustedCertificate.Checked);
 
             if (profile)
             {
@@ -682,7 +686,8 @@ public partial class ucConfig : IMainTabs
                         ftp.Password,
                         ftp.Path,
                         ftp.Encoding,
-                        encryptionMode: ftp.EnforceUnencrypted ? "0" : "3");
+                        encryptionMode: ftp.EnforceUnencrypted ? "0" : "3",
+                        allowUntrustedCertificate: ftp.AllowUntrustedCertificate);
                     break;
             }
         }

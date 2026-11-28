@@ -6,7 +6,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Database;
-using Brightbits.BSH.Main;
+using Brightbits.BSH.Engine.Models;
 using NUnit.Framework;
 
 namespace BSH.Test;
@@ -42,9 +42,10 @@ public class ImportVersionSourcesTests
         await factory.ExecuteNonQueryAsync("INSERT INTO versiontable (versionID, versionTitle, versionSources) VALUES (1, 'keep', 'C:\\Old')");
         await factory.ExecuteNonQueryAsync("INSERT INTO versiontable (versionID, versionTitle, versionSources) VALUES (2, 'other', 'C:\\Other')");
 
-        var quoted = "C:\\Docs\" , versionTitle = \"pwned\", versionSources = \"x";
-        await ucDoConfigure.UpdateVersionSourcesAsync(factory, "1", quoted);
-        await ucDoConfigure.UpdateVersionSourcesAsync(factory, "2", "D:\\Photos");
+        const string quoted = "C:\\Docs\"Archive's";
+        await BackupDatabaseImport.RemapVersionSourcesAsync(factory,
+            [new VersionDetails { Id = "1", Sources = @"C:\Old" }, new VersionDetails { Id = "2", Sources = @"C:\Other" }],
+            [(@"C:\Old", quoted)]);
 
         using var dbClient = factory.CreateDbClient();
         var title = await dbClient.ExecuteScalarAsync("SELECT versionTitle FROM versiontable WHERE versionID = 1");
@@ -57,7 +58,7 @@ public class ImportVersionSourcesTests
             Assert.That(title, Is.EqualTo("keep"));
             Assert.That(sources, Is.EqualTo(quoted));
             Assert.That(otherTitle, Is.EqualTo("other"));
-            Assert.That(otherSources, Is.EqualTo("D:\\Photos"));
+            Assert.That(otherSources, Is.EqualTo(@"C:\Other"));
         });
     }
 }

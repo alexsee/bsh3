@@ -3,11 +3,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Database;
 using BSH.MainApp.Contracts.Services;
 using BSH.MainApp.Models;
+using BSH.MainApp.Services;
 using BSH.MainApp.ViewModels;
 using BSH.Test.Fakes;
+using BSH.Test.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 
@@ -17,6 +22,85 @@ public class SetupImportRemapTests
 {
     private const string OriginalPath = @"C:\OldPc\Documents";
     private const string RemappedPath = @"D:\ThisPc\Documents";
+
+    [Test]
+    public async Task NewFtpSetupUsesTheSelectedEndpointAndPersistsTheCertificateException()
+    {
+        await using var server = new VersionMarkerFtpServer("7");
+        var configuration = new FakeConfigurationManager();
+        var setupService = new SetupService(configuration, new FakeQueryManager(), null!);
+        var viewModel = new SetupViewModel(configuration, setupService, new StubOrchestrationService(),
+            new FakeJobService(), new StubNavigationService(), new FakePresentationService());
+        viewModel.BeginNewSetup();
+        viewModel.Sources.Clear();
+        viewModel.Sources.Add(OriginalPath);
+        await viewModel.GoNextCommand.ExecuteAsync(null);
+        viewModel.SelectedTargetKind = MediaTargetKind.Ftp;
+        viewModel.FtpHost = "127.0.0.1";
+        viewModel.FtpPort = server.Port.ToString();
+        viewModel.FtpUser = "user";
+        viewModel.FtpPassword = "pass";
+        viewModel.FtpFolder = "/";
+        viewModel.FtpEnforceUnencrypted = true;
+        viewModel.FtpAllowUntrustedCertificate = true;
+        await viewModel.GoNextCommand.ExecuteAsync(null);
+        Assert.That(viewModel.CurrentStep, Is.EqualTo(SetupWizardStep.Mode), viewModel.ValidationErrorMessage);
+        Assert.That(server.LoggedIn, Is.True);
+
+        viewModel.SelectedTaskType = TaskType.Manual;
+        Assert.That(await viewModel.FinishNewSetupAsync(), Is.True);
+        Assert.That(configuration.FtpAllowUntrustedCertificate, Is.True);
+        Assert.That(configuration.FtpEncryptionMode, Is.EqualTo("0"));
+    }
+
+    [Test]
+    public async Task ImportFromFtpReplacesDatabaseAndUsesSelectedFtpSettings()
+    {
+        var directory = Directory.CreateTempSubdirectory("bsh-test-ftp-import-").FullName;
+        try
+        {
+            var sourceFactory = new DbClientFactory();
+            await sourceFactory.InitializeAsync(Path.Combine(directory, "source.bshdb"));
+            await sourceFactory.ExecuteNonQueryAsync("INSERT INTO fileversiontable (fileversionID, fileType) VALUES (1, 1)");
+            DbClientFactory.ClosePool();
+            await using var server = new VersionMarkerFtpServer(
+                await File.ReadAllBytesAsync(sourceFactory.DatabaseFile), sessionCount: 2, remoteFileName: "backup.bshdb");
+
+            var destinationFactory = new DbClientFactory();
+            await destinationFactory.InitializeAsync(Path.Combine(directory, "destination.bshdb"));
+            var configuration = new FakeConfigurationManager { SourceFolder = OriginalPath };
+            var setupService = new SetupService(configuration, new FakeQueryManager(), destinationFactory);
+            var viewModel = new SetupViewModel(configuration, setupService, new StubOrchestrationService(),
+                new FakeJobService(), new StubNavigationService(), new ConfirmImportPresentationService(),
+                dbClientFactory: destinationFactory);
+            viewModel.BeginImport();
+            viewModel.SelectedImportSourceKind = SetupImportSourceKind.Ftp;
+            viewModel.ImportFtpHost = "127.0.0.1";
+            viewModel.ImportFtpPort = server.Port.ToString();
+            viewModel.ImportFtpUser = "user";
+            viewModel.ImportFtpPassword = "pass";
+            viewModel.ImportFtpFolder = "/backups";
+            viewModel.ImportFtpEnforceUnencrypted = true;
+
+            await viewModel.GoNextCommand.ExecuteAsync(null);
+
+            Assert.That(viewModel.CurrentStep, Is.EqualTo(SetupWizardStep.ImportRemap), viewModel.ValidationErrorMessage);
+            Assert.That(configuration.MediumType, Is.EqualTo(MediaType.FileTransferServer));
+            Assert.That(configuration.FtpEncryptionMode, Is.EqualTo("0"));
+            Assert.That(configuration.FtpHost, Is.EqualTo("127.0.0.1"));
+            Assert.That(server.MarkerDownloaded, Is.True);
+            using var database = destinationFactory.CreateDbClient();
+            Assert.That(await database.ExecuteScalarAsync("SELECT fileType FROM fileversiontable WHERE fileversionID = 1"), Is.EqualTo(3));
+
+            Assert.That(await viewModel.FinishImportAsync(), Is.True);
+            Assert.That(configuration.TaskType, Is.EqualTo(TaskType.Manual));
+        }
+        finally
+        {
+            DbClientFactory.ClosePool();
+            TempDirectory.DeleteBestEffort(directory);
+        }
+    }
 
     [Test]
     public void TryUpdateSourceRemapUpdatesBoundListCurrentPath()
@@ -118,5 +202,12 @@ public class SetupImportRemapTests
     {
         public Frame? Frame { get; set; }
         public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false) => true;
+    }
+
+    private sealed class ConfirmImportPresentationService : FakePresentationService
+    {
+        public override Task<ContentDialogResult> ShowMessageBoxAsync(
+            string title, string content, IList<Windows.UI.Popups.IUICommand>? commands,
+            uint defaultCommandIndex = 0, uint cancelCommandIndex = 1) => Task.FromResult(ContentDialogResult.Primary);
     }
 }

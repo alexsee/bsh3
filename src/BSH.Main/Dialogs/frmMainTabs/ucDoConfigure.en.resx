@@ -401,4 +401,10 @@ modify. Additionally, the first backup will be performed.</value>
   <data name="cmdConfigure.Text" xml:space="preserve">
     <value>&amp;Configure</value>
   </data>
+  <data name="chkFtpAllowUntrustedCertificate.Text" xml:space="preserve">
+    <value>Allow untrusted FTPS certificates (unsafe)</value>
+  </data>
+  <data name="chkFtpAllowUntrustedCertificate2.Text" xml:space="preserve">
+    <value>Allow untrusted FTPS certificates (unsafe)</value>
+  </data>
 </root>

@@ -20,23 +20,33 @@ namespace BSH.Test;
 public class ServiceWirePipeTests
 {
     [Test]
-    public void PipeDeniesAuthenticatedUsersAndGrantsInteractiveClients()
+    public void PipeGrantsInteractiveClientsAndDeniesNetworkLogons()
     {
         var factory = new CustomNamedPipeServerStreamFactory();
         using var pipe = factory.Create("bsh-acl-" + Guid.NewGuid().ToString("N"),
             PipeDirection.InOut, 2, PipeTransmissionMode.Byte, PipeOptions.None, 8192, 8192);
         var rules = pipe.GetAccessControl().GetAccessRules(true, true, typeof(SecurityIdentifier))
             .Cast<PipeAccessRule>().ToArray();
+        using var identity = WindowsIdentity.GetCurrent();
         var interactive = new SecurityIdentifier(WellKnownSidType.InteractiveSid, null);
+        var administrators = new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null);
+        var system = new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null);
+        var network = new SecurityIdentifier(WellKnownSidType.NetworkSid, null);
 
         Assert.Multiple(() =>
         {
-            AssertNotAllowed(rules, new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null), PipeAccessRights.ReadWrite);
             AssertAllowed(rules, interactive, PipeAccessRights.ReadWrite);
             AssertNotAllowed(rules, interactive, PipeAccessRights.CreateNewInstance);
-            AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null), PipeAccessRights.ReadWrite);
-            AssertAllowed(rules, new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null), PipeAccessRights.FullControl);
-            AssertAllowed(rules, WindowsIdentity.GetCurrent().User!, PipeAccessRights.FullControl);
+            AssertAllowed(rules, administrators, PipeAccessRights.ReadWrite);
+            AssertNotAllowed(rules, administrators, PipeAccessRights.CreateNewInstance);
+            AssertAllowed(rules, system, PipeAccessRights.FullControl);
+            AssertAllowed(rules, identity.User!, PipeAccessRights.FullControl);
+            Assert.That(rules.Where(rule => rule.AccessControlType == AccessControlType.Allow)
+                .Select(rule => rule.IdentityReference).Distinct(),
+                Is.EquivalentTo(new[] { interactive, administrators, system, identity.User! }.Distinct()));
+            Assert.That(rules.Any(rule => rule.IdentityReference.Equals(network)
+                && rule.AccessControlType == AccessControlType.Deny
+                && rule.PipeAccessRights == PipeAccessRights.FullControl), Is.True);
         });
     }
 

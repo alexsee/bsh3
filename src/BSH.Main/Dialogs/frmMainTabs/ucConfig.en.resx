@@ -426,4 +426,7 @@ available.</value>
   <data name="Label6.Text" xml:space="preserve">
     <value>Exclude File Types from Compression</value>
   </data>
+  <data name="chkFtpAllowUntrustedCertificate.Text" xml:space="preserve">
+    <value>Allow untrusted FTPS certificates (unsafe)</value>
+  </data>
 </root>

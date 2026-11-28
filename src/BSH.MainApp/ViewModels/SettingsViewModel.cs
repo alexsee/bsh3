@@ -188,6 +188,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private bool ftpRemoteEnforceUnencrypted;
 
     [ObservableProperty]
+    private bool ftpRemoteAllowUntrustedCertificate;
+
+    [ObservableProperty]
     private bool isMovingBackupTarget;
 
     [ObservableProperty]
@@ -218,7 +221,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             this.FtpRemotePath = this.configurationManager.FtpFolder;
             this.FtpRemoteEncoding = this.configurationManager.FtpCoding;
 
-            // FtpStorage treats mode "3" as encrypted (AutoConnect); anything else is plain FTP.
+            this.FtpRemoteAllowUntrustedCertificate = this.configurationManager.FtpAllowUntrustedCertificate;
             this.FtpRemoteEnforceUnencrypted = this.configurationManager.FtpEncryptionMode != "3";
         }
         finally
@@ -262,9 +265,19 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     public async Task CheckFtpRemote()
     {
         var probe = GetDisplayedFtpConnectionValues();
-        var profile = FtpStorage.CheckConnection(probe.Host, probe.Port, probe.User, probe.Password, probe.Path, probe.Encoding);
+        bool connected;
+        try
+        {
+            connected = FtpStorage.CheckConnection(probe.Host, probe.Port, probe.User, probe.Password, probe.Path,
+                probe.Encoding, !FtpRemoteEnforceUnencrypted, FtpRemoteAllowUntrustedCertificate);
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning(ex, "FTP connection test failed.");
+            connected = false;
+        }
 
-        if (profile)
+        if (connected)
         {
             await presentationController.ShowMessageBoxAsync("MsgBox_Ftp_Successful_Title".GetLocalized(), "MsgBox_Ftp_Successful_Text".GetLocalized(), new List<IUICommand> { new UICommand("MsgBox_OK".GetLocalized()) });
         }
@@ -362,6 +375,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     partial void OnFtpRemoteHostChanged(string? oldValue, string newValue)
     {
         if (oldValue == null || oldValue == newValue) return;
+        if (!suppressTargetSettingsPersistence) FtpRemoteAllowUntrustedCertificate = false;
         PersistFtpTargetIfSelected();
         CheckFtpRemoteCommand.NotifyCanExecuteChanged();
     }
@@ -369,7 +383,16 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     partial void OnFtpRemotePortChanged(int oldValue, int newValue)
     {
         if (oldValue == newValue) return;
+        if (!suppressTargetSettingsPersistence) FtpRemoteAllowUntrustedCertificate = false;
         PersistFtpTargetIfSelected();
+    }
+
+    partial void OnFtpRemoteAllowUntrustedCertificateChanged(bool value)
+    {
+        if (!suppressTargetSettingsPersistence && SelectedMediaType == MediaType.FileTransferServer)
+        {
+            configurationManager.FtpAllowUntrustedCertificate = value;
+        }
     }
 
     partial void OnFtpRemoteUserChanged(string? oldValue, string newValue)
@@ -505,7 +528,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             FtpRemotePassword,
             NormalizeFtpFolder(FtpRemotePath),
             FtpRemoteEncoding,
-            encryptionMode: FtpRemoteEnforceUnencrypted ? "0" : "3");
+            encryptionMode: FtpRemoteEnforceUnencrypted ? "0" : "3",
+            allowUntrustedCertificate: FtpRemoteAllowUntrustedCertificate);
     }
 
     private void ApplyLocalTargetFromPage()

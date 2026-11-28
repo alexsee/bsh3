@@ -4,7 +4,10 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,40 +21,97 @@ internal sealed class VersionMarkerFtpServer : IAsyncDisposable
     private readonly Task session;
     private readonly byte[] marker;
     private readonly bool rejectUploads;
+    private readonly X509Certificate2 certificate;
+    private readonly int sessionCount;
+    private readonly bool implicitTls;
+    private readonly string remoteFileName;
 
     public int Port => ((IPEndPoint)listener.LocalEndpoint).Port;
     public bool MarkerDownloaded { get; private set; }
     public bool UploadReceived { get; private set; }
+    public bool LoggedIn { get; private set; }
+    public string TlsUpgradeCommand { get; private set; }
 
-    public VersionMarkerFtpServer(string marker, bool rejectUploads = false)
-        : this(Encoding.UTF8.GetBytes(marker), rejectUploads)
+    public VersionMarkerFtpServer(string marker, bool rejectUploads = false, X509Certificate2 certificate = null)
+        : this(Encoding.UTF8.GetBytes(marker), rejectUploads, certificate)
     {
     }
 
-    public VersionMarkerFtpServer(byte[] marker, bool rejectUploads = false)
+    public VersionMarkerFtpServer(byte[] marker, bool rejectUploads = false, X509Certificate2 certificate = null,
+        int sessionCount = 1, bool implicitTls = false, string remoteFileName = "backup.bshv")
     {
         this.marker = marker;
         this.rejectUploads = rejectUploads;
+        this.certificate = certificate;
+        this.sessionCount = sessionCount;
+        this.implicitTls = implicitTls;
+        this.remoteFileName = remoteFileName;
         listener.Start();
         session = RunAsync();
     }
 
     private async Task RunAsync()
     {
-        using var client = await listener.AcceptTcpClientAsync(cancellation.Token);
+        // An implicit FTPS endpoint sends no FTP greeting on the initial explicit probe.
+        using var explicitProbe = implicitTls ? await listener.AcceptTcpClientAsync(cancellation.Token) : null;
+        for (var i = 0; i < sessionCount; i++)
+        {
+            using var client = await listener.AcceptTcpClientAsync(cancellation.Token);
+            await RunSessionAsync(client);
+        }
+    }
+
+    private async Task RunSessionAsync(TcpClient client)
+    {
         using var stream = client.GetStream();
-        using var reader = new StreamReader(stream, Encoding.ASCII);
-        using var writer = new StreamWriter(stream, Encoding.ASCII) { AutoFlush = true, NewLine = "\r\n" };
+        using var greetingWriter = new StreamWriter(stream, Encoding.ASCII, leaveOpen: true) { AutoFlush = true, NewLine = "\r\n" };
+        if (!implicitTls)
+        {
+            await greetingWriter.WriteLineAsync("220 FTP fixture");
+        }
+
+        using var tlsStream = certificate == null ? null : new SslStream(stream, leaveInnerStreamOpen: true);
+        if (tlsStream != null)
+        {
+            if (!implicitTls)
+            {
+                using var greetingReader = new StreamReader(stream, Encoding.ASCII, leaveOpen: true);
+                TlsUpgradeCommand = await greetingReader.ReadLineAsync(cancellation.Token);
+                await greetingWriter.WriteLineAsync("234 Start TLS");
+            }
+            try
+            {
+                await tlsStream.AuthenticateAsServerAsync(
+                    new SslServerAuthenticationOptions { ServerCertificate = certificate }, cancellation.Token);
+            }
+            catch (Exception ex) when (ex is AuthenticationException or IOException)
+            {
+                return; // The client can reject the fixture certificate.
+            }
+        }
+
+        Stream controlStream = tlsStream ?? (Stream)stream;
+        using var reader = new StreamReader(controlStream, Encoding.ASCII, leaveOpen: true);
+        using var writer = new StreamWriter(controlStream, Encoding.ASCII, leaveOpen: true) { AutoFlush = true, NewLine = "\r\n" };
         TcpListener dataListener = null;
         try
         {
-            await writer.WriteLineAsync("220 Version marker fixture");
+            if (implicitTls)
+            {
+                await writer.WriteLineAsync("220 FTP fixture");
+            }
+
             while (await reader.ReadLineAsync(cancellation.Token) is { } command)
             {
                 switch (command.Split(' ')[0])
                 {
                     case "USER": await writer.WriteLineAsync("331 Password required"); break;
-                    case "PASS": await writer.WriteLineAsync("230 Logged in"); break;
+                    case "PASS":
+                        LoggedIn = true;
+                        await writer.WriteLineAsync("230 Logged in");
+                        break;
+                    case "PBSZ":
+                    case "PROT": await writer.WriteLineAsync("200 OK"); break;
                     case "SYST": await writer.WriteLineAsync("215 UNIX Type: L8"); break;
                     case "FEAT": await writer.WriteLineAsync("211 No extensions"); break;
                     case "PWD": await writer.WriteLineAsync("257 \"/\""); break;
@@ -85,7 +145,7 @@ internal sealed class VersionMarkerFtpServer : IAsyncDisposable
                         using (var dataClient = await dataListener.AcceptTcpClientAsync(cancellation.Token))
                         {
                             var payload = command.StartsWith("NLST", StringComparison.Ordinal)
-                                ? Encoding.ASCII.GetBytes("/backups/backup.bshv\r\n")
+                                ? Encoding.ASCII.GetBytes($"/backups/{remoteFileName}\r\n")
                                 : marker;
                             await dataClient.GetStream().WriteAsync(payload, cancellation.Token);
                         }
@@ -96,6 +156,10 @@ internal sealed class VersionMarkerFtpServer : IAsyncDisposable
                     default: await writer.WriteLineAsync("502 Command not implemented"); break;
                 }
             }
+        }
+        catch (IOException) when (tlsStream != null && !LoggedIn)
+        {
+            // A rejected certificate can also close the connection after server authentication.
         }
         finally
         {

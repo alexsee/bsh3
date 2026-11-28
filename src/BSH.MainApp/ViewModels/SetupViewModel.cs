@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using Brightbits.BSH.Engine;
 using Brightbits.BSH.Engine.Contracts;
 using Brightbits.BSH.Engine.Contracts.Database;
+using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Services;
 using Brightbits.BSH.Engine.Storage;
 using BSH.MainApp.Contracts.Services;
@@ -58,7 +59,7 @@ public partial class SetupViewModel : ObservableObject
         CurrentStep = SetupWizardStep.Welcome;
     }
 
-    private string DatabaseFile => App.DatabaseFile;
+    private string DatabaseFile => dbClientFactory?.DatabaseFile ?? App.DatabaseFile;
 
     public ObservableCollection<string> Sources { get; } = new();
 
@@ -123,6 +124,13 @@ public partial class SetupViewModel : ObservableObject
     private bool ftpEnforceUnencrypted;
 
     [ObservableProperty]
+    private bool ftpAllowUntrustedCertificate;
+
+    partial void OnFtpHostChanged(string value) => FtpAllowUntrustedCertificate = false;
+
+    partial void OnFtpPortChanged(string value) => FtpAllowUntrustedCertificate = false;
+
+    [ObservableProperty]
     private TaskType selectedTaskType = TaskType.Auto;
 
     [ObservableProperty]
@@ -157,6 +165,13 @@ public partial class SetupViewModel : ObservableObject
 
     [ObservableProperty]
     private bool importFtpEnforceUnencrypted;
+
+    [ObservableProperty]
+    private bool importFtpAllowUntrustedCertificate;
+
+    partial void OnImportFtpHostChanged(string value) => ImportFtpAllowUntrustedCertificate = false;
+
+    partial void OnImportFtpPortChanged(string value) => ImportFtpAllowUntrustedCertificate = false;
 
     [ObservableProperty]
     private SourceRemap? selectedSourceRemap;
@@ -615,7 +630,7 @@ public partial class SetupViewModel : ObservableObject
                         return false;
                     }
 
-                    var ok = FtpStorage.CheckConnection(FtpHost, port, FtpUser, FtpPassword, FtpFolder, FtpEncoding);
+                    var ok = FtpStorage.CheckConnection(FtpHost, port, FtpUser, FtpPassword, FtpFolder, FtpEncoding, !FtpEnforceUnencrypted, FtpAllowUntrustedCertificate);
                     if (!ok)
                     {
                         ValidationErrorMessage = "Setup_Validation_FtpDirectoryNotFound".GetLocalized();
@@ -746,7 +761,8 @@ public partial class SetupViewModel : ObservableObject
                 ImportFtpFolder,
                 ImportFtpEncoding,
                 !ImportFtpEnforceUnencrypted,
-                0))
+                0,
+                ImportFtpAllowUntrustedCertificate))
             {
                 storage.Open();
                 if (!storage.FileExists("backup.bshdb"))
@@ -765,7 +781,6 @@ public partial class SetupViewModel : ObservableObject
             CurrentStep = SetupWizardStep.Progress;
             IsBusy = true;
 
-            setupService.PrepareDatabaseReplacement(DatabaseFile);
             using (var storage = new FtpStorage(
                 ImportFtpHost,
                 port,
@@ -774,22 +789,18 @@ public partial class SetupViewModel : ObservableObject
                 ImportFtpFolder,
                 ImportFtpEncoding,
                 !ImportFtpEnforceUnencrypted,
-                0))
+                0,
+                ImportFtpAllowUntrustedCertificate))
             {
                 storage.Open();
-                storage.CopyFileFromStorage(DatabaseFile, "backup.bshdb");
+                BackupDatabaseImport.DownloadFromStorage(storage, DatabaseFile);
             }
 
             await ReinitializeAfterImportAsync();
 
-            configurationManager.BackupFolder = "";
-            configurationManager.FtpFolder = ImportFtpFolder;
-            configurationManager.FtpHost = ImportFtpHost;
-            configurationManager.FtpPass = ImportFtpPassword;
-            configurationManager.FtpPort = ImportFtpPort;
-            configurationManager.FtpUser = ImportFtpUser;
-            configurationManager.FtpCoding = ImportFtpEncoding;
-            configurationManager.MediumType = MediaType.FileTransferServer;
+            MediaTargetApplier.ApplyFtpTarget(
+                configurationManager, ImportFtpHost, ImportFtpPort, ImportFtpUser, ImportFtpPassword,
+                ImportFtpFolder, ImportFtpEncoding, ImportFtpEnforceUnencrypted ? "0" : "3", ImportFtpAllowUntrustedCertificate);
             await setupService.ConvertFileTypesForFtpImportAsync();
 
             PrepareSourceRemapStep();
@@ -866,6 +877,7 @@ public partial class SetupViewModel : ObservableObject
                 FtpFolder = FtpFolder,
                 FtpEncoding = FtpEncoding,
                 FtpEnforceUnencrypted = FtpEnforceUnencrypted,
+                FtpAllowUntrustedCertificate = FtpAllowUntrustedCertificate,
                 TaskType = SelectedTaskType
             },
             _ => null

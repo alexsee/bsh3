@@ -81,6 +81,13 @@ public partial class SwitchStorageViewModel : ObservableObject
     private bool ftpEnforceUnencrypted;
 
     [ObservableProperty]
+    private bool ftpAllowUntrustedCertificate;
+
+    partial void OnFtpHostChanged(string value) => FtpAllowUntrustedCertificate = false;
+
+    partial void OnFtpPortChanged(string value) => FtpAllowUntrustedCertificate = false;
+
+    [ObservableProperty]
     private string? validationErrorMessage;
 
     public SwitchStorageViewModel(ISwitchStorageService switchStorageService)
@@ -253,7 +260,8 @@ public partial class SwitchStorageViewModel : ObservableObject
                 FtpFolder,
                 string.IsNullOrWhiteSpace(FtpEncoding) ? "UTF-8" : FtpEncoding,
                 !FtpEnforceUnencrypted,
-                0);
+                0,
+                FtpAllowUntrustedCertificate);
             storage.Open();
 
             if (requireEmptyTarget && storage.FileExists(UncTargetProbe.BackupDatabaseFileName))
@@ -288,7 +296,8 @@ public partial class SwitchStorageViewModel : ObservableObject
             FtpPassword,
             FtpFolder,
             string.IsNullOrWhiteSpace(FtpEncoding) ? "UTF-8" : FtpEncoding,
-            FtpEnforceUnencrypted);
+            FtpEnforceUnencrypted,
+            FtpAllowUntrustedCertificate);
     }
 
     private void UpdateTargetVisibility()

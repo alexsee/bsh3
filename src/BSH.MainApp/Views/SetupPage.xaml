@@ -273,6 +273,7 @@
                             <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpFolder}" Text="{x:Bind ViewModel.FtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpEncoding}" Text="{x:Bind ViewModel.FtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <CheckBox Content="{helpers:ResourceString Name=Setup_Target_EnforceUnencryptedFtp}" IsChecked="{x:Bind ViewModel.FtpEnforceUnencrypted, Mode=TwoWay}" />
+                            <CheckBox Content="{helpers:ResourceString Name=Ftp_AllowUntrustedCertificate}" IsChecked="{x:Bind ViewModel.FtpAllowUntrustedCertificate, Mode=TwoWay}" />
                         </StackPanel>
                     </StackPanel>
 
@@ -354,6 +355,7 @@
                             <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpFolder}" Text="{x:Bind ViewModel.ImportFtpFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Header="{helpers:ResourceString Name=Setup_Target_FtpEncoding}" Text="{x:Bind ViewModel.ImportFtpEncoding, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <CheckBox Content="{helpers:ResourceString Name=Setup_Target_EnforceUnencryptedFtp}" IsChecked="{x:Bind ViewModel.ImportFtpEnforceUnencrypted, Mode=TwoWay}" />
+                            <CheckBox Content="{helpers:ResourceString Name=Ftp_AllowUntrustedCertificate}" IsChecked="{x:Bind ViewModel.ImportFtpAllowUntrustedCertificate, Mode=TwoWay}" />
                         </StackPanel>
                     </StackPanel>
 

@@ -28,6 +28,11 @@ namespace BSH.Service
         public CustomNamedPipeServerStreamFactory()
         {
             _pipeSecurity = new PipeSecurity();
+            _pipeSecurity.AddAccessRule(new PipeAccessRule(
+                new SecurityIdentifier(WellKnownSidType.NetworkSid, null),
+                PipeAccessRights.FullControl,
+                AccessControlType.Deny));
+
             GrantAccess(new SecurityIdentifier(WellKnownSidType.InteractiveSid, null), PipeAccessRights.ReadWrite);
             GrantAccess(new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null), PipeAccessRights.ReadWrite);
 

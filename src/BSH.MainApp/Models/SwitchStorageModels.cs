@@ -15,4 +15,5 @@ public sealed record SwitchStorageFtpTarget(
     string Password,
     string Folder,
     string Encoding,
-    bool EnforceUnencrypted);
+    bool EnforceUnencrypted,
+    bool AllowUntrustedCertificate = false);

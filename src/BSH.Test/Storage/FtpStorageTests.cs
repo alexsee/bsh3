@@ -4,12 +4,16 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Security.Authentication;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Brightbits.BSH.Engine.Exceptions;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Storage;
 using BSH.Test.Fakes;
 using BSH.Test.Helpers;
+using FluentFTP;
 using NUnit.Framework;
 
 namespace BSH.Test.Storage;
@@ -36,6 +40,94 @@ public class FtpStorageTests
         {
             Directory.Delete(temporaryDirectory, true);
         }
+    }
+
+    [Test]
+    public async Task CheckMediumRejectsPlainFtpWhenTlsIsRequired()
+    {
+        await using var server = new VersionMarkerFtpServer("7");
+        using var storage = new FtpStorage("127.0.0.1", server.Port, "user", "pass", "/backups", "UTF-8",
+            encryption: true, currentStorageVersion: 7, allowUntrustedCertificate: true);
+
+        Assert.That(await storage.CheckMedium(quickCheck: true), Is.False);
+        Assert.That(server.LoggedIn, Is.False);
+    }
+
+    [TestCase("UTF8")]
+    [TestCase("UTF-8")]
+    public async Task ConnectionAcceptsPersistedUtf8EncodingNames(string encoding)
+    {
+        await using var server = new VersionMarkerFtpServer("7");
+
+        Assert.That(FtpStorage.CheckConnection(
+            "127.0.0.1", server.Port, "user", "pass", "/", encoding, encryption: false), Is.True);
+        Assert.That(server.LoggedIn, Is.True);
+    }
+
+    [Test]
+    public async Task ConnectionTestRequiresConsentToAcceptSelfSignedCertificate()
+    {
+        using var certificate = CreateServerCertificate();
+
+        await using (var server = new VersionMarkerFtpServer("7", certificate: certificate))
+        {
+            Assert.Throws<AuthenticationException>(() => FtpStorage.CheckConnection(
+                "localhost", server.Port, "user", "pass", "/", "UTF-8", encryption: true));
+            Assert.That(server.TlsUpgradeCommand, Is.EqualTo("AUTH TLS"));
+            Assert.That(server.LoggedIn, Is.False);
+        }
+
+        await using (var server = new VersionMarkerFtpServer("7", certificate: certificate))
+        {
+            Assert.That(FtpStorage.CheckConnection(
+                "localhost", server.Port, "user", "pass", "/", "UTF-8",
+                encryption: true, allowUntrustedCertificate: true), Is.True);
+            Assert.That(server.TlsUpgradeCommand, Is.EqualTo("AUTH TLS"));
+            Assert.That(server.LoggedIn, Is.True);
+        }
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ExplicitGreetingTimeoutRetriesWithImplicitTls(bool useAsyncClient)
+    {
+        using var certificate = CreateServerCertificate();
+        await using var server = new VersionMarkerFtpServer([7], certificate: certificate, implicitTls: true);
+        var config = new FtpConfig
+        {
+            EncryptionMode = FtpEncryptionMode.Explicit,
+            ValidateAnyCertificate = true,
+            ReadTimeout = 1000
+        };
+        var credentials = new System.Net.NetworkCredential("user", "pass");
+        const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
+
+        if (useAsyncClient)
+        {
+            using var client = new AsyncFtpClient("127.0.0.1", credentials, server.Port, config);
+            var connect = typeof(FtpStorage).GetMethod("ConnectAsync", flags)!;
+            await (Task)connect.Invoke(null, [client])!;
+            Assert.That(client.IsEncrypted, Is.True);
+        }
+        else
+        {
+            using var client = new FtpClient("127.0.0.1", credentials, server.Port, config);
+            var connect = typeof(FtpStorage).GetMethod("Connect", flags)!;
+            connect.Invoke(null, [client]);
+            Assert.That(client.IsEncrypted, Is.True);
+        }
+
+        Assert.That(server.LoggedIn, Is.True);
+    }
+
+    private static X509Certificate2 CreateServerCertificate()
+    {
+        using var key = RSA.Create(2048);
+        var request = new CertificateRequest("CN=localhost", key, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        using var generatedCertificate = request.CreateSelfSigned(
+            DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddDays(1));
+        // Schannel needs a server certificate with a non-ephemeral private key.
+        return X509CertificateLoader.LoadPkcs12(generatedCertificate.Export(X509ContentType.Pkcs12), password: null);
     }
 
     [Test]
