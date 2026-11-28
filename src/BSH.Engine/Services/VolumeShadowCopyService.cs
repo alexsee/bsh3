@@ -65,6 +65,7 @@ public class VssPipeChannel : StreamingChannel
         ILog logger, IStats stats) : base(serializer, compressor, logger, stats)
     {
         _serviceType = serviceType;
+        ChannelIdentifier = new PipeChannelIdentifier(endpoint.ServerName, endpoint.PipeName);
 
         // PipeDirection.InOut would request GENERIC_WRITE, which includes the right to create server instances.
         var pipe = new NamedPipeClientStream(endpoint.ServerName, endpoint.PipeName,
@@ -85,5 +86,9 @@ public class VssPipeChannel : StreamingChannel
         }
     }
 
+    protected override IChannelIdentifier ChannelIdentifier { get; }
+
     protected override bool SupportsConcurrentStreamIO => false;
+
+    private sealed record PipeChannelIdentifier(string ServerName, string PipeName) : IChannelIdentifier;
 }
