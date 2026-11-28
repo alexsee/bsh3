@@ -143,17 +143,18 @@ public class ServiceWirePipeTests
 
     private static void AssertAllowed(PipeAccessRule[] rules, SecurityIdentifier sid, PipeAccessRights rights)
     {
-        Assert.That(rules.Any(rule => rule.IdentityReference.Equals(sid)
-            && rule.AccessControlType == AccessControlType.Allow
-            && (rule.PipeAccessRights & rights) == rights), Is.True, $"Missing {rights} for {sid}");
+        Assert.That(HasAllowRule(rules, sid, rights), Is.True, $"Missing {rights} for {sid}");
     }
 
     private static void AssertNotAllowed(PipeAccessRule[] rules, SecurityIdentifier sid, PipeAccessRights rights)
     {
-        Assert.That(rules.Any(rule => rule.IdentityReference.Equals(sid)
-            && rule.AccessControlType == AccessControlType.Allow
-            && (rule.PipeAccessRights & rights) == rights), Is.False, $"Unexpected {rights} for {sid}");
+        Assert.That(HasAllowRule(rules, sid, rights), Is.False, $"Unexpected {rights} for {sid}");
     }
+
+    private static bool HasAllowRule(PipeAccessRule[] rules, SecurityIdentifier sid, PipeAccessRights rights) =>
+        rules.Any(rule => rule.IdentityReference.Equals(sid)
+            && rule.AccessControlType == AccessControlType.Allow
+            && (rule.PipeAccessRights & rights) == rights);
 
     private static void SetFileDeny(string path, FileSystemRights rights, bool deny)
     {

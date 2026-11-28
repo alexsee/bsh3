@@ -28,29 +28,20 @@ namespace BSH.Service
         public CustomNamedPipeServerStreamFactory()
         {
             _pipeSecurity = new PipeSecurity();
-            // Interactive callers and administrators may use the pipe. LocalSystem and the
-            // service account keep FullControl so further instances can be created, including
-            // under a custom account. The DACL is protected so the default ACL cannot keep
-            // Authenticated Users.
-            _pipeSecurity.AddAccessRule(new PipeAccessRule(
-                new SecurityIdentifier(WellKnownSidType.InteractiveSid, null),
-                PipeAccessRights.ReadWrite,
-                AccessControlType.Allow));
-            _pipeSecurity.AddAccessRule(new PipeAccessRule(
-                new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null),
-                PipeAccessRights.ReadWrite,
-                AccessControlType.Allow));
-            _pipeSecurity.AddAccessRule(new PipeAccessRule(
-                new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
-                PipeAccessRights.FullControl,
-                AccessControlType.Allow));
+            GrantAccess(new SecurityIdentifier(WellKnownSidType.InteractiveSid, null), PipeAccessRights.ReadWrite);
+            GrantAccess(new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null), PipeAccessRights.ReadWrite);
+
+            // LocalSystem and custom service accounts need permission to create additional instances.
+            GrantAccess(new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null), PipeAccessRights.FullControl);
             using var identity = WindowsIdentity.GetCurrent();
-            _pipeSecurity.AddAccessRule(new PipeAccessRule(
+            GrantAccess(
                 identity.User ?? throw new InvalidOperationException("The service account has no Windows SID."),
-                PipeAccessRights.FullControl,
-                AccessControlType.Allow));
+                PipeAccessRights.FullControl);
             _pipeSecurity.SetAccessRuleProtection(isProtected: true, preserveInheritance: false);
         }
+
+        private void GrantAccess(SecurityIdentifier sid, PipeAccessRights rights) =>
+            _pipeSecurity.AddAccessRule(new PipeAccessRule(sid, rights, AccessControlType.Allow));
 
         public NamedPipeServerStream Create(string pipeName, PipeDirection direction, int maxNumberOfServerInstances,
           PipeTransmissionMode transmissionMode, PipeOptions options, int inBufferSize, int outBufferSize)
@@ -64,18 +55,13 @@ namespace BSH.Service
     {
         private readonly NpHost host;
 
-        private readonly IVSSRemoteObject remoteObject;
-
         public WindowsBackgroundService(ILogger<WindowsBackgroundService> logger)
         {
-            // init remote object
-            remoteObject = new VSSService();
-
             // Preview installs a vss.pipe beside this exe so it does not bind the stable pipe.
             var pipeName = VssPipeNames.ReadInstalledPipeName(AppContext.BaseDirectory);
             host = new CallerImpersonatingNpHost(pipeName, new ServiceWireLogger(logger),
                 new CustomNamedPipeServerStreamFactory());
-            host.AddService(remoteObject);
+            host.AddService<IVSSRemoteObject>(new VSSService());
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -107,19 +93,17 @@ namespace BSH.Service
     internal sealed class CallerImpersonatingNpHost : NpHost
     {
         private const int MaxConnections = 254;
-
-        private readonly INamedPipeServerStreamFactory streamFactory;
-
-        private readonly CancellationTokenSource stopping = new();
+        private const int ErrorPipeBusy = 231;
 
         [ThreadStatic]
-        private static VssPipeConnection? currentConnection;
+        private static PipeConnection? currentConnection;
 
-        internal static VssPipeConnection? CurrentConnection => currentConnection;
-
+        private readonly INamedPipeServerStreamFactory streamFactory;
+        private readonly CancellationTokenSource stopping = new();
         private Thread? listener;
+        private int disposed;
 
-        private int disposeOnce;
+        internal static PipeConnection? CurrentConnection => currentConnection;
 
         public CallerImpersonatingNpHost(string pipeName, ILog log, INamedPipeServerStreamFactory streamFactory)
             : base(pipeName, log, streamFactory: streamFactory)
@@ -136,7 +120,7 @@ namespace BSH.Service
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && Interlocked.Exchange(ref disposeOnce, 1) == 0)
+            if (disposing && Interlocked.Exchange(ref disposed, 1) == 0)
             {
                 stopping.Cancel();
                 listener?.Join();
@@ -179,7 +163,7 @@ namespace BSH.Service
                 new Thread(() => Serve(connected)) { IsBackground = true }.Start();
                 pipe = null;
             }
-            catch (IOException exception) when ((exception.HResult & 0xFFFF) == 231)
+            catch (IOException exception) when ((exception.HResult & 0xFFFF) == ErrorPipeBusy)
             {
                 // All pipe instances are in use. Wait for capacity or shutdown.
                 cancellation.WaitHandle.WaitOne(50);
@@ -194,7 +178,7 @@ namespace BSH.Service
         {
             using (pipe)
             {
-                currentConnection = new VssPipeConnection(pipe);
+                currentConnection = new PipeConnection(pipe);
                 try
                 {
                     ProcessRequest(new BufferedStream(pipe), new BufferedStream(pipe));
@@ -208,6 +192,13 @@ namespace BSH.Service
                     currentConnection = null;
                 }
             }
+        }
+
+        internal sealed class PipeConnection(NamedPipeServerStream pipe)
+        {
+            internal NamedPipeServerStream Pipe { get; } = pipe;
+
+            internal Exception? Error { get; set; }
         }
     }
 }

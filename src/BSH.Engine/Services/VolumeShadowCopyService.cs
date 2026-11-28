@@ -34,23 +34,21 @@ public sealed class VolumeShadowCopyClient : IVssClient
 
         try
         {
+            var endpoint = new NpEndPoint(pipeName);
             var proxy = ProxyFactory.CreateProxy<IVSSRemoteObject>(typeof(VssPipeChannel), typeof(NpEndPoint),
-                new NpEndPoint(pipeName), new DefaultSerializer(), new DefaultCompressor(), logger: null, stats: null);
+                endpoint, new DefaultSerializer(), new DefaultCompressor(), logger: null, stats: null);
             using var channel = (VssPipeChannel)proxy;
 
             var serviceFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             var destination = destFileName.Replace("\\\\", "\\", StringComparison.OrdinalIgnoreCase);
 
-            // copy file
-            var result = proxy.CopyFileWithVSS(serviceFilePath, fileName, destination);
-
-            if (!result)
+            if (proxy.CopyFileWithVSS(serviceFilePath, fileName, destination))
             {
-                Log.Error(proxy.GetException(), "Could not copy file via VSS.");
-                return false;
+                return true;
             }
 
-            return true;
+            Log.Error(proxy.GetException(), "Could not copy file via VSS.");
+            return false;
         }
         catch (Exception ex)
         {

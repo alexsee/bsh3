@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IO.Pipes;
 using System.Security.Principal;
 using BSH.Service.Shared;
 using BSH.Service.VSS;
@@ -116,11 +115,4 @@ public class VSSService : IVSSRemoteObject
         using var output = new FileStream(destination, FileMode.Create, FileAccess.Write, FileShare.Read);
         input.CopyTo(output);
     }
-}
-
-internal sealed class VssPipeConnection(NamedPipeServerStream pipe)
-{
-    internal NamedPipeServerStream Pipe { get; } = pipe;
-
-    internal Exception? Error { get; set; }
 }
