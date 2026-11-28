@@ -46,6 +46,7 @@ namespace Brightbits.BSH.Main
             ilImages = new ImageList(components);
             plFTP = new Panel();
             chkFtpEncryption = new CheckBox();
+            chkFtpAllowUntrustedCertificate = new CheckBox();
             cboFtpEncoding = new ComboBox();
             Label10 = new Label();
             cmdFTPCheck = new Button();
@@ -183,6 +184,7 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(plFTP, "plFTP");
             plFTP.BackColor = System.Drawing.Color.Transparent;
             plFTP.Controls.Add(chkFtpEncryption);
+            plFTP.Controls.Add(chkFtpAllowUntrustedCertificate);
             plFTP.Controls.Add(cboFtpEncoding);
             plFTP.Controls.Add(Label10);
             plFTP.Controls.Add(cmdFTPCheck);
@@ -203,6 +205,9 @@ namespace Brightbits.BSH.Main
             resources.ApplyResources(chkFtpEncryption, "chkFtpEncryption");
             chkFtpEncryption.Name = "chkFtpEncryption";
             chkFtpEncryption.UseVisualStyleBackColor = true;
+            chkFtpAllowUntrustedCertificate.Name = "chkFtpAllowUntrustedCertificate";
+            resources.ApplyResources(chkFtpAllowUntrustedCertificate, "chkFtpAllowUntrustedCertificate");
+            chkFtpAllowUntrustedCertificate.UseVisualStyleBackColor = true;
             // 
             // cboFtpEncoding
             // 
@@ -386,6 +391,7 @@ namespace Brightbits.BSH.Main
         internal ComboBox cboFtpEncoding;
         internal Label Label10;
         private CheckBox chkFtpEncryption;
+        private CheckBox chkFtpAllowUntrustedCertificate;
         internal Button cmdUncCheck;
         internal TextBox txtUncPassword;
         internal Label lblUncPassword;

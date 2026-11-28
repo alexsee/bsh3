@@ -19,4 +19,5 @@ public sealed record ChangeMediaFtpSelection(
     string Password,
     string Path,
     string Encoding,
-    bool EnforceUnencrypted) : ChangeMediaSelection;
+    bool EnforceUnencrypted,
+    bool AllowUntrustedCertificate = false) : ChangeMediaSelection;

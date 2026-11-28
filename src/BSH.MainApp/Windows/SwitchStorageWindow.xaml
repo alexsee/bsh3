@@ -83,6 +83,7 @@
                         ItemsSource="{x:Bind ViewModel.FtpEncodings}"
                         SelectedItem="{x:Bind ViewModel.FtpEncoding, Mode=TwoWay}" />
                     <CheckBox Content="{helpers:ResourceString Name=SwitchStorage_EnforceUnencrypted}" IsChecked="{x:Bind ViewModel.FtpEnforceUnencrypted, Mode=TwoWay}" />
+                    <CheckBox Content="{helpers:ResourceString Name=Ftp_AllowUntrustedCertificate}" IsChecked="{x:Bind ViewModel.FtpAllowUntrustedCertificate, Mode=TwoWay}" />
                     <Button Command="{x:Bind ViewModel.TestFtpConnectionCommand}" Content="{helpers:ResourceString Name=SwitchStorage_TestConnection}" HorizontalAlignment="Left" />
                 </StackPanel>
             </ScrollViewer>

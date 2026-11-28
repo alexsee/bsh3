@@ -28,6 +28,7 @@ public sealed class FakeConfigurationManager : IConfigurationManager
     public string FreeSpace { get; set; } = "";
     public string FtpCoding { get; set; } = "";
     public string FtpEncryptionMode { get; set; } = "";
+    public bool FtpAllowUntrustedCertificate { get; set; }
     public string FtpFolder { get; set; } = "";
     public string FtpHost { get; set; } = "";
     public string FtpPass { get; set; } = "";

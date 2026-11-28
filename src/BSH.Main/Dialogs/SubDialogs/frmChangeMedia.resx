@@ -360,7 +360,7 @@
     <value>plFTP</value>
   </data>
   <data name="chkFtpEncryption.Size" type="System.Drawing.Size, System.Drawing">
-    <value>398, 40</value>
+    <value>398, 33</value>
   </data>
   <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
     <value>Segoe UI, 9.75pt</value>
@@ -1035,7 +1035,7 @@ Schließen Sie nun das neue (leere) Sicherungsmedium an den Computer an und wäh
     <value>736, -2</value>
   </data>
   <data name="plFTP.Size" type="System.Drawing.Size, System.Drawing">
-    <value>879, 236</value>
+    <value>879, 261</value>
   </data>
   <data name="PictureBox1.Size" type="System.Drawing.Size, System.Drawing">
     <value>48, 48</value>
@@ -1421,4 +1421,16 @@ Schließen Sie nun das neue (leere) Sicherungsmedium an den Computer an und wäh
   <metadata name="ilImages.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="chkFtpAllowUntrustedCertificate.Text" xml:space="preserve">
+    <value>Nicht vertrauenswürdige FTPS-Zertifikate zulassen (unsicher)</value>
+  </data>
+  <data name="chkFtpAllowUntrustedCertificate.Location" type="System.Drawing.Point, System.Drawing">
+    <value>45, 230</value>
+  </data>
+  <data name="chkFtpAllowUntrustedCertificate.Size" type="System.Drawing.Size, System.Drawing">
+    <value>817, 29</value>
+  </data>
+  <data name="chkFtpAllowUntrustedCertificate.TabIndex" type="System.Int32, mscorlib">
+    <value>13</value>
+  </data>
 </root>

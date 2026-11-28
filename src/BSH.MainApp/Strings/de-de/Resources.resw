@@ -1693,4 +1693,7 @@ Das Medium wird automatisch erkannt.</value>
   <data name="Overview_Running_Text" xml:space="preserve">
     <value>Sie können währenddessen weiterarbeiten. Der Fortschritt wird unten angezeigt.</value>
   </data>
+  <data name="Ftp_AllowUntrustedCertificate" xml:space="preserve">
+    <value>Nicht vertrauenswürdige FTPS-Zertifikate zulassen (unsicher)</value>
+  </data>
 </root>

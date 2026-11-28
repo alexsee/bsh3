@@ -27,17 +27,21 @@ namespace BSH.Service
 
         public CustomNamedPipeServerStreamFactory()
         {
-            var sid = new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null);
-
             _pipeSecurity = new PipeSecurity();
+            // This endpoint performs file I/O as the service account. Only callers
+            // that already have local administrative privileges may use it.
             _pipeSecurity.AddAccessRule(new PipeAccessRule(
-                sid,
-                PipeAccessRights.ReadWrite,
-                AccessControlType.Allow
-            ));
+                new SecurityIdentifier(WellKnownSidType.NetworkSid, null),
+                PipeAccessRights.FullControl,
+                AccessControlType.Deny));
+            _pipeSecurity.AddAccessRule(new PipeAccessRule(
+                new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null),
+                // ServiceWire opens the client with GENERIC_READ | GENERIC_WRITE.
+                PipeAccessRights.ReadWrite | PipeAccessRights.CreateNewInstance | PipeAccessRights.Synchronize,
+                AccessControlType.Allow));
 
-            // Preserve cross-user client access while allowing the service to create
-            // further pipe instances, including when installed under a custom account.
+            // Allow the service to create further pipe instances, including
+            // when installed under a custom account.
             _pipeSecurity.AddAccessRule(new PipeAccessRule(
                 new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
                 PipeAccessRights.FullControl,

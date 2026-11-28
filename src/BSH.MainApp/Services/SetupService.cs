@@ -101,7 +101,8 @@ public class SetupService : ISetupService
                     configuration.FtpPassword,
                     configuration.FtpFolder,
                     configuration.FtpEncoding,
-                    encryptionMode: configuration.FtpEnforceUnencrypted ? "0" : "3");
+                    encryptionMode: configuration.FtpEnforceUnencrypted ? "0" : "3",
+                    allowUntrustedCertificate: configuration.FtpAllowUntrustedCertificate);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(configuration), configuration.TargetKind, "Unsupported setup target.");
@@ -181,43 +182,6 @@ public class SetupService : ISetupService
         return false;
     }
 
-    public static string ApplySourceRemaps(string versionSources, IReadOnlyList<SourceRemap> remaps)
-    {
-        var sources = versionSources
-            .Split('|', StringSplitOptions.RemoveEmptyEntries)
-            .Select(path => new VersionEntry(path, false))
-            .ToList();
-
-        foreach (var remap in remaps)
-        {
-            if (remap.CurrentPath.Length <= 3)
-            {
-                continue;
-            }
-
-            foreach (var source in sources)
-            {
-                source.Path = source.Path.Replace(remap.OriginalPath, remap.CurrentPath);
-                source.Changed = true;
-            }
-        }
-
-        foreach (var remap in remaps)
-        {
-            if (remap.CurrentPath.Length <= 3)
-            {
-                continue;
-            }
-
-            foreach (var source in sources.Where(entry => !entry.Changed))
-            {
-                source.Path = source.Path.Replace(remap.OriginalPath, remap.CurrentPath);
-            }
-        }
-
-        return string.Join("|", sources.Select(entry => entry.Path));
-    }
-
     public void ReplaceDatabaseWithCopy(string sourceDatabasePath, string destinationDatabasePath)
     {
         PrepareDatabaseReplacement(destinationDatabasePath);
@@ -238,12 +202,8 @@ public class SetupService : ISetupService
 
     public async Task RemapSourcesAsync(IReadOnlyList<SourceRemap> remaps)
     {
-        foreach (var version in queryManager.GetVersions())
-        {
-            var remapped = ApplySourceRemaps(version.Sources ?? string.Empty, remaps);
-            await dbClientFactory.ExecuteNonQueryAsync(
-                "UPDATE versiontable SET versionSources = \"" + EscapeSql(remapped) + "\" WHERE versionID = " + version.Id);
-        }
+        await BackupDatabaseImport.RemapVersionSourcesAsync(
+            dbClientFactory, queryManager.GetVersions(), remaps.Select(remap => (remap.OriginalPath, remap.CurrentPath)));
 
         configurationManager.SourceFolder = string.Join("|", remaps.Select(remap => remap.CurrentPath));
         configurationManager.TaskType = TaskType.Manual;
@@ -261,11 +221,6 @@ public class SetupService : ISetupService
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 3 WHERE fileType = 1");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 4 WHERE fileType = 2");
         await dbClientFactory.ExecuteNonQueryAsync("UPDATE fileversiontable SET fileType = 5 WHERE fileType = 6");
-    }
-
-    private static string EscapeSql(string value)
-    {
-        return value.Replace("\"", "\"\"", StringComparison.Ordinal);
     }
 
     private static bool IsDriveRootPath(string path)
@@ -288,25 +243,6 @@ public class SetupService : ISetupService
             {
                 File.Delete(path);
             }
-        }
-    }
-
-    private sealed class VersionEntry
-    {
-        public VersionEntry(string path, bool changed)
-        {
-            Path = path;
-            Changed = changed;
-        }
-
-        public string Path
-        {
-            get; set;
-        }
-
-        public bool Changed
-        {
-            get; set;
         }
     }
 }

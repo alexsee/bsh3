@@ -102,6 +102,11 @@ public interface IConfigurationManager
         get;
         set;
     }
+    bool FtpAllowUntrustedCertificate
+    {
+        get;
+        set;
+    }
     string FtpFolder
     {
         get;

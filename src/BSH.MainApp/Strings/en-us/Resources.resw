@@ -1693,4 +1693,7 @@ The medium will be automatically detected.</value>
   <data name="Overview_Running_Text" xml:space="preserve">
     <value>You can keep working while this runs. Progress is shown below.</value>
   </data>
+  <data name="Ftp_AllowUntrustedCertificate" xml:space="preserve">
+    <value>Allow untrusted FTPS certificates (unsafe)</value>
+  </data>
 </root>
