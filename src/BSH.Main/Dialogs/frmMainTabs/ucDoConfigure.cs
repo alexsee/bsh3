@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -565,37 +566,48 @@ public partial class ucDoConfigure : IMainTabs
                 // store source directories
                 var sourcePaths = string.Join("|", lvSourceDirs.Items.Cast<ListViewItem>().Select(x => x.Text));
 
-                foreach (var version in BackupLogic.QueryManager.GetVersions())
+                using (var dbClient = BackupLogic.DbClientFactory.CreateDbClient())
                 {
-                    var sources = version.Sources.Split('|').Select(x => new VersionEntry(x, false)).ToList();
-
-                    foreach (ListViewItem entry in lvSourceDirs.Items)
+                    foreach (var version in BackupLogic.QueryManager.GetVersions())
                     {
-                        if (entry.Text.Length > 3)
-                        {
-                            foreach (var source in sources)
-                            {
-                                source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
-                                source.Changed = true;
-                            }
-                        }
-                    }
+                        var sources = version.Sources.Split('|').Select(x => new VersionEntry(x, false)).ToList();
 
-                    foreach (ListViewItem entry in lvSourceDirs.Items)
-                    {
-                        if (entry.Text.Length > 3)
+                        foreach (ListViewItem entry in lvSourceDirs.Items)
                         {
-                            foreach (var source in sources)
+                            if (entry.Text.Length > 3)
                             {
-                                if (!source.Changed)
+                                foreach (var source in sources)
                                 {
                                     source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
+                                    source.Changed = true;
                                 }
                             }
                         }
-                    }
 
-                    await BackupLogic.DbClientFactory.ExecuteNonQueryAsync("UPDATE versiontable SET versionSources = \"" + string.Join("|", sources.Select(x => x.Path).ToArray()) + "\" WHERE versionID = " + version.Id);
+                        foreach (ListViewItem entry in lvSourceDirs.Items)
+                        {
+                            if (entry.Text.Length > 3)
+                            {
+                                foreach (var source in sources)
+                                {
+                                    if (!source.Changed)
+                                    {
+                                        source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
+                                    }
+                                }
+                            }
+                        }
+
+                        var parameters = new (string, object)[]
+                        {
+                            ("versionSources", string.Join("|", sources.Select(x => x.Path))),
+                            ("versionID", long.Parse(version.Id))
+                        };
+                        await dbClient.ExecuteNonQueryAsync(
+                            CommandType.Text,
+                            "UPDATE versiontable SET versionSources = @versionSources WHERE versionID = @versionID",
+                            parameters);
+                    }
                 }
 
                 BackupLogic.ConfigurationManager.SourceFolder = sourcePaths;
