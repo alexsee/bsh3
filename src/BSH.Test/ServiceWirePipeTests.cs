@@ -18,7 +18,7 @@ namespace BSH.Test;
 public class ServiceWirePipeTests
 {
     [Test]
-    public void PipeGrantsUsersReadWriteAndServiceAccountFullControl()
+    public void PipeDeniesAuthenticatedUsersAndGrantsInteractiveClients()
     {
         var factory = new CustomNamedPipeServerStreamFactory();
         using var pipe = factory.Create("bsh-acl-" + Guid.NewGuid().ToString("N"),

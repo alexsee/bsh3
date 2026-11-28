@@ -57,20 +57,10 @@ namespace BSH.Service
         public NamedPipeServerStream Create(string pipeName, PipeDirection direction, int maxNumberOfServerInstances,
           PipeTransmissionMode transmissionMode, PipeOptions options, int inBufferSize, int outBufferSize)
         {
-            // NamedPipeServerStream is sealed, so the impersonating Read override cannot be a
-            // subclass. CallerImpersonatingNpHost wraps the reads ServiceWire makes on this instance.
-            var stream = new NamedPipeServerStream(pipeName, direction, maxNumberOfServerInstances, transmissionMode, options,
-              inBufferSize, outBufferSize);
-            try
-            {
-                stream.SetAccessControl(_pipeSecurity);
-                return stream;
-            }
-            catch
-            {
-                stream.Dispose();
-                throw;
-            }
+            // NamedPipeServerStream is sealed. CallerImpersonatingNpHost impersonates on a wrapping
+            // read stream. The DACL is applied as the pipe is created.
+            return NamedPipeServerStreamAcl.Create(pipeName, direction, maxNumberOfServerInstances, transmissionMode, options,
+              inBufferSize, outBufferSize, _pipeSecurity);
         }
     }
 
@@ -216,6 +206,7 @@ namespace BSH.Service
             }
             finally
             {
+                VssCallerAuthorization.RevertToSelf();
                 try
                 {
                     if (pipe.IsConnected)
@@ -323,11 +314,14 @@ namespace BSH.Service
 
         private void ImpersonateClient(int bytesRead)
         {
-            if (bytesRead <= 0 || VssCallerAuthorization.IsThreadImpersonating())
+            if (bytesRead <= 0)
             {
                 return;
             }
 
+            // A pool thread can still be impersonating the previous client. Drop that token
+            // and bind this read to the client on this pipe.
+            VssCallerAuthorization.RevertToSelf();
             if (!ImpersonateNamedPipeClient(pipe.SafePipeHandle))
             {
                 throw new IOException("The named-pipe caller could not be impersonated.");

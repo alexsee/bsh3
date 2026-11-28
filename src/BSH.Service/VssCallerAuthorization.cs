@@ -54,6 +54,7 @@ internal static class VssCallerAuthorization
     private const uint CreateAlways = 2;
     private const uint FileFlagBackupSemantics = 0x02000000;
     private const uint FileAttributeNormal = 0x00000080;
+    private const uint FileAttributeReparsePoint = 0x00000400;
 
     private const uint SeFileObject = 1;
     private const uint OwnerSecurityInformation = 0x1;
@@ -82,17 +83,6 @@ internal static class VssCallerAuthorization
         using var threadToken = new SafeAccessTokenHandle(opened);
         caller = DuplicateImpersonation(threadToken);
         return caller != null;
-    }
-
-    internal static bool IsThreadImpersonating()
-    {
-        if (!OpenThreadToken(GetCurrentThread(), TokenQuery, true, out var opened))
-        {
-            return false;
-        }
-
-        new SafeAccessTokenHandle(opened).Dispose();
-        return true;
     }
 
     internal static bool RevertToSelf() => RevertToSelfNative();
@@ -246,8 +236,14 @@ internal static class VssCallerAuthorization
 
         using var backup = new VssBackup();
         backup.Setup(root);
+        var snapshotPath = backup.GetSnapshotPath(sourcePath);
+        if (IsReparsePoint(snapshotPath))
+        {
+            throw new UnauthorizedAccessException(DeniedMessage);
+        }
+
         using var snapshot = new FileStream(
-            backup.GetSnapshotPath(sourcePath),
+            snapshotPath,
             FileMode.Open,
             FileAccess.Read,
             FileShare.ReadWrite | FileShare.Delete);
@@ -310,6 +306,13 @@ internal static class VssCallerAuthorization
 
         handle.Dispose();
         return null;
+    }
+
+    private static bool IsReparsePoint(string path)
+    {
+        var attributes = GetFileAttributesW(path);
+        return attributes != InvalidFileAttributes
+            && (attributes & FileAttributeReparsePoint) != 0;
     }
 
     private static string GetFinalDosPath(SafeFileHandle handle)
