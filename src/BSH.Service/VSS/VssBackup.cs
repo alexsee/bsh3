@@ -161,13 +161,9 @@ namespace BSH.Service.VSS
 
             // This bit replaces the file's normal root information with root
             // info from our new shadow copy.
-            if (Path.IsPathRooted(localPath))
+            if (Path.GetPathRoot(localPath) is { Length: > 0 } root)
             {
-                string? root = Path.GetPathRoot(localPath);
-                if (root != null)
-                {
-                    localPath = localPath.Replace(root, string.Empty);
-                }
+                localPath = localPath[root.Length..];
             }
             string slash = Path.DirectorySeparatorChar.ToString();
             if (!_snap.Root.EndsWith(slash) && !localPath.StartsWith(slash))

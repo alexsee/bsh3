@@ -28,30 +28,25 @@ namespace BSH.Service
         public CustomNamedPipeServerStreamFactory()
         {
             _pipeSecurity = new PipeSecurity();
-            // This endpoint performs file I/O as the service account. Only callers
-            // that already have local administrative privileges may use it.
             _pipeSecurity.AddAccessRule(new PipeAccessRule(
                 new SecurityIdentifier(WellKnownSidType.NetworkSid, null),
                 PipeAccessRights.FullControl,
                 AccessControlType.Deny));
-            _pipeSecurity.AddAccessRule(new PipeAccessRule(
-                new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null),
-                // ServiceWire opens the client with GENERIC_READ | GENERIC_WRITE.
-                PipeAccessRights.ReadWrite | PipeAccessRights.CreateNewInstance | PipeAccessRights.Synchronize,
-                AccessControlType.Allow));
 
-            // Allow the service to create further pipe instances, including
-            // when installed under a custom account.
-            _pipeSecurity.AddAccessRule(new PipeAccessRule(
-                new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
-                PipeAccessRights.FullControl,
-                AccessControlType.Allow));
+            GrantAccess(new SecurityIdentifier(WellKnownSidType.InteractiveSid, null), PipeAccessRights.ReadWrite);
+            GrantAccess(new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null), PipeAccessRights.ReadWrite);
+
+            // LocalSystem and custom service accounts need permission to create additional instances.
+            GrantAccess(new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null), PipeAccessRights.FullControl);
             using var identity = WindowsIdentity.GetCurrent();
-            _pipeSecurity.AddAccessRule(new PipeAccessRule(
+            GrantAccess(
                 identity.User ?? throw new InvalidOperationException("The service account has no Windows SID."),
-                PipeAccessRights.FullControl,
-                AccessControlType.Allow));
+                PipeAccessRights.FullControl);
+            _pipeSecurity.SetAccessRuleProtection(isProtected: true, preserveInheritance: false);
         }
+
+        private void GrantAccess(SecurityIdentifier sid, PipeAccessRights rights) =>
+            _pipeSecurity.AddAccessRule(new PipeAccessRule(sid, rights, AccessControlType.Allow));
 
         public NamedPipeServerStream Create(string pipeName, PipeDirection direction, int maxNumberOfServerInstances,
           PipeTransmissionMode transmissionMode, PipeOptions options, int inBufferSize, int outBufferSize)
@@ -65,18 +60,13 @@ namespace BSH.Service
     {
         private readonly NpHost host;
 
-        private readonly IVSSRemoteObject remoteObject;
-
         public WindowsBackgroundService(ILogger<WindowsBackgroundService> logger)
         {
-            // init remote object
-            remoteObject = new VSSService();
-
             // Preview installs a vss.pipe beside this exe so it does not bind the stable pipe.
             var pipeName = VssPipeNames.ReadInstalledPipeName(AppContext.BaseDirectory);
-            host = new NpHost(pipeName, log: new ServiceWireLogger(logger),
-                streamFactory: new CustomNamedPipeServerStreamFactory());
-            host.AddService(remoteObject);
+            host = new CallerImpersonatingNpHost(pipeName, new ServiceWireLogger(logger),
+                new CustomNamedPipeServerStreamFactory());
+            host.AddService<IVSSRemoteObject>(new VSSService());
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -100,6 +90,120 @@ namespace BSH.Service
             {
                 host.Close();
             }
+        }
+    }
+
+    // ServiceWire dispatches synchronously on the connection thread. Bind the pipe to
+    // that dispatch so the RPC can impersonate its caller only for file I/O.
+    internal sealed class CallerImpersonatingNpHost : NpHost
+    {
+        private const int MaxConnections = 254;
+        private const int ErrorPipeBusy = 231;
+
+        [ThreadStatic]
+        private static PipeConnection? currentConnection;
+
+        private readonly INamedPipeServerStreamFactory streamFactory;
+        private readonly CancellationTokenSource stopping = new();
+        private Thread? listener;
+        private int disposed;
+
+        internal static PipeConnection? CurrentConnection => currentConnection;
+
+        public CallerImpersonatingNpHost(string pipeName, ILog log, INamedPipeServerStreamFactory streamFactory)
+            : base(pipeName, log, streamFactory: streamFactory)
+        {
+            this.streamFactory = streamFactory;
+        }
+
+        protected override void StartListener()
+        {
+            var cancellation = stopping.Token;
+            listener = new Thread(() => Listen(cancellation)) { IsBackground = true };
+            listener.Start();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && Interlocked.Exchange(ref disposed, 1) == 0)
+            {
+                stopping.Cancel();
+                listener?.Join();
+                stopping.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private void Listen(CancellationToken cancellation)
+        {
+            try
+            {
+                while (!cancellation.IsCancellationRequested)
+                {
+                    AcceptNextClient(cancellation);
+                }
+            }
+            catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+            {
+            }
+            catch (Exception error)
+            {
+                Log.Error("VSS pipe listener failed: {0}", error.Message);
+                SetStatus(HostStatus.Faulted);
+            }
+        }
+
+        private void AcceptNextClient(CancellationToken cancellation)
+        {
+            NamedPipeServerStream? pipe = null;
+            try
+            {
+                pipe = streamFactory.Create(PipeName, PipeDirection.InOut, MaxConnections, PipeTransmissionMode.Byte,
+                    PipeOptions.Asynchronous, 8192, 8192);
+                pipe.WaitForConnectionAsync(cancellation).GetAwaiter().GetResult();
+                cancellation.ThrowIfCancellationRequested();
+
+                var connected = pipe;
+                new Thread(() => Serve(connected)) { IsBackground = true }.Start();
+                pipe = null;
+            }
+            catch (IOException exception) when ((exception.HResult & 0xFFFF) == ErrorPipeBusy)
+            {
+                // All pipe instances are in use. Wait for capacity or shutdown.
+                cancellation.WaitHandle.WaitOne(50);
+            }
+            finally
+            {
+                pipe?.Dispose();
+            }
+        }
+
+        private void Serve(NamedPipeServerStream pipe)
+        {
+            using (pipe)
+            {
+                currentConnection = new PipeConnection(pipe);
+                try
+                {
+                    ProcessRequest(new BufferedStream(pipe), new BufferedStream(pipe));
+                }
+                catch (Exception error)
+                {
+                    Log.Debug("VSS pipe connection ended: {0}", error.GetType().Name);
+                }
+                finally
+                {
+                    currentConnection = null;
+                }
+            }
+        }
+
+        internal sealed class PipeConnection(NamedPipeServerStream pipe)
+        {
+            internal NamedPipeServerStream Pipe { get; } = pipe;
+
+            internal Exception? Error { get; set; }
         }
     }
 }
