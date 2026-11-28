@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Brightbits.BSH.Engine;
+using Brightbits.BSH.Engine.Contracts.Database;
 using Brightbits.BSH.Engine.Database;
 using Brightbits.BSH.Engine.Security;
 using Brightbits.BSH.Engine.Services;
@@ -566,43 +567,37 @@ public partial class ucDoConfigure : IMainTabs
                 // store source directories
                 var sourcePaths = string.Join("|", lvSourceDirs.Items.Cast<ListViewItem>().Select(x => x.Text));
 
-                using (var dbClient = BackupLogic.DbClientFactory.CreateDbClient())
+                foreach (var version in BackupLogic.QueryManager.GetVersions())
                 {
-                    foreach (var version in BackupLogic.QueryManager.GetVersions())
-                    {
-                        var sources = version.Sources.Split('|').Select(x => new VersionEntry(x, false)).ToList();
+                    var sources = version.Sources.Split('|').Select(x => new VersionEntry(x, false)).ToList();
 
-                        foreach (ListViewItem entry in lvSourceDirs.Items)
+                    foreach (ListViewItem entry in lvSourceDirs.Items)
+                    {
+                        if (entry.Text.Length > 3)
                         {
-                            if (entry.Text.Length > 3)
+                            foreach (var source in sources)
                             {
-                                foreach (var source in sources)
+                                source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
+                                source.Changed = true;
+                            }
+                        }
+                    }
+
+                    foreach (ListViewItem entry in lvSourceDirs.Items)
+                    {
+                        if (entry.Text.Length > 3)
+                        {
+                            foreach (var source in sources)
+                            {
+                                if (!source.Changed)
                                 {
                                     source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
-                                    source.Changed = true;
                                 }
                             }
                         }
-
-                        foreach (ListViewItem entry in lvSourceDirs.Items)
-                        {
-                            if (entry.Text.Length > 3)
-                            {
-                                foreach (var source in sources)
-                                {
-                                    if (!source.Changed)
-                                    {
-                                        source.Path = source.Path.Replace(entry.SubItems[1].Text, entry.Text);
-                                    }
-                                }
-                            }
-                        }
-
-                        await UpdateVersionSourcesAsync(
-                            dbClient,
-                            version.Id,
-                            string.Join("|", sources.Select(x => x.Path)));
                     }
+
+                    await UpdateVersionSourcesAsync(BackupLogic.DbClientFactory, version.Id, string.Join("|", sources.Select(x => x.Path)));
                 }
 
                 BackupLogic.ConfigurationManager.SourceFolder = sourcePaths;
@@ -615,6 +610,12 @@ public partial class ucDoConfigure : IMainTabs
                 await BackupLogic.StartSystemAsync(true);
                 break;
         }
+    }
+
+    internal static async Task UpdateVersionSourcesAsync(IDbClientFactory dbClientFactory, string versionId, string versionSources)
+    {
+        using var dbClient = dbClientFactory.CreateDbClient();
+        await UpdateVersionSourcesAsync(dbClient, versionId, versionSources);
     }
 
     internal static Task UpdateVersionSourcesAsync(DbClient dbClient, string versionId, string versionSources)

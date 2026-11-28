@@ -25,21 +25,28 @@ public class ImportVersionSourcesTests
     public void TearDown()
     {
         SQLiteConnection.ClearAllPools();
-        File.Delete(databaseFile);
+        foreach (var path in new[] { databaseFile, databaseFile + "-wal", databaseFile + "-shm" })
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
     }
 
     [Test]
     public async Task QuotedSourcePathIsStoredWithoutRewritingTheRow()
     {
-        using var dbClient = new DbClient($"Data Source={databaseFile};Mode=ReadWriteCreate;Pooling=False;");
-        await dbClient.ExecuteNonQueryAsync("CREATE TABLE versiontable (versionID INTEGER PRIMARY KEY, versionTitle TEXT, versionSources TEXT)");
-        await dbClient.ExecuteNonQueryAsync("INSERT INTO versiontable (versionID, versionTitle, versionSources) VALUES (1, 'keep', 'C:\\Old')");
-        await dbClient.ExecuteNonQueryAsync("INSERT INTO versiontable (versionID, versionTitle, versionSources) VALUES (2, 'other', 'C:\\Other')");
+        var factory = new DbClientFactory();
+        await factory.InitializeAsync(databaseFile);
+        await factory.ExecuteNonQueryAsync("INSERT INTO versiontable (versionID, versionTitle, versionSources) VALUES (1, 'keep', 'C:\\Old')");
+        await factory.ExecuteNonQueryAsync("INSERT INTO versiontable (versionID, versionTitle, versionSources) VALUES (2, 'other', 'C:\\Other')");
 
         var quoted = "C:\\Docs\" , versionTitle = \"pwned\", versionSources = \"x";
-        await ucDoConfigure.UpdateVersionSourcesAsync(dbClient, "1", quoted);
-        await ucDoConfigure.UpdateVersionSourcesAsync(dbClient, "2", "D:\\Photos");
+        await ucDoConfigure.UpdateVersionSourcesAsync(factory, "1", quoted);
+        await ucDoConfigure.UpdateVersionSourcesAsync(factory, "2", "D:\\Photos");
 
+        using var dbClient = factory.CreateDbClient();
         var title = await dbClient.ExecuteScalarAsync("SELECT versionTitle FROM versiontable WHERE versionID = 1");
         var sources = await dbClient.ExecuteScalarAsync("SELECT versionSources FROM versiontable WHERE versionID = 1");
         var otherTitle = await dbClient.ExecuteScalarAsync("SELECT versionTitle FROM versiontable WHERE versionID = 2");
